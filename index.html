@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dante Analytics OS - Enterprise Edition</title>
+    
+    <style>
+        :root {
+            --bg-deep: #0b0c10;
+            --bg-surface: #14161d;
+            --gold-satin: #d4af37;
+            --gold-glow: rgba(212, 175, 55, 0.15);
+            --platinum: #e5e5e5;
+            --graphite: #2b2e3a;
+            --text-main: #f0f1f5;
+            --text-muted: #9499a7;
+            --emerald: #2ecc71;
+            --crimson: #e74c3c;
+            --cyan-core: #51e2f5;
+            --purple-core: #a855f7;
+            --font-editorial: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: var(--bg-deep); color: var(--text-main); font-family: var(--font-editorial);
+            background-image: radial-gradient(circle at 50% 30%, #191c26 0%, #0b0c10 100%);
+            min-height: 100vh; line-height: 1.6;
+        }
+
+        .app-view { display: none; min-height: 100vh; padding: 2.5rem; }
+        .app-view.active { display: flex; flex-direction: column; }
+
+        #viewGateway { justify-content: center; align-items: center; }
+        .gateway-card {
+            background: var(--bg-surface); border: 1px solid var(--graphite);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); border-radius: 8px; padding: 3.5rem; width: 100%; max-width: 540px; text-align: center;
+        }
+        .gateway-title { font-size: 1.8rem; font-weight: 300; text-transform: uppercase; letter-spacing: 4px; color: var(--gold-satin); margin-bottom: 2.5rem; }
+
+        .selector-group { margin-bottom: 1.8rem; text-align: left; }
+        .selector-label { display: block; color: var(--text-muted); margin-bottom: 0.6rem; font-weight: 600; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; }
+        select {
+            width: 100%; padding: 1.1rem; background: #1a1d26; border: 1px solid var(--graphite);
+            color: var(--text-main); border-radius: 4px; font-size: 0.95rem; outline: none;
+        }
+
+        .btn-premium {
+            width: 100%; padding: 1.2rem; background: transparent; border: 1px solid var(--gold-satin);
+            color: var(--gold-satin); font-weight: 600; text-transform: uppercase; letter-spacing: 2px;
+            border-radius: 4px; cursor: pointer; transition: all 0.3s ease; margin-top: 1.5rem;
+        }
+        .btn-premium:hover { background: var(--gold-satin); color: var(--bg-deep); box-shadow: 0 0 20px var(--gold-glow); }
+        .btn-premium:disabled { border-color: var(--graphite); color: var(--text-muted); cursor: not-allowed; }
+
+        .workspace-header {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--graphite); padding-bottom: 1.2rem; margin-bottom: 2.5rem;
+        }
+        .meta-tag { background: #1a1d26; padding: 0.5rem 1.2rem; border-radius: 4px; border: 1px solid var(--graphite); font-size: 0.85rem; color: var(--gold-satin); }
+        
+        .content-layout { display: grid; grid-template-columns: 1fr; gap: 3rem; flex-grow: 1; }
+        @media (min-width: 950px) { .content-layout { grid-template-columns: 1fr 1fr; } }
+
+        .panel-enunciado {
+            background: rgba(20, 22, 29, 0.6); border: 1px solid var(--graphite);
+            border-radius: 6px; padding: 2.5rem; overflow-y: auto; max-height: 62vh; font-size: 1.05rem; color: #d1d5db;
+        }
+        .panel-enunciado p { margin-bottom: 1.5rem; }
+
+        .panel-reactivo { display: flex; flex-direction: column; gap: 1.5rem; }
+        .pregunta-txt { font-size: 1.2rem; font-weight: 500; color: #fff; margin-bottom: 1rem; }
+        
+        .opciones-grid { display: flex; flex-direction: column; gap: 1rem; }
+        .opcion-card {
+            background: var(--bg-surface); border: 1px solid var(--graphite); border-radius: 4px;
+            padding: 1.2rem; cursor: pointer; display: flex; align-items: center; gap: 1.2rem; transition: all 0.2s ease;
+        }
+        .opcion-card:hover { border-color: var(--gold-satin); background: #181b24; }
+        .opcion-card.selected-intent { border-color: var(--gold-satin); background: rgba(212, 175, 55, 0.05); }
+        
+        .opcion-id {
+            background: #1c1f2a; width: 32px; height: 32px; display: flex; align-items: center;
+            justify-content: center; border-radius: 4px; font-weight: 600; color: var(--gold-satin); border: 1px solid var(--graphite);
+        }
+
+        .opcion-card.correct { border-color: var(--emerald) !important; background: rgba(46, 204, 113, 0.08); }
+        .opcion-card.wrong { border-color: var(--crimson) !important; background: rgba(231, 76, 60, 0.08); }
+        .opciones-grid.freno .opcion-card { pointer-events: none; }
+
+        #uiMetacognicion {
+            background: var(--bg-surface); border: 1px solid var(--gold-satin);
+            border-radius: 6px; padding: 2rem; margin-top: 1.5rem; display: none; text-align: center;
+        }
+        .meta-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1.2rem; }
+        .btn-meta {
+            background: #1a1d26; border: 1px solid var(--graphite); color: var(--text-main);
+            padding: 1rem; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.9rem; transition: all 0.2s;
+        }
+        .btn-meta:hover { border-color: var(--gold-satin); color: var(--gold-satin); }
+
+        #uiFeedback {
+            background: #1a1315; border: 1px solid var(--crimson); border-radius: 6px; padding: 2rem; margin-top: 1.5rem; display: none;
+        }
+        .feedback-header { color: var(--crimson); font-size: 1rem; font-weight: 600; text-transform: uppercase; margin-bottom: 1.2rem; }
+        .forensic-box { display: flex; flex-direction: column; gap: 1.2rem; }
+        .forensic-row { border-left: 2px solid var(--gold-satin); padding-left: 1.2rem; }
+        .forensic-row.trampa { border-left-color: var(--crimson); }
+        .forensic-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-bottom: 0.3rem; }
+        .forensic-txt { font-size: 0.95rem; color: #cbd5e0; }
+
+        #uiIntervencionClinica {
+            background: #0d0f14; border: 2px solid var(--crimson); border-radius: 8px;
+            padding: 2.5rem; margin-top: 1.5rem; display: none; text-align: center;
+            box-shadow: 0 0 30px rgba(231, 76, 60, 0.15);
+        }
+        .pulse-warning { animation: pulse-border 2s infinite; }
+        
+        /* 🪐 RECTIFICACIÓN ADUANERA: ANIMACIÓN CORREGIDA SIN LLAVES COLGANTES */
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 15px rgba(231, 76, 60, 0.2); }
+            50% { box-shadow: 0 0 35px rgba(231, 76, 60, 0.4); border-color: var(--gold-satin); }
+            100% { box-shadow: 0 0 15px rgba(231, 76, 60, 0.2); }
+        }
+
+        .dashboard-container {
+            background: var(--bg-surface); border: 1px solid var(--graphite); border-radius: 8px; padding: 3rem; width: 100%; max-width: 850px; text-align: center; margin: 0 auto;
+        }
+        .chart-box { background: #090a0d; border: 1px solid var(--graphite); border-radius: 6px; padding: 1.5rem; margin: 2.5rem 0; display: flex; justify-content: center; }
+        
+        .telemetry-badge-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 1.5rem; text-align: left; }
+        .telemetry-card { background: #11131a; border: 1px solid var(--graphite); padding: 1rem; border-radius: 4px; }
+        .telemetry-num { font-size: 1.1rem; font-weight: 600; color: var(--gold-satin); margin-top: 0.2rem; }
+
+        .report-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; text-align: left; margin: 2rem 0; }
+
+        .heatmap-container {
+            background: #090a0d; border: 1px solid var(--graphite); border-radius: 6px;
+            padding: 2rem; margin-top: 2rem; text-align: left;
+        }
+        .heatmap-title { font-size: 1rem; font-weight: 400; text-transform: uppercase; color: var(--gold-satin); letter-spacing: 2px; margin-bottom: 1.5rem; border-bottom: 1px dashed var(--graphite); padding-bottom: 0.5rem; }
+        .heatmap-row { margin-bottom: 1.2rem; }
+        .heatmap-row:last-child { margin-bottom: 0; }
+        .heatmap-meta { display: flex; justify-content: space-between; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 0.4rem; color: var(--text-muted); }
+        .heatmap-bar-bg { background: #14161d; height: 10px; border-radius: 3px; border: 1px solid #222; overflow: hidden; }
+        .heatmap-bar-fill { height: 100%; width: 0%; border-radius: 2px; transition: width 1.5s cubic-bezier(0.1, 1, 0.1, 1); }
+
+        .narrative-card {
+            background: linear-gradient(135deg, #161922 0%, #11131a 100%);
+            border: 1px solid var(--graphite); border-left: 4px solid var(--gold-satin);
+            border-radius: 6px; padding: 1.8rem; text-align: left; margin-top: 1.5rem;
+        }
+        .narrative-title { font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--gold-satin); margin-bottom: 0.6rem; }
+        .narrative-p { font-size: 0.95rem; color: #d1d5db; line-height: 1.7; text-align: justify; }
+
+        .clinical-box-grid { display: grid; grid-template-columns: 1fr; gap: 1.2rem; margin-top: 1.5rem; }
+        @media(min-width: 700px) { .clinical-box-grid { grid-template-columns: 1fr 1fr; } }
+        
+        .clinical-card {
+            background: #11131a; border: 1px solid rgba(255,255,255,0.04); border-radius: 6px; padding: 1.5rem; text-align: left;
+        }
+        .clinical-card.badge-crimson { border-top: 3px solid var(--crimson); }
+        .clinical-card.badge-cyan { border-top: 3px solid var(--cyan-core); }
+        .clinical-header-title { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+    </style>
+</head>
+<body>
+
+    <main id="viewGateway" class="app-view active">
+        <div class="gateway-card">
+            <h1 class="gateway-title">Dante Analytics v20.6.2</h1>
+            
+            <div class="selector-group">
+                <label class="selector-label">Evaluación de Estudiante</label>
+                <select id="selEstudiante">
+                    <option value="">Sincronizando cohorte viva...</option>
+                </select>
+            </div>
+
+            <div class="selector-group">
+                <label class="selector-label">Módulo de Competencia</label>
+                <select id="selMateria">
+                    <option value="matematicas">Matemáticas</option>
+                    <option value="lectura_critica">Lectura Crítica</option>
+                    <option value="ciencias_naturales">Ciencias Naturales</option>
+                    <option value="ingles">Inglés</option>
+                </select>
+            </div>
+
+            <button class="btn-premium" id="btnIngresar" onclick="AppController.inicializarSesion()">Sincronizar Entorno</button>
+        </div>
+    </main>
+
+    <main id="viewWorkspace" class="app-view">
+        <header class="workspace-header">
+            <div>
+                <h2 id="lblEstudiante" style="font-weight: 400; color: var(--gold-satin);">Estudiante: -</h2>
+                <p id="lblMateria" style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; margin-top: 0.2rem;">Módulo Analítico</p>
+            </div>
+            <div class="meta-tag" id="lblCompetence">Competencia: Cargando...</div>
+        </header>
+
+        <div class="content-layout">
+            <section class="panel-enunciado" id="uiEnunciados">
+            </section>
+
+            <section class="panel-reactivo">
+                <div id="uiContenedorPreguntaCore">
+                    <div class="pregunta-txt" id="uiPregunta">-</div>
+                    <div class="opciones-grid" id="uiOpcionesGrid"></div>
+                    <button class="btn-premium" id="btnConfirmarSeleccion" style="margin-top: 1rem; display: none;" onclick="QuizEngine.abrirFaseMetacognitiva()">Confirmar Elección</button>
+                </div>
+
+                <div id="uiIntervencionClinica" class="pulse-warning">
+                    <h3 id="lblIntervencionTitulo" style="color: var(--crimson); font-size: 1.1rem; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;">-</h3>
+                    <p id="lblIntervencionCuerpo" style="color: #cbd5e1; font-size: 0.95rem; margin-top: 1rem; line-height: 1.7; text-align: justify;"></p>
+                    
+                    <div style="margin-top: 1.8rem;">
+                        <span id="lblContadorSegundos" style="font-size: 2.2rem; font-weight: 300; color: var(--gold-satin); font-family: monospace;">10</span>
+                        <p style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; margin-top: 0.2rem;">Segundos de desaceleración obligatoria</p>
+                    </div>
+                    <button id="btnDesbloquearFreno" class="btn-premium" style="margin-top: 1.5rem; display: none;" onclick="QuizEngine.liberarFrenoIntervencion()">Activar Sistema 2 Analítico</button>
+                </div>
+
+                <div id="uiMetacognicion">
+                    <p style="font-size: 1rem; font-weight: 500; color: var(--gold-satin);">¿Qué tan seguro estás de tu proceso de resolución?</p>
+                    <div class="meta-grid">
+                        <button class="btn-meta" onclick="QuizEngine.confirmarMetacognicion('alta')">Certeza Absoluta</button>
+                        <button class="btn-meta" onclick="QuizEngine.confirmarMetacognicion('media')">Dudoso</button>
+                        <button class="btn-meta" onclick="QuizEngine.confirmarMetacognicion('baja')">Adiviné</button>
+                    </div>
+                </div>
+
+                <div id="uiFeedback">
+                    <div class="feedback-header">Análisis de Desviación Cognitiva</div>
+                    <div class="forensic-box">
+                        <div class="forensic-row trampa">
+                            <div class="forensic-label" style="color: var(--crimson);">HEURÍSTICA / SESGO DETECTADO</div>
+                            <div class="forensic-txt" id="forensicTrampa">-</div>
+                        </div>
+                        <div class="forensic-row">
+                            <div class="forensic-label" style="color: var(--gold-satin);">LÓGICA DE REMEDIACIÓN</div>
+                            <div class="forensic-txt" id="forensicRealidad">-</div>
+                        </div>
+                    </div>
+                    <button class="btn-premium" style="margin-top: 1.5rem; padding: 0.8rem;" onclick="QuizEngine.procesarFrenoComprension()">Continuar Evaluación</button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <main id="viewDashboard" class="app-view">
+        <div class="dashboard-container">
+            <h2 style="font-weight: 300; text-transform: uppercase; color: var(--gold-satin); letter-spacing: 3px;">Métricas Longitudinales (Dante OS v20.6.2)</h2>
+            <p style="color: var(--text-muted); margin-top: 0.4rem; font-size: 0.9rem;">Modelado Conductual Avanzado y Trayectoria Estándar del Estudiante</p>
+            
+            <div class="chart-box">
+                <svg id="svgChart" width="600" height="250" viewBox="0 0 600 250" style="background: #0a0b0d; border-radius: 4px;"></svg>
+            </div>
+
+            <div class="telemetry-badge-grid">
+                <div class="telemetry-card">
+                    <p style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Tiempo de Execution</p>
+                    <p class="telemetry-num" id="telemetryTime">0.0s</p>
+                </div>
+                <div class="telemetry-card">
+                    <p style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Vacilación Real</p>
+                    <p class="telemetry-num" id="telemetryHesitation">0 cambios</p>
+                </div>
+                <div class="telemetry-card">
+                    <p style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Calibración Certeza</p>
+                    <p class="telemetry-num" id="telemetryConfidence">-</p>
+                </div>
+                <div class="telemetry-card">
+                    <p style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Perfil Conductual</p>
+                    <p class="telemetry-num" id="telemetryProfile" style="color: var(--gold-satin);">-</p>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 1rem; justify-content: space-between; align-items: center; margin-top: 2.5rem; border-top: 1px solid var(--graphite); padding-top: 1.5rem;">
+                <div style="text-align: left;">
+                    <p style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Índice de Habilidad Latente</p>
+                    <p id="lblThetaActual" style="font-size: 1.6rem; font-weight: 400; color: var(--gold-satin);">&theta; = 0.00</p>
+                </div>
+                <button class="btn-premium" style="width: auto; padding: 1rem 2.5rem; margin-top: 0;" onclick="AppController.avanzarSiguienteFase()">Siguiente Reactivo</button>
+            </div>
+        </div>
+    </main>
+
+    <main id="viewFinalReport" class="app-view" style="justify-content: center; align-items: center;">
+        <div class="gateway-card" style="max-width: 780px; text-align: center; padding: 3rem;">
+            <h1 class="gateway-title" style="color: var(--gold-satin); margin-bottom: 0.5rem; font-weight: 300;">Perfil de Adaptación Humana</h1>
+            <p style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 2rem;">Códice del ADN Cognitivo Vivo // Trazabilidad Final</p>
+            
+            <div class="report-grid">
+                <div class="telemetry-card" style="background: #11131a; border-left: 3px solid #eab308;"><p style="font-size: 0.65rem; color: var(--text-muted); font-weight: 600; letter-spacing: 1px;">&theta; ESTIMADO (EAP FIN)</p><p class="telemetry-num" style="color: #eab308; font-size: 1.6rem;" id="repTheta">0.0000</p></div>
+                <div class="telemetry-card" style="background: #11131a; border-left: 3px solid var(--emerald);"><p style="font-size: 0.65rem; color: var(--emerald); font-weight: 700; letter-spacing: 1px;">EQUIVALENCIA ICFES REAL</p><p class="telemetry-num" style="color: var(--emerald); font-size: 2rem; font-weight: bold;" id="repIcfes">0 / 100</p></div>
+                <div class="telemetry-card" style="background: #11131a; border-left: 3px solid var(--cyan-core);"><p style="font-size: 0.65rem; color: var(--text-muted); font-weight: 600; letter-spacing: 1px;">PRECISIÓN BAYESIANA (SEM)</p><p class="telemetry-num" style="color: var(--cyan-core); font-size: 1.6rem;" id="repBsem">0.0000</p></div>
+                <div class="telemetry-card" style="background: #11131a; border-left: 3px solid var(--purple-core);"><p style="font-size: 0.65rem; color: var(--text-muted); font-weight: 600; letter-spacing: 1px;">PROBABILIDAD DE MAESTRÍA AVANZADA</p><p class="telemetry-num" style="color: var(--purple-core); font-size: 1.6rem;" id="repMaestria">0.0%</p></div>
+            </div>
+            
+            <div class="telemetry-card" style="text-align: left; margin-bottom: 2rem; background: #0c0d13; border: 1px dashed var(--graphite);">
+                <p style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 1px;">Intervalo de Certeza Concurrente Escala País (95% Credibilidad)</p>
+                <p id="repIntervalo" style="color: var(--text-main); font-weight: 600; text-align: center; font-size: 1.2rem; margin-top: 0.4rem; letter-spacing: 1px;">[-1, 1]</p>
+            </div>
+
+            <div class="telemetry-badge-grid" style="margin-bottom: 1.5rem;" id="uiAdnFinalContainer">
+                <div class="telemetry-card" style="background:#0e1118; border-bottom: 2px solid var(--crimson);"><p style="font-size:0.6rem; color:var(--text-muted); font-weight:700;">IMPULSIVIDAD (S1)</p><p class="telemetry-num" id="repAdnImpulsividad">0%</p></div>
+                <div class="telemetry-card" style="background:#0e1118; border-bottom: 2px solid #e67e22;"><p style="font-size:0.6rem; color:var(--text-muted); font-weight:700;">ÍNDICE DE FATIGA</p><p class="telemetry-num" id="repAdnFatiga">0%</p></div>
+                <div class="telemetry-card" style="background:#0e1118; border-bottom: 2px solid var(--emerald);"><p style="font-size:0.6rem; color:var(--text-muted); font-weight:700;">RECUPERACIÓN ERROR</p><p class="telemetry-num" id="repAdnRecuperacion">0%</p></div>
+                <div class="telemetry-card" style="background:#0e1118; border-bottom: 2px solid var(--cyan-core);"><p style="font-size:0.6rem; color:var(--text-muted); font-weight:700;">ESTABILIDAD GLOBAL</p><p class="telemetry-num" id="repAdnEstabilidad" style="color:var(--cyan-core);">0%</p></div>
+            </div>
+
+            <div class="narrative-card">
+                <h4 class="narrative-title" id="lblNarrativeHeader">Crónica de la Trayectoria Cognitiva</h4>
+                <p class="narrative-p" id="lblNarrativeBody">Analizando fluctuaciones en la serie temporal...</p>
+            </div>
+
+            <div class="clinical-box-grid">
+                <div class="clinical-card badge-crimson">
+                    <h5 class="clinical-header-title" style="color: var(--crimson);">Vulnerabilidad Forense Dominante</h5>
+                    <p id="lblClinicalVulnerabilidad" style="font-size: 0.88rem; color: #cbd5e1; line-height: 1.6;"></p>
+                </div>
+                <div class="clinical-card badge-cyan">
+                    <h5 class="clinical-header-title" style="color: var(--cyan-core);">Prescripción Clinical de Autorregulación</h5>
+                    <p id="lblClinicalPrescripcion" style="font-size: 0.88rem; color: #cbd5e1; line-height: 1.6;"></p>
+                </div>
+            </div>
+
+            <div class="heatmap-container" style="margin-top: 2rem;">
+                <h3 class="heatmap-title" id="repHeatmapTitle">Mapa de Calor: Diagnóstico de Sesgos Cognitivos</h3>
+                <div id="uiHeatmapBody"></div>
+            </div>
+
+            <button class="btn-premium" style="margin-top: 2.5rem; width: 100%; border-radius: 6px;" onclick="location.reload()">Sincronizar Nuevo Simulacro</button>
+        </div>
+    </main>
+
+    <script>
+        const GATEWAY_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+    ? "http://localhost:3000/api/cat/interactuar"
+    : "/api/cat/interactuar";
+
+        // 🪐 El identificador Multi-Tenant fijo para esta compilación institucional
+        const INSTITUTION_ID = "colegio_sandbox_default";
+
+        const AppState = {
+            estudiante: "", 
+            materia: "", 
+            sessionId: null, 
+            theta: 0.0, 
+            historialTheta: [0.0],
+            itemActual: null,
+            timestamps: { inicioReactivo: 0 },
+            historialSeleccion: [], 
+            seleccionActual: null,
+            telemetriaActual: { tiempoTotal: 0, conteoMutaciones: 0, certeza: "" },
+            bufferRetornoSiguiente: null,
+            bufferEventosCognitivos: [],
+            controlIntervencion: { interval: null, segundosRestantes: 0 },
+            integrityToken: "", 
+            itemHash: "" 
+        };
+
+        class EventSourcingEngine {
+            static registrarEvento(tipo, payload = {}) {
+                AppState.bufferEventosCognitivos.push({ tipo: tipo, timestamp: Date.now(), payload: payload });
+                console.log(`📡 [ES COGNITIVO LOGGED]: ${tipo}`, payload);
+            }
+        }
+
+        class AppController {
+            // 🪐 Vinculación del token Tenant en la URL de consulta de cohorte
+            static async precargarCohorteDinamica() {
+                const selector = document.getElementById("selEstudiante");
+                try {
+                    const res = await fetch(`/api/admin/obtain-cohorte?institution_id=${INSTITUTION_ID}`);
+                    const json = await res.json();
+                    if (json && json.success && json.cohorte && json.cohorte.length > 0) {
+                        selector.innerHTML = "";
+                        json.cohorte.forEach(alumno => {
+                            const opt = document.createElement("option");
+                            opt.value = alumno;
+                            opt.innerText = alumno.charAt(0).toUpperCase() + alumno.slice(1);
+                            selector.appendChild(opt);
+                        });
+                    } else {
+                        throw new Error("Estructura vacía.");
+                    }
+                } catch(e) {
+                    console.error("⚠️ [COHORTE SYNC FALLBACK]:", e.message);
+                    selector.innerHTML = `
+                        <option value="elizabeth">Elizabeth</option>
+                        <option value="samantha">Samantha</option>
+                    `;
+                }
+            }
+
+            static async inicializarSesion() {
+                const btn = document.getElementById("btnIngresar");
+                btn.innerText = "Sincronizando Dante OS Gateway..."; btn.disabled = true;
+
+                const rawEstudiante = document.getElementById("selEstudiante").value;
+                if (!rawEstudiante) {
+                    alert("Por favor seleccione un estudiante válido de la cohorte.");
+                    btn.innerText = "Sincronizar Entorno"; btn.disabled = false;
+                    return;
+                }
+
+                AppState.estudiante = rawEstudiante.toLowerCase().trim();
+                AppState.materia = document.getElementById("selMateria").value;
+                AppState.historialTheta = [0.0]; 
+                AppState.sessionId = `session_web_${Date.now()}`;
+
+                try {
+                    const res = await fetch(GATEWAY_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            studentId: String(AppState.estudiante), 
+                            sessionId: String(AppState.sessionId), 
+                            areaGeneral: String(AppState.materia), 
+                            itemId: null,
+                            institution_id: INSTITUTION_ID // 🪐 Inyección de Tenant
+                        })
+                    });
+                    
+                    const data = await res.json();
+                    if (data.success) {
+                        AppState.integrityToken = data.generatedToken || "";
+                        btn.innerText = "Sincronizar Entorno"; btn.disabled = false;
+                        this.cambiarVista("viewWorkspace");
+                        this.procesarRetornoMotor(data);
+                    } else {
+                        throw new Error(data.error);
+                    }
+                } catch (err) {
+                    alert("Fallo de conexión con el Servidor Node.js: " + err.message);
+                    btn.innerText = "Sincronizar Entorno"; btn.disabled = false;
+                }
+            }
+
+            static procesarRetornoMotor(data) {
+                if (data.detenerExamen) {
+                    EventSourcingEngine.registrarEvento("EXAMEN_CONCLUIDO_CRITERIO_PARADA", { thetaFinal: AppState.theta });
+                    this.desplegarClausuraExamen(data.reporteFinal || data);
+                    return;
+                }
+
+                AppState.theta = data.thetaProgreso !== undefined ? data.thetaProgreso : (data.theta || 0.0);
+                AppState.itemActual = data.item;
+                AppState.itemHash = data.itemHash || "";
+                AppState.timestamps.inicioReactivo = performance.now();
+                AppState.historialSeleccion = [];
+                AppState.seleccionActual = null;
+                document.getElementById("btnConfirmarSeleccion").style.display = "none";
+
+                DOMRenderer.sincronizarCuadernillo(AppState.itemActual, data.bayesianSEMProgreso || data.bayesianSEM || 0.5);
+            }
+
+            static deploymentAnomaliaControl(accs) {
+                document.getElementById("uiContenedorPreguntaCore").style.display = "none";
+                document.getElementById("uiIntervencionClinica").style.display = "block";
+                document.getElementById("btnDesbloquearFreno").style.display = "none";
+
+                document.getElementById("lblIntervencionTitulo").innerText = AppState.bufferRetornoSiguiente.andamiajeForense.errorDetonado;
+                document.getElementById("lblIntervencionCuerpo").innerText = AppState.bufferRetornoSiguiente.andamiajeForense.remediacionSugerida;
+
+                AppState.controlIntervencion.segundosRestantes = accs.intervencion_activa === "IMPULSIVITY_BLOCK" ? 10 : 30;
+                document.getElementById("lblContadorSegundos").innerText = AppState.controlIntervencion.segundosRestantes;
+
+                AppState.controlIntervencion.interval = setInterval(() => {
+                    AppState.controlIntervencion.segundosRestantes--;
+                    document.getElementById("lblContadorSegundos").innerText = AppState.controlIntervencion.segundosRestantes;
+                    
+                    if (AppState.controlIntervencion.segundosRestantes <= 0) {
+                        clearInterval(AppState.controlIntervencion.interval);
+                        document.getElementById("btnDesbloquearFreno").style.display = "block";
+                    }
+                }, 1000);
+            }
+
+            static desplegarClausuraExamen(reporte) {
+                const theta = parseFloat(reporte.thetaEstimado !== undefined ? reporte.thetaEstimado : (reporte.theta || 0.0));
+                const bsem = parseFloat(reporte.precisionMetrica !== undefined ? reporte.precisionMetrica : (reporte.bayesianSEM || 0.5));
+                
+                document.getElementById("repTheta").innerText = theta.toFixed(4);
+                document.getElementById("repBsem").innerText = `\u00B1${bsem.toFixed(4)}`;
+                document.getElementById("repMaestria").innerText = reporte.probMaestriaAvanzada || '0.00%';
+                
+                if (reporte.escalonamiento_pais) {
+                    document.getElementById("repIcfes").innerText = `${reporte.escalonamiento_pais.puntaje_icfes_area} / 100`;
+                    document.getElementById("repIntervalo").innerText = `[ ${reporte.escalonamiento_pais.intervalo_certeza_95.join('  ,  ')} ] pts Escala País`;
+                }
+
+                const adn = reporte.adn_cognitivo || { impulsividad: 20, fatiga: 15, recuperacion: 80, estabilidad: 85 };
+                document.getElementById("repAdnImpulsividad").innerText = `${adn.impulsividad}%`;
+                document.getElementById("repAdnFatiga").innerText = `${adn.fatiga}%`;
+                document.getElementById("repAdnRecuperacion").innerText = `${adn.recuperacion}%`;
+                document.getElementById("repAdnEstabilidad").innerText = `${adn.estabilidad}%`;
+                
+                document.getElementById("lblNarrativeHeader").innerText = `Crónica del ADN Cognitivo de ${AppState.estudiante.toUpperCase()}`;
+                document.getElementById("lblNarrativeBody").innerText = reporte.cronica_narrativa || "Simulación exitosa.";
+
+                DOMRenderer.construirMapaCalorForense(reporte.mapaCalorSesgos || {});
+                this.cambiarVista("viewFinalReport");
+            }
+
+            static avanzarSiguienteFase() {
+                this.cambiarVista("viewWorkspace");
+                this.procesarRetornoMotor(AppState.bufferRetornoSiguiente);
+            }
+
+            static cambiarVista(viewId) {
+                document.querySelectorAll('.app-view').forEach(view => view.classList.remove('active'));
+                document.getElementById(viewId).classList.add('active');
+            }
+        }
+
+        class QuizEngine {
+            static registrarSeleccionPreliminar(cardElement, tipo, id) {
+                AppState.historialSeleccion.push({ option: id, timestamp: new Date().toISOString() });
+                AppState.seleccionActual = { element: cardElement, tipo: tipo, id: id };
+
+                document.querySelectorAll('.opcion-card').forEach(el => el.classList.remove('selected-intent'));
+                cardElement.classList.add('selected-intent');
+                document.getElementById("btnConfirmarSeleccion").style.display = "block";
+            }
+
+            static abrirFaseMetacognitiva() {
+                if (!AppState.seleccionActual) return;
+                document.getElementById("btnConfirmarSeleccion").style.display = "none";
+                document.getElementById("uiOpcionesGrid").classList.add("freno");
+                document.getElementById("uiMetacognicion").style.display = "block";
+            }
+
+            static async confirmarMetacognicion(nivelCerteza) {
+                document.getElementById("uiMetacognicion").style.display = "none";
+                const segundosTotales = (performance.now() - AppState.timestamps.inicioReactivo) / 1000;
+
+                AppState.telemetriaActual.tiempoTotal = segundosTotales.toFixed(1);
+                AppState.telemetriaActual.conteoMutaciones = AppState.historialSeleccion.length - 1;
+                AppState.telemetriaActual.certeza = nivelCerteza;
+
+                try {
+                    const payloadSaneado = {
+                        studentId: String(AppState.estudiante), sessionId: String(AppState.sessionId), 
+                        itemId: String(AppState.itemActual.id), areaGeneral: String(AppState.materia),
+                        responseTime: parseFloat(segundosTotales.toFixed(2)), declaredConfidence: String(nivelCerteza), selectionVector: AppState.historialSeleccion,
+                        integrityToken: AppState.integrityToken, itemHash: AppState.itemHash,
+                        institution_id: INSTITUTION_ID // 🪐 Firma Antifraude de Institución
+                    };
+
+                    const res = await fetch(GATEWAY_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payloadSaneado)
+                    });
+                    
+                    const data = await res.json();
+                    if (!data.success) throw new Error(data.error || "Fallo transaccional.");
+
+                    AppState.bufferRetornoSiguiente = data;
+                    AppState.historialTheta.push(data.thetaProgreso || AppState.theta);
+
+                    if (data.accs_telemetria && data.accs_telemetria.intervencion_activa !== "NONE") {
+                        AppController.deploymentAnomaliaControl(data.accs_telemetria);
+                        return;
+                    }
+
+                    const card = AppState.seleccionActual.element;
+                    if (data.interaccionCorrecta) {
+                        card.classList.add("correct");
+                        setTimeout(() => { this.transicionarADashboard(); }, 1200);
+                    } else {
+                        card.classList.add("wrong");
+                        this.renderizarAndamiajePedagogico(data.andamiajeForense);
+                    }
+                } catch (err) {
+                    alert("Fallo de enlace: " + err.message);
+                }
+            }
+
+            static liberarFrenoIntervencion() {
+                document.getElementById("uiIntervencionClinica").style.display = "none";
+                document.getElementById("uiContenedorPreguntaCore").style.display = "block";
+                const card = AppState.seleccionActual.element;
+                if (AppState.bufferRetornoSiguiente.interaccionCorrecta) {
+                    card.classList.add("correct");
+                    this.transicionarADashboard();
+                } else {
+                    card.classList.add("wrong");
+                    this.renderizarAndamiajePedagogico(AppState.bufferRetornoSiguiente.andamiajeForense);
+                }
+            }
+
+            static renderizarAndamiajePedagogico(andamiaje) {
+                document.getElementById("forensicTrampa").innerText = andamiaje?.errorDetonado || "Desviación.";
+                document.getElementById("forensicRealidad").innerText = andamiaje?.remediacionSugerida || "Ralentización.";
+                document.getElementById("uiFeedback").style.display = "block";
+            }
+
+            static procesarFrenoComprension() {
+                document.getElementById("uiFeedback").style.display = "none";
+                this.transicionarADashboard();
+            }
+
+            static transicionarADashboard() {
+                DOMRenderer.renderizarGraficaYTelemetria();
+                AppController.cambiarVista("viewDashboard");
+            }
+        }
+
+        class DOMRenderer {
+            static sincronizarCuadernillo(item, bSEM) {
+                const uiPregunta = document.getElementById("uiPregunta");
+                const uiOpcionesGrid = document.getElementById("uiOpcionesGrid");
+                const uiEnunciados = document.getElementById("uiEnunciados");
+                const lblCompetence = document.getElementById("lblCompetence");
+
+                document.getElementById("uiFeedback").style.display = "none";
+                document.getElementById("uiMetacognicion").style.display = "none";
+                document.getElementById("uiIntervencionClinica").style.display = "none";
+
+                lblCompetence.innerText = `Sub-competencia: ${String(item.sub_competencia || 'General').toUpperCase()}`;
+                
+                const textoCompleto = item.pregunta_texto || '';
+                const tokens = textoCompleto.split('\n\n');
+                
+                if (tokens.length > 1) {
+                    uiEnunciados.innerHTML = `<p style="margin-bottom: 1rem;">${tokens.slice(0, -1).join('</p><p style="margin-bottom: 1rem;">')}</p>`;
+                    uiPregunta.innerText = tokens[tokens.length - 1];
+                } else {
+                    uiEnunciados.innerHTML = `<p>> Estímulo contextual adaptativo integrado.</p>`;
+                    uiPregunta.innerText = textoCompleto;
+                }
+
+                uiOpcionesGrid.innerHTML = "";
+                uiOpcionesGrid.classList.remove("freno");
+
+                const listado = item.opciones_respuesta || ["A", "B", "C", "D"];
+                listado.forEach((opc, idx) => {
+                    const letra = ["A", "B", "C", "D"][idx];
+                    const card = document.createElement("div");
+                    card.className = "opcion-card";
+                    card.onclick = () => { QuizEngine.registrarSeleccionPreliminar(card, "standard", letra); };
+
+                    const idBox = document.createElement("div"); idBox.className = "opcion-id"; idBox.innerText = letra;
+                    const strokeBox = document.createElement("span"); strokeBox.innerText = opc;
+
+                    card.appendChild(idBox); card.appendChild(strokeBox); uiOpcionesGrid.appendChild(card);
+                });
+            }
+
+            static renderizarGraficaYTelemetria() {
+                document.getElementById("telemetryTime").innerText = `${AppState.telemetriaActual.tiempoTotal}s`;
+                document.getElementById("telemetryHesitation").innerText = `${AppState.telemetriaActual.conteoMutaciones} hits`;
+                document.getElementById("telemetryConfidence").innerText = AppState.telemetriaActual.certeza.toUpperCase();
+                document.getElementById("lblThetaActual").innerHTML = `&theta; = ${AppState.theta.toFixed(4)}`;
+
+                const svg = document.getElementById("svgChart");
+                svg.innerHTML = "";
+
+                if (AppState.historialTheta.length > 1) {
+                    let puntosPath = "";
+                    AppState.historialTheta.forEach((val, i) => {
+                        const x = i * (520 / (AppState.historialTheta.length - 1)) + 40;
+                        const y = 125 - (val * 45);
+                        if (i === 0) puntosPath += `M ${x} ${y}`;
+                        else puntosPath += ` L ${x} ${y}`;
+                        
+                        const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                        dot.setAttribute("cx", x); dot.setAttribute("cy", y); dot.setAttribute("r", "5");
+                        dot.setAttribute("fill", i === AppState.historialTheta.length - 1 ? "#d4af37" : "#ffffff");
+                        svg.appendChild(dot);
+                    });
+
+                    const pathLine = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    pathLine.setAttribute("d", puntosPath); pathLine.setAttribute("fill", "none");
+                    pathLine.setAttribute("stroke", "#d4af37"); pathLine.setAttribute("stroke-width", "3");
+                    svg.appendChild(pathLine);
+                }
+            }
+
+            static construirMapaCalorForense(mapaSesgos) {
+                const container = document.getElementById("uiHeatmapBody");
+                container.innerHTML = "";
+                for (const [sesgo, probabilidad] of Object.entries(mapaSesgos)) {
+                    const probabilidadSaneada = parseFloat(probabilidad || 0);
+                    const porcentajeVisual = (probabilidadSaneada * 100).toFixed(1);
+                    let colorFill = "var(--emerald)";
+                    if (probabilidadSaneada >= 0.40) colorFill = "var(--gold-satin)";
+                    if (probabilidadSaneada >= 0.70 || sesgo.includes('fuga')) colorFill = "var(--crimson)";
+
+                    const row = document.createElement("div");
+                    row.className = "heatmap-row";
+                    row.innerHTML = `
+                        <div class="heatmap-meta">
+                            <span>${sesgo.replace('attr_', '').replace(/_/g, ' ').toUpperCase()}</span>
+                            <span style="font-weight: 600; color: ${colorFill};">${porcentajeVisual}%</span>
+                        </div>
+                        <div class="heatmap-bar-bg"><div class="heatmap-bar-fill" style="background: ${colorFill}; width: ${porcentajeVisual}%;"></div></div>`;
+                    container.appendChild(row);
+                }
+            }
+        }
+
+        window.onload = () => { AppController.precargarCohorteDinamica(); };
+    </script>
+</body>
+</html>
