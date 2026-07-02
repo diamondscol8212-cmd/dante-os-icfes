@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dante OS - Suite del Autor & Mapeo Psicométrico (B2B)</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        :root {
+            --bg-deep: #0b0c10;
+            --bg-surface: #14161d;
+            --gold-satin: #d4af37;
+            --graphite: #2b2e3a;
+        }
+        body {
+            background-color: var(--bg-deep);
+            background-image: radial-gradient(circle at 50% 30%, #191c26 0%, #0b0c10 100%);
+        }
+    </style>
+</head>
+<body class="text-slate-100 min-h-screen p-6 md:p-12">
+
+    <div class="w-full max-w-5xl mx-auto space-y-8">
+        
+        <header class="w-full flex flex-col md:flex-row justify-between items-start md:items-center border-b border-zinc-800 pb-6 gap-4">
+            <div>
+                <h1 class="text-2xl font-light uppercase tracking-wider text-[var(--gold-satin)]">Dante OS // Authoring Control</h1>
+                <p class="text-xs text-slate-500 font-mono mt-1">> INGESTIÓN MASIVA Y CALIBRACIÓN COMPATIBLE DE BANCO DE REACTIVOS</p>
+            </div>
+            <div class="bg-[#14161d] px-4 py-2 rounded-lg border border-zinc-800 text-right">
+                <span class="text-[10px] font-mono text-zinc-500 block uppercase">Entorno de Carga</span>
+                <span class="text-sm font-semibold text-slate-200 tracking-wide uppercase">Bogotá Hub v20.6.2</span>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <div class="lg:col-span-2 space-y-6">
+                <div class="bg-[#14161d] border border-zinc-800 rounded-lg p-6 shadow-2xl">
+                    <h3 class="text-sm font-light uppercase tracking-wider text-slate-300 border-b border-zinc-800 pb-3 mb-4">Ingestión Atómica vía CSV</h3>
+                    
+                    <div id="dropZone" class="border-2 border-dashed border-zinc-700 hover:border-[var(--gold-satin)] bg-[#0d0e15] rounded-lg p-8 text-center cursor-pointer transition-all duration-200">
+                        <span class="text-4xl block mb-3">📥</span>
+                        <p class="text-sm text-slate-300 font-mono mb-1">Arrastra tu archivo .csv aquí o haz clic para explorar</p>
+                        <p class="text-xs text-slate-500">Asegúrate de codificar el archivo en formato UTF-8 para evitar rupturas de caracteres.</p>
+                        <input type="file" id="fileInput" accept=".csv" class="hidden">
+                    </div>
+
+                    <div id="fileInfo" class="hidden mt-4 bg-zinc-800/30 border border-zinc-700 rounded p-3 flex justify-between items-center text-xs font-mono">
+                        <span id="fileName" class="text-slate-300 truncate"></span>
+                        <button onclick="limpiarCarga()" class="text-rose-400 hover:underline cursor-pointer">Remover</button>
+                    </div>
+
+                    <button id="btnProcesar" onclick="procesarIngestiónMasiva()" class="w-full mt-6 bg-amber-500/10 hover:bg-amber-500/20 text-[var(--gold-satin)] border border-amber-500/40 py-3 rounded font-mono text-xs font-bold tracking-wider cursor-pointer transition-all duration-200 opacity-50 pointer-events-none">
+                        ⚡ EJECUTAR MAPEO E INJECTAR EN SUPABASE
+                    </button>
+                </div>
+
+                <div class="bg-[#14161d] border border-zinc-800 rounded-lg p-6 shadow-2xl font-mono text-xs space-y-3">
+                    <h3 class="text-sm font-light uppercase tracking-wider text-slate-300 border-b border-zinc-800 pb-3 mb-2">Logs de Telemetría en Vivo</h3>
+                    <div id="consoleTerminal" class="bg-[#0b0c10] border border-zinc-900 rounded p-4 h-48 overflow-y-auto text-slate-400 space-y-1">
+                        <p class="text-slate-500">> Dante OS Ingestion Framework cargado. Esperando flujo...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <div class="bg-[#14161d] border border-zinc-800 rounded-lg p-6 shadow-2xl space-y-4">
+                    <h3 class="text-sm font-light uppercase tracking-wider text-[var(--gold-satin)] border-b border-zinc-800 pb-3">Códice de Estructura</h3>
+                    <p class="text-xs text-slate-400 leading-relaxed">El CSV debe contener exactamente estas cabeceras separadas por comas:</p>
+                    
+                    <div class="bg-[#0b0c10] p-3 rounded text-[11px] font-mono text-amber-400 border border-zinc-900 overflow-x-auto select-all">
+                        materia,area_general,tipo_estimulo,texto_estimulo,enunciado,dificultad,opcion_a,opcion_b,opcion_c,opcion_d,correcta,sesgo_a,sesgo_b,sesgo_c,sesgo_d
+                    </div>
+
+                    <div class="text-xs space-y-3 pt-2">
+                        <p class="font-bold text-slate-300 border-b border-zinc-800 pb-1">Mapeo de Materias Válidas:</p>
+                        <ul class="space-y-1 font-mono text-slate-400 text-[11px]">
+                            <li>• <span class="text-sky-400">matematicas</span></li>
+                            <li>• <span class="text-purple-400">lectura_critica</span></li>
+                            <li>• <span class="text-emerald-400">ciencias_naturales</span></li>
+                            <li>• <span class="text-amber-400">ingles</span></li>
+                        </ul>
+
+                        <p class="font-bold text-slate-300 border-b border-zinc-800 pb-1 mt-4">Códigos de Matriz Q (Sesgos):</p>
+                        <p class="text-[10px] text-slate-500 italic mb-1">Inyecta el código en las columnas sesgo_x según corresponda:</p>
+                        <ul class="space-y-1 font-mono text-slate-400 text-[10px]">
+                            <li>• <span class="text-rose-400">attr_fuga_grafica_compleja</span> (Ciencias)</li>
+                            <li>• <span class="text-rose-400">attr_omision_conversion</span> (Ciencias / Mat)</li>
+                            <li>• <span class="text-rose-400">attr_fuga_distractor_literal</span> (Lectura)</li>
+                            <li>• <span class="text-rose-400">attr_traduccion_literal_fuga</span> (Inglés)</li>
+                            <li>• <span class="text-slate-500">NONE</span> (Para la opción correcta)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById("dropZone");
+        const fileInput = document.getElementById("fileInput");
+        const fileInfo = document.getElementById("fileInfo");
+        const fileName = document.getElementById("fileName");
+        const btnProcesar = document.getElementById("btnProcesar");
+        const terminal = document.getElementById("consoleTerminal");
+        
+        let archivoCargado = null;
+
+        function logTerminal(msg, tipo = "info") {
+            const p = document.createElement("p");
+            if (tipo === "error") p.className = "text-rose-400 font-bold";
+            else if (tipo === "success") p.className = "text-emerald-400 font-bold";
+            else p.className = "text-slate-400";
+            p.innerText = `> [${new Date().toLocaleTimeString()}] ${msg}`;
+            terminal.appendChild(p);
+            terminal.scrollTop = terminal.scrollHeight;
+        }
+
+        dropZone.onclick = () => fileInput.click();
+        
+        dropZone.ondragover = (e) => { e.preventDefault(); dropZone.classList.add("border-[var(--gold-satin)]"); };
+        dropZone.ondragleave = () => dropZone.classList.remove("border-[var(--gold-satin)]");
+        dropZone.ondrop = (e) => {
+            e.preventDefault();
+            dropZone.classList.remove("border-[var(--gold-satin)]");
+            if (e.dataTransfer.files.length > 0) manejarArchivo(e.dataTransfer.files[0]);
+        };
+
+        fileInput.onchange = () => { if (fileInput.files.length > 0) manejarArchivo(fileInput.files[0]); };
+
+        function manejarArchivo(file) {
+            if (!file.name.endsWith(".csv")) {
+                logTerminal("Ruptura de contrato: Solo se admiten archivos estructurados .csv", "error");
+                return;
+            }
+            archivoCargado = file;
+            fileName.innerText = file.name;
+            fileInfo.classList.remove("hidden");
+            btnProcesar.classList.remove("opacity-50", "pointer-events-none");
+            logTerminal(`Archivo [${file.name}] cargado en búfer. Listo para transmisión.`);
+        }
+
+        function limpiarCarga() {
+            archivoCargado = null;
+            fileInput.value = "";
+            fileInfo.classList.add("hidden");
+            btnProcesar.classList.add("opacity-50", "pointer-events-none");
+            logTerminal("Búfer purgado. Esperando nuevo archivo.");
+        }
+
+        async function procesarIngestiónMasiva() {
+            if (!archivoCargado) return;
+            
+            btnProcesar.disabled = true;
+            btnProcesar.innerText = "PROCESANDO PIPELINE...";
+            logTerminal("Iniciando transmisión asíncrona hacia la pasarela Dante OS Gateway...");
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const csvTexto = e.target.result;
+                
+                try {
+                    const res = await fetch("/api/admin/bulk-import", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ csvContent: csvTexto })
+                    });
+                    
+                    const data = await res.json();
+                    if (data.success) {
+                        logTerminal(`Transmisión exitosa. ${data.inserted} reactivos parseados e insertados en Supabase de forma nativa.`, "success");
+                        logTerminal(`Caché RAM precalentada para las materias afectadas.`, "success");
+                        limpiarCarga();
+                    } else {
+                        throw new Error(data.error);
+                    }
+                } catch (err) {
+                    logTerminal(`CRASH EN CONTRATO LOGÍSTICO: ${err.message}`, "error");
+                } finally {
+                    btnProcesar.disabled = false;
+                    btnProcesar.innerText = "⚡ EJECUTAR MAPEO E INJECTAR EN SUPABASE";
+                }
+            };
+            reader.readAsText(archivoCargado, "UTF-8");
+        }
+    </script>
+</body>
+</html>

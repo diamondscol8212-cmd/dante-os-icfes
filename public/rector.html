@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dante OS - Línea de Vida & Adaptive Authoring (B2B)</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <style>
+        :root {
+            --bg-deep: #0b0c10;
+            --bg-surface: #14161d;
+            --gold-satin: #d4af37;
+            --graphite: #2b2e3a;
+        }
+        body {
+            background-color: var(--bg-deep);
+            background-image: radial-gradient(circle at 50% 30%, #191c26 0%, #0b0c10 100%);
+        }
+    </style>
+</head>
+<body class="text-slate-100 min-h-screen p-6 md:p-12">
+
+    <div id="captureReportContainer" class="w-full max-w-7xl mx-auto space-y-8">
+        
+        <!-- HEADER -->
+        <header class="w-full flex flex-col md:flex-row justify-between items-start md:items-center border-b border-zinc-800 pb-6 gap-4">
+            <div>
+                <h1 class="text-2xl font-light uppercase tracking-wider text-[var(--gold-satin)]">Dante OS // Suite de Observabilidad</h1>
+                <p class="text-xs text-slate-500 font-mono mt-1">> TRAYECTORIA LONGITUDINAL VIVA Y CRÓNICAS DEL MODELO COGNITIVO</p>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-4 actions-pane">
+                <div class="flex flex-wrap bg-[#14161d] p-1 rounded-lg border border-zinc-800 font-mono text-xs gap-1">
+                    <button id="btnMatematicas" onclick="cambiarMateria('matematicas')" class="px-3 py-1.5 rounded transition-all cursor-pointer font-bold text-[var(--gold-satin)] bg-amber-500/10 border border-amber-500/20">
+                        🧮 MATEMÁTICAS
+                    </button>
+                    <button id="btnLectura" onclick="cambiarMateria('lectura_critica')" class="px-3 py-1.5 rounded transition-all cursor-pointer text-zinc-400 hover:text-slate-200">
+                        📖 LECTURA CRÍTICA
+                    </button>
+                    <button id="btnCiencias" onclick="cambiarMateria('ciencias_naturales')" class="px-3 py-1.5 rounded transition-all cursor-pointer text-zinc-400 hover:text-slate-200">
+                        🔬 CIENCIAS NATURALES
+                    </button>
+                    <button id="btnIngles" onclick="cambiarMateria('ingles')" class="px-3 py-1.5 rounded transition-all cursor-pointer text-zinc-400 hover:text-slate-200">
+                        🇬🇧 INGLÉS
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-3 py-2 rounded-lg font-mono text-[11px] text-emerald-400 animate-pulse">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 block"></span>
+                    <span>LIVE STREAM ACTIVO</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- LAYOUT DE ARQUITECTURA -->
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            
+            <!-- PANEL DE CONTROL ADMINISTRATIVO (IZQUIERDA) -->
+            <div class="space-y-4 admin-sidebar">
+                <div class="bg-[#14161d] border border-zinc-800 p-5 rounded-lg shadow-xl space-y-4">
+                    <h4 class="text-xs font-mono text-[var(--gold-satin)] uppercase font-bold tracking-wider border-b border-zinc-800 pb-2">🎛️ Mandos de Época</h4>
+                    <p class="text-[11px] text-slate-400 leading-relaxed">Guarda una instantánea inmutable en Supabase antes de vaciar las llaves volátiles de Redis.</p>
+                    <button onclick="ejecutarResetEpoca()" class="w-full bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/40 py-2 rounded font-mono text-[10px] font-bold tracking-wider cursor-pointer transition-all">
+                        💥 PURGAR Y GUARDAR REPORTE
+                    </button>
+                </div>
+
+                <div class="bg-[#14161d] border border-zinc-800 p-5 rounded-lg shadow-xl space-y-3">
+                    <h4 class="text-xs font-mono text-sky-400 uppercase font-bold tracking-wider border-b border-zinc-800 pb-2">👤 Cohorte Nominal</h4>
+                    <div class="space-y-2">
+                        <input type="text" id="inputNuevoAlumno" placeholder="Identificador alumno..." class="w-full bg-[#0b0c10] border border-zinc-800 rounded px-3 py-1.5 text-xs font-mono text-slate-300 focus:outline-none focus:border-sky-500">
+                        <button onclick="registrarNuevoEstudiante()" class="w-full bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/30 py-2 rounded font-mono text-[10px] font-bold tracking-wider cursor-pointer transition-all">
+                            ➕ MATRICULAR EN COHORTE
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MONITOREO METRICAS CORE (DERECHA) -->
+            <div class="lg:col-span-3 space-y-6">
+                <!-- CARDINAL KPIs -->
+                <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-[#14161d] border border-zinc-800 p-5 rounded-lg shadow-xl kpi-box-pdf">
+                        <p class="text-[10px] font-mono text-slate-500 uppercase tracking-widest">Estudiantes Auditados</p>
+                        <p id="kpiTotalEstudiantes" class="text-3xl font-light text-[var(--gold-satin)] mt-2">0</p>
+                    </div>
+                    <div class="bg-[#14161d] border border-zinc-800 p-5 rounded-lg shadow-xl kpi-box-pdf">
+                        <p class="text-[10px] font-mono text-slate-500 uppercase tracking-widest">Estabilidad Cognitiva Media</p>
+                        <p id="kpiEstabilidad" class="text-3xl font-light text-sky-400 mt-2">0%</p>
+                    </div>
+                    <div class="bg-[#14161d] border border-zinc-800 p-5 rounded-lg shadow-xl kpi-box-pdf">
+                        <p class="text-[10px] font-mono text-slate-500 uppercase tracking-widest">Puntaje Equivalente Promedio</p>
+                        <p id="kpiPromedioIcfes" class="text-3xl font-light text-emerald-400 mt-2">0 / 100 pts</p>
+                    </div>
+                </section>
+
+                <!-- CURVAS DE APEXCHARTS -->
+                <section class="grid grid-cols-1 gap-6">
+                    <div class="bg-[#14161d] border border-zinc-800 p-6 rounded-lg shadow-2xl chart-box-pdf">
+                        <h3 class="text-sm font-light uppercase tracking-wider text-slate-300 border-b border-zinc-800 pb-3 mb-4">Línea de Vida Cognitiva: Trayectoria de Habilidad Latente (θ)</h3>
+                        <div id="chartEvolucionTheta"></div>
+                    </div>
+                    <div class="bg-[#14161d] border border-zinc-800 p-6 rounded-lg shadow-2xl chart-box-pdf">
+                        <h3 class="text-sm font-light uppercase tracking-wider text-slate-300 border-b border-zinc-800 pb-3 mb-4">Evolución de Atributos del ADN Cognitivo Colectivo</h3>
+                        <div id="chartEvolucionADN"></div>
+                    </div>
+                </section>
+
+                <!-- CONTENEDOR DINÁMICO DE NARRATIVAS FORENSES -->
+                <section id="uiNarrativasContenedor" class="grid grid-cols-1 md:grid-cols-2 gap-4 narrative-box-pdf"></section>
+            </div>
+        </div>
+
+        <!-- AUDITORÍA NOMINAL DE ALUMNOS CURRENTES -->
+        <section class="bg-[#14161d] border border-zinc-800 rounded-lg shadow-2xl overflow-hidden table-box-pdf">
+            <div class="p-6 border-b border-zinc-800">
+                <h3 class="text-sm font-light uppercase tracking-wider text-slate-300">Auditoría Longitudinal Nominal de Alumnos</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-sm text-slate-300">
+                    <thead class="bg-[#0b0c10] text-[10px] font-mono text-slate-500 uppercase tracking-widest border-b border-zinc-800">
+                        <tr>
+                            <th class="p-4">Identificador Alumno</th>
+                            <th class="p-4">Habilidad Inicial (θ)</th>
+                            <th class="p-4">Habilidad Concurrente (θ)</th>
+                            <th class="p-4">Δ Evolución Delta</th>
+                            <th class="p-4">Estado Operacional Motor</th>
+                            <th class="p-4">Puntaje Estimado Actual</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaRectorBody" class="divide-y divide-zinc-800/50 font-mono text-xs">
+                        <tr>
+                            <td colspan="6" class="p-8 text-center text-zinc-500 italic">> Sincronizando árbol relacional con Supabase...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- REPOSITORIO DE ÉPOCAS PASADAS PERSISTIDAS -->
+        <section class="bg-[#14161d] border border-zinc-800 rounded-lg shadow-2xl overflow-hidden table-box-pdf">
+            <div class="p-6 border-b border-zinc-800 bg-[#0d0e15]">
+                <h3 class="text-sm font-light uppercase tracking-wider text-[var(--gold-satin)]">
+                    📦 Historial de Épocas e Instantáneas Inmutables (Persistencia SAAS)
+                </h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-sm text-slate-300">
+                    <thead class="bg-[#0b0c10] text-[10px] font-mono text-slate-500 uppercase tracking-widest border-b border-zinc-800">
+                        <tr>
+                            <th class="p-4">ID Instantánea</th>
+                            <th class="p-4">Fecha de Cierre</th>
+                            <th class="p-4">Materia</th>
+                            <th class="p-4">Alumnos Involucrados</th>
+                            <th class="p-4">Rendimiento Promedio</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaEpocasHistoricasBody" class="divide-y divide-zinc-800/50 font-mono text-xs">
+                        <tr>
+                            <td colspan="5" class="p-4 text-center text-zinc-500 italic">> Sincronizando repositorio inmutable...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- ORQUESTACIÓN ANALÍTICA MULTI-TENANT -->
+    <script>
+        let chartT = null;
+        let chartA = null;
+        let materiaActual = 'matematicas'; 
+        
+        // 🪐 Vinculación mandatoria del ID Institucional
+        const INSTITUTION_ID = "colegio_sandbox_default";
+        let cohorteEstudiantes = ["elizabeth", "samantha"]; 
+        let livePollingInterval = null;
+
+        function inicializarGraficasLongitudinales() {
+            document.querySelector("#chartEvolucionTheta").innerHTML = "";
+            document.querySelector("#chartEvolucionADN").innerHTML = "";
+
+            chartT = new ApexCharts(document.querySelector("#chartEvolucionTheta"), {
+                series: [], 
+                chart: { type: 'line', height: 240, toolbar: { show: false }, animations: { enabled: true, easing: 'smooth', speed: 800 } },
+                colors: ['#3498db', '#a855f7', '#2ecc71', '#e67e22', '#f1c40f', '#e74c3c'], 
+                theme: { mode: 'dark' },
+                stroke: { curve: 'smooth', width: 3 }, 
+                xaxis: { categories: ['Inicio', 'Mitad', 'Actual'] }
+            });
+            chartT.render();
+
+            chartA = new ApexCharts(document.querySelector("#chartEvolucionADN"), {
+                series: [], 
+                chart: { type: 'area', height: 240, toolbar: { show: false }, animations: { enabled: true, easing: 'smooth', speed: 800 } },
+                colors: ['#e74c3c', '#e67e22', '#2ecc71'], 
+                theme: { mode: 'dark' },
+                stroke: { curve: 'smooth', width: 2 }, 
+                fill: { type: 'solid', opacity: 0.05 }, 
+                xaxis: { categories: ['Inicio', 'Mitad', 'Actual'] }
+            });
+            chartA.render();
+        }
+
+        async function sincronizarListaCohorte() {
+            try {
+                const res = await fetch(`/api/admin/obtain-cohorte?institution_id=${INSTITUTION_ID}`);
+                const json = await res.json();
+                if (json && json.success) cohorteEstudiantes = json.cohorte;
+            } catch(e) {
+                cohorteEstudiantes = ["elizabeth", "samantha"];
+            }
+        }
+
+        async function cargarEpocasHistoricas() {
+            const tableBody = document.getElementById("tablaEpocasHistoricasBody");
+            if (!tableBody) return;
+            try {
+                const res = await fetch(`/api/admin/obtener-epocas-historicas?institution_id=${INSTITUTION_ID}`);
+                const json = await res.json();
+                if (json && json.success && json.epocas.length > 0) {
+                    tableBody.innerHTML = "";
+                    json.epocas.forEach(ep => {
+                        const tr = document.createElement("tr");
+                        tr.className = "hover:bg-zinc-800/30 text-zinc-300 border-b border-zinc-800/50";
+                        tr.innerHTML = `
+                            <td class="p-4 truncate max-w-[180px] text-[var(--gold-satin)] font-bold">${ep.id}</td>
+                            <td class="p-4 text-zinc-400">${new Date(ep.creado_at).toLocaleString()}</td>
+                            <td class="p-4 uppercase text-sky-400">${ep.materia}</td>
+                            <td class="p-4 text-slate-200">${ep.total_estudiantes_evaluados} alumnos</td>
+                            <td class="p-4 font-bold text-emerald-400">${ep.puntaje_promedio_icfes} / 100 pts</td>
+                        `;
+                        tableBody.appendChild(tr);
+                    });
+                } else {
+                    tableBody.innerHTML = "<tr><td colspan='5' class='p-4 text-center text-zinc-600 italic'>> Ninguna instantánea histórica guardada.</td></tr>";
+                }
+            } catch (err) {
+                tableBody.innerHTML = "<tr><td colspan='5' class='p-4 text-center text-rose-500'>Error de enlace con el repositorio.</td></tr>";
+            }
+        }
+
+        async function compilarMetricasGlobales() {
+            try {
+                await sincronizarListaCohorte();
+
+                const promesasMuestreo = cohorteEstudiantes.map(async (est) => {
+                    const res = await fetch(`/api/cat/auditoria?estudiante=${est}&materia=${materiaActual}&institution_id=${INSTITUTION_ID}`);
+                    const json = await res.json();
+                    if (json && json.success && json.data && json.data.length > 0) return { nombre: est, records: json.data };
+                    return null;
+                });
+
+                const resultadosRaw = await Promise.all(promesasMuestreo);
+                renderizarConsolaLongitudinalCompleta(resultadosRaw.filter(r => r !== null));
+            } catch (err) {
+                console.error("🚨 [POLLING ERROR]:", err.message);
+            }
+        }
+
+        function renderizarConsolaLongitudinalCompleta(cohortes) {
+            const tableBody = document.getElementById("tablaRectorBody");
+            const narrativasContainer = document.getElementById("uiNarrativasContenedor");
+            if (!tableBody) return;
+            
+            tableBody.innerHTML = ""; narrativasContainer.innerHTML = "";
+            document.getElementById("kpiTotalEstudiantes").innerText = cohortes.length;
+            
+            let sumaPuntajes = 0; let sumaEstabilidad = 0;
+            let seriesThetaDinamica = [];
+
+            let globalImpulsividad = [0, 0, 0];
+            let globalFatiga = [0, 0, 0];
+            let globalRecuperacion = [0, 0, 0];
+
+            cohortes.forEach(alumno => {
+                const records = alumno.records;
+                const ultimoRegistro = records[records.length - 1];
+                const thFinal = parseFloat(ultimoRegistro.theta || ultimoRegistro.theta_final || 0);
+                
+                seriesThetaDinamica.push({ name: `${alumno.nombre.toUpperCase()} \u03B8`, data: [0, thFinal * 0.5, thFinal] });
+                
+                const adn = ultimoRegistro.adn_cognitivo || { impulsividad: 23, fatiga: 0, recuperacion: 50, estabilidad: 88.5 };
+                
+                globalImpulsividad[1] += adn.impulsividad * 0.5; globalImpulsividad[2] += adn.impulsividad;
+                globalFatiga[1] += adn.fatiga * 0.5; globalFatiga[2] += adn.fatiga;
+                globalRecuperacion[1] += adn.recuperacion * 0.5; globalRecuperacion[2] += adn.recuperacion;
+
+                const icfes = ultimoRegistro.puntaje_escalonado || Math.round(50 + (thFinal * 13.5));
+                sumaPuntajes += icfes;
+                sumaEstabilidad += adn.estabilidad || 80;
+
+                const tr = document.createElement("tr");
+                tr.className = "hover:bg-zinc-800/30 text-zinc-300 border-b border-zinc-800/50";
+                tr.innerHTML = `
+                    <td class="p-4 font-bold uppercase text-slate-200">${alumno.nombre}</td>
+                    <td class="p-4 text-zinc-500">0.0000</td>
+                    <td class="p-4 text-sky-400">${thFinal.toFixed(4)}</td>
+                    <td class="p-4 font-bold ${thFinal >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${thFinal >= 0 ? '+' : ''}${thFinal.toFixed(4)} \u0394</td>
+                    <td class="p-4 uppercase">ESTABLE (${adn.impulsividad}%)</td>
+                    <td class="p-4 font-bold text-emerald-400">${icfes} pts</td>
+                `;
+                tableBody.appendChild(tr);
+
+                if (adn.cronica_narrativa) {
+                    const card = document.createElement("div");
+                    card.className = "bg-[#14161d] border border-zinc-800 border-l-4 border-amber-500 p-4 rounded-lg text-left";
+                    card.innerHTML = `
+                        <h4 class="text-[11px] font-mono text-[var(--gold-satin)] uppercase font-bold tracking-wider mb-1">Crónica: ${alumno.nombre.toUpperCase()}</h4>
+                        <p class="text-[11px] text-slate-300 leading-relaxed mb-2 italic">"${adn.cronica_narrativa}"</p>
+                        <div class="text-[9px] font-mono text-zinc-500 border-t border-zinc-800 pt-2 space-y-0.5">
+                            <div><span class="text-rose-400">VULNERABILIDAD:</span> ${adn.vulnerabilidad_dominante || 'Bajo observación.'}</div>
+                            <div><span class="text-sky-400">PRESCRIPCIÓN:</span> ${adn.prescripcion_clinica || 'Mantener flujo adaptativo.'}</div>
+                        </div>
+                    `;
+                    narrativasContainer.appendChild(card);
+                }
+            });
+
+            const num = cohortes.length || 1;
+            document.getElementById("kpiPromedioIcfes").innerText = `${Math.round(sumaPuntajes / num)} / 100 pts`;
+            document.getElementById("kpiEstabilidad").innerText = `${Math.round(sumaEstabilidad / num)}%`;
+            
+            chartT.updateOptions({ series: seriesThetaDinamica });
+            chartA.updateOptions({
+                series: [
+                    { name: 'Impulsividad %', data: globalImpulsividad.map(v => Math.round(v / num)) },
+                    { name: 'Fatiga %', data: globalFatiga.map(v => Math.round(v / num)) },
+                    { name: 'Recuperación %', data: globalRecuperacion.map(v => Math.round(v / num)) }
+                ]
+            });
+        }
+
+        async function ejecutarResetEpoca() {
+            if (!confirm(`¿Confirmas la toma de Snapshot Histórica y purga de Redis?`)) return;
+            try {
+                const res = await fetch('/api/admin/reset-epoca', {
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ materia: materiaActual, institution_id: INSTITUTION_ID })
+                });
+                const json = await res.json();
+                if (json.success) { 
+                    alert(json.message); 
+                    await compilarMetricasGlobales(); 
+                    await cargarEpocasHistoricas(); 
+                }
+            } catch(e) { alert("Fallo perimetral."); }
+        }
+
+        async function registrarNuevoEstudiante() {
+            const input = document.getElementById("inputNuevoAlumno");
+            const name = input.value.trim();
+            if (!name) return;
+            try {
+                const res = await fetch('/api/admin/registrar-estudiante', {
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ nombreEstudiante: name, institution_id: INSTITUTION_ID })
+                });
+                const json = await res.json();
+                if (json.success) { 
+                    input.value = ""; 
+                    await compilarMetricasGlobales(); 
+                }
+            } catch(e) {}
+        }
+
+        function cambiarMateria(materia) {
+            materiaActual = materia;
+            document.querySelectorAll('.actions-pane button').forEach(btn => {
+                btn.classList.remove('font-bold', 'text-[var(--gold-satin)]', 'bg-amber-500/10', 'border', 'border-amber-500/20');
+                btn.classList.add('text-zinc-400');
+            });
+            const activeBtn = document.getElementById(`btn${materia.charAt(0).toUpperCase() + materia.slice(1).replace('_critica', '').replace('_naturales', '')}`);
+            if (activeBtn) {
+                activeBtn.classList.add('font-bold', 'text-[var(--gold-satin)]', 'bg-amber-500/10', 'border', 'border-amber-500/20');
+            }
+            compilarMetricasGlobales(); 
+        }
+
+        window.onload = () => { 
+            inicializarGraficasLongitudinales();
+            compilarMetricasGlobales(); 
+            cargarEpocasHistoricas();
+            livePollingInterval = setInterval(compilarMetricasGlobales, 4000); 
+        };
+    </script>
+</body>
+</html>

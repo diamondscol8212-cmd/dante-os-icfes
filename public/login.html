@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dante OS - Portal Perimetral de Roles</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        :root {
+            --bg-deep: #0b0c10;
+            --bg-surface: #14161d;
+            --gold-satin: #d4af37;
+            --gold-glow: rgba(212, 175, 55, 0.15);
+            --graphite: #2b2e3a;
+        }
+        body {
+            background-color: var(--bg-deep);
+            background-image: radial-gradient(circle at 50% 30%, #191c26 0%, #0b0c10 100%);
+        }
+        .role-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--graphite);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .role-card:hover {
+            border-color: var(--gold-satin);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px var(--gold-glow);
+        }
+    </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col justify-between p-6 md:p-12">
+
+    <div class="w-full max-w-6xl mx-auto my-auto space-y-10">
+        
+        <div class="text-center space-y-2">
+            <h1 class="text-4xl font-extralight uppercase tracking-[6px] text-[var(--gold-satin)]">Dante OS</h1>
+            <p class="text-xs text-slate-500 font-mono tracking-[2px]">> PORTAL DE ACCESO PERIMETRAL // ARQUITECTURA DE ROLES ADAPTATIVOS</p>
+            <div class="w-24 h-[1px] bg-gradient-to-r from-transparent via-amber-500/40 to-transparent mx-auto mt-4"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+            
+            <div class="role-card rounded-xl p-8 flex flex-col justify-between group">
+                <div class="space-y-4">
+                    <div class="flex justify-between items-start">
+                        <span class="text-3xl">🧠</span>
+                        <span class="text-[9px] font-mono bg-amber-500/10 text-[var(--gold-satin)] border border-amber-500/20 px-2 py-0.5 rounded">MODO RUNTIME</span>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-light uppercase tracking-wider text-slate-200 group-hover:text-[var(--gold-satin)] transition-colors">Sala de Simulación</h3>
+                        <p class="text-[10px] font-mono text-slate-500 mt-0.5 uppercase">Core de Evaluación Adaptativa</p>
+                    </div>
+                    <p class="text-xs text-slate-400 leading-relaxed text-justify pt-2">
+                        Módulo de interacción directa para cohortes. Evalúa la habilidad latente ($\theta$) analizando en caliente vectores de latencia, impulsividad y fatiga cognitiva.
+                    </p>
+                </div>
+                <div class="pt-8">
+                    <a href="/index.html" class="block w-full text-center bg-zinc-800/50 hover:bg-[var(--gold-satin)] hover:text-black text-slate-300 font-mono text-xs py-3 rounded border border-zinc-700/60 hover:border-transparent transition-all duration-200 uppercase font-bold tracking-wider">
+                        Sincronizar Alumno
+                    </a>
+                </div>
+            </div>
+
+            <div class="role-card rounded-xl p-8 flex flex-col justify-between group">
+                <div class="space-y-4">
+                    <div class="flex justify-between items-start">
+                        <span class="text-3xl">🏛️</span>
+                        <span class="text-[9px] font-mono bg-sky-500/10 text-sky-400 border border-sky-500/20 px-2 py-0.5 rounded">MODO AUDITORÍA</span>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-light uppercase tracking-wider text-slate-200 group-hover:text-[var(--gold-satin)] transition-colors">Consola del Rector</h3>
+                        <p class="text-[10px] font-mono text-slate-500 mt-0.5 uppercase">Trazabilidad Colectiva B2B</p>
+                    </div>
+                    <p class="text-xs text-slate-400 leading-relaxed text-justify pt-2">
+                        Cuadro de mando ejecutivo de alta densidad. Acceso directo a crónicas analíticas de Supabase, alertas clínicas de autorregulación y descarga de reportes maestros.
+                    </p>
+                </div>
+                <div class="pt-8">
+                    <a href="/rector.html" class="block w-full text-center bg-zinc-800/50 hover:bg-[var(--gold-satin)] hover:text-black text-slate-300 font-mono text-xs py-3 rounded border border-zinc-700/60 hover:border-transparent transition-all duration-200 uppercase font-bold tracking-wider">
+                        Monitorear Sede
+                    </a>
+                </div>
+            </div>
+
+            <div class="role-card rounded-xl p-8 flex flex-col justify-between group">
+                <div class="space-y-4">
+                    <div class="flex justify-between items-start">
+                        <span class="text-3xl">🔬</span>
+                        <span class="text-[9px] font-mono bg-purple-500/10 text-purple-400 border border-purple-500/20 px-2 py-0.5 rounded">MODO INVERSO</span>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-light uppercase tracking-wider text-slate-200 group-hover:text-[var(--gold-satin)] transition-colors">Capa de Calibración</h3>
+                        <p class="text-[10px] font-mono text-slate-500 mt-0.5 uppercase">Mapeo de Preguntas e IRT</p>
+                    </div>
+                    <p class="text-xs text-slate-400 leading-relaxed text-justify pt-2">
+                        Herramientas para autores y científicos. Carga masiva de simulacros vía CSV, visualización de información de Fisher y optimización bayesiana de distractores.
+                    </p>
+                </div>
+                <div class="pt-6 flex gap-2">
+                    <a href="/author.html" class="w-1/2 text-center bg-zinc-800/50 hover:bg-purple-500/20 hover:text-purple-300 text-slate-300 font-mono text-[10px] py-3 rounded border border-zinc-700/60 hover:border-purple-500/40 transition-all duration-200 uppercase font-bold tracking-tight">
+                        Carga CSV
+                    </a>
+                    <a href="/calibracion.html" class="w-1/2 text-center bg-zinc-800/50 hover:bg-emerald-500/20 hover:text-emerald-300 text-slate-300 font-mono text-[10px] py-3 rounded border border-zinc-700/60 hover:border-emerald-500/40 transition-all duration-200 uppercase font-bold tracking-tight">
+                        Calibración
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <footer class="w-full max-w-6xl mx-auto text-center text-[10px] font-mono text-zinc-600 border-t border-zinc-900 pt-6 mt-8">
+        DANTE OS v20.6.2 // UNICORN ARCHITECTURE INFRASTRUCTURE SECURITY SECURITY
+    </footer>
+
+</body>
+</html>
