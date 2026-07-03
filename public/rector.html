@@ -1,3 +1,4 @@
+html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -173,14 +174,12 @@
         let chartA = null;
         let materiaActual = 'matematicas'; 
         
-        // 🪐 Orquestación de Redes Direccionales Absolutas
         const GATEWAY_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
             ? "http://localhost:3000"
             : "https://dante-os-platform.onrender.com";
 
         const INSTITUTION_ID = "colegio_sandbox_default";
         
-        // 🪐 BLINDAJE DE SEGURIDAD LOCAL EN EL ARREGLO BASE
         let cohorteEstudiantes = ["elizabeth", "prueba2", "samantha"]; 
         let livePollingInterval = null;
 
@@ -216,7 +215,6 @@
                 const json = await res.json();
                 if (json && json.success) cohorteEstudiantes = json.cohorte;
             } catch(e) {
-                // 🪐 BLINDAJE CRÍTICO FIXED: Preserva a prueba2 en minúsculas ante fallas de red/CORS
                 cohorteEstudiantes = ["elizabeth", "prueba2", "samantha"];
             }
         }
@@ -283,17 +281,20 @@
             let globalRecuperacion = [0, 0, 0];
 
             cohortes.forEach(alumno => {
-                const records = alumno.records;
-                const ultimoRegistro = records[records.length - 1];
+                // 🪐 BLINDAJE DE SEGURIDAD CONTRA ARREGLOS VACÍOS O SESIONES PARCIALES
+                const records = alumno.records || [];
+                if (records.length === 0) return; 
+
+                const ultimoRegistro = records[records.length - 1] || {};
                 const thFinal = parseFloat(ultimoRegistro.theta || ultimoRegistro.theta_final || 0);
                 
                 seriesThetaDinamica.push({ name: `${alumno.nombre.toUpperCase()} \u03B8`, data: [0, thFinal * 0.5, thFinal] });
                 
                 const adn = ultimoRegistro.adn_cognitivo || { impulsividad: 23, fatiga: 0, recuperacion: 50, estabilidad: 88.5 };
                 
-                globalImpulsividad[1] += adn.impulsividad * 0.5; globalImpulsividad[2] += adn.impulsividad;
-                globalFatiga[1] += adn.fatiga * 0.5; globalFatiga[2] += adn.fatiga;
-                globalRecuperacion[1] += adn.recuperacion * 0.5; globalRecuperacion[2] += adn.recuperacion;
+                globalImpulsividad[1] += (adn.impulsividad || 0) * 0.5; globalImpulsividad[2] += (adn.impulsividad || 0);
+                globalFatiga[1] += (adn.fatiga || 0) * 0.5; globalFatiga[2] += (adn.fatiga || 0);
+                globalRecuperacion[1] += (adn.recuperacion || 0) * 0.5; globalRecuperacion[2] += (adn.recuperacion || 0);
 
                 const icfes = ultimoRegistro.puntaje_escalonado || Math.round(50 + (thFinal * 13.5));
                 sumaPuntajes += icfes;
@@ -306,7 +307,7 @@
                     <td class="p-4 text-zinc-500">0.0000</td>
                     <td class="p-4 text-sky-400">${thFinal.toFixed(4)}</td>
                     <td class="p-4 font-bold ${thFinal >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${thFinal >= 0 ? '+' : ''}${thFinal.toFixed(4)} \u0394</td>
-                    <td class="p-4 uppercase">ESTABLE (${adn.impulsividad}%)</td>
+                    <td class="p-4 uppercase">ESTABLE (${adn.impulsividad || 0}%)</td>
                     <td class="p-4 font-bold text-emerald-400">${icfes} pts</td>
                 `;
                 tableBody.appendChild(tr);
