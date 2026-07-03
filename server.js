@@ -294,9 +294,3 @@ app.get('/', (req, res) => {
 });
 
 app.listen(PORT, () => console.log(`\n🚀 [DANTE OS GATEWAY MULTI-TENANT RUNNING]: Servidor activo en http://localhost:${PORT}`));
-
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-app.listen(PORT, () => console.log(`\n🚀 [DANTE OS GATEWAY MULTI-TENANT RUNNING]: Servidor activo en http://localhost:${PORT}`));
