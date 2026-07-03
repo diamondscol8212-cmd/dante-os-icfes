@@ -251,12 +251,24 @@ html
             try {
                 await sincronizarListaCohorte();
 
+                // Modificamos temporalmente la url para traer todo el progreso de la materia y auditar los nombres reales guardados en Supabase
+                const resGeneral = await fetch(`${GATEWAY_URL}/api/cat/auditoria?materia=${materiaActual}&institution_id=${INSTITUTION_ID}`);
+                const jsonGeneral = await resGeneral.json();
+                console.log("🪐 [DANTE FORENSIC LOG] - Datos reales en Supabase:", jsonGeneral.data);
+
                 const promesasMuestreo = cohorteEstudiantes.map(async (est) => {
                     const res = await fetch(`${GATEWAY_URL}/api/cat/auditoria?estudiante=${est}&materia=${materiaActual}&institution_id=${INSTITUTION_ID}`);
                     const json = await res.json();
                     if (json && json.success && json.data && json.data.length > 0) return { nombre: est, records: json.data };
                     return null;
                 });
+
+                const resultadosRaw = await Promise.all(promesasMuestreo);
+                renderizarConsolaLongitudinalCompleta(resultadosRaw.filter(r => r !== null));
+            } catch (err) {
+                console.error("🚨 [POLLING ERROR]:", err.message);
+            }
+        }
 
                 const resultadosRaw = await Promise.all(promesasMuestreo);
                 renderizarConsolaLongitudinalCompleta(resultadosRaw.filter(r => r !== null));
