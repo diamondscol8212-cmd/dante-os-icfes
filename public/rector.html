@@ -173,7 +173,11 @@
         let chartA = null;
         let materiaActual = 'matematicas'; 
         
-        // 🪐 Vinculación mandatoria del ID Institucional
+        // 🪐 Orquestación de Redes Direccionales Absolutas
+        const GATEWAY_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+            ? "http://localhost:3000"
+            : "https://dante-os-platform.onrender.com";
+
         const INSTITUTION_ID = "colegio_sandbox_default";
         let cohorteEstudiantes = ["elizabeth", "samantha"]; 
         let livePollingInterval = null;
@@ -206,7 +210,7 @@
 
         async function sincronizarListaCohorte() {
             try {
-                const res = await fetch(`/api/admin/obtain-cohorte?institution_id=${INSTITUTION_ID}`);
+                const res = await fetch(`${GATEWAY_URL}/api/admin/obtain-cohorte?institution_id=${INSTITUTION_ID}`);
                 const json = await res.json();
                 if (json && json.success) cohorteEstudiantes = json.cohorte;
             } catch(e) {
@@ -218,7 +222,7 @@
             const tableBody = document.getElementById("tablaEpocasHistoricasBody");
             if (!tableBody) return;
             try {
-                const res = await fetch(`/api/admin/obtener-epocas-historicas?institution_id=${INSTITUTION_ID}`);
+                const res = await fetch(`${GATEWAY_URL}/api/admin/obtener-epocas-historicas?institution_id=${INSTITUTION_ID}`);
                 const json = await res.json();
                 if (json && json.success && json.epocas.length > 0) {
                     tableBody.innerHTML = "";
@@ -247,7 +251,7 @@
                 await sincronizarListaCohorte();
 
                 const promesasMuestreo = cohorteEstudiantes.map(async (est) => {
-                    const res = await fetch(`/api/cat/auditoria?estudiante=${est}&materia=${materiaActual}&institution_id=${INSTITUTION_ID}`);
+                    const res = await fetch(`${GATEWAY_URL}/api/cat/auditoria?estudiante=${est}&materia=${materiaActual}&institution_id=${INSTITUTION_ID}`);
                     const json = await res.json();
                     if (json && json.success && json.data && json.data.length > 0) return { nombre: est, records: json.data };
                     return null;
@@ -336,7 +340,7 @@
         async function ejecutarResetEpoca() {
             if (!confirm(`¿Confirmas la toma de Snapshot Histórica y purga de Redis?`)) return;
             try {
-                const res = await fetch('/api/admin/reset-epoca', {
+                const res = await fetch(`${GATEWAY_URL}/api/admin/reset-epoca`, {
                     method: 'POST', 
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ materia: materiaActual, institution_id: INSTITUTION_ID })
@@ -355,7 +359,7 @@
             const name = input.value.trim();
             if (!name) return;
             try {
-                const res = await fetch('/api/admin/registrar-estudiante', {
+                const res = await fetch(`${GATEWAY_URL}/api/admin/registrar-estudiante`, {
                     method: 'POST', 
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ nombreEstudiante: name, institution_id: INSTITUTION_ID })
@@ -371,12 +375,18 @@
         function cambiarMateria(materia) {
             materiaActual = materia;
             document.querySelectorAll('.actions-pane button').forEach(btn => {
-                btn.classList.remove('font-bold', 'text-[var(--gold-satin)]', 'bg-amber-500/10', 'border', 'border-amber-500/20');
-                btn.classList.add('text-zinc-400');
+                btn.className = "px-3 py-1.5 rounded transition-all cursor-pointer text-zinc-400 hover:text-slate-200";
             });
-            const activeBtn = document.getElementById(`btn${materia.charAt(0).toUpperCase() + materia.slice(1).replace('_critica', '').replace('_naturales', '')}`);
+            
+            // Mapeo dinámico y seguro de IDs de botones para manipulación limpia de clases
+            let idBoton = "btnMatematicas";
+            if (materia === "lectura_critica") idBoton = "btnLectura";
+            if (materia === "ciencias_naturales") idBoton = "btnCiencias";
+            if (materia === "ingles") idBoton = "btnIngles";
+
+            const activeBtn = document.getElementById(idBoton);
             if (activeBtn) {
-                activeBtn.classList.add('font-bold', 'text-[var(--gold-satin)]', 'bg-amber-500/10', 'border', 'border-amber-500/20');
+                activeBtn.className = "px-3 py-1.5 rounded transition-all cursor-pointer font-bold text-[var(--gold-satin)] bg-amber-500/10 border border-amber-500/20";
             }
             compilarMetricasGlobales(); 
         }
