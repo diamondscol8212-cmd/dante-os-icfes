@@ -179,6 +179,8 @@
             : "https://dante-os-platform.onrender.com";
 
         const INSTITUTION_ID = "colegio_sandbox_default";
+        
+        // 🪐 BLINDAJE DE SEGURIDAD LOCAL EN EL FALLBACK
         let cohorteEstudiantes = ["elizabeth", "prueba2", "samantha"]; 
         let livePollingInterval = null;
 
@@ -214,7 +216,8 @@
                 const json = await res.json();
                 if (json && json.success) cohorteEstudiantes = json.cohorte;
             } catch(e) {
-                cohorteEstudiantes = ["elizabeth", "samantha"];
+                // 🪐 CORREGIDO: Mantiene el blindaje incluyendo a prueba2 en minúsculas en caso de fallo
+                cohorteEstudiantes = ["elizabeth", "prueba2", "samantha"];
             }
         }
 
@@ -315,7 +318,7 @@
                         <h4 class="text-[11px] font-mono text-[var(--gold-satin)] uppercase font-bold tracking-wider mb-1">Crónica: ${alumno.nombre.toUpperCase()}</h4>
                         <p class="text-[11px] text-slate-300 leading-relaxed mb-2 italic">"${adn.cronica_narrativa}"</p>
                         <div class="text-[9px] font-mono text-zinc-500 border-t border-zinc-800 pt-2 space-y-0.5">
-                            <div><span class="text-rose-400">VULNERABILIDAD:</span> ${adn.vulnerabilidad_dominante || 'Bajo observación.'}</div>
+                            <div><span class="text-rose-400">VULNERABILIDAD:</span> ${adn.vulnerabilidad_dominante || 'Bajo observation.'}</div>
                             <div><span class="text-sky-400">PRESCRIPCIÓN:</span> ${adn.prescripcion_clinica || 'Mantener flujo adaptativo.'}</div>
                         </div>
                     `;
@@ -378,7 +381,6 @@
                 btn.className = "px-3 py-1.5 rounded transition-all cursor-pointer text-zinc-400 hover:text-slate-200";
             });
             
-            // Mapeo dinámico y seguro de IDs de botones para manipulación limpia de clases
             let idBoton = "btnMatematicas";
             if (materia === "lectura_critica") idBoton = "btnLectura";
             if (materia === "ciencias_naturales") idBoton = "btnCiencias";
