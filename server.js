@@ -18,7 +18,8 @@ const ALLOWED_ORIGINS = [
     'http://localhost:5173', 'http://127.0.0.1:5173',
     'http://localhost:3000', 'http://127.0.0.1:5500', 
     'http://localhost:5500', 'https://danteos.com',
-    'https://app.danteos.com', 'null', 'file://'
+    'https://app.danteos.com', 'null', 'file://',
+    'https://dante-os-platform.onrender.com'
 ];
 
 app.use(cors({
