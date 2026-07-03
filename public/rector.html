@@ -248,21 +248,41 @@
 
         async function compilarMetricasGlobales() {
             try {
-                await sincronizarListaCohorte();
-
+                // Traemos todos los registros de progreso de la materia sin filtrar por nombre para capturar los nombres reales en Supabase
                 const resGeneral = await fetch(`${GATEWAY_URL}/api/cat/auditoria?materia=${materiaActual}&institution_id=${INSTITUTION_ID}`);
                 const jsonGeneral = await resGeneral.json();
-                console.log("🪐 [DANTE FORENSIC LOG] - Datos reales en Supabase:", jsonGeneral.data);
+                
+                let resultadosMuestreo = [];
 
-                const promesasMuestreo = cohorteEstudiantes.map(async (est) => {
-                    const res = await fetch(`${GATEWAY_URL}/api/cat/auditoria?estudiante=${est}&materia=${materiaActual}&institution_id=${INSTITUTION_ID}`);
-                    const json = await res.json();
-                    if (json && json.success && json.data && json.data.length > 0) return { nombre: est, records: json.data };
-                    return null;
-                });
+                if (jsonGeneral && jsonGeneral.success && jsonGeneral.data && jsonGeneral.data.length > 0) {
+                    // Agrupamos dinámicamente los registros de Supabase por estudiante
+                    const mapaAlumnos = {};
+                    jsonGeneral.data.forEach(reg => {
+                        const nombreClean = String(reg.estudiante).toLowerCase().trim();
+                        if (!mapaAlumnos[nombreClean]) mapaAlumnos[nombreClean] = [];
+                        mapaAlumnos[nombreClean].push(reg);
+                    });
 
-                const resultadosRaw = await Promise.all(promesasMuestreo);
-                renderizarConsolaLongitudinalCompleta(resultadosRaw.filter(r => r !== null));
+                    // Convertimos el mapa en el formato esperado por el renderizador clásico
+                    for (const [nombre, records] of Object.entries(mapaAlumnos)) {
+                        resultadosMuestreo.push({ nombre: nombre, records: records });
+                    }
+                }
+
+                // Si por alguna razón viene vacío Supabase, usamos el fallback clásico preventivo
+                if (resultadosMuestreo.length === 0) {
+                    await sincronizarListaCohorte();
+                    const promesasMuestreo = cohorteEstudiantes.map(async (est) => {
+                        const res = await fetch(`${GATEWAY_URL}/api/cat/auditoria?estudiante=${est}&materia=${materiaActual}&institution_id=${INSTITUTION_ID}`);
+                        const json = await res.json();
+                        if (json && json.success && json.data && json.data.length > 0) return { nombre: est, records: json.data };
+                        return null;
+                    });
+                    const resultadosRaw = await Promise.all(promesasMuestreo);
+                    resultadosMuestreo = resultadosRaw.filter(r => r !== null);
+                }
+
+                renderizarConsolaLongitudinalCompleta(resultadosMuestreo);
             } catch (err) {
                 console.error("🚨 [POLLING ERROR]:", err.message);
             }
@@ -398,7 +418,7 @@
 
         window.onload = () => { 
             inicializarGraficasLongitudinales();
-            compilarMetricasGlobales(); 
+            compilarMetrales = compilarMetricasGlobales(); 
             cargarEpocasHistoricas();
             livePollingInterval = setInterval(compilarMetricasGlobales, 4000); 
         };
