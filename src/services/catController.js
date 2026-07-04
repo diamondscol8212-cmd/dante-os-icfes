@@ -15,8 +15,10 @@ const OPERATIONAL_CONTROLS = {
     EPS_CDM: 0.02               
 };
 
+// 🪐 CONFIGURACIÓN AMORTIGUADA DE CONTROL CONDUCTUAL (RANGOS MITIGADOS)
 const METACONTROL_THRESHOLDS = {
-    UMBRAL_RUIDO_AZAR_SEGUNDOS: 10.0,
+    UMBRAL_IMPULSIVIDAD_CRITICA_SEGUNDOS: 4.0,       // Sistema 1 Puro (Gatillo de castigo drástico)
+    UMBRAL_TRANSICION_NOMINAL_SEGUNDOS: 12.0,       // Inicio del Tramo 3 Pleno sin alteraciones
     UMBRAL_ANALISIS_PROFUNDO_SEGUNDOS: 60.0,
     UMBRAL_BLOQUEO_FATIGA_SEGUNDOS: 180.0
 };
@@ -304,18 +306,25 @@ export async function procesarInteraccionEstudiante(req, res) {
             }
         }
 
-        const esDisparoAlAzar = (cronometriaSegundos < METACONTROL_THRESHOLDS.UMBRAL_RUIDO_AZAR_SEGUNDOS);
+        // 🪐 AMORTIGUACIÓN DE COMPORTAMIENTO: Traspaso a Tramos de Mitigación Elástica
+        const esDisparoAlAzar = (cronometriaSegundos < METACONTROL_THRESHOLDS.UMBRAL_IMPULSIVIDAD_CRITICA_SEGUNDOS);
+        const esTransicionSuave = (cronometriaSegundos >= METACONTROL_THRESHOLDS.UMBRAL_IMPULSIVIDAD_CRITICA_SEGUNDOS && cronometriaSegundos < METACONTROL_THRESHOLDS.UMBRAL_TRANSICION_NOMINAL_SEGUNDOS);
         const esAnalisisProfundo = (cronometriaSegundos >= METACONTROL_THRESHOLDS.UMBRAL_ANALISIS_PROFUNDO_SEGUNDOS);
         const esBloqueoCognitivo = (cronometriaSegundos > METACONTROL_THRESHOLDS.UMBRAL_BLOQUEO_FATIGA_SEGUNDOS);
 
+        let factorPenalizacionModulada = 1.0;
         let flagIntervencionActiva = "NONE";
         let errorDetonadoMsg = "Ninguno";
         let remediacionSugeridaMsg = "Se prescribe continuar el flujo adaptativo estándar.";
 
         if (esDisparoAlAzar) {
+            factorPenalizacionModulada = 0.40; 
             flagIntervencionActiva = "IMPULSIVITY_BLOCK";
             errorDetonadoMsg = "RUIDO POR IMPULSIVIDAD CRÍTICA (SISTEMA 1 DETECTADO)";
-            remediacionSugeridaMsg = "Has respondido en menos de 10 segundos de forma reactiva. Se prescribe frenar el impulso, respirar profundo y releer el estímulo forzando el Sistema 2 analítico.";
+            remediacionSugeridaMsg = "Has respondido en menos de 4 segundos de forma reactiva. Se prescribe frenar el impulso y releer el estímulo forzando el Sistema 2 analítico.";
+        } else if (esTransicionSuave) {
+            const deltaRango = (cronometriaSegundos - METACONTROL_THRESHOLDS.UMBRAL_IMPULSIVIDAD_CRITICA_SEGUNDOS) / 8.0;
+            factorPenalizacionModulada = 0.60 + (deltaRango * 0.40); 
         } else if (esBloqueoCognitivo) {
             flagIntervencionActiva = "FATIGUED_LOCK";
             errorDetonadoMsg = "SATURACIÓN COGNITIVA / BLOQUEO POR FRUSTRACIÓN";
@@ -327,6 +336,11 @@ export async function procesarInteraccionEstudiante(req, res) {
         
         let thetaActual = nuevoConteoItems === 0 ? sessionState.theta : resultadoEAP.theta;
         let semActual = nuevoConteoItems === 0 ? parseFloat(sessionState.sem_bayesian || 1.0000) : resultadoEAP.bayesianSEM;
+
+        if (itemId && nuevoConteoItems > 0 && factorPenalizacionModulada < 1.0) {
+            let deltaHabilidad = thetaActual - sessionState.theta;
+            thetaActual = sessionState.theta + (deltaHabilidad * factorPenalizacionModulada);
+        }
 
         const itemDifficultyDinamica = metadatosItem ? parseFloat(metadatosItem.b) : 0.0;
         const currentICI = calcularICI(certezaSaneada, interaccionCorrecta, cronometriaSegundos, itemDifficultyDinamica);
@@ -399,7 +413,7 @@ export async function procesarInteraccionEstudiante(req, res) {
             const puntajeIcfesEstandar = resultadoEAP.puntajeIcfesReal || Math.max(1, Math.min(100, Math.round(50 + (thetaActual * 13.8))));
             
             const totalDisparos = arrayHistoricoRespuestas.length || 1;
-            const disparosAzar = arrayHistoricoRespuestas.filter(r => r.responseTime < METACONTROL_THRESHOLDS.UMBRAL_RUIDO_AZAR_SEGUNDOS).length;
+            const disparosAzar = arrayHistoricoRespuestas.filter(r => r.responseTime < 12.0).length; 
             const disparosBloqueo = arrayHistoricoRespuestas.filter(r => r.responseTime > METACONTROL_THRESHOLDS.UMBRAL_BLOQUEO_FATIGA_SEGUNDOS).length;
             
             const adnImpulsividad = Math.round((disparosAzar / totalDisparos) * 100);
@@ -412,9 +426,9 @@ export async function procesarInteraccionEstudiante(req, res) {
             const nombreCapitalizado = String(studentId).charAt(0).toUpperCase() + String(studentId).slice(1);
             let cronicaCalculada = ""; let vulnerabilidadCalculada = ""; let prescripcionCalculada = "";
 
-            if (adnImpulsividad > 40) {
+            if (adnImpulsividad > 50) { 
                 cronicaCalculada = `Durante este desafío, el motor detectó un predominio de respuestas automáticas guiadas por el Sistema 1 rápido. ${nombreCapitalizado} tiende a acelerar el paso ante enunciados hostiles, comprometiendo la precisión en distractores lógicos estructurados.`;
-                vulnerabilidadCalculada = "Impulsividad reactiva descontrolada. El estudiante abandona el análisis formal bajo fricción temporal, cayendo de forma sistemática en el distractor de atracción lineal.";
+                vulnerabilidadCalculada = "Impulsividad reactiva de tramo bajo. El estudiante abandona el análisis formal bajo fricción temporal, cayendo de forma sistemática en el distractor de atracción lineal.";
                 prescripcionCalculada = "Entrenamiento inhibitorio obligatorio. Se prescribe pausar de manera consciente por 8 segundos antes de efectuar cualquier clic para forzar la inyección de sangre al lóbulo frontal (Sistema 2 lento).";
             } else if (adnFatiga > 35) {
                 cronicaCalculada = `La serie temporal evidencia un incremento crítico en las latencias de response a la mitad del examen. ${nombreCapitalizado} experimenta saturación en la memoria de trabajo, lo que reduce la persistencia cognitiva ante estímulos complejos abstractos.`;
@@ -426,7 +440,6 @@ export async function procesarInteraccionEstudiante(req, res) {
                 prescripcionCalculada = "Expansión del límite de asimilación. Continuar el flujo adaptativo incrementando las magnitudes y la complejidad de los reactivos sembrados.";
             }
 
-            // Encapsulamiento atómico híbrido para resolver el fallo de esquema en Supabase
             const payloadPersistenciaBD = {
                 estudiante: String(studentId).toLowerCase().trim(),
                 materia: String(areaSaneada),
@@ -517,7 +530,7 @@ export async function procesarInteraccionEstudiante(req, res) {
 
     } catch (error) {
         console.error("🚨 [CONTROL FORENSE EXCEPCIÓN CRÍTICA v20.5.6]:", error.message);
-        return res.status(500).json({ success: false, error: "Cortocircuito interno." });
+        return res.status(500).json({ success: false, error: "Cortocorticuito interno." });
     }
 }
 
