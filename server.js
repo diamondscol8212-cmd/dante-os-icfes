@@ -199,11 +199,7 @@ app.post('/api/cat/interactuar', async (req, res, next) => {
             return res.status(400).json({ success: false, error: "Dante OS Multitenant: Latencia inválida." });
         }
 
-        // 🪐 BYPASS SANITIZATION: Removemos los decoradores extras para que el motor clásico corra limpio
-        delete req.body.integrityToken;
-        delete req.body.itemHash;
-        delete req.body.institution_id;
-
+        // 🪐 BYPASS SANITIZATION: Mantenemos las claves que el controlador extendido lee en sus flujos elásticos
         return procesarInteraccionEstudiante(req, res);
 
     } catch (err) {
@@ -233,7 +229,7 @@ app.get('/api/cat/auditoria', async (req, res) => {
             const thetaValue = parseFloat(r.theta || r.theta_final || 0);
             const puntajeSintetizado = Math.max(0, Math.min(100, Math.round(50 + (thetaValue * 13.5))));
             
-            const redisExecutiveMetaKey = `dante:${tenantId}:executive:report:${materiaFiltro}:${studentIdClean}`;
+            const redisExecutiveMetaKey = `dante:executive:report:${materiaFiltro}:${studentIdClean}`;
             let adnExtraido = null;
             let mapaCalorExtraido = null;
 
@@ -255,7 +251,7 @@ app.get('/api/cat/auditoria', async (req, res) => {
                     cronica_narrativa: `${studentIdClean.toUpperCase()} opera con estabilidad en el clúster unificado.`,
                     vulnerabilidad_dominante: "Estabilidad cognitiva nominal.", prescripcion_clinica: "Continuar el flujo adaptativo."
                 };
-                mapaCalorExtraido = { attr_error_geometrico: 20, attr_heuristica_lineal: 35 };
+                mapaCalorExtraido = { attr_error_geometrico: 0.02, attr_heuristica_lineal: 0.02 };
             }
 
             return {
