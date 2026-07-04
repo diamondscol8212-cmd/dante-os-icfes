@@ -99,7 +99,7 @@ app.post('/api/admin/registrar-estudiante', async (req, res) => {
 });
 
 // ====================================================================
-// 🪐 PERSISTENCIA HISTÓRICA E SNAPSHOTS MULTI-TENANT
+// 🪐 PERSISTENCIA HISTÓRICA E SNAPSHOTS MULTI-TENANT (CIERRE DE ÉPOCAS)
 // ====================================================================
 app.get('/api/admin/obtener-epocas-historicas', async (req, res) => {
     try {
@@ -152,14 +152,24 @@ app.post('/api/admin/reset-epoca', async (req, res) => {
             matriz_desglose_snapshot: desgloseAlumnos, creado_at: new Date().toISOString()
         };
 
+        // 1. Guardamos la snapshot inmutable en históricos
         await supabase.from('reportes_historicos_cohortes').insert(snapshotAtomico);
 
+        // 🪐 2. LIMPIEZA DE BASE DE DATOS VIVA: Eliminamos el progreso activo en Supabase para arrancar de cero
+        await supabase
+            .from('progreso_estudiantes')
+            .delete()
+            .eq('materia', materiaFiltro)
+            .eq('institution_id', tenantClean);
+
+        // 3. Limpiamos las llaves volátiles de sesión en el clúster de Redis
         const patronSesiones = `dante:${tenantClean}:session:${materiaFiltro}:*`;
         const llaves = await redis.keys(patronSesiones);
         if (llaves.length > 0) {
             await redis.del(...llaves);
         }
-        return res.status(200).json({ success: true, message: `Instantánea Histórica guardada con éxito.` });
+        
+        return res.status(200).json({ success: true, message: `Instantánea Histórica guardada con éxito y época purgada.` });
     } catch (err) {
         return res.status(500).json({ success: false, error: err.message });
     }
@@ -185,25 +195,9 @@ app.post('/api/cat/interactuar', async (req, res, next) => {
     }
 
     try {
-        // 🪐 TEMPORAL BYPASS EN PRODUCCIÓN: Comentado para estabilización del flujo adaptativo longitudinal
-        /*
-        const cachedToken = await redis.get(`dante:${tenantId}:token:security:${sessionId}`);
-        if (!cachedToken || cachedToken !== integrityToken) {
-            return res.status(403).json({ success: false, error: "Dante OS Multitenant: Violación de token perimetral." });
-        }
-        */
-
         if (responseTime <= 0.01) {
             return res.status(400).json({ success: false, error: "Dante OS Multitenant: Latencia inválida." });
         }
-
-        // 🪐 TEMPORAL BYPASS FIRMA ITEM: Comentado para deshabilitar restricción de hash por Secret asimétrico
-        /*
-        const localItemHash = crypto.createHmac('sha256', INTEGRITY_SECRET).update(itemId).digest('hex');
-        if (itemHash !== localItemHash) {
-            return res.status(401).json({ success: false, error: "Dante OS Multitenant: Firma corrupta." });
-        }
-        */
 
         // 🪐 BYPASS SANITIZATION: Removemos los decoradores extras para que el motor clásico corra limpio
         delete req.body.integrityToken;
