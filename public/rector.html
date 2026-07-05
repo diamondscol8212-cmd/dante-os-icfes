@@ -3,424 +3,357 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dante OS - Línea de Vida & Adaptive Authoring (B2B)</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>Dante OS // Suite de Observabilidad del Rector</title>
+    <!-- ApexCharts unificado para renderizado fluido de series temporales colectivas -->
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <style>
         :root {
             --bg-deep: #0b0c10;
             --bg-surface: #14161d;
             --gold-satin: #d4af37;
+            --gold-glow: rgba(212, 175, 55, 0.15);
+            --text-main: #f0f1f5;
+            --text-muted: #9499a7;
             --graphite: #2b2e3a;
+            --emerald: #2ecc71;
+            --crimson: #e74c3c;
+            --cyan-core: #51e2f5;
+            --font-editorial: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            background-color: var(--bg-deep);
+            background-color: var(--bg-deep); color: var(--text-main); font-family: var(--font-editorial);
             background-image: radial-gradient(circle at 50% 30%, #191c26 0%, #0b0c10 100%);
+            min-height: 100vh; padding: 2.5rem; line-height: 1.6;
         }
+
+        header {
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--graphite); padding-bottom: 1.5rem; margin-bottom: 2.5rem;
+        }
+        .live-indicator {
+            display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem;
+            text-transform: uppercase; color: var(--emerald); letter-spacing: 1px;
+            background: rgba(46, 204, 113, 0.1); padding: 0.4rem 1rem; border-radius: 20px; border: 1px solid var(--emerald);
+        }
+        .pulse-dot { width: 8px; height: 8px; background: var(--emerald); border-radius: 50%; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
+
+        .materia-tabs { display: flex; gap: 1rem; }
+        .tab-btn {
+            background: #1a1d26; border: 1px solid var(--graphite); color: var(--text-muted);
+            padding: 0.6rem 1.2rem; border-radius: 4px; cursor: pointer; text-transform: uppercase;
+            font-size: 0.8rem; font-weight: 600; transition: all 0.2s ease;
+        }
+        .tab-btn.active { border-color: var(--gold-satin); color: var(--gold-satin); background: rgba(212, 175, 55, 0.05); }
+
+        .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2.5rem; }
+        .kpi-card { background: var(--bg-surface); border: 1px solid var(--graphite); padding: 1.8rem; border-radius: 6px; }
+        .kpi-val { font-size: 2rem; font-weight: 300; color: var(--gold-satin); margin-top: 0.4rem; }
+
+        .layout-main { display: grid; grid-template-columns: 300px 1fr; gap: 2.5rem; }
+        .sidebar { display: flex; flex-direction: column; gap: 2rem; }
+        
+        .control-panel { background: var(--bg-surface); border: 1px solid var(--graphite); border-radius: 6px; padding: 1.8rem; }
+        .panel-title { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; color: var(--gold-satin); margin-bottom: 1rem; letter-spacing: 1px; }
+
+        .btn-action {
+            width: 100%; padding: 0.9rem; background: transparent; border: 1px solid var(--crimson);
+            color: var(--crimson); font-weight: 600; text-transform: uppercase; font-size: 0.75rem;
+            letter-spacing: 1px; border-radius: 4px; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-action:hover { background: var(--crimson); color: #fff; }
+
+        .input-premium {
+            width: 100%; padding: 0.8rem; background: #1a1d26; border: 1px solid var(--graphite);
+            color: #fff; border-radius: 4px; outline: none; font-size: 0.9rem; margin-bottom: 0.8rem;
+        }
+
+        .chart-box { background: var(--bg-surface); border: 1px solid var(--graphite); border-radius: 6px; padding: 2rem; margin-bottom: 2.5rem; }
+        
+        .table-container { background: var(--bg-surface); border: 1px solid var(--graphite); border-radius: 6px; overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: #1a1d26; color: var(--gold-satin); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; padding: 1.2rem; border-bottom: 1px solid var(--graphite); }
+        td { padding: 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.9rem; vertical-align: top; }
+        tr:hover { background: rgba(255,255,255,0.01); }
+
+        /* Estilos de expansión analítica de filas de alumnos */
+        .badge-delta { font-weight: bold; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.8rem; }
+        .delta-sube { background: rgba(46, 204, 113, 0.1); color: var(--emerald); }
+        .delta-baja { background: rgba(231, 76, 60, 0.1); color: var(--crimson); }
+        
+        .forensic-text-box { font-size: 0.85rem; color: #cbd5e1; margin-top: 0.4rem; padding-left: 0.8rem; border-left: 2px solid var(--gold-satin); text-align: justify; }
+        .clinical-badge { display: inline-block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; padding: 0.1rem 0.4rem; border-radius: 3px; margin-top: 0.4rem; margin-right: 0.5rem; }
+
+        /* Estructura elástica de mini barras de sesgos para la tabla */
+        .mini-heatmap-bar { background: #222; height: 6px; border-radius: 3px; overflow: hidden; margin-top: 0.3rem; width: 100px; }
+        .mini-heatmap-fill { height: 100%; border-radius: 3px; }
     </style>
 </head>
-<body class="text-slate-100 min-h-screen p-6 md:p-12">
+<body>
 
-    <div id="captureReportContainer" class="w-full max-w-7xl mx-auto space-y-8">
-        
-        <!-- HEADER -->
-        <header class="w-full flex flex-col md:flex-row justify-between items-start md:items-center border-b border-zinc-800 pb-6 gap-4">
-            <div>
-                <h1 class="text-2xl font-light uppercase tracking-wider text-[var(--gold-satin)]">Dante OS // Suite de Observabilidad</h1>
-                <p class="text-xs text-slate-500 font-mono mt-1">> TRAYECTORIA LONGITUDINAL VIVA Y CRÓNICAS DEL MODELO COGNITIVO</p>
-            </div>
-            
-            <div class="flex flex-wrap items-center gap-4 actions-pane">
-                <div class="flex flex-wrap bg-[#14161d] p-1 rounded-lg border border-zinc-800 font-mono text-xs gap-1">
-                    <button id="btnMatematicas" onclick="cambiarMateria('matematicas')" class="px-3 py-1.5 rounded transition-all cursor-pointer font-bold text-[var(--gold-satin)] bg-amber-500/10 border border-amber-500/20">
-                        🧮 MATEMÁTICAS
-                    </button>
-                    <button id="btnLectura" onclick="cambiarMateria('lectura_critica')" class="px-3 py-1.5 rounded transition-all cursor-pointer text-zinc-400 hover:text-slate-200">
-                        📖 LECTURA CRÍTICA
-                    </button>
-                    <button id="btnCiencias" onclick="cambiarMateria('ciencias_naturales')" class="px-3 py-1.5 rounded transition-all cursor-pointer text-zinc-400 hover:text-slate-200">
-                        🔬 CIENCIAS NATURALES
-                    </button>
-                    <button id="btnIngles" onclick="cambiarMateria('ingles')" class="px-3 py-1.5 rounded transition-all cursor-pointer text-zinc-400 hover:text-slate-200">
-                        🇬🇧 INGLÉS
-                    </button>
-                </div>
-
-                <div class="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-3 py-2 rounded-lg font-mono text-[11px] text-emerald-400 animate-pulse">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 block"></span>
-                    <span>LIVE STREAM ACTIVO</span>
-                </div>
-            </div>
-        </header>
-
-        <!-- LAYOUT DE ARQUITECTURA -->
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            
-            <!-- PANEL DE CONTROL ADMINISTRATIVO (IZQUIERDA) -->
-            <div class="space-y-4 admin-sidebar">
-                <div class="bg-[#14161d] border border-zinc-800 p-5 rounded-lg shadow-xl space-y-4">
-                    <h4 class="text-xs font-mono text-[var(--gold-satin)] uppercase font-bold tracking-wider border-b border-zinc-800 pb-2">🎛️ Mandos de Época</h4>
-                    <p class="text-[11px] text-slate-400 leading-relaxed">Guarda una instantánea inmutable en Supabase antes de vaciar las llaves volátiles de Redis.</p>
-                    <button onclick="ejecutarResetEpoca()" class="w-full bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/40 py-2 rounded font-mono text-[10px] font-bold tracking-wider cursor-pointer transition-all">
-                        💥 PURGAR Y GUARDAR REPORTE
-                    </button>
-                </div>
-
-                <div class="bg-[#14161d] border border-zinc-800 p-5 rounded-lg shadow-xl space-y-3">
-                    <h4 class="text-xs font-mono text-sky-400 uppercase font-bold tracking-wider border-b border-zinc-800 pb-2">👤 Cohorte Nominal</h4>
-                    <div class="space-y-2">
-                        <input type="text" id="inputNuevoAlumno" placeholder="Identificador alumno..." class="w-full bg-[#0b0c10] border border-zinc-800 rounded px-3 py-1.5 text-xs font-mono text-slate-300 focus:outline-none focus:border-sky-500">
-                        <button onclick="registrarNuevoEstudiante()" class="w-full bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/30 py-2 rounded font-mono text-[10px] font-bold tracking-wider cursor-pointer transition-all">
-                            ➕ MATRICULAR EN COHORTE
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- MONITOREO METRICAS CORE (DERECHA) -->
-            <div class="lg:col-span-3 space-y-6">
-                <!-- CARDINAL KPIs -->
-                <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="bg-[#14161d] border border-zinc-800 p-5 rounded-lg shadow-xl kpi-box-pdf">
-                        <p class="text-[10px] font-mono text-slate-500 uppercase tracking-widest">Estudiantes Auditados</p>
-                        <p id="kpiTotalEstudiantes" class="text-3xl font-light text-[var(--gold-satin)] mt-2">0</p>
-                    </div>
-                    <div class="bg-[#14161d] border border-zinc-800 p-5 rounded-lg shadow-xl kpi-box-pdf">
-                        <p class="text-[10px] font-mono text-slate-500 uppercase tracking-widest">Estabilidad Cognitiva Media</p>
-                        <p id="kpiEstabilidad" class="text-3xl font-light text-sky-400 mt-2">0%</p>
-                    </div>
-                    <div class="bg-[#14161d] border border-zinc-800 p-5 rounded-lg shadow-xl kpi-box-pdf">
-                        <p class="text-[10px] font-mono text-slate-500 uppercase tracking-widest">Puntaje Equivalente Promedio</p>
-                        <p id="kpiPromedioIcfes" class="text-3xl font-light text-emerald-400 mt-2">0 / 100 pts</p>
-                    </div>
-                </section>
-
-                <!-- CURVAS DE APEXCHARTS -->
-                <section class="grid grid-cols-1 gap-6">
-                    <div class="bg-[#14161d] border border-zinc-800 p-6 rounded-lg shadow-2xl chart-box-pdf">
-                        <h3 class="text-sm font-light uppercase tracking-wider text-slate-300 border-b border-zinc-800 pb-3 mb-4">Línea de Vida Cognitiva: Trayectoria de Habilidad Latente (θ)</h3>
-                        <div id="chartEvolucionTheta"></div>
-                    </div>
-                    <div class="bg-[#14161d] border border-zinc-800 p-6 rounded-lg shadow-2xl chart-box-pdf">
-                        <h3 class="text-sm font-light uppercase tracking-wider text-slate-300 border-b border-zinc-800 pb-3 mb-4">Evolución de Atributos del ADN Cognitivo Colectivo</h3>
-                        <div id="chartEvolucionADN"></div>
-                    </div>
-                </section>
-
-                <!-- CONTENEDOR DINÁMICO DE NARRATIVAS FORENSES -->
-                <section id="uiNarrativasContenedor" class="grid grid-cols-1 md:grid-cols-2 gap-4 narrative-box-pdf"></section>
-            </div>
+    <header>
+        <div>
+            <h1 style="font-weight: 300; letter-spacing: 2px; color: var(--gold-satin);">DANTE OS // SUITE DE OBSERVABILIDAD</h1>
+            <p style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; margin-top: 0.2rem;">Trayectoria Longitudinal Viva y Crónicas del Modelo Cognitivo Colectivo</p>
         </div>
+        <div class="materia-tabs">
+            <button class="tab-btn active" onclick="RectorDashboard.cambiarMateria('matematicas', this)">Matemáticas</button>
+            <button class="tab-btn" onclick="RectorDashboard.cambiarMateria('lectura_critica', this)">Lectura Crítica</button>
+            <button class="tab-btn" onclick="RectorDashboard.cambiarMateria('ciencias_naturales', this)">Ciencias Naturales</button>
+            <button class="tab-btn" onclick="RectorDashboard.cambiarMateria('ingles', this)">Inglés</button>
+        </div>
+        <div class="live-indicator"><div class="pulse-dot"></div>Stream Activo</div>
+    </header>
 
-        <!-- AUDITORÍA NOMINAL DE ALUMNOS CURRENTES -->
-        <section class="bg-[#14161d] border border-zinc-800 rounded-lg shadow-2xl overflow-hidden table-box-pdf">
-            <div class="p-6 border-b border-zinc-800">
-                <h3 class="text-sm font-light uppercase tracking-wider text-slate-300">Auditoría Longitudinal Nominal de Alumnos</h3>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse text-sm text-slate-300">
-                    <thead class="bg-[#0b0c10] text-[10px] font-mono text-slate-500 uppercase tracking-widest border-b border-zinc-800">
-                        <tr>
-                            <th class="p-4">Identificador Alumno</th>
-                            <th class="p-4">Habilidad Inicial (θ)</th>
-                            <th class="p-4">Habilidad Concurrente (θ)</th>
-                            <th class="p-4">Δ Evolución Delta</th>
-                            <th class="p-4">Estado Operacional Motor</th>
-                            <th class="p-4">Puntaje Estimado Actual</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tablaRectorBody" class="divide-y divide-zinc-800/50 font-mono text-xs">
-                        <tr>
-                            <td colspan="6" class="p-8 text-center text-zinc-500 italic">> Sincronizando árbol relacional con Supabase...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- REPOSITORIO DE ÉPOCAS PASADAS PERSISTIDAS -->
-        <section class="bg-[#14161d] border border-zinc-800 rounded-lg shadow-2xl overflow-hidden table-box-pdf">
-            <div class="p-6 border-b border-zinc-800 bg-[#0d0e15]">
-                <h3 class="text-sm font-light uppercase tracking-wider text-[var(--gold-satin)]">
-                    📦 Historial de Épocas e Instantáneas Inmutables (Persistencia SAAS)
-                </h3>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse text-sm text-slate-300">
-                    <thead class="bg-[#0b0c10] text-[10px] font-mono text-slate-500 uppercase tracking-widest border-b border-zinc-800">
-                        <tr>
-                            <th class="p-4">ID Instantánea</th>
-                            <th class="p-4">Fecha de Cierre</th>
-                            <th class="p-4">Materia</th>
-                            <th class="p-4">Alumnos Involucrados</th>
-                            <th class="p-4">Rendimiento Promedio</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tablaEpocasHistoricasBody" class="divide-y divide-zinc-800/50 font-mono text-xs">
-                        <tr>
-                            <td colspan="5" class="p-4 text-center text-zinc-500 italic">> Sincronizando repositorio inmutable...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
+    <div class="kpi-grid">
+        <div class="kpi-card"><p style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">Estudiantes Auditados</p><div class="kpi-val" id="kpiTotalEstudiantes">0</div></div>
+        <div class="kpi-card"><p style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">Estabilidad Cognitiva Media</p><div class="kpi-val" id="kpiEstabilidadMedia">0%</div></div>
+        <div class="kpi-card"><p style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">Puntaje Equivalente Promedio</p><div class="kpi-val" id="kpiPuntajePromedio">0 / 100 pts</div></div>
     </div>
 
-    <!-- ORQUESTACIÓN ANALÍTICA MULTI-TENANT -->
+    <div class="layout-main">
+        <aside class="sidebar">
+            <div class="control-panel">
+                <div class="panel-title">Mandos de Época</div>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.2rem;">Guarda una instantánea inmutable en Supabase antes de vaciar las llaves volátiles de Redis.</p>
+                <button class="btn-action" onclick="RectorDashboard.ejecutarCierreEpoca()">🚨 Purgar y Guardar Reporte</button>
+            </div>
+
+            <div class="control-panel">
+                <div class="panel-title">Cohorte Nominal</div>
+                <input type="text" id="txtNuevoAlumno" class="input-premium" placeholder="Identificador alumno...">
+                <button class="btn-action" style="border-color: var(--cyan-core); color: var(--cyan-core);" onclick="RectorDashboard.matricularEstudiante()">+ Matricular en Cohorte</button>
+            </div>
+        </aside>
+
+        <main class="workspace">
+            <div class="chart-box">
+                <div class="panel-title">Evolución de Atributos del ADN Cognitivo Colectivo</div>
+                <div id="chartAdnColectivo"></div>
+            </div>
+
+            <div class="chart-box" style="display:none;">
+                <div id="chartThetaColectivo"></div>
+            </div>
+
+            <div class="panel-title" style="margin-bottom: 0.8rem;">Auditoría Longitudinal Nominal de Alumnos</div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Identificador Alumno</th>
+                            <th>Habilidad Inicial (θ)</th>
+                            <th>Habilidad Concurrente (θ)</th>
+                            <th>Δ Evolución Delta</th>
+                            <th>Estado Operacional Motor</th>
+                            <th>Puntaje Estimado Actual</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbodyAlumnos">
+                        <tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding: 2rem;">Sincronizando clúster de datos multi-tenant...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
     <script>
-        let chartT = null;
-        let chartA = null;
-        let materiaActual = 'matematicas'; 
-        
-        const GATEWAY_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
-            ? "http://localhost:3000"
-            : "https://dante-os-platform.onrender.com";
-
         const INSTITUTION_ID = "colegio_sandbox_default";
-        
-        let cohorteEstudiantes = ["elizabeth", "prueba2", "samantha"]; 
-        let livePollingInterval = null;
+        let CurrentMateria = "matematicas";
+        let AdnChartInstance = null;
 
-        function inicializarGraficasLongitudinales() {
-            document.querySelector("#chartEvolucionTheta").innerHTML = "";
-            document.querySelector("#chartEvolucionADN").innerHTML = "";
-
-            chartT = new ApexCharts(document.querySelector("#chartEvolucionTheta"), {
-                series: [], 
-                chart: { type: 'line', height: 240, toolbar: { show: false }, animations: { enabled: true, easing: 'smooth', speed: 800 } },
-                colors: ['#3498db', '#a855f7', '#2ecc71', '#e67e22', '#f1c40f', '#e74c3c'], 
-                theme: { mode: 'dark' },
-                stroke: { curve: 'smooth', width: 3 }, 
-                xaxis: { categories: ['Inicio', 'Mitad', 'Actual'] }
-            });
-            chartT.render();
-
-            chartA = new ApexCharts(document.querySelector("#chartEvolucionADN"), {
-                series: [], 
-                chart: { type: 'area', height: 240, toolbar: { show: false }, animations: { enabled: true, easing: 'smooth', speed: 800 } },
-                colors: ['#e74c3c', '#e67e22', '#2ecc71'], 
-                theme: { mode: 'dark' },
-                stroke: { curve: 'smooth', width: 2 }, 
-                fill: { type: 'solid', opacity: 0.05 }, 
-                xaxis: { categories: ['Inicio', 'Mitad', 'Actual'] }
-            });
-            chartA.render();
-        }
-
-        async function sincronizarListaCohorte() {
-            try {
-                const res = await fetch(`${GATEWAY_URL}/api/admin/obtain-cohorte?institution_id=${INSTITUTION_ID}`);
-                const json = await res.json();
-                if (json && json.success) cohorteEstudiantes = json.cohorte;
-            } catch(e) {
-                cohorteEstudiantes = ["elizabeth", "prueba2", "samantha"];
-            }
-        }
-
-        async function cargarEpocasHistoricas() {
-            const tableBody = document.getElementById("tablaEpocasHistoricasBody");
-            if (!tableBody) return;
-            try {
-                const res = await fetch(`${GATEWAY_URL}/api/admin/obtener-epocas-historicas?institution_id=${INSTITUTION_ID}`);
-                const json = await res.json();
-                if (json && json.success && json.epocas.length > 0) {
-                    tableBody.innerHTML = "";
-                    json.epocas.forEach(ep => {
-                        const tr = document.createElement("tr");
-                        tr.className = "hover:bg-zinc-800/30 text-zinc-300 border-b border-zinc-800/50";
-                        tr.innerHTML = `
-                            <td class="p-4 truncate max-w-[180px] text-[var(--gold-satin)] font-bold">${ep.id}</td>
-                            <td class="p-4 text-zinc-400">${new Date(ep.creado_at).toLocaleString()}</td>
-                            <td class="p-4 uppercase text-sky-400">${ep.materia}</td>
-                            <td class="p-4 text-slate-200">${ep.total_estudiantes_evaluados} alumnos</td>
-                            <td class="p-4 font-bold text-emerald-400">${ep.puntaje_promedio_icfes} / 100 pts</td>
-                        `;
-                        tableBody.appendChild(tr);
+        class RectorDashboard {
+            // 🪐 COMPONENTE ANALÍTICO: Inyección explícita del header multi-tenant para romper el aislamiento perimetral
+            static async consultarDatos() {
+                try {
+                    const res = await fetch(`/api/cat/auditoria?materia=${CurrentMateria}&institution_id=${INSTITUTION_ID}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-institution-id': INSTITUTION_ID
+                        }
                     });
-                } else {
-                    tableBody.innerHTML = "<tr><td colspan='5' class='p-4 text-center text-zinc-600 italic'>> Ninguna instantánea histórica guardada.</td></tr>";
-                }
-            } catch (err) {
-                tableBody.innerHTML = "<tr><td colspan='5' class='p-4 text-center text-rose-500'>Error de enlace con el repositorio.</td></tr>";
-            }
-        }
-
-        async function compilarMetricasGlobales() {
-            try {
-                // Traemos todos los registros de progreso de la materia sin filtrar por nombre para capturar los nombres reales en Supabase
-                const resGeneral = await fetch(`${GATEWAY_URL}/api/cat/auditoria?materia=${materiaActual}&institution_id=${INSTITUTION_ID}`);
-                const jsonGeneral = await resGeneral.json();
-                
-                let resultadosMuestreo = [];
-
-                if (jsonGeneral && jsonGeneral.success && jsonGeneral.data && jsonGeneral.data.length > 0) {
-                    // Agrupamos dinámicamente los registros de Supabase por estudiante
-                    const mapaAlumnos = {};
-                    jsonGeneral.data.forEach(reg => {
-                        const nombreClean = String(reg.estudiante).toLowerCase().trim();
-                        if (!mapaAlumnos[nombreClean]) mapaAlumnos[nombreClean] = [];
-                        mapaAlumnos[nombreClean].push(reg);
-                    });
-
-                    // Convertimos el mapa en el formato esperado por el renderizador clásico
-                    for (const [nombre, records] of Object.entries(mapaAlumnos)) {
-                        resultadosMuestreo.push({ nombre: nombre, records: records });
+                    const json = await res.json();
+                    if (json && json.success) {
+                        this.renderizarPanel(json.data || []);
                     }
+                } catch (err) {
+                    console.error("🚨 [SUITE RECTOR SYNC ERROR]:", err.message);
                 }
-
-                // Si por alguna razón viene vacío Supabase, usamos el fallback clásico preventivo
-                if (resultadosMuestreo.length === 0) {
-                    await sincronizarListaCohorte();
-                    const promesasMuestreo = cohorteEstudiantes.map(async (est) => {
-                        const res = await fetch(`${GATEWAY_URL}/api/cat/auditoria?estudiante=${est}&materia=${materiaActual}&institution_id=${INSTITUTION_ID}`);
-                        const json = await res.json();
-                        if (json && json.success && json.data && json.data.length > 0) return { nombre: est, records: json.data };
-                        return null;
-                    });
-                    const resultadosRaw = await Promise.all(promesasMuestreo);
-                    resultadosMuestreo = resultadosRaw.filter(r => r !== null);
-                }
-
-                renderizarConsolaLongitudinalCompleta(resultadosMuestreo);
-            } catch (err) {
-                console.error("🚨 [POLLING ERROR]:", err.message);
             }
-        }
 
-        function renderizarConsolaLongitudinalCompleta(cohortes) {
-            const tableBody = document.getElementById("tablaRectorBody");
-            const narrativasContainer = document.getElementById("uiNarrativasContenedor");
-            if (!tableBody) return;
-            
-            tableBody.innerHTML = ""; narrativasContainer.innerHTML = "";
-            document.getElementById("kpiTotalEstudiantes").innerText = cohortes.length;
-            
-            let sumaPuntajes = 0; let sumaEstabilidad = 0;
-            let seriesThetaDinamica = [];
-
-            let globalImpulsividad = [0, 0, 0];
-            let globalFatiga = [0, 0, 0];
-            let globalRecuperacion = [0, 0, 0];
-
-            cohortes.forEach(alumno => {
-                const records = alumno.records || [];
-                if (records.length === 0) return; 
-
-                const ultimoRegistro = records[records.length - 1] || {};
-                const thFinal = parseFloat(ultimoRegistro.theta || ultimoRegistro.theta_final || 0);
+            static renderizarPanel(alumnos) {
+                const tbody = document.getElementById("tbodyAlumnos");
                 
-                seriesThetaDinamica.push({ name: `${alumno.nombre.toUpperCase()} \u03B8`, data: [0, thFinal * 0.5, thFinal] });
-                
-                const adn = ultimoRegistro.adn_cognitivo || { impulsividad: 23, fatiga: 0, recuperacion: 50, estabilidad: 88.5 };
-                
-                globalImpulsividad[1] += (adn.impulsividad || 0) * 0.5; globalImpulsividad[2] += (adn.impulsividad || 0);
-                globalFatiga[1] += (adn.fatiga || 0) * 0.5; globalFatiga[2] += (adn.fatiga || 0);
-                globalRecuperacion[1] += (adn.recuperacion || 0) * 0.5; globalRecuperacion[2] += (adn.recuperacion || 0);
+                if (alumnos.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:2rem;">Ninguna sesión viva o progreso activo registrado para esta época en Matemáticas.</td></tr>`;
+                    this.actualizarKPIs(0, 0, 0);
+                    this.dibujarGraficaColectiva([0], [0], [0]);
+                    return;
+                }
 
-                const icfes = ultimoRegistro.puntaje_escalonado || Math.round(50 + (thFinal * 13.5));
-                sumaPuntajes += icfes;
-                sumaEstabilidad += adn.estabilidad || 80;
+                tbody.innerHTML = "";
+                let sumaEstabilidad = 0;
+                let sumaPuntajes = 0;
 
-                const tr = document.createElement("tr");
-                tr.className = "hover:bg-zinc-800/30 text-zinc-300 border-b border-zinc-800/50";
-                tr.innerHTML = `
-                    <td class="p-4 font-bold uppercase text-slate-200">${alumno.nombre}</td>
-                    <td class="p-4 text-zinc-500">0.0000</td>
-                    <td class="p-4 text-sky-400">${thFinal.toFixed(4)}</td>
-                    <td class="p-4 font-bold ${thFinal >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${thFinal >= 0 ? '+' : ''}${thFinal.toFixed(4)} \u0394</td>
-                    <td class="p-4 uppercase">ESTABLE (${adn.impulsividad || 0}%)</td>
-                    <td class="p-4 font-bold text-emerald-400">${icfes} pts</td>
-                `;
-                tableBody.appendChild(tr);
+                let serieImpulsividad = [];
+                let serieFatiga = [];
+                let serieRecuperacion = [];
 
-                if (adn.cronica_narrativa) {
-                    const card = document.createElement("div");
-                    card.className = "bg-[#14161d] border border-zinc-800 border-l-4 border-amber-500 p-4 rounded-lg text-left";
-                    card.innerHTML = `
-                        <h4 class="text-[11px] font-mono text-[var(--gold-satin)] uppercase font-bold tracking-wider mb-1">Crónica: ${alumno.nombre.toUpperCase()}</h4>
-                        <p class="text-[11px] text-slate-300 leading-relaxed mb-2 italic">"${adn.cronica_narrativa}"</p>
-                        <div class="text-[9px] font-mono text-zinc-500 border-t border-zinc-800 pt-2 space-y-0.5">
-                            <div><span class="text-rose-400">VULNERABILIDAD:</span> ${adn.vulnerabilidad_dominante || 'Bajo observación.'}</div>
-                            <div><span class="text-sky-400">PRESCRIPCIÓN:</span> ${adn.prescripcion_clinica || 'Mantener flujo adaptativo.'}</div>
-                        </div>
+                alumnos.forEach(al => {
+                    const adn = al.adn_cognitivo || {};
+                    const sesgos = al.mapa_calor_sesgos || {};
+
+                    sumaEstabilidad += parseFloat(adn.estabilidad || 75);
+                    sumaPuntajes += parseInt(al.puntaje_escalonado || 50);
+
+                    serieImpulsividad.push(parseFloat(adn.impulsividad || 20));
+                    serieFatiga.push(parseFloat(adn.fatiga || 0));
+                    serieRecuperacion.push(parseFloat(adn.recuperacion || 50));
+
+                    // Calcular delta de crecimiento psicométrico
+                    const thInicial = 0.0000;
+                    const thFinal = parseFloat(al.theta_final || 0);
+                    const delta = thFinal - thInicial;
+                    const deltaClass = delta >= 0 ? "delta-sube" : "delta-baja";
+                    const deltaSigno = delta >= 0 ? "+" : "";
+
+                    // Evaluar el tramo de velocidad para pintar el estado del motor
+                    let tramoTxt = "NOMINAL (S2)";
+                    let tramoColor = "var(--emerald)";
+                    if (adn.impulsividad > 50) {
+                        tramoTxt = "IMPULSIVO (S1)";
+                        tramoColor = "var(--crimson)";
+                    }
+
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+                        <td>
+                            <strong style="color:var(--gold-satin); text-transform:uppercase;">${al.estudiante}</strong>
+                            <div class="clinical-badge" style="background:rgba(231,76,60,0.15); color:var(--crimson);">Vulnerabilidad:</div>
+                            <div class="forensic-text-box" style="border-left-color:var(--crimson);">${adn.vulnerabilidad_dominante}</div>
+                            <div class="clinical-badge" style="background:rgba(81,226,245,0.15); color:var(--cyan-core);">Prescripción Clínica:</div>
+                            <div class="forensic-text-box" style="border-left-color:var(--cyan-core);">${adn.prescripcion_clinica}</div>
+                            <div class="clinical-badge" style="background:rgba(212,175,55,0.15); color:var(--gold-satin);">Crónica Narrativa:</div>
+                            <div class="forensic-text-box">${adn.cronica_narrativa}</div>
+                        </td>
+                        <td>${thInicial.toFixed(4)}</td>
+                        <td style="font-weight:600; color:#fff;">${thFinal.toFixed(4)}</td>
+                        <td><span class="badge-delta ${deltaClass}">${deltaSigno}${delta.toFixed(4)}</span></td>
+                        <td style="font-weight:bold; color:${tramoColor};">${tramoTxt}</td>
+                        <td>
+                            <div style="font-size:1.1rem; font-weight:bold; color:var(--emerald);">${al.puntaje_escalonado} / 100</div>
+                            <div style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; margin-top:0.4rem; font-weight:bold;">Mapa de Calor de Sesgos:</div>
+                            ${this.construirMiniBarrasSesgos(sesgos)}
+                        </td>
                     `;
-                    narrativasContainer.appendChild(card);
-                }
-            });
-
-            const num = cohortes.length || 1;
-            document.getElementById("kpiPromedioIcfes").innerText = `${Math.round(sumaPuntajes / num)} / 100 pts`;
-            document.getElementById("kpiEstabilidad").innerText = `${Math.round(sumaEstabilidad / num)}%`;
-            
-            chartT.updateOptions({ series: seriesThetaDinamica });
-            chartA.updateOptions({
-                series: [
-                    { name: 'Impulsividad %', data: globalImpulsividad.map(v => Math.round(v / num)) },
-                    { name: 'Fatiga %', data: globalFatiga.map(v => Math.round(v / num)) },
-                    { name: 'Recuperación %', data: globalRecuperacion.map(v => Math.round(v / num)) }
-                ]
-            });
-        }
-
-        async function ejecutarResetEpoca() {
-            if (!confirm(`¿Confirmas la toma de Snapshot Histórica y purga de Redis?`)) return;
-            try {
-                const res = await fetch(`${GATEWAY_URL}/api/admin/reset-epoca`, {
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ materia: materiaActual, institution_id: INSTITUTION_ID })
+                    tbody.appendChild(tr);
                 });
-                const json = await res.json();
-                if (json.success) { 
-                    alert(json.message); 
-                    await compilarMetricasGlobales(); 
-                    await cargarEpocasHistoricas(); 
-                }
-            } catch(e) { alert("Fallo perimetral."); }
-        }
 
-        async function registrarNuevoEstudiante() {
-            const input = document.getElementById("inputNuevoAlumno");
-            const name = input.value.trim();
-            if (!name) return;
-            try {
-                const res = await fetch(`${GATEWAY_URL}/api/admin/registrar-estudiante`, {
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nombreEstudiante: name, institution_id: INSTITUTION_ID })
-                });
-                const json = await res.json();
-                if (json.success) { 
-                    input.value = ""; 
-                    await compilarMetricasGlobales(); 
-                }
-            } catch(e) {}
-        }
+                const promEstabilidad = Math.round(sumaEstabilidad / alumnos.length);
+                const promPuntaje = Math.round(sumaPuntajes / alumnos.length);
 
-        function cambiarMateria(materia) {
-            materiaActual = materia;
-            document.querySelectorAll('.actions-pane button').forEach(btn => {
-                btn.className = "px-3 py-1.5 rounded transition-all cursor-pointer text-zinc-400 hover:text-slate-200";
-            });
-            
-            let idBoton = "btnMatematicas";
-            if (materia === "lectura_critica") idBoton = "btnLectura";
-            if (materia === "ciencias_naturales") idBoton = "btnCiencias";
-            if (materia === "ingles") idBoton = "btnIngles";
-
-            const activeBtn = document.getElementById(idBoton);
-            if (activeBtn) {
-                activeBtn.className = "px-3 py-1.5 rounded transition-all cursor-pointer font-bold text-[var(--gold-satin)] bg-amber-500/10 border border-amber-500/20";
+                this.actualizarKPIs(alumnos.length, promEstabilidad, promPuntaje);
+                this.dibujarGraficaColectiva(serieImpulsividad, serieFatiga, serieRecuperacion);
             }
-            compilarMetricasGlobales(); 
+
+            static construirMiniBarrasSesgos(sesgos) {
+                let html = "";
+                for (const [key, val] of Object.entries(sesgesMapSaneado(sesgos))) {
+                    const porc = (parseFloat(val) > 1.0 ? parseFloat(val) : parseFloat(val) * 100).toFixed(0);
+                    let color = "var(--emerald)";
+                    if (porc >= 25) color = "var(--gold-satin)";
+                    if (porc >= 55 || key.toLowerCase().includes('inversion') || key.toLowerCase().includes('omision')) color = "var(--crimson)";
+                    
+                    html += `
+                        <div style="margin-top:0.3rem; display:flex; align-items:center; justify-content:space-between; font-size:0.7rem;">
+                            <span style="color:var(--text-muted); font-size:0.65rem;">${key.replace('attr_','').replace(/_/g,' ').toUpperCase()}:</span>
+                            <span style="color:${color}; font-weight:bold; margin-left:10px;">${porc}%</span>
+                        </div>
+                        <div class="mini-heatmap-bar"><div class="mini-heatmap-fill" style="width:${porc}%; background:${color};"></div></div>
+                    `;
+                }
+                return html;
+            }
+
+            static actualizarKPIs(total, estabilidad, puntaje) {
+                document.getElementById("kpiTotalEstudiantes").innerText = total;
+                document.getElementById("kpiEstabilidadMedia").innerText = `${estabilidad}%`;
+                document.getElementById("kpiPuntajePromedio").innerText = `${puntaje} / 100 pts`;
+            }
+
+            static dibujarGraficaColectiva(impulsividad, fatiga, recuperacion) {
+                const options = {
+                    series: [
+                        { name: 'Impulsividad %', data: impulsividad },
+                        { name: 'Fatiga %', data: fatiga },
+                        { name: 'Recuperación Error %', data: recuperacion }
+                    ],
+                    chart: { type: 'radar', height: 280, toolbar: { show: false }, background: 'transparent' },
+                    colors: ['#e74c3c', '#e67e22', '#2ecc71'],
+                    stroke: { width: 2 },
+                    fill: { opacity: 0.1 },
+                    markers: { size: 4 },
+                    theme: { mode: 'dark' },
+                    xaxis: { categories: Array.from({length: impulsividad.length}, (_, i) => `Muestra #${i+1}`) }
+                };
+
+                const el = document.getElementById("chartAdnColectivo");
+                el.innerHTML = "";
+                AdnChartInstance = new ApexCharts(el, options);
+                AdnChartInstance.render();
+            }
+
+            static async ejecutarCierreEpoca() {
+                if (!confirm("🚨 ADVERTENCIA DANTE OS:\n¿Está seguro de cerrar la Época actual? Se consolidará un reporte inmutable en Supabase y se purgará la caché de Redis.")) return;
+                try {
+                    const res = await fetch('/api/admin/reset-epoca', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'x-institution-id': INSTITUTION_ID },
+                        body: JSON.stringify({ materia: CurrentMateria, institution_id: INSTITUTION_ID })
+                    });
+                    const json = await res.json();
+                    alert(json.message || "Época guardada con éxito.");
+                    this.consultarDatos();
+                } catch (e) { alert("Error transaccional."); }
+            }
+
+            static async matricularEstudiante() {
+                const input = document.getElementById("txtNuevoAlumno");
+                const nombre = input.value.trim();
+                if (!nombre) return;
+
+                try {
+                    const res = await fetch('/api/admin/registrar-estudiante', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'x-institution-id': INSTITUTION_ID },
+                        body: JSON.stringify({ nombreEstudiante: nombre, institution_id: INSTITUTION_ID })
+                    });
+                    const json = await res.json();
+                    alert(json.message);
+                    input.value = "";
+                    this.consultarDatos();
+                } catch(e) { alert("Error."); }
+            }
+
+            static cambiarMateria(materia, btnElement) {
+                CurrentMateria = materia;
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                btnElement.classList.add('active');
+                this.consultarDatos();
+            }
         }
 
-        window.onload = () => { 
-            inicializarGraficasLongitudinales();
-            compilarMetrales = compilarMetricasGlobales(); 
-            cargarEpocasHistoricas();
-            livePollingInterval = setInterval(compilarMetricasGlobales, 4000); 
+        function sesgesMapSaneado(sesgos) {
+            return Object.keys(sesgos).length > 0 ? sesgos : { "ERROR_GEOMETRICO": 0.02, "HEURISTICA_LINEAL": 0.02, "OMISION_CONVERSION": 0.02, "INVERSION_OPERATIONAL": 0.10 };
+        }
+
+        // Bucle síncrono de observabilidad viva cada 4 segundos
+        window.onload = () => {
+            RectorDashboard.consultarDatos();
+            setInterval(() => { RectorDashboard.consultarDatos(); }, 4000);
         };
     </script>
 </body>
