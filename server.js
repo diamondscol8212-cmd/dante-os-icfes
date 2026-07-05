@@ -43,8 +43,6 @@ const INTEGRITY_SECRET = process.env.INTEGRITY_SECRET || 'DANTE_OS_LEGENDBLIND_S
 // ====================================================================
 // 🪐 GESTIÓN DE COHORTE EN MEMORIA DINÁMICA
 // ====================================================================
-const REDIS_COHORTE_KEY = "dante:system:cohorte_global";
-
 async function inicializarCohorteTenantBase(tenantId) {
     const key = `dante:${tenantId}:system:cohorte_global`;
     try {
@@ -91,28 +89,7 @@ app.post('/api/admin/registrar-estudiante', async (req, res) => {
         const key = `dante:${tenantClean}:system:cohorte_global`;
         
         await redis.sadd(key, cleanName);
-        console.log(`👤 [TENANT COHORTE EXPANSION]: [${tenantClean}] -> Registrado alumno -> [${cleanName}]`);
         return res.status(200).json({ success: true, message: `Estudiante ${cleanName} matriculado.` });
-    } catch (err) {
-        return res.status(500).json({ success: false, error: err.message });
-    }
-});
-
-// ====================================================================
-// 🪐 PERSISTENCIA HISTÓRICA E SNAPSHOTS MULTI-TENANT (CIERRE DE ÉPOCAS)
-// ====================================================================
-app.get('/api/admin/obtener-epocas-historicas', async (req, res) => {
-    try {
-        const tenantId = req.headers['x-institution-id'] || req.query.institution_id || "colegio_sandbox_default";
-        const tenantClean = String(tenantId).toLowerCase().trim();
-        const { data, error } = await supabase
-            .from('reportes_historicos_cohortes')
-            .select('*')
-            .eq('institution_id', tenantClean)
-            .order('creado_at', { ascending: false });
-            
-        if (error) throw error;
-        return res.status(200).json({ success: true, epocas: data || [] });
     } catch (err) {
         return res.status(500).json({ success: false, error: err.message });
     }
@@ -152,22 +129,17 @@ app.post('/api/admin/reset-epoca', async (req, res) => {
             matriz_desglose_snapshot: desgloseAlumnos, creado_at: new Date().toISOString()
         };
 
-        // 1. Guardamos la snapshot inmutable en históricos
         await supabase.from('reportes_historicos_cohortes').insert(snapshotAtomico);
 
-        // 🪐 2. LIMPIEZA DE BASE DE DATOS VIVA: Eliminamos el progreso activo en Supabase para arrancar de cero
         await supabase
             .from('progreso_estudiantes')
             .delete()
             .eq('materia', materiaFiltro)
             .eq('institution_id', tenantClean);
 
-        // 3. Limpiamos las llaves volátiles de sesión en el clúster de Redis
         const patronSesiones = `dante:${tenantClean}:session:${materiaFiltro}:*`;
         const llaves = await redis.keys(patronSesiones);
-        if (llaves.length > 0) {
-            await redis.del(...llaves);
-        }
+        if (llaves.length > 0) { await redis.del(...llaves); }
         
         return res.status(200).json({ success: true, message: `Instantánea Histórica guardada con éxito y época purgada.` });
     } catch (err) {
@@ -175,11 +147,8 @@ app.post('/api/admin/reset-epoca', async (req, res) => {
     }
 });
 
-// ====================================================================
-// 🪐 GATEWAY INTERCEPTOR CON BYPASS DE COMPATIBILIDAD CON CACHÉ COGNITIVA
-// ====================================================================
 app.post('/api/cat/interactuar', async (req, res, next) => {
-    const { studentId, sessionId, integrityToken, itemHash, responseTime, itemId, institution_id } = req.body;
+    const { studentId, sessionId, responseTime, itemId, institution_id } = req.body;
     const tenantId = String(institution_id || "colegio_sandbox_default").toLowerCase().trim();
 
     if (!itemId) {
@@ -188,8 +157,6 @@ app.post('/api/cat/interactuar', async (req, res, next) => {
             .digest('hex');
             
         await redis.set(`dante:${tenantId}:token:security:${sessionId}`, tokenToken, 'EX', 3600);
-        
-        // 🪐 BYPASS DE COMPATIBILIDAD: Limpiamos los campos extendidos antes de pasárselos a catController
         req.body.generatedToken = tokenToken;
         return procesarInteraccionEstudiante(req, res);
     }
@@ -198,22 +165,19 @@ app.post('/api/cat/interactuar', async (req, res, next) => {
         if (responseTime <= 0.01) {
             return res.status(400).json({ success: false, error: "Dante OS Multitenant: Latencia inválida." });
         }
-
-        // 🪐 BYPASS SANITIZATION: Mantenemos las claves que el controlador extendido lee en sus flujos elásticos
         return procesarInteraccionEstudiante(req, res);
-
     } catch (err) {
         return res.status(500).json({ success: false, error: "Excepción en Firewalls." });
     }
 });
 
 // ====================================================================
-// 🪐 AUDITORÍA NOMINAL ADAPTATIVA - CORREGIDA PARA AUDITORÍA DEL RECTOR
+// 🪐 AUDITORÍA NOMINAL ADAPTATIVA - EXTRACCIÓN HÍBRIDA ELÁSTICA
 // ====================================================================
 app.get('/api/cat/auditoria', async (req, res) => {
     try {
         const { estudiante, materia, institution_id } = req.query;
-        const tenantId = String(institution_id || "colegio_sandbox_default").toLowerCase().trim();
+        const tenantId = String(institution_id || req.headers['x-institution-id'] || "colegio_sandbox_default").toLowerCase().trim();
         
         let query = supabase.from('progreso_estudiantes').select('*').eq('institution_id', tenantId).order('ultima_actualizacion', { ascending: true });
         if (estudiante) query = query.eq('estudiante', String(estudiante).toLowerCase().trim());
@@ -229,7 +193,6 @@ app.get('/api/cat/auditoria', async (req, res) => {
             const thetaValue = parseFloat(r.theta || r.theta_final || 0);
             const puntajeSintetizado = Math.max(0, Math.min(100, Math.round(50 + (thetaValue * 13.5))));
             
-            // 🪐 IMPORTANTE: Sincronización exacta de la clave de Redis con la construida por el catController
             const redisExecutiveMetaKey = `dante:executive:report:${materiaFiltro}:${studentIdClean}`;
             let adnExtraido = null;
             let mapaCalorExtraido = null;
@@ -238,33 +201,24 @@ app.get('/api/cat/auditoria', async (req, res) => {
                 const cachedMeta = await redis.get(redisExecutiveMetaKey);
                 if (cachedMeta) {
                     const parsed = JSON.parse(cachedMeta);
-                    
-                    // Absorción directa respetando el formato síncrono del motor psicométrico
-                    mapaCalorExtraido = parsed.mapa_calor_sesges || parsed.mapa_calor_sesgos || { attr_error_geometrico: 0.02, attr_heuristica_lineal: 0.02 };
+                    mapaCalorExtraido = parsed.mapa_calor_sesgos || { attr_error_geometrico: 0.02, attr_heuristica_lineal: 0.02 };
                     adnExtraido = {
                         impulsividad: parsed.impulsividad !== undefined ? parsed.impulsividad : 20,
                         fatiga: parsed.fatiga !== undefined ? parsed.fatiga : 0,
                         recuperacion: parsed.recuperacion !== undefined ? parsed.recuperacion : 50,
                         estabilidad: parsed.estabilidad !== undefined ? parsed.estabilidad : 75,
-                        cronica_narrativa: parsed.cronica_narrativa || "Trayectoria longitudinal nominal bajo análisis estándar.",
+                        cronica_narrativa: parsed.cronica_narrativa || "Trayectoria longitudinal nominal registrada.",
                         vulnerabilidad_dominante: parsed.vulnerabilidad_dominante || "Sin anomalías críticas registradas.",
-                        prescripcion_clinica: parsed.prescripcion_clinica || "Mantener el flujo adaptativo incrementando la complejidad."
+                        prescripcion_clinica: parsed.prescripcion_clinica || "Mantener el flujo adaptativo."
                     };
                 }
-            } catch (err) {
-                console.error("⚠️ [REDIS READ COLD FAIL IN AUDITORIA]:", err.message);
-            }
+            } catch (err) {}
 
-            // Fallback robusto en caso de que la caché de Redis haya expirado (Garantiza datos al Rector)
             if (!adnExtraido) {
                 adnExtraido = {
-                    impulsividad: 23,
-                    fatiga: 0,
-                    recuperacion: 50,
-                    estabilidad: 88.5,
-                    cronica_narrativa: `${studentIdClean.toUpperCase()} opera con estabilidad en el clúster unificado. Historial consolidado en base de datos.`,
-                    vulnerabilidad_dominante: "Estabilidad cognitiva nominal.",
-                    prescripcion_clinica: "Continuar el flujo adaptativo estándar de la materia."
+                    impulsividad: 23, fatiga: 0, recuperacion: 50, estabilidad: 88.5,
+                    cronica_narrativa: `${studentIdClean.toUpperCase()} opera con estabilidad en el clúster unificado.`,
+                    vulnerabilidad_dominante: "Estabilidad cognitiva nominal.", prescripcion_clinica: "Continuar el flujo adaptativo estándar."
                 };
                 mapaCalorExtraido = { attr_error_geometrico: 0.02, attr_heuristica_lineal: 0.02 };
             }
@@ -283,17 +237,8 @@ app.get('/api/cat/auditoria', async (req, res) => {
 
         return res.status(200).json({ success: true, data: datosSaneados });
     } catch (error) { 
-        console.error("🚨 [SERVER AUDITORIA ENDPOINT CRASH]:", error.message);
-        return res.status(500).json({ success: false, error: "Fallo relacional de auditoría." }); 
+        return res.status(500).json({ success: false }); 
     }
-});
-
-app.get('/api/authoring/banco-calibracion', async (req, res) => {
-    try {
-        const { data, error } = await supabase.from('metricas_calibracion_items').select('*').order('total_interacciones', { ascending: false });
-        if (error) throw error;
-        return res.status(200).json({ success: true, data: data || [] });
-    } catch (error) { return res.status(500).json({ success: false }); }
 });
 
 app.use(express.static(path.join(__dirname, 'public')));
