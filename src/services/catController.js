@@ -609,3 +609,7 @@ async function procesarPipelineFondo() {
     }
 }
 setTimeout(procesarPipelineFondo, 5000);
+        setTimeout(procesarPipelineFondo, 5000);
+    }
+}
+setTimeout(procesarPipelineFondo, 5000);
