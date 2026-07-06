@@ -98,7 +98,7 @@ async function ejecutarCompilacionFriaDB(area) {
                     const estructuraTrampaQ = {};
                     
                     llavesAtributosDinamicos.forEach(attr => {
-                        structureTrampaQ[attr] = (dist.sesgo_asociado === attr) ? 1 : 0;
+                        estructuraTrampaQ[attr] = (dist.sesgo_asociado === attr) ? 1 : 0;
                     });
                     mapaTrampas.set(llaveCompuesta, estructuraTrampaQ);
                 });
@@ -120,10 +120,11 @@ async function ejecutarCompilacionFriaDB(area) {
                     estructuraQ[attr] = item.matriz_q_items?.[attr] || 0;
                 });
 
+                // 🪐 CORRECCIÓN DE DISTRACTORES NUMÉRICOS: Asegura mapeo idéntico al del Seeder Soberano
                 metadatosEstructurados = {
                     id: item.id,
                     pregunta_texto: item.pregunta_texto,
-                    opciones_respuesta: item.opciones_respuesta || ["A", "B", "C", "D"],
+                    opciones_respuesta: Array.isArray(item.opciones_respuesta) ? item.opciones_respuesta : ["A", "B", "C", "D"],
                     a: parseFloat(item.parametro_a_discriminacion || 1.0),
                     b: parseFloat(item.parametro_b_dificultad || 0.0),
                     c: parseFloat(item.parametro_c_adivinacion || 0.2),
@@ -192,7 +193,7 @@ export async function procesarInteraccionEstudiante(req, res) {
     const timestampInicio = Date.now();
     try {
         const { studentId, sessionId, itemId, areaGeneral, responseTime, tiempo, declaredConfidence, certeza, selectionVector, institution_id } = req.body;
-        // 🪐 AMARRE DE SEGURIDAD MULTI-TENANT BACKEND-LEVEL
+        // 🪐 BLINDAJE MULTI-TENANT OBLIGATORIO: Fuerza fallback para no perder trazabilidad institucional
         const tenantId = String(institution_id || "colegio_sandbox_default").toLowerCase().trim();
 
         if (!studentId || !sessionId || !areaGeneral) {
@@ -441,10 +442,11 @@ export async function procesarInteraccionEstudiante(req, res) {
                 prescripcionCalculada = "Expansión del límite de asimilación. Continuar el flujo adaptativo incrementando las magnitudes y la complejidad de los reactivos sembrados.";
             }
 
+            // 🪐 REGENERACIÓN COMPATIBLE MULTI-TENANT: Amarre indestructible de la institución
             const payloadPersistenciaBD = {
                 estudiante: String(studentId).toLowerCase().trim(),
                 materia: String(areaSaneada),
-                institution_id: tenantId, // 🪐 INYECCIÓN ADAPTATIVA: Asegura el amarrado inmutable en Supabase
+                institution_id: tenantId, 
                 theta: parseFloat(thetaActual.toFixed(4)), 
                 historial_theta: historialThetaArray, 
                 items_respondidos: arrayHistoricoRespuestas.map(r => ({
@@ -561,7 +563,7 @@ async function procesarPipelineFondo() {
             let tasaAciertoEmpirico = aciertosAcumulados / totalMuestras;
             let parametroAdivinacionC = totalAdivinaciones / totalMuestras;
             
-            let p_theta = { c: parametroAdivinacionC }; // Saneado interno
+            let p_theta = { c: parametroAdivinacionC }; 
             let informacionFisherEmpirica = 0.25; 
 
             let estadoCalibracion = "CALIBRADO";
@@ -605,10 +607,6 @@ async function procesarPipelineFondo() {
             setTimeout(procesarPipelineFondo, 5000); 
         }
     } catch (err) {
-        setTimeout(procesarPipelineFondo, 5000);
-    }
-}
-setTimeout(procesarPipelineFondo, 5000);
         setTimeout(procesarPipelineFondo, 5000);
     }
 }
