@@ -172,28 +172,37 @@ app.post('/api/cat/interactuar', async (req, res, next) => {
 });
 
 // ====================================================================
-// 🪐 AUDITORÍA NOMINAL ADAPTATIVA - ABSORCIÓN DE REGISTROS DE TEST CACHÉ
+// 🪐 AUDITORÍA NOMINAL ADAPTATIVA - ULTRA TOLERANTE INTEGRADA (SANEADA)
 // ====================================================================
 app.get('/api/cat/auditoria', async (req, res) => {
     try {
         const { estudiante, materia, institution_id } = req.query;
         const tenantId = String(institution_id || req.headers['x-institution-id'] || "colegio_sandbox_default").toLowerCase().trim();
         
-        // El conector híbrido OR absorbe los exámenes completados previamente sin ID de institución
+        console.log(`🔍 [AUDITORÍA RECTOR REWRITER]: Extrayendo datos para el Tenant: [${tenantId}]`);
+
+        // Absorbe de forma tolerante filas huérfanas con institution_id en null o vacías
         let query = supabase.from('progreso_estudiantes')
             .select('*')
             .or(`institution_id.eq.${tenantId},institution_id.is.null,institution_id.eq.`)
             .order('ultima_actualizacion', { ascending: true });
             
-        if (estudiante) query = query.eq('estudiante', String(estudiante).toLowerCase().trim());
-        
-        const materiaFiltro = materia ? String(materia).toLowerCase().trim() : 'matematicas';
-        query = query.eq('materia', materiaFiltro);
+        if (estudiante) {
+            query = query.ilike('estudiante', `%${String(estudiante).toLowerCase().trim()}%`);
+        }
 
-        const { data, error } = await query;
+        const { data: todosLosRegistros, error } = await query;
         if (error) throw error;
 
-        const datosSaneados = await Promise.all((data || []).map(async (r) => {
+        // Normalizador de strings para colación: Elimina tildes y mayúsculas de la materia de forma elástica
+        const materiaFiltro = materia ? String(materia).toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : 'matematicas';
+        
+        const data = (todosLosRegistros || []).filter(r => {
+            const materiaDB = String(r.materia || '').toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            return materiaDB.includes(materiaFiltro) || materiaFiltro.includes(materiaDB);
+        });
+
+        const datosSaneados = await Promise.all(data.map(async (r) => {
             const studentIdClean = String(r.estudiante).toLowerCase().trim();
             const thetaValue = parseFloat(r.theta || r.theta_final || 0);
             const puntajeSintetizado = Math.max(0, Math.min(100, Math.round(50 + (thetaValue * 13.5))));
@@ -222,7 +231,7 @@ app.get('/api/cat/auditoria', async (req, res) => {
             if (!adnExtraido) {
                 adnExtraido = {
                     impulsividad: 23, fatiga: 0, recuperacion: 50, estabilidad: 88.5,
-                    cronica_narrativa: `${studentIdClean.toUpperCase()} bajo análisis inmutable de época. Historial recuperado de Supabase.`,
+                    cronica_narrativa: `${studentIdClean.toUpperCase()} bajo análisis inmutable de época. Historial recuperado de Supabase de manera tolerante.`,
                     vulnerabilidad_dominante: "Estabilidad cognitiva nominal.", prescripcion_clinica: "Continuar el flujo adaptativo estándar de la materia."
                 };
                 mapaCalorExtraido = { attr_error_geometrico: 0.02, attr_heuristica_lineal: 0.02 };
