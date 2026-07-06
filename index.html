@@ -375,8 +375,14 @@
             static async precargarCohorteDinamica() {
                 const selector = document.getElementById("selEstudiante");
                 try {
-                    // Sincronización absoluta con el endpoint multi-tenant saneado de Render
-                    const res = await fetch(`https://dante-os-platform.onrender.com/api/admin/obtener-cohorte?institution_id=${INSTITUTION_ID}`);
+                    // Sincronización absoluta ajustada al endpoint de server.js de cohorte en memoria Redis
+                    const res = await fetch(`https://dante-os-platform.onrender.com/api/admin/obtain-cohorte?institution_id=${INSTITUTION_ID}`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-institution-id': INSTITUTION_ID
+                        }
+                    });
                     const json = await res.json();
                     if (json && json.success && json.cohorte && json.cohorte.length > 0) {
                         selector.innerHTML = "";
