@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dante OS // Suite de Observabilidad del Rector</title>
-    <!-- ApexCharts unificado para renderizado fluido de series temporales colectivas -->
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <style>
         :root {
@@ -78,7 +77,6 @@
         td { padding: 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.9rem; vertical-align: top; }
         tr:hover { background: rgba(255,255,255,0.01); }
 
-        /* Estilos de expansión analítica de filas de alumnos */
         .badge-delta { font-weight: bold; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.8rem; }
         .delta-sube { background: rgba(46, 204, 113, 0.1); color: var(--emerald); }
         .delta-baja { background: rgba(231, 76, 60, 0.1); color: var(--crimson); }
@@ -86,7 +84,6 @@
         .forensic-text-box { font-size: 0.85rem; color: #cbd5e1; margin-top: 0.4rem; padding-left: 0.8rem; border-left: 2px solid var(--gold-satin); text-align: justify; }
         .clinical-badge { display: inline-block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; padding: 0.1rem 0.4rem; border-radius: 3px; margin-top: 0.4rem; margin-right: 0.5rem; }
 
-        /* Estructura elástica de mini barras de sesgos para la tabla */
         .mini-heatmap-bar { background: #222; height: 6px; border-radius: 3px; overflow: hidden; margin-top: 0.3rem; width: 100px; }
         .mini-heatmap-fill { height: 100%; border-radius: 3px; }
     </style>
@@ -96,7 +93,7 @@
     <header>
         <div>
             <h1 style="font-weight: 300; letter-spacing: 2px; color: var(--gold-satin);">DANTE OS // SUITE DE OBSERVABILIDAD</h1>
-            <p style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; margin-top: 0.2rem;">Trayectoria Longitudinal Viva y Crónicas del Modelo Cognitivo Colectivo</p>
+            <p id="lblVersionTag" style="color: var(--cyan-core); font-size: 0.85rem; text-transform: uppercase; margin-top: 0.2rem; font-weight: bold; letter-spacing: 1px;">Sincronizando versión de infraestructura...</p>
         </div>
         <div class="materia-tabs">
             <button class="tab-btn active" onclick="RectorDashboard.cambiarMateria('matematicas', this)">Matemáticas</button>
@@ -134,10 +131,6 @@
                 <div id="chartAdnColectivo"></div>
             </div>
 
-            <div class="chart-box" style="display:none;">
-                <div id="chartThetaColectivo"></div>
-            </div>
-
             <div class="panel-title" style="margin-bottom: 0.8rem;">Auditoría Longitudinal Nominal de Alumnos</div>
             <div class="table-container">
                 <table>
@@ -165,7 +158,6 @@
         let AdnChartInstance = null;
 
         class RectorDashboard {
-            // 🪐 COMPONENTE ANALÍTICO: Inyección explícita del header multi-tenant para romper el aislamiento perimetral
             static async consultarDatos() {
                 try {
                     const res = await fetch(`/api/cat/auditoria?materia=${CurrentMateria}&institution_id=${INSTITUTION_ID}`, {
@@ -176,6 +168,11 @@
                         }
                     });
                     const json = await res.json();
+                    
+                    if (json && json.version) {
+                        document.getElementById("lblVersionTag").innerText = `CONECTADO A ENGINE: ${json.version}`;
+                    }
+
                     if (json && json.success) {
                         this.renderizarPanel(json.data || []);
                     }
@@ -213,14 +210,12 @@
                     serieFatiga.push(parseFloat(adn.fatiga || 0));
                     serieRecuperacion.push(parseFloat(adn.recuperacion || 50));
 
-                    // Calcular delta de crecimiento psicométrico
                     const thInicial = 0.0000;
                     const thFinal = parseFloat(al.theta_final || 0);
                     const delta = thFinal - thInicial;
                     const deltaClass = delta >= 0 ? "delta-sube" : "delta-baja";
                     const deltaSigno = delta >= 0 ? "+" : "";
 
-                    // Evaluar el tramo de velocidad para pintar el estado del motor
                     let tramoTxt = "NOMINAL (S2)";
                     let tramoColor = "var(--emerald)";
                     if (adn.impulsividad > 50) {
@@ -350,10 +345,9 @@
             return Object.keys(sesgos).length > 0 ? sesgos : { "ERROR_GEOMETRICO": 0.02, "HEURISTICA_LINEAL": 0.02, "OMISION_CONVERSION": 0.02, "INVERSION_OPERATIONAL": 0.10 };
         }
 
-        // Bucle síncrono de observabilidad viva cada 4 segundos
         window.onload = () => {
             RectorDashboard.consultarDatos();
-            setInterval(() => { RectorDashboard.consultarDatos(); }, 4000);
+            setInterval(() => { RectorDashboard.consultarDatos(); }, 3000);
         };
     </script>
 </body>
