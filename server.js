@@ -106,7 +106,7 @@ app.post('/api/admin/reset-epoca', async (req, res) => {
             .from('progreso_estudiantes')
             .select('*')
             .eq('materia', materiaFiltro)
-            .eq('institution_id', tenantClean);
+            .or(`institution_id.eq.${tenantClean},institution_id.is.null,institution_id.eq.`);
             
         let sumaPuntajes = 0;
         let conteoAlumnos = progresoActual?.length || 0;
@@ -134,10 +134,9 @@ app.post('/api/admin/reset-epoca', async (req, res) => {
         await supabase
             .from('progreso_estudiantes')
             .delete()
-            .eq('materia', materiaFiltro)
-            .eq('institution_id', tenantClean);
+            .eq('materia', materiaFiltro);
 
-        const patronSesiones = `dante:${tenantClean}:session:${materiaFiltro}:*`;
+        const patronSesiones = `dante:*:session:${materiaFiltro}:*`;
         const llaves = await redis.keys(patronSesiones);
         if (llaves.length > 0) { await redis.del(...llaves); }
         
@@ -172,14 +171,19 @@ app.post('/api/cat/interactuar', async (req, res, next) => {
 });
 
 // ====================================================================
-// 🪐 AUDITORÍA NOMINAL ADAPTATIVA - EXTRACCIÓN HÍBRIDA ELÁSTICA
+// 🪐 AUDITORÍA NOMINAL ADAPTATIVA - ULTRA TOLERANTE INTEGRADA
 // ====================================================================
 app.get('/api/cat/auditoria', async (req, res) => {
     try {
         const { estudiante, materia, institution_id } = req.query;
         const tenantId = String(institution_id || req.headers['x-institution-id'] || "colegio_sandbox_default").toLowerCase().trim();
         
-        let query = supabase.from('progreso_estudiantes').select('*').eq('institution_id', tenantId).order('ultima_actualizacion', { ascending: true });
+        // 🪐 DETECTOR TOLERANTE HÍBRIDO: Absorbe registros huérfanos generados por la caché estática
+        let query = supabase.from('progreso_estudiantes')
+            .select('*')
+            .or(`institution_id.eq.${tenantId},institution_id.is.null,institution_id.eq.`)
+            .order('ultima_actualizacion', { ascending: true });
+            
         if (estudiante) query = query.eq('estudiante', String(estudiante).toLowerCase().trim());
         
         const materiaFiltro = materia ? String(materia).toLowerCase().trim() : 'matematicas';
