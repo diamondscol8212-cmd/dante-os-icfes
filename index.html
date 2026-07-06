@@ -35,9 +35,14 @@
         #viewGateway { justify-content: center; align-items: center; }
         .gateway-card {
             background: var(--bg-surface); border: 1px solid var(--graphite);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); border-radius: 8px; padding: 3.5rem; width: 100%; max-width: 540px; text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); border-radius: 8px; padding: 3.5rem; width: 100%; max-width: 540px; text-align: center; position: relative;
         }
         .gateway-title { font-size: 1.8rem; font-weight: 300; text-transform: uppercase; letter-spacing: 4px; color: var(--gold-satin); margin-bottom: 2.5rem; }
+
+        .system-version-tag {
+            position: absolute; top: 1.5rem; right: 1.5rem; font-size: 0.75rem; font-weight: bold;
+            color: var(--cyan-core); letter-spacing: 1px; text-transform: uppercase;
+        }
 
         .selector-group { margin-bottom: 1.8rem; text-align: left; }
         .selector-label { display: block; color: var(--text-muted); margin-bottom: 0.6rem; font-weight: 600; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; }
@@ -168,12 +173,13 @@
 
     <main id="viewGateway" class="app-view active">
         <div class="gateway-card">
+            <div class="system-version-tag">UI ENGINE: v20.6.2-FIX_MASTER</div>
             <h1 class="gateway-title">Dante Analytics v20.6.2</h1>
             
             <div class="selector-group">
                 <label class="selector-label">Evaluación de Estudiante</label>
                 <select id="selEstudiante">
-                    <option value="">Sincronizando cohorte viva...</option>
+                    <option value="">Sincronizando cohorte viva desde Supabase...</option>
                 </select>
             </div>
 
@@ -337,10 +343,7 @@
     </main>
 
     <script>
-        const GATEWAY_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
-            ? "http://localhost:3000/api/cat/interactuar"
-            : "https://dante-os-platform.onrender.com/api/cat/interactuar";
-    
+        const GATEWAY_URL = "https://dante-os-platform.onrender.com/api/cat/interactuar";
         const INSTITUTION_ID = "colegio_sandbox_default";
 
         const AppState = {
@@ -372,14 +375,15 @@
             static async precargarCohorteDinamica() {
                 const selector = document.getElementById("selEstudiante");
                 try {
-                    const res = await fetch(`/api/admin/obtain-cohorte?institution_id=${INSTITUTION_ID}`);
+                    // Sincronización absoluta con el endpoint multi-tenant saneado de Render
+                    const res = await fetch(`https://dante-os-platform.onrender.com/api/admin/obtener-cohorte?institution_id=${INSTITUTION_ID}`);
                     const json = await res.json();
                     if (json && json.success && json.cohorte && json.cohorte.length > 0) {
                         selector.innerHTML = "";
                         json.cohorte.forEach(alumno => {
                             const opt = document.createElement("option");
-                            opt.value = alumno;
-                            opt.innerText = alumno.charAt(0).toUpperCase() + alumno.slice(1);
+                            opt.value = alumno.toLowerCase().trim();
+                            opt.innerText = alumno.toUpperCase();
                             selector.appendChild(opt);
                         });
                     } else {
@@ -388,8 +392,9 @@
                 } catch(e) {
                     console.error("⚠️ [COHORTE SYNC FALLBACK]:", e.message);
                     selector.innerHTML = `
-                        <option value="elizabeth">Elizabeth</option>
-                        <option value="samantha">Samantha</option>
+                        <option value="elizabeth">ELIZABETH</option>
+                        <option value="samantha">SAMANTHA</option>
+                        <option value="javier">JAVIER</option>
                     `;
                 }
             }
@@ -400,7 +405,7 @@
 
                 const rawEstudiante = document.getElementById("selEstudiante").value;
                 if (!rawEstudiante) {
-                    alert("Por favor seleccione un estudiante válido de la cohorte.");
+                    alert("Por favor seleccione un estudiante válido de la cohorte nominal.");
                     btn.innerText = "Sincronizar Entorno"; btn.disabled = false;
                     return;
                 }
@@ -494,8 +499,6 @@
                     document.getElementById("repIntervalo").innerText = `[ ${reporte.escalonamiento_pais.intervalo_certeza_95.join('  ,  ')} ] pts Escala País`;
                 }
 
-                // 🪐 REALINEACIÓN COGNITIVA ABSOLUTA DE DANTE OS:
-                // Extracción tolerante e híbrida para no dejar celdas en blanco bajo ningún escenario
                 const adn = reporte.adn_cognitivo || reporte;
                 
                 const impulsividadVal = adn.impulsividad !== undefined ? adn.impulsividad : 20;
@@ -510,10 +513,9 @@
                 
                 document.getElementById("lblNarrativeHeader").innerText = `Crónica del ADN Cognitivo de ${AppState.estudiante.toUpperCase()}`;
                 
-                // Mapeo unificado directo de la tubería analítica del backend
                 document.getElementById("lblNarrativeBody").innerText = adn.cronica_narrativa || "Trayectoria adaptativa registrada y consolidada de forma exitosa.";
                 document.getElementById("lblClinicalVulnerabilidad").innerText = adn.vulnerabilidad_dominante || "Sin desviaciones críticas registradas en los tramos de latencia.";
-                document.getElementById("lblClinicalPrescripcion").innerText = adn.prescripcion_clinica || "Se prescribe mantener la cadencia adaptativa nominal incrementando la dificultad.";
+                document.getElementById("lblClinicalPrescripcion").innerText = adn.prescripcion_clinica || "Se prescribe mantener la cadencia adaptativa nominal.";
 
                 DOMRenderer.construirMapaCalorForense(reporte.mapaCalorSesgos || adn.mapa_calor_sesgos || {});
                 this.cambiarVista("viewFinalReport");
