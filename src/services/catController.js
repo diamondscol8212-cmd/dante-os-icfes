@@ -120,11 +120,10 @@ async function ejecutarCompilacionFriaDB(area) {
                     estructuraQ[attr] = item.matriz_q_items?.[attr] || 0;
                 });
 
-                // 🪐 CORRECCIÓN DE DISTRACTORES NUMÉRICOS: Asegura mapeo idéntico al del Seeder Soberano
                 metadatosEstructurados = {
                     id: item.id,
                     pregunta_texto: item.pregunta_texto,
-                    opciones_respuesta: Array.isArray(item.opciones_respuesta) ? item.opciones_respuesta : ["A", "B", "C", "D"],
+                    opciones_respuesta: item.opciones_respuesta || ["A", "B", "C", "D"],
                     a: parseFloat(item.parametro_a_discriminacion || 1.0),
                     b: parseFloat(item.parametro_b_dificultad || 0.0),
                     c: parseFloat(item.parametro_c_adivinacion || 0.2),
@@ -193,7 +192,7 @@ export async function procesarInteraccionEstudiante(req, res) {
     const timestampInicio = Date.now();
     try {
         const { studentId, sessionId, itemId, areaGeneral, responseTime, tiempo, declaredConfidence, certeza, selectionVector, institution_id } = req.body;
-        // 🪐 BLINDAJE MULTI-TENANT OBLIGATORIO: Fuerza fallback para no perder trazabilidad institucional
+        // 🪐 AMARRE MULTI-TENANT BACKEND-LEVEL: Fallback forzado a Sandbox por seguridad
         const tenantId = String(institution_id || "colegio_sandbox_default").toLowerCase().trim();
 
         if (!studentId || !sessionId || !areaGeneral) {
@@ -442,7 +441,7 @@ export async function procesarInteraccionEstudiante(req, res) {
                 prescripcionCalculada = "Expansión del límite de asimilación. Continuar el flujo adaptativo incrementando las magnitudes y la complejidad de los reactivos sembrados.";
             }
 
-            // 🪐 REGENERACIÓN COMPATIBLE MULTI-TENANT: Amarre indestructible de la institución
+            // 🪐 COMPATIBILIDAD ABSOLUTA EN BASE DE DATOS: Forzamos la escritura del objeto completo de crónicas
             const payloadPersistenciaBD = {
                 estudiante: String(studentId).toLowerCase().trim(),
                 materia: String(areaSaneada),
@@ -456,6 +455,16 @@ export async function procesarInteraccionEstudiante(req, res) {
                     tiempo: r.responseTime || 15
                 })),
                 puntaje_escalonado: puntajeIcfesEstandar,
+                adn_cognitivo: {
+                    impulsividad: adnImpulsividad,
+                    fatiga: adnFatiga,
+                    recuperacion: adnRecuperacion,
+                    estabilidad: Math.max(0, 100 - (adnImpulsividad + adnFatiga) / 2),
+                    cronica_narrativa: cronicaCalculada,
+                    vulnerabilidad_dominante: vulnerabilidadCalculada,
+                    prescripcion_clinica: prescripcionCalculada,
+                    mapa_calor_sesgos: nuevosPriorsAtributos
+                },
                 ultima_actualizacion: new Date().toISOString()
             };
 
