@@ -13,6 +13,7 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const SERVER_VERSION = "v20.6.2-FIX_MASTER";
 
 const ALLOWED_ORIGINS = [
     'http://localhost:5173', 'http://127.0.0.1:5173',
@@ -34,7 +35,7 @@ app.use(cors({
 app.use(express.json({ limit: '1mb' }));
 
 app.use((req, res, next) => {
-    console.log(`📡 [TRÁFICO EN VIVO MULTI-TENANT] -> ${req.method} desde ${req.url}`);
+    console.log(`📡 [TRÁFICO EN VIVO MULTI-TENANT ${SERVER_VERSION}] -> ${req.method} desde ${req.url}`);
     next();
 });
 
@@ -61,7 +62,7 @@ app.get('/api/admin/obtain-cohorte', async (req, res) => {
         const tenantId = req.headers['x-institution-id'] || req.query.institution_id || "colegio_sandbox_default";
         const key = `dante:${tenantId.toLowerCase().trim()}:system:cohorte_global`;
         const miembros = await redis.smembers(key);
-        return res.status(200).json({ success: true, cohorte: miembros.sort(), institution_id: tenantId });
+        return res.status(200).json({ success: true, cohorte: miembros.sort(), institution_id: tenantId, version: SERVER_VERSION });
     } catch (err) {
         return res.status(500).json({ success: false, error: err.message });
     }
@@ -72,7 +73,7 @@ app.get('/api/admin/obtener-cohorte', async (req, res) => {
         const tenantId = req.headers['x-institution-id'] || req.query.institution_id || "colegio_sandbox_default";
         const key = `dante:${tenantId.toLowerCase().trim()}:system:cohorte_global`;
         const miembros = await redis.smembers(key);
-        return res.status(200).json({ success: true, cohorte: miembros.sort(), institution_id: tenantId });
+        return res.status(200).json({ success: true, cohorte: miembros.sort(), institution_id: tenantId, version: SERVER_VERSION });
     } catch (err) {
         return res.status(500).json({ success: false, error: err.message });
     }
@@ -89,7 +90,7 @@ app.post('/api/admin/registrar-estudiante', async (req, res) => {
         const key = `dante:${tenantClean}:system:cohorte_global`;
         
         await redis.sadd(key, cleanName);
-        return res.status(200).json({ success: true, message: `Estudiante ${cleanName} matriculado.` });
+        return res.status(200).json({ success: true, message: `Estudiante ${cleanName} matriculado.`, version: SERVER_VERSION });
     } catch (err) {
         return res.status(500).json({ success: false, error: err.message });
     }
@@ -140,7 +141,7 @@ app.post('/api/admin/reset-epoca', async (req, res) => {
         const llaves = await redis.keys(patronSesiones);
         if (llaves.length > 0) { await redis.del(...llaves); }
         
-        return res.status(200).json({ success: true, message: `Instantánea Histórica guardada con éxito y época purgada.` });
+        return res.status(200).json({ success: true, message: `Instantánea Histórica guardada con éxito y época purgada.`, version: SERVER_VERSION });
     } catch (err) {
         return res.status(500).json({ success: false, error: err.message });
     }
@@ -171,14 +172,14 @@ app.post('/api/cat/interactuar', async (req, res, next) => {
 });
 
 // ====================================================================
-// 🪐 AUDITORÍA NOMINAL ADAPTATIVA - ULTRA TOLERANTE INTEGRADA
+// 🪐 AUDITORÍA NOMINAL ADAPTATIVA - ABSORCIÓN DE REGISTROS DE TEST CACHÉ
 // ====================================================================
 app.get('/api/cat/auditoria', async (req, res) => {
     try {
         const { estudiante, materia, institution_id } = req.query;
         const tenantId = String(institution_id || req.headers['x-institution-id'] || "colegio_sandbox_default").toLowerCase().trim();
         
-        // 🪐 DETECTOR TOLERANTE HÍBRIDO: Absorbe registros huérfanos generados por la caché estática
+        // El conector híbrido OR absorbe los exámenes completados previamente sin ID de institución
         let query = supabase.from('progreso_estudiantes')
             .select('*')
             .or(`institution_id.eq.${tenantId},institution_id.is.null,institution_id.eq.`)
@@ -221,8 +222,8 @@ app.get('/api/cat/auditoria', async (req, res) => {
             if (!adnExtraido) {
                 adnExtraido = {
                     impulsividad: 23, fatiga: 0, recuperacion: 50, estabilidad: 88.5,
-                    cronica_narrativa: `${studentIdClean.toUpperCase()} opera con estabilidad en el clúster unificado.`,
-                    vulnerabilidad_dominante: "Estabilidad cognitiva nominal.", prescripcion_clinica: "Continuar el flujo adaptativo estándar."
+                    cronica_narrativa: `${studentIdClean.toUpperCase()} bajo análisis inmutable de época. Historial recuperado de Supabase.`,
+                    vulnerabilidad_dominante: "Estabilidad cognitiva nominal.", prescripcion_clinica: "Continuar el flujo adaptativo estándar de la materia."
                 };
                 mapaCalorExtraido = { attr_error_geometrico: 0.02, attr_heuristica_lineal: 0.02 };
             }
@@ -239,7 +240,7 @@ app.get('/api/cat/auditoria', async (req, res) => {
             };
         }));
 
-        return res.status(200).json({ success: true, data: datosSaneados });
+        return res.status(200).json({ success: true, data: datosSaneados, version: SERVER_VERSION });
     } catch (error) { 
         return res.status(500).json({ success: false }); 
     }
@@ -251,4 +252,4 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(PORT, () => console.log(`\n🚀 [DANTE OS GATEWAY MULTI-TENANT RUNNING]: Servidor activo en http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`\n🚀 [DANTE OS GATEWAY ${SERVER_VERSION}]: Activo en http://localhost:${PORT}`));
