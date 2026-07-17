@@ -1,12 +1,21 @@
-// seeder.js - Inyector Psicométrico de Alta Fidelidad (Dante OS v20.5.6 - Seed Engine)
+// 🪐 seeder.js - Inyector Psicométrico & Perimetral B2B Saneado (Dante OS v20.6.3)
 import crypto from 'crypto';
 import { supabase } from '../../supabaseClient.js';
 
 const AREA_EXAMEN = 'matematicas';
 const TOTAL_ITEMS_PRODUCCION = 100;
 const OPCIONES_ESTANDAR = ["A", "B", "C", "D"];
+const INSTITUTION_ID = 'colegio_sandbox_default';
 
-// Estructuras semánticas base para generación procedural limpia
+// ====================================================================
+// 🧠 MOTOR CRIPTOGRÁFICO ADAPTATIVO COMPATIBLE CON AUTHROUTES
+// ====================================================================
+function generarHashPassword(password) {
+    const salt = crypto.randomBytes(16).toString('hex');
+    const hash = crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha512').toString('hex');
+    return { hash, salt };
+}
+
 const ENUNCIADOS_ALGEBRA = [
     { txt: "Si 2x + 5 = 15, ¿cuál es el valor de x?", ok: "A", opciones: ["5", "10", "15", "20"], q: { attr_heuristica_lineal: 1, attr_inversion_operacional: 0, attr_omision_conversion: 0, attr_error_geometrico: 0 } },
     { txt: "Simplifica la expresión distributiva clásica: 3(x - 4) + 2x.", ok: "B", opciones: ["5x - 4", "5x - 12", "x - 12", "5x + 12"], q: { attr_heuristica_lineal: 0, attr_inversion_operacional: 1, attr_omision_conversion: 0, attr_error_geometrico: 0 } },
@@ -26,18 +35,13 @@ const ENUNCIADOS_GEOMETRIA = [
 
 const BANCO_PRODUCTION = [];
 
-// Generación balanceada 50/50 con distribución lineal exacta en el espacio Logit
 for (let i = 0; i < TOTAL_ITEMS_PRODUCCION; i++) {
-    // Alternancia estricta de competencias para balanceo ideal
     const esAlgebra = i % 2 === 0;
     const pool = esAlgebra ? ENUNCIADOS_ALGEBRA : ENUNCIADOS_GEOMETRIA;
     const base = pool[Math.floor(Math.random() * pool.length)];
 
-    // Mapeo lineal homogéneo del espectro logit de [-2.2 a +2.2]
     const logitFrac = i / (TOTAL_ITEMS_PRODUCCION - 1);
     const bCalculado = parseFloat((-2.2 + logitFrac * 4.4).toFixed(3));
-
-    // Discriminación dinámica adaptativa (A mayor dificultad, mayor necesidad de discriminación)
     const aCalculado = parseFloat((1.2 + (logitFrac * 0.8) + (Math.random() * 0.2)).toFixed(2));
 
     const opcionesMapeadas = base.opciones.map((texto, idx) => `${OPCIONES_ESTANDAR[idx]}) ${texto}`);
@@ -56,13 +60,14 @@ for (let i = 0; i < TOTAL_ITEMS_PRODUCCION; i++) {
 }
 
 async function ejecutarSiembraSoberana() {
-    console.log(`🚀 [SEED ENGINE INITIALIZING]: Distribuyendo ${TOTAL_ITEMS_PRODUCCION} nodos balanceados en escala logit sin asimetrías...`);
+    console.log(`🚀 [SEED ENGINE INITIALIZING]: Distribuyendo ${TOTAL_ITEMS_PRODUCCION} nodos adaptativos + Credenciales Perimetrales...`);
 
     try {
         console.log("🧹 Purgando bases relacionales viejas...");
         await supabase.from('mapa_trampas_distractores').delete().neq('opcion_marcada', 'XYZ_FORCE_CLEAR');
         await supabase.from('matriz_q_items').delete().neq('attr_heuristica_lineal', -999);
         await supabase.from('banco_items_irt').delete().eq('area_general', AREA_EXAMEN);
+        await supabase.from('usuarios').delete().neq('email', 'admin_ghost@danteos.com');
 
         console.log("🌱 Inyectando lote masivo de alta fidelidad psicométrica...");
 
@@ -78,7 +83,6 @@ async function ejecutarSiembraSoberana() {
                 parametro_b_dificultad: item.b,
                 parametro_c_adivinacion: item.c
             }]);
-
             if (errBase) throw new Error(`Fallo Base en ítem: ${errBase.message}`);
 
             const { error: errQ } = await supabase.from('matriz_q_items').insert([{
@@ -88,7 +92,6 @@ async function ejecutarSiembraSoberana() {
                 attr_omision_conversion: item.q.attr_omision_conversion,
                 attr_error_geometrico: item.q.attr_error_geometrico
             }]);
-
             if (errQ) throw new Error(`Fallo Matriz Q: ${errQ.message}`);
 
             const incorrectas = OPCIONES_ESTANDAR.filter(o => o !== item.ok);
@@ -103,10 +106,40 @@ async function ejecutarSiembraSoberana() {
                 }]);
             }
         }
+        console.log(`✅ Lote Psicométrico sembrado (100 reactivos).`);
 
-        console.log(`\n✅ [SEEDING SOBERANO COMPLETADO]: 100 ítems cargados con éxito (50 Álgebra / 50 Geometría). Escala Logit limpia.`);
+        console.log("🔒 Derivando llaves criptográficas PBKDF2 para usuarios semilla...");
+
+        const usuariosSemilla = [
+            { email: "rector@sandbox.edu.co", pass: "rector123", rol: "rector" },
+            { email: "elizabeth@sandbox.edu.co", pass: "elizabeth123", rol: "estudiante" },
+            { email: "samantha@sandbox.edu.co", pass: "samantha123", rol: "estudiante" }
+        ];
+
+        // Sintaxis elástica corregida usando upsert para evitar la excepción
+        await supabase.from('instituciones').upsert([{ id: INSTITUTION_ID, nombre_institucion: "Colegio Sandbox Capital Base" }], { onConflict: 'id' });
+
+        for (const u of usuariosSemilla) {
+            const { hash, salt } = generarHashPassword(u.pass);
+
+            const { error: errUser } = await supabase.from('usuarios').insert([{
+                email: u.email,
+                password_hash: hash,
+                salt: salt,
+                rol: u.rol,
+                institution_id: INSTITUTION_ID
+            }]);
+
+            if (errUser) throw new Error(`Fallo Cripto-Seed para [${u.email}]: ${errUser.message}`);
+            console.log(`🔑 Cuenta sembrada -> ${u.email} [Rol: ${u.rol}]`);
+        }
+
+        console.log(`\n🪐 [SIEMBRA EXCELSA COMPLETADA]: 100 ítems indexados y credenciales PBKDF2 activas en T-${INSTITUTION_ID}.`);
+        process.exit(0);
+
     } catch (err) {
         console.error("🚨 [SEED ENGINE CRITICAL FAULT]:", err.message);
+        process.exit(1);
     }
 }
 
