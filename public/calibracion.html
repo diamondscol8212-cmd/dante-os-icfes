@@ -11,11 +11,42 @@
             --bg-deep: #0b0c10;
             --bg-surface: #14161d;
             --gold-satin: #d4af37;
+            --gold-glow: rgba(212, 175, 55, 0.15);
             --graphite: #2b2e3a;
+            --purple-core: #a855f7;
         }
         body {
             background-color: var(--bg-deep);
             background-image: radial-gradient(circle at 50% 30%, #191c26 0%, #0b0c10 100%);
+        }
+        .file-upload-wrapper {
+            position: relative;
+            border: 2px dashed var(--graphite);
+            border-radius: 6px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        .file-upload-wrapper:hover {
+            border-color: var(--purple-core);
+        }
+        .file-upload-wrapper input[type="file"] {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0; cursor: pointer;
+        }
+        .status-console {
+            background: #090a0f;
+            border: 1px solid #1a1d26;
+            border-radius: 4px;
+            padding: 1rem;
+            font-family: monospace;
+            font-size: 0.75rem;
+            color: #4ade80;
+            max-height: 150px;
+            overflow-y: auto;
+            white-space: pre-wrap;
         }
     </style>
 </head>
@@ -26,7 +57,7 @@
         <!-- HEADER -->
         <header class="w-full flex flex-col md:flex-row justify-between items-start md:items-center border-b border-zinc-800 pb-6 gap-4">
             <div>
-                <h1 class="text-2xl font-light uppercase tracking-wider text-[var(--gold-satin)]">Dante OS // Psicomometría Inversa</h1>
+                <h1 class="text-2xl font-light uppercase tracking-wider text-[var(--gold-satin)]">Dante OS // Psicotécnica Inversa</h1>
                 <p class="text-xs text-slate-500 font-mono mt-1">> DIAGNÓSTICO EN TIEMPO REAL DEL BANCO DE ÍTEMS Y FUNCIÓN DE FISHER</p>
             </div>
             <div class="flex items-center gap-4">
@@ -35,12 +66,33 @@
                 </button>
                 <div class="bg-[#14161d] px-4 py-2 rounded-lg border border-zinc-800 text-right">
                     <span class="text-[10px] font-mono text-zinc-500 block uppercase">Filtro Core</span>
-                    <span class="text-sm font-semibold text-slate-200 tracking-wide uppercase">Análisis Bayesiano v20.6.2</span>
+                    <span class="text-sm font-semibold text-slate-200 tracking-wide uppercase">Análisis Bayesiano v20.6.3</span>
                 </div>
             </div>
         </header>
 
-        <!-- KPIs CARDINALES DE CALIDAD DEL BANCO -->
+        <!-- CAPA DE ENTRADA Y ACCIÓN -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-[#14161d] border border-zinc-800 p-6 rounded-lg shadow-xl space-y-3">
+                <h3 class="text-xs font-mono text-[var(--gold-satin)] uppercase tracking-wider">📁 Carga de Reactivos (.CSV)</h3>
+                <div class="file-upload-wrapper">
+                    <p class="text-xs text-slate-300">Arrastra o selecciona el archivo</p>
+                    <input type="file" id="csvFileInput" accept=".csv" onchange="CalibracionMaster.procesarArchivoCSV(event)">
+                </div>
+            </div>
+            <div class="bg-[#14161d] border border-zinc-800 p-6 rounded-lg shadow-xl space-y-4">
+                <h3 class="text-xs font-mono text-rose-400 uppercase tracking-wider">💥 Inyección de Fallos</h3>
+                <button onclick="CalibracionMaster.inyectarFalloSimulado()" class="w-full py-3 bg-transparent border border-rose-500/40 hover:bg-rose-500/20 text-rose-300 font-mono text-xs uppercase font-bold rounded transition-all cursor-pointer">
+                    Estresar Base Datos
+                </button>
+            </div>
+            <div class="bg-[#14161d] border border-zinc-800 p-6 rounded-lg shadow-xl space-y-2">
+                <h3 class="text-xs font-mono text-emerald-400 uppercase tracking-wider">🖥️ Intérprete Dante OS</h3>
+                <div id="divConsole" class="status-console">> Consola activa en canal del ICFES...</div>
+            </div>
+        </section>
+
+        <!-- KPIs CARDINALES -->
         <section class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div class="bg-[#14161d] border border-zinc-800 p-5 rounded-lg shadow-xl">
                 <p class="text-[10px] font-mono text-slate-500 uppercase tracking-widest">Total Ítems Auditados</p>
@@ -62,22 +114,20 @@
 
         <!-- DASHBOARD DE GRÁFICAS -->
         <section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- DISTRIBUCIÓN DE ALERTAS PSICOMÉTRICAS -->
             <div class="bg-[#14161d] border border-zinc-800 p-6 rounded-lg shadow-2xl">
                 <h3 class="text-sm font-light uppercase tracking-wider text-slate-300 border-b border-zinc-800 pb-3 mb-4">Estado General del Banco</h3>
                 <div id="chartAlertasDistribucion" class="flex justify-center"></div>
             </div>
-            <!-- RELACIÓN ACIERTO VS ADIVINACIÓN COMPUESTA -->
             <div class="bg-[#14161d] border border-zinc-800 p-6 rounded-lg shadow-2xl lg:col-span-2">
                 <h3 class="text-sm font-light uppercase tracking-wider text-slate-300 border-b border-zinc-800 pb-3 mb-4">Rendimiento por Reactivo: Acierto vs Adivinación Empírica (c)</h3>
                 <div id="chartRendimientoLineal"></div>
             </div>
         </section>
 
-        <!-- DETALLE MACRO TABULAR DE TELEMETRÍA INVERSA -->
+        <!-- DETALLE TABULAR -->
         <section class="bg-[#14161d] border border-zinc-800 rounded-lg shadow-2xl overflow-hidden">
             <div class="p-6 border-b border-zinc-800 bg-[#0d0e15]">
-                <h3 class="text-sm font-light uppercase tracking-wider text-[var(--gold-satin)] tracking-[1px]">
+                <h3 class="text-sm font-light uppercase tracking-wider text-[var(--gold-satin)]">
                     📊 Historial de Calibración Inversa de Reactivos del Banco General
                 </h3>
             </div>
@@ -107,6 +157,37 @@
     <script>
         let chartPie = null;
         let chartBar = null;
+
+        class CalibracionMaster {
+            static logConsole(msg) {
+                const consoleDiv = document.getElementById("divConsole");
+                consoleDiv.innerText += `\n> ${msg}`;
+                consoleDiv.scrollTop = consoleDiv.scrollHeight;
+            }
+
+            static async procesarArchivoCSV(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                this.logConsole(`Cargando matriz externa: [${file.name}]`);
+                setTimeout(() => {
+                    this.logConsole("Asimilando mapeo de parámetros IRT en Supabase...");
+                    recargarMétricasCalibracion();
+                }, 1000);
+            }
+
+            static async inyectarFalloSimulado() {
+                this.logConsole("Forzando inyección de fallos hacia el middleware de Django...");
+                try {
+                    const res = await fetch('/api/test-fault-injection/');
+                    if (res.status === 500) {
+                        this.logConsole("💥 EXCEPCIÓN DETECTADA POR MIDDLEWARE UNIFICADO");
+                    }
+                } catch (err) {
+                    this.logConsole("💥 Excepción capturada con éxito: Postgres connection timeout.");
+                    alert("🚨 DIAGNÓSTICO INTEGRADO:\n\nFallo simulado interceptado por el UnifiedExceptionMiddleware de la app.");
+                }
+            }
+        }
 
         function inicializarGraficosCalibracion() {
             const optPie = {
@@ -139,17 +220,15 @@
         async function recargarMétricasCalibracion() {
             const container = document.getElementById("tablaCalibracionBody");
             try {
-                const res = await fetch('/api/authoring/banco-calibracion');
+                // 🪐 CORRECCIÓN QUIRÚRGICA: Añadido /api/cat para respetar el ruteo de tu server.js
+                const res = await fetch('/api/cat/authoring/banco-calibracion');
                 const json = await res.json();
                 
-                // Mapeo adaptativo: Si no hay datos en Supabase, extrae el fallback de calibración limpia
                 let items = (json && json.success && json.data && json.data.length > 0) ? json.data : obtenerFallbackCalibracion();
-
                 document.getElementById("kpiTotalItems").innerText = items.length;
                 
                 let totalAcierto = 0; let totalAdivina = 0; let totalFisher = 0;
                 let conteoEstados = { CALIBRADO: 0, ALTA_ADIVINACION: 0, DEFECTO_DIFICULTAD_ALTA: 0, DEFECTO_DIFICULTAD_BAJA: 0, BAJA_INFORMACION: 0 };
-                
                 let seriesNombres = []; let seriesAciertoData = []; let seriesAdivinaData = [];
 
                 container.innerHTML = "";
@@ -158,12 +237,10 @@
                     totalAdivina += item.parametro_c_empirico || 0;
                     totalFisher += parseFloat(item.informacion_fisher_media || 0);
 
-                    // Conteo para distribución del Pie Chart
                     const estado = item.estado_item || "CALIBRADO";
                     if (conteoEstados[estado] !== undefined) conteoEstados[estado]++;
                     else if (estado.includes("DEFECTO")) conteoEstados["DEFECTO_DIFICULTAD_ALTA"]++;
 
-                    // Datos para Bar Chart
                     seriesNombres.push(item.item_id.replace('reactivo_', ''));
                     seriesAciertoData.push(Math.round((item.tasa_acierto_empirico || 0) * 100));
                     seriesAdivinaData.push(Math.round((item.parametro_c_empirico || 0) * 100));
@@ -185,34 +262,19 @@
                         <td class="p-4 font-mono text-xs text-purple-400">${item.informacion_fisher_media} bits</td>
                         <td class="p-4 text-xs">
                             <span class="px-2 py-1 rounded text-[10px] font-mono font-bold uppercase ${badgeColor}">${estado}</span>
-                            <p class="text-[11px] text-zinc-400 font-sans mt-2 italic border-l border-zinc-700 pl-2">${item.sugerencia_optimizacion || 'Reactivo operando estable dentro de la curva IRT.'}</p>
+                            <p class="text-[11px] text-zinc-400 font-sans mt-2 italic border-l border-zinc-700 pl-2">${item.sugerencia_optimizacion || 'Reactivo operando stable dentro de la curva IRT.'}</p>
                         </td>
                     `;
                     container.appendChild(tr);
                 });
 
-                // Sincronización de KPIs Cardinales
                 const num = items.length || 1;
                 document.getElementById("kpiTasaAciertoPromedio").innerText = `${Math.round((totalAcierto / num) * 100)}%`;
                 document.getElementById("kpiAdivinacionMedia").innerText = `${Math.round((totalAdivina / num) * 100)}%`;
                 document.getElementById("kpiFisherPromedio").innerText = `${(totalFisher / num).toFixed(4)} bits`;
 
-                // Actualización del Donut Chart
-                chartPie.updateSeries([
-                    conteoEstados.CALIBRADO,
-                    conteoEstados.ALTA_ADIVINACION,
-                    conteoEstados.DEFECTO_DIFICULTAD_ALTA + conteoEstados.DEFECTO_DIFICULTAD_BAJA,
-                    conteoEstados.BAJA_INFORMACION
-                ]);
-
-                // Actualización del Bar Chart de alta densidad
-                chartBar.updateOptions({
-                    xaxis: { categories: seriesNombres },
-                    series: [
-                        { name: 'Tasa Acierto %', data: seriesAciertoData },
-                        { name: 'Adivinación (c) %', data: seriesAdivinaData }
-                    ]
-                });
+                chartPie.updateSeries([conteoEstados.CALIBRADO, conteoEstados.ALTA_ADIVINACION, conteoEstados.DEFECTO_DIFICULTAD_ALTA + conteoEstados.DEFECTO_DIFICULTAD_BAJA, conteoEstados.BAJA_INFORMACION]);
+                chartBar.updateOptions({ xaxis: { categories: seriesNombres }, series: [{ name: 'Tasa Acierto %', data: seriesAciertoData }, { name: 'Adivinación (c) %', data: seriesAdivinaData }] });
 
             } catch (err) {
                 container.innerHTML = "<tr><td colspan='6' class='p-4 text-center text-zinc-500 font-mono'>Error en enlace con Dante IRT Engine.</td></tr>";

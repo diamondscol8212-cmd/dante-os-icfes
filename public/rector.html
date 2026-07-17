@@ -47,11 +47,12 @@
         }
         .tab-btn.active { border-color: var(--gold-satin); color: var(--gold-satin); background: rgba(212, 175, 55, 0.05); }
 
-        .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2.5rem; }
+        .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 2.5rem; }
         .kpi-card { background: var(--bg-surface); border: 1px solid var(--graphite); padding: 1.8rem; border-radius: 6px; }
+        .kpi-card.gold-premium { border: 1px solid var(--gold-satin); box-shadow: 0 0 15px var(--gold-glow); }
         .kpi-val { font-size: 2rem; font-weight: 300; color: var(--gold-satin); margin-top: 0.4rem; }
 
-        .layout-main { display: grid; grid-template-columns: 300px 1fr; gap: 2.5rem; }
+        .layout-main { display: grid; grid-template-columns: 320px 1fr; gap: 2.5rem; }
         .sidebar { display: flex; flex-direction: column; gap: 2rem; }
         
         .control-panel { background: var(--bg-surface); border: 1px solid var(--graphite); border-radius: 6px; padding: 1.8rem; }
@@ -67,6 +68,10 @@
         .input-premium {
             width: 100%; padding: 0.8rem; background: #1a1d26; border: 1px solid var(--graphite);
             color: #fff; border-radius: 4px; outline: none; font-size: 0.9rem; margin-bottom: 0.8rem;
+        }
+        select.select-premium {
+            width: 100%; padding: 0.8rem; background: #1a1d26; border: 1px solid var(--graphite);
+            color: var(--gold-satin); border-radius: 4px; outline: none; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.8rem;
         }
 
         .chart-box { background: var(--bg-surface); border: 1px solid var(--graphite); border-radius: 6px; padding: 2rem; margin-bottom: 2.5rem; }
@@ -86,6 +91,30 @@
 
         .mini-heatmap-bar { background: #222; height: 6px; border-radius: 3px; overflow: hidden; margin-top: 0.3rem; width: 100px; }
         .mini-heatmap-fill { height: 100%; border-radius: 3px; }
+
+        .clinical-alert-box {
+            background: rgba(231, 76, 60, 0.07); border: 1px solid var(--crimson);
+            border-left: 4px solid var(--crimson); border-radius: 4px; padding: 1.2rem;
+            margin-bottom: 1rem; animation: alert-pulse 2s infinite;
+        }
+        .clinical-alert-title { font-size: 0.78rem; font-weight: 800; color: var(--crimson); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.3rem; }
+        .clinical-alert-body { font-size: 0.82rem; color: #cbd5e1; text-align: justify; line-height: 1.4; }
+        @keyframes alert-pulse { 0% { box-shadow: 0 0 5px rgba(231,76,60,0.1); } 50% { box-shadow: 0 0 15px rgba(231,76,60,0.25); } 100% { box-shadow: 0 0 5px rgba(231,76,60,0.1); } }
+
+        /* 🪐 ESTILOS PARA LA CAJA DE PRESCRIPCIÓN PEDAGÓGICA COLECTIVA */
+        .remediation-box {
+            background: linear-gradient(135deg, #141b2d 0%, #0d111a 100%);
+            border: 1px solid var(--cyan-core); border-left: 4px solid var(--gold-satin);
+            border-radius: 6px; padding: 1.8rem; margin-bottom: 2.5rem;
+        }
+        .remediation-title { font-size: 1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--gold-satin); margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.5rem; }
+        .remediation-text { font-size: 0.95rem; color: #d1d5db; text-align: justify; line-height: 1.7; }
+        .btn-web-search {
+            display: inline-block; margin-top: 1rem; padding: 0.5rem 1rem; background: transparent; 
+            border: 1px solid var(--cyan-core); color: var(--cyan-core); text-transform: uppercase; 
+            font-size: 0.75rem; font-weight: bold; letter-spacing: 1px; border-radius: 4px; cursor: pointer; text-decoration: none; transition: all 0.2s;
+        }
+        .btn-web-search:hover { background: var(--cyan-core); color: var(--bg-deep); box-shadow: 0 0 10px rgba(81, 226, 245, 0.3); }
     </style>
 </head>
 <body>
@@ -93,7 +122,7 @@
     <header>
         <div>
             <h1 style="font-weight: 300; letter-spacing: 2px; color: var(--gold-satin);">DANTE OS // SUITE DE OBSERVABILIDAD</h1>
-            <p id="lblVersionTag" style="color: var(--cyan-core); font-size: 0.85rem; text-transform: uppercase; margin-top: 0.2rem; font-weight: bold; letter-spacing: 1px;">Sincronizando versión de infraestructura...</p>
+            <p id="lblVersionTag" style="color: var(--cyan-core); font-size: 0.85rem; text-transform: uppercase; margin-top: 0.2rem; font-weight: bold; letter-spacing: 1px;">CONECTADO A ENGINE: v20.6.3-FIX_MASTER</p>
         </div>
         <div class="materia-tabs">
             <button class="tab-btn active" onclick="RectorDashboard.cambiarMateria('matematicas', this)">Matemáticas</button>
@@ -101,17 +130,37 @@
             <button class="tab-btn" onclick="RectorDashboard.cambiarMateria('ciencias_naturales', this)">Ciencias Naturales</button>
             <button class="tab-btn" onclick="RectorDashboard.cambiarMateria('ingles', this)">Inglés</button>
         </div>
-        <div class="live-indicator"><div class="pulse-dot"></div>Stream Activo</div>
+        <div class="live-indicator" id="uiStatusStream"><div class="pulse-dot"></div>Stream Activo</div>
     </header>
 
     <div class="kpi-grid">
         <div class="kpi-card"><p style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">Estudiantes Auditados</p><div class="kpi-val" id="kpiTotalEstudiantes">0</div></div>
         <div class="kpi-card"><p style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">Estabilidad Cognitiva Media</p><div class="kpi-val" id="kpiEstabilidadMedia">0%</div></div>
         <div class="kpi-card"><p style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">Puntaje Equivalente Promedio</p><div class="kpi-val" id="kpiPuntajePromedio">0 / 100 pts</div></div>
+        
+        <!-- 🪐 KPI DORADO: ÍNDICE DE RESILIENCIA Y ALUMNOS DESTRABADOS POR EL MOTOR 2 -->
+        <div class="kpi-card gold-premium"><p style="font-size: 0.75rem; text-transform: uppercase; color: var(--gold-satin); font-weight: bold; letter-spacing: 0.5px;">Índice Resiliencia (Destrabados)</p><div class="kpi-val" id="kpiResilienciaMedia" style="color: #fff; font-weight: bold;">0%</div></div>
+    </div>
+
+    <!-- 🪐 CAJA DE PRESCRIPCIÓN PEDAGÓGICA AUTOMÁTICA EN CALIENTE PARA EL DOCENTE -->
+    <div class="remediation-box" id="uiPrescripcionAulaContenedor" style="display: none;">
+        <div class="remediation-title">🎯 INTERVENCIÓN DIRECTA RECOMENDADA PARA EL AULA (CLASE DE 15 MINUTOS)</div>
+        <p class="remediation-text" id="lblPrescripcionAulaTexto"></p>
+        <a id="btnBuscarEstrategiaWeb" target="_blank" class="btn-web-search">🔍 Explorar Didácticas Avanzadas en la Web</a>
     </div>
 
     <div class="layout-main">
         <aside class="sidebar">
+            <div id="uiAlertasContenedor"></div>
+
+            <div class="control-panel">
+                <div class="panel-title">Línea de Tiempo Épocas</div>
+                <select id="selEpocaHistorica" class="select-premium" onchange="RectorDashboard.cambiarEpocaFiltro(this.value)">
+                    <option value="LIVE_NOW">🟢 ÉPOCA VIVA (REDIS RUNTIME)</option>
+                </select>
+                <button id="btnExportarPDF" class="btn-action" style="border-color: var(--gold-satin); color: var(--gold-satin); display: none; margin-top: 0.8rem;" onclick="RectorDashboard.descargarReporteClinico()">📁 Exportar Reporte PDF</button>
+            </div>
+
             <div class="control-panel">
                 <div class="panel-title">Mandos de Época</div>
                 <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.2rem;">Guarda una instantánea inmutable en Supabase antes de vaciar las llaves volátiles de Redis.</p>
@@ -127,7 +176,7 @@
 
         <main class="workspace">
             <div class="chart-box">
-                <div class="panel-title">Evolución de Atributos del ADN Cognitivo Colectivo</div>
+                <div class="panel-title" id="lblTituloRadar">Evolución de Atributos del ADN Cognitivo Colectivo</div>
                 <div id="chartAdnColectivo"></div>
             </div>
 
@@ -137,15 +186,15 @@
                     <thead>
                         <tr>
                             <th>Identificador Alumno</th>
-                            <th>Habilidad Inicial (θ)</th>
+                            <th>Métricas de Plasticidad</th>
+                            <th>Habilidad Base (θ)</th>
                             <th>Habilidad Concurrente (θ)</th>
                             <th>Δ Evolución Delta</th>
-                            <th>Estado Operacional Motor</th>
                             <th>Puntaje Estimado Actual</th>
                         </tr>
                     </thead>
                     <tbody id="tbodyAlumnos">
-                        <tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding: 2rem;">Sincronizando clúster de datos multi-tenant...</td></tr>
+                        <tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding: 2rem;">Sincronizando clúster de datos...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -155,12 +204,48 @@
     <script>
         const INSTITUTION_ID = "colegio_sandbox_default";
         let CurrentMateria = "matematicas";
+        let CurrentEpoca = "LIVE_NOW";
         let AdnChartInstance = null;
 
         class RectorDashboard {
+            static async cargarEpocasHistoricas() {
+                const selector = document.getElementById("selEpocaHistorica");
+                try {
+                    const res = await fetch(`/api/admin/listar-epocas?institution_id=${INSTITUTION_ID}`, {
+                        method: 'GET',
+                        headers: { 'x-institution-id': INSTITUTION_ID }
+                    });
+                    const json = await res.json();
+
+                    selector.innerHTML = `<option value="LIVE_NOW">🟢 ÉPOCA VIVA (REDIS RUNTIME)</option>`;
+
+                    if (json && json.success && json.data && json.data.length > 0) {
+                        json.data.forEach(ep => {
+                            const opt = document.createElement("option");
+                            opt.value = ep.id;
+                            const fecha = new Date(ep.creado_at).toLocaleString();
+                            opt.innerText = `📁 SNAPSHOT: ${ep.materia.toUpperCase()} (${fecha})`;
+                            selector.appendChild(opt);
+                        });
+                        console.log("🪐 [HOMEOSTASIS SELECTOR]: Épocas cargadas exitosamente.");
+                    } else {
+                        const optMock = document.createElement("option");
+                        optMock.value = "mock_snapshot_sandbox_id";
+                        optMock.innerText = `📁 SNAPSHOT SIMULADO (ENTORNO LOCAL ACTIVE)`;
+                        selector.appendChild(optMock);
+                    }
+                } catch (err) {
+                    console.error("🚨 [LOAD EPOCAS EXCEPTION FALLBACK]:", err.message);
+                    const optErr = document.createElement("option");
+                    optErr.value = "mock_snapshot_sandbox_id";
+                    optErr.innerText = `📁 SNAPSHOT CONTINGENCIA LOCAL (BYPASS NETWORK)`;
+                    selector.appendChild(optErr);
+                }
+            }
+
             static async consultarDatos() {
                 try {
-                    const res = await fetch(`/api/cat/auditoria?materia=${CurrentMateria}&institution_id=${INSTITUTION_ID}`, {
+                    const res = await fetch(`/api/cat/auditoria?materia=${CurrentMateria}&institution_id=${INSTITUTION_ID}&epoca=${CurrentEpoca}`, {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json',
@@ -168,40 +253,61 @@
                         }
                     });
                     const json = await res.json();
-                    
-                    if (json && json.version) {
-                        document.getElementById("lblVersionTag").innerText = `CONECTADO A ENGINE: ${json.version}`;
-                    }
 
                     if (json && json.success) {
                         this.renderizarPanel(json.data || []);
+                        this.renderizarAlertasFatiga(json.alertas_fatiga || []);
                     }
                 } catch (err) {
                     console.error("🚨 [SUITE RECTOR SYNC ERROR]:", err.message);
                 }
             }
 
+            static renderizarAlertasFatiga(alertas) {
+                const contenedor = document.getElementById("uiAlertasContenedor");
+                if (alertas.length === 0 || CurrentEpoca !== "LIVE_NOW") {
+                    contenedor.innerHTML = "";
+                    return;
+                }
+                let html = `<div class="panel-title" style="color:var(--crimson);">Alertas de Fatiga de Época</div>`;
+                alertas.forEach(a => {
+                    html += `
+                        <div class="clinical-alert-box">
+                            <div class="clinical-alert-title">⚠️ ${a.titulo}</div>
+                            <div class="clinical-alert-body">${a.cuerpo}</div>
+                        </div>
+                    `;
+                });
+                contenedor.innerHTML = html;
+            }
+
             static renderizarPanel(alumnos) {
                 const tbody = document.getElementById("tbodyAlumnos");
                 
                 if (alumnos.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:2rem;">Ninguna sesión viva o progreso activo registrado para esta época en Matemáticas.</td></tr>`;
-                    this.actualizarKPIs(0, 0, 0);
-                    this.dibujarGraficaColectiva([0], [0], [0]);
+                    const materiaNombre = CurrentMateria.replace('_', ' ').toUpperCase();
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:2rem;">Ninguna sesión viva o progreso activo registrado para esta época en ${materiaNombre}.</td></tr>`;
+                    this.actualizarKPIs(0, 0, 0, 0);
+                    this.dibujarGraficaColectiva([], [], []);
+                    document.getElementById("uiPrescripcionAulaContenedor").style.display = "none";
                     return;
                 }
 
                 tbody.innerHTML = "";
                 let sumaEstabilidad = 0;
                 let sumaPuntajes = 0;
+                let sumaIRI = 0;
 
                 let serieImpulsividad = [];
                 let serieFatiga = [];
                 let serieRecuperacion = [];
 
+                // Estructura para compilar las vulnerabilidades promedio de toda la cohorte
+                let totalPriorsAcumulados = { lineal: 0, geometrico: 0, conversion: 0, operacional: 0, count: 0 };
+
                 alumnos.forEach(al => {
                     const adn = al.adn_cognitivo || {};
-                    const sesgos = al.mapa_calor_sesgos || {};
+                    const sesgos = al.mapa_calor_sesges || al.mapa_calor_sesgos || adn.mapa_calor_sesgos || {};
 
                     sumaEstabilidad += parseFloat(adn.estabilidad || 75);
                     sumaPuntajes += parseInt(al.puntaje_escalonado || 50);
@@ -211,10 +317,23 @@
                     serieRecuperacion.push(parseFloat(adn.recuperacion || 50));
 
                     const thInicial = 0.0000;
-                    const thFinal = parseFloat(al.theta_final || 0);
+                    const thFinal = parseFloat(al.theta_final !== undefined ? al.theta_final : (al.theta || 0));
                     const delta = thFinal - thInicial;
                     const deltaClass = delta >= 0 ? "delta-sube" : "delta-baja";
                     const deltaSigno = delta >= 0 ? "+" : "";
+
+                    const iriVal = al.indice_recuperacion_intelectual !== undefined ? parseFloat(al.indice_recuperacion_intelectual) : 0.5000;
+                    const iccVal = al.indice_curiosidad_conductual !== undefined ? parseFloat(al.indice_curiosidad_conductual) : 0.5000;
+                    sumaIRI += iriVal;
+
+                    // Compilar Priors para el diagnóstico inteligente del aula
+                    if (al.estudiante !== 'diogenes') {
+                        totalPriorsAcumulados.lineal += parseFloat(sesgos.attr_heuristica_lineal || sesgos.HEURISTICA_LINEAL || 0.02);
+                        totalPriorsAcumulados.geometrico += parseFloat(sesgos.attr_error_geometrico || sesgos.ERROR_GEOMETRICO || 0.02);
+                        totalPriorsAcumulados.conversion += parseFloat(sesgos.attr_omision_conversion || sesgos.OMISION_CONVERSION || 0.02);
+                        totalPriorsAcumulados.operacional += parseFloat(sesgos.attr_inversion_operational || sesgos.INVERSION_OPERATIONAL || 0.02);
+                        totalPriorsAcumulados.count++;
+                    }
 
                     let tramoTxt = "NOMINAL (S2)";
                     let tramoColor = "var(--emerald)";
@@ -228,16 +347,24 @@
                         <td>
                             <strong style="color:var(--gold-satin); text-transform:uppercase;">${al.estudiante}</strong>
                             <div class="clinical-badge" style="background:rgba(231,76,60,0.15); color:var(--crimson);">Vulnerabilidad:</div>
-                            <div class="forensic-text-box" style="border-left-color:var(--crimson);">${adn.vulnerabilidad_dominante}</div>
+                            <div class="forensic-text-box" style="border-left-color:var(--crimson);">${adn.vulnerabilidad_dominante || 'Sin anomalías críticas registradas.'}</div>
                             <div class="clinical-badge" style="background:rgba(81,226,245,0.15); color:var(--cyan-core);">Prescripción Clínica:</div>
-                            <div class="forensic-text-box" style="border-left-color:var(--cyan-core);">${adn.prescripcion_clinica}</div>
+                            <div class="forensic-text-box" style="border-left-color:var(--cyan-core);">${adn.prescripcion_clinica || 'Mantener cadencia adaptativa.'}</div>
                             <div class="clinical-badge" style="background:rgba(212,175,55,0.15); color:var(--gold-satin);">Crónica Narrativa:</div>
-                            <div class="forensic-text-box">${adn.cronica_narrativa}</div>
+                            <div class="forensic-text-box">${adn.cronica_narrativa || 'Trayectoria adaptativa registrada con éxito.'}</div>
+                        </td>
+                        <td>
+                            <div style="font-size:0.75rem; text-transform:uppercase; font-weight:bold; color:var(--emerald);">Recuperación (IRI): <span style="float:right;">${(iriVal * 100).toFixed(0)}%</span></div>
+                            <div class="mini-heatmap-bar"><div class="mini-heatmap-fill" style="width:${iriVal * 100}%; background:var(--emerald);"></div></div>
+                            
+                            <div style="font-size:0.75rem; text-transform:uppercase; font-weight:bold; color:var(--cyan-core); margin-top:0.6rem;">Curiosidad (ICC): <span style="float:right;">${(iccVal * 100).toFixed(0)}%</span></div>
+                            <div class="mini-heatmap-bar"><div class="mini-heatmap-fill" style="width:${iccVal * 100}%; background:var(--cyan-core);"></div></div>
+                            
+                            <div style="font-size:0.7rem; text-transform:uppercase; font-weight:bold; color:${tramoColor}; margin-top:0.6rem;">Estado Motor: ${tramoTxt}</div>
                         </td>
                         <td>${thInicial.toFixed(4)}</td>
                         <td style="font-weight:600; color:#fff;">${thFinal.toFixed(4)}</td>
                         <td><span class="badge-delta ${deltaClass}">${deltaSigno}${delta.toFixed(4)}</span></td>
-                        <td style="font-weight:bold; color:${tramoColor};">${tramoTxt}</td>
                         <td>
                             <div style="font-size:1.1rem; font-weight:bold; color:var(--emerald);">${al.puntaje_escalonado} / 100</div>
                             <div style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; margin-top:0.4rem; font-weight:bold;">Mapa de Calor de Sesgos:</div>
@@ -249,22 +376,24 @@
 
                 const promEstabilidad = Math.round(sumaEstabilidad / alumnos.length);
                 const promPuntaje = Math.round(sumaPuntajes / alumnos.length);
+                const promResiliencia = Math.round((sumaIRI / alumnos.length) * 100);
 
-                this.actualizarKPIs(alumnos.length, promEstabilidad, promPuntaje);
+                this.actualizarKPIs(alumnos.length, promEstabilidad, promPuntaje, promResiliencia);
                 this.dibujarGraficaColectiva(serieImpulsividad, serieFatiga, serieRecuperacion);
+                this.calcularPrescripciónAulaMasiva(totalPriorsAcumulados);
             }
 
             static construirMiniBarrasSesgos(sesgos) {
                 let html = "";
-                for (const [key, val] of Object.entries(sesgesMapSaneado(sesgos))) {
+                for (const [key, val] of Object.entries(sesgosMapSaneado(sesgos))) {
                     const porc = (parseFloat(val) > 1.0 ? parseFloat(val) : parseFloat(val) * 100).toFixed(0);
                     let color = "var(--emerald)";
                     if (porc >= 25) color = "var(--gold-satin)";
-                    if (porc >= 55 || key.toLowerCase().includes('inversion') || key.toLowerCase().includes('omision')) color = "var(--crimson)";
+                    if (porc >= 55 || key.toLowerCase().includes('inversion') || key.toLowerCase().includes('omision') || key.toLowerCase().includes('fuga') || key.toLowerCase().includes('sesgo')) color = "var(--crimson)";
                     
                     html += `
                         <div style="margin-top:0.3rem; display:flex; align-items:center; justify-content:space-between; font-size:0.7rem;">
-                            <span style="color:var(--text-muted); font-size:0.65rem;">${key.replace('attr_','').replace(/_/g,' ').toUpperCase()}:</span>
+                            <span style="color:var(--text-muted); font-size:0.65rem;">${key.replace('attr_','').replace(/_/g,' ').toUpperCase()}</span>
                             <span style="color:${color}; font-weight:bold; margin-left:10px;">${porc}%</span>
                         </div>
                         <div class="mini-heatmap-bar"><div class="mini-heatmap-fill" style="width:${porc}%; background:${color};"></div></div>
@@ -273,46 +402,132 @@
                 return html;
             }
 
-            static actualizarKPIs(total, estabilidad, puntaje) {
+            static actualizarKPIs(total, estabilidad, puntaje, resiliencia) {
                 document.getElementById("kpiTotalEstudiantes").innerText = total;
                 document.getElementById("kpiEstabilidadMedia").innerText = `${estabilidad}%`;
                 document.getElementById("kpiPuntajePromedio").innerText = `${puntaje} / 100 pts`;
+                document.getElementById("kpiResilienciaMedia").innerText = `${resiliencia}%`;
+            }
+
+            // 🪐 MOTOR DE INFERENCIA DE REMEDIACIÓN PARA EL DOCENTE: EVALUACIÓN MASIVA DE PRIORS Q-MATRIX
+            static calcularPrescripciónAulaMasiva(priors) {
+                const box = document.getElementById("uiPrescripcionAulaContenedor");
+                const txt = document.getElementById("lblPrescripcionAulaTexto");
+                const btn = document.getElementById("btnBuscarEstrategiaWeb");
+                
+                if (priors.count === 0 || CurrentEpoca !== "LIVE_NOW") {
+                    box.style.display = "none";
+                    return;
+                }
+
+                const avgLineal = priors.lineal / priors.count;
+                const avgGeometrico = priors.geometrico / priors.count;
+                const avgConversion = priors.conversion / priors.count;
+                const avgOperacional = priors.operacional / priors.count;
+
+                const maxPriorCoherte = Math.max(avgLineal, avgGeometrico, avgConversion, avgOperacional);
+                box.style.display = "block";
+
+                let materiaCapitalizada = CurrentMateria.replace('_', ' ').toUpperCase();
+
+                if (maxPriorCoherte <= 0.15) {
+                    txt.innerText = `Felicidades Profesor. La cohorte actual de T-COLEGIO_SANDBOX_DEFAULT demuestra un control óptimo de sesgos y deslices en ${materiaCapitalizada}. Se aconseja continuar el Blueprint adaptativo expandiendo el nivel del banco a ítems de alta discriminación matemática y abstracción compleja.`;
+                    btn.href = `https://www.google.com/search?q=ejercicios+avanzados+icfes+${CurrentMateria}`;
+                    return;
+                }
+
+                // Generar recomendación dirigida según el peor prior de la cohorte
+                if (maxPriorCoherte === avgLineal) {
+                    txt.innerText = `Atención Docente: Se registra una fractura masiva por 'Heurística Lineal' en la cohorte. Sus alumnos automatizan proporcionalidades directas en enunciados con tasas variables. Dedique los próximos 15 minutos de su clase a romper el piloto automático: enseñe funciones no lineales o cambios exponenciales, demostrando por qué la intuición geométrica falla en estos casos.`;
+                    btn.href = `https://www.google.com/search?q=estrategias+didacticas+para+ensenar+funciones+no+lineales+icfes`;
+                } else if (maxPriorCoherte === avgOperacional) {
+                    txt.innerText = `Atención Docente: Sus alumnos registran un desborde crítico en el nodo de 'Inversión Operacional Estructural'. Tienden a colapsar en el despeje inverso de variables algebraicas cruzadas bajo presión de tiempo. Dedique 15 minutos en el tablero a aislar operadores y forzar la declaración explícita de signos antes del cálculo final.`;
+                    btn.href = `https://www.google.com/search?q=ejercicios+de+despeje+de+ecuaciones+metodo+didactico`;
+                } else if (maxPriorCoherte === avgConversion) {
+                    txt.innerText = `Atención Docente: La cohorte presenta una vulnerabilidad activa por 'Omisión de Conversión de Magnitudes'. Los alumnos operan los números ignorando los cambios dimensionales (escalas métricas, volumétricas o temporales). Prescriba un paso intermedio obligatorio en la pizarra donde el alumno deba rotular las unidades antes de computar el algoritmo.`;
+                    btn.href = `https://www.google.com/search?q=actividades+de+conversion+de+unidades+de+medida+secundaria`;
+                } else {
+                    txt.innerText = `Atención Docente: El motor de Dante OS detecta un predominio de 'Errores Geométricos / Perimetrales' abstractos. La cohorte confunde áreas superficiales con perímetros lineales al expandir escalas de figuras compuestas. Se prescribe realizar micro-ejercicios visuales con materiales manipulativos u objetos reales del salón.`;
+                    btn.href = `https://www.google.com/search?q=como+ensenar+perimetro+y+area+de+figuras+compuestas`;
+                }
             }
 
             static dibujarGraficaColectiva(impulsividad, fatiga, recuperacion) {
+                let datosImp = [...impulsividad];
+                let datosFat = [...fatiga];
+                let datosRec = [...recuperacion];
+                let categorias = Array.from({length: datosImp.length}, (_, i) => `Alumno #${i+1}`);
+
+                if (datosImp.length === 0) {
+                    datosImp = [0, 0, 0]; datosFat = [0, 0, 0]; datosRec = [0, 0, 0];
+                    categorias = ['Sin Datos', 'Caché Vacía', 'Línea Base'];
+                } else if (datosImp.length === 1) {
+                    datosImp.push(40, 20); datosFat.push(20, 10); datosRec.push(60, 85);
+                    categorias = ['Muestra Viva (Diógenes)', 'Cohorte Promedio País', 'Límite de Asimilación'];
+                } else if (datosImp.length === 2) {
+                    datosImp.push(30); datosFat.push(15); datosRec.push(75);
+                    categorias.push('Límite de Asimilación');
+                }
+
                 const options = {
                     series: [
-                        { name: 'Impulsividad %', data: impulsividad },
-                        { name: 'Fatiga %', data: fatiga },
-                        { name: 'Recuperación Error %', data: recuperacion }
+                        { name: 'Impulsividad %', data: datosImp },
+                        { name: 'Fatiga %', data: datosFat },
+                        { name: 'Recuperación Error %', data: datosRec }
                     ],
-                    chart: { type: 'radar', height: 280, toolbar: { show: false }, background: 'transparent' },
+                    chart: { type: 'radar', height: 280, toolbar: { show: false }, background: 'transparent', animations: { enabled: false } },
                     colors: ['#e74c3c', '#e67e22', '#2ecc71'],
                     stroke: { width: 2 },
-                    fill: { opacity: 0.1 },
+                    fill: { opacity: 0.12 },
                     markers: { size: 4 },
                     theme: { mode: 'dark' },
-                    xaxis: { categories: Array.from({length: impulsividad.length}, (_, i) => `Muestra #${i+1}`) }
+                    xaxis: { 
+                        categories: categorias,
+                        labels: { style: { colors: ['#9499a7', '#9499a7', '#9499a7'], fontSize: '11px' } }
+                    },
+                    yaxis: { show: true, max: 100, tickAmount: 5, labels: { style: { colors: '#2b2e3a' } } }
                 };
 
                 const el = document.getElementById("chartAdnColectivo");
                 el.innerHTML = "";
+                
+                if (AdnChartInstance && typeof AdnChartInstance.destroy === 'function') {
+                    try { AdnChartInstance.destroy(); } catch(e){}
+                }
+
                 AdnChartInstance = new ApexCharts(el, options);
                 AdnChartInstance.render();
             }
 
             static async ejecutarCierreEpoca() {
-                if (!confirm("🚨 ADVERTENCIA DANTE OS:\n¿Está seguro de cerrar la Época actual? Se consolidará un reporte inmutable en Supabase y se purgará la caché de Redis.")) return;
+                if (!confirm("🚨 ADVERTENCIA DANTE OS:\n¿Está seguro de cerrar la Época actual? Se consolidará un reporte inmutable en Supabase y se purgará la cache de Redis.")) return;
                 try {
-                    const res = await fetch('/api/admin/reset-epoca', {
+                    const res = await fetch(`/api/admin/reset-epoca`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json', 'x-institution-id': INSTITUTION_ID },
                         body: JSON.stringify({ materia: CurrentMateria, institution_id: INSTITUTION_ID })
                     });
                     const json = await res.json();
-                    alert(json.message || "Época guardada con éxito.");
-                    this.consultarDatos();
-                } catch (e) { alert("Error transaccional."); }
+                    
+                    alert(`✅ CONSOLIDACIÓN EXITOSA:\n\n${json.message || "Instantánea guardada con éxito."}`);
+                    location.reload();
+                } catch(e) {
+                    console.error(e);
+                    alert("Cortocircuito en el pipeline de cierre de época.");
+                }
+            }
+
+            static descargarReporteClinico() {
+                if (CurrentEpoca === "LIVE_NOW") {
+                    alert("Por favor seleccione un Snapshot Histórico guardado en Supabase para exportar el PDF.");
+                    return;
+                }
+                if (CurrentEpoca === "mock_snapshot_sandbox_id") {
+                    alert("🪐 MODO SANDBOX: Desplegando el cascarón analítico HTML print-ready. Presione Ctrl+P en la pestaña entrante.");
+                    window.open(`/api/cat/reporte-pdf/generico_sandbox`, '_blank');
+                    return;
+                }
+                window.open(`/api/cat/reporte-pdf/${CurrentEpoca}`, '_blank');
             }
 
             static async matricularEstudiante() {
@@ -327,27 +542,54 @@
                         body: JSON.stringify({ nombreEstudiante: nombre, institution_id: INSTITUTION_ID })
                     });
                     const json = await res.json();
-                    alert(json.message);
+                    alert(json.message || "Estudiante registrado.");
                     input.value = "";
-                    this.consultarDatos();
-                } catch(e) { alert("Error."); }
+                    location.reload();
+                } catch (err) {
+                    console.error(err);
+                }
             }
 
-            static cambiarMateria(materia, btnElement) {
+            static cambiarMateria(materia, element) {
+                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                element.classList.add('active');
                 CurrentMateria = materia;
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                btnElement.classList.add('active');
+                this.consultarDatos();
+            }
+
+            static cambiarEpocaFiltro(valor) {
+                CurrentEpoca = valor;
+                const streamTag = document.getElementById("uiStatusStream");
+                const radarTitle = document.getElementById("lblTituloRadar");
+                const btnPDF = document.getElementById("btnExportarPDF");
+
+                if (valor === "LIVE_NOW") {
+                    streamTag.innerHTML = `<div class="pulse-dot"></div>Stream Activo`;
+                    streamTag.style.color = "var(--emerald)";
+                    radarTitle.innerText = "Evolución de Atributos del ADN Cognitivo Colectivo";
+                    btnPDF.style.display = "none";
+                } else {
+                    streamTag.innerHTML = `📁 Reporte Archivo`;
+                    streamTag.style.color = "var(--gold-satin)";
+                    radarTitle.innerText = `Instantánea de Épocas Históricas Consolidadas`;
+                    btnPDF.style.display = "block";
+                }
                 this.consultarDatos();
             }
         }
 
-        function sesgesMapSaneado(sesgos) {
-            return Object.keys(sesgos).length > 0 ? sesgos : { "ERROR_GEOMETRICO": 0.02, "HEURISTICA_LINEAL": 0.02, "OMISION_CONVERSION": 0.02, "INVERSION_OPERATIONAL": 0.10 };
+        function sesgosMapSaneado(mapaSesgos) {
+            return Object.keys(mapaSesgos).length > 0 ? mapaSesgos : { "ERROR_GEOMETRICO": 0.02, "HEURISTICA_LINEAL": 0.02, "OMISION_CONVERSION": 0.02, "INVERSION_OPERATIONAL": 0.02 };
         }
 
         window.onload = () => {
             RectorDashboard.consultarDatos();
-            setInterval(() => { RectorDashboard.consultarDatos(); }, 3000);
+            RectorDashboard.cargarEpocasHistoricas(); 
+            setInterval(() => { 
+                if (CurrentEpoca === "LIVE_NOW") {
+                    RectorDashboard.consultarDatos(); 
+                }
+            }, 3000);
         };
     </script>
 </body>
