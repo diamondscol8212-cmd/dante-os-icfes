@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dante OS 3.0 - Simulador de Calibración 3PL</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0b0f19;
+            color: #e2e8f0;
+            padding: 30px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 { color: #38bdf8; border-bottom: 2px solid #1e293b; padding-bottom: 10px; }
+        .card {
+            background-color: #1e293b;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+        }
+        .control-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #94a3b8;
+        }
+        input[type="range"] {
+            width: 100%;
+            accent-color: #38bdf8;
+        }
+        .valor {
+            float: right;
+            color: #38bdf8;
+            font-family: monospace;
+            font-size: 1.1em;
+        }
+        .resultado-box {
+            text-align: center;
+            background-color: #0f172a;
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid #38bdf8;
+        }
+        .porcentaje {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #4ade80;
+            margin: 10px 0;
+        }
+        .formula {
+            font-family: monospace;
+            background-color: #0f172a;
+            padding: 10px;
+            border-radius: 6px;
+            color: #cbd5e1;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🧠 Dante OS 3.0: Motor Adaptativo 3PL</h1>
+    <p>Mueve los controles para simular cómo el algoritmo calcula la probabilidad de éxito de las niñas neutralizando el azar.</p>
+
+    <div class="card">
+        <h3>👤 Parámetro del Estudiante</h3>
+        <div class="control-group">
+            <label>Habilidad del Estudiante (Theta &theta;): <span id="valTheta" class="valor">0.0</span></label>
+            <input type="range" id="theta" min="-3" max="3" step="0.1" value="0">
+            <small style="color:#64748b;">-3 significa principiante | +3 significa genio/maestría</small>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>📝 Parámetros del Ítem (Pregunta del ICFES)</h3>
+        
+        <div class="control-group">
+            <label>Dificultad (b): <span id="valB" class="valor">0.0</span></label>
+            <input type="range" id="param_b" min="-3" max="3" step="0.1" value="0">
+        </div>
+
+        <div class="control-group">
+            <label>Discriminación / Calidad (a): <span id="valA" class="valor">1.0</span></label>
+            <input type="range" id="param_a" min="0.5" max="2.5" step="0.1" value="1.0">
+        </div>
+
+        <div class="control-group">
+            <label>Adivinación / Azar (c): <span id="valC" class="valor">0.25</span></label>
+            <input type="range" id="param_c" min="0" max="0.5" step="0.05" value="0.25">
+            <small style="color:#64748b;">0.25 significa examen de 4 opciones múltiples (ICFES base)</small>
+        </div>
+    </div>
+
+    <div class="resultado-box">
+        <h3>🎯 Probabilidad Calculada de Acierto:</h3>
+        <div id="pantallaPorcentaje" class="porcentaje">62.50%</div>
+        <div id="analisisTexto" style="color: #94a3b8;">La pregunta está perfectamente calibrada para su nivel.</div>
+    </div>
+
+    <script>
+        // LA FUNCIÓN JAVASCRIPT CORREGIDA (Sintaxis limpia)
+        function calcularProbabilidadAcierto3PL(theta, a, b, c) {
+            const exponente = -a * (theta - b);
+            const denominador = 1 + Math.exp(exponente);
+            const probabilidad = c + ((1 - c) / denominador);
+            return probabilidad;
+        }
+
+        // Captura de elementos de la interfaz para interactividad
+        const sliders = ['theta', 'param_a', 'param_b', 'param_c'];
+        
+        function actualizarSimulacion() {
+            const th = parseFloat(document.getElementById('theta').value);
+            const a = parseFloat(document.getElementById('param_a').value);
+            const b = parseFloat(document.getElementById('param_b').value);
+            const c = parseFloat(document.getElementById('param_c').value);
+
+            // Actualizar textos visuales de los sliders
+            document.getElementById('valTheta').innerText = th.toFixed(1);
+            document.getElementById('valA').innerText = a.toFixed(1);
+            document.getElementById('valB').innerText = b.toFixed(1);
+            document.getElementById('valC').innerText = c.toFixed(2);
+
+            // Ejecutar la matemática corregida
+            const resultadoIntermedio = calcularProbabilidadAcierto3PL(th, a, b, c);
+            const porcentajeFinal = (resultadoIntermedio * 100).toFixed(2);
+
+            // Pintar resultado
+            const contenedorPct = document.getElementById('pantallaPorcentaje');
+            contenedorPct.innerText = porcentajeFinal + "%";
+
+            // Diagnóstico adaptativo en tiempo real
+            const analisis = document.getElementById('analisisTexto');
+            if (resultadoIntermedio > 0.85) {
+                contenedorPct.style.color = "#ef4444"; // Rojo (Muy fácil, peligro de aburrimiento)
+                analisis.innerText = "🚨 Pregunta demasiado FÁCIL. Las niñas se van a aburrir. El motor debe subir la dificultad.";
+            } else if (resultadoIntermedio < (c + 0.08)) {
+                contenedorPct.style.color = "#eab308"; // Amarillo (Adivinación pura)
+                analisis.innerText = "⚠️ Pregunta muy DIFÍCIL. Alta probabilidad de responder por 'chiripa'. El motor debe bajar la dificultad.";
+            } else {
+                contenedorPct.style.color = "#4ade80"; // Verde (Zona Óptima de Aprendizaje)
+                analisis.innerText = "🟢 ¡ZONA ÓPTIMA! Desafío perfecto para Samantha o Elizabeth. Máxima retención cognitiva.";
+            }
+        }
+
+        // Escuchar los movimientos de los controles
+        sliders.forEach(id => {
+            document.getElementById(id).addEventListener('input', actualizarSimulacion);
+        });
+    </script>
+</body>
+</html>

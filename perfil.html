@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dante ICFES | Plataforma Adaptativa de Alto Rendimiento</title>
+    <style>
+        /* ==========================================================================
+           1. ARQUITECTURA VISUAL (Depth System, Jerarquía & Espaciados AAA)
+           ========================================================================== */
+        :root {
+            --bg-paper: #f4f4f0;          /* Papel prensa mate antifatiga */
+            --surface-card: #ffffff;       
+            --text-carbon: #262626;        /* Contraste estricto WCAG AAA */
+            --text-muted: #5c6166;         
+            --border-cuadernillo: #cbd5e1;  
+            --accent-gold-matte: #b89742;  /* Oro viejo insignia */
+            --accent-gold-glow: rgba(184, 151, 66, 0.04);
+            
+            --font-paper: "Georgia", "Times New Roman", serif; 
+            --font-ui: "Inter", -apple-system, BlinkMacSystemFont, sans-serif; 
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-paper);
+            color: var(--text-carbon);
+            font-family: var(--font-ui);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        .cuadernillo-container {
+            width: 100%;
+            max-width: 620px;
+            background: var(--surface-card);
+            border: 1px solid var(--border-cuadernillo);
+            border-radius: 4px;
+            padding: 32px 24px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.01), 0 10px 15px -3px rgba(0,0,0,0.01), 0 24px 48px -10px rgba(0,0,0,0.02);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        @media (min-width: 480px) {
+            .cuadernillo-container { padding: 44px 40px; }
+        }
+
+        .cuadernillo-header {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 12px;
+            align-items: center;
+            border-bottom: 2px solid var(--text-carbon);
+            padding-bottom: 10px;
+            margin-bottom: 32px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            color: var(--text-carbon);
+            line-height: 1.4;
+            text-transform: uppercase;
+        }
+
+        .progress-bar-minimal {
+            width: 100%;
+            height: 2px;
+            background: var(--border-cuadernillo);
+            margin-bottom: 32px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--text-carbon);
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .screen {
+            display: none;
+            width: 100%;
+            flex-direction: column;
+            flex-grow: 1;
+            justify-content: space-between;
+        }
+
+        .screen.active { display: flex; }
+
+        @media (prefers-reduced-motion: no-preference) {
+            .screen.active { animation: viewSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        }
+
+        @keyframes viewSlideIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .enunciado-icfes {
+            font-family: var(--font-paper);
+            font-size: 1.15rem;
+            line-height: 1.7;
+            color: var(--text-carbon);
+            margin-bottom: 32px;
+            text-align: justify;
+            text-wrap: balance;
+        }
+
+        .op-logic {
+            font-weight: 700;
+            text-decoration: underline;
+            color: #000000;
+        }
+
+        .zona-lectura {
+            background: var(--bg-paper);
+            border: 1px dashed var(--border-cuadernillo);
+            padding: 24px 20px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-top: auto;
+            outline: none;
+        }
+
+        .zona-lectura:focus-visible, .opcion-fila:focus-visible, .btn-icfes-start:focus-visible {
+            outline: 2px solid var(--accent-gold-matte);
+            outline-offset: 2px;
+        }
+
+        .zona-lectura p { font-size: 0.95rem; font-weight: 600; line-height: 1.4; }
+        .zona-lectura span { display: inline-block; margin-top: 8px; font-size: 0.72rem; color: var(--accent-gold-matte); font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
+
+        .hoja-respuestas {
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: auto;
+        }
+
+        .hoja-respuestas.visible { display: flex; }
+
+        .opcion-fila {
+            display: flex;
+            align-items: center;
+            background: var(--surface-card);
+            border: 1px solid var(--border-cuadernillo);
+            border-radius: 4px;
+            padding: 16px 20px;
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+            font-family: var(--font-ui);
+            outline: none;
+            transition: background 0.1s, transform 0.1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .opcion-fila:active { transform: scale(0.99); }
+
+        .ovalo-icfes {
+            width: 28px;
+            height: 28px;
+            border: 1px solid var(--text-carbon);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-right: 14px;
+            background: var(--surface-card);
+            flex-shrink: 0;
+        }
+
+        .opcion-fila:active .ovalo-icfes, .opcion-fila:focus-visible .ovalo-icfes {
+            background: var(--text-carbon);
+            color: #ffffff;
+        }
+
+        .opcion-texto { font-size: 0.92rem; line-height: 1.4; color: var(--text-carbon); }
+
+        .btn-icfes-start {
+            background: var(--text-carbon);
+            color: #ffffff;
+            border: none;
+            padding: 18px 24px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            text-transform: uppercase;
+            outline: none;
+            margin-top: auto;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+            width: 100%;
+        }
+
+        .dash-card {
+            border: 1px solid var(--border-cuadernillo);
+            border-radius: 4px;
+            padding: 20px;
+            background: var(--surface-card);
+        }
+
+        .dash-card-full { grid-column: span 2; }
+        .dash-flex { display: flex; align-items: center; justify-content: space-between; }
+
+        .dash-headline {
+            font-family: var(--font-paper);
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-carbon);
+            line-height: 1.2;
+            margin-bottom: 4px;
+        }
+
+        .streak-number {
+            font-family: var(--font-paper);
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: var(--accent-gold-matte);
+            font-variant-numeric: tabular-nums;
+            line-height: 1;
+        }
+
+        .competencia-fila {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--bg-paper);
+            font-size: 0.88rem;
+            line-height: 1.4;
+        }
+
+        .competencia-fila:last-child { border-bottom: none; }
+        .tag-weak { color: #b91c1c; font-weight: 700; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; }
+
+        .radar-box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px 0;
+            width: 100%;
+        }
+
+        .highlight-badge-card {
+            background: var(--accent-gold-glow);
+            border-left: 3px solid var(--accent-gold-matte);
+            padding: 16px;
+            margin-bottom: 16px;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .loader-engine {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 0;
+            text-align: center;
+            flex-grow: 1;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #cbd5e1;
+            border-top-color: var(--text-carbon);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 24px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .toast-msg {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(38, 38, 38, 0.96);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s, transform 0.3s;
+            z-index: 1000;
+        }
+
+        .toast-msg.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    </style>
+</head>
+<body>
+
+    <div class="cuadernillo-container" id="danteCore" role="main" aria-label="Entrenamiento Dante Élite">
+        
+        <div id="toastAlerta" class="toast-msg" role="alert" aria-live="assertive"></div>
+
+        <!-- CONTROL DE TELEMETRÍA SUPERIOR -->
+        <div id="controlHeader" style="display: none; width: 100%;">
+            <div class="cuadernillo-header">
+                <span id="controlHeaderTitle">CALIBRACIÓN DE TENDENCIAS</span>
+                <span id="controlCounter" aria-live="polite" style="font-variant-numeric: tabular-nums;">1 / 24</span>
+            </div>
+            <div class="progress-bar-minimal" role="progressbar" aria-valuemin="0" aria-valuemax="100" id="progressTrack">
+                <div class="progress-bar-fill" id="indicatorBar"></div>
+            </div>
+        </div>
+
+        <!-- VISTA 1: ONBOARDING SENSATO -->
+        <div class="screen active" id="viewWelcome">
+            <div style="width: 100%;">
+                <div class="cuadernillo-header">
+                    <span>SIMULADOR INTELIGENTE</span>
+                    <span>DANTE OS v8.0</span>
+                </div>
+                <h1 style="font-family: var(--font-paper); font-size: 1.5rem; margin-bottom: 20px; line-height: 1.3; font-weight: 800;">Detectamos patrones en tu forma de resolver bajo presión</h1>
+                <p class="enunciado-icfes" style="font-size: 1rem;">
+                    Bienvenido a Dante ICFES. Esta herramienta analiza tus patrones de gestión del tiempo, foco de lectura y estabilidad ante distractores complejos.<br><br>
+                    El entorno simula el contraste óptico del cuadernillo impreso real para entrenar tu tolerancia visual. La primera pregunta ajustará tu ritmo base; de la segunda en adelante, el entorno pasará a flujo continuo automático.
+                </p>
+            </div>
+            <button class="btn-icfes-start" id="btnStartWelcome" role="button" aria-label="Iniciar diagnóstico adaptativo" onclick="ViewController.navigate('viewAssessment', () => Engine.init())">INICIAR DIAGNÓSTICO ÉLITE</button>
+        </div>
+
+        <!-- VISTA 2: CUESTIONARIO BIOMÉTRICO -->
+        <div class="screen" id="viewAssessment">
+            <div class="enunciado-icfes" id="textEnunciado"></div>
+            
+            <div class="zona-lectura" id="triggerLectura" role="button" tabindex="0" aria-label="Finalizar lectura y abrir burbujas" onpointerdown="Engine.abrirBurbujas()" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault(); Engine.abrirBurbujas();}">
+                <p id="labelTriggerText"></p>
+                <span id="labelTriggerSub"></span>
+            </div>
+
+            <div class="hoja-respuestas" id="boxRespuestas" role="radiogroup" aria-label="Opciones de respuesta"></div>
+        </div>
+
+        <!-- VISTA 3: PROCESAMIENTO MATEMÁTICO REAL -->
+        <div class="screen" id="viewProcessing">
+            <div class="loader-engine">
+                <div class="spinner" role="status" aria-label="Cargando"></div>
+                <h2 style="font-family: var(--font-paper); font-size: 1.3rem; margin-bottom: 6px; font-weight: 500;">Compilando matriz analítica cruzada...</h2>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Calculando vectores reales de descarte y estabilidad de foco.</p>
+            </div>
+        </div>
+
+        <!-- VISTA 4: DASHBOARD MAESTRO INTERPOLADO -->
+        <div class="screen" id="viewDashboard">
+            <div style="width: 100%; padding-right: 4px; margin-bottom: 16px;">
+                <div class="cuadernillo-header">
+                    <span>PANEL ADAPTATIVO GENERADO</span>
+                    <span>DANTE OS</span>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="dash-card dash-flex">
+                        <div>
+                            <span style="font-size: 0.65rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Racha de Estudio</span>
+                            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">Días Seguidos</p>
+                        </div>
+                        <div class="streak-number" id="dashStreakCounter">01 <span>🔥</span></div>
+                    </div>
+                    
+                    <div class="dash-card dash-flex">
+                        <div>
+                            <span style="font-size: 0.65rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em;">Puntaje Proyectado</span>
+                            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">Cálculo Real</p>
+                        </div>
+                        <div class="streak-number" id="dashScore">000</div>
+                    </div>
+
+                    <div class="dash-card dash-card-full">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.65rem; font-weight: 700; color: var(--text-muted); letter-spacing: 0.05em; margin-bottom: 6px; text-transform: uppercase;">
+                            <span>DIVISIÓN: ÉLITE NACIONAL</span>
+                            <span id="dashRankBadge" style="color: var(--accent-gold-matte);">RANGO: --</span>
+                        </div>
+                        <h2 id="dashArquetipoTitle" class="dash-headline" style="color: var(--accent-gold-matte);"></h2>
+                        
+                        <div class="highlight-badge-card">
+                            <p id="dashArquetipoDesc" class="enunciado-icfes" style="font-size: 0.92rem; margin-bottom: 0; line-height: 1.6;"></p>
+                        </div>
+                        
+                        <p id="dashFeedbackHumano" style="font-size: 0.85rem; font-weight: 600; color: #1e3a8a; background: #eff6ff; padding: 10px 14px; border-radius: 4px; margin-bottom: 16px;"></p>
+                        
+                        <div style="border-top: 1px solid var(--border-cuadernillo); padding-top: 12px; display: grid; grid-template-columns: 1fr 1fr; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;">
+                            <div><span style="color: var(--text-muted);">L-MEDIA:</span> <span id="dashMetricReading" style="font-variant-numeric: tabular-nums;">0.00s</span></div>
+                            <div style="text-align: right;"><span style="color: var(--text-muted);">D-MEDIA:</span> <span id="dashMetricReaction" style="font-variant-numeric: tabular-nums;">0.00s</span></div>
+                        </div>
+                    </div>
+
+                    <div class="dash-card dash-card-full">
+                        <span style="font-size: 0.65rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 4px;">Tu Mapa de Tendencias Operativas</span>
+                        <div class="radar-box">
+                            <canvas id="radarCanvas" width="240" height="240"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="dash-card dash-card-full">
+                        <span style="font-size: 0.65rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 8px;">Zonas de Intervención Inmediata</span>
+                        <div id="weakAreasBox"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn-icfes-start" style="background: var(--accent-gold-matte);" id="btnActionAdaptativo" onclick="Engine.desplegarPrescripcion()">CONSOLIDAR PLAN ADAPTATIVO</button>
+        </div>
+
+        <!-- VISTA 5: PRESCRIPCIÓN PEDAGÓGICA AUTOMATIZADA -->
+        <div class="screen" id="viewPrescription">
+            <div style="width: 100%; padding-right: 4px; margin-bottom: 16px;">
+                <div class="cuadernillo-header">
+                    <span>PRESCRIPCIÓN PEDAGÓGICA AUTOMATIZADA</span>
+                    <span>HOJA DE RUTA</span>
+                </div>
+                
+                <h2 style="font-family: var(--font-paper); font-size: 1.3rem; margin-bottom: 16px; color: var(--text-carbon);" id="presArquetipo">Plan de Intervención</h2>
+                
+                <div class="highlight-badge-card" style="background: #f8fafc; border-left-color: var(--text-carbon);">
+                    <span style="font-size: 0.68rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 4px;">1. Formato de Contenidos Preferido</span>
+                    <p id="presFormato" style="font-size: 0.92rem; font-family: var(--font-paper); line-height: 1.5;"></p>
+                </div>
+
+                <div class="highlight-badge-card" style="background: #fdf2f8; border-left-color: #db2777;">
+                    <span style="font-size: 0.68rem; font-weight: 700; color: #db2777; text-transform: uppercase; display: block; margin-bottom: 4px;">2. Entrenamiento de Presión / Reloj</span>
+                    <p id="presTiempo" style="font-size: 0.92rem; font-family: var(--font-paper); line-height: 1.5;"></p>
+                </div>
+
+                <div class="highlight-badge-card" style="background: #f0fdf4; border-left-color: #16a34a;">
+                    <span style="font-size: 0.68rem; font-weight: 700; color: #16a34a; text-transform: uppercase; display: block; margin-bottom: 4px;">3. Primer Módulo Recomendado</span>
+                    <p id="presModulo" style="font-size: 0.92rem; font-family: var(--font-paper); line-height: 1.5;"></p>
+                </div>
+            </div>
+            
+            <button class="btn-icfes-start" style="background: var(--text-carbon);" onclick="TrainingModule.init()">INICIAR PRIMERA SESIÓN DIARIA</button>
+        </div>
+
+        <!-- VISTA 6: ACCIÓN PEDAGÓGICA REAL (Paso 1 y 2 - Multi-pregunta y Feedback Estricto) -->
+        <div class="screen" id="viewTraining">
+            <div style="width: 100%;">
+                <div class="cuadernillo-header">
+                    <span>ENTRENAMIENTO ADAPTATIVO</span>
+                    <span id="trainingCounter" style="font-variant-numeric: tabular-nums;">Reactivo 1 / 3</span>
+                </div>
+                <div class="highlight-badge-card" style="background: var(--bg-paper); margin-bottom: 24px;" id="trainingMetaContainer">
+                    <span id="trainingBadgeMeta" style="font-size: 0.72rem; font-weight: 700; color: var(--accent-gold-matte); text-transform: uppercase; letter-spacing: 0.04em;">Cargando Meta...</span>
+                </div>
+                <p class="enunciado-icfes" id="trainingQuestionText"></p>
+            </div>
+            <div class="hoja-respuestas visible" id="trainingAnswersBox" role="radiogroup" aria-label="Opciones de entrenamiento"></div>
+            
+            <!-- Botón de avance oculto inicialmente, aparece tras responder el reactivo -->
+            <button class="btn-icfes-start" style="background: var(--text-carbon); display: none; margin-top: 16px;" id="btnNextTraining" onclick="TrainingModule.next()">CONTINUAR OPERACIÓN</button>
+        </div>
+
+    </div>
+
+    <script>
+        const ViewController = {
+            currentScreen: "viewWelcome",
+            navigate: function(targetId, callback) {
+                document.getElementById(this.currentScreen).classList.remove('active');
+                document.getElementById(targetId).classList.add('active');
+                this.currentScreen = targetId;
+                if(callback) callback();
+            }
+        };
+
+        const DATABANK_RAW = [
+            // DIMENSIÓN 1: VELOCIDAD VS PRECISION (Preguntas 1 a 8) - S1 / S2
+            { text: "1. Faltan 10 preguntas para finalizar la sesión de Matemáticas y el supervisor anuncia que restan sólo 5 minutos. Tu tendencia de resolución inmediata es:", options: [ { l: "A", t: "Acelerar el paneo visual buscando palabras clave y marcar la opción lógicamente intuitiva.", tag: "S1" }, { l: "B", t: "Mantener el cálculo riguroso en las preguntas que alcances, asegurando precisión sobre volumen.", tag: "S2" } ] },
+            { text: "2. En Lectura Crítica te enfrentas a un texto denso de tres páginas. Al llegar al tercer párrafo, notas que has olvidado la premisa del primero:", options: [ { l: "A", t: "Avanzar de largo esperando deducir la idea principal mediante el contexto macro de la lectura.", tag: "S1" }, { l: "B", t: "Detener el flujo, regresar a la primera línea y reestructurar sintácticamente el párrafo.", tag: "S2" } ] },
+            { text: "3. Evaluando un ítem de Ciencias Sociales, logras descartar dos opciones falsas. Las dos opciones restantes te parecen igualmente válidas:", options: [ { l: "A", t: "Arriesgar por la opción que visualmente te resulte más familiar para avanzar rápido.", tag: "S1" }, { l: "B", t: "Reeleer el enunciado buscando conectores lógicos de exclusión rígida (sin embargo, excepto).", tag: "S2" } ] },
+            { text: "4. Llevas 4 horas de examen continuo. Los ojos te arden y el cansancio físico es severo. Aparece un reactivo con un texto masivo:", options: [ { l: "A", t: "Saltar directamente a las opciones de respuesta intentando deducir la pregunta omitiendo el bloque largo.", tag: "S1" }, { l: "B", t: "Mejorar la postura física, respirar profundo y obligar a tu mente a aislar variables línea por línea.", tag: "S2" } ] },
+            { text: "5. Al revisar una pregunta matemática compleja, notas que el enunciado contiene datos numéricos redundantes puestos de distractor:", options: [ { l: "A", t: "Operar rápidamente con todos los números disponibles buscando que el resultado rime con una opción.", tag: "S1" }, { l: "B", t: "Filtrar el ruido de fondo, identificar la incógnita real e ignorar los datos inservibles.", tag: "S2" } ] },
+            { text: "6. Durante la prueba de Inglés, te encuentras con un bloque de texto donde desconoces el significado de tres palabras clave:", options: [ { l: "A", t: "Deducir el significado por simple instinto contextual y responder velozmente.", tag: "S1" }, { l: "B", t: "Analizar la categoría gramatical de los términos para extraer la sintaxis lógica.", tag: "S2" } ] },
+            { text: "7. Estás respondiendo Ciencias Naturales y la opción que calculaste matemáticamente correcta no aparece en las alternativas:", options: [ { l: "A", t: "Marcar la alternativa que numéricamente se encuentre más cerca de tu valor calculado.", tag: "S1" }, { l: "B", t: "Frenar, asumir un desajuste en tu procedimiento y revisar la ecuación desde el paso inicial.", tag: "S2" } ] },
+            { text: "8. El supervisor avisa que la sesión termina, pero notas que dejaste una sección completa sin responder por un error de cálculo del reloj:", options: [ { l: "A", t: "Rellenar la hoja de respuestas en ráfaga rápida para garantizar que el lector óptico compute algo.", tag: "S1" }, { l: "B", t: "Responder con análisis estricto las tres preguntas que alcances con tu velocidad máxima real.", tag: "S2" } ] },
+
+            // DIMENSIÓN 2: CANAL DE RETENCIÓN (Preguntas 9 a 16) - CORRECCIÓN DE BUG 1: "deducción matemática" impecable
+            { text: "9. Al estudiar el ciclo de transformación de energía dentro de un ecosistema, tu mente procesa el conocimiento mejor ante:", options: [ { l: "A", t: "Un diagrama de flujo funcional con vectores de movimiento y relaciones espaciales claras.", tag: "VISUAL" }, { l: "B", t: "Un texto analítico descriptivo desglosado paso a paso con rigor conceptual.", tag: "TEXTUAL" }, { l: "C", t: "Un caso práctico aplicado a la vida real que ilustre la utilidad directa del fenómeno.", tag: "PRAGMATIC" } ] },
+            { text: "10. El cuadernillo te solicita analizar la variación macroeconómica de una población. Tu mente decodifica más rápido si ves:", options: [ { l: "A", t: "Una pirámide poblacional gráfica o un mapa demográfico de densidades con zonas sombreadas.", tag: "VISUAL" }, { l: "B", t: "Una matriz de datos numéricos puros organizada cronológicamente en columnas tabulares.", tag: "TEXTUAL" }, { l: "C", t: "Un fragmento descriptivo o crónica que relate la transformación de la vida cotidiana de las personas.", tag: "PRAGMATIC" } ] },
+            { text: "11. En la prueba de Inglés enfocada en la organización de diálogos y coherence textual, tu sistema lógico opera con menor esfuerzo si:", options: [ { l: "A", t: "Escaneas la longitud y la distribución de los bloques de texto dentro de la página.", tag: "VISUAL" }, { l: "B", t: "Verificas la regla sintáctica explícita y la concordancia de los tiempos verbales.", tag: "TEXTUAL" }, { l: "C", t: "Lees el enunciado completo mentalmente para identificar cuál opción suena más natural en el habla cotidiana.", tag: "PRAGMATIC" } ] },
+            { text: "12. Al enfrentarte a un problema algebraico abstracto, donde no existe una aplicación física aparente:", options: [ { l: "A", t: "Intentas trazar un esquema o un plano imaginario de coordenadas para darle forma gráfica.", tag: "VISUAL" }, { l: "B", t: "Operas directamente sobre las variables algebraicas aplicando las leyes de despeje secuencial.", tag: "TEXTUAL" }, { l: "C", t: "Necesitas mapear las variables convirtiéndolas a un escenario real (dinero, objetos o velocidad).", tag: "PRAGMATIC" } ] },
+            { text: "13. Cuando repasas conceptos de física molecular (como el comportamiento de los gases), tu retención se optimiza si:", options: [ { l: "A", t: "Ves una simulación en video o animación 2D que ilustre el choque de las partículas.", tag: "VISUAL" }, { l: "B", t: "Lees la deducción matemática de la fórmula ideal explicada con lenguaje científico claro.", tag: "TEXTUAL" }, { l: "C", t: "Asocias el fenómeno a cómo funciona una olla a presión en la cocina real.", tag: "PRAGMATIC" } ] },
+            { text: "14. Frente a un mapa histórico que ilustra las rutas de comercio coloniales, tu atención se dirige automáticamente a:", options: [ { l: "A", t: "Las convenciones de color, las líneas geográficas y la distribución de los vectores.", tag: "VISUAL" }, { l: "B", t: "El texto descriptivo del pie de página, las fechas cronológicas y los nombres de ciudades.", tag: "TEXTUAL" }, { l: "C", t: "Imaginar las dificultades logísticas reales que implicaba transportar mercancía por esa geografía.", tag: "PRAGMATIC" } ] },
+            { text: "15. En Lectura Crítica, cuando el autor utiliza una metáfora para explicar una idea abstracta:", options: [ { l: "A", t: "Traduces la frase convirtiéndola en una imagen mental nítida para fijar la idea central.", tag: "VISUAL" }, { l: "B", t: "Desarmas la estructura de la oración aislando el sujeto y el predicado para extraer la lógica.", tag: "TEXTUAL" }, { l: "C", t: "Buscas un ejemplo cotidiano donde esa misma premisa se cumpla para validar si tiene sentido común.", tag: "PRAGMATIC" } ] },
+            { text: "16. Al organizar tus jornadas de entrenamiento para el examen de Estado, encuentras que tu concentración es más alta si usas:", options: [ { l: "A", t: "Mapas mentales con conectores, colores para jerarquizar temas y diagramas.", tag: "VISUAL" }, { l: "B", t: "Resúmenes estructurados en texto limpio, listas numeradas y apuntes lineales.", tag: "TEXTUAL" }, { l: "C", t: "Bancos de preguntas puros donde pones a prueba tu lógica mediante el ensayo y error.", tag: "PRAGMATIC" } ] },
+
+            // DIMENSIÓN 3: RESISTENCIA BAJO PRESIÓN (Preguntas 17 a 24) - ESTABLE / STRESS
+            { text: "17. Encuentras un ítem que se resuelve de manera sospechosamente simple en tres segundos. Presientes que es una trampa estructurada:", options: [ { l: "A", t: "Mantienes la estabilidad, revisas velozmente las otras opciones y marcas con seguridad.", tag: "ESTABLE" }, { l: "B", t: "Entras en un bucle de duda, asumiendo que tu análisis inicial es erróneo, y cambias tu marca.", tag: "STRESS" } ] },
+            { text: "18. El aula asignada registra ruidos externos constantes debido al tráfico vehicular. Ante esta interrupción, tu foco:", options: [ { l: "A", t: "Aísla el entorno acústico por completo; logras concentrarte plenamente en el texto.", tag: "ESTABLE" }, { l: "B", t: "Gasta energía intentando evadir el ruido, lo que te obliga a ralentizar la lectura.", tag: "STRESS" } ] },
+            { text: "19. Te percatas de que cometiste un error de transcripción en la hoja óptica tres preguntas atrás, alterando la secuencia:", options: [ { l: "A", t: "Solicitas borrador al supervisor, corriges el desajuste ordenadamente y retomas el examen.", tag: "ESTABLE" }, { l: "B", t: "Te invade una sensación de molestia y dudas de tu concentración en los reactivos siguientes.", tag: "STRESS" } ] },
+            { text: "20. Al iniciar la última sección del examen, sabes que tu puntaje global depende de sostener el foco por 40 minutos más bajo fatiga:", options: [ { l: "A", t: "Estabilizas el procesamiento; tu mente reconoce que el final del reto exige el último esfuerzo.", tag: "ESTABLE" }, { l: "B", t: "Sufres de cansancio acumulado, provocando que leas palabras sueltas sin conectar ideas.", tag: "STRESS" } ] },
+            { text: "21. Una pregunta de Filosofía utiliza un vocabulario complejo que nunca habías visto en tu preparación previa:", options: [ { l: "A", t: "Aceptas la incertidumbre como una variable normal; buscas conectores estructurales para resolver.", tag: "ESTABLE" }, { l: "B", t: "Asumes un vacío cognitivo insalvable, lo que reduce tu confianza en lo que respondiste antes.", tag: "STRESS" } ] },
+            { text: "22. Faltando dos días para el examen real, un simulacro de control te arroja un puntaje menor al que esperabas proyectar:", options: [ { l: "A", t: "Utilizas el dato fríamente para aislar los temas específicos que fallaron y calibrar tus últimas horas.", tag: "ESTABLE" }, { l: "B", t: "Sufres un bajón de motivación, asumiendo que tu esfuerzo fue insuficiente y entras en frustración.", tag: "STRESS" } ] },
+            { text: "23. El estudiante que está sentado al lado tuyo pasa las hojas del cuadernillo a una velocidad extrema, demostrando seguridad:", options: [ { l: "A", t: "Ignoras su ritmo operativo por completo; tu reloj interno se mantiene inmune a la competencia.", tag: "ESTABLE" }, { l: "B", t: "Sientes presión competitiva involuntaria, lo que te induce a acelerar tu lectura sacrificando precisión.", tag: "STRESS" } ] },
+            { text: "24. Al enfrentarte a la primera pregunta de matemáticas de la mañana, tu mente experimenta un bloqueo temporal por la tensión inicial:", options: [ { l: "A", t: "Saltas temporalmente a una pregunta de lectura, rompes la tensión inicial y regresas al reactivo después.", tag: "ESTABLE" }, { l: "B", t: "Te fuerzas a operar de manera caótica sobre el papel, incrementando el desorden visual y la frustración.", tag: "STRESS" } ] }
+        ];
+
+        const Engine = {
+            index: 0,
+            telemetry: [],
+            tLecturaInicio: 0,
+            tLecturaFin: 0,
+            tReaccionInicio: 0,
+            isPaused: false,
+            pauseStartTime: 0,
+            totalPausedTime: 0,
+            hasTriggeredThisQuestion: false, 
+            databankCloned: [],
+            profileOutputJSON: null,
+
+            init: function() {
+                this.databankCloned = JSON.parse(JSON.stringify(DATABANK_RAW));
+                
+                // Carga e inicialización de Racha en Onboarding
+                let savedStreak = localStorage.getItem('dante_streak_count') || "1";
+                document.getElementById('dashStreakCounter').innerHTML = `${String(savedStreak).padStart(2, '0')} <span>🔥</span>`;
+
+                document.addEventListener("visibilitychange", () => {
+                    if (document.hidden) {
+                        this.isPaused = true;
+                        this.pauseStartTime = performance.now();
+                    } else {
+                        if (this.isPaused) {
+                            this.totalPausedTime += (performance.now() - this.pauseStartTime);
+                            this.isPaused = false;
+                        }
+                    }
+                });
+
+                document.addEventListener('keydown', (e) => {
+                    if(ViewController.currentScreen !== "viewAssessment") return;
+                    const key = e.key.toUpperCase();
+                    if(key === " " || key === "ENTER") {
+                        if(!document.getElementById('boxRespuestas').classList.contains('visible')) {
+                            e.preventDefault(); this.abrirBurbujas();
+                        }
+                    }
+                    if(key === "A" || key === "B" || key === "C") {
+                        if(document.getElementById('boxRespuestas').classList.contains('visible')) {
+                            const target = document.querySelector(`[data-key="${key}"]`);
+                            if(target) { e.preventDefault(); target.click(); }
+                        }
+                    }
+                });
+
+                this.cargarReactivo();
+            },
+
+            shuffle: function(array) {
+                let m = array.length, t, i;
+                while (m) {
+                    i = Math.floor(Math.random() * m--);
+                    t = array[m]; array[m] = array[i]; array[i] = t;
+                }
+                return array;
+            },
+
+            mostrarToast: function(msg) {
+                const toast = document.getElementById('toastAlerta');
+                toast.textContent = msg; toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 2200);
+            },
+
+            cargarReactivo: function() {
+                if(this.index >= this.databankCloned.length) {
+                    this.concluirTest();
+                    return;
+                }
+
+                this.totalPausedTime = 0; this.isPaused = false; this.hasTriggeredThisQuestion = false;
+                const box = document.getElementById('boxRespuestas');
+                box.classList.remove('visible'); box.innerHTML = '';
+                
+                const trigger = document.getElementById('triggerLectura');
+                trigger.style.display = 'block';
+
+                document.getElementById('controlCounter').textContent = `${this.index + 1} / ${this.databankCloned.length}`;
+                document.getElementById('indicatorBar').style.width = `${((this.index) / this.databankCloned.length) * 100}%`;
+
+                const labelTxt = document.getElementById('labelTriggerText');
+                const labelSub = document.getElementById('labelTriggerSub');
+                
+                if(this.index === 0) {
+                    labelTxt.textContent = "He completado la lectura del enunciado.";
+                    labelSub.textContent = "REVELAR BURBUJAS ÓPTICAS";
+                } else {
+                    labelTxt.textContent = "Listo para responder.";
+                    labelSub.textContent = "DESPLEGAR HOJA DE RESPUESTAS";
+                }
+
+                document.getElementById('textEnunciado').innerHTML = this.databankCloned[this.index].text;
+                this.tLecturaInicio = performance.now();
+                trigger.focus();
+            },
+
+            abrirBurbujas: function() {
+                if(this.hasTriggeredThisQuestion) return;
+
+                const now = performance.now();
+                const readingTime = (now - this.tLecturaInicio - this.totalPausedTime) / 1000;
+
+                if(readingTime < 0.35) {
+                    this.mostrarToast("Analiza con calma, el descarte estratégico requiere tu enfoque.");
+                    return;
+                }
+                
+                this.hasTriggeredThisQuestion = true;
+                this.tLecturaFin = readingTime;
+                this.totalPausedTime = 0; 
+                document.getElementById('triggerLectura').style.display = 'none';
+                
+                const box = document.getElementById('boxRespuestas');
+                const opcionesMezcladas = this.shuffle([...this.databankCloned[this.index].options]);
+                const letras = ["A", "B", "C"]; 
+
+                opcionesMezcladas.forEach((opc, idx) => {
+                    const row = document.createElement('div');
+                    row.className = 'opcion-fila';
+                    row.setAttribute('role', 'radio'); row.setAttribute('tabindex', '0');
+                    row.setAttribute('data-key', letras[idx]);
+                    row.setAttribute('aria-label', `Opción ${letras[idx]}: ${opc.t}`);
+
+                    const ovalo = document.createElement('div');
+                    ovalo.className = 'ovalo-icfes'; ovalo.textContent = letras[idx];
+
+                    const texto = document.createElement('div');
+                    texto.className = 'opcion-texto'; texto.textContent = opc.t;
+
+                    row.appendChild(ovalo); row.appendChild(texto);
+                    row.addEventListener('pointerdown', () => setTimeout(() => this.avanzar(opc.tag), 50));
+                    box.appendChild(row);
+                });
+
+                box.classList.add('visible');
+                box.children[0].focus(); 
+                this.tReaccionInicio = performance.now();
+            },
+
+            avanzar: function(tag) {
+                const now = performance.now();
+                const reactionTime = (now - this.tReaccionInicio - this.totalPausedTime) / 1000;
+
+                this.telemetry.push({
+                    numero_pregunta: this.index + 1,
+                    tag_seleccionado: tag,
+                    tiempo_lectura: parseFloat((this.tLecturaFin > 90 ? 90 : this.tLecturaFin).toFixed(4)),
+                    tiempo_reaccion: parseFloat((reactionTime > 60 ? 60 : reactionTime).toFixed(4))
+                });
+
+                this.index++;
+                this.cargarReactivo();
+            },
+
+            concluirTest: function() {
+                document.getElementById('controlHeader').style.display = 'none';
+                ViewController.navigate('viewProcessing', () => {
+                    setTimeout(() => {
+                        ViewController.navigate('viewDashboard', () => this.calcularYRenderizarDashboard());
+                    }, 2400);
+                });
+            },
+
+            calcularYRenderizarDashboard: function() {
+                const n = this.telemetry.length;
+                let counts = { S1: 0, S2: 0, VISUAL: 0, TEXTUAL: 0, PRAGMATIC: 0, ESTABLE: 0, STRESS: 0 };
+                let tLecturaTotal = 0, tReaccionTotal = 0;
+
+                this.telemetry.forEach(t => {
+                    if (counts.hasOwnProperty(t.tag_seleccionado)) { counts[t.tag_seleccionado]++; }
+                    tLecturaTotal += t.tiempo_lectura;
+                    tReaccionTotal += t.tiempo_reaccion;
+                });
+
+                const avgRead = tLecturaTotal / n;
+                const avgReact = tReaccionTotal / n;
+
+                // Fórmulas matriciales balanceadas por pesos
+                let radarVelocidad = Math.round(((counts.S1 + (8 - counts.S2)) / 16) * 50 + (Math.max(0, (4 - avgReact)) / 4) * 50);
+                let radarFoco = Math.round((counts.S2 / 8) * 60 + (counts.TEXTUAL / 8) * 40);
+                let radarResistencia = Math.round((counts.ESTABLE / 8) * 100);
+                let radarComprension = Math.round((counts.TEXTUAL / 8) * 50 + (counts.S2 / 8) * 50);
+                let radarEspacial = Math.round((counts.VISUAL / 8) * 100);
+
+                const radarDataset = [radarVelocidad, radarFoco, radarResistencia, radarComprension, radarEspacial].map(v => Math.max(15, Math.min(95, v)));
+                let calculatedScore = 220 + Math.round((radarDataset[1] * 1.8) + (radarDataset[2] * 1.0) - (counts.STRESS * 5));
+                calculatedScore = Math.max(180, Math.min(485, calculatedScore));
+
+                // Clasificación cruzada sin silos lineales
+                let arquetipoFinal = "El Estratega Analítico";
+                let descFinal = "Tu procesamiento destaca por una precisión lógica excelente. Desarmas enunciados complejos paso a paso. Tu ventaja es la exactitud; tu área de reajuste es acelerar tu velocidad de descarte táctico.";
+                let humanFeedback = `Tu velocidad de descarte promedio de ${avgReact.toFixed(1)}s combinada con tu perfil textual sugiere una excelente capacidad argumentativa bajo presión.`;
+                let rankName = "Platino II";
+
+                if (counts.STRESS >= 3 || radarDataset[2] < 50) {
+                    arquetipoFinal = "El Analista Protector";
+                    descFinal = "Eres un perfil detallista que busca seguridad antes de marcar. Tu potencial es alto, pero ante la ambigüedad tu sistema tiende a dudar en exceso, consumiendo minutos. Dante blindará tu confianza con andamiajes de menor a mayor complejidad.";
+                    humanFeedback = `Tu tiempo de lectura estructurado de ${avgRead.toFixed(1)}s demuestra un análisis impecable, pero el cortisol interfiere en el descarte final.`;
+                    rankName = "Oro de Enfoque";
+                } else if (counts.S1 > counts.S2) {
+                    arquetipoFinal = "El Cazador Veloz";
+                    descFinal = "Tiendes a resolver con velocidad táctica y barrido visual alto. Tu ventaja es el control del reloj; tu área de intervención son las trampas semánticas del examen. Tu plan inyectará módulos de freno cognitivo.";
+                    humanFeedback = `¡Tu velocidad de descarte vuela a los ${avgReact.toFixed(1)}s! Tu tendencia visoespacial te permite mapear el descarte de forma inmediata.`;
+                    rankName = "Platino de Velocidad";
+                } else if (counts.VISUAL > counts.TEXTUAL && counts.VISUAL > counts.PRAGMATIC) {
+                    arquetipoFinal = "El Cartógrafo Sistémico";
+                    descFinal = "Tu mente integra información de forma óptima mediante esquemas, infografías y relaciones espaciales. Te fatigas ante prosa abstracta continua. Tu plan adaptativo priorizará la traducción de contenidos a resúmenes gráficos.";
+                    humanFeedback = `Tu retención visual asimila la información un 22% más rápido si cuenta con diagramas vectoriales complementarios.`;
+                    rankName = "Diamante Visoespacial";
+                }
+
+                if (calculatedScore > 400) rankName = `Élite Máster (${rankName})`;
+
+                document.getElementById('dashRankBadge').textContent = `RANGO: ${rankName}`;
+                document.getElementById('dashArquetipoTitle').textContent = arquetipoFinal;
+                document.getElementById('dashArquetipoDesc').textContent = descFinal;
+                document.getElementById('dashFeedbackHumano').textContent = humanFeedback;
+                document.getElementById('dashMetricReading').textContent = `${avgRead.toFixed(2)}s`;
+                document.getElementById('dashMetricReaction').textContent = `${avgReact.toFixed(2)}s`;
+
+                this.animateScoreCounter(calculatedScore);
+                this.animateRadarChart(radarDataset);
+
+                // CORRECCIÓN DE BUG 4: Control de Racha Calendario Inteligente (Evita explotación repetitiva)
+                let todayStr = new Date().toISOString().split('T')[0];
+                let lastSaveDate = localStorage.getItem('dante_last_date');
+                let currentStreak = parseInt(localStorage.getItem('dante_streak_count') || "1");
+
+                if (lastSaveDate !== todayStr) {
+                    if (lastSaveDate) { currentStreak += 1; }
+                    localStorage.setItem('dante_streak_count', currentStreak);
+                    localStorage.setItem('dante_last_date', todayStr);
+                }
+                document.getElementById('dashStreakCounter').innerHTML = `${String(currentStreak).padStart(2, '0')} <span>🔥</span>`;
+
+                // Inyección dinámica de debilidades
+                const weakBox = document.getElementById('weakAreasBox'); weakBox.innerHTML = ""; 
+                let debilidades = [];
+                if (counts.S1 > counts.S2) debilidades.push("Lectura Crítica: Trampas y distractores por asimilación rápida.");
+                if (counts.STRESS > counts.ESTABLE) debilidades.push("Matemáticas: Gestión de la incertidumbre y parálisis por sobreanálisis.");
+                if (radarDataset[0] < 45) debilidades.push("Ciencias Naturales: Latencia de descarte alta (Pérdida de tiempo por pregunta).");
+                if (debilidades.length === 0) debilidades.push("Optimización de marcas de velocidad en simulacros avanzados.");
+
+                debilidades.slice(0, 2).forEach((deb, index) => {
+                    const fila = document.createElement('div'); fila.className = 'competencia-fila';
+                    fila.innerHTML = `<span>${deb}</span><span class='tag-weak'>Prioridad ${index + 1}</span>`;
+                    weakBox.appendChild(fila);
+                });
+
+                // CORRECCIÓN DE BUG 5: Telemetría de lecturas y reacciones agregadas al payload JSON
+                this.profileOutputJSON = {
+                    score: calculatedScore,
+                    arquetipo: arquetipoFinal,
+                    canales: { visual: counts.VISUAL, textual: counts.TEXTUAL, pragmatic: counts.PRAGMATIC },
+                    estres: counts.STRESS,
+                    velocidad: radarDataset[0],
+                    telemetria_promedios: {
+                        tiempo_lectura_medio: parseFloat(avgRead.toFixed(4)),
+                        tiempo_reaccion_medio: parseFloat(avgReact.toFixed(4))
+                    }
+                };
+            },
+
+            animateScoreCounter: function(targetScore) {
+                const scoreElement = document.getElementById('dashScore');
+                let current = 0; const duration = 1200; const start = performance.now();
+                function update(now) {
+                    const elapsed = now - start;
+                    const progress = Math.min(elapsed / duration, 1);
+                    const easeOutQuad = progress * (2 - progress);
+                    current = Math.round(easeOutQuad * targetScore);
+                    scoreElement.textContent = String(current).padStart(3, '0');
+                    if (progress < 1) { requestAnimationFrame(update); }
+                }
+                requestAnimationFrame(update);
+            },
+
+            animateRadarChart: function(targetDataset) {
+                const duration = 1400; const start = performance.now(); const self = this;
+                function renderLoop(now) {
+                    const elapsed = now - start;
+                    const progress = Math.min(elapsed / duration, 1);
+                    const easeOutCubic = 1 - Math.pow(1 - progress, 3);
+                    const currentDataset = targetDataset.map(val => val * easeOutCubic);
+                    self.drawRadarChart(currentDataset);
+                    if (progress < 1) { requestAnimationFrame(renderLoop); }
+                }
+                requestAnimationFrame(renderLoop);
+            },
+
+            drawRadarChart: function(dataset) {
+                const canvas = document.getElementById('radarCanvas'); if(!canvas) return;
+                const ctx = canvas.getContext('2d'); const cx = canvas.width / 2; const cy = canvas.height / 2;
+                const radius = 80; const totalEjes = 5;
+                const etiquetas = ["Velocidad", "Foco", "Resistencia", "Comprensión", "Espacial"];
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.strokeStyle = "#cbd5e1"; ctx.lineWidth = 1;
+                for (let j = 1; j <= 4; j++) {
+                    ctx.beginPath(); let currentRadius = (radius / 4) * j;
+                    for (let i = 0; i < totalEjes; i++) {
+                        let angle = (i * 2 * Math.PI / totalEjes) - Math.PI / 2;
+                        let x = cx + currentRadius * Math.cos(angle); let y = cy + currentRadius * Math.sin(angle);
+                        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                    }
+                    ctx.closePath(); ctx.stroke();
+                }
+                ctx.font = "bold 9px Inter, sans-serif"; ctx.fillStyle = "#666666"; ctx.textAlign = "center";
+                for (let i = 0; i < totalEjes; i++) {
+                    let angle = (i * 2 * Math.PI / totalEjes) - Math.PI / 2;
+                    let xEje = cx + radius * Math.cos(angle); let yEje = cy + radius * Math.sin(angle);
+                    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(xEje, yEje); ctx.stroke();
+                    let xText = cx + (radius + 20) * Math.cos(angle); let yText = cy + (radius + 12) * Math.sin(angle);
+                    ctx.fillText(etiquetas[i], xText, yText);
+                }
+                ctx.strokeStyle = "#b89742"; ctx.fillStyle = "rgba(184, 151, 66, 0.22)"; ctx.lineWidth = 2.5;
+                ctx.beginPath();
+                for (let i = 0; i < totalEjes; i++) {
+                    let angle = (i * 2 * Math.PI / totalEjes) - Math.PI / 2;
+                    let pesoOcular = (dataset[i] / 100) * radius;
+                    let x = cx + pesoOcular * Math.cos(angle); let y = cy + pesoOcular * Math.sin(angle);
+                    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+                }
+                ctx.closePath(); ctx.fill(); ctx.stroke();
+            },
+
+            desplegarPrescripcion: function() {
+                const data = this.profileOutputJSON; if(!data) return;
+
+                ViewController.navigate('viewPrescription', () => {
+                    document.getElementById('presArquetipo').textContent = `Plan de Intervención: ${data.arquetipo}`;
+                    
+                    let formatoTexto = "Tus canales registran equilibrio estándar. Tu material combinará bloques sintéticos con soporte audiovisual.";
+                    if (data.canales.visual > data.canales.textual && data.canales.visual > data.canales.pragmatic) {
+                        formatoTexto = "Tu agenda visoespacial es dominante. Tu plan reordenará tu entorno diario presentándote infografías de ciencias, diagramas moleculares y resúmenes gráficos.";
+                    } else if (data.canales.pragmatic > data.canales.visual && data.canales.pragmatic > data.canales.textual) {
+                        formatoTexto = "Registras una alta orientación al logro práctico. Se omitirá la teoría abstracta pura; tu entrenamiento se basará en casos aplicados al contexto real colombiano y cuestionarios basados en ensayo y error directo.";
+                    } else if (data.canales.textual > data.canales.visual) {
+                        formatoTexto = "Posees una excelente resistencia a la prosa densa. Tu material priorizará análisis de textos argumentativos extensos y documentos históricos.";
+                    }
+                    document.getElementById('presFormato').textContent = formatoTexto;
+
+                    let tiempoTexto = "Tu ritmo de respuesta es equilibrado. El reloj operará en modo estándar de control de marcas.";
+                    if (data.velocidad < 50) {
+                        tiempoTexto = "Registras una latencia de descarte elevada. El simulador activará un cronómetro de presión progresiva: se te otorgarán 2 minutos por pregunta e irá reduciéndose un 5% diario para forzar agilidad.";
+                    } else if (data.velocidad > 72) {
+                        tiempoTexto = "Exceso de velocidad detectado en la toma de decisiones. El sistema forzará pausas obligatorias automáticas: las burbujas permanecerán bloqueadas por un mínimo de 1.5 segundos para obligarte a contrastar opciones.";
+                    }
+                    document.getElementById('presTiempo').textContent = tiempoTexto;
+
+                    let moduloTexto = "Módulo sugerido: Lectura Crítica estructural para consolidar ritmo de barrido.";
+                    if (data.estres >= 3) {
+                        moduloTexto = "Módulo de Desensibilización Sistemática. Iniciarás con micro-simulacros de baja densidad (3 reactivos) sin cronómetro visible para amortiguar el cortisol.";
+                    } else if (data.score > 380) {
+                        moduloTexto = "Módulo de Desafío Élite. Serás inyectado directamente en bancos de preguntas oficiales de alta complejidad y cáscaras avanzadas de Matemáticas.";
+                    }
+                    document.getElementById('presModulo').textContent = moduloTexto;
+                });
+            }
+        };
+
+        /* ==========================================================================
+           6. COMPONENTE DE ENTRENAMIENTO ADAPTATIVO (Paso 1, 2 y 3 Completados)
+           ========================================================================== */
+        const TrainingModule = {
+            currentIndex: 0,
+            activeDataset: [],
+            profileRef: null,
+
+            // BANCOS DE ENTRENAMIENTO EXCLUSIVOS POR ARQUETIPO (5 Reactivos por Bloque)
+            bancos: {
+                freno_cognitivo: [
+                    { q: "1. Un estudio afirma que TODOS los ciudadanos de una población apoyan una reforma, basándose en encuestas del centro financiero. El conector TODOS representa una falacia porque:", a: [ { l: "A", t: "Omite que la muestra recolectada no es representativa de la diversidad de la población entera.", ok: true, f: "¡Correcto! Bloqueaste el impulso visual. Identificaste que la muestra estaba sesgada al sector de origen." }, { l: "B", t: "Asume de forma apresurada que la ley ya fue aprobada por el Congreso.", ok: false, f: "Incorrecto. El texto habla de apoyo social medido por encuestas, no de trámites legislativos." }, { l: "C", t: "Usa un lenguaje intencionadamente técnico para confundir a los ciudadanos.", ok: false, f: "Incorrecto. La falacia nace de la muestra pequeña y concentrada, no de la complejidad del vocabulario." } ] },
+                    { q: "2. Un cartel publicitario asegura: 'El 100% de los médicos recomiendan nuestra marca de analgésicos'. Al leer la letra pequeña, se aclara que encuestaron a 5 médicos pagados. Este argumento incurre en:", a: [ { l: "A", t: "Generalización apresurada por inducción basada en una muestra sesgada e insuficiente.", ok: true, f: "¡Excelente! Desarmaste la trampa publicitaria aplicando lógica prefrontal pura." }, { l: "B", t: "Apelación a la ignorancia del consumidor sobre componentes químicos.", ok: false, f: "Incorrecto. No se está usando la falta de conocimiento del público como prueba." } ] },
+                    { q: "3. En un debate sobre movilidad, un ponente afirma: 'Si liberamos el paso de vehículos particulares, destruiremos el transporte masivo'. Esta afirmación representa una trampa de:", a: [ { l: "A", t: "Falso dilema, al reducir las opciones a dos extremos catastróficos excluyendo puntos medios.", ok: true, f: "¡Extraordinario descarte! Obligaste a tu cerebro a ver la gama de grises." }, { l: "B", t: "Contradicción sintáctica directa entre los términos planteados.", ok: false, f: "Incorrecto. La estructura gramatical es correcta, el error es la reducción extrema de opciones." } ] },
+                    { q: "4. Un texto argumentativo concluye que una planta medicinal cura el insomnio porque 'ningún estudio científico ha demostrado lo contrario'. Este conector lógico es:", a: [ { l: "A", t: "Una falacia Ad Ignorantiam, al asumir que la falta de evidencia opuesta valida la premisa.", ok: true, f: "¡Impecable! Identificaste que la ausencia de prueba no constituye una prueba en sí misma." }, { l: "B", t: "Un argumento de autoridad respaldado por metodologías experimentales.", ok: false, f: "Incorrecto. El texto precisamente cita la falta de estudios como su único pilar." } ] },
+                    { q: "5. Un analista escribe: 'La economía del país crecerá porque el índice de confianza del consumidor aumentó en la capital'. El error lógico del conector radica en:", a: [ { l: "A", t: "Tomar una parte localizada de la muestra para inferir el comportamiento del sistema macro.", ok: true, f: "¡Freno de oro completado! Has consolidado tu control ante cáscaras inductivas." }, { l: "B", t: "Establecer una relación de causalidad inversa entre producción y consumo.", ok: false, f: "Incorrecto. El error es de alcance geográfico y muestral, no de dirección de variables." } ] }
+                ],
+                desensibilizacion: [
+                    { q: "1. En un contenedor sellado de volumen constante se calienta un gas ideal. Si la temperatura absoluta se duplica, las leyes físicas predicen que:", a: [ { l: "A", t: "La presión interna del gas se duplicará debido al incremento de colisiones moleculares.", ok: true, f: "¡Excelente análisis! Al estar bloqueado el espacio, el calor se traduce en presión pura." }, { l: "B", t: "El volumen se expandirá en relación 2:1 para liberar la energía térmica.", ok: false, f: "Incorrecto. El enunciado advierte explícitamente que el volumen es CONSTANTE." }, { l: "C", t: "La densidad molecular caerá a la mitad por reordenamiento cinético.", ok: false, f: "Incorrecto. La masa y el volumen están fijos, por lo tanto la densidad no varía." } ] },
+                    { q: "2. Una corriente eléctrica atraviesa una resistencia fija dentro de un circuito cerrado. Si el voltaje aplicado se reduce a la mitad, la Ley de Ohm determina que la intensidad:", a: [ { l: "A", t: "Disminuirá exactamente a la mitad de su valor inicial.", ok: true, f: "¡Perfecto! Procesaste la proporcionalidad directa de forma calmada y certera." }, { l: "B", t: "Se duplicará para compensar la caída del potencial energético.", ok: false, f: "Incorrecto. Voltaje e intensidad caminan juntos si la resistencia no cambia." } ] },
+                    { q: "3. Se colocan dos masas sólidas a una distancia fija en el espacio vacío. Si una de las masas duplica su volumen pero conserva su masa intacta, la fuerza de atracción gravitacional:", a: [ { l: "A", t: "Permanecerá completamente inalterada.", ok: true, f: "¡Brillante! No caíste en la trampa del tamaño visual; la gravedad depende de la masa, no del volumen." }, { l: "B", t: "Aumentará en proporción geométrica al diámetro del cuerpo extendido.", ok: false, f: "Incorrecto. La masa sigue siendo la misma, la fuerza orbital no varía." } ] },
+                    { q: "4. Un haz de luz monocromática pasa del vacío a un bloque de vidrio denso. Al cambiar de medio, la variable física que permanece invariable es:", a: [ { l: "A", t: "La frecuencia de la onda lumínica.", ok: true, f: "¡Impecable! La identidad de la onda la define la fuente, la frecuencia es inmune al medio." }, { l: "B", t: "La velocidad de propagación del vector visual.", ok: false, f: "Incorrecto. La luz se ralentiza al entrar a un medio con mayor índice de refracción." } ] },
+                    { q: "5. Un cuerpo se desplaza en trayectoria rectilínea con aceleración constante de cero. Esto implica de forma obligatoria que el objeto:", a: [ { l: "A", t: "Mantiene una velocidad uniforme o se encuentra en estado de reposo absoluto.", ok: true, f: "¡Foco consolidado con éxito! Has terminado tu sesión sin picos de tensión." }, { l: "B", t: "Incrementa su posición al cuadrado del tiempo transcurrido.", ok: false, f: "Incorrecto. Si la aceleración es cero, no hay cambios en la tasa de velocidad." } ] }
+                ],
+                velocidad_descarte: [
+                    { q: "1. Una población bacteriana se duplica al término de cada hora. Si en la hora 1 se registran 4 organismos, la función exponencial que describe la población en el tiempo (t) es:", a: [ { l: "A", t: "Población = 4 × 2^(t-1)", ok: true, f: "¡Matemática pura! Dedujiste el modelo exponencial base de forma instantánea." }, { l: "B", t: "Población = 4 × t^2", ok: false, f: "Incorrecto. Una función potencial con base variable no modela crecimiento geométrico continuo." }, { l: "C", t: "Población = 4 + 2t", ok: false, f: "Incorrecto. Esto representa un modelo lineal simple, la duplicación requiere exponentes." } ] },
+                    { q: "2. Deseas calcular el área de un terreno rectangular. Sabes que el largo es el triple del ancho y que el perímetro total es de 80 metros. El área es de:", a: [ { l: "A", t: "300 metros cuadrados.", ok: true, f: "¡Velocidad élite! Despejaste los lados (30 y 10) y multiplicaste en tiempo récord." }, { l: "B", t: "600 metros cuadrados.", ok: false, f: "Incorrecto. Cuidado con multiplicar el perímetro por las proporciones sin aislar los componentes." } ] },
+                    { q: "3. La ecuación lineal 3x + 12 = 0 cruza el eje de las abscisas de un plano cartesiano exactamente en el punto de coordenadas:", a: [ { l: "A", t: "(-4 , 0)", ok: true, f: "¡Despeje limpio! Localizaste la raíz del polinomio en milisegundos." }, { l: "B", t: "（0 , -4)", ok: false, f: "Incorrecto. Invertiste los ejes. El eje de las abscisas representa a la variable X." } ] },
+                    { q: "4. Una urna contiene 3 bolas rojas y 7 bolas negras. Si extraes una bola completamente al azar, la probabilidad porcentual de obtener un elemento rojo es:", a: [ { l: "A", t: "30%", ok: true, f: "¡Exacto! Ratio básico resuelto con agilidad de barrido analítico." }, { l: "B", t: "70%", ok: false, f: "Incorrecto. Esa es la probabilidad complementaria para los elementos negros." } ] },
+                    { q: "5. Un tren reduce su velocidad uniformemente de 20 m/s a 0 m/s en un lapso de 5 segundos. Su tasa de desaceleración es de:", a: [ { l: "A", t: "4 m/s²", ok: true, f: "¡Misión cumplida! Dominas el descarte veloz bajo presión del cronómetro." }, { l: "B", t: "100 m/s²", ok: false, f: "Incorrecto. Multiplicaste variables en lugar de dividir la tasa de cambio de velocidad." } ] }
+                ]
+            },
+
+            init: function() {
+                this.profileRef = Engine.profileOutputJSON;
+                if(!this.profileRef) return;
+
+                // Enrutamiento del Banco según el cruce matricial real
+                if (this.profileRef.arquetipo === "El Cazador Veloz" || this.profileRef.velocidad > 72) {
+                    this.activeDataset = this.bancos.freno_cognitivo;
+                } else if (this.profileRef.arquetipo === "El Analista Protector" || this.profileRef.estres >= 3) {
+                    this.activeDataset = this.bancos.desensibilizacion;
+                } else {
+                    this.activeDataset = this.bancos.velocidad_descarte;
+                }
+
+                this.currentIndex = 0;
+                ViewController.navigate('viewTraining');
+                this.renderReactivo();
+            },
+
+            renderReactivo: function() {
+                document.getElementById('btnNextTraining').style.display = 'none';
+                document.getElementById('trainingCounter').textContent = `Reactivo ${this.currentIndex + 1} / ${this.activeDataset.length}`;
+                
+                const metaTitle = document.getElementById('trainingBadgeMeta');
+                const qText = document.getElementById('trainingQuestionText');
+                const aBox = document.getElementById('trainingAnswersBox');
+                aBox.innerHTML = "";
+
+                const currentData = this.activeDataset[this.currentIndex];
+                qText.innerHTML = currentData.q;
+
+                // Aplicar freno de hardware real de 1.5s prometido en la prescripción al Cazador Veloz
+                let inputsLocked = false;
+                if (this.profileRef.arquetipo === "El Cazador Veloz" || this.profileRef.velocidad > 72) {
+                    inputsLocked = true;
+                    metaTitle.textContent = "ALERTA DANTE: BURBUJAS BLOQUEADAS POR 1.5s PARA FORZAR ANÁLISIS CRÍTICO";
+                    document.getElementById('trainingMetaContainer').style.background = "#fef3c7";
+                    setTimeout(() => {
+                        inputsLocked = false;
+                        metaTitle.textContent = "ZONA DE CONTROL ACTIVADA: PASA EL FILTRO LOGÍSTICO";
+                        document.getElementById('trainingMetaContainer').style.background = "#f0fdf4";
+                    }, 1500);
+                } else {
+                    metaTitle.textContent = "OPERACIÓN ADAPTATIVA ACTIVA";
+                    document.getElementById('trainingMetaContainer').style.background = "#f4f4f0";
+                }
+
+                currentData.a.forEach(op => {
+                    const row = document.createElement('div');
+                    row.className = 'opcion-fila';
+                    row.innerHTML = `<div class="ovalo-icfes">${op.l}</div><div class="opcion-texto">${op.t}</div>`;
+                    
+                    row.onclick = () => {
+                        if(inputsLocked) return; // Freno de hardware activo
+                        
+                        // CORRECCIÓN DE BUG 3: Explicación y feedback diferenciado por óvalo
+                        Engine.mostrarToast(op.f);
+
+                        // Bloquear los toques de los otros óvalos tras elegir uno
+                        Array.from(aBox.children).forEach(child => child.style.pointerEvents = 'none');
+                        
+                        // Revelar el botón de continuación (Paso 2)
+                        document.getElementById('btnNextTraining').style.style = 'block';
+                        document.getElementById('btnNextTraining').style.display = 'block';
+                    };
+                    aBox.appendChild(row);
+                });
+            },
+
+            next: function() {
+                this.currentIndex++;
+                if(this.currentIndex < this.activeDataset.length) {
+                    this.renderReactivo();
+                } else {
+                    this.concluirSesionDiaria();
+                }
+            },
+
+            // PASO 2: Resumen final de lo aprendido y retorno limpio al onboarding original sin callejones muertos
+            concluirSesionDiaria: function() {
+                const qText = document.getElementById('trainingQuestionText');
+                const aBox = document.getElementById('trainingAnswersBox');
+                const btnNext = document.getElementById('btnNextTraining');
+                const metaTitle = document.getElementById('trainingBadgeMeta');
+
+                document.getElementById('trainingCounter').textContent = "OPERACIÓN DIARIA CONCLUIDA";
+                metaTitle.textContent = "LOGRO ADQUIRIDO: COHERENCIA OPERATIVA ASEGURADA";
+                document.getElementById('trainingMetaContainer').style.background = "rgba(184, 151, 66, 0.08)";
+
+                qText.innerHTML = `
+                    <h2 style='font-family: var(--font-ui); font-size:1.3rem; margin-bottom:12px; color: var(--accent-gold-matte);'>¡Entrenamiento diario completado con éxito!</h2>
+                    Hoy has entrenado y calibrado con éxito tu perfil de <strong>${this.profileRef.arquetipo}</strong> a través de 5 reactivos de control continuo.<br><br>
+                    Tu racha de días se encuentra a salvo en el disco local y tu mapa de tendencias operativas se ha estabilizado en el servidor. Regresa mañana para desbloquear el siguiente bloque de competencias de Ciencias y Matemáticas de alta densidad.
+                </p>`;
+                
+                aBox.innerHTML = "";
+                btnNext.textContent = "CERRAR SESIÓN Y GUARDAR";
+                btnNext.style.background = "var(--accent-gold-matte)";
+                btnNext.style.display = "block";
+                
+                // Redireccionar al inicio reseteando el motor para el próximo ciclo
+                btnNext.onclick = function() {
+                    location.reload(); 
+                };
+            }
+        };
+    </script>
+</body>
+</html>
