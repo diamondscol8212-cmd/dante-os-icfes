@@ -101,7 +101,6 @@
         .clinical-alert-body { font-size: 0.82rem; color: #cbd5e1; text-align: justify; line-height: 1.4; }
         @keyframes alert-pulse { 0% { box-shadow: 0 0 5px rgba(231,76,60,0.1); } 50% { box-shadow: 0 0 15px rgba(231,76,60,0.25); } 100% { box-shadow: 0 0 5px rgba(231,76,60,0.1); } }
 
-        /* 🪐 ESTILOS PARA LA CAJA DE PRESCRIPCIÓN PEDAGÓGICA COLECTIVA */
         .remediation-box {
             background: linear-gradient(135deg, #141b2d 0%, #0d111a 100%);
             border: 1px solid var(--cyan-core); border-left: 4px solid var(--gold-satin);
@@ -137,12 +136,9 @@
         <div class="kpi-card"><p style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">Estudiantes Auditados</p><div class="kpi-val" id="kpiTotalEstudiantes">0</div></div>
         <div class="kpi-card"><p style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">Estabilidad Cognitiva Media</p><div class="kpi-val" id="kpiEstabilidadMedia">0%</div></div>
         <div class="kpi-card"><p style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600;">Puntaje Equivalente Promedio</p><div class="kpi-val" id="kpiPuntajePromedio">0 / 100 pts</div></div>
-        
-        <!-- 🪐 KPI DORADO: ÍNDICE DE RESILIENCIA Y ALUMNOS DESTRABADOS POR EL MOTOR 2 -->
         <div class="kpi-card gold-premium"><p style="font-size: 0.75rem; text-transform: uppercase; color: var(--gold-satin); font-weight: bold; letter-spacing: 0.5px;">Índice Resiliencia (Destrabados)</p><div class="kpi-val" id="kpiResilienciaMedia" style="color: #fff; font-weight: bold;">0%</div></div>
     </div>
 
-    <!-- 🪐 CAJA DE PRESCRIPCIÓN PEDAGÓGICA AUTOMÁTICA EN CALIENTE PARA EL DOCENTE -->
     <div class="remediation-box" id="uiPrescripcionAulaContenedor" style="display: none;">
         <div class="remediation-title">🎯 INTERVENCIÓN DIRECTA RECOMENDADA PARA EL AULA (CLASE DE 15 MINUTOS)</div>
         <p class="remediation-text" id="lblPrescripcionAulaTexto"></p>
@@ -162,7 +158,7 @@
             </div>
 
             <div class="control-panel">
-                <div class="panel-title">Mandos de Época</div>
+                <div class="panel-title">Mandos de Épocas</div>
                 <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.2rem;">Guarda una instantánea inmutable en Supabase antes de vaciar las llaves volátiles de Redis.</p>
                 <button class="btn-action" onclick="RectorDashboard.ejecutarCierreEpoca()">🚨 Purgar y Guardar Reporte</button>
             </div>
@@ -202,7 +198,17 @@
     </div>
 
     <script>
-        const INSTITUTION_ID = "colegio_sandbox_default";
+        // 🪐 OPTIMIZACIÓN DE RUTA DINÁMICA ANTI-LOCALHOST BLOCKING
+        const HOST_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+            ? "http://localhost:3000"
+            : window.location.origin;
+
+        // Recuperar credenciales criptográficas perimetrales del login
+        const sessionToken = localStorage.getItem("dante_token");
+        const rawUser = localStorage.getItem("dante_user");
+        const userObj = rawUser ? JSON.parse(rawUser) : {};
+        const INSTITUTION_ID = userObj.institution_id || "colegio_sandbox_default";
+
         let CurrentMateria = "matematicas";
         let CurrentEpoca = "LIVE_NOW";
         let AdnChartInstance = null;
@@ -211,9 +217,12 @@
             static async cargarEpocasHistoricas() {
                 const selector = document.getElementById("selEpocaHistorica");
                 try {
-                    const res = await fetch(`/api/admin/listar-epocas?institution_id=${INSTITUTION_ID}`, {
+                    const res = await fetch(`${HOST_URL}/api/admin/listar-epocas?institution_id=${INSTITUTION_ID}`, {
                         method: 'GET',
-                        headers: { 'x-institution-id': INSTITUTION_ID }
+                        headers: { 
+                            'x-institution-id': INSTITUTION_ID,
+                            'Authorization': `Bearer ${sessionToken}`
+                        }
                     });
                     const json = await res.json();
 
@@ -227,7 +236,6 @@
                             opt.innerText = `📁 SNAPSHOT: ${ep.materia.toUpperCase()} (${fecha})`;
                             selector.appendChild(opt);
                         });
-                        console.log("🪐 [HOMEOSTASIS SELECTOR]: Épocas cargadas exitosamente.");
                     } else {
                         const optMock = document.createElement("option");
                         optMock.value = "mock_snapshot_sandbox_id";
@@ -235,7 +243,7 @@
                         selector.appendChild(optMock);
                     }
                 } catch (err) {
-                    console.error("🚨 [LOAD EPOCAS EXCEPTION FALLBACK]:", err.message);
+                    console.error("🚨 [LOAD EPOCAS EXCEPTION]:", err.message);
                     const optErr = document.createElement("option");
                     optErr.value = "mock_snapshot_sandbox_id";
                     optErr.innerText = `📁 SNAPSHOT CONTINGENCIA LOCAL (BYPASS NETWORK)`;
@@ -245,11 +253,12 @@
 
             static async consultarDatos() {
                 try {
-                    const res = await fetch(`/api/cat/auditoria?materia=${CurrentMateria}&institution_id=${INSTITUTION_ID}&epoca=${CurrentEpoca}`, {
+                    const res = await fetch(`${HOST_URL}/api/cat/auditoria?materia=${CurrentMateria}&institution_id=${INSTITUTION_ID}&epoca=${CurrentEpoca}`, {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json',
-                            'x-institution-id': INSTITUTION_ID
+                            'x-institution-id': INSTITUTION_ID,
+                            'Authorization': `Bearer ${sessionToken}`
                         }
                     });
                     const json = await res.json();
@@ -302,8 +311,7 @@
                 let serieFatiga = [];
                 let serieRecuperacion = [];
 
-                // Estructura para compilar las vulnerabilidades promedio de toda la cohorte
-                let totalPriorsAcumulados = { lineal: 0, geometrico: 0, conversion: 0, operacional: 0, count: 0 };
+                let totalPriorsAcumulados = { lineal: 0, geometrico: 0, conversion: 0, operational: 0, count: 0 };
 
                 alumnos.forEach(al => {
                     const adn = al.adn_cognitivo || {};
@@ -326,14 +334,12 @@
                     const iccVal = al.indice_curiosidad_conductual !== undefined ? parseFloat(al.indice_curiosidad_conductual) : 0.5000;
                     sumaIRI += iriVal;
 
-                    // Compilar Priors para el diagnóstico inteligente del aula
-                    if (al.estudiante !== 'diogenes') {
-                        totalPriorsAcumulados.lineal += parseFloat(sesgos.attr_heuristica_lineal || sesgos.HEURISTICA_LINEAL || 0.02);
-                        totalPriorsAcumulados.geometrico += parseFloat(sesgos.attr_error_geometrico || sesgos.ERROR_GEOMETRICO || 0.02);
-                        totalPriorsAcumulados.conversion += parseFloat(sesgos.attr_omision_conversion || sesgos.OMISION_CONVERSION || 0.02);
-                        totalPriorsAcumulados.operacional += parseFloat(sesgos.attr_inversion_operational || sesgos.INVERSION_OPERATIONAL || 0.02);
-                        totalPriorsAcumulados.count++;
-                    }
+                    const sesgosSaneados = sesgosMapSaneado(sesgos);
+                    totalPriorsAcumulados.lineal += parseFloat(sesgosSaneados.attr_heuristica_lineal || 0);
+                    totalPriorsAcumulados.geometrico += parseFloat(sesgosSaneados.attr_error_geometrico || 0);
+                    totalPriorsAcumulados.conversion += parseFloat(sesgosSaneados.attr_omision_conversion || 0);
+                    totalPriorsAcumulados.operacional += parseFloat(sesgosSaneados.attr_inversion_operational || 0);
+                    totalPriorsAcumulados.count++;
 
                     let tramoTxt = "NOMINAL (S2)";
                     let tramoColor = "var(--emerald)";
@@ -368,7 +374,7 @@
                         <td>
                             <div style="font-size:1.1rem; font-weight:bold; color:var(--emerald);">${al.puntaje_escalonado} / 100</div>
                             <div style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; margin-top:0.4rem; font-weight:bold;">Mapa de Calor de Sesgos:</div>
-                            ${this.construirMiniBarrasSesgos(sesgos)}
+                            ${this.construirMiniBarrasSesgos(sesgosSaneados)}
                         </td>
                     `;
                     tbody.appendChild(tr);
@@ -385,11 +391,11 @@
 
             static construirMiniBarrasSesgos(sesgos) {
                 let html = "";
-                for (const [key, val] of Object.entries(sesgosMapSaneado(sesgos))) {
+                for (const [key, val] of Object.entries(sesgos)) {
                     const porc = (parseFloat(val) > 1.0 ? parseFloat(val) : parseFloat(val) * 100).toFixed(0);
                     let color = "var(--emerald)";
                     if (porc >= 25) color = "var(--gold-satin)";
-                    if (porc >= 55 || key.toLowerCase().includes('inversion') || key.toLowerCase().includes('omision') || key.toLowerCase().includes('fuga') || key.toLowerCase().includes('sesgo')) color = "var(--crimson)";
+                    if (porc >= 55) color = "var(--crimson)";
                     
                     html += `
                         <div style="margin-top:0.3rem; display:flex; align-items:center; justify-content:space-between; font-size:0.7rem;">
@@ -409,7 +415,6 @@
                 document.getElementById("kpiResilienciaMedia").innerText = `${resiliencia}%`;
             }
 
-            // 🪐 MOTOR DE INFERENCIA DE REMEDIACIÓN PARA EL DOCENTE: EVALUACIÓN MASIVA DE PRIORS Q-MATRIX
             static calcularPrescripciónAulaMasiva(priors) {
                 const box = document.getElementById("uiPrescripcionAulaContenedor");
                 const txt = document.getElementById("lblPrescripcionAulaTexto");
@@ -431,18 +436,14 @@
                 let materiaCapitalizada = CurrentMateria.replace('_', ' ').toUpperCase();
 
                 if (maxPriorCoherte <= 0.15) {
-                    txt.innerText = `Felicidades Profesor. La cohorte actual de T-COLEGIO_SANDBOX_DEFAULT demuestra un control óptimo de sesgos y deslices en ${materiaCapitalizada}. Se aconseja continuar el Blueprint adaptativo expandiendo el nivel del banco a ítems de alta discriminación matemática y abstracción compleja.`;
+                    txt.innerText = `Felicidades Profesor. La cohorte actual demuestra un control óptimo de sesgos en ${materiaCapitalizada}. Se aconseja continuar el Blueprint adaptativo expandiendo el nivel del banco a ítems de alta abstracción compleja.`;
                     btn.href = `https://www.google.com/search?q=ejercicios+avanzados+icfes+${CurrentMateria}`;
                     return;
                 }
 
-                // Generar recomendación dirigida según el peor prior de la cohorte
-                if (maxPriorCoherte === avgLineal) {
-                    txt.innerText = `Atención Docente: Se registra una fractura masiva por 'Heurística Lineal' en la cohorte. Sus alumnos automatizan proporcionalidades directas en enunciados con tasas variables. Dedique los próximos 15 minutos de su clase a romper el piloto automático: enseñe funciones no lineales o cambios exponenciales, demostrando por qué la intuición geométrica falla en estos casos.`;
-                    btn.href = `https://www.google.com/search?q=estrategias+didacticas+para+ensenar+funciones+no+lineales+icfes`;
-                } else if (maxPriorCoherte === avgOperacional) {
-                    txt.innerText = `Atención Docente: Sus alumnos registran un desborde crítico en el nodo de 'Inversión Operacional Estructural'. Tienden a colapsar en el despeje inverso de variables algebraicas cruzadas bajo presión de tiempo. Dedique 15 minutos en el tablero a aislar operadores y forzar la declaración explícita de signos antes del cálculo final.`;
-                    btn.href = `https://www.google.com/search?q=ejercicios+de+despeje+de+ecuaciones+metodo+didactico`;
+                if (maxPriorCoherte === avgOperacional || maxPriorCoherte === avgLineal) {
+                    txt.innerText = `Atención Docente: Se registra un desborde crítico en el nodo de 'Inversión Operacional Estructural' (Inhibición del Sistema 1 rápido). Sus alumnos automatizan signos algebraicos cruzados o proporcionalidades directas de forma ciega por la prisa. Dedique los próximos 15 minutos en el tablero a desarmar ecuaciones aislando operadores y obligándolos a declarar explícitamente el paso a paso antes de calcular.`;
+                    btn.href = `https://www.google.com/search?q=estrategias+didacticas+para+despeje+de+ecuaciones+algebraicas+secundaria`;
                 } else if (maxPriorCoherte === avgConversion) {
                     txt.innerText = `Atención Docente: La cohorte presenta una vulnerabilidad activa por 'Omisión de Conversión de Magnitudes'. Los alumnos operan los números ignorando los cambios dimensionales (escalas métricas, volumétricas o temporales). Prescriba un paso intermedio obligatorio en la pizarra donde el alumno deba rotular las unidades antes de computar el algoritmo.`;
                     btn.href = `https://www.google.com/search?q=actividades+de+conversion+de+unidades+de+medida+secundaria`;
@@ -502,9 +503,13 @@
             static async ejecutarCierreEpoca() {
                 if (!confirm("🚨 ADVERTENCIA DANTE OS:\n¿Está seguro de cerrar la Época actual? Se consolidará un reporte inmutable en Supabase y se purgará la cache de Redis.")) return;
                 try {
-                    const res = await fetch(`/api/admin/reset-epoca`, {
+                    const res = await fetch(`${HOST_URL}/api/cat/reset-epoca`, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'x-institution-id': INSTITUTION_ID },
+                        headers: { 
+                            'Content-Type': 'application/json', 
+                            'x-institution-id': INSTITUTION_ID,
+                            'Authorization': `Bearer ${sessionToken}`
+                        },
                         body: JSON.stringify({ materia: CurrentMateria, institution_id: INSTITUTION_ID })
                     });
                     const json = await res.json();
@@ -524,10 +529,10 @@
                 }
                 if (CurrentEpoca === "mock_snapshot_sandbox_id") {
                     alert("🪐 MODO SANDBOX: Desplegando el cascarón analítico HTML print-ready. Presione Ctrl+P en la pestaña entrante.");
-                    window.open(`/api/cat/reporte-pdf/generico_sandbox`, '_blank');
+                    window.open(`${HOST_URL}/api/cat/reporte-pdf/generico_sandbox`, '_blank');
                     return;
                 }
-                window.open(`/api/cat/reporte-pdf/${CurrentEpoca}`, '_blank');
+                window.open(`${HOST_URL}/api/cat/reporte-pdf/${CurrentEpoca}`, '_blank');
             }
 
             static async matricularEstudiante() {
@@ -536,9 +541,13 @@
                 if (!nombre) return;
 
                 try {
-                    const res = await fetch('/api/admin/registrar-estudiante', {
+                    const res = await fetch(`${HOST_URL}/api/admin/registrar-estudiante`, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json', 'x-institution-id': INSTITUTION_ID },
+                        headers: { 
+                            'Content-Type': 'application/json', 
+                            'x-institution-id': INSTITUTION_ID,
+                            'Authorization': `Bearer ${sessionToken}`
+                        },
                         body: JSON.stringify({ nombreEstudiante: nombre, institution_id: INSTITUTION_ID })
                     });
                     const json = await res.json();
@@ -579,17 +588,31 @@
         }
 
         function sesgosMapSaneado(mapaSesgos) {
-            return Object.keys(mapaSesgos).length > 0 ? mapaSesgos : { "ERROR_GEOMETRICO": 0.02, "HEURISTICA_LINEAL": 0.02, "OMISION_CONVERSION": 0.02, "INVERSION_OPERATIONAL": 0.02 };
+            // Mapeo unificado para capturar tanto la nomenclatura antigua como el modelo 2026 de producción
+            return {
+                attr_heuristica_lineal: mapaSesgos.attr_heuristica_lineal || mapaSesgos.HEURISTICA_LINEAL || mapaSesded || 0.02,
+                attr_error_geometrico: mapaSesgos.attr_error_geometrico || mapaSesgos.ERROR_GEOMETRICO || 0.02,
+                attr_omision_conversion: mapaSesgos.attr_omision_conversion || mapaSesgos.OMISION_CONVERSION || 0.02,
+                attr_inversion_operational: mapaSesgos.attr_inversion_operational || mapaSesgos.attr_inversion_operacional || mapaSesgos.INVERSION_OPERATIONAL || mapaSesgos.INVERSION_OPERACIONAL || 0.02
+            };
         }
 
         window.onload = () => {
+            // Control perimetral: Redirección si se intenta saltar el login
+            if (!sessionToken) {
+                alert("🚨 CONTROL PORTAL: Credenciales ausentes. Redirigiendo a pasarela.");
+                window.location.href = "/login.html";
+                return;
+            }
             RectorDashboard.consultarDatos();
             RectorDashboard.cargarEpocasHistoricas(); 
+            
+            // Intervalo optimizado a 15 segundos que respeta el foco de la pestaña (Anti-Saturación)
             setInterval(() => { 
-                if (CurrentEpoca === "LIVE_NOW") {
+                if (CurrentEpoca === "LIVE_NOW" && !document.hidden) {
                     RectorDashboard.consultarDatos(); 
                 }
-            }, 3000);
+            }, 15000);
         };
     </script>
 </body>
