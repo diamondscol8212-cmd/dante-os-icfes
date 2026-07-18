@@ -124,7 +124,7 @@
     <div class="student-id" id="student-label">ID: Cargando...</div>
     
     <div class="panel" id="main-panel">
-        <div class="loading-text" id="loader">📡 Sincronizando con el Gateway en localhost:3000...</div>
+        <div class="loading-text" id="loader">📡 Sincronizando modelo psicométrico concurrente...</div>
         
         <div id="content" style="display: none;">
             <h4>Termómetro de Certeza Bayesian</h4>
@@ -145,12 +145,32 @@
 </div>
 
 <script>
-    const STUDENT_ID = "student_normalizado_test";
-    const API_URL = `http://localhost:3000/api/cat/gemelo/${STUDENT_ID}`;
+    // 🪐 DETECCIÓN DINÁMICA DE HOST PARA ENTORNO DE PRODUCCIÓN
+    const HOST_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+        ? "http://localhost:3000"
+        : window.location.origin;
+
+    // Extracción inteligente de la sesión activa del alumno desde localStorage
+    const sessionToken = localStorage.getItem("dante_token");
+    const rawUser = localStorage.getItem("dante_user");
+    const userObj = rawUser ? JSON.parse(rawUser) : {};
+    
+    // Si no hay sesión iniciada de prueba, usamos Elizabeth como Fallback Nominal
+    const STUDENT_ID = userObj.estudiante || "elizabeth";
+    const INSTITUTION_ID = userObj.institution_id || "colegio_sandbox_default";
+
+    const API_URL = `${HOST_URL}/api/cat/gemelo/${STUDENT_ID}`;
 
     async function consultarGemeloDigital() {
         try {
-            const response = await fetch(API_URL);
+            const response = await fetch(API_URL, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-institution-id': INSTITUTION_ID,
+                    'Authorization': `Bearer ${sessionToken}`
+                }
+            });
             if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
             
             const resData = await response.json();
@@ -159,7 +179,7 @@
                 const esc = gemelo.escalonamiento_icfes;
 
                 // Actualizar Textos
-                document.getElementById('student-label').innerText = `ID: ${STUDENT_ID} (${resData.origen})`;
+                document.getElementById('student-label').innerText = `ID: ${STUDENT_ID.toUpperCase()} (${resData.origen || 'SUPABASE LIVE'})`;
                 document.getElementById('val-min').innerText = esc.intervalo_95[0];
                 document.getElementById('val-target').innerText = esc.puntaje_estimado;
                 document.getElementById('val-max').innerText = esc.intervalo_95[1];
@@ -179,7 +199,13 @@
         }
     }
 
-    window.onload = consultarGemeloDigital;
+    window.onload = () => {
+        // Validación preventiva: Si no hay token, avisar pero permitir visualizar fallback
+        if (!sessionToken) {
+            console.warn("⚠️ [DANTE SECURITY]: Token ausente en LocalStorage. Corriendo en modo Sandbox.");
+        }
+        consultarGemeloDigital();
+    };
 </script>
 
 </body>
