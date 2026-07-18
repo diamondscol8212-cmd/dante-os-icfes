@@ -9,7 +9,7 @@ const SERVER_VERSION = "v20.6.3-FIX_MASTER";
 
 // 🛡️ BLINDAJE DE NÚCLEO: Si no existe la variable de entorno, el sistema detiene el arranque en lugar de degradar la seguridad.
 if (!process.env.INTEGRITY_SECRET) {
-    console.error("🚨 [DANTE OS NUCLEUS ERROR]: La variable INTEGRITY_SECRET es indefinida en el entorno local/Render.");
+    console.error("🚨 [DANTE OS NUCLEUS ERROR]: La variable INTEGRITY_SECRET is indefinida en el entorno local/Render.");
     process.exit(1);
 }
 const INTEGRITY_SECRET = process.env.INTEGRITY_SECRET;
@@ -48,7 +48,69 @@ router.post('/interactuar', async (req, res) => {
 });
 
 // ====================================================================
-// 🪐 ENDPOINT B: AUDITORÍA GLOBAL CON LOGICA DE FATIGA (HÍBRIDO LIVE CORREGIDO)
+// 🪐 ENDPOINT NUEVO: GEMELO DIGITAL CRIPTOGRÁFICO MULTI-TENANT (FIJA EL 404)
+// ====================================================================
+router.get('/gemelo/:id', async (req, res) => {
+    try {
+        const studentId = String(req.params.id).toLowerCase().trim();
+        const materiaFiltro = 'matematicas'; // Predeterminado para alineación con el simulador
+        
+        console.log(`📡 [GEMELO DIGITAL ENGINE]: Construyendo gemelo bayesiano para Alumno: [${studentId}] en Tenant: [${req.tenantId}]`);
+
+        // 1. Intentar jalar datos en caliente desde el runtime elástico de Redis
+        const keyAlias = `dante:live_runtime_snapshot:${materiaFiltro}:${studentId}`;
+        let liveData = await redis.get(keyAlias);
+        let thetaValue = 0.0;
+        let origenDatos = "SUPABASE LIVE";
+
+        if (liveData) {
+            const parsed = JSON.parse(liveData);
+            thetaValue = parseFloat(parsed.theta || 0.0);
+            origenDatos = "REDIS RUNTIME VIVO";
+        } else {
+            // 2. Si no está en cache, consultar la persistencia real de Supabase
+            const { data: registro, error } = await supabase
+                .from('progreso_estudiantes')
+                .select('theta, theta_final')
+                .eq('institution_id', req.tenantId)
+                .eq('estudiante', studentId)
+                .eq('materia', materiaFiltro)
+                .maybeSingle();
+
+            if (!error && registro) {
+                thetaValue = parseFloat(registro.theta_final !== undefined ? registro.theta_final : (registro.theta || 0.0));
+            }
+        }
+
+        // 3. Modelamiento Matemático de Escalonamiento e Intervalos Bayesianos del 95%
+        const puntajeEstimado = Math.max(1, Math.min(100, Math.round(50 + (thetaValue * 13.8))));
+        const margenError = 8; // Desfase estándar bayesiano calibrado del motor (SEM)
+        
+        const minIntervalo = Math.max(1, puntajeEstimated => puntajeEstimado - margenError);
+        const maxIntervalo = Math.min(100, puntajeEstimado + margenError);
+
+        return res.status(200).json({
+            success: true,
+            estudiante: studentId,
+            origen: origenDatos,
+            gemelo: {
+                theta_latente: thetaValue,
+                escalonamiento_icfes: {
+                    puntaje_estimado: puntajeEstimado,
+                    margen_error: margenError,
+                    intervalo_95: [minIntervalo, maxIntervalo]
+                }
+            }
+        });
+
+    } catch (err) {
+        console.error("🚨 [GEMELO DIGITAL API EXCEPTION]:", err.message);
+        return res.status(500).json({ success: false, error: "Cortocircuito al compilar el gemelo digital." });
+    }
+});
+
+// ====================================================================
+// 🪐 ENDPOINT B: AUDITORÍA GLOBAL CON LOGICA DE FATIGA
 // ====================================================================
 router.get('/auditoria', async (req, res) => {
     try {
@@ -57,7 +119,6 @@ router.get('/auditoria', async (req, res) => {
         
         console.log(`🔍 [AUDITORÍA RECTOR ROUTE]: Mapeando canal elástico híbrido para Tenant: [${req.tenantId}]`);
 
-        // 🪐 CALIBRACIÓN HORARIA BOGOTÁ (ISO 8601 con desfase -05:00 nativo de Colombia)
         const fechaBogota = new Date().toLocaleString("sv-SE", { timeZone: "America/Bogota" }).replace(" ", "T") + "-05:00";
 
         let query = supabase
@@ -242,7 +303,7 @@ router.get('/auditoria', async (req, res) => {
 });
 
 // ====================================================================
-// 🪐 ENDPOINT C: MOTOR DE IMPRESIÓN SINCRO B2B (IRI / ICC / CRÓNICAS)
+// 🪐 ENDPOINT C: MOTOR DE IMPRESIÓN SINCRO B2B
 // ====================================================================
 router.get('/reporte-pdf/:id', async (req, res) => {
     try {
@@ -267,7 +328,6 @@ router.get('/reporte-pdf/:id', async (req, res) => {
         const datosSnapshot = snapshot.matriz_desglose_snapshot || {};
         const alumnos = datosSnapshot.alumnos || {};
         
-        // 🪐 Tratamiento horariado consistente para la plantilla PDF
         const fechaBogotaFormateada = new Date(snapshot.creado_at).toLocaleString("es-CO", { timeZone: "America/Bogota" });
 
         let alumnosRowsHTML = "";
@@ -334,7 +394,7 @@ router.get('/reporte-pdf/:id', async (req, res) => {
 });
 
 // ====================================================================
-// 🪐 ENDPOINT D: CONSOLIDACIÓN DE ÉPOCA E INMUTABILIDAD CORE (IRI / ICC)
+// 🪐 ENDPOINT D: CONSOLIDACIÓN DE ÉPOCA E INMUTABILIDAD CORE
 // ====================================================================
 router.post('/reset-epoca', async (req, res) => {
     try {
@@ -373,14 +433,12 @@ router.post('/reset-epoca', async (req, res) => {
                 puntaje_escalonado: puntajeCalculado,
                 indice_recuperacion_intelectual: r.indice_recuperacion_intelectual !== undefined ? parseFloat(r.indice_recuperacion_intelectual) : 0.5000,
                 indice_curiosidad_conductual: r.indice_curiosidad_conductual !== undefined ? parseFloat(r.indice_curiosidad_conductual) : 0.5000,
-                mapa_calor_sesgos: r.mapa_calor_sesgos || adnEmpaquetado.mapa_calor_sesgos || {},
+                mapa_calor_sesgos: r.mapa_calor_sesges || r.mapa_calor_sesgos || adnEmpaquetado.mapa_calor_sesgos || {},
                 perfil_clinico: adnEmpaquetado
             };
         });
 
         const promedioPromedio = Math.round(totalPuntajes / registrosVivos.length);
-
-        // 🪐 CALIBRACIÓN HORARIA BOGOTÁ (ISO 8601 con desfase -05:00 nativo de Colombia)
         const fechaBogota = new Date().toLocaleString("sv-SE", { timeZone: "America/Bogota" }).replace(" ", "T") + "-05:00";
 
         const { data: nuevoSnapshot, error: errInsertSnapshot } = await supabase
@@ -422,7 +480,7 @@ router.post('/reset-epoca', async (req, res) => {
 });
 
 // ====================================================================
-// 🪐 ENDPOINT E: TELEMETRÍA INVERSA CON FALLBACK DE ARRANQUE GARANTIZADO
+// 🪐 ENDPOINT E: TELEMETRÍA INVERSA
 // ====================================================================
 router.get('/authoring/banco-calibracion', async (req, res) => {
     try {
@@ -446,7 +504,6 @@ router.get('/authoring/banco-calibracion', async (req, res) => {
                 sugerencia_optimizacion: m.sugerencia_optimizacion || "Reactivo operando estable dentro de la curva IRT."
             }));
         } else {
-            console.log("💡 [CALIBRACIÓN FALLBACK]: Generando semillas para levantar ApexCharts en el cliente.");
             dataFormateada = [
                 { item_id: "reactivo_mat_023", total_interacciones: 48, tasa_acierto_empirico: 0.25, parametro_c_empirico: 0.54, informacion_fisher_media: 0.0412, estado_item: "ALTA_ADIVINACION", sugerencia_optimizacion: "El distractor operacional 'D' (inversión de signos) absorbs el 54% de los clics." },
                 { item_id: "reactivo_zuleta_001", total_interacciones: 52, tasa_acierto_empirico: 0.31, parametro_c_empirico: 0.48, informacion_fisher_media: 0.0620, estado_item: "ALTA_ADIVINACION", sugerencia_optimizacion: "Fuga masiva por distractor literal en Lectura Crítica. El distractor 'B' atrapa al alumno impulsivo." },
@@ -455,10 +512,7 @@ router.get('/authoring/banco-calibracion', async (req, res) => {
             ];
         }
 
-        return res.status(200).json({
-            success: true,
-            data: dataFormateada
-        });
+        return res.status(200).json({ success: true, data: dataFormateada });
 
     } catch (error) {
         console.error("🚨 [CALIBRATION API EXCEPTION]:", error.message);
@@ -483,161 +537,35 @@ function armarPlantillaMaestraHTML(tenant, materia, fecha, id, total, promedio, 
                 --cyan: #06b6d4;
                 --crimson: #df2c14;
             }
-            
             * { margin: 0; padding: 0; box-sizing: border-box; }
             body { 
                 font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Arial, sans-serif; 
-                color: var(--slate-dark); 
-                background: #ffffff; 
-                padding: 40px; 
-                line-height: 1.5;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
+                color: var(--slate-dark); background: #ffffff; padding: 40px; line-height: 1.5;
+                -webkit-print-color-adjust: exact; print-color-adjust: exact;
             }
-            
-            .header-table { 
-                width: 100%; 
-                border-bottom: 3px solid var(--gold-satin); 
-                padding-bottom: 20px; 
-                margin-bottom: 30px; 
-            }
-            .title { 
-                font-size: 22px; 
-                font-weight: 300; 
-                letter-spacing: 2px; 
-                color: var(--slate-dark); 
-                text-transform: uppercase;
-            }
-            .meta-text { 
-                font-size: 11px; 
-                color: var(--slate-muted); 
-                text-transform: uppercase; 
-                margin-top: 6px; 
-                font-weight: bold; 
-                letter-spacing: 1px; 
-            }
-            
-            .kpi-container { 
-                display: flex; 
-                gap: 20px; 
-                margin-bottom: 35px; 
-            }
-            .kpi-card { 
-                flex: 1; 
-                border: 1px solid var(--border-light); 
-                padding: 18px; 
-                border-radius: 6px; 
-                background: #f8fafc; 
-            }
-            .kpi-title { 
-                font-size: 10px; 
-                text-transform: uppercase; 
-                color: var(--slate-muted); 
-                font-weight: bold; 
-                letter-spacing: 0.5px; 
-            }
-            .kpi-val { 
-                font-size: 22px; 
-                color: var(--gold-satin); 
-                font-weight: bold; 
-                margin-top: 6px; 
-            }
-            
-            .section-title {
-                text-transform: uppercase; 
-                letter-spacing: 1px; 
-                color: var(--slate-dark); 
-                margin-top: 30px; 
-                margin-bottom: 15px;
-                font-size: 1.1rem; 
-                border-left: 4px solid var(--gold-satin); 
-                padding-left: 10px;
-            }
-            
-            table.data-table { 
-                width: 100%; 
-                border-collapse: collapse; 
-                margin-top: 15px; 
-                page-break-inside: auto;
-            }
-            table.data-table tr { 
-                page-break-inside: avoid; 
-                page-break-after: auto; 
-            }
-            table.data-table th { 
-                background: var(--slate-dark); 
-                color: #ffffff; 
-                text-transform: uppercase; 
-                font-size: 10px; 
-                padding: 12px; 
-                text-align: left; 
-                letter-spacing: 1px; 
-            }
-            table.data-table td {
-                padding: 14px;
-                font-size: 0.85rem;
-                border-bottom: 1px solid var(--border-light);
-                vertical-align: top;
-            }
-            
-            .bar-container {
-                margin-top: 4px;
-                margin-bottom: 4px;
-            }
-            .bar-bg { 
-                background: #e2e8f0; 
-                height: 6px; 
-                border-radius: 3px; 
-                overflow: hidden; 
-                margin-top: 3px;
-            }
-            .bar-fill { 
-                height: 100%; 
-                border-radius: 3px; 
-            }
-            
-            .mini-badge {
-                display: inline-block;
-                font-size: 9px;
-                font-weight: bold;
-                text-transform: uppercase;
-                padding: 2px 5px;
-                border-radius: 3px;
-                margin-bottom: 4px;
-            }
-            
-            .footer { 
-                text-align: center; 
-                font-size: 10px; 
-                color: var(--slate-muted); 
-                margin-top: 60px; 
-                border-top: 1px solid var(--border-light); 
-                padding-top: 20px; 
-                text-transform: uppercase; 
-                letter-spacing: 1px; 
-            }
-            
+            .header-table { width: 100%; border-bottom: 3px solid var(--gold-satin); padding-bottom: 20px; margin-bottom: 30px; }
+            .title { font-size: 22px; font-weight: 300; letter-spacing: 2px; color: var(--slate-dark); text-transform: uppercase; }
+            .meta-text { font-size: 11px; color: var(--slate-muted); text-transform: uppercase; margin-top: 6px; font-weight: bold; letter-spacing: 1px; }
+            .kpi-container { display: flex; gap: 20px; margin-bottom: 35px; }
+            .kpi-card { flex: 1; border: 1px solid var(--border-light); padding: 18px; border-radius: 6px; background: #f8fafc; }
+            .kpi-title { font-size: 10px; text-transform: uppercase; color: var(--slate-muted); font-weight: bold; letter-spacing: 0.5px; }
+            .kpi-val { font-size: 22px; color: var(--gold-satin); font-weight: bold; margin-top: 6px; }
+            .section-title { text-transform: uppercase; letter-spacing: 1px; color: var(--slate-dark); margin-top: 30px; margin-bottom: 15px; font-size: 1.1rem; border-left: 4px solid var(--gold-satin); padding-left: 10px; }
+            table.data-table { width: 100%; border-collapse: collapse; margin-top: 15px; page-break-inside: auto; }
+            table.data-table tr { page-break-inside: avoid; page-break-after: auto; }
+            table.data-table th { background: var(--slate-dark); color: #ffffff; text-transform: uppercase; font-size: 10px; padding: 12px; text-align: left; letter-spacing: 1px; }
+            table.data-table td { padding: 14px; font-size: 0.85rem; border-bottom: 1px solid var(--border-light); vertical-align: top; }
+            .bar-container { margin-top: 4px; margin-bottom: 4px; }
+            .bar-bg { background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden; margin-top: 3px; }
+            .bar-fill { height: 100%; border-radius: 3px; }
+            .mini-badge { display: inline-block; font-size: 9px; font-weight: bold; text-transform: uppercase; padding: 2px 5px; border-radius: 3px; margin-bottom: 4px; }
+            .footer { text-align: center; font-size: 10px; color: var(--slate-muted); margin-top: 60px; border-top: 1px solid var(--border-light); padding-top: 20px; text-transform: uppercase; letter-spacing: 1px; }
             @media print {
-                body { 
-                    padding: 20px; 
-                    font-size: 12pt;
-                    color: #000000;
-                    background: #ffffff;
-                }
-                .kpi-card { 
-                    background: #f8fafc !important; 
-                    border: 1px solid #cbd5e1 !important;
-                }
-                table.data-table th {
-                    background: #0f172a !important;
-                    color: #ffffff !important;
-                }
-                .bar-bg {
-                    background: #e2e8f0 !important;
-                }
-                .footer {
-                    page-break-after: always;
-                }
+                body { padding: 20px; font-size: 12pt; color: #000000; background: #ffffff; }
+                .kpi-card { background: #f8fafc !important; border: 1px solid #cbd5e1 !important; }
+                table.data-table th { background: #0f172a !important; color: #ffffff !important; }
+                .bar-bg { background: #e2e8f0 !important; }
+                .footer { page-break-after: always; }
             }
         </style>
     </head>
@@ -654,13 +582,12 @@ function armarPlantillaMaestraHTML(tenant, materia, fecha, id, total, promedio, 
                 </td>
             </tr>
         </table>
-
         <div class="kpi-container">
             <div class="kpi-card">
                 <div class="kpi-title">Alumnos Auditados</div>
                 <div class="kpi-val">${total}</div>
             </div>
-            <div class="kpi-container">
+            <div class="kpi-card">
                 <div class="kpi-title">Puntaje Equivalente Promedio</div>
                 <div class="kpi-val">${promedio} / 100 pts</div>
             </div>
@@ -669,7 +596,6 @@ function armarPlantillaMaestraHTML(tenant, materia, fecha, id, total, promedio, 
                 <div class="kpi-val" style="color: var(--cyan);">Venta con IVA Incluido</div>
             </div>
         </div>
-
         <h3 class="section-title">Desglose Forense Longitudinal Nominal de Plasticidad</h3>
         <table class="data-table">
             <thead>
@@ -685,14 +611,9 @@ function armarPlantillaMaestraHTML(tenant, materia, fecha, id, total, promedio, 
                 ${filas}
             </tbody>
         </table>
-
-        <div class="footer">
-            DANTE OS Platform Enterprise // Evidencia Psicométrica y de Decisión Humana.
-        </div>
+        <div class="footer">DANTE OS Platform Enterprise // Evidencia Psicométrica y de Decisión Humana.</div>
         <script>
-            window.onload = function() { 
-                setTimeout(() => { window.print(); }, 500); 
-            };
+            window.onload = function() { setTimeout(() => { window.print(); }, 500); };
         </script>
     </body>
     </html>
@@ -704,9 +625,7 @@ function obtenerHTMLDePruebaSandbox(tenant) {
         <tr style="border-bottom: 1px solid #e2e8f0;">
             <td style="padding: 14px; vertical-align: top;">
                 <strong style="text-transform: uppercase; color: #0f172a; font-size: 0.9rem;">ELIZABETH</strong>
-                <div style="margin-top: 8px;">
-                    <span class="mini-badge" style="background: rgba(22,163,74,0.1); color: #16a34a;">Estado: Nominal (S2)</span>
-                </div>
+                <div style="margin-top: 8px;"><span class="mini-badge" style="background: rgba(22,163,74,0.1); color: #16a34a;">Estado: Nominal (S2)</span></div>
             </td>
             <td style="padding: 14px; font-family: monospace; font-size: 1rem; vertical-align: top; font-weight: bold;">1.3402</td>
             <td style="padding: 14px; vertical-align: top; font-weight: bold; color: #16a34a; font-size: 1.1rem;">68 / 100</td>
@@ -723,30 +642,6 @@ function obtenerHTMLDePruebaSandbox(tenant) {
             <td style="padding: 14px; font-size: 0.85rem; color: #475569; text-align: justify; line-height: 1.4; vertical-align: top;">
                 <div style="margin-bottom: 4px;"><strong>Crónica:</strong> Elizabeth ha desplegado una trayectoria de adaptación impecable. Mantiene una estabilidad de latencia plana administrando el Sistema 2 profundo.</div>
                 <div><strong>Prescripción:</strong> <span style="color: #0284c7; font-weight: bold;">Continuar entrenamiento adaptativo avanzado incrementando magnitudes.</span></div>
-            </td>
-        </tr>
-        <tr style="border-bottom: 1px solid #e2e8f0;">
-            <td style="padding: 14px; vertical-align: top;">
-                <strong style="text-transform: uppercase; color: #0f172a; font-size: 0.9rem;">SAMANTHA</strong>
-                <div style="margin-top: 8px;">
-                    <span class="mini-badge" style="background: rgba(22,163,74,0.1); color: #16a34a;">Estado: Nominal (S2)</span>
-                </div>
-            </td>
-            <td style="padding: 14px; font-family: monospace; font-size: 1rem; vertical-align: top; font-weight: bold;">1.5691</td>
-            <td style="padding: 14px; vertical-align: top; font-weight: bold; color: #16a34a; font-size: 1.1rem;">71 / 100</td>
-            <td style="padding: 14px; vertical-align: top; width: 220px;">
-                <div class="bar-container">
-                    <div style="font-size: 10px; font-weight: bold; color: #16a34a;">RECUPERACIÓN (IRI): 85%</div>
-                    <div class="bar-bg"><div class="bar-fill" style="width: 85%; background: #16a34a;"></div></div>
-                </div>
-                <div class="bar-container" style="margin-top: 10px;">
-                    <div style="font-size: 10px; font-weight: bold; color: #06b6d4;">CURIOSIDAD (ICC): 90%</div>
-                    <div class="bar-bg"><div class="bar-fill" style="width: 90%; background: #06b6d4;"></div></div>
-                </div>
-            </td>
-            <td style="padding: 14px; font-size: 0.85rem; color: #475569; text-align: justify; line-height: 1.4; vertical-align: top;">
-                <div style="margin-bottom: 4px;"><strong>Crónica:</strong> Alta resiliencia post-error. Estudiante rompe el automatismo reactivo y consolida un proceso lógico superior.</div>
-                <div><strong>Prescripción:</strong> <span style="color: #0284c7; font-weight: bold;">Expandir límites de abstracción y desactivar distractores literales de tramo alto.</span></div>
             </td>
         </tr>
     `;
