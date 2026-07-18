@@ -57,6 +57,9 @@ router.get('/auditoria', async (req, res) => {
         
         console.log(`🔍 [AUDITORÍA RECTOR ROUTE]: Mapeando canal elástico híbrido para Tenant: [${req.tenantId}]`);
 
+        // 🪐 CALIBRACIÓN HORARIA BOGOTÁ (ISO 8601 con desfase -05:00 nativo de Colombia)
+        const fechaBogota = new Date().toLocaleString("sv-SE", { timeZone: "America/Bogota" }).replace(" ", "T") + "-05:00";
+
         let query = supabase
             .from('progreso_estudiantes')
             .select('*')
@@ -110,7 +113,7 @@ router.get('/auditoria', async (req, res) => {
                     items_respondidos: parsed.irt_responses || [],
                     adn_cognitivo: parsed.estado_operacional === 'STABLE' ? {
                         impulsividad: 15, fatiga: 5, recuperacion: 80, estabilidad: 90,
-                        cronica_narrativa: "Trayectoria elástica nominal en ejecución activa dentro del Sistema 2 profundo.",
+                        cronica_narrativa: "Trayectoria elástica nominal en execution activa dentro del Sistema 2 profundo.",
                         vulnerabilidad_dominante: "Estabilidad cognitiva nominal.",
                         prescripcion_clinica: "Continuar el flujo adaptativo avanzado incrementando magnitudes de reactivos."
                     } : {
@@ -119,7 +122,7 @@ router.get('/auditoria', async (req, res) => {
                         vulnerabilidad_dominante: "Impulsividad reactiva detectada en el tramo.",
                         prescripcion_clinica: "Entrenamiento inhibitorio obligatorio. Forzar desaceleración de clics por 8 segundos."
                     },
-                    ultima_actualizacion: new Date().toISOString()
+                    ultima_actualizacion: fechaBogota
                 });
             }
         }
@@ -145,7 +148,7 @@ router.get('/auditoria', async (req, res) => {
                 vulnerabilidad_dominante: "Impulsividad reactiva de tramo bajo.",
                 prescripcion_clinica: "Entrenamiento inhibitorio obligatorio."
             },
-            ultima_actualizacion: new Date().toISOString()
+            ultima_actualizacion: fechaBogota
         };
 
         if (!dataFiltered.some(r => String(r.estudiante).toLowerCase().trim() === 'diogenes')) {
@@ -204,7 +207,7 @@ router.get('/auditoria', async (req, res) => {
                 indice_recuperacion_intelectual: r.indice_recuperacion_intelectual !== undefined ? r.indice_recuperacion_intelectual : 0.50,
                 indice_curiosidad_conductual: r.indice_curiosidad_conductual !== undefined ? r.indice_curiosidad_conductual : 0.50,
                 puntaje_escalonado: Number(r.puntaje_escalonado || puntajeSintetizado),
-                updated_at: r.ultima_actualizacion || new Date().toISOString()
+                updated_at: r.ultima_actualizacion || fechaBogota
             };
         }));
 
@@ -263,7 +266,9 @@ router.get('/reporte-pdf/:id', async (req, res) => {
 
         const datosSnapshot = snapshot.matriz_desglose_snapshot || {};
         const alumnos = datosSnapshot.alumnos || {};
-        const fechaFormateada = new Date(snapshot.creado_at).toLocaleString();
+        
+        // 🪐 Tratamiento horariado consistente para la plantilla PDF
+        const fechaBogotaFormateada = new Date(snapshot.creado_at).toLocaleString("es-CO", { timeZone: "America/Bogota" });
 
         let alumnosRowsHTML = "";
         Object.entries(alumnos).forEach(([nombre, meta]) => {
@@ -282,7 +287,7 @@ router.get('/reporte-pdf/:id', async (req, res) => {
                 sesgosHTML += `
                     <div style="font-size: 9px; margin-top: 5px; color: #475569; display: flex; justify-content: space-between;">
                         <span>${key.replace('attr_', '').replace(/_/g, ' ').toUpperCase()}</span>
-                        <strong>${porc}%</strong>
+                        <span><strong>${porc}%</strong></span>
                     </div>
                     <div style="background: #e2e8f0; height: 4px; border-radius: 2px; overflow:hidden; margin-top: 2px; margin-bottom: 4px;">
                         <div style="background: ${color}; height: 100%; width: ${porc}%;"></div>
@@ -318,7 +323,7 @@ router.get('/reporte-pdf/:id', async (req, res) => {
             `;
         });
 
-        const htmlDocument = armarPlantillaMaestraHTML(snapshot.institution_id, snapshot.materia, fechaFormateada, snapshot.id, snapshot.total_estudiantes_evaluados, snapshot.puntaje_promedio_icfes, alumnosRowsHTML);
+        const htmlDocument = armarPlantillaMaestraHTML(snapshot.institution_id, snapshot.materia, fechaBogotaFormateada, snapshot.id, snapshot.total_estudiantes_evaluados, snapshot.puntaje_promedio_icfes, alumnosRowsHTML);
         res.setHeader('Content-Type', 'text/html');
         return res.status(200).send(htmlDocument);
 
@@ -375,6 +380,9 @@ router.post('/reset-epoca', async (req, res) => {
 
         const promedioPromedio = Math.round(totalPuntajes / registrosVivos.length);
 
+        // 🪐 CALIBRACIÓN HORARIA BOGOTÁ (ISO 8601 con desfase -05:00 nativo de Colombia)
+        const fechaBogota = new Date().toLocaleString("sv-SE", { timeZone: "America/Bogota" }).replace(" ", "T") + "-05:00";
+
         const { data: nuevoSnapshot, error: errInsertSnapshot } = await supabase
             .from('reportes_historicos_cohortes')
             .insert([{
@@ -384,7 +392,7 @@ router.post('/reset-epoca', async (req, res) => {
                 total_estudiantes_evaluados: registrosVivos.length,
                 puntaje_promedio_icfes: promedioPromedio,
                 matriz_desglose_snapshot: { alumnos: desgloseAlumnosJSON },
-                creado_at: new Date().toISOString()
+                creado_at: fechaBogota
             }])
             .select();
 
@@ -742,7 +750,7 @@ function obtenerHTMLDePruebaSandbox(tenant) {
             </td>
         </tr>
     `;
-    return armarPlantillaMaestraHTML(tenant, "matematicas", new Date().toLocaleString(), "sandbox-id-999", 2, 69, filasMock);
+    return armarPlantillaMaestraHTML(tenant, "matematicas", new Date().toLocaleString("es-CO", { timeZone: "America/Bogota" }), "sandbox-id-999", 2, 69, filasMock);
 }
 
 export default router;
