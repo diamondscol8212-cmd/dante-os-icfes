@@ -138,6 +138,9 @@ app.post('/api/admin/reset-epoca', async (req, res) => {
 
         const promedioIcfesArea = conteoAlumnos > 0 ? Math.round(sumaPuntajes / conteoAlumnos) : 50;
 
+        // 🪐 CALIBRACIÓN HORARIA BOGOTÁ (ISO 8601 con desfase -05:00 nativo de Colombia)
+        const fechaBogota = new Date().toLocaleString("sv-SE", { timeZone: "America/Bogota" }).replace(" ", "T") + "-05:00";
+
         const snapshotAtomico = {
             id: crypto.randomUUID(), 
             materia: materiaFiltro, 
@@ -148,7 +151,7 @@ app.post('/api/admin/reset-epoca', async (req, res) => {
                 metadata_ajuste_b2b: { version_engine: "v20.6.3-CORPORATE", export_iva_compliant: true },
                 alumnos: desgloseAlumnos
             }, 
-            creado_at: new Date().toISOString()
+            creado_at: fechaBogota
         };
 
         await supabase.from('reportes_historicos_cohortes').insert(snapshotAtomico);
