@@ -1,13 +1,11 @@
-// 🪐 catController.js - Motor de Inferencia Psicométrica Multidimensional, Índices Conductuales (IRI/ICC) e Homeostasis de Progreso
+// catController.js - Motor de Inferencia Psicométrica Multidimensional, Índices Conductuales (IRI/ICC) e Homeostasis de Progreso
 // Dante OS v21.0.0 Enterprise Edition // Bogotá, Colombia
 import crypto from 'crypto'; 
 import { supabase } from '../../supabaseClient.js'; 
 import { redis } from '../../redisClient.js';       
 import { estimarHabilidadEAP, calcularInformacionFisher, calcularICI, calcularCRI } from './engine3PL.js'; 
 import { actualizarGemeloDigital } from '../../twinService.js'; 
-// ⚙️ CORRECCIÓN DE IMPORTACIÓN: Apuntamos al archivo selector correcto en tu disco
 import { obtenerSiguienteItem } from './catSelectorEngine.js'; 
-// 🤖 IMPORTACIÓN DEL SERVICIO DE INTELIGENCIA DE INTÉRPRETE COGNITIVO
 import { generarInterpretacionCognitiva } from './aiService.js';
 
 const CALIBRATION_VERSION = process.env.IRT_CALIBRATION_VERSION || 'v21.0_multitheta';
@@ -51,7 +49,6 @@ function calcularIndiceIRI(historicoRespuestas, itemsMapa) {
     for (let i = 0; i < historicoRespuestas.length - 1; i++) {
         const respuestaActual = historicoRespuestas[i];
         const itemActualMeta = itemsMapa.get(respuestaActual.itemId);
-        
         const esRespuestaCorrecta = (respuestaActual.correcto === true || respuestaActual.isCorrect === true);
         
         if (!esRespuestaCorrecta && itemActualMeta && itemActualMeta.b <= respuestaActual.thetaSnapshot) {
@@ -408,7 +405,7 @@ export async function procesarInteraccionEstudiante(req, res) {
                     isCorrect: interaccionCorrecta, 
                     selectedOption: opcionMarcada,
                     timestampEpoch: Date.now(), 
-                    thetaSnapshot: parseFloat(sessionState.thetas?.[metadatosItem.sub_competencia] || 0.0),
+                    thetaSnapshot: parseFloat(sessionState.thetas?.[metadatosItem.sub_competencia] || sessionState.thetas?.algebra || 0.0),
                     responseTime: cronometriaSegundos,
                     irt: { a: metadatosItem.a, b: metadatosItem.b, c: metadatosItem.c, calibrationVersion: CALIBRATION_VERSION }
                 });
@@ -454,8 +451,6 @@ export async function procesarInteraccionEstudiante(req, res) {
 
         let factorPenalizacionModulada = 1.0;
         let flagIntervencionActiva = "NONE";
-        
-        // 🧠 SISTEMA DE ANDAMIAJE INTELIGENTE DE DOBLE CAPA (Fase 2.5)
         let errorDetonadoMsg = "Ninguno";
         let remediacionSugeridaMsg = "Se prescribe continuar el flujo adaptativo estándar.";
 
@@ -464,7 +459,6 @@ export async function procesarInteraccionEstudiante(req, res) {
             const tieneTrampaMapeada = cacheInstancia.mapaTrampasGlobal.has(llaveBusqueda);
 
             if (tieneTrampaMapeada) {
-                // CAPA 1: Extracción Quirúrgica
                 const datosTrampa = cacheInstancia.mapaTrampasGlobal.get(llaveBusqueda);
                 const sesgoActivo = Object.keys(datosTrampa).find(attr => datosTrampa[attr] === 1);
                 
@@ -476,7 +470,7 @@ export async function procesarInteraccionEstudiante(req, res) {
                 
                 const mapeoExplicaciones = {
                     "attr_heuristica_lineal": "Has asumido una relación directa o lineal simple. Recuerda que este tipo de problemas requiere descomponer las variables y no operar de forma directa con el primer atajo que percibe tu mente.",
-                    "attr_inversion_operacional": "Detectamos una inversión en el sentido de la operación. Revisa si confundiste una multiplicación con una división, o si sumaste exponentes en lugar de multiplicarlos.",
+                    "attr_inversion_operacional": "Detectamos una inversión en el sentido de la operation. Revisa si confundiste una multiplicación con una división, o si sumaste exponentes en lugar de multiplicarlos.",
                     "attr_omision_conversion": "Faltó un paso crítico de conversión. Valida si las unidades de medida (litros, metros, segundos) coinciden en todo el planteamiento antes de operar los números.",
                     "attr_error_geometrico": "Se registra un conflicto en la representación espacial. Confirma si el ejercicio te solicita la superficie total (área) o el límite de la figura (perímetro)."
                 };
@@ -484,12 +478,11 @@ export async function procesarInteraccionEstudiante(req, res) {
                 remediacionSugeridaMsg = mapeoExplicaciones[sesgoActivo] || "Has caído en un distractor diseñado para evaluar desajustes procedimentales. Analiza el paso anterior a tu resultado.";
 
             } else {
-                // CAPA 2: Fallback Basal Temático
                 const subComp = String(metadatosItem.sub_competencia || 'algebra').toLowerCase().trim();
                 
                 if (subComp.includes('algebra') || subComp.includes('calculo')) {
                     errorDetonadoMsg = "Desajuste en Propiedades Operacionales (Álgebra)";
-                    remediacionSugeridaMsg = "Revisa con atención el signo de tus términos y recuerda la jerarquía de las operaciones. Si hay exponentes o paréntesis, asegúrate de aplicar la distribución correcta antes de agrupar.";
+                    remediacionSugeridaMsg = "Revisa con atención el signo de tus términos y recuerda la jerarquía de las operaciones. Si hay exponentes o paréntesis, asegúrate de aplicar la distribución correcta antes de gupar.";
                 } else if (subComp.includes('geometria') || subComp.includes('medicion') || subComp.includes('razonamiento')) {
                     errorDetonadoMsg = "Sesgo de Representación Espacial-Perimetral";
                     remediacionSugeridaMsg = "No te fíes solo de la perspectiva visual del gráfico. Identifica claramente las unidades de medida dadas y valida si el problema te pide calcular un área (espacio interior) o un perímetro (contorno).";
@@ -519,9 +512,19 @@ export async function procesarInteraccionEstudiante(req, res) {
 
         const conteoActualizadoItems = arrayHistoricoRespuestas.length;
 
-        // ⚙️ LLAMADA AL MOTOR SELECTOR: Empaquetamos el estado para consultar el siguiente ítem
+        // 🧠 BLINDAJE INDUSTRIAL DE REDIRECCIÓN MULTI-COMPETENCIA
+        const subCompetenciaDestino = metadatosItem ? String(metadatosItem.sub_competencia).toLowerCase().trim() : 'algebra';
+        let currentThetaMateriaTarget = sessionState.thetas?.algebra || 0.0;
+        
+        if (subCompetenciaDestino.includes('geometria') || subCompetenciaDestino.includes('medicion') || subCompetenciaDestino.includes('razonamiento')) {
+            currentThetaMateriaTarget = sessionState.thetas?.geometria || 0.0;
+        } else if (subCompetenciaDestino.includes('estadistica') || subCompetenciaDestino.includes('probabilidad') || subCompetenciaDestino.includes('interpretacion')) {
+            currentThetaMateriaTarget = sessionState.thetas?.estadistica || 0.0;
+        }
+
+        // ⚙️ LLAMADA AL MOTOR SELECTOR CON THETA CORREGIDO
         const internalStateForSelector = {
-            theta: sessionState.thetas?.[metadatosItem?.sub_competencia || 'algebra'] || 0.0,
+            theta: currentThetaMateriaTarget,
             sem_bayesian: sessionState.sem_bayesian || 1.0,
             items_respondidos_count: conteoActualizadoItems,
             seen_item_ids: Array.from(itemsExcluidosExamen),
@@ -531,10 +534,9 @@ export async function procesarInteraccionEstudiante(req, res) {
         const resultadoSelector = obtenerSiguienteItem(internalStateForSelector, cacheInstancia);        
         
         let algebraTheta = sessionState.thetas.algebra;
-        let geometriaTheta = sessionState.thetas.geometria;
+        let geometryTheta = sessionState.thetas.geometria;
         let estadisticaTheta = sessionState.thetas.estadistica;
 
-        // Recalcular habilidad mediante EAP Bayesiana si hay respuestas en el historial
         let semActual = sessionState.sem_bayesian || 1.0;
         if (arrayHistoricoRespuestas.length > 0) {
             const calculoPsicometrico = estimarHabilidadEAP(arrayHistoricoRespuestas.map(r => ({
@@ -543,22 +545,17 @@ export async function procesarInteraccionEstudiante(req, res) {
             
             semActual = calculoPsicometrico.bayesianSEM;
             
-            const subComp = metadatosItem ? metadatosItem.sub_competencia : 'algebra';
-            if (subComp.includes('algebra') || subComp.includes('calculo')) {
-                algebraTheta = calculoPsicometrico.theta;
-            } else if (subComp.includes('geometria') || subComp.includes('medicion')) {
-                geometriaTheta = calculoPsicometrico.theta;
-            } else {
+            const subComp = metadatosItem ? String(metadatosItem.sub_competencia).toLowerCase().trim() : 'algebra';
+            if (subComp.includes('geometria') || subComp.includes('medicion') || subComp.includes('razonamiento')) {
+                geometryTheta = calculoPsicometrico.theta;
+            } else if (subComp.includes('estadistica') || subComp.includes('probabilidad') || subComp.includes('interpretacion')) {
                 estadisticaTheta = calculoPsicometrico.theta;
+            } else {
+                algebraTheta = calculoPsicometrico.theta;
             }
         }
 
         const itemDifficultyDinamica = metadatosItem ? parseFloat(metadatosItem.b) : 0.0;
-        const subCompetenciaActual = metadatosItem ? metadatosItem.sub_competencia : 'algebra';
-        
-        const thetaActualMateria = subCompetenciaActual === 'razonamiento y argumentacion' ? geometriaTheta : 
-                                  (subCompetenciaActual === 'interpretacion y representacion' ? estadisticaTheta : algebraTheta);
-
         const currentICI = calcularICI(certezaSaneada, interaccionCorrecta, cronometriaSegundos, itemDifficultyDinamica);
         const currentCRI = calcularCRI(arrayHistoricoRespuestas);
 
@@ -597,7 +594,7 @@ export async function procesarInteraccionEstudiante(req, res) {
         
         const localRuntimeState = {
             session_id: activeSessionId, student_id: studentIdSaneado, area_general: areaSaneada, 
-            thetas: { algebra: algebraTheta, geometria: geometriaTheta, estadistica: estadisticaTheta }, 
+            thetas: { algebra: algebraTheta, geometria: geometryTheta, estadistica: estadisticaTheta }, 
             sem_bayesian: semActual, items_respondidos_count: conteoActualizadoItems,
             priors_dinamicos: nuevosPriorsAtributos, estado_operacional: estadoOperacional,
             seen_item_ids: Array.from(itemsExcluidosExamen), irt_responses: arrayHistoricoRespuestas,
@@ -610,11 +607,8 @@ export async function procesarInteraccionEstudiante(req, res) {
 
         const forzarDetencionExamen = conteoActualizadoItems > 0 && (resultadoSelector.detenerExamen || conteoActualizadoItems >= OPERATIONAL_CONTROLS.MAX_ITEMS_EXAMEN);
 
-        // =====================================================================
-        // 🔮 CAPA DE CLAUSURA: INTERPRETACIÓN PSICOMÉTRICA CON GEMINI 2.5 FLASH (FASE 2)
-        // =====================================================================
         if (forzarDetencionExamen) {
-            const thetaPromedioGlobal = (algebraTheta + geometriaTheta + estadisticaTheta) / 3.0;
+            const thetaPromedioGlobal = (algebraTheta + geometryTheta + estadisticaTheta) / 3.0;
             const puntajeIcfesEstandar = Math.max(1, Math.min(100, Math.round(50 + (thetaPromedioGlobal * 13.8))));
             
             const totalDisparos = arrayHistoricoRespuestas.length || 1;
@@ -636,31 +630,29 @@ export async function procesarInteraccionEstudiante(req, res) {
                 }
             }
 
-            // 🤖 LLAMADA ASÍNCRONA A GEMINI PARA GENERAR LA INTERPRETACIÓN PERSONALIZADA
             console.log(`🤖 [DANTE AI SERVICE]: Conectando con Gemini en vivo para generar el reporte de ${studentIdSaneado}...`);
             
             let interpretacionIA;
             try {
-                // 🚀 CONEXIÓN EN VIVO CON TU CUENTA CLOUD PREPAGO DE GOOGLE AI STUDIO
                 interpretacionIA = await generarInterpretacionCognitiva(studentIdSaneado, areaSaneada, {
                     thetaGlobal: String(thetaPromedioGlobal.toFixed(4)),
-                    semGlobal: String(semActual.toFixed(4)),
+                    sem_global: String(semActual.toFixed(4)),
                     impulsividad: String(adnImpulsividad),
                     recuperacion: String(adnRecuperacion),
                     estabilidad: String(adnEstabilidad),
                     sesgoDominante: String(sesgoMaximoId)
                 });
             } catch (aiErr) {
-                console.error("⚠️ [FALLBACK ACTIVO]: Error llamando al servicio de Gemini, aplicando rescate local:", aiErr.message);
+                console.error("⚠️ [FALLBACK ACTIVO]: Error llamando al servicio de Gemini:", aiErr.message);
                 interpretacionIA = {
-                    cronica_narrativa: `A partir del desempeño observado, ${studentIdSaneado.toUpperCase()} muestra un manejo conceptual favorable en ${areaSaneada.toUpperCase()}. Se sugiere continuar reforzando las áreas con mayor índice de dificultad.`,
+                    cronica_narrativa: `A partir del desempeño observado, ${studentIdSaneado.toUpperCase()} muestra un manejo conceptual favorable en ${areaSaneada.toUpperCase()}.`,
                     desviacion_enfoque: "Foco procedimental variable durante la sesión.",
-                    estrategia_autorregulacion: "Monitorear los tiempos de ejecución en problemas complejos para optimizar el rendimiento global.",
+                    estrategia_autorregulacion: "Monitorear los tiempos de ejecución en problemas complejos.",
                     plan_entrenamiento: [
                         "Días 1-3: Repasa los fundamentos de operaciones distributivas en álgebra.",
-                        "Días 4-5: Practica 5 ejercicios sin límite de tiempo para concentrarte en el procedimiento.",
-                        "Días 6-8: Realiza lecturas de 10 segundos antes de marcar cualquier respuesta en ejercicios complejos.",
-                        "Días 9-10: Ejecuta simulacros cortos de 3 preguntas controlando físicamente las pulsaciones."
+                        "Días 4-5: Practica 5 ejercicios sin límite de tiempo.",
+                        "Días 6-8: Realiza lecturas de 10 segundos antes de marcar.",
+                        "Días 9-10: Ejecuta simulacros cortos."
                     ]
                 };
             }
@@ -670,15 +662,10 @@ export async function procesarInteraccionEstudiante(req, res) {
                 fatiga: adnFatiga, 
                 recuperacion: adnRecuperacion,
                 estabilidad: adnEstabilidad,
-                cronica_narrativa: interpretacionIA.cronica_narrativa || "Análisis completado de forma exitosa.", 
-                vulnerabilidad_dominante: interpretacionIA.desviacion_enfoque || "Enfoque nominal estándar.", 
-                prescripcion_clinica: interpretacionIA.estrategia_autorregulacion || "Continuar con el plan de estudio sugerido.", 
-                plan_entrenamiento: interpretacionIA.plan_entrenamiento || [
-                    "Días 1-3: Repasa los fundamentos de operaciones distributivas en álgebra.",
-                    "Días 4-5: Practica 5 ejercicios sin límite de tiempo.",
-                    "Días 6-8: Realiza lecturas de 10 segundos antes de marcar.",
-                    "Días 9-10: Ejecuta simulacros cortos."
-                ],
+                cronica_narrativa: interpretacionIA.cronica_narrativa || "Análisis completado.", 
+                vulnerabilidad_dominante: interpretacionIA.desviacion_enfoque || "Enfoque estándar.", 
+                prescripcion_clinica: interpretacionIA.estrategia_autorregulacion || "Continuar plan.", 
+                plan_entrenamiento: interpretacionIA.plan_entrenamiento,
                 mapa_calor_sesgos: nuevosPriorsAtributos
             };
 
@@ -687,7 +674,7 @@ export async function procesarInteraccionEstudiante(req, res) {
                 materia: String(areaSaneada),
                 institution_id: tenantId, 
                 theta_algebra_calculo: parseFloat(algebraTheta.toFixed(4)), 
-                theta_geometria_medicion: parseFloat(geometriaTheta.toFixed(4)), 
+                theta_geometria_medicion: parseFloat(geometryTheta.toFixed(4)), 
                 theta_estadistica_probabilidad: parseFloat(estadisticaTheta.toFixed(4)), 
                 indice_recuperacion_intelectual: iriActual, 
                 indice_curiosidad_conductual: iccActual,
@@ -703,18 +690,17 @@ export async function procesarInteraccionEstudiante(req, res) {
             await supabase.from('progreso_estudiantes').upsert(payloadPersistenciaBD, { onConflict: 'estudiante,materia,institution_id' });
 
             const payloadPerfilFinal = { 
-                thetas: { algebra: algebraTheta, geometria: geometriaTheta, estadistica: estadisticaTheta },
+                thetas: { algebra: algebraTheta, geometria: geometryTheta, estadistica: estadisticaTheta },
                 escalonamiento_icfes: { puntaje_estimated: puntajeIcfesEstandar },
                 adn_cognitivo: executivePayload, mapa_calor_sesgos: nuevosPriorsAtributos,
                 iri: iriActual, icc: iccActual
             };
             
-            // 🚨 BLINDAJE INDUSTRIAL: Borramos las claves de sesión de Redis ANTES del retorno para impedir bucles infinitos
             await redis.setex(`dante:profile:${areaSaneada}:${studentIdSaneado}`, REDIS_TTL_SECONDS, JSON.stringify(payloadPerfilFinal)).catch(() => {});
             await redis.del(cacheKey).catch(() => {});
             await redis.del(indexLookUpKey).catch(() => {});
             
-            console.log(`🏁 [🏁 EXAMEN FINALIZADO EXITOSAMENTE]: Estado RAM purgado para ${studentIdSaneado}. Retornando reporte final.`);
+            console.log(`🏁 [EXAMEN FINALIZADO]: Estado purgado para ${studentIdSaneado}. Retornando reporte.`);
 
             return res.status(200).json({
                 success: true, 
@@ -738,13 +724,12 @@ export async function procesarInteraccionEstudiante(req, res) {
                     }
                 }
             });
-        } // ⬅️ Fin del bloque de detención forzada
+        }
 
         const rawItemId = resultadoSelector.item?.id;
-        const idProcesadoParaFrontend = rawItemId; 
 
         return res.status(200).json({
-            success: true, detenerExamen: false, thetaProgreso: thetaActualMateria, bayesianSEMProgreso: semActual,
+            success: true, detenerExamen: false, thetaProgreso: currentThetaMateriaTarget, bayesianSEMProgreso: semActual,
             interaccionCorrecta, latencia_computo_ms: Date.now() - timestampInicio,
             cronicaBienvenida: cronicaCelebracionArranque,
             generatedToken: integrityToken || "jwt_live_nominal_test_" + Date.now(),
@@ -757,7 +742,7 @@ export async function procesarInteraccionEstudiante(req, res) {
             },
             andamiajeForense: { errorDetonado: errorDetonadoMsg, remediacionSugerida: remediacionSugeridaMsg },
             item: {
-                id: idProcesadoParaFrontend, 
+                id: rawItemId, 
                 pregunta_texto: resultadoSelector.item.pregunta_texto,
                 opciones_respuesta: resultadoSelector.item.opciones_respuesta || ["A", "B", "C", "D"],
                 sub_competencia: resultadoSelector.item.sub_competencia
@@ -766,7 +751,7 @@ export async function procesarInteraccionEstudiante(req, res) {
 
     } catch (error) {
         console.error("🚨 [CONTROL FORENSE EXCEPCIÓN CRÍTICA v21.0.0]:", error.message);
-        return res.status(500).json({ success: false, error: "Cortocircuito interno perimetral." });
+        return res.status(500).json({ success: false, error: "Cortocorticuito interno perimetral." });
     }
 }
 
