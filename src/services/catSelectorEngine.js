@@ -92,8 +92,6 @@ export function obtenerSiguienteItem(sessionState, cacheInstancia) {
             Object.keys(item.matriz_q).forEach(attr => {
                 if (item.matriz_q[attr] === 1) {
                     const probabilidadFallaAtributo = parseFloat(estudiantePriors[attr] || 0.5);
-                    // Si el estudiante tiene alta probabilidad de falla en el atributo,
-                    // elevamos el score de este ítem para forzar su aparición y entrenarlo
                     if (probabilidadFallaAtributo > 0.60) {
                         penalizacionO_InyeccionSesgo += probabilidadFallaAtributo * 1.5;
                     }
