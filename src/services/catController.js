@@ -410,20 +410,28 @@ export async function procesarInteraccionEstudiante(req, res) {
                     irt: { a: metadatosItem.a, b: metadatosItem.b, c: metadatosItem.c, calibrationVersion: CALIBRATION_VERSION }
                 });
 
+                // 🛡️ PERSISTENCIA SÍNCRONA DIRECTA Y TRANSPARENTE
                 try {
-                    await supabase.from('registro_eventos').insert([{
-                        student_id: studentIdSaneado,
-                        item_id: idRealMapeado,
-                        is_correct: interaccionCorrecta,
-                        response_time: cronometriaSegundos,
-                        declared_confidence: certezaSaneada,
-                        opcion_marcada: opcionMarcada, 
-                        institution_id: tenantId,
-                        created_at: new Date().toISOString()
-                    }]);
-                    console.log(`✅ [DANTE BASE DE DATOS]: Evento guardado para el estudiante unificado: [${studentIdSaneado}] en el ítem ${idRealMapeado}`);
+                    const { data: insertData, error: insertError } = await supabase
+                        .from('registro_eventos')
+                        .insert([{
+                            student_id: studentIdSaneado,
+                            item_id: idRealMapeado,
+                            is_correct: interaccionCorrecta,
+                            response_time: cronometriaSegundos,
+                            declared_confidence: certezaSaneada,
+                            opcion_marcada: opcionMarcada, 
+                            institution_id: tenantId,
+                            created_at: new Date().toISOString()
+                        }]);
+
+                    if (insertError) {
+                        console.error(`🚨 [SUPABASE REJECTION]: La DB rechazó el registro. Código: ${insertError.code}. Mensaje: ${insertError.message}. Detalles: ${insertError.details}`);
+                    } else {
+                        console.log(`✅ [DANTE BASE DE DATOS REAL]: Fila inyectada con éxito total para: [${studentIdSaneado}] en ítem ${idRealMapeado}`);
+                    }
                 } catch (dbErr) {
-                    console.error("⚠️ Error guardando evento directo:", dbErr.message);
+                    console.error("🚨 [CRITICAL CANAL INSERTION FAILED]:", dbErr.message);
                 }
             }
         } else if (itemId) {
@@ -472,7 +480,7 @@ export async function procesarInteraccionEstudiante(req, res) {
                     "attr_heuristica_lineal": "Has asumido una relación directa o lineal simple. Recuerda que este tipo de problemas requiere descomponer las variables y no operar de forma directa con el primer atajo que percibe tu mente.",
                     "attr_inversion_operacional": "Detectamos una inversión en el sentido de la operation. Revisa si confundiste una multiplicación con una división, o si sumaste exponentes en lugar de multiplicarlos.",
                     "attr_omision_conversion": "Faltó un paso crítico de conversión. Valida si las unidades de medida (litros, metros, segundos) coinciden en todo el planteamiento antes de operar los números.",
-                    "attr_error_geometrico": "Se registra un conflicto en la representación espacial. Confirma si el ejercicio te solicita la superficie total (área) o el límite de la figura (perímetro)."
+                    "attr_error_geometrico": "Se registra un conflicto en la representation espacial. Confirma si el ejercicio te solicita la superficie total (área) o el límite de la figura (perímetro)."
                 };
 
                 remediacionSugeridaMsg = mapeoExplicaciones[sesgoActivo] || "Has caído en un distractor diseñado para evaluar desajustes procedimentales. Analiza el paso anterior a tu resultado.";
@@ -512,7 +520,6 @@ export async function procesarInteraccionEstudiante(req, res) {
 
         const conteoActualizadoItems = arrayHistoricoRespuestas.length;
 
-        // 🧠 BLINDAJE INDUSTRIAL DE REDIRECCIÓN MULTI-COMPETENCIA
         const subCompetenciaDestino = metadatosItem ? String(metadatosItem.sub_competencia).toLowerCase().trim() : 'algebra';
         let currentThetaMateriaTarget = sessionState.thetas?.algebra || 0.0;
         
@@ -522,7 +529,6 @@ export async function procesarInteraccionEstudiante(req, res) {
             currentThetaMateriaTarget = sessionState.thetas?.estadistica || 0.0;
         }
 
-        // ⚙️ LLAMADA AL MOTOR SELECTOR CON THETA CORREGIDO
         const internalStateForSelector = {
             theta: currentThetaMateriaTarget,
             sem_bayesian: sessionState.sem_bayesian || 1.0,
@@ -764,13 +770,11 @@ async function procesarPipelineFondo() {
 
         let paquete = JSON.parse(elementoRaw);
         try {
-            if (paquete.tipo === 'EVENTO') {
-                await supabase.from('registro_eventos').insert([paquete.data]);
-            } else if (paquete.tipo === 'GEMELO') {
+            if (paquete.tipo === 'GEMELO') {
                 await actualizarGemeloDigital(paquete.data);
             }
         } catch (dbError) {
-            console.log("💡 [PIPELINE ABSORCION]: Sincronización en caché completada.");
+            console.log("💡 [PIPELINE ABSORCION]: Sincronización en caché de gemelo completada.");
         }
 
         await redis.lpop('dante:pipeline:events');
