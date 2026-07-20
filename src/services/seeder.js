@@ -1,7 +1,7 @@
 // 🪐 seeder.js - Inyector Psicométrico Realista con Matriz Q y Mapa de Trampas
 // Dante OS Enterprise Edition // Bogotá, Colombia
 import crypto from 'crypto';
-import { supabase } from './supabaseClient.js';
+import { supabase } from '../../supabaseClient.js';
 
 const INSTITUTION_ID = 'colegio_sandbox_default';
 
