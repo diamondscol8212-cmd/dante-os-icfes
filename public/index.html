@@ -335,12 +335,14 @@
             <div style="display:none;" id="repBsem"></div>
 
             <div style="display: flex; gap: 1rem; justify-content: space-between; align-items: center; margin-top: 2rem; border-top: 1px solid var(--graphite); padding-top: 1.2rem;">
-    <div style="text-align: left;">
-        <p style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Progreso de Estabilidad</p>
-        <p id="lblPedagogicoActual" style="font-size: 1.2rem; font-weight: 700; color: var(--gold-satin); letter-spacing: -0.02em;">Cómputo en Línea Base</p>
-    </div>
-    <button class="btn-premium" style="width: auto; padding: 0.8rem 1.8rem; margin-top: 0; font-size: 0.8rem;" onclick="AppController.avanzarSiguienteFase()">Avanzar Reactivo</button>
-</div>
+                <div style="text-align: left;">
+                    <p style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">Progreso de Estabilidad</p>
+                    <p id="lblPedagogicoActual" style="font-size: 1.2rem; font-weight: 700; color: var(--gold-satin); letter-spacing: -0.02em;">Cómputo en Línea Base</p>
+                </div>
+                <button class="btn-premium" style="width: auto; padding: 0.8rem 1.8rem; margin-top: 0; font-size: 0.8rem;" onclick="AppController.avanzarSiguienteFase()">Avanzar Reactivo</button>
+            </div>
+        </div>
+    </main>
 
     <main id="viewFinalReport" class="app-view" style="justify-content: center; align-items: center;">
         <div class="gateway-card" style="max-width: 680px; text-align: center; padding: 2.5rem 1.5rem;">
@@ -546,7 +548,6 @@
                 
                 document.getElementById("lblContadorSegundos").innerText = AppState.controlIntervencion.segundosRestantes;
                 
-                // Inicializar círculo animado de hardware
                 const ring = document.getElementById("loaderRingBar");
                 ring.style.strokeDashoffset = "0";
 
@@ -555,7 +556,6 @@
                     AppState.controlIntervencion.segundosRestantes--;
                     document.getElementById("lblContadorSegundos").innerText = AppState.controlIntervencion.segundosRestantes;
                     
-                    // Actualizar el offset de la barra de carga circular de Tailwind
                     const pctPasado = (AppState.controlIntervencion.totalInicial - AppState.controlIntervencion.segundosRestantes) / AppState.controlIntervencion.totalInicial;
                     ring.style.strokeDashoffset = String(283 * pctPasado);
 
@@ -567,65 +567,82 @@
             }
 
             static desplegarClausuraExamen(reporte) {
-                const theta = parseFloat(reporte.thetaEstimado !== undefined ? reporte.thetaEstimado : (reporte.theta || 0.0));
-                const bsem = parseFloat(reporte.precisionMetrica !== undefined ? reporte.precisionMetrica : (reporte.bayesianSEM || 0.5));
-                
-                document.getElementById("repTheta").innerText = theta.toFixed(4);
-                document.getElementById("repBsem").innerText = `\u00B1${bsem.toFixed(4)}`;
-                document.getElementById("repMaestria").innerText = reporte.probMaestriaAvanzada || '0.0%';
-                
-                if (reporte.escalonamiento_pais) {
-                    document.getElementById("repIcfes").innerText = `${reporte.escalonamiento_pais.puntaje_icfes_area} / 100`;
-                    document.getElementById("repIntervalo").innerText = `[ ${reporte.escalonamiento_pais.intervalo_certeza_95.join('  -  ')} ]`;
+                try {
+                    if (!reporte) throw new Error("Reporte vacío.");
+
+                    const theta = parseFloat(reporte.thetaEstimado !== undefined ? reporte.thetaEstimado : (reporte.theta || 0.0));
+                    const bsem = parseFloat(reporte.precisionMetrica !== undefined ? reporte.precisionMetrica : (reporte.bayesianSEM || 0.5));
+                    
+                    document.getElementById("repTheta").innerText = theta.toFixed(4);
+                    document.getElementById("repBsem").innerText = `\u00B1${bsem.toFixed(4)}`;
+                    document.getElementById("repMaestria").innerText = reporte.probMaestriaAvanzada || '0.0%';
+                    
+                    if (reporte.escalonamiento_pais) {
+                        document.getElementById("repIcfes").innerText = `${reporte.escalonamiento_pais.puntaje_icfes_area || 50} / 100`;
+                        document.getElementById("repIntervalo").innerText = `[ ${ (reporte.escalonamiento_pais.intervalo_certeza_95 || [45, 55]).join('  -  ') } ] pts`;
+                    } else {
+                        const puntajeRespaldo = reporte.score || 50;
+                        document.getElementById("repIcfes").innerText = `${puntajeRespaldo} / 100`;
+                        document.getElementById("repIntervalo").innerText = `[ ${puntajeRespaldo - 5}  -  ${puntajeRespaldo + 5} ] pts`;
+                    }
+
+                    const adn = reporte.adn_cognitivo ? reporte.adn_cognitivo : reporte;
+                    
+                    const impulsividadVal = adn.impulsividad !== undefined ? adn.impulsividad : 20;
+                    const fatigaVal = adn.fatiga !== undefined ? adn.fatiga : 0;
+                    const recuperacionVal = adn.recuperacion !== undefined ? adn.recuperacion : 50;
+                    const estabilidadVal = adn.estabilidad !== undefined ? adn.estabilidad : 75;
+
+                    document.getElementById("repAdnImpulsividad").innerText = `${impulsividadVal}%`;
+                    document.getElementById("repAdnFatiga").innerText = `${fatigaVal}%`;
+                    document.getElementById("repAdnRecuperacion").innerText = `${recuperacionVal}%`;
+                    document.getElementById("repAdnEstabilidad").innerText = `${estabilidadVal}%`;
+                    
+                    document.getElementById("lblNarrativeHeader").innerText = `Crónica del Perfil de Ejecución`;
+                    
+                    document.getElementById("lblNarrativeBody").innerText = adn.cronica_narrativa || reporte.cronica_narrativa || "Análisis de trayectoria adaptativa completado con consistencia.";
+                    document.getElementById("lblClinicalVulnerabilidad").innerText = adn.vulnerabilidad_dominante || adn.desviacion_enfoque || "Foco operacional bajo rangos estándar.";
+                    document.getElementById("lblClinicalPrescripcion").innerText = adn.prescripcion_clinica || adn.estrategia_autorregulacion || "Mantener cadencia adaptativa nominal en simulacros continuos.";
+                    
+                    const planContainer = document.getElementById("uiContenedorPlanEntrenamiento");
+                    const planCuerpo = document.getElementById("uiPlanEntrenamientoCuerpo");
+                    const planArray = adn.plan_entrenamiento || reporte.plan_entrenamiento;
+
+                    if (planArray && Array.isArray(planArray) && planArray.length > 0) {
+                        planCuerpo.innerHTML = "";
+                        planArray.forEach((accion, index) => {
+                            const item = document.createElement("div");
+                            item.style.background = "rgba(39, 39, 42, 0.4)";
+                            item.style.border = "1px solid var(--graphite)";
+                            item.style.padding = "0.75rem 1rem";
+                            item.style.borderRadius = "6px";
+                            item.style.fontSize = "0.85rem";
+                            item.style.color = "#e4e4e7";
+                            item.innerHTML = `<strong style="color: var(--cyan-core); margin-right: 0.4rem;">Fase ${index + 1}:</strong> ${accion}`;
+                            planCuerpo.appendChild(item);
+                        });
+                        planContainer.style.display = "block";
+                    } else {
+                        planCuerpo.innerHTML = `
+                            <div style="background:rgba(39,39,42,0.4); border:1px solid var(--graphite); padding:0.75rem 1rem; border-radius:6px; font-size:0.85rem; color:#e4e4e7;">
+                                <strong style="color:var(--cyan-core); margin-right:0.4rem;">Fase 1:</strong> Monitorear latencias de descarte en el tablero de control para consolidar precisión.
+                            </div>
+                        `;
+                        planContainer.style.display = "block";
+                    }
+
+                    DOMRenderer.construirMapaCalorForense(reporte.mapCalorSesgos || reporte.mapaCalorSesgos || adn.mapa_calor_sesges || adn.mapa_calor_sesgos || {});
+                    this.cambiarVista("viewFinalReport");
+
+                } catch (err) {
+                    console.error("🚨 [DANTE UI REPORT EXCEPTION]:", err.message);
+                    this.cambiarVista("viewFinalReport");
                 }
-
-                const adn = reporte.adn_cognitivo ? reporte.adn_cognitivo : reporte;
-                
-                const impulsividadVal = adn.impulsividad !== undefined ? adn.impulsividad : 20;
-                const fatigaVal = adn.fatiga !== undefined ? adn.fatiga : 0;
-                const recuperacionVal = adn.recuperacion !== undefined ? adn.recuperacion : 50;
-                const estabilidadVal = adn.estabilidad !== undefined ? adn.estabilidad : 75;
-
-                document.getElementById("repAdnImpulsividad").innerText = `${impulsividadVal}%`;
-                document.getElementById("repAdnFatiga").innerText = `${fatigaVal}%`;
-                document.getElementById("repAdnRecuperacion").innerText = `${recuperacionVal}%`;
-                document.getElementById("repAdnEstabilidad").innerText = `${estabilidadVal}%`;
-                
-                document.getElementById("lblNarrativeHeader").innerText = `Análisis Longitudinal Computado`;
-                
-                document.getElementById("lblNarrativeBody").innerText = adn.cronica_narrativa ? adn.cronica_narrativa : "Trayectoria adaptativa registrada de forma exitosa.";
-                document.getElementById("lblClinicalVulnerabilidad").innerText = adn.vulnerabilidad_dominante ? adn.vulnerabilidad_dominante : "Sin desajustes críticos registrados en el tramo.";
-                document.getElementById("lblClinicalPrescripcion").innerText = adn.prescripcion_clinica ? adn.prescripcion_clinica : "Se sugiere mantener el ritmo constante de práctica.";
-                
-                const planContainer = document.getElementById("uiContenedorPlanEntrenamiento");
-                const planClippedCuerpo = document.getElementById("uiPlanEntrenamientoCuerpo");
-                const planArray = adn.plan_entrenamiento || reporte.plan_entrenamiento;
-
-                if (planArray && Array.isArray(planArray) && planArray.length > 0) {
-                    planClippedCuerpo.innerHTML = "";
-                    planArray.forEach((accion, index) => {
-                        const item = document.createElement("div");
-                        item.style.background = "rgba(39, 39, 42, 0.4)";
-                        item.style.border = "1px solid var(--graphite)";
-                        item.style.padding = "0.75rem 1rem";
-                        item.style.borderRadius = "6px";
-                        item.style.fontSize = "0.85rem";
-                        item.style.color = "#e4e4e7";
-                        item.innerHTML = `<strong style="color: var(--cyan-core); margin-right: 0.4rem;">Fase ${index + 1}:</strong> ${accion}`;
-                        planClippedCuerpo.appendChild(item);
-                    });
-                    planContainer.style.display = "block";
-                } else {
-                    planContainer.style.display = "none";
-                }
-
-                DOMRenderer.construirMapaCalorForense(reporte.mapCalorSesgos || reporte.mapaCalorSesgos || adn.mapa_calor_sesges || adn.mapa_calor_sesgos || {});
-                this.cambiarVista("viewFinalReport");
             }
 
             static avanzarSiguienteFase() {
                 if (AppState.bufferRetornoSiguiente && AppState.bufferRetornoSiguiente.detenerExamen) {
-                    this.desplegarClausuraExamen(AppState.bufferRetornoSiguiente.reporteFinal || AppState.bufferRetornoSiguiente);
+                    this.desplegaclausuraExamen(AppState.bufferRetornoSiguiente.reporteFinal || AppState.bufferRetornoSiguiente);
                 } else {
                     this.cambiarVista("viewWorkspace");
                     this.procesarRetornoMotor(AppState.bufferRetornoSiguiente);
@@ -694,6 +711,7 @@
                     if (data.detenerExamen) {
                         const card = AppState.seleccionActual.element;
                         card.classList.add(data.interaccionCorrecta ? "correct" : "wrong");
+                        
                         setTimeout(() => {
                             AppController.desplegarClausuraExamen(data.reporteFinal || data);
                         }, 1200);
@@ -853,7 +871,7 @@
                     uiEnunciados.innerHTML = `<p style="margin-bottom: 1rem;">${tokens.slice(0, -1).join('</p><p style="margin-bottom: 1rem;">')}</p>`;
                     uiPregunta.innerText = tokens[tokens.length - 1];
                 } else {
-                    uiEnunciados.innerHTML = `<p>> Estímulo contextual adaptativo cargado con éxito.</p>`;
+                    uiEnunciados.innerHTML = `<p>> Estí­mulo contextual adaptativo cargado con éxito.</p>`;
                     uiPregunta.innerText = textoCompleto;
                 }
 
@@ -879,7 +897,6 @@
                 document.getElementById("telemetryHesitation").innerText = `${AppState.telemetriaActual.conteoMutaciones} hits`;
                 document.getElementById("telemetryConfidence").innerText = AppState.telemetriaActual.certeza.toUpperCase();
                 
-                // Mapear el label del progreso pedagógico humano basado en la longitud recorrida
                 const reactivosRendidos = AppState.historialTheta.length - 1;
                 document.getElementById("lblPedagogicoActual").innerText = `Calibración: Nivel ${reactivosRendidos}`;
 
@@ -896,7 +913,7 @@
                     let puntosPath = "";
                     AppState.historialTheta.forEach((val, i) => {
                         const x = AppState.historialTheta.length === 1 ? 300 : i * (520 / (AppState.historialTheta.length - 1)) + 40;
-                        const y = 100 - (val * 30); // Centrar la escala vertical de forma elástica
+                        const y = 100 - (val * 30); 
                         if (i === 0) puntosPath += `M ${x} ${y}`;
                         else puntosPath += ` L ${x} ${y}`;
                         
@@ -920,11 +937,11 @@
                 container.innerHTML = "";
                 
                 const mapeoNombres = {
-                    "attr_heuristica_lineal": "Atajos Directos / Heurísticas Simples",
+                    "attr_heuristica_lineal": "Atajos Directos / Heurí­sticas Simples",
                     "attr_inversion_operacional": "Inversión de Operadores / Signos",
                     "attr_omision_conversion": "Omisión de Unidades / Conversión",
                     "attr_error_geometrico": "Errores de Dimensión Espacial",
-                    "heuristica_lineal": "Atajos Directos / Heurísticas Simples",
+                    "heuristica_lineal": "Atajos Directos / Heurí­sticas Simples",
                     "inversion_operacional": "Inversión de Operadores / Signos",
                     "omision_conversion": "Omisión de Unidades / Conversión",
                     "error_geometrico": "Errores de Dimensión Espacial"
