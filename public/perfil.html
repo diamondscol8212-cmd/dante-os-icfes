@@ -99,7 +99,7 @@
                 <div class="tooltip-wrapper">
                     <span class="text-xs text-amber-500 font-bold"> (?)</span>
                     <div class="tooltip-box">
-                        <strong>🔥 Racha de Estudio:</strong> Muestra los días consecutivos que el estudiante ha ingresado a practicar sin interrumpir su disciplina de preparación.
+                        <strong>🔥 Racha de Estudio:</strong> Días consecutivos de práctica en la plataforma.
                     </div>
                 </div>
             </div>
@@ -112,7 +112,7 @@
                 <div class="tooltip-wrapper">
                     <span class="text-xs text-emerald-500 font-bold"> (?)</span>
                     <div class="tooltip-box">
-                        <strong>📊 Puntaje Estimado (1 a 100 pts):</strong> Proyección real de la calificación equivalente en el examen de Estado ICFES según las preguntas acertadas.
+                        <strong>📊 Puntaje Estimado (1 a 100 pts):</strong> Proyección real de la calificación equivalente en el examen de Estado ICFES.
                     </div>
                 </div>
             </div>
@@ -125,7 +125,7 @@
                 <div class="tooltip-wrapper">
                     <span class="text-xs text-sky-500 font-bold"> (?)</span>
                     <div class="tooltip-box">
-                        <strong>🧠 Nivel Psicométrico (Theta):</strong> Índice de capacidad intelectual real en la materia (de -3.0 a +3.0). Valores por encima de 0.0 indican desempeño superior al promedio.
+                        <strong>🧠 Nivel Psicométrico (Theta):</strong> Índice de capacidad intelectual real en la materia (de -3.0 a +3.0).
                     </div>
                 </div>
             </div>
@@ -138,7 +138,7 @@
                 <div class="tooltip-wrapper">
                     <span class="text-xs text-purple-500 font-bold"> (?)</span>
                     <div class="tooltip-box">
-                        <strong>🛡️ Capacidad de Recuperación (IRI):</strong> Mide qué tan bien responde el estudiante tras cometer un error sin caer en frustración o bloqueo.
+                        <strong>🛡️ Capacidad de Recuperación (IRI):</strong> Mide la capacidad de aprendizaje tras cometer errores.
                     </div>
                 </div>
             </div>
@@ -170,7 +170,7 @@
                 <p id="lblVulnerabilidadTxt" class="text-slate-300">Cargando análisis forense...</p>
             </div>
 
-            <!-- 📌 NUEVA SECCIÓN: LISTA DE COMPRAS ACADÉMICA (TEMAS A REPASAR HOY EN ESPAÑOL CLARO) -->
+            <!-- 📌 LISTA DE COMPRAS ACADÉMICA -->
             <div class="p-4 bg-[#0d121f] border border-cyan-500/30 rounded-lg space-y-3">
                 <div class="flex items-center gap-2">
                     <span class="text-base">📌</span>
@@ -192,7 +192,7 @@
             </div>
         </div>
 
-        <!-- MAPA DE CALOR DE SESGOS CON EXPLICACIONES AYUDA (?) -->
+        <!-- MAPA DE CALOR DE SESGOS -->
         <div class="bg-[#12141c] border border-zinc-800 p-6 rounded-lg shadow-2xl space-y-4">
             <div class="flex justify-between items-center border-b border-zinc-800 pb-3">
                 <h3 class="text-sm font-light uppercase tracking-wider text-rose-400">🔥 Mapa de Calor de Sesgos</h3>
@@ -238,7 +238,6 @@
 
         let currentMateriaFiltro = "todas";
         let cacheHistorialCompleto = [];
-        let cacheGemeloCompleto = {};
 
         let chartEvolucion = null;
         let chartRadar = null;
@@ -252,19 +251,11 @@
 
             static async cargarDatosCompletos() {
                 try {
-                    const [resGemelo, resAuditoria] = await Promise.all([
-                        fetch(`${HOST_URL}/api/cat/gemelo/${STUDENT_ID}`, {
-                            headers: { 'x-institution-id': INSTITUTION_ID, 'Authorization': `Bearer ${sessionToken}` }
-                        }),
-                        fetch(`${HOST_URL}/api/cat/auditoria?estudiante=${STUDENT_ID}&institution_id=${INSTITUTION_ID}`, {
-                            headers: { 'x-institution-id': INSTITUTION_ID, 'Authorization': `Bearer ${sessionToken}` }
-                        })
-                    ]);
+                    const resAuditoria = await fetch(`${HOST_URL}/api/cat/auditoria?estudiante=${STUDENT_ID}&institution_id=${INSTITUTION_ID}`, {
+                        headers: { 'x-institution-id': INSTITUTION_ID, 'Authorization': `Bearer ${sessionToken}` }
+                    });
 
-                    const jsonGemelo = await resGemelo.json();
                     const jsonAuditoria = await resAuditoria.json();
-
-                    cacheGemeloCompleto = jsonGemelo.gemelo || {};
                     cacheHistorialCompleto = jsonAuditoria.data || [];
 
                     this.procesarYRenderizarVistas();
@@ -283,41 +274,40 @@
             static procesarYRenderizarVistas() {
                 document.getElementById("lblSubtituloAlumno").innerText = `> EXPEDIENTE Y TRAYECTORIA LONGITUDINAL DE: ${STUDENT_ID.toUpperCase()}`;
 
-                // Racha
                 const streak = localStorage.getItem("dante_streak_count") || "1";
                 document.getElementById("kpiRacha").innerText = `${streak} 🔥`;
 
-                // Filtrar historial según materia seleccionada
+                // Filtrar historial según la materia seleccionada
                 let historialFiltrado = cacheHistorialCompleto;
                 if (currentMateriaFiltro !== "todas") {
-                    historialFiltrado = cacheHistorialCompleto.filter(h => (h.materia || '').toLowerCase() === currentMateriaFiltro);
+                    historialFiltrado = cacheHistorialCompleto.filter(h => {
+                        const m = String(h.materia || h.area_general || '').toLowerCase().trim();
+                        return m === currentMateriaFiltro;
+                    });
                 }
 
-                // Cálculo de mayor theta alcanzado
+                // Obtener el registro más reciente para los KPIs y diagnósticos
+                let ultimoRegistro = null;
                 let maxThetaVal = 0.0000;
                 let maxPuntajeVal = 50;
+                let iriVal = 0.50;
 
                 if (Array.isArray(historialFiltrado) && historialFiltrado.length > 0) {
-                    historialFiltrado.forEach(h => {
-                        const t = parseFloat(h.theta || 0.0);
-                        if (Math.abs(t) > Math.abs(maxThetaVal)) {
-                            maxThetaVal = t;
-                        }
-                    });
-                    maxPuntajeVal = Math.max(1, Math.min(100, Math.round(50 + (maxThetaVal * 13.8))));
-                } else if (cacheGemeloCompleto) {
-                    const esc = cacheGemeloCompleto.escalonamiento_icfes || {};
-                    maxThetaVal = parseFloat(cacheGemeloCompleto.theta_actual !== undefined ? cacheGemeloCompleto.theta_actual : (esc.theta || 0.0000));
-                    maxPuntajeVal = esc.puntaje_estimado || Math.max(1, Math.min(100, Math.round(50 + (maxThetaVal * 13.8))));
+                    ultimoRegistro = historialFiltrado[historialFiltrado.length - 1]; // El más reciente
+                    maxThetaVal = parseFloat(ultimoRegistro.theta_final !== undefined ? ultimoRegistro.theta_final : (ultimoRegistro.theta || 0.0));
+                    maxPuntajeVal = ultimoRegistro.puntaje_escalonado || Math.max(1, Math.min(100, Math.round(50 + (maxThetaVal * 13.8))));
+                    iriVal = parseFloat(ultimoRegistro.indice_recuperacion_intelectual !== undefined ? ultimoRegistro.indice_recuperacion_intelectual : 0.50);
+                } else if (cacheHistorialCompleto.length > 0) {
+                    // Fallback a global si no hay simulacros específicos en esta pestaña
+                    ultimoRegistro = cacheHistorialCompleto[cacheHistorialCompleto.length - 1];
+                    maxThetaVal = parseFloat(ultimoRegistro.theta_final !== undefined ? ultimoRegistro.theta_final : (ultimoRegistro.theta || 0.0));
+                    maxPuntajeVal = ultimoRegistro.puntaje_escalonado || Math.max(1, Math.min(100, Math.round(50 + (maxThetaVal * 13.8))));
+                    iriVal = parseFloat(ultimoRegistro.indice_recuperacion_intelectual !== undefined ? ultimoRegistro.indice_recuperacion_intelectual : 0.50);
                 }
 
                 document.getElementById("kpiTheta").innerText = maxThetaVal.toFixed(4);
                 document.getElementById("kpiPuntaje").innerText = `${maxPuntajeVal} / 100 pts`;
-
-                // IRI & Rango
-                const indices = cacheGemeloCompleto.indices_avanzados || {};
-                const iri = parseFloat(indices.iri !== undefined ? indices.iri : 0.50);
-                document.getElementById("kpiIRI").innerText = `${Math.round(iri * 100)}%`;
+                document.getElementById("kpiIRI").innerText = `${Math.round(iriVal * 100)}%`;
 
                 let rango = "Platino II";
                 if (maxPuntajeVal > 75) rango = "Élite MÁSTER";
@@ -325,25 +315,26 @@
                 else if (maxPuntajeVal < 45) rango = "Oro de Enfoque";
                 document.getElementById("lblRangoBadge").innerText = `RANGO: ${rango}`;
 
-                // Diagnóstico, Prescripción y Lista de Compras Académica en Español
-                const adn = cacheGemeloCompleto.adn_cognitivo || {};
+                // Extraer ADN Cognitivo e IA
+                const adn = ultimoRegistro?.adn_cognitivo || {};
                 document.getElementById("lblVulnerabilidadTxt").innerText = adn.vulnerabilidad_dominante || "Sin desvíos críticos detectados.";
                 document.getElementById("lblPrescripcionTxt").innerText = adn.prescripcion_clinica || "Mantener la cadencia adaptativa actual.";
                 document.getElementById("lblCronicaTxt").innerText = adn.cronica_narrativa || "Trayectoria adaptativa registrada con éxito en el sistema.";
 
                 // Generar lista de temas para el estudiante y sus papás
-                this.generarListaTemasEstudio(currentMateriaFiltro, adn);
+                this.generarListaTemasEstudio(currentMateriaFiltro);
 
-                // Mapa de Calor
-                this.renderizarMapaCalor(cacheGemeloCompleto.mapa_calor_sesgos || adn.mapa_calor_sesgos || {});
+                // Mapa de Calor de Sesgos
+                const mapaSesgos = ultimoRegistro?.mapa_calor_sesgos || adn.mapa_calor_sesgos || {};
+                this.renderizarMapaCalor(mapaSesgos);
 
                 // Tablas & Gráficas
                 this.renderizarTablaHistorial(historialFiltrado);
                 this.renderizarGraficaEvolucion(historialFiltrado);
-                this.renderizarRadar(cacheGemeloCompleto);
+                this.renderizarRadar(adn);
             }
 
-            static generarListaTemasEstudio(materia, adn) {
+            static generarListaTemasEstudio(materia) {
                 const contenedorList = document.getElementById("listaTemasEstudioHtml");
                 contenedorList.innerHTML = "";
 
@@ -380,26 +371,26 @@
                     { 
                         k: "attr_heuristica_lineal", 
                         n: "Heurística Lineal (S1)", 
-                        v: sesgos.attr_heuristica_lineal || sesgos.lineal || 0.15,
+                        v: sesgos.attr_heuristica_lineal || sesgos.heuristica_lineal || 0.15,
                         desc: "Responder muy rápido por intuición o impulso, sin verificar si la pregunta tenía una trampa de lectura."
-                    },
-                    { 
-                        k: "attr_error_geometrico", 
-                        n: "Error Geométrico", 
-                        v: sesgos.attr_error_geometrico || sesgos.geometrico || 0.15,
-                        desc: "Confundir conceptos de borde o contorno (perímetro) con la superficie interna (área) en figuras."
-                    },
-                    { 
-                        k: "attr_omision_conversion", 
-                        n: "Omisión de Conversión", 
-                        v: sesgos.attr_omision_conversion || sesgos.conversion || 0.15,
-                        desc: "Olvidar cambiar las unidades (ejemplo: pasar minutos a horas o centímetros a metros) antes de hacer la operación matemática."
                     },
                     { 
                         k: "attr_inversion_operacional", 
                         n: "Inversión Operacional", 
-                        v: sesgos.attr_inversion_operacional || sesgos.operacional || 0.15,
-                        desc: "Confundir signos al despejar (+ por -) o invertir el orden al dividir o multiplicar números."
+                        v: sesgos.attr_inversion_operacional || sesgos.inversion_operacional || 0.15,
+                        desc: "Confundir signos al despejar o invertir la relación entre conceptos clave."
+                    },
+                    { 
+                        k: "attr_omision_conversion", 
+                        n: "Omisión de Conversión", 
+                        v: sesgos.attr_omision_conversion || sesgos.omision_conversion || 0.15,
+                        desc: "Olvidar cambiar las unidades o ignorar condiciones explícitas antes de seleccionar la respuesta."
+                    },
+                    { 
+                        k: "attr_error_geometrico", 
+                        n: "Error Geométrico / Contextual", 
+                        v: sesgos.attr_error_geometrico || sesgos.error_geometrico || 0.15,
+                        desc: "Confundir conceptos de perímetro y área o perder de vista el enfoque global del enunciado."
                     }
                 ];
 
@@ -438,16 +429,17 @@
 
                 body.innerHTML = "";
                 registros.forEach(r => {
-                    const fecha = new Date(r.created_at || Date.now()).toLocaleDateString('es-CO');
-                    const th = parseFloat(r.theta || 0.0).toFixed(4);
-                    const pts = r.puntaje_escalonado || Math.round(50 + (parseFloat(r.theta || 0) * 13.8));
+                    const fecha = new Date(r.updated_at || r.created_at || Date.now()).toLocaleDateString('es-CO');
+                    const materiaNombre = String(r.materia || r.area_general || 'matematicas').replace('_', ' ').toUpperCase();
+                    const th = parseFloat(r.theta_final !== undefined ? r.theta_final : (r.theta || 0.0)).toFixed(4);
+                    const pts = r.puntaje_escalonado || Math.round(50 + (parseFloat(th) * 13.8));
                     const estadoTxt = parseFloat(th) !== 0 ? "EVALUADO" : "EN CURSO / BASE";
                     const estadoClass = parseFloat(th) !== 0 ? "text-emerald-400" : "text-amber-400";
 
                     body.innerHTML += `
                         <tr class="hover:bg-zinc-800/30 transition-colors">
                             <td class="p-4 font-mono text-xs text-slate-400">${fecha}</td>
-                            <td class="p-4 uppercase text-xs font-semibold text-slate-200">${r.materia || 'matematicas'}</td>
+                            <td class="p-4 uppercase text-xs font-semibold text-slate-200">${materiaNombre}</td>
                             <td class="p-4 font-mono font-bold text-sky-400">${th}</td>
                             <td class="p-4 font-mono font-bold text-emerald-400">${pts} / 100 pts</td>
                             <td class="p-4 font-mono text-xs ${estadoClass}">${estadoTxt}</td>
@@ -457,12 +449,12 @@
             }
 
             static renderizarGraficaEvolucion(historial) {
-                let sesionesValidas = (historial || []).filter(h => parseFloat(h.theta) !== 0 || (historial.length === 1));
+                let sesionesValidas = (historial || []).filter(h => parseFloat(h.theta || h.theta_final) !== 0 || (historial.length === 1));
                 if (sesionesValidas.length === 0 && historial.length > 0) sesionesValidas = historial;
 
-                const sesionesOrdenadas = [...sesionesValidas].reverse();
-                const fechas = sesionesOrdenadas.map((_, i) => `Sesión #${i+1}`);
-                const seriesData = sesionesOrdenadas.map(h => parseFloat((parseFloat(h.theta) || 0).toFixed(4)));
+                const sesionesOrdenadas = [...sesionesValidas];
+                const fechas = sesionesOrdenadas.map((_, i) => `Simulacro #${i+1}`);
+                const seriesData = sesionesOrdenadas.map(h => parseFloat((parseFloat(h.theta_final !== undefined ? h.theta_final : h.theta) || 0).toFixed(4)));
 
                 if (fechas.length === 0) { fechas.push('Línea Base'); seriesData.push(0.0000); }
 
@@ -480,22 +472,21 @@
                 chartEvolucion.render();
             }
 
-            static renderizarRadar(gemelo) {
-                const adn = gemelo.adn_cognitivo || {};
+            static renderizarRadar(adn) {
                 const options = {
                     series: [{
                         name: 'Atributos Cognitivos',
                         data: [
-                            parseFloat(adn.velocidad || 65),
-                            parseFloat(adn.foco || 75),
-                            parseFloat(adn.resistencia || 80),
-                            parseFloat(adn.comprension || 70),
-                            parseFloat(adn.espacial || 60)
+                            parseFloat(100 - (adn.impulsividad || 20)),
+                            parseFloat(adn.estabilidad || 75),
+                            parseFloat(100 - (adn.fatiga || 10)),
+                            parseFloat(adn.recuperacion || 80),
+                            parseFloat(adn.estabilidad || 70)
                         ]
                     }],
                     chart: { type: 'radar', height: 260, toolbar: { show: false }, background: 'transparent' },
                     colors: ['#d4af37'], theme: { mode: 'dark' },
-                    xaxis: { categories: ['Velocidad', 'Foco', 'Resistencia', 'Comprensión', 'Espacial'] },
+                    xaxis: { categories: ['Autorregulación', 'Foco', 'Resistencia', 'Recuperación', 'Comprensión'] },
                     yaxis: { show: false, max: 100 }
                 };
 
