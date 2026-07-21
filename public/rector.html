@@ -202,12 +202,10 @@
     </div>
 
     <script>
-        // 🪐 DETECCIÓN DE HOST DINÁMICA
         const HOST_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
             ? "http://localhost:3000"
             : window.location.origin;
 
-        // Recuperar credenciales criptográficas del login
         const sessionToken = localStorage.getItem("dante_token");
         const rawUser = localStorage.getItem("dante_user");
         const userObj = rawUser ? JSON.parse(rawUser) : {};
@@ -240,18 +238,9 @@
                             opt.innerText = `📁 SNAPSHOT: ${ep.materia.toUpperCase()} (${fecha})`;
                             selector.appendChild(opt);
                         });
-                    } else {
-                        const optMock = document.createElement("option");
-                        optMock.value = "mock_snapshot_sandbox_id";
-                        optMock.innerText = `📁 SNAPSHOT SIMULADO (ENTORNO LOCAL ACTIVE)`;
-                        selector.appendChild(optMock);
                     }
                 } catch (err) {
                     console.error("🚨 [LOAD EPOCAS EXCEPTION]:", err.message);
-                    const optErr = document.createElement("option");
-                    optErr.value = "mock_snapshot_sandbox_id";
-                    optErr.innerText = `📁 SNAPSHOT CONTINGENCIA LOCAL (BYPASS NETWORK)`;
-                    selector.appendChild(optErr);
                 }
             }
 
@@ -266,9 +255,6 @@
                         }
                     });
                     const json = await res.json();
-
-                    // 🚨 INSPECTOR EN VIVO (MUESTRA EN F12 EL OBJETO COMPLETO QUE DEVUELVE RENDER)
-                    console.log("🔍 [RESPUESTA AUDITORIA SERVIDOR]:", json);
 
                     if (json && json.success) {
                         this.renderizarPanel(json.data || []);
@@ -324,42 +310,36 @@
                     const adn = al.adn_cognitivo || {};
                     const sesgos = al.mapa_calor_sesges || al.mapa_calor_sesgos || adn.mapa_calor_sesgos || {};
 
-                    // 🛠️ ESCANEO EXHAUSTIVO DE THETA
+                    // 🛠️ EXTRACCIÓN INTELIGENTE DE HABILIDAD (THETA)
                     let thetaExtraido = null;
 
-                    const buscarNumeroValido = (...valores) => {
-                        for (let v of valores) {
-                            if (v !== undefined && v !== null && v !== "" && !isNaN(parseFloat(v))) {
-                                return parseFloat(v);
-                            }
-                        }
-                        return null;
-                    };
+                    // 1. Buscar theta directo en la raíz del alumno o en adn_cognitivo
+                    if (al.theta !== undefined && al.theta !== null) thetaExtraido = parseFloat(al.theta);
+                    else if (al.theta_final !== undefined && al.theta_final !== null) thetaExtraido = parseFloat(al.theta_final);
+                    else if (adn.theta !== undefined && adn.theta !== null) thetaExtraido = parseFloat(adn.theta);
 
-                    thetaExtraido = buscarNumeroValido(
-                        al.theta_final,
-                        al.theta,
-                        al.thetaEstimado,
-                        al.habilidad,
-                        al.habilidad_latente,
-                        adn.theta,
-                        adn.theta_final,
-                        al.items_respondidos?.theta,
-                        al.items_respondidos?.theta_final,
-                        al.reporteFinal?.thetaEstimado,
-                        al.reporteFinal?.theta
-                    );
-
-                    if (thetaExtraido === null) {
-                        thetaExtraido = 0.0000;
+                    // 2. Si theta viene en el historial o en items respondidos (como ocurrió con rector y elizabeth)
+                    if ((thetaExtraido === null || thetaExtraido === 0) && Array.isArray(al.historial_theta) && al.historial_theta.length > 0) {
+                        thetaExtraido = parseFloat(al.historial_theta[al.historial_theta.length - 1]);
                     }
 
+                    // 3. Fallback adaptativo: Estimar theta según aciertos en items_respondidos
+                    if ((thetaExtraido === null || thetaExtraido === 0) && Array.isArray(al.items_respondidos) && al.items_respondidos.length > 0) {
+                        const total = al.items_respondidos.length;
+                        const correctos = al.items_respondidos.filter(it => it.is_correct || it.correcto || it.isCorrect).length;
+                        const proporcion = correctos / total;
+                        // Transformación logit de habilidad estimada
+                        thetaExtraido = parseFloat((Math.log(Math.max(0.05, Math.min(0.95, proporcion)) / (1 - Math.max(0.05, Math.min(0.95, proporcion))))).toFixed(4));
+                    }
+
+                    // Valor final de theta
+                    const thFinal = thetaExtraido !== null ? thetaExtraido : 0.0000;
                     const thInicial = parseFloat(al.theta_inicial !== undefined ? al.theta_inicial : 0.0000);
-                    const thFinal = thetaExtraido;
                     const delta = thFinal - thInicial;
                     const deltaClass = delta >= 0 ? "delta-sube" : "delta-baja";
                     const deltaSigno = delta >= 0 ? "+" : "";
 
+                    // Calcular el Puntaje Escala País (1-100 pts)
                     const puntajeCalculadoReal = Math.max(1, Math.min(100, Math.round(50 + (thFinal * 13.8))));
                     const puntajeMostrar = (al.puntaje_escalonado && parseInt(al.puntaje_escalonado) > 0) 
                         ? parseInt(al.puntaje_escalonado) 
@@ -569,11 +549,6 @@
                     alert("Por favor seleccione un Snapshot Histórico guardado en Supabase para exportar el PDF.");
                     return;
                 }
-                if (CurrentEpoca === "mock_snapshot_sandbox_id") {
-                    alert("🪐 MODO SANDBOX: Desplegando el cascarón analítico HTML print-ready. Presione Ctrl+P en la pestaña entrante.");
-                    window.open(`${HOST_URL}/api/cat/reporte-pdf/generico_sandbox`, '_blank');
-                    return;
-                }
                 window.open(`${HOST_URL}/api/cat/reporte-pdf/${CurrentEpoca}`, '_blank');
             }
 
@@ -629,7 +604,6 @@
             }
         }
 
-        // 🛠️ FUNCIÓN SANITIZADA CONTRA EXCEPCIONES Y SYMBOLS UNDEFINED
         function sesgosMapSaneado(mapaSesgos) {
             const safe = mapaSesgos || {};
             return {
