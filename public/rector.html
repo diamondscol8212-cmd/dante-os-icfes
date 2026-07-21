@@ -30,6 +30,7 @@
         header {
             display: flex; justify-content: space-between; align-items: center;
             border-bottom: 1px solid var(--graphite); padding-bottom: 1.5rem; margin-bottom: 2.5rem;
+            flex-wrap: wrap; gap: 1rem;
         }
         .live-indicator {
             display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem;
@@ -39,20 +40,22 @@
         .pulse-dot { width: 8px; height: 8px; background: var(--emerald); border-radius: 50%; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
 
-        .materia-tabs { display: flex; gap: 1rem; }
+        .materia-tabs { display: flex; gap: 0.6rem; flex-wrap: wrap; }
         .tab-btn {
             background: #1a1d26; border: 1px solid var(--graphite); color: var(--text-muted);
-            padding: 0.6rem 1.2rem; border-radius: 4px; cursor: pointer; text-transform: uppercase;
-            font-size: 0.8rem; font-weight: 600; transition: all 0.2s ease;
+            padding: 0.6rem 1.1rem; border-radius: 4px; cursor: pointer; text-transform: uppercase;
+            font-size: 0.75rem; font-weight: 600; transition: all 0.2s ease;
         }
-        .tab-btn.active { border-color: var(--gold-satin); color: var(--gold-satin); background: rgba(212, 175, 55, 0.05); }
+        .tab-btn.active { border-color: var(--gold-satin); color: var(--gold-satin); background: rgba(212, 175, 55, 0.08); }
 
-        .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 2.5rem; }
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem; }
         .kpi-card { background: var(--bg-surface); border: 1px solid var(--graphite); padding: 1.8rem; border-radius: 6px; }
         .kpi-card.gold-premium { border: 1px solid var(--gold-satin); box-shadow: 0 0 15px var(--gold-glow); }
         .kpi-val { font-size: 2rem; font-weight: 300; color: var(--gold-satin); margin-top: 0.4rem; }
 
         .layout-main { display: grid; grid-template-columns: 320px 1fr; gap: 2.5rem; }
+        @media (max-width: 900px) { .layout-main { grid-template-columns: 1fr; } }
+        
         .sidebar { display: flex; flex-direction: column; gap: 2rem; }
         
         .control-panel { background: var(--bg-surface); border: 1px solid var(--graphite); border-radius: 6px; padding: 1.8rem; }
@@ -76,7 +79,7 @@
 
         .chart-box { background: var(--bg-surface); border: 1px solid var(--graphite); border-radius: 6px; padding: 2rem; margin-bottom: 2.5rem; }
         
-        .table-container { background: var(--bg-surface); border: 1px solid var(--graphite); border-radius: 6px; overflow: hidden; }
+        .table-container { background: var(--bg-surface); border: 1px solid var(--graphite); border-radius: 6px; overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; text-align: left; }
         th { background: #1a1d26; color: var(--gold-satin); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; padding: 1.2rem; border-bottom: 1px solid var(--graphite); }
         td { padding: 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.9rem; vertical-align: top; }
@@ -124,6 +127,7 @@
             <p id="lblVersionTag" style="color: var(--cyan-core); font-size: 0.85rem; text-transform: uppercase; margin-top: 0.2rem; font-weight: bold; letter-spacing: 1px;">CONECTADO A ENGINE: v20.6.3-FIX_MASTER</p>
         </div>
         <div class="materia-tabs">
+            <button class="tab-btn" onclick="RectorDashboard.cambiarMateria('diagnostico_general', this)">Diagnóstico General</button>
             <button class="tab-btn active" onclick="RectorDashboard.cambiarMateria('matematicas', this)">Matemáticas</button>
             <button class="tab-btn" onclick="RectorDashboard.cambiarMateria('lectura_critica', this)">Lectura Crítica</button>
             <button class="tab-btn" onclick="RectorDashboard.cambiarMateria('ciencias_naturales', this)">Ciencias Naturales</button>
@@ -198,7 +202,7 @@
     </div>
 
     <script>
-        // 🪐 OPTIMIZACIÓN DE RUTA DINÁMICA ANTI-LOCALHOST BLOCKING
+        // 🪐 DETECCIÓN DE HOST DINÁMICA ANTI-BLOQUEO LOCALHOST
         const HOST_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
             ? "http://localhost:3000"
             : window.location.origin;
@@ -372,7 +376,7 @@
                         <td style="font-weight:600; color:#fff;">${thFinal.toFixed(4)}</td>
                         <td><span class="badge-delta ${deltaClass}">${deltaSigno}${delta.toFixed(4)}</span></td>
                         <td>
-                            <div style="font-size:1.1rem; font-weight:bold; color:var(--emerald);">${al.puntaje_escalonado} / 100</div>
+                            <div style="font-size:1.1rem; font-weight:bold; color:var(--emerald);">${al.puntaje_escalonado || 50} / 100</div>
                             <div style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; margin-top:0.4rem; font-weight:bold;">Mapa de Calor de Sesgos:</div>
                             ${this.construirMiniBarrasSesgos(sesgosSaneados)}
                         </td>
@@ -464,7 +468,7 @@
                     categorias = ['Sin Datos', 'Caché Vacía', 'Línea Base'];
                 } else if (datosImp.length === 1) {
                     datosImp.push(40, 20); datosFat.push(20, 10); datosRec.push(60, 85);
-                    categorias = ['Muestra Viva (Diógenes)', 'Cohorte Promedio País', 'Límite de Asimilación'];
+                    categorias = ['Muestra Viva (Sandbox)', 'Cohorte Promedio País', 'Límite de Asimilación'];
                 } else if (datosImp.length === 2) {
                     datosImp.push(30); datosFat.push(15); datosRec.push(75);
                     categorias.push('Límite de Asimilación');
@@ -503,7 +507,7 @@
             static async ejecutarCierreEpoca() {
                 if (!confirm("🚨 ADVERTENCIA DANTE OS:\n¿Está seguro de cerrar la Época actual? Se consolidará un reporte inmutable en Supabase y se purgará la cache de Redis.")) return;
                 try {
-                    const res = await fetch(`${HOST_URL}/api/cat/reset-epoca`, {
+                    const res = await fetch(`${HOST_URL}/api/admin/reset-epoca`, {
                         method: 'POST',
                         headers: { 
                             'Content-Type': 'application/json', 
@@ -587,18 +591,18 @@
             }
         }
 
+        // 🛠️ FUNCIÓN SANITIZADA CONTRA EXCEPCIONES Y SYMBOLS UNDEFINED
         function sesgosMapSaneado(mapaSesgos) {
-            // Mapeo unificado para capturar tanto la nomenclatura antigua como el modelo 2026 de producción
+            const safe = mapaSesgos || {};
             return {
-                attr_heuristica_lineal: mapaSesgos.attr_heuristica_lineal || mapaSesgos.HEURISTICA_LINEAL || mapaSesded || 0.02,
-                attr_error_geometrico: mapaSesgos.attr_error_geometrico || mapaSesgos.ERROR_GEOMETRICO || 0.02,
-                attr_omision_conversion: mapaSesgos.attr_omision_conversion || mapaSesgos.OMISION_CONVERSION || 0.02,
-                attr_inversion_operational: mapaSesgos.attr_inversion_operational || mapaSesgos.attr_inversion_operacional || mapaSesgos.INVERSION_OPERATIONAL || mapaSesgos.INVERSION_OPERACIONAL || 0.02
+                attr_heuristica_lineal: safe.attr_heuristica_lineal || safe.HEURISTICA_LINEAL || safe.lineal || 0.02,
+                attr_error_geometrico: safe.attr_error_geometrico || safe.ERROR_GEOMETRICO || safe.geometrico || 0.02,
+                attr_omision_conversion: safe.attr_omision_conversion || safe.OMISION_CONVERSION || safe.conversion || 0.02,
+                attr_inversion_operational: safe.attr_inversion_operational || safe.attr_inversion_operacional || safe.INVERSION_OPERATIONAL || safe.INVERSION_OPERACIONAL || safe.operacional || 0.02
             };
         }
 
         window.onload = () => {
-            // Control perimetral: Redirección si se intenta saltar el login
             if (!sessionToken) {
                 alert("🚨 CONTROL PORTAL: Credenciales ausentes. Redirigiendo a pasarela.");
                 window.location.href = "/login.html";
@@ -607,7 +611,6 @@
             RectorDashboard.consultarDatos();
             RectorDashboard.cargarEpocasHistoricas(); 
             
-            // Intervalo optimizado a 15 segundos que respeta el foco de la pestaña (Anti-Saturación)
             setInterval(() => { 
                 if (CurrentEpoca === "LIVE_NOW" && !document.hidden) {
                     RectorDashboard.consultarDatos(); 
