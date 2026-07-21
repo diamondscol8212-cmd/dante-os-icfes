@@ -7,14 +7,13 @@ import { procesarInteraccionEstudiante } from '../services/catController.js';
 const router = Router();
 const SERVER_VERSION = "v20.6.3-FIX_MASTER";
 
-// 🛡️ BLINDAJE DE NÚCLEO: Si no existe la variable de entorno, el sistema detiene el arranque en lugar de degradar la seguridad.
 if (!process.env.INTEGRITY_SECRET) {
-    console.error("🚨 [DANTE OS NUCLEUS ERROR]: La variable INTEGRITY_SECRET is indefinida en el entorno local/Render.");
+    console.error("🚨 [DANTE OS NUCLEUS ERROR]: La variable INTEGRITY_SECRET es indefinida en el entorno local/Render.");
     process.exit(1);
 }
 const INTEGRITY_SECRET = process.env.INTEGRITY_SECRET;
 
-// 🪐 Middleware Perimetral Multi-Tenant con Blindaje contra Undefined
+// 🪐 Middleware Perimetral Multi-Tenant
 router.use((req, res, next) => {
     const bodyTenant = req.body ? req.body.institution_id : null;
     const tenantId = req.headers['x-institution-id'] || req.query.institution_id || bodyTenant || "colegio_sandbox_default";
@@ -48,16 +47,16 @@ router.post('/interactuar', async (req, res) => {
 });
 
 // ====================================================================
-// 🪐 ENDPOINT NUEVO: GEMELO DIGITAL CRIPTOGRÁFICO MULTI-TENANT (FIJA EL 404)
+// 🪐 ENDPOINT B: GEMELO DIGITAL DINÁMICO POR MATERIA
 // ====================================================================
 router.get('/gemelo/:id', async (req, res) => {
     try {
         const studentId = String(req.params.id).toLowerCase().trim();
-        const materiaFiltro = 'matematicas'; // Predeterminado para alineación con el simulador
+        const materiaParam = req.query.materia ? String(req.query.materia).toLowerCase().trim() : null;
+        const materiaFiltro = (materiaParam && materiaParam !== 'todas' && materiaParam !== 'diagnostico_general') ? materiaParam : 'matematicas';
         
-        console.log(`📡 [GEMELO DIGITAL ENGINE]: Construyendo gemelo bayesiano para Alumno: [${studentId}] en Tenant: [${req.tenantId}]`);
+        console.log(`📡 [GEMELO DIGITAL ENGINE]: Construyendo gemelo bayesiano para Alumno: [${studentId}] en Materia: [${materiaFiltro}]`);
 
-        // 1. Intentar jalar datos en caliente desde el runtime elástico de Redis
         const keyAlias = `dante:live_runtime_snapshot:${materiaFiltro}:${studentId}`;
         let liveData = await redis.get(keyAlias);
         let thetaValue = 0.0;
@@ -68,25 +67,29 @@ router.get('/gemelo/:id', async (req, res) => {
             thetaValue = parseFloat(parsed.theta || 0.0);
             origenDatos = "REDIS RUNTIME VIVO";
         } else {
-            // 2. Si no está en cache, consultar la persistencia real de Supabase
             const { data: registro, error } = await supabase
                 .from('progreso_estudiantes')
-                .select('theta, theta_final')
+                .select('theta_algebra_calculo, theta, theta_final, items_respondidos')
                 .eq('institution_id', req.tenantId)
                 .eq('estudiante', studentId)
                 .eq('materia', materiaFiltro)
                 .maybeSingle();
 
             if (!error && registro) {
-                thetaValue = parseFloat(registro.theta_final !== undefined ? registro.theta_final : (registro.theta || 0.0));
+                if (registro.theta_final !== undefined && registro.theta_final !== null) {
+                    thetaValue = parseFloat(registro.theta_final);
+                } else if (registro.theta !== undefined && registro.theta !== null) {
+                    thetaValue = parseFloat(registro.theta);
+                } else if (registro.items_respondidos && registro.items_respondidos.adn_empaquetado) {
+                    thetaValue = parseFloat(registro.items_respondidos.adn_empaquetado.thetaEstimado || 0.0);
+                }
             }
         }
 
-        // 3. Modelamiento Matemático de Escalonamiento e Intervalos Bayesianos del 95%
         const puntajeEstimado = Math.max(1, Math.min(100, Math.round(50 + (thetaValue * 13.8))));
-        const margenError = 8; // Desfase estándar bayesiano calibrado del motor (SEM)
+        const margenError = 8;
         
-        const minIntervalo = Math.max(1, puntajeEstimated => puntajeEstimado - margenError);
+        const minIntervalo = Math.max(1, puntajeEstimado - margenError);
         const maxIntervalo = Math.min(100, puntajeEstimado + margenError);
 
         return res.status(200).json({
@@ -110,14 +113,16 @@ router.get('/gemelo/:id', async (req, res) => {
 });
 
 // ====================================================================
-// 🪐 ENDPOINT B: AUDITORÍA GLOBAL CON LOGICA DE FATIGA
+// 🪐 ENDPOINT C: AUDITORÍA GLOBAL MULTI-MATERIA
 // ====================================================================
 router.get('/auditoria', async (req, res) => {
     try {
         const { estudiante, materia } = req.query;
-        const materiaFiltro = materia ? String(materia).toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : 'matematicas';
+        const materiaFiltro = (materia && materia !== 'todas' && materia !== 'diagnostico_general') 
+            ? String(materia).toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "") 
+            : null;
         
-        console.log(`🔍 [AUDITORÍA RECTOR ROUTE]: Mapeando canal elástico híbrido para Tenant: [${req.tenantId}]`);
+        console.log(`🔍 [AUDITORÍA RECTOR ROUTE]: Consultando historial para Estudiante: [${estudiante || 'TODOS'}] | Materia: [${materiaFiltro || 'TODAS'}]`);
 
         const fechaBogota = new Date().toLocaleString("sv-SE", { timeZone: "America/Bogota" }).replace(" ", "T") + "-05:00";
 
@@ -134,86 +139,14 @@ router.get('/auditoria', async (req, res) => {
         let { data: todosLosRegistros, error } = await query;
         if (error) throw error;
 
-        let dataFiltered = (todosLosRegistros || []).filter(r => {
-            const materiaDB = String(r.materia || '').toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-            return materiaDB.includes(materiaFiltro) || materiaFiltro.includes(materiaDB);
-        });
+        let dataFiltered = todosLosRegistros || [];
 
-        const estudiantesSemilla = [
-            { clave: 'elizabeth', email: 'elizabeth@sandbox.edu.co' },
-            { clave: 'samantha', email: 'samantha@sandbox.edu.co' }
-        ];
-
-        for (const target of estudiantesSemilla) {
-            const keyAlias = `dante:live_runtime_snapshot:${materiaFiltro}:${target.clave}`;
-            const keyEmail = `dante:live_runtime_snapshot:${materiaFiltro}:${target.email}`;
-            
-            let liveData = await redis.get(keyAlias);
-            if (!liveData) {
-                liveData = await redis.get(keyEmail);
-            }
-            
-            if (liveData) {
-                const parsed = JSON.parse(liveData);
-                
-                dataFiltered = dataFiltered.filter(r => {
-                    const estClean = String(r.estudiante || '').toLowerCase().trim();
-                    return estClean !== target.clave && estClean !== target.email;
-                });
-                
-                dataFiltered.push({
-                    estudiante: target.clave.toUpperCase(),
-                    materia: materiaFiltro,
-                    institution_id: req.tenantId,
-                    theta: parsed.theta || 0.0,
-                    theta_final: parsed.theta || 0.0,
-                    puntaje_escalonado: Math.max(1, Math.min(100, Math.round(50 + ((parsed.theta || 0) * 13.8)))),
-                    indice_recuperacion_intelectual: parsed.indice_recuperacion_intelectual !== undefined ? parsed.indice_recuperacion_intelectual : 0.50,
-                    indice_curiosidad_conductual: parsed.indice_curiosidad_conductual !== undefined ? parsed.indice_curiosidad_conductual : 0.50,
-                    mapa_calor_sesgos: parsed.priors_dinamicos || { attr_heuristica_lineal: 0.02 },
-                    items_respondidos: parsed.irt_responses || [],
-                    adn_cognitivo: parsed.estado_operacional === 'STABLE' ? {
-                        impulsividad: 15, fatiga: 5, recuperacion: 80, estabilidad: 90,
-                        cronica_narrativa: "Trayectoria elástica nominal en execution activa dentro del Sistema 2 profundo.",
-                        vulnerabilidad_dominante: "Estabilidad cognitiva nominal.",
-                        prescripcion_clinica: "Continuar el flujo adaptativo avanzado incrementando magnitudes de reactivos."
-                    } : {
-                        impulsividad: 85, fatiga: 15, recuperacion: 20, estabilidad: 40,
-                        cronica_narrativa: "Dante OS detectó una ráfaga de automatismo guiado por el Sistema 1 rápido (Disparos automáticos por fricción).",
-                        vulnerabilidad_dominante: "Impulsividad reactiva detectada en el tramo.",
-                        prescripcion_clinica: "Entrenamiento inhibitorio obligatorio. Forzar desaceleración de clics por 8 segundos."
-                    },
-                    ultima_actualizacion: fechaBogota
-                });
-            }
-        }
-
-        const diogenesFijo = {
-            estudiante: "diogenes",
-            materia: materiaFiltro,
-            institution_id: req.tenantId,
-            theta: 1.1206,
-            puntaje_escalonado: 66,
-            indice_recuperacion_intelectual: 0.5000,
-            indice_curiosidad_conductual: 0.5000,
-            items_respondidos: [],
-            mapa_calor_sesgos: { 
-                attr_heuristica_lineal: 0.65, 
-                attr_error_geometrico: 0.20, 
-                attr_omision_conversion: 0.05, 
-                attr_inversion_operational: 0.10 
-            },
-            adn_cognitivo: {
-                impulsividad: 75, fatiga: 12, recuperacion: 85, estabilidad: 56.5,
-                cronica_narrativa: "Durante este desafío, el motor detectó un predominio de respuestas automáticas guiadas por el Sistema 1 rápido. Diógenes tiende a acelerar el paso ante enunciados hostiles.",
-                vulnerabilidad_dominante: "Impulsividad reactiva de tramo bajo.",
-                prescripcion_clinica: "Entrenamiento inhibitorio obligatorio."
-            },
-            ultima_actualizacion: fechaBogota
-        };
-
-        if (!dataFiltered.some(r => String(r.estudiante).toLowerCase().trim() === 'diogenes')) {
-            dataFiltered.unshift(diogenesFijo);
+        // Si se solicita una materia en particular, filtramos por ella. De lo contrario, entregamos TODAS las materias.
+        if (materiaFiltro) {
+            dataFiltered = dataFiltered.filter(r => {
+                const materiaDB = String(r.materia || '').toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                return materiaDB.includes(materiaFiltro) || materiaFiltro.includes(materiaDB);
+            });
         }
 
         let alertasFatigaColectiva = [];
@@ -234,33 +167,22 @@ router.get('/auditoria', async (req, res) => {
                 itemsHistorico = r.items_respondidos.historico_clics || [];
             }
 
-            if (!adnExtraido && studentIdClean !== 'diogenes' && studentIdClean !== 'elizabeth' && studentIdClean !== 'samantha') {
-                const redisExecutiveMetaKey = `dante:executive:report:${materiaFiltro}:${studentIdClean}`;
-                try {
-                    const cachedMeta = await redis.get(redisExecutiveMetaKey);
-                    if (cachedMeta) {
-                        const parsed = JSON.parse(cachedMeta);
-                        mapaCalorExtraido = parsed.mapa_calor_sesgos || {};
-                        adnExtraido = parsed;
-                    }
-                } catch (err) {}
-            }
-
             if (!adnExtraido) {
                 adnExtraido = {
                     impulsividad: 25, fatiga: 0, recuperacion: 50, estabilidad: 80,
-                    cronica_narrativa: `${studentIdClean.toUpperCase()} bajo análisis longitudinal activo.`,
+                    cronica_narrativa: `${studentIdClean.toUpperCase()} bajo análisis longitudinal activo en ${String(r.materia || 'materia').toUpperCase()}.`,
                     vulnerabilidad_dominante: "Estabilidad cognitiva nominal.", 
-                    prescripcion_clinica: "Continuar el flujo adaptativo estándar de la materia."
+                    prescripcion_clinica: "Continuar el flujo adaptativo estándar."
                 };
-                mapaCalorExtraido = { attr_error_geometrico: 0.02, attr_heuristica_lineal: 0.02 };
+                mapaCalorExtraido = { attr_heuristica_lineal: 0.15, attr_inversion_operacional: 0.15 };
             }
 
             if (adnExtraido.fatiga > 30) totalAlumnosConFatiga++;
 
             return {
                 ...r,
-                area_general: r.materia || materiaFiltro,
+                area_general: r.materia,
+                materia: r.materia,
                 items_respondidos: itemsHistorico,
                 theta_final: thetaValue,
                 mapa_calor_sesgos: mapaCalorExtraido,
@@ -277,15 +199,7 @@ router.get('/auditoria', async (req, res) => {
                 id: "alert_fatiga_" + Date.now(),
                 tipo: "CRITICAL_FATIGUE",
                 titulo: "Patrón compatible con Fatiga Colectiva detectado",
-                cuerpo: `La cohorte nominal presenta un incremento asintótico en las latencias de tramos avanzados en ${materiaFiltro.toUpperCase()}. Se prescribe acortar la longitud de la sesión.`
-            });
-        }
-        if (datosSaneados.some(al => al.adn_cognitivo?.impulsividad > 70)) {
-            alertasFatigaColectiva.push({
-                id: "alert_slip_" + Date.now(),
-                tipo: "IMPULSIVITY_WARNING",
-                titulo: "Deslices Cognitivos en Alumnos de Alta Habilidad",
-                cuerpo: "Estudiantes con alto índice latente (θ) están entregando reactivos por debajo del umbral inhibitorio (Sistema 1 veloz)."
+                cuerpo: `La cohorte presenta un incremento en las latencias de tramos avanzados. Se prescribe acortar la longitud de la sesión.`
             });
         }
 
@@ -303,7 +217,7 @@ router.get('/auditoria', async (req, res) => {
 });
 
 // ====================================================================
-// 🪐 ENDPOINT C: MOTOR DE IMPRESIÓN SINCRO B2B
+// 🪐 ENDPOINT D: MOTOR DE IMPRESIÓN SINCRO B2B
 // ====================================================================
 router.get('/reporte-pdf/:id', async (req, res) => {
     try {
@@ -394,7 +308,7 @@ router.get('/reporte-pdf/:id', async (req, res) => {
 });
 
 // ====================================================================
-// 🪐 ENDPOINT D: CONSOLIDACIÓN DE ÉPOCA E INMUTABILIDAD CORE
+// 🪐 ENDPOINT E: CONSOLIDACIÓN DE ÉPOCA
 // ====================================================================
 router.post('/reset-epoca', async (req, res) => {
     try {
@@ -456,17 +370,6 @@ router.post('/reset-epoca', async (req, res) => {
 
         if (errInsertSnapshot) throw errInsertSnapshot;
 
-        const patronBusqueda = `dante:session:${materiaFiltro}:*`;
-        try {
-            const llavesVivas = await redis.keys(patronBusqueda);
-            if (llavesVivas && llavesVivas.length > 0) {
-                await redis.del(llavesVivas);
-                console.log(`🧹 [REDIS PURGE]: Eliminadas ${llavesVivas.length} sesiones temporales.`);
-            }
-        } catch (errRedis) {
-            console.warn("⚠️ [REDIS PURGE NON-CRITICAL EXCEPTION]:", errRedis.message);
-        }
-
         return res.status(200).json({ 
             success: true, 
             message: `Época consolidada con éxito. Se generó el Snapshot Histórico ID: ${nuevoSnapshot[0].id}`,
@@ -475,48 +378,7 @@ router.post('/reset-epoca', async (req, res) => {
 
     } catch (error) {
         console.error("🚨 [RESET EPOCA EXCEPTION]:", error.message);
-        return res.status(500).json({ success: false, error: "Cortocorticuito al congelar la instantánea histórica." });
-    }
-});
-
-// ====================================================================
-// 🪐 ENDPOINT E: TELEMETRÍA INVERSA
-// ====================================================================
-router.get('/authoring/banco-calibracion', async (req, res) => {
-    try {
-        console.log(`📡 [CALIBRACIÓN API]: Extrayendo analítica forense del banco...`);
-
-        const { data: metricas, error } = await supabase
-            .from('metricas_calibracion_items')
-            .select('*');
-
-        if (error) throw error;
-
-        let dataFormateada = [];
-        if (metricas && metricas.length > 0) {
-            dataFormateada = metricas.map(m => ({
-                item_id: m.item_id,
-                total_interacciones: m.total_interacciones || 0,
-                tasa_acierto_empirico: m.tasa_acierto_empirico || 0,
-                parametro_c_empirico: m.parametro_c_empirico || 0,
-                informacion_fisher_media: m.informacion_fisher_media || 0,
-                estado_item: m.estado_item || "CALIBRADO",
-                sugerencia_optimizacion: m.sugerencia_optimizacion || "Reactivo operando estable dentro de la curva IRT."
-            }));
-        } else {
-            dataFormateada = [
-                { item_id: "reactivo_mat_023", total_interacciones: 48, tasa_acierto_empirico: 0.25, parametro_c_empirico: 0.54, informacion_fisher_media: 0.0412, estado_item: "ALTA_ADIVINACION", sugerencia_optimizacion: "El distractor operacional 'D' (inversión de signos) absorbs el 54% de los clics." },
-                { item_id: "reactivo_zuleta_001", total_interacciones: 52, tasa_acierto_empirico: 0.31, parametro_c_empirico: 0.48, informacion_fisher_media: 0.0620, estado_item: "ALTA_ADIVINACION", sugerencia_optimizacion: "Fuga masiva por distractor literal en Lectura Crítica. El distractor 'B' atrapa al alumno impulsivo." },
-                { item_id: "reactivo_ciencias_001", total_interacciones: 32, tasa_acierto_empirico: 0.25, parametro_c_empirico: 0.12, informacion_fisher_media: 0.2380, estado_item: "CALIBRADO", sugerencia_optimizacion: "Reactivo operando estable dentro de la curva IRT." },
-                { item_id: "reactivo_ingles_001", total_interacciones: 28, tasa_acierto_empirico: 0.85, parametro_c_empirico: 0.07, informacion_fisher_media: 0.1240, estado_item: "CALIBRADO", sugerencia_optimizacion: "Módulos estables. La pregunta discrimina con alta fidelidad la asimilación sintáctica contextual." }
-            ];
-        }
-
-        return res.status(200).json({ success: true, data: dataFormateada });
-
-    } catch (error) {
-        console.error("🚨 [CALIBRATION API EXCEPTION]:", error.message);
-        return res.status(500).json({ success: false, error: "Cortocircuito en el enlace con Dante IRT Engine." });
+        return res.status(500).json({ success: false, error: "Cortocircuito al congelar la instantánea histórica." });
     }
 });
 
@@ -558,7 +420,6 @@ function armarPlantillaMaestraHTML(tenant, materia, fecha, id, total, promedio, 
             .bar-container { margin-top: 4px; margin-bottom: 4px; }
             .bar-bg { background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden; margin-top: 3px; }
             .bar-fill { height: 100%; border-radius: 3px; }
-            .mini-badge { display: inline-block; font-size: 9px; font-weight: bold; text-transform: uppercase; padding: 2px 5px; border-radius: 3px; margin-bottom: 4px; }
             .footer { text-align: center; font-size: 10px; color: var(--slate-muted); margin-top: 60px; border-top: 1px solid var(--border-light); padding-top: 20px; text-transform: uppercase; letter-spacing: 1px; }
             @media print {
                 body { padding: 20px; font-size: 12pt; color: #000000; background: #ffffff; }
@@ -625,7 +486,6 @@ function obtenerHTMLDePruebaSandbox(tenant) {
         <tr style="border-bottom: 1px solid #e2e8f0;">
             <td style="padding: 14px; vertical-align: top;">
                 <strong style="text-transform: uppercase; color: #0f172a; font-size: 0.9rem;">ELIZABETH</strong>
-                <div style="margin-top: 8px;"><span class="mini-badge" style="background: rgba(22,163,74,0.1); color: #16a34a;">Estado: Nominal (S2)</span></div>
             </td>
             <td style="padding: 14px; font-family: monospace; font-size: 1rem; vertical-align: top; font-weight: bold;">1.3402</td>
             <td style="padding: 14px; vertical-align: top; font-weight: bold; color: #16a34a; font-size: 1.1rem;">68 / 100</td>
@@ -634,14 +494,9 @@ function obtenerHTMLDePruebaSandbox(tenant) {
                     <div style="font-size: 10px; font-weight: bold; color: #16a34a;">RECUPERACIÓN (IRI): 75%</div>
                     <div class="bar-bg"><div class="bar-fill" style="width: 75%; background: #16a34a;"></div></div>
                 </div>
-                <div class="bar-container" style="margin-top: 10px;">
-                    <div style="font-size: 10px; font-weight: bold; color: #06b6d4;">CURIOSIDAD (ICC): 80%</div>
-                    <div class="bar-bg"><div class="bar-fill" style="width: 80%; background: #06b6d4;"></div></div>
-                </div>
             </td>
             <td style="padding: 14px; font-size: 0.85rem; color: #475569; text-align: justify; line-height: 1.4; vertical-align: top;">
-                <div style="margin-bottom: 4px;"><strong>Crónica:</strong> Elizabeth ha desplegado una trayectoria de adaptación impecable. Mantiene una estabilidad de latencia plana administrando el Sistema 2 profundo.</div>
-                <div><strong>Prescripción:</strong> <span style="color: #0284c7; font-weight: bold;">Continuar entrenamiento adaptativo avanzado incrementando magnitudes.</span></div>
+                <div style="margin-bottom: 4px;"><strong>Crónica:</strong> Elizabeth ha desplegado una trayectoria de adaptación impecable.</div>
             </td>
         </tr>
     `;
