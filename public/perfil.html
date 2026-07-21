@@ -111,9 +111,7 @@
         <!-- MAPA DE CALOR DE SESGOS -->
         <div class="bg-[#14161d] border border-zinc-800 p-6 rounded-lg shadow-2xl space-y-4">
             <h3 class="text-sm font-light uppercase tracking-wider text-rose-400 border-b border-zinc-800 pb-3">🔥 Mapa de Calor de Sesgos</h3>
-            <div id="contenedorBarrasSesgos" class="space-y-4 text-xs font-mono">
-                <!-- Se llena dinámicamente -->
-            </div>
+            <div id="contenedorBarrasSesgos" class="space-y-4 text-xs font-mono"></div>
         </div>
     </section>
 
@@ -163,7 +161,6 @@
 
             static async cargarDatosCompletos() {
                 try {
-                    // Consulta paralela al gemelo y a la auditoría del estudiante
                     const [resGemelo, resAuditoria] = await Promise.all([
                         fetch(`${HOST_URL}/api/cat/gemelo/${STUDENT_ID}`, {
                             headers: { 'x-institution-id': INSTITUTION_ID, 'Authorization': `Bearer ${sessionToken}` }
@@ -189,13 +186,26 @@
                 const streak = localStorage.getItem("dante_streak_count") || "1";
                 document.getElementById("kpiRacha").innerText = `${streak} 🔥`;
 
-                // Métrica Habilidad & Puntaje
-                const esc = gemelo.escalonamiento_icfes || {};
-                const thetaVal = parseFloat(gemelo.theta_actual !== undefined ? gemelo.theta_actual : (esc.theta || 0.0000));
-                const puntajeReal = esc.puntaje_estimado || Math.max(1, Math.min(100, Math.round(50 + (thetaVal * 13.8))));
-                
-                document.getElementById("kpiTheta").innerText = thetaVal.toFixed(4);
-                document.getElementById("kpiPuntaje").innerText = `${puntajeReal} / 100 pts`;
+                // 🛠️ FILTRADO INTELIGENTE DE MAYOR/MÁS RECIENTE THETA REAL
+                let maxThetaVal = 0.0000;
+                let maxPuntajeVal = 50;
+
+                if (Array.isArray(historial) && historial.length > 0) {
+                    historial.forEach(h => {
+                        const t = parseFloat(h.theta || 0.0);
+                        if (Math.abs(t) > Math.abs(maxThetaVal)) {
+                            maxThetaVal = t;
+                        }
+                    });
+                    maxPuntajeVal = Math.max(1, Math.min(100, Math.round(50 + (maxThetaVal * 13.8))));
+                } else if (gemelo) {
+                    const esc = gemelo.escalonamiento_icfes || {};
+                    maxThetaVal = parseFloat(gemelo.theta_actual !== undefined ? gemelo.theta_actual : (esc.theta || 0.0000));
+                    maxPuntajeVal = esc.puntaje_estimado || Math.max(1, Math.min(100, Math.round(50 + (maxThetaVal * 13.8))));
+                }
+
+                document.getElementById("kpiTheta").innerText = maxThetaVal.toFixed(4);
+                document.getElementById("kpiPuntaje").innerText = `${maxPuntajeVal} / 100 pts`;
 
                 // IRI & Rango
                 const indices = gemelo.indices_avanzados || {};
@@ -203,9 +213,9 @@
                 document.getElementById("kpiIRI").innerText = `${Math.round(iri * 100)}%`;
 
                 let rango = "Platino II";
-                if (puntajeReal > 75) rango = "Élite MÁSTER";
-                else if (puntajeReal > 60) rango = "Diamante Visoespacial";
-                else if (puntajeReal < 45) rango = "Oro de Enfoque";
+                if (maxPuntajeVal > 75) rango = "Élite MÁSTER";
+                else if (maxPuntajeVal > 60) rango = "Diamante Visoespacial";
+                else if (maxPuntajeVal < 45) rango = "Oro de Enfoque";
                 document.getElementById("lblRangoBadge").innerText = `RANGO: ${rango}`;
 
                 // Diagnóstico & Prescripción
@@ -255,7 +265,7 @@
             static renderizarTablaHistorial(registros) {
                 const body = document.getElementById("tablaHistorialBody");
                 if (!registros || registros.length === 0) {
-                    body.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-xs text-slate-500 italic font-mono">> No tienes exámenenes guardados todavía.</td></tr>`;
+                    body.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-xs text-slate-500 italic font-mono">> No tienes exámenes guardados todavía.</td></tr>`;
                     return;
                 }
 
@@ -263,7 +273,7 @@
                 registros.forEach(r => {
                     const fecha = new Date(r.created_at || Date.now()).toLocaleDateString('es-CO');
                     const th = parseFloat(r.theta || 0.0).toFixed(4);
-                    const pts = r.puntaje_escalonado || Math.round(50 + (th * 13.8));
+                    const pts = r.puntaje_escalonado || Math.round(50 + (parseFloat(r.theta || 0) * 13.8));
 
                     body.innerHTML += `
                         <tr class="hover:bg-zinc-800/30 transition-colors">
@@ -279,7 +289,7 @@
 
             static renderizarGraficaEvolucion(historial) {
                 const fechas = (historial || []).map((_, i) => `Sesión #${i+1}`);
-                const seriesData = (historial || []).map(h => parseFloat((h.theta || 0).toFixed(4)));
+                const seriesData = (historial || []).map(h => parseFloat((parseFloat(h.theta) || 0).toFixed(4)));
 
                 if (fechas.length === 0) { fechas.push('Línea Base'); seriesData.push(0.0000); }
 
