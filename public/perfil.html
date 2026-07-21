@@ -48,6 +48,34 @@
         .mini-bar-bg { background: #090a0f; height: 8px; border-radius: 4px; overflow: hidden; margin-top: 0.4rem; border: 1px solid var(--graphite); }
         .mini-bar-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
 
+        /* Estilos del Termómetro Bayesiano */
+        .thermometer-container {
+            height: 16px;
+            background: #27272a;
+            border-radius: 9999px;
+            position: relative;
+            margin: 25px 0 15px 0;
+        }
+        .confidence-band {
+            position: absolute;
+            height: 100%;
+            background: rgba(245, 158, 11, 0.25);
+            border-radius: 9999px;
+            transition: all 0.5s ease;
+        }
+        .pin {
+            position: absolute;
+            top: -6px;
+            width: 28px;
+            height: 28px;
+            background: #fbbf24;
+            border-radius: 50%;
+            border: 3px solid #09090b;
+            transform: translateX(-50%);
+            transition: all 0.5s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+        }
+
         /* Tooltip personalizado */
         .tooltip-wrapper { position: relative; display: inline-block; cursor: pointer; }
         .tooltip-box {
@@ -146,6 +174,37 @@
         </div>
     </section>
 
+    <!-- WIDGET INTEGRADO: GEMELO DIGITAL // TERMÓMETRO DE CERTEZA BAYESIANO -->
+    <section class="bg-[#12141c] border border-zinc-800 p-6 rounded-lg shadow-2xl">
+        <div class="flex justify-between items-center border-b border-zinc-800 pb-3 mb-2">
+            <h3 class="text-sm font-light uppercase tracking-wider text-[var(--gold-satin)] flex items-center gap-2">
+                <span>🧬</span> Gemelo Digital // Termómetro de Certeza Bayesiano
+            </h3>
+            <span id="lblOrigenGemelo" class="text-[10px] font-mono text-slate-400 uppercase bg-[#08090c] px-2 py-1 border border-zinc-800 rounded">Sincronizando...</span>
+        </div>
+
+        <div class="thermometer-container">
+            <div class="confidence-band" id="band"></div>
+            <div class="pin" id="pin-marker"></div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3 text-center font-mono text-xs text-slate-400 mt-6">
+            <div class="bg-[#08090c] p-3 rounded-lg border border-zinc-800/80">
+                <span class="block text-[10px] uppercase tracking-wider">Intervalo Mínimo</span>
+                <strong style="color: #fff;" id="val-min" class="text-base font-bold mt-1 block">0</strong>
+            </div>
+            <div class="bg-[#08090c] p-3 rounded-lg border border-amber-500/30">
+                <span class="block text-[10px] uppercase text-amber-400 tracking-wider">Puntaje Estimado</span>
+                <strong style="color: #fbbf24;" id="val-target" class="text-base font-bold mt-1 block">50</strong>
+            </div>
+            <div class="bg-[#08090c] p-3 rounded-lg border border-zinc-800/80">
+                <span class="block text-[10px] uppercase tracking-wider">Intervalo Máximo</span>
+                <strong style="color: #fff;" id="val-max" class="text-base font-bold mt-1 block">100</strong>
+            </div>
+        </div>
+        <p class="text-center font-mono text-xs text-slate-500 mt-3" id="val-error">Margen de Error Bayesiano: Calibrando...</p>
+    </section>
+
     <!-- SECCIÓN GRÁFICAS DEL ESTUDIANTE -->
     <section class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div class="bg-[#12141c] border border-zinc-800 p-6 rounded-lg shadow-2xl">
@@ -233,11 +292,13 @@
         const sessionToken = localStorage.getItem("dante_token");
         const rawUser = localStorage.getItem("dante_user");
         const userObj = rawUser ? JSON.parse(rawUser) : {};
-        const STUDENT_ID = userObj.email ? userObj.email.split('@')[0].toLowerCase().trim() : "elizabeth";
+        const STUDENT_ID = userObj.email ? userObj.email.split('@')[0].toLowerCase().trim() : (userObj.estudiante || "elizabeth");
         const INSTITUTION_ID = userObj.institution_id || "colegio_sandbox_default";
 
         let currentMateriaFiltro = "todas";
         let cacheHistorialCompleto = [];
+        let cacheGemeloCompleto = {};
+        let cacheOrigenGemelo = "SUPABASE LIVE";
 
         let chartEvolucion = null;
         let chartRadar = null;
@@ -251,11 +312,20 @@
 
             static async cargarDatosCompletos() {
                 try {
-                    const resAuditoria = await fetch(`${HOST_URL}/api/cat/auditoria?estudiante=${STUDENT_ID}&institution_id=${INSTITUTION_ID}`, {
-                        headers: { 'x-institution-id': INSTITUTION_ID, 'Authorization': `Bearer ${sessionToken}` }
-                    });
+                    const [resGemelo, resAuditoria] = await Promise.all([
+                        fetch(`${HOST_URL}/api/cat/gemelo/${STUDENT_ID}`, {
+                            headers: { 'x-institution-id': INSTITUTION_ID, 'Authorization': `Bearer ${sessionToken}` }
+                        }),
+                        fetch(`${HOST_URL}/api/cat/auditoria?estudiante=${STUDENT_ID}&institution_id=${INSTITUTION_ID}`, {
+                            headers: { 'x-institution-id': INSTITUTION_ID, 'Authorization': `Bearer ${sessionToken}` }
+                        })
+                    ]);
 
+                    const jsonGemelo = await resGemelo.json();
                     const jsonAuditoria = await resAuditoria.json();
+
+                    cacheGemeloCompleto = jsonGemelo.gemelo || {};
+                    cacheOrigenGemelo = jsonGemelo.origen || "SUPABASE LIVE";
                     cacheHistorialCompleto = jsonAuditoria.data || [];
 
                     this.procesarYRenderizarVistas();
@@ -298,7 +368,6 @@
                     maxPuntajeVal = ultimoRegistro.puntaje_escalonado || Math.max(1, Math.min(100, Math.round(50 + (maxThetaVal * 13.8))));
                     iriVal = parseFloat(ultimoRegistro.indice_recuperacion_intelectual !== undefined ? ultimoRegistro.indice_recuperacion_intelectual : 0.50);
                 } else if (cacheHistorialCompleto.length > 0) {
-                    // Fallback a global si no hay simulacros específicos en esta pestaña
                     ultimoRegistro = cacheHistorialCompleto[cacheHistorialCompleto.length - 1];
                     maxThetaVal = parseFloat(ultimoRegistro.theta_final !== undefined ? ultimoRegistro.theta_final : (ultimoRegistro.theta || 0.0));
                     maxPuntajeVal = ultimoRegistro.puntaje_escalonado || Math.max(1, Math.min(100, Math.round(50 + (maxThetaVal * 13.8))));
@@ -315,8 +384,34 @@
                 else if (maxPuntajeVal < 45) rango = "Oro de Enfoque";
                 document.getElementById("lblRangoBadge").innerText = `RANGO: ${rango}`;
 
+                // Renderizar Termómetro de Certeza Bayesiano (Gemelo Digital)
+                const esc = cacheGemeloCompleto.escalonamiento_icfes || {
+                    puntaje_estimado: maxPuntajeVal,
+                    intervalo_95: [Math.max(1, maxPuntajeVal - 8), Math.min(100, maxPuntajeVal + 8)],
+                    margen_error: 8
+                };
+
+                const minVal = esc.intervalo_95?.[0] ?? Math.max(1, maxPuntajeVal - 8);
+                const targetVal = esc.puntaje_estimado ?? maxPuntajeVal;
+                const maxVal = esc.intervalo_95?.[1] ?? Math.min(100, maxPuntajeVal + 8);
+                const margenErr = esc.margen_error ?? 8;
+
+                document.getElementById('lblOrigenGemelo').innerText = `${cacheOrigenGemelo || 'SUPABASE LIVE'}`;
+                document.getElementById('val-min').innerText = minVal;
+                document.getElementById('val-target').innerText = targetVal;
+                document.getElementById('val-max').innerText = maxVal;
+                document.getElementById('val-error').innerText = `Margen de Error Bayesiano: ±${margenErr} pts (Credibilidad 95%)`;
+
+                const bandEl = document.getElementById('band');
+                const pinEl = document.getElementById('pin-marker');
+                if (bandEl && pinEl) {
+                    bandEl.style.left = `${minVal}%`;
+                    bandEl.style.width = `${Math.max(2, maxVal - minVal)}%`;
+                    pinEl.style.left = `${targetVal}%`;
+                }
+
                 // Extraer ADN Cognitivo e IA
-                const adn = ultimoRegistro?.adn_cognitivo || {};
+                const adn = ultimoRegistro?.adn_cognitivo || cacheGemeloCompleto.adn_cognitivo || {};
                 document.getElementById("lblVulnerabilidadTxt").innerText = adn.vulnerabilidad_dominante || "Sin desvíos críticos detectados.";
                 document.getElementById("lblPrescripcionTxt").innerText = adn.prescripcion_clinica || "Mantener la cadencia adaptativa actual.";
                 document.getElementById("lblCronicaTxt").innerText = adn.cronica_narrativa || "Trayectoria adaptativa registrada con éxito en el sistema.";
