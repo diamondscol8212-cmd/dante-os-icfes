@@ -202,7 +202,7 @@
     </div>
 
     <script>
-        // 🪐 DETECCIÓN DE HOST DINÁMICA ANTI-BLOQUEO LOCALHOST
+        // 🪐 DETECCIÓN DE HOST DINÁMICA
         const HOST_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
             ? "http://localhost:3000"
             : window.location.origin;
@@ -321,18 +321,34 @@
                     const adn = al.adn_cognitivo || {};
                     const sesgos = al.mapa_calor_sesges || al.mapa_calor_sesgos || adn.mapa_calor_sesgos || {};
 
+                    // 🛠️ EXTRACCIÓN MULTINIVEL DE THETA IMPERMEABLE
+                    let thetaExtraido = 0.0000;
+                    if (al.theta_final !== undefined && al.theta_final !== null) {
+                        thetaExtraido = parseFloat(al.theta_final);
+                    } else if (al.theta !== undefined && al.theta !== null) {
+                        thetaExtraido = parseFloat(al.theta);
+                    } else if (adn.theta !== undefined && adn.theta !== null) {
+                        thetaExtraido = parseFloat(adn.theta);
+                    } else if (al.items_respondidos && !Array.isArray(al.items_respondidos) && al.items_respondidos.theta !== undefined) {
+                        thetaExtraido = parseFloat(al.items_respondidos.theta);
+                    }
+
+                    const thInicial = parseFloat(al.theta_inicial !== undefined ? al.theta_inicial : 0.0000);
+                    const thFinal = thetaExtraido;
+                    const delta = thFinal - thInicial;
+                    const deltaClass = delta >= 0 ? "delta-sube" : "delta-baja";
+                    const deltaSigno = delta >= 0 ? "+" : "";
+
+                    // Recalcular el puntaje de escala país con el theta real
+                    const puntajeCalculadoReal = Math.max(1, Math.min(100, Math.round(50 + (thFinal * 13.8))));
+                    const puntajeMostrar = al.puntaje_escalonado && al.puntaje_escalonado > 0 ? al.puntaje_escalonado : puntajeCalculadoReal;
+
                     sumaEstabilidad += parseFloat(adn.estabilidad || 75);
-                    sumaPuntajes += parseInt(al.puntaje_escalonado || 50);
+                    sumaPuntajes += parseInt(puntajeMostrar);
 
                     serieImpulsividad.push(parseFloat(adn.impulsividad || 20));
                     serieFatiga.push(parseFloat(adn.fatiga || 0));
                     serieRecuperacion.push(parseFloat(adn.recuperacion || 50));
-
-                    const thInicial = 0.0000;
-                    const thFinal = parseFloat(al.theta_final !== undefined ? al.theta_final : (al.theta || 0));
-                    const delta = thFinal - thInicial;
-                    const deltaClass = delta >= 0 ? "delta-sube" : "delta-baja";
-                    const deltaSigno = delta >= 0 ? "+" : "";
 
                     const iriVal = al.indice_recuperacion_intelectual !== undefined ? parseFloat(al.indice_recuperacion_intelectual) : 0.5000;
                     const iccVal = al.indice_curiosidad_conductual !== undefined ? parseFloat(al.indice_curiosidad_conductual) : 0.5000;
@@ -372,11 +388,11 @@
                             
                             <div style="font-size:0.7rem; text-transform:uppercase; font-weight:bold; color:${tramoColor}; margin-top:0.6rem;">Estado Motor: ${tramoTxt}</div>
                         </td>
-                        <td>${thInicial.toFixed(4)}</td>
-                        <td style="font-weight:600; color:#fff;">${thFinal.toFixed(4)}</td>
+                        <td class="font-mono text-slate-400">${thInicial.toFixed(4)}</td>
+                        <td class="font-mono font-bold text-sky-400">${thFinal.toFixed(4)}</td>
                         <td><span class="badge-delta ${deltaClass}">${deltaSigno}${delta.toFixed(4)}</span></td>
                         <td>
-                            <div style="font-size:1.1rem; font-weight:bold; color:var(--emerald);">${al.puntaje_escalonado || 50} / 100</div>
+                            <div style="font-size:1.1rem; font-weight:bold; color:var(--emerald);">${puntajeMostrar} / 100</div>
                             <div style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; margin-top:0.4rem; font-weight:bold;">Mapa de Calor de Sesgos:</div>
                             ${this.construirMiniBarrasSesgos(sesgosSaneados)}
                         </td>
@@ -591,7 +607,7 @@
             }
         }
 
-        // 🛠️ FUNCIÓN SANITIZADA CONTRA EXCEPCIONES Y SYMBOLS UNDEFINED
+        // 🛠️ FUNCIÓN SANITIZADA CONTRA EXCEPCIONES UNDEFINED
         function sesgosMapSaneado(mapaSesgos) {
             const safe = mapaSesgos || {};
             return {
