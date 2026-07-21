@@ -101,33 +101,17 @@ async function ejecutarCompilacionFriaDB(area) {
     try {
         console.log(`📡 [B2B COGNITIVE COMPILE v21.0.0]: Descargando e indexando el códice para: [${area}]...`);
         
-        let resItems;
-        const esMateriaEstructuraTexto = (area === 'lectura_critica' || area === 'ingles' || area === 'ciencias_naturales');
-
-        if (esMateriaEstructuraTexto) {
-            resItems = await supabase.from('banco_reactivos').select('*').eq('materia', area);
-        } else {
-            resItems = await supabase.from('banco_items_irt').select(`
-                id, pregunta_texto, opciones_respuesta, parametro_a_discriminacion, parametro_b_dificultad, parametro_c_adivinacion, sub_competencia, correcta
-            `).eq('area_general', area);
-        }
+        // 🛠️ CONSULTA UNIFICADA A TABLA SOBERANA BANCO_ITEMS_IRT
+        const resItems = await supabase.from('banco_items_irt').select(`
+            id, pregunta_texto, opciones_respuesta, parametro_a_discriminacion, parametro_b_dificultad, parametro_c_adivinacion, sub_competencia, correcta
+        `).eq('area_general', area);
 
         if (resItems.error) throw resItems.error;
         if (!resItems.data || resItems.data.length === 0) {
             throw new Error(`El repositorio para '${area}' no contiene registros válidos en Supabase.`);
         }
 
-        let llavesAtributosDinamicos = [];
-        if (area === 'lectura_critica') {
-            llavesAtributosDinamicos = ['attr_fuga_distractor_literal', 'attr_sesgo_confirmacion', 'attr_fallo_integracion_intertextual'];
-        } else if (area === 'ciencias_naturales') {
-            llavesAtributosDinamicos = ['attr_fuga_grafica_complexa', 'attr_sesgo_causal_lineal', 'attr_omision_conversion'];
-        } else if (area === 'ingles') {
-            llavesAtributosDinamicos = ['attr_traduccion_literal_fuga', 'attr_sobregeneralizacion_regla', 'attr_fallo_contextual'];
-        } else {
-            llavesAtributosDinamicos = ['attr_heuristica_lineal', 'attr_error_geometrico', 'attr_omision_conversion', 'attr_inversion_operacional'];
-        }
-
+        const llavesAtributosDinamicos = ['attr_heuristica_lineal', 'attr_inversion_operacional', 'attr_omision_conversion', 'attr_error_geometrico'];
         CACHE_ESQUEMA_ATRIBUTOS.set(area, llavesAtributosDinamicos);
 
         const mapaItems = new Map();
@@ -136,81 +120,55 @@ async function ejecutarCompilacionFriaDB(area) {
 
         resItems.data.forEach(item => {
             let estructuraQ = {};
-            let metadatosEstructurados = {};
+            llavesAtributosDinamicos.forEach(attr => {
+                estructuraQ[attr] = item.matriz_q_items?.[attr] || 0;
+            });
 
-            if (esMateriaEstructuraTexto) {
-                const opciones = item.opciones_reactivo || {};
-                const correctaObj = opciones.opcion_correcta || {};
-                const distractores = opciones.distractores_sesgos || [];
-
-                llavesAtributosDinamicos.forEach(attr => { estructuraQ[attr] = 0; });
-
-                distractores.forEach(dist => {
-                    const letraMarcada = String(dist.letra || "").toUpperCase().trim();
-                    const llaveCompuesta = `${item.id}_${letraMarcada}`;
-                    const estructuraTrampaQ = {};
-                    
-                    llavesAtributosDinamicos.forEach(attr => {
-                        estructuraTrampaQ[attr] = (dist.sesgo_asociado === attr) ? 1 : 0;
-                    });
-                    mapaTrampas.set(llaveCompuesta, estructuraTrampaQ);
-                });
-
-                metadatosEstructurados = {
-                    id: item.id,
-                    pregunta_texto: item.texto_estimulo ? `${item.texto_estimulo}\n\n${item.enunciado}` : item.pregunta_texto || item.enunciado,
-                    opciones_respuesta: ["A", "B", "C", "D"],
-                    a: parseFloat(item.parametro_a_discriminacion || 1.25), 
-                    b: parseFloat(item.dificultad_teorica_b_bayes || item.parametro_b_dificultad || 0.0),
-                    c: parseFloat(item.parametro_c_adivinacion || 0.20), 
-                    sub_competencia: String(item.area_general || item.sub_competencia || 'indeterminado').toLowerCase().trim(),
-                    correcta: String(correctaObj.letra || item.correcta || 'A').toUpperCase().trim(),
-                    correcta_db: String(correctaObj.letra || item.correcta || 'A').toUpperCase().trim(),
-                    matriz_q: estructuraQ
-                };
-
-            } else {
-                llavesAtributosDinamicos.forEach(attr => {
-                    estructuraQ[attr] = item.matriz_q_items?.[attr] || 0;
-                });
-
-                metadatosEstructurados = {
-                    id: item.id,
-                    pregunta_texto: item.pregunta_texto,
-                    opciones_respuesta: item.opciones_respuesta || ["A", "B", "C", "D"],
-                    a: parseFloat(item.parametro_a_discriminacion || 1.0),
-                    b: parseFloat(item.parametro_b_dificultad || 0.0),
-                    c: parseFloat(item.parametro_c_adivinacion || 0.2),
-                    sub_competencia: String(item.sub_competencia || 'general').toLowerCase().trim(),
-                    correcta: String(item.correcta || 'B').toUpperCase().trim(),
-                    correcta_db: String(item.correcta || 'B').toUpperCase().trim(),
-                    matriz_q: estructuraQ
-                };
+            let opcionesNormalizadas = ["A", "B", "C", "D"];
+            if (Array.isArray(item.opciones_respuesta)) {
+                opcionesNormalizadas = item.opciones_respuesta;
+            } else if (typeof item.opciones_respuesta === 'string') {
+                try {
+                    opcionesNormalizadas = JSON.parse(item.opciones_respuesta);
+                } catch (e) {
+                    opcionesNormalizadas = [item.opciones_respuesta];
+                }
             }
+
+            const metadatosEstructurados = {
+                id: item.id,
+                pregunta_texto: item.pregunta_texto,
+                opciones_respuesta: opcionesNormalizadas,
+                a: parseFloat(item.parametro_a_discriminacion || 1.0),
+                b: parseFloat(item.parametro_b_dificultad || 0.0),
+                c: parseFloat(item.parametro_c_adivinacion || 0.2),
+                sub_competencia: String(item.sub_competencia || 'general').toLowerCase().trim(),
+                correcta: String(item.correcta || 'B').toUpperCase().trim(),
+                correcta_db: String(item.correcta || 'B').toUpperCase().trim(),
+                matriz_q: estructuraQ
+            };
 
             mapaItems.set(item.id, metadatosEstructurados);
             const indexBucket = obtenerIndexBucket(metadatosEstructurados.b);
             matrizBuckets[indexBucket].push(metadatosEstructurados);
         });
 
-        if (!esMateriaEstructuraTexto) {
-            const resTrampas = await supabase.from('mapa_trampas_distractores').select('*');
-            if (!resTrampas.error && resTrampas.data) {
-                resTrampas.data.forEach(t => {
-                    const yMarcada = String(t.opcion_marcada || "").toUpperCase().trim();
-                    const llaveCompuesta = `${t.item_id}_${yMarcada}`;
-                    const estructuraTrampaQ = {};
-                    llavesAtributosDinamicos.forEach(attr => {
-                        if (t[attr] !== undefined) {
-                            estructuraTrampaQ[attr] = t[attr];
-                        } else {
-                            const fallbackKey = attr.replace('attr_', 'vulnera_');
-                            estructuraTrampaQ[attr] = t[fallbackKey] || 0;
-                        }
-                    });
-                    mapaTrampas.set(llaveCompuesta, estructuraTrampaQ);
+        const resTrampas = await supabase.from('mapa_trampas_distractores').select('*');
+        if (!resTrampas.error && resTrampas.data) {
+            resTrampas.data.forEach(t => {
+                const yMarcada = String(t.opcion_marcada || "").toUpperCase().trim();
+                const llaveCompuesta = `${t.item_id}_${yMarcada}`;
+                const estructuraTrampaQ = {};
+                llavesAtributosDinamicos.forEach(attr => {
+                    if (t[attr] !== undefined) {
+                        estructuraTrampaQ[attr] = t[attr];
+                    } else {
+                        const fallbackKey = attr.replace('attr_', 'vulnera_');
+                        estructuraTrampaQ[attr] = t[fallbackKey] || 0;
+                    }
                 });
-            }
+                mapaTrampas.set(llaveCompuesta, estructuraTrampaQ);
+            });
         }
 
         CACHE_BANCO_ITEMS.set(area, mapaItems);
@@ -263,7 +221,7 @@ export async function procesarInteraccionEstudiante(req, res) {
 
         const cronometriaSegundos = parseFloat(responseTime || tiempo || 15.0);
         const certezaSaneada = String(declaredConfidence || certeza || 'alta').toLowerCase().trim(); 
-        const llavesAtributos = CACHE_ESQUEMA_ATRIBUTOS.get(areaSaneada) || [];
+        const llavesAtributos = CACHE_ESQUEMA_ATRIBUTOS.get(areaSaneada) || ['attr_heuristica_lineal', 'attr_inversion_operacional', 'attr_omision_conversion', 'attr_error_geometrico'];
         
         const indexLookUpKey = `dante:active_index:${areaSaneada}:${studentIdSaneado}`;
         let activeSessionId = sessionId;
@@ -410,7 +368,6 @@ export async function procesarInteraccionEstudiante(req, res) {
                     irt: { a: metadatosItem.a, b: metadatosItem.b, c: metadatosItem.c, calibrationVersion: CALIBRATION_VERSION }
                 });
 
-                // 🛡️ PERSISTENCIA SÍNCRONA DIRECTA Y TRANSPARENTE
                 try {
                     const { data: insertData, error: insertError } = await supabase
                         .from('registro_eventos')
@@ -426,7 +383,7 @@ export async function procesarInteraccionEstudiante(req, res) {
                         }]);
 
                     if (insertError) {
-                        console.error(`🚨 [SUPABASE REJECTION]: La DB rechazó el registro. Código: ${insertError.code}. Mensaje: ${insertError.message}. Detalles: ${insertError.details}`);
+                        console.error(`🚨 [SUPABASE REJECTION]: La DB rechazó el registro. Código: ${insertError.code}. Mensaje: ${insertError.message}`);
                     } else {
                         console.log(`✅ [DANTE BASE DE DATOS REAL]: Fila inyectada con éxito total para: [${studentIdSaneado}] en ítem ${idRealMapeado}`);
                     }
@@ -477,30 +434,17 @@ export async function procesarInteraccionEstudiante(req, res) {
                 }
                 
                 const mapeoExplicaciones = {
-                    "attr_heuristica_lineal": "Has asumido una relación directa o lineal simple. Recuerda que este tipo de problemas requiere descomponer las variables y no operar de forma directa con el primer atajo que percibe tu mente.",
-                    "attr_inversion_operacional": "Detectamos una inversión en el sentido de la operation. Revisa si confundiste una multiplicación con una división, o si sumaste exponentes en lugar de multiplicarlos.",
-                    "attr_omision_conversion": "Faltó un paso crítico de conversión. Valida si las unidades de medida (litros, metros, segundos) coinciden en todo el planteamiento antes de operar los números.",
-                    "attr_error_geometrico": "Se registra un conflicto en la representation espacial. Confirma si el ejercicio te solicita la superficie total (área) o el límite de la figura (perímetro)."
+                    "attr_heuristica_lineal": "Has asumido una relación directa o lineal simple. Recuerda que este tipo de problemas requiere descomponer las variables y no operar de forma directa.",
+                    "attr_inversion_operacional": "Detectamos una inversión en el sentido de la operación. Revisa si confundiste los términos o invertiste la relación.",
+                    "attr_omision_conversion": "Faltó un paso crítico de conversión de magnitudes antes de operar.",
+                    "attr_error_geometrico": "Se registra un conflicto en la representación espacial o perimetral."
                 };
 
-                remediacionSugeridaMsg = mapeoExplicaciones[sesgoActivo] || "Has caído en un distractor diseñado para evaluar desajustes procedimentales. Analiza el paso anterior a tu resultado.";
+                remediacionSugeridaMsg = mapeoExplicaciones[sesgoActivo] || "Has caído en un distractor diseñado para evaluar desajustes procedimentales.";
 
             } else {
-                const subComp = String(metadatosItem.sub_competencia || 'algebra').toLowerCase().trim();
-                
-                if (subComp.includes('algebra') || subComp.includes('calculo')) {
-                    errorDetonadoMsg = "Desajuste en Propiedades Operacionales (Álgebra)";
-                    remediacionSugeridaMsg = "Revisa con atención el signo de tus términos y recuerda la jerarquía de las operaciones. Si hay exponentes o paréntesis, asegúrate de aplicar la distribución correcta antes de gupar.";
-                } else if (subComp.includes('geometria') || subComp.includes('medicion') || subComp.includes('razonamiento')) {
-                    errorDetonadoMsg = "Sesgo de Representación Espacial-Perimetral";
-                    remediacionSugeridaMsg = "No te fíes solo de la perspectiva visual del gráfico. Identifica claramente las unidades de medida dadas y valida si el problema te pide calcular un área (espacio interior) o un perímetro (contorno).";
-                } else if (subComp.includes('estadistica') || subComp.includes('probabilidad') || subComp.includes('interpretacion')) {
-                    errorDetonadoMsg = "Heurística de Disponibilidad / Error de Muestreo";
-                    remediacionSugeridaMsg = "Evita sacar conclusiones rápidas con los primeros datos que ves en la gráfica. Lee bien los ejes cartesianos, las etiquetas y fíjate si el problema te pide una frecuencia absoluta o un porcentaje del total.";
-                } else {
-                    errorDetonadoMsg = "Desviación de Enfoque Procedimental";
-                    remediacionSugeridaMsg = "Lee con calma el enunciado del problema. Identifica cuál es la pregunta central y descarta los distractores numéricos que no aportan al cálculo final.";
-                }
+                errorDetonadoMsg = "Desviación de Enfoque Procedimental";
+                remediacionSugeridaMsg = "Lee con calma el enunciado del problema e identifica la pregunta central descartando distractores.";
             }
         }
 
@@ -508,18 +452,17 @@ export async function procesarInteraccionEstudiante(req, res) {
             factorPenalizacionModulada = 0.40; 
             flagIntervencionActiva = "IMPULSIVITY_BLOCK";
             errorDetonadoMsg = "RUIDO POR IMPULSIVIDAD CRÍTICA (SISTEMA 1 DETECTADO)";
-            remediacionSugeridaMsg = "Has respondido en menos de 4 segundos de forma reactiva. Se prescribe frenar el impulso y releer el estímulo forzando el Sistema 2 analítico.";
+            remediacionSugeridaMsg = "Has respondido en menos de 4 segundos de forma reactiva. Se prescribe frenar el impulso y releer el estímulo.";
         } else if (esTransicionSuave) {
             const deltaRango = (cronometriaSegundos - METACONTROL_THRESHOLDS.UMBRAL_IMPULSIVIDAD_CRITICA_SEGUNDOS) / 8.0;
             factorPenalizacionModulada = 0.60 + (deltaRango * 0.40); 
         } else if (esBloqueoCognitivo) {
             flagIntervencionActiva = "FATIGUED_LOCK";
             errorDetonadoMsg = "SATURACIÓN COGNITIVA / BLOQUEO POR FRUSTRACIÓN";
-            remediacionSugeridaMsg = "Has excedido los 3 minutos en este reactivo sin consolidar un proceso de resolución. Tu ventana de fatiga está activa. Se prescribe realizar una pausa de control de 30 segundos antes de reanudar.";
+            remediacionSugeridaMsg = "Has excedido los 3 minutos en este reactivo sin consolidar un proceso de resolución.";
         }
 
         const conteoActualizadoItems = arrayHistoricoRespuestas.length;
-
         const subCompetenciaDestino = metadatosItem ? String(metadatosItem.sub_competencia).toLowerCase().trim() : 'algebra';
         let currentThetaMateriaTarget = sessionState.thetas?.algebra || 0.0;
         
@@ -655,7 +598,7 @@ export async function procesarInteraccionEstudiante(req, res) {
                     desviacion_enfoque: "Foco procedimental variable durante la sesión.",
                     estrategia_autorregulacion: "Monitorear los tiempos de ejecución en problemas complejos.",
                     plan_entrenamiento: [
-                        "Días 1-3: Repasa los fundamentos de operaciones distributivas en álgebra.",
+                        "Días 1-3: Repasa los fundamentos de operaciones distributivas.",
                         "Días 4-5: Practica 5 ejercicios sin límite de tiempo.",
                         "Días 6-8: Realiza lecturas de 10 segundos antes de marcar.",
                         "Días 9-10: Ejecuta simulacros cortos."
