@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dante OS // Centro de Mando del Estudiante</title>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        :root {
+            --bg-deep: #0b0c10;
+            --bg-surface: #14161d;
+            --gold-satin: #d4af37;
+            --gold-glow: rgba(212, 175, 55, 0.15);
+            --graphite: #2b2e3a;
+            --emerald: #2ecc71;
+            --crimson: #e74c3c;
+            --cyan-core: #51e2f5;
+            --font-editorial: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: var(--bg-deep); color: #f0f1f5; font-family: var(--font-editorial);
+            background-image: radial-gradient(circle at 50% 30%, #191c26 0%, #0b0c10 100%);
+            min-height: 100vh; padding: 2rem; line-height: 1.6;
+        }
+
+        .kpi-card { background: var(--bg-surface); border: 1px solid var(--graphite); padding: 1.5rem; border-radius: 6px; }
+        .kpi-val { font-size: 2rem; font-weight: 300; color: var(--gold-satin); margin-top: 0.3rem; }
+        .mini-bar-bg { background: #090a0f; height: 8px; border-radius: 4px; overflow: hidden; margin-top: 0.4rem; border: 1px solid var(--graphite); }
+        .mini-bar-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
+    </style>
+</head>
+<body class="max-w-7xl mx-auto space-y-8">
+
+    <!-- HEADER / BARRA DE NAVEGACIÓN -->
+    <header class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-zinc-800 pb-6 gap-4">
+        <div>
+            <div class="flex items-center gap-3">
+                <h1 class="text-2xl font-light uppercase tracking-wider text-[var(--gold-satin)]">Dante OS // Hoja de Vida Cognitiva</h1>
+                <span id="lblRangoBadge" class="text-xs font-bold px-3 py-1 bg-amber-500/10 border border-amber-500/30 text-[var(--gold-satin)] rounded uppercase tracking-wider">Cargando Rango...</span>
+            </div>
+            <p id="lblSubtituloAlumno" class="text-xs text-slate-400 font-mono mt-1">> EXPEDIENTE Y TRAYECTORIA LONGITUDINAL DEL ALUMNO</p>
+        </div>
+        
+        <div class="flex items-center gap-3">
+            <a href="/index.html" class="bg-[#1a1d26] hover:bg-zinc-800 border border-zinc-700 text-slate-200 px-4 py-2 rounded text-xs font-mono font-bold uppercase tracking-wider transition-all">
+                ⚡ ir a realizar simulacro
+            </a>
+            <button onclick="PerfilEstudiante.cerrarSesion()" class="border border-rose-500/40 text-rose-400 hover:bg-rose-500/10 px-4 py-2 rounded text-xs font-mono font-bold uppercase tracking-wider transition-all">
+                Salir
+            </button>
+        </div>
+    </header>
+
+    <!-- CARDS DE METRICAS GLOBALES -->
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="kpi-card">
+            <p class="text-[10px] font-mono text-slate-400 uppercase tracking-widest">Racha Activa</p>
+            <p id="kpiRacha" class="kpi-val text-amber-400">1 🔥</p>
+        </div>
+        <div class="kpi-card">
+            <p class="text-[10px] font-mono text-slate-400 uppercase tracking-widest">Puntaje Proyectado ICFES</p>
+            <p id="kpiPuntaje" class="kpi-val text-emerald-400">0 / 100 pts</p>
+        </div>
+        <div class="kpi-card">
+            <p class="text-[10px] font-mono text-slate-400 uppercase tracking-widest">Habilidad Latente Actual (θ)</p>
+            <p id="kpiTheta" class="kpi-val text-sky-400">0.0000</p>
+        </div>
+        <div class="kpi-card">
+            <p class="text-[10px] font-mono text-slate-400 uppercase tracking-widest">Resiliencia Cognitiva (IRI)</p>
+            <p id="kpiIRI" class="kpi-val text-purple-400">50%</p>
+        </div>
+    </section>
+
+    <!-- SECCIÓN GRÁFICAS DEL ESTUDIANTE -->
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="bg-[#14161d] border border-zinc-800 p-6 rounded-lg shadow-2xl">
+            <h3 class="text-sm font-light uppercase tracking-wider text-slate-300 border-b border-zinc-800 pb-3 mb-4">Evolución Histórica de Habilidad (θ)</h3>
+            <div id="chartEvolucionTheta"></div>
+        </div>
+        <div class="bg-[#14161d] border border-zinc-800 p-6 rounded-lg shadow-2xl">
+            <h3 class="text-sm font-light uppercase tracking-wider text-slate-300 border-b border-zinc-800 pb-3 mb-4">Radar de Tendencias Operativas</h3>
+            <div id="chartRadarDimensiones"></div>
+        </div>
+    </section>
+
+    <!-- SECCIÓN PLAN DE ENTRENAMIENTO Y MAPA DE SESGOS -->
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- PLAN DE ENTRENAMIENTO -->
+        <div class="lg:col-span-2 bg-[#14161d] border border-zinc-800 p-6 rounded-lg shadow-2xl space-y-4">
+            <h3 class="text-sm font-light uppercase tracking-wider text-[var(--gold-satin)] border-b border-zinc-800 pb-3">🎯 Plan Personalizado Prescrito por la IA</h3>
+            
+            <div class="p-4 bg-[#0b0c10] border-l-4 border-[var(--cyan-core)] rounded text-xs leading-relaxed space-y-2">
+                <span id="lblVulnerabilidadTitle" class="font-bold text-[var(--cyan-core)] uppercase block">Diagnóstico Principal:</span>
+                <p id="lblVulnerabilidadTxt" class="text-slate-300">Cargando análisis forense...</p>
+            </div>
+
+            <div class="p-4 bg-[#0b0c10] border-l-4 border-[var(--gold-satin)] rounded text-xs leading-relaxed space-y-2">
+                <span class="font-bold text-[var(--gold-satin)] uppercase block">Prescripción Directa:</span>
+                <p id="lblPrescripcionTxt" class="text-slate-300">Calculando itinerario de estudio adaptativo...</p>
+            </div>
+
+            <div class="pt-2">
+                <p class="text-xs font-mono text-slate-400 uppercase tracking-wider mb-2">Crónica de Trayectoria:</p>
+                <p id="lblCronicaTxt" class="text-xs text-slate-300 italic bg-[#1a1d26] p-3 rounded border border-zinc-800 leading-relaxed"></p>
+            </div>
+        </div>
+
+        <!-- MAPA DE CALOR DE SESGOS -->
+        <div class="bg-[#14161d] border border-zinc-800 p-6 rounded-lg shadow-2xl space-y-4">
+            <h3 class="text-sm font-light uppercase tracking-wider text-rose-400 border-b border-zinc-800 pb-3">🔥 Mapa de Calor de Sesgos</h3>
+            <div id="contenedorBarrasSesgos" class="space-y-4 text-xs font-mono">
+                <!-- Se llena dinámicamente -->
+            </div>
+        </div>
+    </section>
+
+    <!-- HISTORIAL DE SIMULACROS -->
+    <section class="bg-[#14161d] border border-zinc-800 rounded-lg shadow-2xl overflow-hidden">
+        <div class="p-6 border-b border-zinc-800 bg-[#0d0e15]">
+            <h3 class="text-sm font-light uppercase tracking-wider text-[var(--gold-satin)]">📊 Registro de Exámenes Realizados</h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-sm text-slate-300">
+                <thead class="bg-[#0b0c10] text-[10px] font-mono text-slate-500 uppercase tracking-widest border-b border-zinc-800">
+                    <tr>
+                        <th class="p-4">Fecha</th>
+                        <th class="p-4">Materia</th>
+                        <th class="p-4">Habilidad (θ)</th>
+                        <th class="p-4">Puntaje ICFES</th>
+                        <th class="p-4">Sesgo Dominante</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaHistorialBody" class="divide-y divide-zinc-800/50">
+                    <tr><td colspan="5" class="p-8 text-center text-xs text-slate-500 italic font-mono">> Cargando registros del estudiante...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <script>
+        const HOST_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+            ? "http://localhost:3000"
+            : window.location.origin;
+
+        const sessionToken = localStorage.getItem("dante_token");
+        const rawUser = localStorage.getItem("dante_user");
+        const userObj = rawUser ? JSON.parse(rawUser) : {};
+        const STUDENT_ID = userObj.email ? userObj.email.split('@')[0].toLowerCase().trim() : "elizabeth";
+        const INSTITUTION_ID = userObj.institution_id || "colegio_sandbox_default";
+
+        let chartEvolucion = null;
+        let chartRadar = null;
+
+        class PerfilEstudiante {
+            static cerrarSesion() {
+                localStorage.removeItem("dante_token");
+                localStorage.removeItem("dante_user");
+                window.location.href = "/login.html";
+            }
+
+            static async cargarDatosCompletos() {
+                try {
+                    // Consulta paralela al gemelo y a la auditoría del estudiante
+                    const [resGemelo, resAuditoria] = await Promise.all([
+                        fetch(`${HOST_URL}/api/cat/gemelo/${STUDENT_ID}`, {
+                            headers: { 'x-institution-id': INSTITUTION_ID, 'Authorization': `Bearer ${sessionToken}` }
+                        }),
+                        fetch(`${HOST_URL}/api/cat/auditoria?estudiante=${STUDENT_ID}&institution_id=${INSTITUTION_ID}`, {
+                            headers: { 'x-institution-id': INSTITUTION_ID, 'Authorization': `Bearer ${sessionToken}` }
+                        })
+                    ]);
+
+                    const jsonGemelo = await resGemelo.json();
+                    const jsonAuditoria = await resAuditoria.json();
+
+                    this.renderizarResumen(jsonGemelo.gemelo || {}, jsonAuditoria.data || []);
+                } catch (err) {
+                    console.error("🚨 [PERFIL LOAD ERROR]:", err.message);
+                }
+            }
+
+            static renderizarResumen(gemelo, historial) {
+                document.getElementById("lblSubtituloAlumno").innerText = `> EXPEDIENTE Y TRAYECTORIA LONGITUDINAL DE: ${STUDENT_ID.toUpperCase()}`;
+
+                // Racha
+                const streak = localStorage.getItem("dante_streak_count") || "1";
+                document.getElementById("kpiRacha").innerText = `${streak} 🔥`;
+
+                // Métrica Habilidad & Puntaje
+                const esc = gemelo.escalonamiento_icfes || {};
+                const thetaVal = parseFloat(gemelo.theta_actual !== undefined ? gemelo.theta_actual : (esc.theta || 0.0000));
+                const puntajeReal = esc.puntaje_estimado || Math.max(1, Math.min(100, Math.round(50 + (thetaVal * 13.8))));
+                
+                document.getElementById("kpiTheta").innerText = thetaVal.toFixed(4);
+                document.getElementById("kpiPuntaje").innerText = `${puntajeReal} / 100 pts`;
+
+                // IRI & Rango
+                const indices = gemelo.indices_avanzados || {};
+                const iri = parseFloat(indices.iri !== undefined ? indices.iri : 0.50);
+                document.getElementById("kpiIRI").innerText = `${Math.round(iri * 100)}%`;
+
+                let rango = "Platino II";
+                if (puntajeReal > 75) rango = "Élite MÁSTER";
+                else if (puntajeReal > 60) rango = "Diamante Visoespacial";
+                else if (puntajeReal < 45) rango = "Oro de Enfoque";
+                document.getElementById("lblRangoBadge").innerText = `RANGO: ${rango}`;
+
+                // Diagnóstico & Prescripción
+                const adn = gemelo.adn_cognitivo || {};
+                document.getElementById("lblVulnerabilidadTxt").innerText = adn.vulnerabilidad_dominante || "Sin desvíos críticos detectados.";
+                document.getElementById("lblPrescripcionTxt").innerText = adn.prescripcion_clinica || "Mantener la cadencia adaptativa actual.";
+                document.getElementById("lblCronicaTxt").innerText = adn.cronica_narrativa || "Trayectoria adaptativa registrada con éxito en el sistema.";
+
+                // Mapa de Calor
+                this.renderizarMapaCalor(gemelo.mapa_calor_sesgos || adn.mapa_calor_sesgos || {});
+
+                // Tablas & Gráficas
+                this.renderizarTablaHistorial(historial);
+                this.renderizarGraficaEvolucion(historial);
+                this.renderizarRadar(gemelo);
+            }
+
+            static renderizarMapaCalor(sesgos) {
+                const cont = document.getElementById("contenedorBarrasSesgos");
+                cont.innerHTML = "";
+
+                const itemsSesgos = [
+                    { k: "attr_heuristica_lineal", n: "Heurística Lineal (S1)", v: sesgos.attr_heuristica_lineal || sesgos.lineal || 0.15 },
+                    { k: "attr_error_geometrico", n: "Error Geométrico", v: sesgos.attr_error_geometrico || sesgos.geometrico || 0.15 },
+                    { k: "attr_omision_conversion", n: "Omisión de Conversión", v: sesgos.attr_omision_conversion || sesgos.conversion || 0.15 },
+                    { k: "attr_inversion_operacional", n: "Inversión Operacional", v: sesgos.attr_inversion_operacional || sesgos.operacional || 0.15 }
+                ];
+
+                itemsSesgos.forEach(s => {
+                    const pct = Math.round((parseFloat(s.v) > 1.0 ? parseFloat(s.v) : parseFloat(s.v) * 100));
+                    let color = "var(--emerald)";
+                    if (pct >= 25) color = "var(--gold-satin)";
+                    if (pct >= 55) color = "var(--crimson)";
+
+                    cont.innerHTML += `
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-slate-400">${s.n}</span>
+                                <span class="font-bold" style="color: ${color}">${pct}%</span>
+                            </div>
+                            <div class="mini-bar-bg"><div class="mini-bar-fill" style="width: ${pct}%; background: ${color}"></div></div>
+                        </div>
+                    `;
+                });
+            }
+
+            static renderizarTablaHistorial(registros) {
+                const body = document.getElementById("tablaHistorialBody");
+                if (!registros || registros.length === 0) {
+                    body.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-xs text-slate-500 italic font-mono">> No tienes exámenenes guardados todavía.</td></tr>`;
+                    return;
+                }
+
+                body.innerHTML = "";
+                registros.forEach(r => {
+                    const fecha = new Date(r.created_at || Date.now()).toLocaleDateString('es-CO');
+                    const th = parseFloat(r.theta || 0.0).toFixed(4);
+                    const pts = r.puntaje_escalonado || Math.round(50 + (th * 13.8));
+
+                    body.innerHTML += `
+                        <tr class="hover:bg-zinc-800/30 transition-colors">
+                            <td class="p-4 font-mono text-xs text-slate-400">${fecha}</td>
+                            <td class="p-4 uppercase text-xs font-semibold text-slate-200">${r.materia || 'matematicas'}</td>
+                            <td class="p-4 font-mono font-bold text-sky-400">${th}</td>
+                            <td class="p-4 font-mono font-bold text-emerald-400">${pts} / 100 pts</td>
+                            <td class="p-4 font-mono text-xs text-amber-400">ANALIZADO</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            static renderizarGraficaEvolucion(historial) {
+                const fechas = (historial || []).map((_, i) => `Sesión #${i+1}`);
+                const seriesData = (historial || []).map(h => parseFloat((h.theta || 0).toFixed(4)));
+
+                if (fechas.length === 0) { fechas.push('Línea Base'); seriesData.push(0.0000); }
+
+                const options = {
+                    series: [{ name: 'Habilidad Latente (θ)', data: seriesData }],
+                    chart: { type: 'area', height: 260, toolbar: { show: false }, background: 'transparent' },
+                    colors: ['#3b82f6'], theme: { mode: 'dark' }, stroke: { curve: 'smooth', width: 3 },
+                    fill: { type: 'gradient', gradient: { opacityFrom: 0.4, opacityTo: 0.05 } },
+                    xaxis: { categories: fechas, labels: { style: { colors: '#9499a7', fontSize: '10px' } } },
+                    yaxis: { labels: { style: { colors: '#9499a7' } } }
+                };
+
+                if (chartEvolucion) chartEvolucion.destroy();
+                chartEvolucion = new ApexCharts(document.querySelector("#chartEvolucionTheta"), options);
+                chartEvolucion.render();
+            }
+
+            static renderizarRadar(gemelo) {
+                const adn = gemelo.adn_cognitivo || {};
+                const options = {
+                    series: [{
+                        name: 'Atributos Cognitivos',
+                        data: [
+                            parseFloat(adn.velocidad || 65),
+                            parseFloat(adn.foco || 75),
+                            parseFloat(adn.resistencia || 80),
+                            parseFloat(adn.comprension || 70),
+                            parseFloat(adn.espacial || 60)
+                        ]
+                    }],
+                    chart: { type: 'radar', height: 260, toolbar: { show: false }, background: 'transparent' },
+                    colors: ['#d4af37'], theme: { mode: 'dark' },
+                    xaxis: { categories: ['Velocidad', 'Foco', 'Resistencia', 'Comprensión', 'Espacial'] },
+                    yaxis: { show: false, max: 100 }
+                };
+
+                if (chartRadar) chartRadar.destroy();
+                chartRadar = new ApexCharts(document.querySelector("#chartRadarDimensiones"), options);
+                chartRadar.render();
+            }
+        }
+
+        window.onload = () => {
+            if (!sessionToken) {
+                alert("🚨 CONTROL PORTAL: Inicia sesión primero.");
+                window.location.href = "/login.html";
+                return;
+            }
+            PerfilEstudiante.cargarDatosCompletos();
+        };
+    </script>
+</body>
+</html>
