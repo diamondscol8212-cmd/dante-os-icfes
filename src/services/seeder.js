@@ -5,9 +5,6 @@ import { supabase } from '../../supabaseClient.js';
 
 const INSTITUTION_ID = 'colegio_sandbox_default';
 
-// ====================================================================
-// 🧠 BANCO MAESTRO DE REACTIVOS CONTEXTUALIZADOS ESTILO ICFES (SABER 11)
-// ====================================================================
 const REACTIVOS_REALES = [
     // ----------------------------------------------------------------
     // 📐 MATEMÁTICAS (10 Reactivos)
@@ -134,7 +131,7 @@ const REACTIVOS_REALES = [
     },
 
     // ----------------------------------------------------------------
-    // 📖 LECTURA CRÍTICA (10 Reactivos) -> Etiquetado exacto: lectura_critica
+    // 📖 LECTURA CRÍTICA (10 Reactivos)
     // ----------------------------------------------------------------
     {
         area: 'lectura_critica', sub: 'argumentacion',
@@ -258,7 +255,7 @@ const REACTIVOS_REALES = [
     },
 
     // ----------------------------------------------------------------
-    // 🧪 CIENCIAS NATURALES (10 Reactivos) -> Etiquetado exacto: ciencias_naturales
+    // 🧪 CIENCIAS NATURALES (10 Reactivos)
     // ----------------------------------------------------------------
     {
         area: 'ciencias_naturales', sub: 'fisica',
@@ -382,7 +379,7 @@ const REACTIVOS_REALES = [
     },
 
     // ----------------------------------------------------------------
-    // 🇬🇧 INGLÉS (10 Reactivos) -> Etiquetado exacto: ingles
+    // 🇬🇧 INGLÉS (10 Reactivos)
     // ----------------------------------------------------------------
     {
         area: 'ingles', sub: 'grammar_reading',
@@ -507,7 +504,7 @@ const REACTIVOS_REALES = [
 ];
 
 async function sembrarBancoSoberano() {
-    console.log("🚀 [SIEMBRA DANTE OS]: Limpiando tablas e inyectando banco completo normalizado...");
+    console.log("🚀 [SIEMBRA DANTE OS]: Limpiando tablas e inyectando banco con arreglo estricto de opciones...");
 
     try {
         await supabase.from('mapa_trampas_distractores').delete().neq('opcion_marcada', 'CLEAN_ALL');
@@ -518,16 +515,17 @@ async function sembrarBancoSoberano() {
 
         for (const item of REACTIVOS_REALES) {
             const itemId = crypto.randomUUID();
-
-            // 🛠️ Normalizar área a minúsculas exactas requeridas por el router
             const areaNormalized = String(item.area).toLowerCase().trim();
+
+            // 🛠️ FORZAR ESTRUCTURA DE ARREGLO DE TEXTO EXACTO PARA POSTGRESQL
+            const arregloOpcionesValido = Array.isArray(item.opciones) ? item.opciones : [item.opciones];
 
             const { error: errBase } = await supabase.from('banco_items_irt').insert([{
                 id: itemId,
                 area_general: areaNormalized,
                 sub_competencia: item.sub,
                 pregunta_texto: item.texto,
-                opciones_respuesta: item.opciones,
+                opciones_respuesta: arregloOpcionesValido, // Se pasa como array real
                 correcta: item.ok,
                 parametro_a_discriminacion: item.a,
                 parametro_b_dificultad: item.b,
@@ -559,10 +557,10 @@ async function sembrarBancoSoberano() {
                 if (errTrampa) throw new Error(`Error en mapa_trampas: ${errTrampa.message}`);
             }
 
-            console.log(`✅ Ítem sembrado y normalizado: [${areaNormalized.toUpperCase()} // ${item.sub.toUpperCase()}] -> UUID: ${itemId}`);
+            console.log(`✅ Ítem sembrado correctamente: [${areaNormalized.toUpperCase()} // ${item.sub.toUpperCase()}] -> UUID: ${itemId}`);
         }
 
-        console.log("\n🎉 [SIEMBRA COMPLETADA]: 40 reactivos perfectamente normalizados para Supabase.");
+        console.log("\n🎉 [SIEMBRA COMPLETADA]: 40 reactivos formateados como arreglos nativos en Supabase.");
         process.exit(0);
 
     } catch (err) {
