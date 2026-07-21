@@ -134,7 +134,7 @@ const REACTIVOS_REALES = [
     },
 
     // ----------------------------------------------------------------
-    // 📖 LECTURA CRÍTICA (10 Reactivos)
+    // 📖 LECTURA CRÍTICA (10 Reactivos) -> Etiquetado exacto: lectura_critica
     // ----------------------------------------------------------------
     {
         area: 'lectura_critica', sub: 'argumentacion',
@@ -258,7 +258,7 @@ const REACTIVOS_REALES = [
     },
 
     // ----------------------------------------------------------------
-    // 🧪 CIENCIAS NATURALES (10 Reactivos)
+    // 🧪 CIENCIAS NATURALES (10 Reactivos) -> Etiquetado exacto: ciencias_naturales
     // ----------------------------------------------------------------
     {
         area: 'ciencias_naturales', sub: 'fisica',
@@ -382,7 +382,7 @@ const REACTIVOS_REALES = [
     },
 
     // ----------------------------------------------------------------
-    // 🇬🇧 INGLÉS (10 Reactivos)
+    // 🇬🇧 INGLÉS (10 Reactivos) -> Etiquetado exacto: ingles
     // ----------------------------------------------------------------
     {
         area: 'ingles', sub: 'grammar_reading',
@@ -507,7 +507,7 @@ const REACTIVOS_REALES = [
 ];
 
 async function sembrarBancoSoberano() {
-    console.log("🚀 [SIEMBRA DANTE OS]: Limpiando tablas e inyectando banco completo de 40 reactivos...");
+    console.log("🚀 [SIEMBRA DANTE OS]: Limpiando tablas e inyectando banco completo normalizado...");
 
     try {
         await supabase.from('mapa_trampas_distractores').delete().neq('opcion_marcada', 'CLEAN_ALL');
@@ -519,9 +519,12 @@ async function sembrarBancoSoberano() {
         for (const item of REACTIVOS_REALES) {
             const itemId = crypto.randomUUID();
 
+            // 🛠️ Normalizar área a minúsculas exactas requeridas por el router
+            const areaNormalized = String(item.area).toLowerCase().trim();
+
             const { error: errBase } = await supabase.from('banco_items_irt').insert([{
                 id: itemId,
-                area_general: item.area,
+                area_general: areaNormalized,
                 sub_competencia: item.sub,
                 pregunta_texto: item.texto,
                 opciones_respuesta: item.opciones,
@@ -556,10 +559,10 @@ async function sembrarBancoSoberano() {
                 if (errTrampa) throw new Error(`Error en mapa_trampas: ${errTrampa.message}`);
             }
 
-            console.log(`✅ Ítem sembrado: [${item.area.toUpperCase()} // ${item.sub.toUpperCase()}] -> UUID: ${itemId}`);
+            console.log(`✅ Ítem sembrado y normalizado: [${areaNormalized.toUpperCase()} // ${item.sub.toUpperCase()}] -> UUID: ${itemId}`);
         }
 
-        console.log("\n🎉 [SIEMBRA COMPLETADA]: 40 reactivos indexados (10 por cada materia).");
+        console.log("\n🎉 [SIEMBRA COMPLETADA]: 40 reactivos perfectamente normalizados para Supabase.");
         process.exit(0);
 
     } catch (err) {
