@@ -128,7 +128,7 @@
                         <th class="p-4">Materia</th>
                         <th class="p-4">Habilidad (θ)</th>
                         <th class="p-4">Puntaje ICFES</th>
-                        <th class="p-4">Sesgo Dominante</th>
+                        <th class="p-4">Estado</th>
                     </tr>
                 </thead>
                 <tbody id="tablaHistorialBody" class="divide-y divide-zinc-800/50">
@@ -186,7 +186,7 @@
                 const streak = localStorage.getItem("dante_streak_count") || "1";
                 document.getElementById("kpiRacha").innerText = `${streak} 🔥`;
 
-                // 🛠️ FILTRADO INTELIGENTE DE MAYOR/MÁS RECIENTE THETA REAL
+                // 🛠️ FILTRADO Y DETECCIÓN DEL MAYOR THETA REAL ALCANZADO
                 let maxThetaVal = 0.0000;
                 let maxPuntajeVal = 50;
 
@@ -274,6 +274,8 @@
                     const fecha = new Date(r.created_at || Date.now()).toLocaleDateString('es-CO');
                     const th = parseFloat(r.theta || 0.0).toFixed(4);
                     const pts = r.puntaje_escalonado || Math.round(50 + (parseFloat(r.theta || 0) * 13.8));
+                    const estadoTxt = parseFloat(th) !== 0 ? "EVALUADO" : "EN CURSO / BASE";
+                    const estadoClass = parseFloat(th) !== 0 ? "text-emerald-400" : "text-amber-400";
 
                     body.innerHTML += `
                         <tr class="hover:bg-zinc-800/30 transition-colors">
@@ -281,15 +283,25 @@
                             <td class="p-4 uppercase text-xs font-semibold text-slate-200">${r.materia || 'matematicas'}</td>
                             <td class="p-4 font-mono font-bold text-sky-400">${th}</td>
                             <td class="p-4 font-mono font-bold text-emerald-400">${pts} / 100 pts</td>
-                            <td class="p-4 font-mono text-xs text-amber-400">ANALIZADO</td>
+                            <td class="p-4 font-mono text-xs ${estadoClass}">${estadoTxt}</td>
                         </tr>
                     `;
                 });
             }
 
             static renderizarGraficaEvolucion(historial) {
-                const fechas = (historial || []).map((_, i) => `Sesión #${i+1}`);
-                const seriesData = (historial || []).map(h => parseFloat((parseFloat(h.theta) || 0).toFixed(4)));
+                // 🛠️ FILTRO INTELIGENTE: Ordenar por fecha cronológica y filtrar intentos nulos si hay más de 1
+                let sesionesValidas = (historial || []).filter(h => parseFloat(h.theta) !== 0 || (historial.length === 1));
+                
+                if (sesionesValidas.length === 0 && historial.length > 0) {
+                    sesionesValidas = historial;
+                }
+
+                // Invertir para que la sesión #1 sea la más antigua y la última sea la más reciente
+                const sesionesOrdenadas = [...sesionesValidas].reverse();
+
+                const fechas = sesionesOrdenadas.map((_, i) => `Sesión #${i+1}`);
+                const seriesData = sesionesOrdenadas.map(h => parseFloat((parseFloat(h.theta) || 0).toFixed(4)));
 
                 if (fechas.length === 0) { fechas.push('Línea Base'); seriesData.push(0.0000); }
 
