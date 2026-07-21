@@ -207,7 +207,7 @@
             ? "http://localhost:3000"
             : window.location.origin;
 
-        // Recuperar credenciales criptográficas perimetrales del login
+        // Recuperar credenciales criptográficas del login
         const sessionToken = localStorage.getItem("dante_token");
         const rawUser = localStorage.getItem("dante_user");
         const userObj = rawUser ? JSON.parse(rawUser) : {};
@@ -267,6 +267,9 @@
                     });
                     const json = await res.json();
 
+                    // 🚨 INSPECTOR EN VIVO (MUESTRA EN F12 EL OBJETO COMPLETO QUE DEVUELVE RENDER)
+                    console.log("🔍 [RESPUESTA AUDITORIA SERVIDOR]:", json);
+
                     if (json && json.success) {
                         this.renderizarPanel(json.data || []);
                         this.renderizarAlertasFatiga(json.alertas_fatiga || []);
@@ -321,16 +324,34 @@
                     const adn = al.adn_cognitivo || {};
                     const sesgos = al.mapa_calor_sesges || al.mapa_calor_sesgos || adn.mapa_calor_sesgos || {};
 
-                    // 🛠️ EXTRACCIÓN MULTINIVEL DE THETA IMPERMEABLE
-                    let thetaExtraido = 0.0000;
-                    if (al.theta_final !== undefined && al.theta_final !== null) {
-                        thetaExtraido = parseFloat(al.theta_final);
-                    } else if (al.theta !== undefined && al.theta !== null) {
-                        thetaExtraido = parseFloat(al.theta);
-                    } else if (adn.theta !== undefined && adn.theta !== null) {
-                        thetaExtraido = parseFloat(adn.theta);
-                    } else if (al.items_respondidos && !Array.isArray(al.items_respondidos) && al.items_respondidos.theta !== undefined) {
-                        thetaExtraido = parseFloat(al.items_respondidos.theta);
+                    // 🛠️ ESCANEO EXHAUSTIVO DE THETA
+                    let thetaExtraido = null;
+
+                    const buscarNumeroValido = (...valores) => {
+                        for (let v of valores) {
+                            if (v !== undefined && v !== null && v !== "" && !isNaN(parseFloat(v))) {
+                                return parseFloat(v);
+                            }
+                        }
+                        return null;
+                    };
+
+                    thetaExtraido = buscarNumeroValido(
+                        al.theta_final,
+                        al.theta,
+                        al.thetaEstimado,
+                        al.habilidad,
+                        al.habilidad_latente,
+                        adn.theta,
+                        adn.theta_final,
+                        al.items_respondidos?.theta,
+                        al.items_respondidos?.theta_final,
+                        al.reporteFinal?.thetaEstimado,
+                        al.reporteFinal?.theta
+                    );
+
+                    if (thetaExtraido === null) {
+                        thetaExtraido = 0.0000;
                     }
 
                     const thInicial = parseFloat(al.theta_inicial !== undefined ? al.theta_inicial : 0.0000);
@@ -339,9 +360,10 @@
                     const deltaClass = delta >= 0 ? "delta-sube" : "delta-baja";
                     const deltaSigno = delta >= 0 ? "+" : "";
 
-                    // Recalcular el puntaje de escala país con el theta real
                     const puntajeCalculadoReal = Math.max(1, Math.min(100, Math.round(50 + (thFinal * 13.8))));
-                    const puntajeMostrar = al.puntaje_escalonado && al.puntaje_escalonado > 0 ? al.puntaje_escalonado : puntajeCalculadoReal;
+                    const puntajeMostrar = (al.puntaje_escalonado && parseInt(al.puntaje_escalonado) > 0) 
+                        ? parseInt(al.puntaje_escalonado) 
+                        : puntajeCalculadoReal;
 
                     sumaEstabilidad += parseFloat(adn.estabilidad || 75);
                     sumaPuntajes += parseInt(puntajeMostrar);
@@ -607,7 +629,7 @@
             }
         }
 
-        // 🛠️ FUNCIÓN SANITIZADA CONTRA EXCEPCIONES UNDEFINED
+        // 🛠️ FUNCIÓN SANITIZADA CONTRA EXCEPCIONES Y SYMBOLS UNDEFINED
         function sesgosMapSaneado(mapaSesgos) {
             const safe = mapaSesgos || {};
             return {
