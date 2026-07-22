@@ -7,12 +7,12 @@
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
             --bg-deep: #08090c;
-            --bg-surface: rgba(20, 22, 29, 0.75);
+            --bg-surface: rgba(20, 22, 29, 0.85);
             --bg-card: rgba(26, 29, 38, 0.85);
             --gold-satin: #d4af37;
             --gold-glow: rgba(212, 175, 55, 0.25);
@@ -38,7 +38,7 @@
             line-height: 1.6;
         }
 
-        .font-mono { font-family: var(--font-mono); }
+        .font-mono { font-family: var(--font-mono) !important; }
 
         header {
             display: flex; 
@@ -104,7 +104,14 @@
         }
         .kpi-card:hover { transform: translateY(-3px); border-color: rgba(212, 175, 55, 0.4); }
         .kpi-card.gold-premium { border: 1px solid var(--gold-satin); box-shadow: 0 0 20px var(--gold-glow); }
-        .kpi-val { font-size: 2.2rem; font-weight: 300; font-family: var(--font-mono); color: var(--gold-satin); margin-top: 0.4rem; }
+        .kpi-val { 
+            font-size: 1.75rem !important; 
+            font-weight: 600; 
+            font-family: var(--font-mono) !important; 
+            color: var(--gold-satin); 
+            margin-top: 0.4rem; 
+            white-space: nowrap !important;
+        }
 
         .remediation-box {
             background: linear-gradient(135deg, rgba(20, 27, 45, 0.85) 0%, rgba(13, 17, 26, 0.9) 100%);
@@ -499,7 +506,6 @@
                     tonoEmocional = "Lóbulo frontal acelerado. Pídele que respire y lea la pregunta en voz alta durante 8 segundos.";
                 }
 
-                // 🛠️ FALLBACK ROBUSTO DE PAYLOAD IA
                 const prescripcionFinal = adn.prescripcion_clinica || adn.estrategia_autorregulacion || 'Mantener flujo de práctica adaptativo estándar.';
 
                 cont.innerHTML = `
@@ -546,23 +552,16 @@
                 let html = "";
                 for (const [key, val] of Object.entries(sesgos)) {
                     const porc = (parseFloat(val) > 1.0 ? parseFloat(val) : parseFloat(val) * 100).toFixed(0);
-                    let gradientFill = "linear-gradient(90deg, #10b981 0%, #2ecc71 100%)";
-                    let colorText = "var(--emerald)";
-                    if (porc >= 25) {
-                        gradientFill = "linear-gradient(90deg, #f59e0b 0%, #d4af37 100%)";
-                        colorText = "var(--gold-satin)";
-                    }
-                    if (porc >= 55) {
-                        gradientFill = "linear-gradient(90deg, #f43f5e 0%, #e74c3c 100%)";
-                        colorText = "var(--crimson)";
-                    }
+                    let color = "var(--emerald)";
+                    if (porc >= 25) color = "var(--gold-satin)";
+                    if (porc >= 55) color = "var(--crimson)";
                     
                     html += `
                         <div style="margin-top:0.3rem; display:flex; align-items:center; justify-content:space-between; font-size:0.68rem;" class="font-mono">
                             <span style="color:var(--text-muted); font-size:0.65rem;">${key.replace('attr_','').replace(/_/g,' ').toUpperCase()}</span>
-                            <span style="color:${colorText}; font-weight:bold; margin-left:10px;">${porc}%</span>
+                            <span style="color:${color}; font-weight:bold; margin-left:10px;">${porc}%</span>
                         </div>
-                        <div class="mini-heatmap-bar"><div class="mini-heatmap-fill" style="width:${porc}%; background:${gradientFill};"></div></div>
+                        <div class="mini-heatmap-bar"><div class="mini-heatmap-fill" style="width:${porc}%; background:${color};"></div></div>
                     `;
                 }
                 return html;
