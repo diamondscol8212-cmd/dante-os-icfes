@@ -8,12 +8,12 @@
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
             --bg-deep: #08090c;
-            --bg-surface: rgba(18, 20, 28, 0.75);
+            --bg-surface: rgba(18, 20, 28, 0.85);
             --bg-card: rgba(24, 27, 38, 0.85);
             --gold-satin: #d4af37;
             --gold-glow: rgba(212, 175, 55, 0.25);
@@ -37,7 +37,7 @@
             line-height: 1.6;
         }
 
-        .font-mono { font-family: var(--font-mono); }
+        .font-mono { font-family: var(--font-mono) !important; }
 
         /* Navegación por Materia */
         .tab-materia-btn {
@@ -62,11 +62,11 @@
             box-shadow: 0 0 15px var(--gold-glow);
         }
 
-        /*Tarjetas Glassmorphism */
+        /* Tarjetas Glassmorphism */
         .kpi-card {
             background: var(--bg-surface); 
             border: 1px solid var(--graphite); 
-            padding: 1.6rem;
+            padding: 1.5rem;
             border-radius: 12px; 
             position: relative; 
             overflow: hidden; 
@@ -75,7 +75,14 @@
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
         .kpi-card:hover { transform: translateY(-3px); border-color: rgba(212, 175, 55, 0.4); }
-        .kpi-val { font-size: 2.2rem; font-weight: 300; font-family: var(--font-mono); color: var(--gold-satin); margin-top: 0.3rem; }
+        .kpi-val { 
+            font-size: 1.75rem !important; 
+            font-weight: 600; 
+            font-family: var(--font-mono) !important; 
+            color: var(--gold-satin); 
+            margin-top: 0.3rem; 
+            white-space: nowrap !important;
+        }
 
         .glass-panel {
             background: var(--bg-surface);
@@ -151,7 +158,7 @@
         
         <div class="flex items-center gap-3">
             <a href="/index.html" class="bg-[#181b26] hover:bg-zinc-800 border border-zinc-700 text-slate-200 px-4 py-2 rounded-lg text-xs font-mono font-bold uppercase tracking-wider transition-all">
-                ⚡ ir a realizar simulacro
+                ⚡ Ir a Realizar Simulacro
             </a>
             <button onclick="PerfilEstudiante.cerrarSesion()" class="border border-rose-500/40 text-rose-400 hover:bg-rose-500/10 px-4 py-2 rounded-lg text-xs font-mono font-bold uppercase tracking-wider transition-all">
                 Salir
@@ -280,7 +287,7 @@
                     <span class="text-base">📌</span>
                     <h4 class="text-xs font-bold uppercase text-[var(--cyan-core)] tracking-wider font-mono">Lista de Temas Sugeridos para Repasar Hoy:</h4>
                 </div>
-                <ul id="listaTemasEstudioHtml" class="text-xs text-slate-200 space-y-2 list-disc pl-5 font-mono">
+                <ul id="listaTemasEstudioHtml" class="text-xs text-slate-200 space-y-2 list-disc pl-5 font-sans">
                     <li>Sincronizando plan pedagógico en español...</li>
                 </ul>
             </div>
@@ -292,7 +299,7 @@
 
             <div class="pt-2">
                 <p class="text-xs font-mono text-slate-400 uppercase tracking-wider mb-2">Crónica Narrativa de Trayectoria:</p>
-                <p id="lblCronicaTxt" class="text-xs text-slate-300 italic bg-[#181b26]/80 p-3 rounded-lg border border-zinc-800 leading-relaxed"></p>
+                <p id="lblCronicaTxt" class="text-xs text-slate-300 italic bg-[#181b26]/80 p-3 rounded-lg border border-zinc-800 leading-relaxed font-sans"></p>
             </div>
         </div>
 
@@ -301,7 +308,7 @@
                 <h3 class="text-sm font-light uppercase tracking-wider text-rose-400">🔥 Mapa de Calor de Sesgos</h3>
                 <span class="text-[10px] text-slate-400 font-mono">Haz clic en (?) para ver la ayuda</span>
             </div>
-            <div id="contenedorBarrasSesgos" class="space-y-4 text-xs font-mono"></div>
+            <div id="contenedorBarrasSesgos" class="space-y-4 text-xs font-sans"></div>
         </div>
     </section>
 
@@ -459,7 +466,7 @@
 
                 const adn = ultimoRegistro?.adn_cognitivo || cacheGemeloCompleto.adn_cognitivo || {};
                 document.getElementById("lblVulnerabilidadTxt").innerText = adn.vulnerabilidad_dominante || "Sin desvíos críticos detectados.";
-                document.getElementById("lblPrescripcionTxt").innerText = adn.prescripcion_clinica || "Mantener la cadencia adaptativa actual.";
+                document.getElementById("lblPrescripcionTxt").innerText = adn.prescripcion_clinica || adn.estrategia_autorregulacion || "Mantener la cadencia adaptativa actual.";
                 document.getElementById("lblCronicaTxt").innerText = adn.cronica_narrativa || "Trayectoria adaptativa registrada con éxito en el sistema.";
 
                 this.generarListaTemasEstudio(currentMateriaFiltro);
@@ -508,7 +515,7 @@
                 const itemsSesgos = [
                     { 
                         k: "attr_heuristica_lineal", 
-                        n: "Heurística Lineal (S1)", 
+                        n: "Heurística Lineal", 
                         v: sesgos.attr_heuristica_lineal || sesgos.heuristica_lineal || 0.15,
                         desc: "Responder muy rápido por intuición o impulso, sin verificar si la pregunta tenía una trampa de lectura."
                     },
@@ -549,7 +556,7 @@
                         <div>
                             <div class="flex justify-between items-center mb-1">
                                 <div class="flex items-center gap-1">
-                                    <span class="text-slate-300 font-medium text-xs">${s.n}</span>
+                                    <span class="text-slate-300 font-medium text-xs font-sans">${s.n}</span>
                                     <div class="tooltip-wrapper">
                                         <span class="text-[10px] text-amber-400 font-bold"> (?)</span>
                                         <div class="tooltip-box font-sans">
@@ -557,7 +564,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <span class="font-bold" style="color: ${colorText}">${pct}%</span>
+                                <span class="font-bold font-mono" style="color: ${colorText}">${pct}%</span>
                             </div>
                             <div class="mini-bar-bg"><div class="mini-bar-fill" style="width: ${pct}%; background: ${gradientFill}"></div></div>
                         </div>
@@ -581,13 +588,13 @@
                     const esEvaluado = parseFloat(th) !== 0 || (r.adn_cognitivo && r.adn_cognitivo.cronica_narrativa);
                     
                     const estadoHTML = esEvaluado 
-                        ? `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">EVALUADO</span>`
-                        : `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/10 border border-amber-500/30 text-amber-400">EN CURSO / BASE</span>`;
+                        ? `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono">EVALUADO</span>`
+                        : `<span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/10 border border-amber-500/30 text-amber-400 font-mono">EN CURSO / BASE</span>`;
 
                     body.innerHTML += `
                         <tr class="hover:bg-white/[0.02] transition-colors">
                             <td class="p-4 font-mono text-xs text-slate-400">${fecha}</td>
-                            <td class="p-4 uppercase text-xs font-semibold text-slate-200">${materiaNombre}</td>
+                            <td class="p-4 uppercase text-xs font-semibold text-slate-200 font-sans">${materiaNombre}</td>
                             <td class="p-4 font-mono font-bold text-sky-400">${th}</td>
                             <td class="p-4 font-mono font-bold text-emerald-400">${pts} / 100 pts</td>
                             <td class="p-4 font-mono text-xs">${estadoHTML}</td>
