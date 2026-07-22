@@ -48,6 +48,7 @@
         .mini-bar-bg { background: #090a0f; height: 8px; border-radius: 4px; overflow: hidden; margin-top: 0.4rem; border: 1px solid var(--graphite); }
         .mini-bar-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
 
+        /* Termómetro Bayesiano */
         .thermometer-container {
             height: 16px;
             background: #27272a;
@@ -169,6 +170,7 @@
         </div>
     </section>
 
+    <!-- WIDGET GEMELO DIGITAL -->
     <section class="bg-[#12141c] border border-zinc-800 p-6 rounded-lg shadow-2xl">
         <div class="flex justify-between items-center border-b border-zinc-800 pb-3 mb-2">
             <h3 class="text-sm font-light uppercase tracking-wider text-[var(--gold-satin)] flex items-center gap-2">
@@ -334,7 +336,7 @@
                 const streak = localStorage.getItem("dante_streak_count") || "1";
                 document.getElementById("kpiRacha").innerText = `${streak} 🔥`;
 
-                // Filtrar historial según la materia seleccionada
+                // Filtrar por materia seleccionada
                 let historialFiltrado = cacheHistorialCompleto;
                 if (currentMateriaFiltro !== "todas") {
                     historialFiltrado = cacheHistorialCompleto.filter(h => {
@@ -343,17 +345,19 @@
                     });
                 }
 
-                // 🛠️ BÚSQUEDA INTELIGENTE: Seleccionar el registro 'EVALUADO' más relevante
+                // 🛠️ FILTRO INTELIGENTE DE EXÁMENES EVALUADOS REALES
+                // Buscar registros cuya habilidad sea distinta de 0 o contengan adn empaquetado
                 let ultimoRegistro = null;
-                const evaluados = (historialFiltrado || []).filter(h => parseFloat(h.theta_final || h.theta || 0) !== 0);
-                
+                const evaluados = (historialFiltrado || []).filter(h => {
+                    const th = parseFloat(h.theta_final || h.theta || 0);
+                    const adn = h.adn_cognitivo || h.items_respondidos?.adn_empaquetado;
+                    return th !== 0 || (adn && adn.cronica_narrativa && !adn.cronica_narrativa.includes('análisis longitudinal activo'));
+                });
+
                 if (evaluados.length > 0) {
-                    ultimoRegistro = evaluados[evaluados.length - 1]; // El evaluado más reciente
+                    ultimoRegistro = evaluados[evaluados.length - 1]; // Toma la última prueba real completada
                 } else if (historialFiltrado.length > 0) {
                     ultimoRegistro = historialFiltrado[historialFiltrado.length - 1];
-                } else if (cacheHistorialCompleto.length > 0) {
-                    const evaluadosGlobal = cacheHistorialCompleto.filter(h => parseFloat(h.theta_final || h.theta || 0) !== 0);
-                    ultimoRegistro = evaluadosGlobal.length > 0 ? evaluadosGlobal[evaluadosGlobal.length - 1] : cacheHistorialCompleto[cacheHistorialCompleto.length - 1];
                 }
 
                 let maxThetaVal = 0.0000;
@@ -376,7 +380,7 @@
                 else if (maxPuntajeVal < 45) rango = "Oro de Enfoque";
                 document.getElementById("lblRangoBadge").innerText = `RANGO: ${rango}`;
 
-                // Termómetro Bayesiano
+                // Termómetro Bayesiano (Gemelo)
                 const esc = cacheGemeloCompleto.escalonamiento_icfes || {
                     puntaje_estimado: maxPuntajeVal,
                     intervalo_95: [Math.max(1, maxPuntajeVal - 8), Math.min(100, maxPuntajeVal + 8)],
@@ -517,8 +521,9 @@
                     const materiaNombre = String(r.materia || r.area_general || 'matematicas').replace('_', ' ').toUpperCase();
                     const th = parseFloat(r.theta_final !== undefined ? r.theta_final : (r.theta || 0.0)).toFixed(4);
                     const pts = r.puntaje_escalonado || Math.round(50 + (parseFloat(th) * 13.8));
-                    const estadoTxt = parseFloat(th) !== 0 ? "EVALUADO" : "EN CURSO / BASE";
-                    const estadoClass = parseFloat(th) !== 0 ? "text-emerald-400" : "text-amber-400";
+                    const esEvaluado = parseFloat(th) !== 0 || (r.adn_cognitivo && r.adn_cognitivo.cronica_narrativa);
+                    const estadoTxt = esEvaluado ? "EVALUADO" : "EN CURSO / BASE";
+                    const estadoClass = esEvaluado ? "text-emerald-400" : "text-amber-400";
 
                     body.innerHTML += `
                         <tr class="hover:bg-zinc-800/30 transition-colors">
