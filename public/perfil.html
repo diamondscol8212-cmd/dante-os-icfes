@@ -35,6 +35,7 @@
             min-height: 100vh; 
             padding: 1rem; 
             line-height: 1.6;
+            overflow-x: hidden;
         }
         @media (min-width: 768px) { body { padding: 2rem; } }
 
@@ -64,7 +65,7 @@
             box-shadow: 0 0 15px var(--gold-glow);
         }
 
-        /* Tarjetas Glassmorphism */
+        /* Tarjetas Glassmorphism con overflow visible */
         .kpi-card {
             background: var(--bg-surface); 
             border: 1px solid var(--graphite); 
@@ -75,8 +76,9 @@
             transition: all 0.25s ease;
             backdrop-filter: blur(12px);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            z-index: 10;
         }
-        .kpi-card:hover { transform: translateY(-3px); border-color: rgba(212, 175, 55, 0.4); }
+        .kpi-card:hover { transform: translateY(-3px); border-color: rgba(212, 175, 55, 0.4); z-index: 50; }
         .kpi-val { 
             font-size: 1.6rem !important; 
             font-weight: 600; 
@@ -93,6 +95,8 @@
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
             border-radius: 12px;
             overflow: visible !important;
+            position: relative;
+            z-index: 5;
         }
 
         /* Termómetro Bayesiano */
@@ -136,7 +140,7 @@
         }
         .mini-bar-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
 
-        /* --- SISTEMA DE TOOLTIPS FLOANTES ANTI-CORTE --- */
+        /* --- SISTEMA DE TOOLTIPS FLOANTES DEFINITIVO --- */
         .tooltip-wrapper { 
             position: relative; 
             display: inline-flex; 
@@ -145,41 +149,39 @@
         }
         .tooltip-box {
             visibility: hidden; 
-            width: 240px; 
-            background-color: rgba(10, 12, 18, 0.98); 
-            color: #e2e8f0;
+            width: 220px; 
+            max-width: 85vw;
+            background-color: #0d0f17; 
+            color: #f1f5f9;
             text-align: left; 
             padding: 0.75rem; 
             border-radius: 8px; 
             border: 1px solid var(--gold-satin);
             position: absolute; 
-            z-index: 99999 !important; 
+            z-index: 999999 !important; 
             opacity: 0; 
-            transition: opacity 0.2s ease; 
+            transition: opacity 0.2s ease, transform 0.2s ease; 
             font-size: 0.72rem; 
             line-height: 1.4;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.95); 
-            backdrop-filter: blur(12px);
+            box-shadow: 0 14px 35px rgba(0, 0, 0, 0.95); 
+            backdrop-filter: blur(16px);
             pointer-events: none;
         }
 
-        /* Reglas de orientación inteligente para tooltips */
+        /* Posición para KPI Superiores: Abren hacia abajo a la izquierda */
         .kpi-card .tooltip-box {
-            top: 120% !important;
-            left: 50% !important;
-            transform: translateX(-50%);
-        }
-
-        .glass-panel .tooltip-box {
-            bottom: 120% !important;
+            top: calc(100% + 6px) !important;
             right: 0 !important;
+            left: auto !important;
+            transform: none !important;
         }
 
-        @media (max-width: 640px) {
-            .tooltip-box {
-                width: 200px;
-                font-size: 0.68rem;
-            }
+        /* Posición para Paneles Inferiores: Abren hacia arriba a la izquierda */
+        .glass-panel .tooltip-box {
+            bottom: calc(100% + 6px) !important;
+            right: 0 !important;
+            left: auto !important;
+            transform: none !important;
         }
 
         .tooltip-wrapper:hover .tooltip-box { 
