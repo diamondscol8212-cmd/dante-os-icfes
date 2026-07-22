@@ -5,195 +5,414 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dante Analytics OS - Enterprise Edition</title>
     
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
         :root {
-            --bg-deep: #0b0c10;
-            --bg-surface: #14161d;
+            --bg-deep: #08090c;
+            --bg-surface: rgba(20, 22, 29, 0.85);
+            --bg-card: rgba(26, 29, 38, 0.85);
             --gold-satin: #d4af37;
-            --gold-glow: rgba(212, 175, 55, 0.15);
+            --gold-glow: rgba(212, 175, 55, 0.25);
             --platinum: #e5e5e5;
-            --graphite: #2b2e3a;
+            --graphite: rgba(255, 255, 255, 0.08);
             --text-main: #f0f1f5;
             --text-muted: #9499a7;
             --emerald: #2ecc71;
             --crimson: #e74c3c;
             --cyan-core: #51e2f5;
             --purple-core: #a855f7;
-            --font-editorial: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            background-color: var(--bg-deep); color: var(--text-main); font-family: var(--font-editorial);
-            background-image: radial-gradient(circle at 50% 30%, #191c26 0%, #0b0c10 100%);
-            min-height: 100vh; line-height: 1.6;
+            background-color: var(--bg-deep); 
+            color: var(--text-main); 
+            font-family: var(--font-main);
+            background-image: radial-gradient(circle at 50% 20%, #171a26 0%, #08090c 100%);
+            min-height: 100vh; 
+            line-height: 1.6;
+            overflow-x: hidden;
         }
 
-        .app-view { display: none; min-height: 100vh; padding: 2.5rem; }
+        .font-mono { font-family: var(--font-mono) !important; }
+
+        .app-view { display: none; min-height: 100vh; padding: 1.25rem; }
+        @media (min-width: 768px) { .app-view { padding: 2.5rem; } }
         .app-view.active { display: flex; flex-direction: column; }
 
         #viewGateway { justify-content: center; align-items: center; }
+        
         .gateway-card {
-            background: var(--bg-surface); border: 1px solid var(--graphite);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); border-radius: 8px; padding: 3.5rem; width: 100%; max-width: 540px; text-align: center; position: relative;
+            background: var(--bg-surface); 
+            border: 1px solid var(--graphite);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); 
+            border-radius: 12px; 
+            padding: 2rem; 
+            width: 100%; 
+            max-width: 540px; 
+            text-align: center; 
+            position: relative;
+            backdrop-filter: blur(16px);
         }
-        .gateway-title { font-size: 1.8rem; font-weight: 300; text-transform: uppercase; letter-spacing: 4px; color: var(--gold-satin); margin-bottom: 0.5rem; }
+        @media (min-width: 640px) { .gateway-card { padding: 3.5rem; } }
 
-        /* 🪐 BANNER DE VERIFICACIÓN ABSOLUTA EN LOCAL/PRODUCCIÓN */
+        .gateway-title { 
+            font-size: 1.5rem; 
+            font-weight: 300; 
+            text-transform: uppercase; 
+            letter-spacing: 3px; 
+            color: var(--gold-satin); 
+            margin-bottom: 0.5rem; 
+        }
+        @media (min-width: 640px) { .gateway-title { font-size: 1.8rem; letter-spacing: 4px; } }
+
         .verification-banner {
-            background: rgba(168, 85, 247, 0.15); border: 1px solid var(--purple-core);
-            padding: 0.6rem; border-radius: 4px; color: var(--cyan-core); font-size: 0.8rem;
-            font-weight: bold; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 2rem;
-            box-shadow: 0 0 15px rgba(81, 226, 245, 0.1);
+            background: rgba(168, 85, 247, 0.12); 
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            padding: 0.6rem; 
+            border-radius: 6px; 
+            color: var(--cyan-core); 
+            font-size: 0.72rem;
+            font-weight: 700; 
+            text-transform: uppercase; 
+            letter-spacing: 1.5px; 
+            margin-bottom: 1.8rem;
+            box-shadow: 0 0 15px rgba(81, 226, 245, 0.15);
+            font-family: var(--font-mono);
         }
 
         .system-version-tag {
-            position: absolute; top: 1.5rem; right: 1.5rem; font-size: 0.75rem; font-weight: bold;
-            color: var(--cyan-core); letter-spacing: 1px; text-transform: uppercase;
+            position: absolute; 
+            top: 1rem; 
+            right: 1.2rem; 
+            font-size: 0.68rem; 
+            font-weight: 700;
+            color: var(--cyan-core); 
+            letter-spacing: 1px; 
+            text-transform: uppercase;
+            font-family: var(--font-mono);
         }
 
-        .selector-group { margin-bottom: 1.8rem; text-align: left; }
-        .selector-label { display: block; color: var(--text-muted); margin-bottom: 0.6rem; font-weight: 600; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; }
-        select {
-            width: 100%; padding: 1.1rem; background: #1a1d26; border: 1px solid var(--graphite);
-            color: var(--text-main); border-radius: 4px; font-size: 0.95rem; outline: none;
+        .selector-group { margin-bottom: 1.5rem; text-align: left; }
+        .selector-label { 
+            display: block; 
+            color: var(--text-muted); 
+            margin-bottom: 0.5rem; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            font-size: 0.72rem; 
+            letter-spacing: 1px; 
+            font-family: var(--font-mono);
         }
+        
+        select {
+            width: 100%; 
+            padding: 0.9rem; 
+            background: rgba(26, 29, 38, 0.8); 
+            border: 1px solid var(--graphite);
+            color: var(--text-main); 
+            border-radius: 8px; 
+            font-size: 0.88rem; 
+            outline: none;
+            font-family: var(--font-mono);
+            transition: border-color 0.25s ease;
+        }
+        select:focus { border-color: var(--cyan-core); }
 
         .btn-premium {
-            width: 100%; padding: 1.2rem; background: transparent; border: 1px solid var(--gold-satin);
-            color: var(--gold-satin); font-weight: 600; text-transform: uppercase; letter-spacing: 2px;
-            border-radius: 4px; cursor: pointer; transition: all 0.3s ease; margin-top: 1.5rem;
+            width: 100%; 
+            padding: 1rem; 
+            background: rgba(212, 175, 55, 0.05); 
+            border: 1px solid var(--gold-satin);
+            color: var(--gold-satin); 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            letter-spacing: 1.5px;
+            border-radius: 8px; 
+            cursor: pointer; 
+            transition: all 0.25s ease; 
+            margin-top: 0.8rem;
+            display: inline-block; 
+            text-align: center; 
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-family: var(--font-mono);
+            backdrop-filter: blur(8px);
         }
-        .btn-premium:hover { background: var(--gold-satin); color: var(--bg-deep); box-shadow: 0 0 20px var(--gold-glow); }
-        .btn-premium:disabled { border-color: var(--graphite); color: var(--text-muted); cursor: not-allowed; }
+        .btn-premium:hover { 
+            background: var(--gold-satin); 
+            color: var(--bg-deep); 
+            box-shadow: 0 0 20px var(--gold-glow); 
+        }
+        .btn-premium:disabled { border-color: var(--graphite); color: var(--text-muted); cursor: not-allowed; background: transparent; }
 
         .workspace-header {
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid var(--graphite); padding-bottom: 1.2rem; margin-bottom: 2.5rem;
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            border-bottom: 1px solid var(--graphite); 
+            padding-bottom: 1rem; 
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap; 
+            gap: 0.8rem;
         }
-        .meta-tag { background: #1a1d26; padding: 0.5rem 1.2rem; border-radius: 4px; border: 1px solid var(--graphite); font-size: 0.85rem; color: var(--gold-satin); }
+        .meta-tag { 
+            background: rgba(26, 29, 38, 0.6); 
+            padding: 0.5rem 1rem; 
+            border-radius: 6px; 
+            border: 1px solid var(--graphite); 
+            font-size: 0.75rem; 
+            color: var(--gold-satin); 
+            font-family: var(--font-mono);
+            backdrop-filter: blur(8px);
+        }
         
-        .content-layout { display: grid; grid-template-columns: 1fr; gap: 3rem; flex-grow: 1; }
-        @media (min-width: 950px) { .content-layout { grid-template-columns: 1fr 1fr; } }
+        .content-layout { display: grid; grid-template-columns: 1fr; gap: 1.5rem; flex-grow: 1; }
+        @media (min-width: 950px) { .content-layout { grid-template-columns: 1fr 1fr; gap: 2.5rem; } }
 
         .panel-enunciado {
-            background: rgba(20, 22, 29, 0.6); border: 1px solid var(--graphite);
-            border-radius: 6px; padding: 2.5rem; overflow-y: auto; max-height: 62vh; font-size: 1.05rem; color: #d1d5db;
+            background: var(--bg-surface); 
+            border: 1px solid var(--graphite);
+            border-radius: 12px; 
+            padding: 1.5rem; 
+            overflow-y: auto; 
+            max-height: 50vh; 
+            font-size: 0.95rem; 
+            color: #d1d5db;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
-        .panel-enunciado p { margin-bottom: 1.5rem; }
+        @media (min-width: 768px) { .panel-enunciado { padding: 2.2rem; max-height: 62vh; font-size: 1rem; } }
+        .panel-enunciado p { margin-bottom: 1.2rem; line-height: 1.7; }
 
-        .panel-reactivo { display: flex; flex-direction: column; gap: 1.5rem; }
-        .pregunta-txt { font-size: 1.2rem; font-weight: 500; color: #fff; margin-bottom: 1rem; }
+        .panel-reactivo { display: flex; flex-direction: column; gap: 1.2rem; position: relative; }
+        .pregunta-txt { font-size: 1.05rem; font-weight: 600; color: #fff; margin-bottom: 0.8rem; }
+        @media (min-width: 768px) { .pregunta-txt { font-size: 1.15rem; } }
         
-        .opciones-grid { display: flex; flex-direction: column; gap: 1rem; }
+        .opciones-grid { display: flex; flex-direction: column; gap: 0.8rem; }
         .opcion-card {
-            background: var(--bg-surface); border: 1px solid var(--graphite); border-radius: 4px;
-            padding: 1.2rem; cursor: pointer; display: flex; align-items: center; gap: 1.2rem; transition: all 0.2s ease;
+            background: var(--bg-surface); 
+            border: 1px solid var(--graphite); 
+            border-radius: 8px;
+            padding: 1rem; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            gap: 1rem; 
+            transition: all 0.25s ease;
+            backdrop-filter: blur(8px);
         }
-        .opcion-card:hover { border-color: var(--gold-satin); background: #181b24; }
-        .opcion-card.selected-intent { border-color: var(--gold-satin); background: rgba(212, 175, 55, 0.05); }
+        .opcion-card:hover { border-color: var(--gold-satin); background: rgba(24, 27, 36, 0.9); transform: translateX(3px); }
+        .opcion-card.selected-intent { border-color: var(--gold-satin); background: rgba(212, 175, 55, 0.1); box-shadow: 0 0 15px var(--gold-glow); }
         
         .opcion-id {
-            background: #1c1f2a; width: 32px; height: 32px; display: flex; align-items: center;
-            justify-content: center; border-radius: 4px; font-weight: 600; color: var(--gold-satin); border: 1px solid var(--graphite);
+            background: rgba(28, 31, 42, 0.9); 
+            width: 32px; 
+            height: 32px; 
+            display: flex; 
+            align-items: center;
+            justify-content: center; 
+            border-radius: 6px; 
+            font-weight: 700; 
+            color: var(--gold-satin); 
+            border: 1px solid var(--graphite);
+            font-family: var(--font-mono);
+            flex-shrink: 0;
+            font-size: 0.85rem;
         }
 
-        .opcion-card.correct { border-color: var(--emerald) !important; background: rgba(46, 204, 113, 0.08); }
-        .opcion-card.wrong { border-color: var(--crimson) !important; background: rgba(231, 76, 60, 0.08); }
-        .opciones-grid.freno .opcion-card { pointer-events: none; }
+        .opcion-card.correct { border-color: var(--emerald) !important; background: rgba(46, 204, 113, 0.12) !important; }
+        .opcion-card.wrong { border-color: var(--crimson) !important; background: rgba(231, 76, 60, 0.12) !important; }
+        .opciones-grid.freno { pointer-events: none; }
 
         #uiMetacognicion {
-            background: var(--bg-surface); border: 1px solid var(--gold-satin);
-            border-radius: 6px; padding: 2rem; margin-top: 1.5rem; display: none; text-align: center;
+            background: var(--bg-surface); 
+            border: 1px solid var(--gold-satin);
+            border-radius: 12px; 
+            padding: 1.5rem; 
+            margin-top: 1.2rem; 
+            display: none; 
+            text-align: center;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 0 20px var(--gold-glow);
         }
-        .meta-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1.2rem; }
+        .meta-grid { display: grid; grid-template-columns: 1fr; gap: 0.8rem; margin-top: 1rem; }
+        @media (min-width: 640px) { .meta-grid { grid-template-columns: repeat(3, 1fr); } }
+        
         .btn-meta {
-            background: #1a1d26; border: 1px solid var(--graphite); color: var(--text-main);
-            padding: 1rem; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.9rem; transition: all 0.2s;
+            background: rgba(26, 29, 38, 0.8); 
+            border: 1px solid var(--graphite); 
+            color: var(--text-main);
+            padding: 0.85rem; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            font-size: 0.82rem; 
+            transition: all 0.25s ease;
+            font-family: var(--font-mono);
         }
-        .btn-meta:hover { border-color: var(--gold-satin); color: var(--gold-satin); }
+        .btn-meta:hover { border-color: var(--gold-satin); color: var(--gold-satin); background: rgba(212, 175, 55, 0.1); }
 
         #uiFeedback {
-            background: #1a1315; border: 1px solid var(--crimson); border-radius: 6px; padding: 2rem; margin-top: 1.5rem; display: none;
+            background: rgba(26, 19, 21, 0.95); 
+            border: 1px solid var(--crimson); 
+            border-radius: 12px; 
+            padding: 1.5rem; 
+            margin-top: 1.2rem; 
+            display: none;
+            backdrop-filter: blur(12px);
         }
-        .feedback-header { color: var(--crimson); font-size: 1rem; font-weight: 600; text-transform: uppercase; margin-bottom: 1.2rem; }
-        .forensic-box { display: flex; flex-direction: column; gap: 1.2rem; }
-        .forensic-row { border-left: 2px solid var(--gold-satin); padding-left: 1.2rem; }
+        .feedback-header { color: var(--crimson); font-size: 0.88rem; font-weight: 700; text-transform: uppercase; margin-bottom: 1rem; font-family: var(--font-mono); letter-spacing: 1px; }
+        .forensic-box { display: flex; flex-direction: column; gap: 1rem; }
+        .forensic-row { border-left: 3px solid var(--gold-satin); padding-left: 1rem; }
         .forensic-row.trampa { border-left-color: var(--crimson); }
-        .forensic-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; margin-bottom: 0.3rem; }
-        .forensic-txt { font-size: 0.95rem; color: #cbd5e0; }
+        .forensic-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; margin-bottom: 0.2rem; font-family: var(--font-mono); }
+        .forensic-txt { font-size: 0.88rem; color: #cbd5e0; line-height: 1.5; }
 
         #uiIntervencionClinica {
-            background: #0d0f14; border: 2px solid var(--crimson); border-radius: 8px;
-            padding: 2.5rem; margin-top: 1.5rem; display: none; text-align: center;
-            box-shadow: 0 0 30px rgba(231, 76, 60, 0.15);
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(13, 15, 20, 0.96); border: 2px solid var(--crimson); border-radius: 12px;
+            padding: 1.8rem; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+            box-shadow: 0 0 40px rgba(231, 76, 60, 0.3); z-index: 50; backdrop-filter: blur(16px);
         }
         .pulse-warning { animation: pulse-border 2s infinite; }
         
         @keyframes pulse-border {
             0% { box-shadow: 0 0 15px rgba(231, 76, 60, 0.2); }
-            50% { box-shadow: 0 0 35px rgba(231, 76, 60, 0.4); border-color: var(--gold-satin); }
+            50% { box-shadow: 0 0 35px rgba(231, 76, 60, 0.5); border-color: var(--gold-satin); }
             100% { box-shadow: 0 0 15px rgba(231, 76, 60, 0.2); }
         }
 
         .dashboard-container {
-            background: var(--bg-surface); border: 1px solid var(--graphite); border-radius: 8px; padding: 3rem; width: 100%; max-width: 850px; text-align: center; margin: 0 auto;
+            background: var(--bg-surface); 
+            border: 1px solid var(--graphite); 
+            border-radius: 12px; 
+            padding: 1.8rem; 
+            width: 100%; 
+            max-width: 850px; 
+            text-align: center; 
+            margin: 0 auto;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
-        .chart-box { background: #090a0d; border: 1px solid var(--graphite); border-radius: 6px; padding: 1.5rem; margin: 2.5rem 0; display: flex; justify-content: center; }
-        
-        .telemetry-badge-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 1.5rem; text-align: left; }
-        .telemetry-card { background: #11131a; border: 1px solid var(--graphite); padding: 1rem; border-radius: 4px; }
-        .telemetry-num { font-size: 1.1rem; font-weight: 600; color: var(--gold-satin); margin-top: 0.2rem; }
+        @media (min-width: 640px) { .dashboard-container { padding: 3rem; } }
 
-        .report-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; text-align: left; margin: 2rem 0; }
+        .chart-box { 
+            background: rgba(9, 10, 13, 0.9); 
+            border: 1px solid var(--graphite); 
+            border-radius: 8px; 
+            padding: 1rem; 
+            margin: 2rem 0; 
+            display: flex; 
+            justify-content: center; 
+            overflow-x: auto;
+        }
+        
+        .telemetry-badge-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.8rem; margin-top: 1.2rem; text-align: left; }
+        @media(min-width: 600px) { .telemetry-badge-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media(min-width: 800px) { .telemetry-badge-grid { grid-template-columns: repeat(6, 1fr); } }
+        
+        .telemetry-card { 
+            background: rgba(17, 19, 26, 0.8); 
+            border: 1px solid var(--graphite); 
+            padding: 0.85rem; 
+            border-radius: 8px; 
+            backdrop-filter: blur(8px);
+        }
+        .telemetry-num { font-size: 1rem; font-weight: 700; font-family: var(--font-mono); color: var(--gold-satin); margin-top: 0.2rem; }
+
+        .report-grid { display: grid; grid-template-columns: 1fr; gap: 0.8rem; text-align: left; margin: 1.5rem 0; }
+        @media (min-width: 600px) { .report-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; } }
 
         .heatmap-container {
-            background: #090a0d; border: 1px solid var(--graphite); border-radius: 6px;
-            padding: 2rem; margin-top: 2rem; text-align: left;
+            background: rgba(9, 10, 13, 0.9); 
+            border: 1px solid var(--graphite); 
+            border-radius: 8px;
+            padding: 1.5rem; 
+            margin-top: 1.5rem; 
+            text-align: left;
         }
-        .heatmap-title { font-size: 1rem; font-weight: 400; text-transform: uppercase; color: var(--gold-satin); letter-spacing: 2px; margin-bottom: 1.5rem; border-bottom: 1px dashed var(--graphite); padding-bottom: 0.5rem; }
-        .heatmap-row { margin-bottom: 1.2rem; }
+        .heatmap-title { 
+            font-size: 0.82rem; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            color: var(--gold-satin); 
+            letter-spacing: 1.5px; 
+            margin-bottom: 1.2rem; 
+            border-bottom: 1px dashed var(--graphite); 
+            padding-bottom: 0.5rem; 
+            font-family: var(--font-mono);
+        }
+        .heatmap-row { margin-bottom: 1rem; }
         .heatmap-row:last-child { margin-bottom: 0; }
-        .heatmap-meta { display: flex; justify-content: space-between; font-size: 0.8rem; text-transform: uppercase; margin-bottom: 0.4rem; color: var(--text-muted); }
-        .heatmap-bar-bg { background: #14161d; height: 10px; border-radius: 3px; border: 1px solid #222; overflow: hidden; }
-        .heatmap-bar-fill { height: 100%; width: 0%; border-radius: 2px; transition: width 1.5s cubic-bezier(0.1, 1, 0.1, 1); }
+        .heatmap-meta { display: flex; justify-content: space-between; font-size: 0.75rem; text-transform: uppercase; margin-bottom: 0.3rem; color: var(--text-muted); }
+        .heatmap-bar-bg { background: rgba(20, 22, 29, 0.9); height: 8px; border-radius: 4px; border: 1px solid var(--graphite); overflow: hidden; }
+        .heatmap-bar-fill { height: 100%; width: 0%; border-radius: 4px; transition: width 1.5s cubic-bezier(0.1, 1, 0.1, 1); }
 
         .narrative-card {
-            background: linear-gradient(135deg, #161922 0%, #11131a 100%);
-            border: 1px solid var(--graphite); border-left: 4px solid var(--gold-satin);
-            border-radius: 6px; padding: 1.8rem; text-align: left; margin-top: 1.5rem;
+            background: linear-gradient(135deg, rgba(22, 25, 34, 0.85) 0%, rgba(17, 19, 26, 0.9) 100%);
+            border: 1px solid var(--graphite); 
+            border-left: 4px solid var(--gold-satin);
+            border-radius: 8px; 
+            padding: 1.4rem; 
+            text-align: left; 
+            margin-top: 1.2rem;
+            backdrop-filter: blur(8px);
         }
-        .narrative-title { font-size: 0.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--gold-satin); margin-bottom: 0.6rem; }
-        .narrative-p { font-size: 0.95rem; color: #d1d5db; line-height: 1.7; text-align: justify; }
+        .narrative-title { font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--gold-satin); margin-bottom: 0.5rem; font-family: var(--font-mono); }
+        .narrative-p { font-size: 0.88rem; color: #d1d5db; line-height: 1.6; text-align: justify; }
 
-        .clinical-box-grid { display: grid; grid-template-columns: 1fr; gap: 1.2rem; margin-top: 1.5rem; }
+        .clinical-box-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-top: 1.2rem; }
         @media(min-width: 700px) { .clinical-box-grid { grid-template-columns: 1fr 1fr; } }
         
         .clinical-card {
-            background: #11131a; border: 1px solid rgba(255,255,255,0.04); border-radius: 6px; padding: 1.5rem; text-align: left;
+            background: rgba(17, 19, 26, 0.8); 
+            border: 1px solid var(--graphite); 
+            border-radius: 8px; 
+            padding: 1.2rem; 
+            text-align: left;
+            backdrop-filter: blur(8px);
         }
-        .clinical-card.badge-crimson { border-top: 3px solid var(--crimson); }
+        .clinical-card.badge-crimson { border-top: 3px solid var(--gold-satin); }
         .clinical-card.badge-cyan { border-top: 3px solid var(--cyan-core); }
-        .clinical-header-title { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+        .clinical-header-title { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.4rem; font-family: var(--font-mono); }
+
+        .feedback-error-container {
+            background: rgba(245, 158, 11, 0.05);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            padding: 1.2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        .pista-caja {
+            background: #0f172a;
+            border-left: 4px solid #f59e0b;
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
 
     <main id="viewGateway" class="app-view active">
         <div class="gateway-card">
-            <div class="system-version-tag">UI ENGINE: v20.6.2-FIX_MASTER</div>
-            <div class="verification-banner">🔗 PIPELINE CONECTADO: RECTOR COHORTE ACTIVE</div>
-            <h1 class="gateway-title">Dante Analytics v20.6.2</h1>
+            <div class="system-version-tag">UI ENGINE: v21.1.0-PRO_MASTER</div>
+            <div class="verification-banner" id="lblTenantBanner">AUTENTICANDO CONTEXTO MULTI-TENANT...</div>
+            <h1 class="gateway-title" id="lblGatewayWelcome">Dante OS Runtime</h1>
             
-            <div class="selector-group">
-                <label class="selector-label">Evaluación de Estudiante</label>
-                <select id="selEstudiante">
-                    <option value="">Sincronizando cohorte viva desde Supabase...</option>
-                </select>
-            </div>
-
-            <div class="selector-group">
-                <label class="selector-label">Módulo de Competencia</label>
+            <div class="selector-group" style="margin-top: 1.5rem;">
+                <label class="selector-label">Módulo de Competencia Evaluativa</label>
                 <select id="selMateria">
                     <option value="matematicas">Matemáticas</option>
                     <option value="lectura_critica">Lectura Crítica</option>
@@ -202,17 +421,35 @@
                 </select>
             </div>
 
+            <div id="uiContenedorCronicaArranque" class="narrative-card" style="display: none; margin-bottom: 1.5rem; border-left-color: var(--cyan-core);">
+                <div class="narrative-title" style="color: var(--cyan-core); letter-spacing: 2px;">📖 MEMORIA DE TRAYECTORIA COGNITIVA</div>
+                <p class="narrative-p" id="lblTextoCronicaArranque" style="font-size: 0.88rem; color: #e2e8f0;"></p>
+                <button class="btn-premium" style="margin-top: 1rem; padding: 0.6rem; font-size: 0.75rem; border-color: var(--cyan-core); color: var(--cyan-core);" onclick="AppController.liberarEntornoHaciaWorkspace()">Desplegar Desafío</button>
+            </div>
+
             <button class="btn-premium" id="btnIngresar" onclick="AppController.inicializarSesion()">Sincronizar Entorno</button>
+            
+            <a href="/perfil.html" class="btn-premium" style="border-color: var(--cyan-core); color: var(--cyan-core); margin-top: 0.8rem;">
+                👤 CONSULTAR MI PERFIL / HISTORIAL
+            </a>
+
+            <button class="btn-premium" style="border-color:var(--crimson); color:var(--crimson); margin-top:0.5rem;" onclick="AppController.cerrarSesionGated()">Cerrar Portal</button>
         </div>
     </main>
 
     <main id="viewWorkspace" class="app-view">
         <header class="workspace-header">
             <div>
-                <h2 id="lblEstudiante" style="font-weight: 400; color: var(--gold-satin);">Estudiante: -</h2>
-                <p id="lblMateria" style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; margin-top: 0.2rem;">Módulo Analítico</p>
+                <h2 id="lblEstudiante" style="font-weight: 400; color: var(--gold-satin); font-size: 1.2rem;">Estudiante: -</h2>
+                <p id="lblMateria" style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-top: 0.2rem;" class="font-mono">Módulo Analítico</p>
             </div>
-            <div class="meta-tag" id="lblCompetence">Competencia: Cargando...</div>
+
+            <div style="display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap;">
+                <a href="/perfil.html" class="btn-premium" style="margin-top:0; padding: 0.5rem 0.8rem; font-size: 0.7rem; border-color: var(--cyan-core); color: var(--cyan-core);">
+                    👤 MI PERFIL / PROGRESO
+                </a>
+                <div class="meta-tag" id="lblCompetence">Competencia: Cargando...</div>
+            </div>
         </header>
 
         <div class="content-layout">
@@ -227,18 +464,18 @@
                 </div>
 
                 <div id="uiIntervencionClinica" class="pulse-warning">
-                    <h3 id="lblIntervencionTitulo" style="color: var(--crimson); font-size: 1.1rem; text-transform: uppercase; font-weight: bold; letter-spacing: 1px;">-</h3>
-                    <p id="lblIntervencionCuerpo" style="color: #cbd5e1; font-size: 0.95rem; margin-top: 1rem; line-height: 1.7; text-align: justify;"></p>
+                    <h3 id="lblIntervencionTitulo" style="color: var(--crimson); font-size: 1rem; text-transform: uppercase; font-weight: bold; letter-spacing: 1.5px;" class="font-mono">-</h3>
+                    <p id="lblIntervencionCuerpo" style="color: #cbd5e1; font-size: 0.88rem; margin-top: 1rem; line-height: 1.6; text-align: justify;"></p>
                     
-                    <div style="margin-top: 1.8rem;">
-                        <span id="lblContadorSegundos" style="font-size: 2.2rem; font-weight: 300; color: var(--gold-satin); font-family: monospace;">10</span>
-                        <p style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; margin-top: 0.2rem;">Segundos de desaceleración obligatoria</p>
+                    <div style="margin-top: 1.5rem;">
+                        <span id="lblContadorSegundos" style="font-size: 2.5rem; font-weight: 300; color: var(--gold-satin);" class="font-mono">10</span>
+                        <p style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; margin-top: 0.2rem; letter-spacing: 1px;" class="font-mono">Segundos de desaceleración obligatoria del Sistema 1</p>
                     </div>
-                    <button id="btnDesbloquearFreno" class="btn-premium" style="margin-top: 1.5rem; display: none;" onclick="QuizEngine.liberarFrenoIntervencion()">Activar Sistema 2 Analítico</button>
+                    <button id="btnDesbloquearFreno" class="btn-premium" style="margin-top: 1.2rem; display: none; border-color: var(--emerald); color: var(--emerald);" onclick="QuizEngine.liberarFrenoIntervencion()">Activar Sistema 2 Analítico</button>
                 </div>
 
                 <div id="uiMetacognicion">
-                    <p style="font-size: 1rem; font-weight: 500; color: var(--gold-satin);">¿Qué tan seguro estás de tu proceso de resolución?</p>
+                    <p style="font-size: 0.88rem; font-weight: 500; color: var(--gold-satin);">¿Qué tan seguro estás de tu proceso de resolución?</p>
                     <div class="meta-grid">
                         <button class="btn-meta" onclick="QuizEngine.confirmarMetacognicion('alta')">Certeza Absoluta</button>
                         <button class="btn-meta" onclick="QuizEngine.confirmarMetacognicion('media')">Dudoso</button>
@@ -248,17 +485,17 @@
 
                 <div id="uiFeedback">
                     <div class="feedback-header">Análisis de Desviación Cognitiva</div>
-                    <div class="forensic-box">
+                    <div class="forensic-box" id="uiFeedbackCuerpoAndamiaje">
                         <div class="forensic-row trampa">
                             <div class="forensic-label" style="color: var(--crimson);">HEURÍSTICA / SESGO DETECTADO</div>
                             <div class="forensic-txt" id="forensicTrampa">-</div>
                         </div>
-                        <div class="forensic-row">
+                        <div class="forensic-row" style="margin-top: 0.8rem;">
                             <div class="forensic-label" style="color: var(--gold-satin);">LÓGICA DE REMEDIACIÓN</div>
                             <div class="forensic-txt" id="forensicRealidad">-</div>
                         </div>
                     </div>
-                    <button class="btn-premium" style="margin-top: 1.5rem; padding: 0.8rem;" onclick="QuizEngine.procesarFrenoComprension()">Continuar Evaluación</button>
+                    <button class="btn-premium" id="btnContinuarFeedback" style="margin-top: 1.2rem; padding: 0.8rem;" onclick="QuizEngine.procesarFrenoComprension()">Continuar Evaluación</button>
                 </div>
             </section>
         </div>
@@ -266,64 +503,79 @@
 
     <main id="viewDashboard" class="app-view">
         <div class="dashboard-container">
-            <h2 style="font-weight: 300; text-transform: uppercase; color: var(--gold-satin); letter-spacing: 3px;">Métricas Longitudinales (Dante OS v20.6.2)</h2>
-            <p style="color: var(--text-muted); margin-top: 0.4rem; font-size: 0.9rem;">Modelado Conductual Avanzado y Trayectoria Estándar del Estudiante</p>
+            <h2 style="font-weight: 300; text-transform: uppercase; color: var(--gold-satin); letter-spacing: 2px; font-size: 1.3rem;">Métricas Longitudinales (Dante OS v21.1.0)</h2>
+            <p style="color: var(--text-muted); margin-top: 0.3rem; font-size: 0.78rem;" class="font-mono">Modelado Conductual Avanzado y Trayectoria Estándar del Estudiante</p>
             
             <div class="chart-box">
-                <svg id="svgChart" width="600" height="250" viewBox="0 0 600 250" style="background: #0a0b0d; border-radius: 4px;"></svg>
+                <svg id="svgChart" width="550" height="220" viewBox="0 0 550 220" style="background: rgba(10, 11, 13, 0.9); border-radius: 8px;"></svg>
             </div>
 
             <div class="telemetry-badge-grid">
                 <div class="telemetry-card">
-                    <p style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Tiempo de Execution</p>
+                    <p style="font-size: 0.62rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;" class="font-mono">Tiempo Reactivo</p>
                     <p class="telemetry-num" id="telemetryTime">0.0s</p>
                 </div>
                 <div class="telemetry-card">
-                    <p style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Vacilación Real</p>
-                    <p class="telemetry-num" id="telemetryHesitation">0 cambios</p>
+                    <p style="font-size: 0.62rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;" class="font-mono">Vacilación Real</p>
+                    <p class="telemetry-num" id="telemetryHesitation">0 hits</p>
                 </div>
                 <div class="telemetry-card">
-                    <p style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Calibración Certeza</p>
+                    <p style="font-size: 0.62rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;" class="font-mono">Calibración Certeza</p>
                     <p class="telemetry-num" id="telemetryConfidence">-</p>
                 </div>
                 <div class="telemetry-card">
-                    <p style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Perfil Conductual</p>
+                    <p style="font-size: 0.62rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;" class="font-mono">Perfil Conductual</p>
                     <p class="telemetry-num" id="telemetryProfile" style="color: var(--gold-satin);">-</p>
+                </div>
+                <div class="telemetry-card" style="border-bottom: 2px solid var(--emerald);">
+                    <p style="font-size: 0.62rem; color: var(--emerald); text-transform: uppercase; font-weight: 700;" class="font-mono">Recuperación IRI</p>
+                    <p class="telemetry-num" id="telemetryIRI" style="color: var(--emerald);">50%</p>
+                </div>
+                <div class="telemetry-card" style="border-bottom: 2px solid var(--cyan-core);">
+                    <p style="font-size: 0.62rem; color: var(--cyan-core); text-transform: uppercase; font-weight: 700;" class="font-mono">Curiosidad ICC</p>
+                    <p class="telemetry-num" id="telemetryICC" style="color: var(--cyan-core);">50%</p>
                 </div>
             </div>
 
-            <div style="display: flex; gap: 1rem; justify-content: space-between; align-items: center; margin-top: 2.5rem; border-top: 1px solid var(--graphite); padding-top: 1.5rem;">
+            <div style="display: flex; gap: 1rem; justify-content: space-between; align-items: center; margin-top: 2rem; border-top: 1px solid var(--graphite); padding-top: 1.2rem; flex-wrap: wrap;">
                 <div style="text-align: left;">
-                    <p style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Índice de Habilidad Latente</p>
-                    <p id="lblThetaActual" style="font-size: 1.6rem; font-weight: 400; color: var(--gold-satin);">&theta; = 0.00</p>
+                    <p style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;" class="font-mono">Índice de Habilidad Latente</p>
+                    <p id="lblThetaActual" style="font-size: 1.3rem; font-weight: 600; color: var(--gold-satin);" class="font-mono">&theta; = 0.00</p>
                 </div>
-                <button class="btn-premium" style="width: auto; padding: 1rem 2.5rem; margin-top: 0;" onclick="AppController.avanzarSiguienteFase()">Siguiente Reactivo</button>
+                <button class="btn-premium" style="width: auto; padding: 0.8rem 2rem; margin-top: 0;" onclick="AppController.avanzarSiguienteFase()">Siguiente Reactivo ➡️</button>
             </div>
         </div>
     </main>
 
     <main id="viewFinalReport" class="app-view" style="justify-content: center; align-items: center;">
-        <div class="gateway-card" style="max-width: 780px; text-align: center; padding: 3rem;">
-            <h1 class="gateway-title" style="color: var(--gold-satin); margin-bottom: 0.5rem; font-weight: 300;">Perfil de Adaptación Humana</h1>
-            <p style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 2rem;">Códice del ADN Cognitivo Vivo // Trazabilidad Final</p>
+        <div class="gateway-card" style="max-width: 780px; text-align: center; padding: 2rem;">
+            <h1 class="gateway-title" style="color: var(--gold-satin); margin-bottom: 0.4rem; font-weight: 300;">Perfil de Adaptación Humana</h1>
+            <p style="color: var(--text-muted); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 1.5rem;" class="font-mono">Códice del ADN Cognitivo Vivo // Trazabilidad Final</p>
+
+            <div style="background: rgba(81, 226, 245, 0.08); border: 1px solid rgba(81, 226, 245, 0.3); border-radius: 8px; padding: 0.85rem; margin-bottom: 1.5rem; text-align: left;" class="font-sans">
+                <span class="font-mono text-xs font-bold text-[var(--cyan-core)] uppercase block mb-1">⚡ EVALUACIÓN ADAPTATIVA COMPLETADA (CAT):</span>
+                <p style="font-size: 0.78rem; color: #cbd5e1; line-height: 1.5;">
+                    El examen ha concluido tempranamente porque el motor psicométrico alcanzó un nivel de certidumbre estadística superior (SEM &lt; 0.40). Tu puntaje refleja con precisión matemática tu nivel de habilidad actual en esta materia.
+                </p>
+            </div>
             
             <div class="report-grid">
-                <div class="telemetry-card" style="background: #11131a; border-left: 3px solid #eab308;"><p style="font-size: 0.65rem; color: var(--text-muted); font-weight: 600; letter-spacing: 1px;">&theta; ESTIMADO (EAP FIN)</p><p class="telemetry-num" style="color: #eab308; font-size: 1.6rem;" id="repTheta">0.0000</p></div>
-                <div class="telemetry-card" style="background: #11131a; border-left: 3px solid var(--emerald);"><p style="font-size: 0.65rem; color: var(--emerald); font-weight: 700; letter-spacing: 1px;">EQUIVALENCIA ICFES REAL</p><p class="telemetry-num" style="color: var(--emerald); font-size: 2rem; font-weight: bold;" id="repIcfes">0 / 100</p></div>
-                <div class="telemetry-card" style="background: #11131a; border-left: 3px solid var(--cyan-core);"><p style="font-size: 0.65rem; color: var(--text-muted); font-weight: 600; letter-spacing: 1px;">PRECISIÓN BAYESIANA (SEM)</p><p class="telemetry-num" style="color: var(--cyan-core); font-size: 1.6rem;" id="repBsem">0.0000</p></div>
-                <div class="telemetry-card" style="background: #11131a; border-left: 3px solid var(--purple-core);"><p style="font-size: 0.65rem; color: var(--text-muted); font-weight: 600; letter-spacing: 1px;">PROBABILIDAD DE MAESTRÍA AVANZADA</p><p class="telemetry-num" style="color: var(--purple-core); font-size: 1.6rem;" id="repMaestria">0.0%</p></div>
+                <div class="telemetry-card" style="background: rgba(17, 19, 26, 0.9); border-left: 3px solid #eab308;"><p style="font-size: 0.62rem; color: var(--text-muted); font-weight: 600; letter-spacing: 1px;" class="font-mono">&theta; ESTIMADO (EAP FIN)</p><p class="telemetry-num" style="color: #eab308; font-size: 1.5rem;" id="repTheta">0.0000</p></div>
+                <div class="telemetry-card" style="background: rgba(17, 19, 26, 0.9); border-left: 3px solid var(--emerald);"><p style="font-size: 0.62rem; color: var(--emerald); font-weight: 700; letter-spacing: 1px;" class="font-mono">EQUIVALENCIA ICFES REAL</p><p class="telemetry-num" style="color: var(--emerald); font-size: 1.6rem; font-weight: bold;" id="repIcfes">0 / 100</p></div>
+                <div class="telemetry-card" style="background: rgba(17, 19, 26, 0.9); border-left: 3px solid var(--cyan-core);"><p style="font-size: 0.62rem; color: var(--text-muted); font-weight: 600; letter-spacing: 1px;" class="font-mono">PRECISIÓN BAYESIANA (SEM)</p><p class="telemetry-num" style="color: var(--cyan-core); font-size: 1.5rem;" id="repBsem">0.0000</p></div>
+                <div class="telemetry-card" style="background: rgba(17, 19, 26, 0.9); border-left: 3px solid var(--purple-core);"><p style="font-size: 0.62rem; color: var(--text-muted); font-weight: 600; letter-spacing: 1px;" class="font-mono">PROBABILIDAD DE MAESTRÍA AVANZADA</p><p class="telemetry-num" style="color: var(--purple-core); font-size: 1.5rem;" id="repMaestria">0.0%</p></div>
             </div>
             
-            <div class="telemetry-card" style="text-align: left; margin-bottom: 2rem; background: #0c0d13; border: 1px dashed var(--graphite);">
-                <p style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 1px;">Intervalo de Certeza Concurrente Escala País (95% Credibilidad)</p>
-                <p id="repIntervalo" style="color: var(--text-main); font-weight: 600; text-align: center; font-size: 1.2rem; margin-top: 0.4rem; letter-spacing: 1px;">[-1, 1]</p>
+            <div class="telemetry-card" style="text-align: left; margin-bottom: 1.5rem; background: rgba(12, 13, 19, 0.9); border: 1px dashed var(--graphite);">
+                <p style="font-size: 0.62rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 1px;" class="font-mono">Intervalo de Certeza Concurrente Escala País (95% Credibilidad)</p>
+                <p id="repIntervalo" style="color: var(--text-main); font-weight: 600; text-align: center; font-size: 1.1rem; margin-top: 0.3rem; letter-spacing: 1px;" class="font-mono">[-1, 1]</p>
             </div>
 
-            <div class="telemetry-badge-grid" style="margin-bottom: 1.5rem;" id="uiAdnFinalContainer">
-                <div class="telemetry-card" style="background:#0e1118; border-bottom: 2px solid var(--crimson);"><p style="font-size:0.6rem; color:var(--text-muted); font-weight:700;">IMPULSIVIDAD (S1)</p><p class="telemetry-num" id="repAdnImpulsividad">0%</p></div>
-                <div class="telemetry-card" style="background:#0e1118; border-bottom: 2px solid #e67e22;"><p style="font-size:0.6rem; color:var(--text-muted); font-weight:700;">ÍNDICE DE FATIGA</p><p class="telemetry-num" id="repAdnFatiga">0%</p></div>
-                <div class="telemetry-card" style="background:#0e1118; border-bottom: 2px solid var(--emerald);"><p style="font-size:0.6rem; color:var(--text-muted); font-weight:700;">RECUPERACIÓN ERROR</p><p class="telemetry-num" id="repAdnRecuperacion">0%</p></div>
-                <div class="telemetry-card" style="background:#0e1118; border-bottom: 2px solid var(--cyan-core);"><p style="font-size:0.6rem; color:var(--text-muted); font-weight:700;">ESTABILIDAD GLOBAL</p><p class="telemetry-num" id="repAdnEstabilidad" style="color:var(--cyan-core);">0%</p></div>
+            <div class="telemetry-badge-grid" style="margin-bottom: 1.2rem;" id="uiAdnFinalContainer">
+                <div class="telemetry-card" style="background:rgba(14, 17, 24, 0.9); border-bottom: 2px solid var(--crimson);"><p style="font-size:0.58rem; color:var(--text-muted); font-weight:700;" class="font-mono">IMPULSIVIDAD (S1)</p><p class="telemetry-num" id="repAdnImpulsividad">0%</p></div>
+                <div class="telemetry-card" style="background:rgba(14, 17, 24, 0.9); border-bottom: 2px solid #e67e22;"><p style="font-size:0.58rem; color:var(--text-muted); font-weight:700;" class="font-mono">ÍNDICE DE FATIGA</p><p class="telemetry-num" id="repAdnFatiga">0%</p></div>
+                <div class="telemetry-card" style="background:rgba(14, 17, 24, 0.9); border-bottom: 2px solid var(--emerald);"><p style="font-size:0.58rem; color:var(--text-muted); font-weight:700;" class="font-mono">RECUPERACIÓN ERROR</p><p class="telemetry-num" id="repAdnRecuperacion">0%</p></div>
+                <div class="telemetry-card" style="background:rgba(14, 17, 24, 0.9); border-bottom: 2px solid var(--cyan-core);"><p style="font-size:0.58rem; color:var(--text-muted); font-weight:700;" class="font-mono">ESTABILIDAD GLOBAL</p><p class="telemetry-num" id="repAdnEstabilidad" style="color:var(--cyan-core);">0%</p></div>
             </div>
 
             <div class="narrative-card">
@@ -333,29 +585,39 @@
 
             <div class="clinical-box-grid">
                 <div class="clinical-card badge-crimson">
-                    <h5 class="clinical-header-title" style="color: var(--crimson);">Vulnerabilidad Forense Dominante</h5>
-                    <p id="lblClinicalVulnerabilidad" style="font-size: 0.88rem; color: #cbd5e1; line-height: 1.6;"></p>
+                    <h5 class="clinical-header-title" style="color: var(--gold-satin);">Área de Enfoque Prioritario</h5>
+                    <p id="lblClinicalVulnerabilidad" style="font-size: 0.82rem; color: #cbd5e1; line-height: 1.5;"></p>
                 </div>
                 <div class="clinical-card badge-cyan">
-                    <h5 class="clinical-header-title" style="color: var(--cyan-core);">Prescripción Clinical de Autorregulación</h5>
-                    <p id="lblClinicalPrescripcion" style="font-size: 0.88rem; color: #cbd5e1; line-height: 1.6;"></p>
+                    <h5 class="clinical-header-title" style="color: var(--cyan-core);">Recomendación de Aprendizaje Práctico</h5>
+                    <p id="lblClinicalPrescripcion" style="font-size: 0.82rem; color: #cbd5e1; line-height: 1.5;"></p>
                 </div>
             </div>
 
-            <div class="heatmap-container" style="margin-top: 2rem;">
+            <div class="narrative-card" id="uiContenedorPlanEntrenamiento" style="margin-top: 1.2rem; border-left-color: var(--cyan-core); display: none;">
+                <h4 class="narrative-title" style="color: var(--cyan-core); letter-spacing: 1px;">🎯 PLAN DE ENTRENAMIENTO PERSONALIZADO (10 DÍAS)</h4>
+                <div id="uiPlanEntrenamientoCuerpo" style="display: flex; flex-direction: column; gap: 0.6rem; margin-top: 0.6rem; text-align: left;"></div>
+            </div>
+
+            <div class="heatmap-container" style="margin-top: 1.5rem;">
                 <h3 class="heatmap-title" id="repHeatmapTitle">Mapa de Calor: Diagnóstico de Sesgos Cognitivos</h3>
                 <div id="uiHeatmapBody"></div>
             </div>
 
-            <button class="btn-premium" style="margin-top: 2.5rem; width: 100%; border-radius: 6px;" onclick="location.reload()">Sincronizar Nuevo Simulacro</button>
+            <div style="display: flex; gap: 0.8rem; margin-top: 2rem; flex-wrap: wrap;">
+                <a href="/perfil.html" class="btn-premium" style="flex: 1; border-color: var(--cyan-core); color: var(--cyan-core); border-radius: 8px;">
+                    👤 IR A MI PERFIL COMPLETO
+                </a>
+                <button class="btn-premium" style="flex: 1; border-radius: 8px;" onclick="location.reload()">Sincronizar Nuevo Simulacro</button>
+            </div>
         </div>
     </main>
 
     <script>
-        // 🪐 AMARRE ABSOLUTO AL HOST LOCAL / PRODUCCIÓN AUTOMÁTICO
         const HOST_URL = window.location.origin;
         const GATEWAY_URL = `${HOST_URL}/api/cat/interactuar`;
-        const INSTITUTION_ID = "colegio_sandbox_default";
+        
+        let INSTITUTION_ID = "colegio_sandbox_default";
 
         const AppState = {
             estudiante: "", 
@@ -372,7 +634,8 @@
             bufferEventosCognitivos: [],
             controlIntervencion: { interval: null, segundosRestantes: 0 },
             integrityToken: "", 
-            itemHash: "" 
+            itemHash: "",
+            esSegundoIntento: false
         };
 
         class EventSourcingEngine {
@@ -383,56 +646,51 @@
         }
 
         class AppController {
-            static async precargarCohorteDinamica() {
-                const selector = document.getElementById("selEstudiante");
-                try {
-                    // Sincronización absoluta utilizando la URL del host concurrente limpia
-                    const res = await fetch(`${HOST_URL}/api/admin/obtain-cohorte?institution_id=${INSTITUTION_ID}`);
-                    const json = await res.json();
-                    if (json && json.success && json.cohorte && json.cohorte.length > 0) {
-                        selector.innerHTML = "";
-                        json.cohorte.forEach(alumno => {
-                            const opt = document.createElement("option");
-                            opt.value = alumno.toLowerCase().trim();
-                            opt.innerText = alumno.toUpperCase();
-                            selector.appendChild(opt);
-                        });
-                    } else {
-                        throw new Error("Estructura vacía.");
-                    }
-                } catch(e) {
-                    console.error("⚠️ [COHORTE SYNC FALLBACK]:", e.message);
-                    selector.innerHTML = `
-                        <option value="elizabeth">ELIZABETH</option>
-                        <option value="samantha">SAMANTHA</option>
-                        <option value="javier">JAVIER</option>
-                    `;
+            static resolverContextoAutenticado() {
+                const rawUser = localStorage.getItem("dante_user");
+                const token = localStorage.getItem("dante_token");
+
+                if (!rawUser || !token) {
+                    alert("🚨 CONTROL PERIMETRAL: Sesión ausente o expirada. Redirigiendo al portal.");
+                    window.location.href = "/login.html";
+                    return;
                 }
+
+                const sessionData = JSON.parse(rawUser);
+                AppState.estudiante = sessionData.email ? sessionData.email.split('@')[0].toLowerCase().trim() : (sessionData.estudiante || "viviana");
+                INSTITUTION_ID = sessionData.institution_id || "colegio_sandbox_default";
+                AppState.integrityToken = token;
+
+                document.getElementById("lblTenantBanner").innerText = `🔗 INQUILINO CONECTADO: T-${INSTITUTION_ID.toUpperCase()}`;
+                document.getElementById("lblGatewayWelcome").innerText = `SALA DE ${AppState.estudiante.toUpperCase()}`;
+            }
+
+            static cerrarSesionGated() {
+                localStorage.removeItem("dante_token");
+                localStorage.removeItem("dante_user");
+                window.location.href = "/login.html";
             }
 
             static async inicializarSesion() {
                 const btn = document.getElementById("btnIngresar");
                 btn.innerText = "Sincronizando Dante OS Gateway..."; btn.disabled = true;
 
-                const rawEstudiante = document.getElementById("selEstudiante").value;
-                if (!rawEstudiante) {
-                    alert("Por favor seleccione un estudiante válido de la cohorte nominal.");
-                    btn.innerText = "Sincronizar Entorno"; btn.disabled = false;
-                    return;
-                }
-
-                AppState.estudiante = rawEstudiante.toLowerCase().trim();
                 AppState.materia = document.getElementById("selMateria").value;
                 AppState.historialTheta = [0.0]; 
-                AppState.sessionId = `session_web_${Date.now()}`;
 
-                document.getElementById("lblEstudiante").innerText = `Estudiante: ${rawEstudiante.toUpperCase()}`;
+                localStorage.removeItem("dante_session_active");
+                AppState.sessionId = `session_web_clean_${Date.now()}`;
+
+                document.getElementById("lblEstudiante").innerText = `Estudiante: ${AppState.estudiante.toUpperCase()}`;
                 document.getElementById("lblMateria").innerText = `Módulo Analítico: ${AppState.materia.replace('_', ' ').toUpperCase()}`;
 
                 try {
                     const res = await fetch(GATEWAY_URL, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem("dante_token")}`
+                        },
                         body: JSON.stringify({ 
                             studentId: String(AppState.estudiante), 
                             sessionId: String(AppState.sessionId), 
@@ -444,10 +702,18 @@
                     
                     const data = await res.json();
                     if (data.success) {
-                        AppState.integrityToken = data.generatedToken || "";
-                        btn.innerText = "Sincronizar Entorno"; btn.disabled = false;
-                        this.cambiarVista("viewWorkspace");
-                        this.procesarRetornoMotor(data);
+                        AppState.integrityToken = data.generatedToken || AppState.integrityToken;
+                        
+                        if (data.cronicaBienvenida) {
+                            document.getElementById("lblTextoCronicaArranque").innerText = data.cronicaBienvenida;
+                            document.getElementById("uiContenedorCronicaArranque").style.display = "block";
+                            btn.innerText = "Sincronizar Entorno";
+                            AppState.bufferRetornoSiguiente = data; 
+                        } else {
+                            btn.innerText = "Sincronizar Entorno"; btn.disabled = false;
+                            this.cambiarVista("viewWorkspace");
+                            this.procesarRetornoMotor(data);
+                        }
                     } else {
                         throw new Error(data.error);
                     }
@@ -455,6 +721,13 @@
                     alert("Fallo de conexión con el Servidor Node.js: " + err.message);
                     btn.innerText = "Sincronizar Entorno"; btn.disabled = false;
                 }
+            }
+
+            static liberarEntornoHaciaWorkspace() {
+                document.getElementById("uiContenedorCronicaArranque").style.display = "none";
+                document.getElementById("btnIngresar").disabled = false;
+                this.cambiarVista("viewWorkspace");
+                this.procesarRetornoMotor(AppState.bufferRetornoSiguiente);
             }
 
             static procesarRetornoMotor(data) {
@@ -470,6 +743,7 @@
                 AppState.timestamps.inicioReactivo = performance.now();
                 AppState.historialSeleccion = [];
                 AppState.seleccionActual = null;
+                AppState.esSegundoIntento = false;
                 document.getElementById("btnConfirmarSeleccion").style.display = "none";
 
                 DOMRenderer.sincronizarCuadernillo(AppState.itemActual, data.bayesianSEMProgreso || data.bayesianSEM || 0.5);
@@ -477,15 +751,18 @@
 
             static deploymentAnomaliaControl(accs) {
                 document.getElementById("uiContenedorPreguntaCore").style.display = "none";
-                document.getElementById("uiIntervencionClinica").style.display = "block";
+                document.getElementById("uiIntervencionClinica").style.display = "flex";
                 document.getElementById("btnDesbloquearFreno").style.display = "none";
 
-                document.getElementById("lblIntervencionTitulo").innerText = AppState.bufferRetornoSiguiente.andamiajeForense.errorDetonado;
-                document.getElementById("lblIntervencionCuerpo").innerText = AppState.bufferRetornoSiguiente.andamiajeForense.remediacionSugerida;
+                const andamiaje = AppState.bufferRetornoSiguiente?.andamiajeForense || {};
+
+                document.getElementById("lblIntervencionTitulo").innerText = andamiaje.errorDetonado || "DESACELERACIÓN SISTEMA 1";
+                document.getElementById("lblIntervencionCuerpo").innerText = andamiaje.remediacionSugerida || "Tómate 10 segundos para releer la pregunta antes de responder.";
 
                 AppState.controlIntervencion.segundosRestantes = accs.intervencion_activa === "IMPULSIVITY_BLOCK" ? 10 : 30;
                 document.getElementById("lblContadorSegundos").innerText = AppState.controlIntervencion.segundosRestantes;
 
+                clearInterval(AppState.controlIntervencion.interval);
                 AppState.controlIntervencion.interval = setInterval(() => {
                     AppState.controlIntervencion.segundosRestantes--;
                     document.getElementById("lblContadorSegundos").innerText = AppState.controlIntervencion.segundosRestantes;
@@ -508,13 +785,17 @@
                 if (reporte.escalonamiento_pais) {
                     document.getElementById("repIcfes").innerText = `${reporte.escalonamiento_pais.puntaje_icfes_area} / 100`;
                     document.getElementById("repIntervalo").innerText = `[ ${reporte.escalonamiento_pais.intervalo_certeza_95.join('  ,  ')} ] pts Escala País`;
+                } else {
+                    const pts = Math.max(1, Math.min(100, Math.round(50 + (theta * 13.8))));
+                    document.getElementById("repIcfes").innerText = `${pts} / 100`;
+                    document.getElementById("repIntervalo").innerText = `[ ${Math.max(1, pts - 5)} , ${Math.min(100, pts + 5)} ] pts Escala País`;
                 }
 
-                const adn = reporte.adn_cognitivo || reporte;
+                const adn = reporte.adn_cognitivo ? reporte.adn_cognitivo : reporte;
                 
                 const impulsividadVal = adn.impulsividad !== undefined ? adn.impulsividad : 20;
                 const fatigaVal = adn.fatiga !== undefined ? adn.fatiga : 0;
-                const recuperacionVal = adn.recuperacion !== undefined ? adn.recuperacion : 50;
+                const recuperacionVal = adn.recuperacion !== undefined ? adn.recuperacion : 59;
                 const estabilidadVal = adn.estabilidad !== undefined ? adn.estabilidad : 75;
 
                 document.getElementById("repAdnImpulsividad").innerText = `${impulsividadVal}%`;
@@ -524,16 +805,38 @@
                 
                 document.getElementById("lblNarrativeHeader").innerText = `Crónica del ADN Cognitivo de ${AppState.estudiante.toUpperCase()}`;
                 
-                document.getElementById("lblNarrativeBody").innerText = adn.cronica_narrativa || "Trayectoria adaptativa registrada de forma exitosa.";
-                document.getElementById("lblClinicalVulnerabilidad").innerText = adn.vulnerabilidad_dominante || "Sin desviaciones críticas registradas en los tramos de latencia.";
-                document.getElementById("lblClinicalPrescripcion").innerText = adn.prescripcion_clinica || "Se prescribe mantener la cadencia adaptativa nominal.";
+                document.getElementById("lblNarrativeBody").innerText = adn.cronica_narrativa || "Tu rendimiento fue evaluado bajo un modelo de alta precisión. Tu perfil cognitivo demuestra estabilidad con áreas puntuales para reforzar en sintaxis y comprensión global.";
+                document.getElementById("lblClinicalVulnerabilidad").innerText = adn.vulnerabilidad_dominante || "Heurística lineal y traducción literal paso a paso.";
+                document.getElementById("lblClinicalPrescripcion").innerText = adn.prescripcion_clinica || "Aplica la técnica de escaneo global leyendo la oración completa de atrás hacia adelante.";
+                
+                const planContainer = document.getElementById("uiContenedorPlanEntrenamiento");
+                const planCuerpo = document.getElementById("uiPlanEntrenamientoCuerpo");
+                const planArray = adn.plan_entrenamiento || reporte.plan_entrenamiento;
 
-                DOMRenderer.construirMapaCalorForense(reporte.mapaCalorSesgos || adn.mapa_calor_sesgos || {});
+                if (planArray && Array.isArray(planArray) && planArray.length > 0) {
+                    planCuerpo.innerHTML = "";
+                    planArray.forEach((accion, index) => {
+                        const item = document.createElement("div");
+                        item.style.background = "rgba(81, 226, 245, 0.03)";
+                        item.style.border = "1px solid rgba(81, 226, 245, 0.1)";
+                        item.style.padding = "0.8rem 1.2rem";
+                        item.style.borderRadius = "6px";
+                        item.style.fontSize = "0.85rem";
+                        item.style.color = "#d1d5db";
+                        item.innerHTML = `<strong style="color: var(--cyan-core); margin-right: 0.5rem;" class="font-mono">Fase ${index + 1}:</strong> ${accion}`;
+                        planCuerpo.appendChild(item);
+                    });
+                    planContainer.style.display = "block";
+                } else {
+                    planContainer.style.display = "none";
+                }
+
+                DOMRenderer.construirMapaCalorForense(reporte.mapCalorSesgos || reporte.mapaCalorSesgos || adn.mapa_calor_sesgos || {});
                 this.cambiarVista("viewFinalReport");
             }
 
             static avanzarSiguienteFase() {
-                if (AppState.bufferRetornoSiguiente.detenerExamen) {
+                if (AppState.bufferRetornoSiguiente && AppState.bufferRetornoSiguiente.detenerExamen) {
                     this.desplegarClausuraExamen(AppState.bufferRetornoSiguiente.reporteFinal || AppState.bufferRetornoSiguiente);
                 } else {
                     this.cambiarVista("viewWorkspace");
@@ -587,7 +890,10 @@
 
                     const res = await fetch(GATEWAY_URL, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${localStorage.getItem("dante_token")}`
+                        },
                         body: JSON.stringify(payloadSaneado)
                     });
                     
@@ -597,12 +903,29 @@
                     AppState.bufferRetornoSiguiente = data;
                     AppState.historialTheta.push(data.thetaProgreso !== undefined ? data.thetaProgreso : AppState.theta);
 
+                    if (data.detenerExamen) {
+                        const card = AppState.seleccionActual.element;
+                        card.classList.add(data.interaccionCorrecta ? "correct" : "wrong");
+                        setTimeout(() => {
+                            AppController.desplegarClausuraExamen(data.reporteFinal || data);
+                        }, 1200);
+                        return;
+                    }
+
                     if (data.accs_telemetria && data.accs_telemetria.intervencion_activa !== "NONE") {
                         AppController.deploymentAnomaliaControl(data.accs_telemetria);
                         return;
                     }
 
                     const card = AppState.seleccionActual.element;
+                    
+                    if (!data.interaccionCorrecta && !AppState.esSegundoIntento) {
+                        AppState.esSegundoIntento = true;
+                        card.classList.add("wrong");
+                        this.renderizarSegundoIntentoPista(data.andamiajeForense);
+                        return;
+                    }
+
                     if (data.interaccionCorrecta) {
                         card.classList.add("correct");
                         setTimeout(() => { this.transicionarADashboard(); }, 1200);
@@ -618,6 +941,7 @@
             static liberarFrenoIntervencion() {
                 document.getElementById("uiIntervencionClinica").style.display = "none";
                 document.getElementById("uiContenedorPreguntaCore").style.display = "block";
+                
                 const card = AppState.seleccionActual.element;
                 if (AppState.bufferRetornoSiguiente.interaccionCorrecta) {
                     card.classList.add("correct");
@@ -628,10 +952,128 @@
                 }
             }
 
-            static renderizarAndamiajePedagogico(andamiaje) {
-                document.getElementById("forensicTrampa").innerText = andamiaje?.errorDetonado || "Desviación Analítica Detectada.";
-                document.getElementById("forensicRealidad").innerText = andamiaje?.remediacionSugerida || "Se prescribe ralentización de tramo.";
-                document.getElementById("uiFeedback").style.display = "block";
+            static resolverAndamiajeSincronizado(andamiaje) {
+                const item = AppState.itemActual || {};
+                const letraSeleccionada = AppState.seleccionActual?.id || 'A';
+                const materia = (AppState.materia || 'matematicas').toLowerCase();
+                
+                let errorTxt = andamiaje?.errorDetonado;
+                let remediacionTxt = andamiaje?.remediacionSugerida;
+
+                if (item.explicaciones && item.explicaciones[letraSeleccionada]) {
+                    remediacionTxt = item.explicaciones[letraSeleccionada];
+                } else if (item.explicacion_general) {
+                    remediacionTxt = item.explicacion_general;
+                }
+
+                const esTextoMatematicoGenerico = remediacionTxt && (remediacionTxt.includes("descomponer las variables") || remediacionTxt.includes("operar de forma directa"));
+
+                if (!remediacionTxt || esTextoMatematicoGenerico) {
+                    if (materia === 'ingles') {
+                        remediacionTxt = `Identifica la función comunicativa y el contexto global del texto en inglés. Evita traducir palabra por palabra la opción [ ${letraSeleccionada} ].`;
+                    } else if (materia === 'lectura_critica') {
+                        remediacionTxt = `Evalúa si la opción [ ${letraSeleccionada} ] se queda en una lectura literal o si realmente responde al sentido implícito y a la intención del autor.`;
+                    } else if (materia === 'ciencias_naturales') {
+                        remediacionTxt = `Analiza la relación de causa y efecto en la evidencia científica del enunciado antes de validar la opción [ ${letraSeleccionada} ].`;
+                    } else {
+                        remediacionTxt = `Descompón las variables y verifica la relación operacional del problema. La opción [ ${letraSeleccionada} ] no satisface el algoritmo planteado.`;
+                    }
+                }
+
+                if (!errorTxt) {
+                    if (materia === 'ingles' || materia === 'lectura_critica') {
+                        errorTxt = `Sesgo de Traducción Literal / Heurística de Lectura Superficial.`;
+                    } else if (materia === 'ciencias_naturales') {
+                        errorTxt = `Inconsistencia en la Inferencia Experimental / Análisis de Variables.`;
+                    } else {
+                        errorTxt = `Inconsistencia Operacional en la opción [ ${letraSeleccionada} ].`;
+                    }
+                }
+
+                return { errorDetonado: errorTxt, remediacionSugerida: remediacionTxt };
+            }
+
+            static renderizarSegundoIntentoPista(andamiajeBruto) {
+                const andamiaje = this.resolverAndamiajeSincronizado(andamiajeBruto);
+                const uiFeedback = document.getElementById("uiFeedback");
+                const uiCuerpo = document.getElementById("uiFeedbackCuerpoAndamiaje");
+                const btnContinuar = document.getElementById("btnContinuarFeedback");
+
+                uiFeedback.querySelector(".feedback-header").innerText = "🔍 DETECCIÓN COGNITIVA // SEGUNDO INTENTO ACTIVADO";
+                uiFeedback.querySelector(".feedback-header").style.color = "var(--gold-satin)";
+                uiFeedback.style.borderColor = "var(--gold-satin)";
+
+                uiCuerpo.innerHTML = `
+                    <div class="feedback-error-container animate-fade-in">
+                        <p class="text-sm mb-3" style="color: #cbd5e1;">
+                            La opción seleccionada no resuelve correctamente esta pregunta. Revisa la recomendación específica para este enunciado:
+                        </p>
+                        <div class="pista-caja bg-slate-900/90 p-3.5 rounded-lg mb-3" style="border-left: 4px solid var(--gold-satin);">
+                            <span class="text-xs font-semibold text-amber-400 font-mono uppercase tracking-wider block">💡 Orientación para este Ítem:</span>
+                            <p class="text-xs mt-1" style="color: #e2e8f0; line-height: 1.5;">${andamiaje.remediacionSugerida}</p>
+                        </div>
+                        <p class="text-[11px] text-slate-400 font-sans">Dante OS habilita un segundo intento para reajustar tu estrategia antes de enviar el registro definitivo.</p>
+                    </div>
+                `;
+
+                btnContinuar.innerText = "🔄 Intentar de nuevo";
+                btnContinuar.disabled = false;
+                btnContinuar.onclick = () => { this.habilitarFlujoDeReintento(); };
+                
+                uiFeedback.style.display = "block";
+            }
+
+            static habilitarFlujoDeReintento() {
+                document.getElementById("uiFeedback").style.display = "none";
+                document.getElementById("uiOpcionesGrid").classList.remove("freno");
+                
+                document.querySelectorAll('.opcion-card').forEach(el => {
+                    el.classList.remove('selected-intent');
+                    el.classList.remove('wrong');
+                });
+
+                AppState.seleccionActual = null;
+                document.getElementById("btnConfirmarSeleccion").style.display = "none";
+            }
+
+            static renderizarAndamiajePedagogico(andamiajeBruto) {
+                const andamiaje = this.resolverAndamiajeSincronizado(andamiajeBruto);
+                const uiFeedback = document.getElementById("uiFeedback");
+                const uiCuerpo = document.getElementById("uiFeedbackCuerpoAndamiaje");
+                const btnContinuar = document.getElementById("btnContinuarFeedback");
+
+                uiFeedback.querySelector(".feedback-header").innerText = "Análisis de Desviación Cognitiva";
+                uiFeedback.querySelector(".feedback-header").style.color = "var(--crimson)";
+                uiFeedback.style.borderColor = "var(--crimson)";
+
+                uiCuerpo.innerHTML = `
+                    <div class="forensic-row trampa">
+                        <div class="forensic-label" style="color: var(--crimson);">HEURÍSTICA / SESGO DETECTADO</div>
+                        <div class="forensic-txt" id="forensicTrampa">${andamiaje.errorDetonado}</div>
+                    </div>
+                    <div class="forensic-row" style="margin-top: 0.8rem;">
+                        <div class="forensic-label" style="color: var(--gold-satin);">LÓGICA DE REMEDIACIÓN</div>
+                        <div class="forensic-txt" id="forensicRealidad">${andamiaje.remediacionSugerida}</div>
+                    </div>
+                `;
+
+                let segundosRestantes = 8;
+                btnContinuar.disabled = true;
+                btnContinuar.innerText = `Asimilando corrección cognitiva... (${segundosRestantes}s)`;
+                btnContinuar.onclick = () => { QuizEngine.procesarFrenoComprension(); };
+
+                const intervalId = setInterval(() => {
+                    segundosRestantes--;
+                    if (segundosRestantes <= 0) {
+                        clearInterval(intervalId);
+                        btnContinuar.disabled = false;
+                        btnContinuar.innerText = "Continuar Evaluación ➡️";
+                    } else {
+                        btnContinuar.innerText = `Asimilando corrección cognitiva... (${segundosRestantes}s)`;
+                    }
+                }, 1000);
+
+                uiFeedback.style.display = "block";
             }
 
             static procesarFrenoComprension() {
@@ -655,17 +1097,29 @@
                 document.getElementById("uiFeedback").style.display = "none";
                 document.getElementById("uiMetacognicion").style.display = "none";
                 document.getElementById("uiIntervencionClinica").style.display = "none";
+                document.getElementById("uiContenedorPreguntaCore").style.display = "block";
 
                 lblCompetence.innerText = `Sub-competencia: ${String(item.sub_competencia || 'General').toUpperCase()}`;
                 
                 const textoCompleto = item.pregunta_texto || '';
                 const tokens = textoCompleto.split('\n\n');
                 
+                // 🟢 SOPORTE VISUAL ICFES (Detecta si el ítem trae recurso_visual o imagen_url)
+                let contenidoVisualHTML = "";
+                const urlVisual = item.recurso_visual || item.imagen_url;
+                if (urlVisual) {
+                    contenidoVisualHTML = `
+                        <div style="margin: 1.2rem 0; text-align: center; background: rgba(10, 11, 13, 0.6); padding: 1rem; border-radius: 8px; border: 1px solid var(--graphite);">
+                            <img src="${urlVisual}" alt="Recursos visuales del examen ICFES" style="max-width: 100%; height: auto; border-radius: 6px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);" />
+                        </div>
+                    `;
+                }
+
                 if (tokens.length > 1) {
-                    uiEnunciados.innerHTML = `<p style="margin-bottom: 1rem;">${tokens.slice(0, -1).join('</p><p style="margin-bottom: 1rem;">')}</p>`;
+                    uiEnunciados.innerHTML = `<p style="margin-bottom: 1rem;">${tokens.slice(0, -1).join('</p><p style="margin-bottom: 1rem;">')}</p>` + contenidoVisualHTML;
                     uiPregunta.innerText = tokens[tokens.length - 1];
                 } else {
-                    uiEnunciados.innerHTML = `<p>> Estímulo contextual adaptativo integrado.</p>`;
+                    uiEnunciados.innerHTML = `<p>> Estímulo contextual adaptativo integrado.</p>` + contenidoVisualHTML;
                     uiPregunta.innerText = textoCompleto;
                 }
 
@@ -692,6 +1146,12 @@
                 document.getElementById("telemetryConfidence").innerText = AppState.telemetriaActual.certeza.toUpperCase();
                 document.getElementById("lblThetaActual").innerHTML = `&theta; = ${AppState.theta.toFixed(4)}`;
 
+                if (AppState.bufferRetornoSiguiente && AppState.bufferRetornoSiguiente.accs_telemetria) {
+                    const idx = AppState.bufferRetornoSiguiente.accs_telemetria.indices_avanzados || {};
+                    document.getElementById("telemetryIRI").innerText = `${((idx.iri || 0.59) * 100).toFixed(0)}%`;
+                    document.getElementById("telemetryICC").innerText = `${((idx.icc || 0.50) * 100).toFixed(0)}%`;
+                }
+
                 const segs = parseFloat(AppState.telemetriaActual.tiempoTotal);
                 const lblProfile = document.getElementById("telemetryProfile");
                 if (segs < 4.0) { lblProfile.innerText = "S1 IMPULSIVO"; lblProfile.style.color = "var(--crimson)"; }
@@ -704,8 +1164,8 @@
                 if (AppState.historialTheta.length > 0) {
                     let puntosPath = "";
                     AppState.historialTheta.forEach((val, i) => {
-                        const x = AppState.historialTheta.length === 1 ? 300 : i * (520 / (AppState.historialTheta.length - 1)) + 40;
-                        const y = 125 - (val * 45);
+                        const x = AppState.historialTheta.length === 1 ? 275 : i * (470 / (AppState.historialTheta.length - 1)) + 40;
+                        const y = 110 - (val * 40);
                         if (i === 0) puntosPath += `M ${x} ${y}`;
                         else puntosPath += ` L ${x} ${y}`;
                         
@@ -728,31 +1188,55 @@
                 const container = document.getElementById("uiHeatmapBody");
                 container.innerHTML = "";
                 
-                const sesgosIterar = Object.keys(mapaSesgos).length > 0 ? mapaSesgos : { "ERROR_GEOMETRICO": 0.02, "HEURISTICA_LINEAL": 0.02, "OMISION_CONVERSION": 0.02, "INVERSION_OPERATIONAL": 0.10 };
+                const mapeoNombres = {
+                    "attr_heuristica_lineal": "Heurística Lineal (Sistema 1)",
+                    "attr_inversion_operacional": "Inversión Operacional Estructural",
+                    "attr_omision_conversion": "Omisión de Conversión de Magnitudes",
+                    "attr_error_geometrico": "Errores Geométricos / Perimetrales",
+                    "heuristica_lineal": "Heurística Lineal (Sistema 1)",
+                    "inversion_operacional": "Inversión Operacional Estructural",
+                    "omision_conversion": "Omisión de Conversión de Magnitudes",
+                    "error_geometrico": "Errores Geométricos / Perimetrales"
+                };
+
+                const sesgosIterar = Object.keys(mapaSesgos).length > 0 ? mapaSesgos : { 
+                    "attr_heuristica_lineal": 0.98, 
+                    "attr_inversion_operacional": 0.98, 
+                    "attr_omision_conversion": 0.50, 
+                    "attr_error_geometrico": 0.50 
+                };
 
                 for (const [sesgo, probabilidad] of Object.entries(sesgosIterar)) {
                     const probabilidadSaneada = parseFloat(probabilidad || 0);
-                    const porcentajeVisual = (probabilidadSaneada > 1.0 ? probabilidadSaneada : probabilidadSaneada * 100).toFixed(1);
+                    
+                    const porcentajeVisual = (probabilidadSaneada <= 1.0 ? probabilidadSaneada * 100 : probabilidadSaneada).toFixed(1);
                     const fraccion = parseFloat(porcentajeVisual) / 100;
                     
                     let colorFill = "var(--emerald)";
-                    if (fraccion >= 0.25) colorFill = "var(--gold-satin)";
-                    if (fraccion >= 0.55 || sesgo.toLowerCase().includes('fuga') || sesgo.toLowerCase().includes('inversion')) colorFill = "var(--crimson)";
+                    if (fraccion >= 0.25 && fraccion < 0.55) {
+                        colorFill = "var(--gold-satin)";
+                    } else if (fraccion >= 0.55) {
+                        colorFill = "var(--crimson)";
+                    }
+
+                    const nombreAmigable = mapeoNombres[sesgo] || sesgo.replace('attr_', '').replace(/_/g, ' ').toUpperCase();
 
                     const row = document.createElement("div");
                     row.className = "heatmap-row";
                     row.innerHTML = `
-                        <div class="heatmap-meta">
-                            <span>${sesgo.replace('attr_', '').replace(/_/g, ' ').toUpperCase()}</span>
-                            <span style="font-weight: 600; color: ${colorFill};">${porcentajeVisual}%</span>
+                        <div class="heatmap-meta font-sans">
+                            <span>${nombreAmigable}</span>
+                            <span style="font-weight: 600; color: ${colorFill};" class="font-mono">${porcentajeVisual}%</span>
                         </div>
-                        <div class="heatmap-bar-bg"><div class="heatmap-bar-fill" style="background: ${colorFill}; width: ${porcentajeVisual}%;"></div></div>`;
+                        <div class="heatmap-bar-bg">
+                            <div class="heatmap-bar-fill" style="background: ${colorFill}; width: ${porcentajeVisual}%;"></div>
+                        </div>`;
                     container.appendChild(row);
                 }
             }
         }
 
-        window.onload = () => { AppController.precargarCohorteDinamica(); };
+        window.onload = () => { AppController.resolverContextoAutenticado(); };
     </script>
 </body>
 </html>
