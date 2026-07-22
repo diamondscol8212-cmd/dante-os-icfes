@@ -504,7 +504,7 @@ const REACTIVOS_REALES = [
 ];
 
 async function sembrarBancoSoberano() {
-    console.log("🚀 [SIEMBRA DANTE OS]: Limpiando tablas e inyectando banco con arreglo estricto de opciones...");
+    console.log("🚀 [SIEMBRA DANTE OS]: Limpiando tablas e inyectando banco con matriz Q y metadatos integrados...");
 
     try {
         await supabase.from('mapa_trampas_distractores').delete().neq('opcion_marcada', 'CLEAN_ALL');
@@ -516,24 +516,26 @@ async function sembrarBancoSoberano() {
         for (const item of REACTIVOS_REALES) {
             const itemId = crypto.randomUUID();
             const areaNormalized = String(item.area).toLowerCase().trim();
-
-            // 🛠️ FORZAR ESTRUCTURA DE ARREGLO DE TEXTO EXACTO PARA POSTGRESQL
             const arregloOpcionesValido = Array.isArray(item.opciones) ? item.opciones : [item.opciones];
 
+            // 🛠️ INSERCIÓN CORREGIDA: Incluye matriz_q_items y distractores_metadata en el registro principal
             const { error: errBase } = await supabase.from('banco_items_irt').insert([{
                 id: itemId,
                 area_general: areaNormalized,
                 sub_competencia: item.sub,
                 pregunta_texto: item.texto,
-                opciones_respuesta: arregloOpcionesValido, // Se pasa como array real
+                opciones_respuesta: arregloOpcionesValido,
                 correcta: item.ok,
                 parametro_a_discriminacion: item.a,
                 parametro_b_dificultad: item.b,
-                parametro_c_adivinacion: item.c
+                parametro_c_adivinacion: item.c,
+                matriz_q_items: item.q,             // 🟢 POBLADO DIRECTO DE MATRIZ Q (JSONB)
+                distractores_metadata: item.trampas  // 🟢 POBLADO DIRECTO DE TRAMPAS (JSONB)
             }]);
 
             if (errBase) throw new Error(`Error en banco_items_irt: ${errBase.message}`);
 
+            // Mantenemos también las tablas secundarias relacionales sincronizadas
             const { error: errQ } = await supabase.from('matriz_q_items').insert([{
                 item_id: itemId,
                 attr_heuristica_lineal: item.q.attr_heuristica_lineal,
@@ -560,7 +562,7 @@ async function sembrarBancoSoberano() {
             console.log(`✅ Ítem sembrado correctamente: [${areaNormalized.toUpperCase()} // ${item.sub.toUpperCase()}] -> UUID: ${itemId}`);
         }
 
-        console.log("\n🎉 [SIEMBRA COMPLETADA]: 40 reactivos formateados como arreglos nativos en Supabase.");
+        console.log("\n🎉 [SIEMBRA COMPLETADA]: 40 reactivos formateados y sincronizados integralmente en Supabase.");
         process.exit(0);
 
     } catch (err) {
