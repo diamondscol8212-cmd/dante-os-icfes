@@ -76,9 +76,9 @@ router.get('/gemelo/:id', async (req, res) => {
                 .maybeSingle();
 
             if (!error && registro) {
-                if (registro.theta_final !== undefined && registro.theta_final !== null) {
+                if (registro.theta_final !== undefined && registro.theta_final !== null && parseFloat(registro.theta_final) !== 0) {
                     thetaValue = parseFloat(registro.theta_final);
-                } else if (registro.theta !== undefined && registro.theta !== null) {
+                } else if (registro.theta !== undefined && registro.theta !== null && parseFloat(registro.theta) !== 0) {
                     thetaValue = parseFloat(registro.theta);
                 } else if (registro.items_respondidos && registro.items_respondidos.adn_empaquetado) {
                     thetaValue = parseFloat(registro.items_respondidos.adn_empaquetado.thetaEstimado || 0.0);
@@ -113,7 +113,7 @@ router.get('/gemelo/:id', async (req, res) => {
 });
 
 // ====================================================================
-// 🪐 ENDPOINT C: AUDITORÍA GLOBAL MULTI-MATERIA
+// 🪐 ENDPOINT C: AUDITORÍA GLOBAL MULTI-MATERIA CON EXTRACCIÓN INTELIGENTE
 // ====================================================================
 router.get('/auditoria', async (req, res) => {
     try {
@@ -141,7 +141,6 @@ router.get('/auditoria', async (req, res) => {
 
         let dataFiltered = todosLosRegistros || [];
 
-        // Si se solicita una materia en particular, filtramos por ella. De lo contrario, entregamos TODAS las materias.
         if (materiaFiltro) {
             dataFiltered = dataFiltered.filter(r => {
                 const materiaDB = String(r.materia || '').toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -154,8 +153,22 @@ router.get('/auditoria', async (req, res) => {
 
         const datosSaneados = await Promise.all(dataFiltered.map(async (r) => {
             const studentIdClean = String(r.estudiante).toLowerCase().trim();
-            const thetaValue = parseFloat(r.theta || r.theta_final || 0);
-            const puntajeSintetizado = Math.max(0, Math.min(100, Math.round(50 + (thetaValue * 13.5))));
+            
+            // 🛠️ RECUPERACIÓN AVANZADA DE HABILIDAD
+            let thetaValue = parseFloat(r.theta_final !== undefined && r.theta_final !== null ? r.theta_final : (r.theta || 0));
+            
+            if (thetaValue === 0 && r.items_respondidos && r.items_respondidos.adn_empaquetado) {
+                thetaValue = parseFloat(r.items_respondidos.adn_empaquetado.thetaEstimado || 0);
+            }
+            if (thetaValue === 0 && (r.theta_algebra_calculo || r.theta_geometria_medicion || r.theta_estadistica_probabilidad)) {
+                const alg = parseFloat(r.theta_algebra_calculo || 0);
+                const geo = parseFloat(r.theta_geometria_medicion || 0);
+                const est = parseFloat(r.theta_estadistica_probabilidad || 0);
+                const prom = (alg + geo + est) / 3.0;
+                if (prom !== 0) thetaValue = prom;
+            }
+
+            const puntajeSintetizado = Math.max(1, Math.min(100, Math.round(50 + (thetaValue * 13.8))));
             
             let adnExtraido = r.adn_cognitivo || null;
             let mapaCalorExtraido = r.mapa_calor_sesgos || null;
@@ -184,6 +197,7 @@ router.get('/auditoria', async (req, res) => {
                 area_general: r.materia,
                 materia: r.materia,
                 items_respondidos: itemsHistorico,
+                theta: thetaValue,
                 theta_final: thetaValue,
                 mapa_calor_sesgos: mapaCalorExtraido,
                 adn_cognitivo: adnExtraido,
