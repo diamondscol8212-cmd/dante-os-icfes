@@ -429,7 +429,6 @@
 
             <button class="btn-premium" id="btnIngresar" onclick="AppController.inicializarSesion()">Sincronizar Entorno</button>
             
-            <!-- 🔗 BOTÓN DE ACCESO DIRECTO AL PERFIL DEL ALUMNO DESDE EL PORTAL -->
             <a href="/perfil.html" class="btn-premium" style="border-color: var(--cyan-core); color: var(--cyan-core); margin-top: 0.8rem;">
                 👤 CONSULTAR MI PERFIL / HISTORIAL
             </a>
@@ -553,7 +552,6 @@
             <h1 class="gateway-title" style="color: var(--gold-satin); margin-bottom: 0.4rem; font-weight: 300;">Perfil de Adaptación Humana</h1>
             <p style="color: var(--text-muted); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 1.5rem;" class="font-mono">Códice del ADN Cognitivo Vivo // Trazabilidad Final</p>
 
-            <!-- 💡 BANNER INFORMATIVO FORMATIVO CAT / ICFES -->
             <div style="background: rgba(81, 226, 245, 0.08); border: 1px solid rgba(81, 226, 245, 0.3); border-radius: 8px; padding: 0.85rem; margin-bottom: 1.5rem; text-align: left;" class="font-sans">
                 <span class="font-mono text-xs font-bold text-[var(--cyan-core)] uppercase block mb-1">⚡ EVALUACIÓN ADAPTATIVA COMPLETADA (CAT):</span>
                 <p style="font-size: 0.78rem; color: #cbd5e1; line-height: 1.5;">
@@ -954,25 +952,45 @@
                 }
             }
 
-            // 🛠️ GARANTIZA QUE LA ASESORÍA O PISTA SEA DE LA PREGUNTA EN PANTALLA
+            // 🛠️ GARANTIZA QUE LA REMEDIACIÓN SEA 100% DINÁMICA SEGÚN LA MATERIA
             static resolverAndamiajeSincronizado(andamiaje) {
                 const item = AppState.itemActual || {};
                 const letraSeleccionada = AppState.seleccionActual?.id || 'A';
+                const materia = (AppState.materia || 'matematicas').toLowerCase();
                 
                 let errorTxt = andamiaje?.errorDetonado;
                 let remediacionTxt = andamiaje?.remediacionSugerida;
 
-                // Si la sugerencia no viene del backend o viene genérica, la extraemos del item en memoria
-                if (!remediacionTxt && item.explicaciones) {
-                    remediacionTxt = item.explicaciones[letraSeleccionada] || item.explicacion_general;
+                // 1. Extraer explicación específica de la opción si está presente en el ítem
+                if (item.explicaciones && item.explicaciones[letraSeleccionada]) {
+                    remediacionTxt = item.explicaciones[letraSeleccionada];
+                } else if (item.explicacion_general) {
+                    remediacionTxt = item.explicacion_general;
+                }
+
+                // 2. Si no hay explicación específica ni general, o si viene genérica de matemáticas, generar fallback por materia
+                const esTextoMatematicoGenerico = remediacionTxt && (remediacionTxt.includes("descomponer las variables") || remediacionTxt.includes("operar de forma directa"));
+
+                if (!remediacionTxt || esTextoMatematicoGenerico) {
+                    if (materia === 'ingles') {
+                        remediacionTxt = `Identifica la función comunicativa y el contexto global del texto en inglés. Evita traducir palabra por palabra la opción [ ${letraSeleccionada} ].`;
+                    } else if (materia === 'lectura_critica') {
+                        remediacionTxt = `Evalúa si la opción [ ${letraSeleccionada} ] se queda en una lectura literal o si realmente responde al sentido implícito y a la intención del autor.`;
+                    } else if (materia === 'ciencias_naturales') {
+                        remediacionTxt = `Analiza la relación de causa y efecto en la evidencia científica del enunciado antes de validar la opción [ ${letraSeleccionada} ].`;
+                    } else {
+                        remediacionTxt = `Descompón las variables y verifica la relación operacional del problema. La opción [ ${letraSeleccionada} ] no satisface el algoritmo planteado.`;
+                    }
                 }
 
                 if (!errorTxt) {
-                    errorTxt = `Inconsistencia sintáctica en la opción [ ${letraSeleccionada} ] respecto al enunciado actual.`;
-                }
-
-                if (!remediacionTxt) {
-                    remediacionTxt = `Evalúa de nuevo el enunciado: "${(item.pregunta_texto || '').substring(0, 80)}..." e identifica la opción que mantenga la coherencia lógica.`;
+                    if (materia === 'ingles' || materia === 'lectura_critica') {
+                        errorTxt = `Sesgo de Traducción Literal / Heurística de Lectura Superficial.`;
+                    } else if (materia === 'ciencias_naturales') {
+                        errorTxt = `Inconsistencia en la Inferencia Experimental / Análisis de Variables.`;
+                    } else {
+                        errorTxt = `Inconsistencia Operacional en la opción [ ${letraSeleccionada} ].`;
+                    }
                 }
 
                 return { errorDetonado: errorTxt, remediacionSugerida: remediacionTxt };
