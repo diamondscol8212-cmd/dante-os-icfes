@@ -62,14 +62,14 @@
             box-shadow: 0 0 15px var(--gold-glow);
         }
 
-        /* Tarjetas Glassmorphism */
+        /* Tarjetas Glassmorphism con overflow visible para permitir tooltips */
         .kpi-card {
             background: var(--bg-surface); 
             border: 1px solid var(--graphite); 
             padding: 1.5rem;
             border-radius: 12px; 
             position: relative; 
-            overflow: hidden; 
+            overflow: visible !important; 
             transition: all 0.25s ease;
             backdrop-filter: blur(12px);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
@@ -90,6 +90,7 @@
             backdrop-filter: blur(12px);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
             border-radius: 12px;
+            overflow: visible !important;
         }
 
         /* Termómetro Bayesiano */
@@ -133,16 +134,48 @@
         }
         .mini-bar-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
 
-        /* Tooltips */
-        .tooltip-wrapper { position: relative; display: inline-block; cursor: pointer; }
-        .tooltip-box {
-            visibility: hidden; width: 260px; background-color: rgba(13, 15, 23, 0.95); color: #e2e8f0;
-            text-align: left; padding: 0.8rem; border-radius: 8px; border: 1px solid var(--gold-satin);
-            position: absolute; z-index: 50; bottom: 125%; left: 50%; transform: translateX(-50%);
-            opacity: 0; transition: opacity 0.3s; font-size: 0.75rem; line-height: 1.4;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.8); backdrop-filter: blur(8px);
+        /* Tooltips Sin Recorte (Blindados contra bordes) */
+        .tooltip-wrapper { 
+            position: relative; 
+            display: inline-flex; 
+            align-items: center;
+            cursor: pointer; 
         }
-        .tooltip-wrapper:hover .tooltip-box { visibility: visible; opacity: 1; }
+        .tooltip-box {
+            visibility: hidden; 
+            width: 260px; 
+            background-color: rgba(12, 14, 22, 0.98); 
+            color: #e2e8f0;
+            text-align: left; 
+            padding: 0.85rem; 
+            border-radius: 8px; 
+            border: 1px solid var(--gold-satin);
+            position: absolute; 
+            z-index: 9999 !important; 
+            bottom: 125%; 
+            right: 0; 
+            opacity: 0; 
+            transition: opacity 0.25s ease, transform 0.25s ease; 
+            font-size: 0.75rem; 
+            line-height: 1.45;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.9); 
+            backdrop-filter: blur(12px);
+            pointer-events: none;
+        }
+
+        /* Tooltips para tarjetas KPI superiores (despliegan hacia abajo) */
+        .kpi-card .tooltip-box {
+            top: 130% !important;
+            bottom: auto !important;
+            left: 50% !important;
+            right: auto !important;
+            transform: translateX(-50%);
+        }
+
+        .tooltip-wrapper:hover .tooltip-box { 
+            visibility: visible; 
+            opacity: 1; 
+        }
     </style>
 </head>
 <body class="max-w-7xl mx-auto space-y-8">
@@ -306,7 +339,7 @@
         <div class="glass-panel p-6 space-y-4">
             <div class="flex justify-between items-center border-b border-zinc-800 pb-3">
                 <h3 class="text-sm font-light uppercase tracking-wider text-rose-400">🔥 Mapa de Calor de Sesgos</h3>
-                <span class="text-[10px] text-slate-400 font-mono">Haz clic en (?) para ver la ayuda</span>
+                <span class="text-[10px] text-slate-400 font-mono">Pasa el cursor por (?)</span>
             </div>
             <div id="contenedorBarrasSesgos" class="space-y-4 text-xs font-sans"></div>
         </div>
@@ -411,14 +444,13 @@
                     ultimoRegistro = historialFiltrado[historialFiltrado.length - 1];
                 }
 
-                // 🛠️ EXTRAER VALORES DESDE JSONB DE SUPABASE
+                // Extraer valores desde JSONB Supabase
                 let maxThetaVal = 0.0000;
                 let maxPuntajeVal = 50;
                 let iriVal = 0.50;
                 let itemsResp = {};
 
                 if (ultimoRegistro) {
-                    // Extraer Theta de la lista JSONB
                     if (Array.isArray(ultimoRegistro.historial_theta) && ultimoRegistro.historial_theta.length > 0) {
                         maxThetaVal = parseFloat(ultimoRegistro.historial_theta[ultimoRegistro.historial_theta.length - 1]);
                     } else if (ultimoRegistro.theta_final !== undefined && ultimoRegistro.theta_final !== null) {
@@ -465,7 +497,6 @@
                     pinEl.style.left = `${targetVal}%`;
                 }
 
-                // Extracción de ADN Cognitivo
                 const adn = itemsResp.adn_cognitivo || ultimoRegistro?.adn_cognitivo || cacheGemeloCompleto.adn_cognitivo || {};
                 
                 document.getElementById("lblVulnerabilidadTxt").innerText = adn.vulnerabilidad_dominante || "Heurística lineal y traducción literal paso a paso.";
@@ -474,7 +505,6 @@
 
                 this.generarListaTemasEstudio(currentMateriaFiltro);
 
-                // Mapa de Calor con valores reales (ejemplo 98% en Heurística e Inversión)
                 const mapaSesgos = adn.mapa_calor_sesgos || itemsResp.mapa_calor_sesgos || {
                     attr_heuristica_lineal: 0.98,
                     attr_inversion_operacional: 0.98,
