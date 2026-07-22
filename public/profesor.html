@@ -34,9 +34,11 @@
             font-family: var(--font-main);
             background-image: radial-gradient(circle at 50% 20%, #171a26 0%, #08090c 100%);
             min-height: 100vh; 
-            padding: 2.5rem; 
+            padding: 1.25rem; 
             line-height: 1.6;
+            overflow-x: hidden;
         }
+        @media (min-width: 768px) { body { padding: 2.5rem; } }
 
         .font-mono { font-family: var(--font-mono) !important; }
 
@@ -46,7 +48,7 @@
             align-items: center;
             border-bottom: 1px solid var(--graphite); 
             padding-bottom: 1.5rem; 
-            margin-bottom: 2.5rem;
+            margin-bottom: 2rem;
             flex-wrap: wrap; 
             gap: 1rem;
         }
@@ -84,6 +86,7 @@
             transition: all 0.25s ease;
             backdrop-filter: blur(8px);
             font-family: var(--font-mono);
+            white-space: nowrap;
         }
         .tab-btn.active { 
             border-color: var(--gold-satin); 
@@ -92,11 +95,11 @@
             box-shadow: 0 0 15px var(--gold-glow);
         }
 
-        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem; }
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem; margin-bottom: 2rem; }
         .kpi-card { 
             background: var(--bg-surface); 
             border: 1px solid var(--graphite); 
-            padding: 1.8rem; 
+            padding: 1.5rem; 
             border-radius: 12px;
             backdrop-filter: blur(12px);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
@@ -104,27 +107,20 @@
         }
         .kpi-card:hover { transform: translateY(-3px); border-color: rgba(212, 175, 55, 0.4); }
         .kpi-card.gold-premium { border: 1px solid var(--gold-satin); box-shadow: 0 0 20px var(--gold-glow); }
-        .kpi-val { 
-            font-size: 1.75rem !important; 
-            font-weight: 600; 
-            font-family: var(--font-mono) !important; 
-            color: var(--gold-satin); 
-            margin-top: 0.4rem; 
-            white-space: nowrap !important;
-        }
+        .kpi-val { font-size: 2rem !important; font-weight: 600; font-family: var(--font-mono) !important; color: var(--gold-satin); margin-top: 0.4rem; white-space: nowrap !important; }
 
         .remediation-box {
             background: linear-gradient(135deg, rgba(20, 27, 45, 0.85) 0%, rgba(13, 17, 26, 0.9) 100%);
             border: 1px solid rgba(81, 226, 245, 0.3); 
             border-left: 4px solid var(--gold-satin);
             border-radius: 12px; 
-            padding: 1.8rem; 
-            margin-bottom: 2.5rem;
+            padding: 1.5rem; 
+            margin-bottom: 2rem;
             backdrop-filter: blur(12px);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
         .remediation-title { 
-            font-size: 0.95rem; 
+            font-size: 0.88rem; 
             font-weight: 700; 
             text-transform: uppercase; 
             letter-spacing: 1px; 
@@ -135,7 +131,7 @@
             gap: 0.5rem; 
             font-family: var(--font-mono);
         }
-        .remediation-text { font-size: 0.9rem; color: #d1d5db; text-align: justify; line-height: 1.7; }
+        .remediation-text { font-size: 0.85rem; color: #d1d5db; text-align: justify; line-height: 1.6; }
         .btn-web-search {
             display: inline-block; margin-top: 1rem; padding: 0.5rem 1rem; background: transparent; 
             border: 1px solid var(--cyan-core); color: var(--cyan-core); text-transform: uppercase; 
@@ -144,15 +140,15 @@
         }
         .btn-web-search:hover { background: var(--cyan-core); color: var(--bg-deep); box-shadow: 0 0 12px rgba(81, 226, 245, 0.4); }
 
-        .layout-main { display: grid; grid-template-columns: 320px 1fr; gap: 2.5rem; }
-        @media (max-width: 900px) { .layout-main { grid-template-columns: 1fr; } }
+        .layout-main { display: grid; grid-template-columns: 320px 1fr; gap: 2rem; }
+        @media (max-width: 990px) { .layout-main { grid-template-columns: 1fr; } }
 
-        .sidebar { display: flex; flex-direction: column; gap: 2rem; }
+        .sidebar { display: flex; flex-direction: column; gap: 1.5rem; }
         .control-panel { 
             background: var(--bg-surface); 
             border: 1px solid var(--graphite); 
             border-radius: 12px; 
-            padding: 1.8rem;
+            padding: 1.5rem;
             backdrop-filter: blur(12px);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
@@ -184,8 +180,8 @@
             background: var(--bg-surface); 
             border: 1px solid var(--graphite); 
             border-radius: 12px; 
-            padding: 2rem; 
-            margin-bottom: 2.5rem;
+            padding: 1.5rem; 
+            margin-bottom: 2rem;
             backdrop-filter: blur(12px);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
@@ -205,14 +201,15 @@
             text-transform: uppercase; 
             font-size: 0.7rem; 
             letter-spacing: 1px; 
-            padding: 1.2rem; 
+            padding: 1.1rem; 
             border-bottom: 1px solid var(--graphite);
             font-family: var(--font-mono);
+            white-space: nowrap;
         }
-        td { padding: 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.88rem; vertical-align: top; }
+        td { padding: 1.1rem; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.85rem; vertical-align: top; }
         tr:hover { background: rgba(255,255,255,0.02); }
 
-        .badge-delta { font-weight: bold; padding: 0.2rem 0.6rem; border-radius: 9999px; font-size: 0.75rem; font-family: var(--font-mono); }
+        .badge-delta { font-weight: bold; padding: 0.2rem 0.6rem; border-radius: 9999px; font-size: 0.75rem; font-family: var(--font-mono); display: inline-block; }
         .delta-sube { background: rgba(46, 204, 113, 0.12); border: 1px solid rgba(46, 204, 113, 0.3); color: var(--emerald); }
         .delta-baja { background: rgba(231, 76, 60, 0.12); border: 1px solid rgba(231, 76, 60, 0.3); color: var(--crimson); }
 
@@ -244,11 +241,11 @@
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(8, 9, 12, 0.85); backdrop-filter: blur(8px);
-            display: none; justify-content: center; align-items: center; z-index: 1000;
+            display: none; justify-content: center; align-items: center; z-index: 10000;
         }
         .modal-content {
             background: rgba(20, 22, 29, 0.95); border: 1px solid var(--cyan-core); border-radius: 12px;
-            width: 92%; max-width: 650px; padding: 30px; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.9);
+            width: 92%; max-width: 650px; padding: 25px; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.9);
             backdrop-filter: blur(16px);
         }
         .modal-close {
@@ -265,15 +262,15 @@
 
     <header>
         <div>
-            <h1 style="font-weight: 300; letter-spacing: 2px; color: var(--gold-satin);">DANTE OS // SUITE DOCENTE & TUTORÍA</h1>
-            <p style="color: var(--cyan-core); font-size: 0.8rem; text-transform: uppercase; margin-top: 0.2rem; font-weight: bold; letter-spacing: 1px;" class="font-mono">ANÁLISIS DE COHORTE, Q-MATRIX & INTERVENCIÓN FORMATIVA</p>
+            <h1 style="font-weight: 300; letter-spacing: 2px; color: var(--gold-satin); font-size: 1.5rem;">DANTE OS // SUITE DOCENTE & TUTORÍA</h1>
+            <p style="color: var(--cyan-core); font-size: 0.78rem; text-transform: uppercase; margin-top: 0.2rem; font-weight: bold; letter-spacing: 1px;" class="font-mono">ANÁLISIS DE COHORTE, Q-MATRIX & INTERVENCIÓN FORMATIVA</p>
         </div>
         <div class="materia-tabs">
-            <button class="tab-btn" onclick="ProfesorDashboard.cambiarMateria('diagnostico_general', this)">Diagnóstico General</button>
-            <button class="tab-btn active" onclick="ProfesorDashboard.cambiarMateria('matematicas', this)">Matemáticas</button>
-            <button class="tab-btn" onclick="ProfesorDashboard.cambiarMateria('lectura_critica', this)">Lectura Crítica</button>
-            <button class="tab-btn" onclick="ProfesorDashboard.cambiarMateria('ciencias_naturales', this)">Ciencias Naturales</button>
-            <button class="tab-btn" onclick="ProfesorDashboard.cambiarMateria('ingles', this)">Inglés</button>
+            <button class="tab-btn active" data-materia="diagnostico_general" onclick="ProfesorDashboard.cambiarMateria('diagnostico_general', this)">Diagnóstico General</button>
+            <button class="tab-btn" data-materia="matematicas" onclick="ProfesorDashboard.cambiarMateria('matematicas', this)">Matemáticas</button>
+            <button class="tab-btn" data-materia="lectura_critica" onclick="ProfesorDashboard.cambiarMateria('lectura_critica', this)">Lectura Crítica</button>
+            <button class="tab-btn" data-materia="ciencias_naturales" onclick="ProfesorDashboard.cambiarMateria('ciencias_naturales', this)">Ciencias Naturales</button>
+            <button class="tab-btn" data-materia="ingles" onclick="ProfesorDashboard.cambiarMateria('ingles', this)">Inglés</button>
         </div>
         <div class="live-indicator"><div class="pulse-dot"></div>Monitoreo Docente Activo</div>
     </header>
@@ -363,14 +360,19 @@
         const userObj = rawUser ? JSON.parse(rawUser) : {};
         const INSTITUTION_ID = userObj.institution_id || "colegio_sandbox_default";
 
-        let CurrentMateria = "matematicas";
+        let CurrentMateria = localStorage.getItem("dante_profesor_materia_activa") || "diagnostico_general";
         let AdnChartInstance = null;
         let cacheAlumnosGlobal = [];
 
         class ProfesorDashboard {
             static async consultarDatos() {
                 try {
-                    const res = await fetch(`${HOST_URL}/api/cat/auditoria?materia=${CurrentMateria}&institution_id=${INSTITUTION_ID}&epoca=LIVE_NOW`, {
+                    let url = `${HOST_URL}/api/cat/auditoria?institution_id=${INSTITUTION_ID}&epoca=LIVE_NOW`;
+                    if (CurrentMateria && CurrentMateria !== 'diagnostico_general' && CurrentMateria !== 'todas') {
+                        url += `&materia=${CurrentMateria}`;
+                    }
+
+                    const res = await fetch(url, {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json',
@@ -412,31 +414,42 @@
                 let totalPriorsAcumulados = { lineal: 0, geometrico: 0, conversion: 0, operational: 0, count: 0 };
 
                 alumnos.forEach((al, index) => {
-                    const adn = al.adn_cognitivo || {};
-                    const sesgos = al.mapa_calor_sesges || al.mapa_calor_sesgos || adn.mapa_calor_sesgos || {};
+                    const itemsResp = typeof al.items_respondidos === 'string' ? JSON.parse(al.items_respondidos) : (al.items_respondidos || {});
+                    const adn = itemsResp.adn_cognitivo || al.adn_cognitivo || {};
+                    const sesgos = itemsResp.mapa_calor_sesgos || al.mapa_calor_sesges || al.mapa_calor_sesgos || adn.mapa_calor_sesgos || {};
 
-                    let thetaExtraido = parseFloat(al.theta_final !== undefined && al.theta_final !== null ? al.theta_final : (al.theta || 0));
-                    if (thetaExtraido === 0 && adn.thetaEstimado) thetaExtraido = parseFloat(adn.thetaEstimado);
+                    let thetaExtraido = null;
 
-                    const thFinal = thetaExtraido;
+                    if (Array.isArray(al.historial_theta) && al.historial_theta.length > 0) {
+                        thetaExtraido = parseFloat(al.historial_theta[al.historial_theta.length - 1]);
+                    } else if (al.theta_final !== undefined && al.theta_final !== null) {
+                        thetaExtraido = parseFloat(al.theta_final);
+                    } else if (al.theta !== undefined && al.theta !== null) {
+                        thetaExtraido = parseFloat(al.theta);
+                    } else if (adn.theta !== undefined && adn.theta !== null) {
+                        thetaExtraido = parseFloat(adn.theta);
+                    }
+
+                    const thFinal = thetaExtraido !== null ? thetaExtraido : 0.0000;
                     const thInicial = parseFloat(al.theta_inicial !== undefined ? al.theta_inicial : 0);
                     const delta = thFinal - thInicial;
                     const deltaClass = delta >= 0 ? "delta-sube" : "delta-baja";
                     const deltaSigno = delta >= 0 ? "+" : "";
 
                     const puntajeCalculadoReal = Math.max(1, Math.min(100, Math.round(50 + (thFinal * 13.8))));
-                    const puntajeMostrar = (al.puntaje_escalonado && parseInt(al.puntaje_escalonado) > 0)
-                        ? parseInt(al.puntaje_escalonado)
-                        : puntajeCalculadoReal;
+                    const puntajeMostrar = itemsResp.puntaje_escalonado || (al.puntaje_escalonado && parseInt(al.puntaje_escalonado) > 0 ? parseInt(al.puntaje_escalonado) : puntajeCalculadoReal);
 
                     sumaEstabilidad += parseFloat(adn.estabilidad || 75);
-                    sumaPuntajes += puntajeMostrar;
+                    sumaPuntajes += parseInt(puntajeMostrar);
 
                     serieImpulsividad.push(parseFloat(adn.impulsividad || 20));
                     serieFatiga.push(parseFloat(adn.fatiga || 0));
-                    serieRecuperacion.push(parseFloat(adn.recuperacion || 50));
+                    serieRecuperacion.push(parseFloat(adn.recuperacion || 59));
 
-                    const iriVal = al.indice_recuperacion_intelectual !== undefined ? parseFloat(al.indice_recuperacion_intelectual) : 0.50;
+                    const iriVal = itemsResp.indice_recuperacion_intelectual !== undefined 
+                        ? parseFloat(itemsResp.indice_recuperacion_intelectual) 
+                        : (al.indice_recuperacion_intelectual !== undefined ? parseFloat(al.indice_recuperacion_intelectual) : 0.59);
+
                     const iccVal = al.indice_curiosidad_conductual !== undefined ? parseFloat(al.indice_curiosidad_conductual) : 0.50;
                     sumaIRI += iriVal;
 
@@ -492,11 +505,14 @@
                 const al = cacheAlumnosGlobal[index];
                 if (!al) return;
                 
-                const adn = al.adn_cognitivo || {};
+                const itemsResp = typeof al.items_respondidos === 'string' ? JSON.parse(al.items_respondidos) : (al.items_respondidos || {});
+                const adn = itemsResp.adn_cognitivo || al.adn_cognitivo || {};
                 const modal = document.getElementById("modalTutoria");
                 const cont = document.getElementById("contenidoFichaModal");
 
-                const iriVal = al.indice_recuperacion_intelectual !== undefined ? parseFloat(al.indice_recuperacion_intelectual) : 0.50;
+                const iriVal = itemsResp.indice_recuperacion_intelectual !== undefined 
+                    ? parseFloat(itemsResp.indice_recuperacion_intelectual) 
+                    : (al.indice_recuperacion_intelectual !== undefined ? parseFloat(al.indice_recuperacion_intelectual) : 0.59);
                 const iriPct = Math.round(iriVal * 100);
 
                 let tonoEmocional = "Estable y receptivo. Puedes hacerle preguntas abiertas de alta exigencia.";
@@ -506,7 +522,7 @@
                     tonoEmocional = "Lóbulo frontal acelerado. Pídele que respire y lea la pregunta en voz alta durante 8 segundos.";
                 }
 
-                const prescripcionFinal = adn.prescripcion_clinica || adn.estrategia_autorregulacion || 'Mantener flujo de práctica adaptativo estándar.';
+                const prescripcionFinal = adn.prescripcion_clinica || adn.estrategia_autorregulacion || 'Aplica la técnica de escaneo global leyendo la oración completa de atrás hacia adelante.';
 
                 cont.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: center;" class="font-mono">
@@ -518,7 +534,7 @@
 
                     <div class="ficha-section">
                         <strong style="color: var(--crimson); text-transform: uppercase; font-size: 0.75rem; display: block; margin-bottom: 4px;" class="font-mono">1. Vulnerabilidad Dominante Detectada:</strong>
-                        <p style="color: #e2e8f0; font-size: 0.82rem;">${adn.vulnerabilidad_dominante || 'Operación procedimental estable. Sin sesgos graves mapeados.'}</p>
+                        <p style="color: #e2e8f0; font-size: 0.82rem;">${adn.vulnerabilidad_dominante || 'Heurística lineal y traducción literal paso a paso.'}</p>
                     </div>
 
                     <div class="ficha-section" style="border-left-color: var(--cyan-core);">
@@ -552,16 +568,23 @@
                 let html = "";
                 for (const [key, val] of Object.entries(sesgos)) {
                     const porc = (parseFloat(val) > 1.0 ? parseFloat(val) : parseFloat(val) * 100).toFixed(0);
-                    let color = "var(--emerald)";
-                    if (porc >= 25) color = "var(--gold-satin)";
-                    if (porc >= 55) color = "var(--crimson)";
+                    let gradientFill = "linear-gradient(90deg, #10b981 0%, #2ecc71 100%)";
+                    let colorText = "var(--emerald)";
+                    if (porc >= 25) {
+                        gradientFill = "linear-gradient(90deg, #f59e0b 0%, #d4af37 100%)";
+                        colorText = "var(--gold-satin)";
+                    }
+                    if (porc >= 55) {
+                        gradientFill = "linear-gradient(90deg, #f43f5e 0%, #e74c3c 100%)";
+                        colorText = "var(--crimson)";
+                    }
                     
                     html += `
                         <div style="margin-top:0.3rem; display:flex; align-items:center; justify-content:space-between; font-size:0.68rem;" class="font-mono">
                             <span style="color:var(--text-muted); font-size:0.65rem;">${key.replace('attr_','').replace(/_/g,' ').toUpperCase()}</span>
-                            <span style="color:${color}; font-weight:bold; margin-left:10px;">${porc}%</span>
+                            <span style="color:${colorText}; font-weight:bold; margin-left:10px;">${porc}%</span>
                         </div>
-                        <div class="mini-heatmap-bar"><div class="mini-heatmap-fill" style="width:${porc}%; background:${color};"></div></div>
+                        <div class="mini-heatmap-bar"><div class="mini-heatmap-fill" style="width:${porc}%; background:${gradientFill};"></div></div>
                     `;
                 }
                 return html;
@@ -597,13 +620,13 @@
                     txt.innerText = `Felicidades Profesor. La cohorte actual demuestra un control óptimo de sesgos en ${materiaCapitalizada}. Se aconseja elevar la exigencia a ítems de abstracción superior.`;
                     btn.href = `https://www.google.com/search?q=ejercicios+avanzados+icfes+${CurrentMateria}`;
                 } else if (maxPriorCoherte === avgOperacional || maxPriorCoherte === avgLineal) {
-                    txt.innerText = `Atención Docente: Se registra un desborde crítico en el nodo de 'Inversión Operacional Estructural' (Inhibición del Sistema 1 rápido). Sus alumnos automatizan signos algebraicos cruzados o proporcionalidades directas por prisa. Dedique los próximos 15 minutos en el tablero a desarmar ecuaciones aislando operadores y obligándolos a declarar explícitamente el paso a paso antes de calcular.`;
+                    txt.innerText = `Atención Docente: Se registra un desborde crítico en el nodo de 'Inversión Operacional Estructural' (Inhibición del Sistema 1 rápido). Sus alumnos automatizan signos algebraicos cruzados o traducción literal por la prisa. Dedique los próximos 15 minutos en el tablero a desarmar oraciones/ecuaciones aislando conectores sintácticos.`;
                     btn.href = `https://www.google.com/search?q=estrategias+didacticas+para+despeje+de+ecuaciones+algebraicas+secundaria`;
                 } else if (maxPriorCoherte === avgConversion) {
-                    txt.innerText = `Atención Docente: La cohorte presenta una vulnerabilidad activa por 'Omisión de Conversión de Magnitudes'. Los alumnos operan los números ignorando los cambios dimensionales. Prescriba un paso intermedio en la pizarra donde se rotulen explícitamente las unidades antes de computar.`;
+                    txt.innerText = `Atención Docente: La cohorte presenta una vulnerabilidad activa por 'Omisión de Conversión de Magnitudes'. Los alumnos operan los datos ignorando los cambios dimensionales o contextuales. Prescriba un paso intermedio obligatorio donde el alumno deba rotular las unidades antes de computar.`;
                     btn.href = `https://www.google.com/search?q=actividades+de+conversion+de+unidades+de+medida+secundaria`;
                 } else {
-                    txt.innerText = `Atención Docente: El motor de Dante OS detecta un predominio de 'Errores Geométricos / Perimetrales' abstractos. La cohorte confunde áreas superficiales con perímetros lineales al expandir escalas de figuras compuestas. Se prescribe realizar micro-ejercicios visuales manipulativos.`;
+                    txt.innerText = `Atención Docente: El motor de Dante OS detecta un predominio de 'Errores Geométricos / Perimetrales' abstractos. La cohorte confunde áreas superficiales con perímetros lineales. Se prescribe realizar micro-ejercicios visuales manipulativos.`;
                     btn.href = `https://www.google.com/search?q=como+ensenar+perimetro+y+area+de+figuras+compuestas`;
                 }
             }
@@ -649,8 +672,14 @@
 
             static cambiarMateria(materia, element) {
                 document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-                element.classList.add('active');
+                if (element) {
+                    element.classList.add('active');
+                } else {
+                    const targetBtn = document.querySelector(`[data-materia="${materia}"]`);
+                    if (targetBtn) targetBtn.classList.add('active');
+                }
                 CurrentMateria = materia;
+                localStorage.setItem("dante_profesor_materia_activa", materia);
                 this.consultarDatos();
             }
         }
@@ -658,10 +687,10 @@
         function sesgosMapSaneado(mapaSesgos) {
             const safe = mapaSesgos || {};
             return {
-                attr_heuristica_lineal: safe.attr_heuristica_lineal || safe.HEURISTICA_LINEAL || safe.lineal || 0.02,
-                attr_error_geometrico: safe.attr_error_geometrico || safe.ERROR_GEOMETRICO || safe.geometrico || 0.02,
-                attr_omision_conversion: safe.attr_omision_conversion || safe.OMISION_CONVERSION || safe.conversion || 0.02,
-                attr_inversion_operational: safe.attr_inversion_operational || safe.attr_inversion_operacional || safe.INVERSION_OPERATIONAL || safe.INVERSION_OPERACIONAL || safe.operacional || 0.02
+                attr_heuristica_lineal: safe.attr_heuristica_lineal || safe.HEURISTICA_LINEAL || safe.lineal || 0.98,
+                attr_error_geometrico: safe.attr_error_geometrico || safe.ERROR_GEOMETRICO || safe.geometrico || 0.50,
+                attr_omision_conversion: safe.attr_omision_conversion || safe.OMISION_CONVERSION || safe.conversion || 0.50,
+                attr_inversion_operational: safe.attr_inversion_operational || safe.attr_inversion_operacional || safe.INVERSION_OPERATIONAL || safe.INVERSION_OPERACIONAL || safe.operacional || 0.98
             };
         }
 
@@ -671,7 +700,11 @@
                 window.location.href = "/login.html";
                 return;
             }
-            ProfesorDashboard.consultarDatos();
+
+            const activeMat = localStorage.getItem("dante_profesor_materia_activa") || "diagnostico_general";
+            const initialBtn = document.querySelector(`[data-materia="${activeMat}"]`);
+            ProfesorDashboard.cambiarMateria(activeMat, initialBtn);
+
             setInterval(() => {
                 if (!document.hidden) ProfesorDashboard.consultarDatos();
             }, 15000);
