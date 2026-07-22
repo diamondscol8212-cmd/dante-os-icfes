@@ -33,13 +33,14 @@
             font-family: var(--font-main);
             background-image: radial-gradient(circle at 50% 20%, #171a26 0%, #08090c 100%);
             min-height: 100vh; 
-            padding: 2rem; 
+            padding: 1rem; 
             line-height: 1.6;
         }
+        @media (min-width: 768px) { body { padding: 2rem; } }
 
         .font-mono { font-family: var(--font-mono) !important; }
 
-        /* Navegación por Materia */
+        /* Navegación por Materia Responsiva */
         .tab-materia-btn {
             background: rgba(24, 27, 38, 0.6); 
             border: 1px solid var(--graphite); 
@@ -54,6 +55,7 @@
             transition: all 0.25s ease;
             backdrop-filter: blur(8px);
             font-family: var(--font-mono);
+            white-space: nowrap;
         }
         .tab-materia-btn.active {
             border-color: var(--gold-satin); 
@@ -62,11 +64,11 @@
             box-shadow: 0 0 15px var(--gold-glow);
         }
 
-        /* Tarjetas Glassmorphism con overflow visible para permitir tooltips */
+        /* Tarjetas Glassmorphism */
         .kpi-card {
             background: var(--bg-surface); 
             border: 1px solid var(--graphite); 
-            padding: 1.5rem;
+            padding: 1.25rem;
             border-radius: 12px; 
             position: relative; 
             overflow: visible !important; 
@@ -76,7 +78,7 @@
         }
         .kpi-card:hover { transform: translateY(-3px); border-color: rgba(212, 175, 55, 0.4); }
         .kpi-val { 
-            font-size: 1.75rem !important; 
+            font-size: 1.6rem !important; 
             font-weight: 600; 
             font-family: var(--font-mono) !important; 
             color: var(--gold-satin); 
@@ -134,7 +136,7 @@
         }
         .mini-bar-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
 
-        /* Tooltips Sin Recorte (Blindados contra bordes) */
+        /* --- SISTEMA DE TOOLTIPS FLOANTES ANTI-CORTE --- */
         .tooltip-wrapper { 
             position: relative; 
             display: inline-flex; 
@@ -143,33 +145,41 @@
         }
         .tooltip-box {
             visibility: hidden; 
-            width: 260px; 
-            background-color: rgba(12, 14, 22, 0.98); 
+            width: 240px; 
+            background-color: rgba(10, 12, 18, 0.98); 
             color: #e2e8f0;
             text-align: left; 
-            padding: 0.85rem; 
+            padding: 0.75rem; 
             border-radius: 8px; 
             border: 1px solid var(--gold-satin);
             position: absolute; 
-            z-index: 9999 !important; 
-            bottom: 125%; 
-            right: 0; 
+            z-index: 99999 !important; 
             opacity: 0; 
-            transition: opacity 0.25s ease, transform 0.25s ease; 
-            font-size: 0.75rem; 
-            line-height: 1.45;
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.9); 
+            transition: opacity 0.2s ease; 
+            font-size: 0.72rem; 
+            line-height: 1.4;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.95); 
             backdrop-filter: blur(12px);
             pointer-events: none;
         }
 
-        /* Tooltips para tarjetas KPI superiores (despliegan hacia abajo) */
+        /* Reglas de orientación inteligente para tooltips */
         .kpi-card .tooltip-box {
-            top: 130% !important;
-            bottom: auto !important;
+            top: 120% !important;
             left: 50% !important;
-            right: auto !important;
             transform: translateX(-50%);
+        }
+
+        .glass-panel .tooltip-box {
+            bottom: 120% !important;
+            right: 0 !important;
+        }
+
+        @media (max-width: 640px) {
+            .tooltip-box {
+                width: 200px;
+                font-size: 0.68rem;
+            }
         }
 
         .tooltip-wrapper:hover .tooltip-box { 
@@ -178,20 +188,20 @@
         }
     </style>
 </head>
-<body class="max-w-7xl mx-auto space-y-8">
+<body class="max-w-7xl mx-auto space-y-6">
 
-    <header class="flex flex-col lg:flex-row justify-between items-start lg:items-center border-b border-zinc-800 pb-6 gap-4">
+    <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-zinc-800 pb-5 gap-4">
         <div>
             <div class="flex items-center gap-3 flex-wrap">
-                <h1 class="text-2xl font-light uppercase tracking-wider text-[var(--gold-satin)]">Dante OS // Hoja de Vida Cognitiva</h1>
-                <span id="lblRangoBadge" class="text-xs font-bold px-3 py-1 bg-amber-500/10 border border-amber-500/30 text-[var(--gold-satin)] rounded-full uppercase tracking-wider font-mono">Cargando Rango...</span>
+                <h1 class="text-xl sm:text-2xl font-light uppercase tracking-wider text-[var(--gold-satin)]">Dante OS // Hoja de Vida Cognitiva</h1>
+                <span id="lblRangoBadge" class="text-[10px] sm:text-xs font-bold px-3 py-1 bg-amber-500/10 border border-amber-500/30 text-[var(--gold-satin)] rounded-full uppercase tracking-wider font-mono">Cargando Rango...</span>
             </div>
-            <p id="lblSubtituloAlumno" class="text-xs text-slate-400 font-mono mt-1">> EXPEDIENTE Y TRAYECTORIA LONGITUDINAL DEL ALUMNO</p>
+            <p id="lblSubtituloAlumno" class="text-[11px] text-slate-400 font-mono mt-1">> EXPEDIENTE Y TRAYECTORIA LONGITUDINAL DEL ALUMNO</p>
         </div>
         
-        <div class="flex items-center gap-3">
-            <a href="/index.html" class="bg-[#181b26] hover:bg-zinc-800 border border-zinc-700 text-slate-200 px-4 py-2 rounded-lg text-xs font-mono font-bold uppercase tracking-wider transition-all">
-                ⚡ Ir a Realizar Simulacro
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+            <a href="/index.html" class="flex-1 sm:flex-none text-center bg-[#181b26] hover:bg-zinc-800 border border-zinc-700 text-slate-200 px-4 py-2 rounded-lg text-xs font-mono font-bold uppercase tracking-wider transition-all">
+                ⚡ Ir a Simulacro
             </a>
             <button onclick="PerfilEstudiante.cerrarSesion()" class="border border-rose-500/40 text-rose-400 hover:bg-rose-500/10 px-4 py-2 rounded-lg text-xs font-mono font-bold uppercase tracking-wider transition-all">
                 Salir
@@ -199,7 +209,7 @@
         </div>
     </header>
 
-    <nav class="flex gap-2 overflow-x-auto pb-2 border-b border-zinc-800/60">
+    <nav class="flex gap-2 overflow-x-auto pb-2 border-b border-zinc-800/60 no-scrollbar">
         <button class="tab-materia-btn active" onclick="PerfilEstudiante.cambiarFiltroMateria('todas', this)">🌐 Diagnóstico Global</button>
         <button class="tab-materia-btn" onclick="PerfilEstudiante.cambiarFiltroMateria('matematicas', this)">📐 Matemáticas</button>
         <button class="tab-materia-btn" onclick="PerfilEstudiante.cambiarFiltroMateria('lectura_critica', this)">📖 Lectura Crítica</button>
@@ -215,7 +225,7 @@
                 <div class="tooltip-wrapper">
                     <span class="text-xs text-amber-500 font-bold"> (?)</span>
                     <div class="tooltip-box font-sans">
-                        <strong>🔥 Racha de Estudio:</strong> Días consecutivos de práctica en la plataforma.
+                        <strong>🔥 Racha de Estudio:</strong> Días consecutivos de práctica continua en Dante OS.
                     </div>
                 </div>
             </div>
@@ -228,7 +238,7 @@
                 <div class="tooltip-wrapper">
                     <span class="text-xs text-emerald-500 font-bold"> (?)</span>
                     <div class="tooltip-box font-sans">
-                        <strong>📊 Puntaje Estimado (1 a 100 pts):</strong> Proyección real de la calificación equivalente en el examen de Estado ICFES.
+                        <strong>📊 Puntaje Estimado (1 a 100 pts):</strong> Proyección en escala oficial Saber 11.
                     </div>
                 </div>
             </div>
@@ -241,7 +251,7 @@
                 <div class="tooltip-wrapper">
                     <span class="text-xs text-sky-500 font-bold"> (?)</span>
                     <div class="tooltip-box font-sans">
-                        <strong>🧠 Nivel Psicométrico (Theta):</strong> Índice de capacidad intelectual real en la materia (de -3.0 a +3.0).
+                        <strong>🧠 Nivel Psicométrico (Theta):</strong> Índice IRT en la materia (de -3.0 a +3.0).
                     </div>
                 </div>
             </div>
@@ -254,7 +264,7 @@
                 <div class="tooltip-wrapper">
                     <span class="text-xs text-purple-500 font-bold"> (?)</span>
                     <div class="tooltip-box font-sans">
-                        <strong>🛡️ Capacidad de Recuperación (IRI):</strong> Mide la capacidad de aprendizaje tras cometer errores.
+                        <strong>🛡️ Capacidad de Recuperación (IRI):</strong> Mide la autorregulación tras un error.
                     </div>
                 </div>
             </div>
@@ -263,9 +273,9 @@
     </section>
 
     <!-- WIDGET GEMELO DIGITAL -->
-    <section class="glass-panel p-6">
+    <section class="glass-panel p-5 sm:p-6">
         <div class="flex justify-between items-center border-b border-zinc-800 pb-3 mb-2">
-            <h3 class="text-sm font-light uppercase tracking-wider text-[var(--gold-satin)] flex items-center gap-2">
+            <h3 class="text-xs sm:text-sm font-light uppercase tracking-wider text-[var(--gold-satin)] flex items-center gap-2">
                 <span>🧬</span> Gemelo Digital // Termómetro de Certeza Bayesiano
             </h3>
             <span id="lblOrigenGemelo" class="text-[10px] font-mono text-slate-400 uppercase bg-[#08090c] px-2 py-1 border border-zinc-800 rounded-full">Sincronizando...</span>
@@ -276,39 +286,39 @@
             <div class="pin" id="pin-marker"></div>
         </div>
 
-        <div class="grid grid-cols-3 gap-3 text-center font-mono text-xs text-slate-400 mt-6">
-            <div class="bg-[#08090c]/80 p-3 rounded-lg border border-zinc-800/80">
-                <span class="block text-[10px] uppercase tracking-wider">Intervalo Mínimo</span>
-                <strong style="color: #fff;" id="val-min" class="text-base font-bold mt-1 block">0</strong>
+        <div class="grid grid-cols-3 gap-2 sm:gap-3 text-center font-mono text-xs text-slate-400 mt-6">
+            <div class="bg-[#08090c]/80 p-2.5 sm:p-3 rounded-lg border border-zinc-800/80">
+                <span class="block text-[9px] sm:text-[10px] uppercase tracking-wider">Intervalo Mínimo</span>
+                <strong style="color: #fff;" id="val-min" class="text-sm sm:text-base font-bold mt-1 block">0</strong>
             </div>
-            <div class="bg-[#08090c]/80 p-3 rounded-lg border border-amber-500/30">
-                <span class="block text-[10px] uppercase text-amber-400 tracking-wider">Puntaje Estimado</span>
-                <strong style="color: #fbbf24;" id="val-target" class="text-base font-bold mt-1 block">50</strong>
+            <div class="bg-[#08090c]/80 p-2.5 sm:p-3 rounded-lg border border-amber-500/30">
+                <span class="block text-[9px] sm:text-[10px] uppercase text-amber-400 tracking-wider">Puntaje Estimado</span>
+                <strong style="color: #fbbf24;" id="val-target" class="text-sm sm:text-base font-bold mt-1 block">50</strong>
             </div>
-            <div class="bg-[#08090c]/80 p-3 rounded-lg border border-zinc-800/80">
-                <span class="block text-[10px] uppercase tracking-wider">Intervalo Máximo</span>
-                <strong style="color: #fff;" id="val-max" class="text-base font-bold mt-1 block">100</strong>
+            <div class="bg-[#08090c]/80 p-2.5 sm:p-3 rounded-lg border border-zinc-800/80">
+                <span class="block text-[9px] sm:text-[10px] uppercase tracking-wider">Intervalo Máximo</span>
+                <strong style="color: #fff;" id="val-max" class="text-sm sm:text-base font-bold mt-1 block">100</strong>
             </div>
         </div>
-        <p class="text-center font-mono text-xs text-slate-500 mt-3" id="val-error">Margen de Error Bayesiano: Calibrando...</p>
+        <p class="text-center font-mono text-[11px] text-slate-500 mt-3" id="val-error">Margen de Error Bayesiano: Calibrando...</p>
     </section>
 
     <!-- GRAFICAS -->
-    <section class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div class="glass-panel p-6">
-            <h3 class="text-sm font-light uppercase tracking-wider text-slate-300 border-b border-zinc-800 pb-3 mb-4">Evolución Histórica de Habilidad (θ)</h3>
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="glass-panel p-5 sm:p-6">
+            <h3 class="text-xs sm:text-sm font-light uppercase tracking-wider text-slate-300 border-b border-zinc-800 pb-3 mb-4">Evolución Histórica de Habilidad (θ)</h3>
             <div id="chartEvolucionTheta"></div>
         </div>
-        <div class="glass-panel p-6">
-            <h3 class="text-sm font-light uppercase tracking-wider text-slate-300 border-b border-zinc-800 pb-3 mb-4">Radar de Tendencias Operativas</h3>
+        <div class="glass-panel p-5 sm:p-6">
+            <h3 class="text-xs sm:text-sm font-light uppercase tracking-wider text-slate-300 border-b border-zinc-800 pb-3 mb-4">Radar de Tendencias Operativas</h3>
             <div id="chartRadarDimensiones"></div>
         </div>
     </section>
 
     <!-- PLAN PRESCRITO & MAPA DE SESGOS -->
-    <section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div class="lg:col-span-2 glass-panel p-6 space-y-6">
-            <h3 class="text-sm font-light uppercase tracking-wider text-[var(--gold-satin)] border-b border-zinc-800 pb-3">🎯 Plan Personalizado Prescrito por la IA</h3>
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 glass-panel p-5 sm:p-6 space-y-5">
+            <h3 class="text-xs sm:text-sm font-light uppercase tracking-wider text-[var(--gold-satin)] border-b border-zinc-800 pb-3">🎯 Plan Personalizado Prescrito por la IA</h3>
             
             <div class="p-4 bg-[#08090c]/80 border-l-4 border-[var(--cyan-core)] rounded-r-lg text-xs leading-relaxed space-y-2">
                 <span id="lblVulnerabilidadTitle" class="font-bold text-[var(--cyan-core)] uppercase block font-mono">Diagnóstico Forense Principal:</span>
@@ -331,14 +341,14 @@
             </div>
 
             <div class="pt-2">
-                <p class="text-xs font-mono text-slate-400 uppercase tracking-wider mb-2">Crónica Narrativa de Trayectoria:</p>
-                <p id="lblCronicaTxt" class="text-xs text-slate-300 italic bg-[#181b26]/80 p-3 rounded-lg border border-zinc-800 leading-relaxed font-sans"></p>
+                <p class="text-[11px] font-mono text-slate-400 uppercase tracking-wider mb-2">Crónica Narrativa de Trayectoria:</p>
+                <p id="lblCronicaTxt" class="text-xs text-slate-300 italic bg-[#181b26]/80 p-3.5 rounded-lg border border-zinc-800 leading-relaxed font-sans"></p>
             </div>
         </div>
 
-        <div class="glass-panel p-6 space-y-4">
+        <div class="glass-panel p-5 sm:p-6 space-y-4">
             <div class="flex justify-between items-center border-b border-zinc-800 pb-3">
-                <h3 class="text-sm font-light uppercase tracking-wider text-rose-400">🔥 Mapa de Calor de Sesgos</h3>
+                <h3 class="text-xs sm:text-sm font-light uppercase tracking-wider text-rose-400">🔥 Mapa de Calor de Sesgos</h3>
                 <span class="text-[10px] text-slate-400 font-mono">Pasa el cursor por (?)</span>
             </div>
             <div id="contenedorBarrasSesgos" class="space-y-4 text-xs font-sans"></div>
@@ -347,18 +357,18 @@
 
     <!-- HISTORIAL DE EXÁMENES -->
     <section class="glass-panel overflow-hidden">
-        <div class="p-6 border-b border-zinc-800 bg-[#0c0d13]/80">
-            <h3 class="text-sm font-light uppercase tracking-wider text-[var(--gold-satin)]">📊 Registro de Exámenes Realizados</h3>
+        <div class="p-5 sm:p-6 border-b border-zinc-800 bg-[#0c0d13]/80">
+            <h3 class="text-xs sm:text-sm font-light uppercase tracking-wider text-[var(--gold-satin)]">📊 Registro de Exámenes Realizados</h3>
         </div>
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse text-sm text-slate-300">
+            <table class="w-full text-left border-collapse text-xs sm:text-sm text-slate-300">
                 <thead class="bg-[#08090c]/90 text-[10px] font-mono text-slate-500 uppercase tracking-widest border-b border-zinc-800">
                     <tr>
-                        <th class="p-4">Fecha</th>
-                        <th class="p-4">Materia</th>
-                        <th class="p-4">Habilidad (θ)</th>
-                        <th class="p-4">Puntaje ICFES</th>
-                        <th class="p-4">Estado</th>
+                        <th class="p-3 sm:p-4">Fecha</th>
+                        <th class="p-3 sm:p-4">Materia</th>
+                        <th class="p-3 sm:p-4">Habilidad (θ)</th>
+                        <th class="p-3 sm:p-4">Puntaje ICFES</th>
+                        <th class="p-3 sm:p-4">Estado</th>
                     </tr>
                 </thead>
                 <tbody id="tablaHistorialBody" class="divide-y divide-zinc-800/50">
@@ -444,7 +454,6 @@
                     ultimoRegistro = historialFiltrado[historialFiltrado.length - 1];
                 }
 
-                // Extraer valores desde JSONB Supabase
                 let maxThetaVal = 0.0000;
                 let maxPuntajeVal = 50;
                 let iriVal = 0.50;
@@ -524,7 +533,11 @@
 
                 let temas = [];
 
-                if (materia === "matematicas" || materia === "todas") {
+                if (materia === "ingles" || materia === "todas") {
+                    temas.push("Comprensión de avisos publicitarios y señales de lugar público (Parte 1 ICFES).");
+                    temas.push("Uso de tiempos verbales compuestos (Present Perfect vs. Past Simple).");
+                    temas.push("Estrategias de lectura rápida por palabras clave (Scanning y Skimming).");
+                } else if (materia === "matematicas") {
                     temas.push("Regla de tres simple e inversa (Resolución de problemas de proporcionalidad).");
                     temas.push("Conversión de unidades de medida (paso de metros a cm, o minutos a horas).");
                     temas.push("Despeje de ecuaciones algebraicas y lectura e interpretación de gráficas cartesianas.");
@@ -536,10 +549,6 @@
                     temas.push("Conservación de la energía y leyes de conservación en física mecánica.");
                     temas.push("Interpretación de cadenas tróficas y flujo de masa en ecosistemas.");
                     temas.push("Análisis de variables dependientes e independientes en experimentos científicos.");
-                } else if (materia === "ingles") {
-                    temas.push("Comprensión de avisos publicitarios y señales de lugar público (Parte 1 ICFES).");
-                    temas.push("Uso de tiempos verbales compuestos (Present Perfect vs. Past Simple).");
-                    temas.push("Estrategias de lectura rápida por palabras clave (Scanning y Skimming).");
                 }
 
                 temas.forEach(t => {
@@ -556,25 +565,25 @@
                         k: "attr_heuristica_lineal", 
                         n: "Heurística Lineal", 
                         v: sesgos.attr_heuristica_lineal || sesgos.heuristica_lineal || 0.98,
-                        desc: "Responder muy rápido por intuición o traducción secuencial literal, sin verificar el contexto global."
+                        desc: "Responder por traducción secuencial literal, sin verificar el contexto global."
                     },
                     { 
                         k: "attr_inversion_operacional", 
                         n: "Inversión Operacional", 
                         v: sesgos.attr_inversion_operacional || sesgos.inversion_operacional || 0.98,
-                        desc: "Confundir la posición sintáctica o invertir la relación de adjetivos y sustantivos."
+                        desc: "Invertir la relación de adjetivos, sustantivos o conectores lógicos."
                     },
                     { 
                         k: "attr_omision_conversion", 
                         n: "Omisión de Conversión", 
                         v: sesgos.attr_omision_conversion || sesgos.omision_conversion || 0.50,
-                        desc: "Ignorar las variables de escala o cambios contextuales antes de seleccionar la respuesta."
+                        desc: "Ignorar las variables de escala o cambios sintácticos antes de responder."
                     },
                     { 
                         k: "attr_error_geometrico", 
                         n: "Error Geométrico / Contextual", 
                         v: sesgos.attr_error_geometrico || sesgos.error_geometrico || 0.50,
-                        desc: "Confundir elementos de lectura perimetral o aislar una palabra del resto del párrafo."
+                        desc: "Confundir elementos del párrafo o aislar una palabra del resto del texto."
                     }
                 ];
 
@@ -635,11 +644,11 @@
 
                     body.innerHTML += `
                         <tr class="hover:bg-white/[0.02] transition-colors">
-                            <td class="p-4 font-mono text-xs text-slate-400">${fecha}</td>
-                            <td class="p-4 uppercase text-xs font-semibold text-slate-200 font-sans">${materiaNombre}</td>
-                            <td class="p-4 font-mono font-bold text-sky-400">${th.toFixed(4)}</td>
-                            <td class="p-4 font-mono font-bold text-emerald-400">${pts} / 100 pts</td>
-                            <td class="p-4 font-mono text-xs">
+                            <td class="p-3 sm:p-4 font-mono text-xs text-slate-400">${fecha}</td>
+                            <td class="p-3 sm:p-4 uppercase text-xs font-semibold text-slate-200 font-sans">${materiaNombre}</td>
+                            <td class="p-3 sm:p-4 font-mono font-bold text-sky-400">${th.toFixed(4)}</td>
+                            <td class="p-3 sm:p-4 font-mono font-bold text-emerald-400">${pts} / 100 pts</td>
+                            <td class="p-3 sm:p-4 font-mono text-xs">
                                 <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono">EVALUADO</span>
                             </td>
                         </tr>
