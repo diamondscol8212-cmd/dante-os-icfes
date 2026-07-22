@@ -607,6 +607,7 @@ export async function procesarInteraccionEstudiante(req, res) {
             }
             
             const executivePayload = {
+                thetaEstimado: thetaPromedioGlobal,
                 impulsividad: adnImpulsividad, 
                 fatiga: adnFatiga, 
                 recuperacion: adnRecuperacion,
@@ -618,10 +619,16 @@ export async function procesarInteraccionEstudiante(req, res) {
                 mapa_calor_sesgos: nuevosPriorsAtributos
             };
 
+            // 🛠️ PERSISTENCIA TOTALMENTE Mapeada EN SUPABASE
             const payloadPersistenciaBD = {
                 estudiante: studentIdSaneado,
                 materia: String(areaSaneada),
                 institution_id: tenantId, 
+                theta: parseFloat(thetaPromedioGlobal.toFixed(4)),
+                theta_final: parseFloat(thetaPromedioGlobal.toFixed(4)),
+                puntaje_escalonado: puntajeIcfesEstandar,
+                adn_cognitivo: executivePayload,
+                mapa_calor_sesgos: nuevosPriorsAtributos,
                 theta_algebra_calculo: parseFloat(algebraTheta.toFixed(4)), 
                 theta_geometria_medicion: parseFloat(geometryTheta.toFixed(4)), 
                 theta_estadistica_probabilidad: parseFloat(estadisticaTheta.toFixed(4)), 
@@ -700,7 +707,7 @@ export async function procesarInteraccionEstudiante(req, res) {
 
     } catch (error) {
         console.error("🚨 [CONTROL FORENSE EXCEPCIÓN CRÍTICA v21.0.0]:", error.message);
-        return res.status(500).json({ success: false, error: "Cortocorticuito interno perimetral." });
+        return res.status(500).json({ success: false, error: "Cortocircuito interno perimetral." });
     }
 }
 
