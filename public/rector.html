@@ -7,12 +7,12 @@
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
             --bg-deep: #08090c;
-            --bg-surface: rgba(20, 22, 29, 0.75);
+            --bg-surface: rgba(20, 22, 29, 0.85);
             --bg-card: rgba(26, 29, 38, 0.85);
             --gold-satin: #d4af37;
             --gold-glow: rgba(212, 175, 55, 0.2);
@@ -37,7 +37,7 @@
             line-height: 1.6;
         }
 
-        .font-mono { font-family: var(--font-mono); }
+        .font-mono { font-family: var(--font-mono) !important; }
 
         header {
             display: flex; 
@@ -80,8 +80,9 @@
             font-size: 0.72rem; 
             font-weight: 700; 
             letter-spacing: 1px;
-            transition: all 0.25 ease;
+            transition: all 0.25s ease;
             backdrop-filter: blur(8px);
+            font-family: var(--font-mono);
         }
         .tab-btn.active { 
             border-color: var(--gold-satin); 
@@ -102,7 +103,14 @@
         }
         .kpi-card:hover { transform: translateY(-3px); border-color: rgba(212, 175, 55, 0.4); }
         .kpi-card.gold-premium { border: 1px solid var(--gold-satin); box-shadow: 0 0 20px var(--gold-glow); }
-        .kpi-val { font-size: 2.2rem; font-weight: 300; font-family: var(--font-mono); color: var(--gold-satin); margin-top: 0.4rem; }
+        .kpi-val { 
+            font-size: 1.75rem !important; 
+            font-weight: 600; 
+            font-family: var(--font-mono) !important; 
+            color: var(--gold-satin); 
+            margin-top: 0.4rem; 
+            white-space: nowrap !important;
+        }
 
         .layout-main { display: grid; grid-template-columns: 320px 1fr; gap: 2.5rem; }
         @media (max-width: 900px) { .layout-main { grid-template-columns: 1fr; } }
@@ -510,11 +518,11 @@
                         <td>
                             <strong style="color:var(--gold-satin); text-transform:uppercase;">${al.estudiante}</strong>
                             <br>
-                            <a href="/dashboard_gemelo.html" class="btn-gemelo-link">👁️ Ver Gemelo</a>
+                            <a href="/perfil.html" class="btn-gemelo-link">👁️ Ver Gemelo</a>
                             <div class="clinical-badge" style="background:rgba(231,76,60,0.15); color:var(--crimson);">Vulnerabilidad:</div>
                             <div class="forensic-text-box" style="border-left-color:var(--crimson);">${adn.vulnerabilidad_dominante || 'Sin anomalías críticas registradas.'}</div>
                             <div class="clinical-badge" style="background:rgba(81,226,245,0.15); color:var(--cyan-core);">Prescripción Clínica:</div>
-                            <div class="forensic-text-box" style="border-left-color:var(--cyan-core);">${adn.prescripcion_clinica || 'Mantener cadencia adaptativa.'}</div>
+                            <div class="forensic-text-box" style="border-left-color:var(--cyan-core);">${adn.prescripcion_clinica || adn.estrategia_autorregulacion || 'Mantener cadencia adaptativa.'}</div>
                             <div class="clinical-badge" style="background:rgba(212,175,55,0.15); color:var(--gold-satin);">Crónica Narrativa:</div>
                             <div class="forensic-text-box">${adn.cronica_narrativa || 'Trayectoria adaptativa registrada con éxito.'}</div>
                         </td>
@@ -640,9 +648,9 @@
                     theme: { mode: 'dark' },
                     xaxis: { 
                         categories: categorias,
-                        labels: { style: { colors: ['#9499a7', '#9499a7', '#9499a7'], fontSize: '11px' } }
+                        labels: { style: { colors: ['#9499a7', '#9499a7', '#9499a7'], fontSize: '11px', fontFamily: 'JetBrains Mono' } }
                     },
-                    yaxis: { show: true, max: 100, tickAmount: 5, labels: { style: { colors: '#2b2e3a' } } }
+                    yaxis: { show: true, max: 100, tickAmount: 5, labels: { style: { colors: '#2b2e3a', fontFamily: 'JetBrains Mono' } } }
                 };
 
                 const el = document.getElementById("chartAdnColectivo");
