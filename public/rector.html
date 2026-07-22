@@ -33,9 +33,11 @@
             font-family: var(--font-main);
             background-image: radial-gradient(circle at 50% 20%, #171a26 0%, #08090c 100%);
             min-height: 100vh; 
-            padding: 2.5rem; 
+            padding: 1.25rem; 
             line-height: 1.6;
+            overflow-x: hidden;
         }
+        @media (min-width: 768px) { body { padding: 2.5rem; } }
 
         .font-mono { font-family: var(--font-mono) !important; }
 
@@ -45,7 +47,7 @@
             align-items: center;
             border-bottom: 1px solid var(--graphite); 
             padding-bottom: 1.5rem; 
-            margin-bottom: 2.5rem;
+            margin-bottom: 2rem;
             flex-wrap: wrap; 
             gap: 1rem;
         }
@@ -83,6 +85,7 @@
             transition: all 0.25s ease;
             backdrop-filter: blur(8px);
             font-family: var(--font-mono);
+            white-space: nowrap;
         }
         .tab-btn.active { 
             border-color: var(--gold-satin); 
@@ -91,11 +94,11 @@
             box-shadow: 0 0 15px var(--gold-glow);
         }
 
-        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem; }
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem; margin-bottom: 2rem; }
         .kpi-card { 
             background: var(--bg-surface); 
             border: 1px solid var(--graphite); 
-            padding: 1.8rem; 
+            padding: 1.5rem; 
             border-radius: 12px;
             backdrop-filter: blur(12px);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
@@ -112,16 +115,16 @@
             white-space: nowrap !important;
         }
 
-        .layout-main { display: grid; grid-template-columns: 320px 1fr; gap: 2.5rem; }
-        @media (max-width: 900px) { .layout-main { grid-template-columns: 1fr; } }
+        .layout-main { display: grid; grid-template-columns: 320px 1fr; gap: 2rem; }
+        @media (max-width: 990px) { .layout-main { grid-template-columns: 1fr; } }
         
-        .sidebar { display: flex; flex-direction: column; gap: 2rem; }
+        .sidebar { display: flex; flex-direction: column; gap: 1.5rem; }
         
         .control-panel { 
             background: var(--bg-surface); 
             border: 1px solid var(--graphite); 
             border-radius: 12px; 
-            padding: 1.8rem;
+            padding: 1.5rem;
             backdrop-filter: blur(12px);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
@@ -137,7 +140,7 @@
 
         .btn-action {
             width: 100%; 
-            padding: 0.9rem; 
+            padding: 0.85rem; 
             background: transparent; 
             border: 1px solid var(--crimson);
             color: var(--crimson); 
@@ -184,8 +187,8 @@
             background: var(--bg-surface); 
             border: 1px solid var(--graphite); 
             border-radius: 12px; 
-            padding: 2rem; 
-            margin-bottom: 2.5rem;
+            padding: 1.5rem; 
+            margin-bottom: 2rem;
             backdrop-filter: blur(12px);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
@@ -205,14 +208,15 @@
             text-transform: uppercase; 
             font-size: 0.7rem; 
             letter-spacing: 1px; 
-            padding: 1.2rem; 
+            padding: 1.1rem; 
             border-bottom: 1px solid var(--graphite);
             font-family: var(--font-mono);
+            white-space: nowrap;
         }
-        td { padding: 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.88rem; vertical-align: top; }
+        td { padding: 1.1rem; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.85rem; vertical-align: top; }
         tr:hover { background: rgba(255,255,255,0.02); }
 
-        .badge-delta { font-weight: bold; padding: 0.2rem 0.6rem; border-radius: 9999px; font-size: 0.75rem; font-family: var(--font-mono); }
+        .badge-delta { font-weight: bold; padding: 0.2rem 0.6rem; border-radius: 9999px; font-size: 0.75rem; font-family: var(--font-mono); display: inline-block; }
         .delta-sube { background: rgba(46, 204, 113, 0.12); border: 1px solid rgba(46, 204, 113, 0.3); color: var(--emerald); }
         .delta-baja { background: rgba(231, 76, 60, 0.12); border: 1px solid rgba(231, 76, 60, 0.3); color: var(--crimson); }
         
@@ -239,13 +243,13 @@
             border: 1px solid rgba(81, 226, 245, 0.3); 
             border-left: 4px solid var(--gold-satin);
             border-radius: 12px; 
-            padding: 1.8rem; 
-            margin-bottom: 2.5rem;
+            padding: 1.5rem; 
+            margin-bottom: 2rem;
             backdrop-filter: blur(12px);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
-        .remediation-title { font-size: 0.95rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--gold-satin); margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.5rem; font-family: var(--font-mono); }
-        .remediation-text { font-size: 0.9rem; color: #d1d5db; text-align: justify; line-height: 1.7; }
+        .remediation-title { font-size: 0.88rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--gold-satin); margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.5rem; font-family: var(--font-mono); }
+        .remediation-text { font-size: 0.85rem; color: #d1d5db; text-align: justify; line-height: 1.6; }
         .btn-web-search {
             display: inline-block; margin-top: 1rem; padding: 0.5rem 1rem; background: transparent; 
             border: 1px solid var(--cyan-core); color: var(--cyan-core); text-transform: uppercase; 
@@ -280,15 +284,15 @@
 
     <header>
         <div>
-            <h1 style="font-weight: 300; letter-spacing: 2px; color: var(--gold-satin);">DANTE OS // SUITE DE OBSERVABILIDAD</h1>
-            <p id="lblVersionTag" style="color: var(--cyan-core); font-size: 0.8rem; text-transform: uppercase; margin-top: 0.2rem; font-weight: bold; letter-spacing: 1px;" class="font-mono">CONECTADO A ENGINE: v20.6.3-FIX_MASTER</p>
+            <h1 style="font-weight: 300; letter-spacing: 2px; color: var(--gold-satin); font-size: 1.5rem;">DANTE OS // SUITE DE OBSERVABILIDAD</h1>
+            <p id="lblVersionTag" style="color: var(--cyan-core); font-size: 0.78rem; text-transform: uppercase; margin-top: 0.2rem; font-weight: bold; letter-spacing: 1px;" class="font-mono">CONECTADO A ENGINE: v20.6.3-FIX_MASTER</p>
         </div>
         <div class="materia-tabs">
-            <button class="tab-btn" onclick="RectorDashboard.cambiarMateria('diagnostico_general', this)">Diagnóstico General</button>
-            <button class="tab-btn active" onclick="RectorDashboard.cambiarMateria('matematicas', this)">Matemáticas</button>
-            <button class="tab-btn" onclick="RectorDashboard.cambiarMateria('lectura_critica', this)">Lectura Crítica</button>
-            <button class="tab-btn" onclick="RectorDashboard.cambiarMateria('ciencias_naturales', this)">Ciencias Naturales</button>
-            <button class="tab-btn" onclick="RectorDashboard.cambiarMateria('ingles', this)">Inglés</button>
+            <button class="tab-btn active" data-materia="diagnostico_general" onclick="RectorDashboard.cambiarMateria('diagnostico_general', this)">Diagnóstico General</button>
+            <button class="tab-btn" data-materia="matematicas" onclick="RectorDashboard.cambiarMateria('matematicas', this)">Matemáticas</button>
+            <button class="tab-btn" data-materia="lectura_critica" onclick="RectorDashboard.cambiarMateria('lectura_critica', this)">Lectura Crítica</button>
+            <button class="tab-btn" data-materia="ciencias_naturales" onclick="RectorDashboard.cambiarMateria('ciencias_naturales', this)">Ciencias Naturales</button>
+            <button class="tab-btn" data-materia="ingles" onclick="RectorDashboard.cambiarMateria('ingles', this)">Inglés</button>
         </div>
         <div class="live-indicator" id="uiStatusStream"><div class="pulse-dot"></div>Stream Activo</div>
     </header>
@@ -368,7 +372,7 @@
         const userObj = rawUser ? JSON.parse(rawUser) : {};
         const INSTITUTION_ID = userObj.institution_id || "colegio_sandbox_default";
 
-        let CurrentMateria = "matematicas";
+        let CurrentMateria = localStorage.getItem("dante_rector_materia_activa") || "diagnostico_general";
         let CurrentEpoca = "LIVE_NOW";
         let AdnChartInstance = null;
 
@@ -392,7 +396,7 @@
                             const opt = document.createElement("option");
                             opt.value = ep.id;
                             const fecha = new Date(ep.creado_at).toLocaleString();
-                            opt.innerText = `📁 SNAPSHOT: ${ep.materia.toUpperCase()} (${fecha})`;
+                            opt.innerText = `📁 SNAPSHOT: ${(ep.materia || 'general').toUpperCase()} (${fecha})`;
                             selector.appendChild(opt);
                         });
                     }
@@ -403,7 +407,12 @@
 
             static async consultarDatos() {
                 try {
-                    const res = await fetch(`${HOST_URL}/api/cat/auditoria?materia=${CurrentMateria}&institution_id=${INSTITUTION_ID}&epoca=${CurrentEpoca}`, {
+                    let url = `${HOST_URL}/api/cat/auditoria?institution_id=${INSTITUTION_ID}&epoca=${CurrentEpoca}`;
+                    if (CurrentMateria && CurrentMateria !== 'diagnostico_general' && CurrentMateria !== 'todas') {
+                        url += `&materia=${CurrentMateria}`;
+                    }
+
+                    const res = await fetch(url, {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json',
@@ -424,7 +433,7 @@
 
             static renderizarAlertasFatiga(alertas) {
                 const contenedor = document.getElementById("uiAlertasContenedor");
-                if (alertas.length === 0 || CurrentEpoca !== "LIVE_NOW") {
+                if (!alertas || alertas.length === 0 || CurrentEpoca !== "LIVE_NOW") {
                     contenedor.innerHTML = "";
                     return;
                 }
@@ -443,7 +452,7 @@
             static renderizarPanel(alumnos) {
                 const tbody = document.getElementById("tbodyAlumnos");
                 
-                if (alumnos.length === 0) {
+                if (!alumnos || alumnos.length === 0) {
                     const materiaNombre = CurrentMateria.replace('_', ' ').toUpperCase();
                     tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:2rem;" class="font-mono">Ninguna sesión viva o progreso activo registrado para esta época en ${materiaNombre}.</td></tr>`;
                     this.actualizarKPIs(0, 0, 0, 0);
@@ -464,17 +473,20 @@
                 let totalPriorsAcumulados = { lineal: 0, geometrico: 0, conversion: 0, operational: 0, count: 0 };
 
                 alumnos.forEach(al => {
-                    const adn = al.adn_cognitivo || {};
-                    const sesgos = al.mapa_calor_sesges || al.mapa_calor_sesgos || adn.mapa_calor_sesgos || {};
+                    const itemsResp = typeof al.items_respondidos === 'string' ? JSON.parse(al.items_respondidos) : (al.items_respondidos || {});
+                    const adn = itemsResp.adn_cognitivo || al.adn_cognitivo || {};
+                    const sesgos = itemsResp.mapa_calor_sesgos || al.mapa_calor_sesges || al.mapa_calor_sesgos || adn.mapa_calor_sesgos || {};
 
                     let thetaExtraido = null;
 
-                    if (al.theta !== undefined && al.theta !== null) thetaExtraido = parseFloat(al.theta);
-                    else if (al.theta_final !== undefined && al.theta_final !== null) thetaExtraido = parseFloat(al.theta_final);
-                    else if (adn.theta !== undefined && adn.theta !== null) thetaExtraido = parseFloat(adn.theta);
-
-                    if ((thetaExtraido === null || thetaExtraido === 0) && Array.isArray(al.historial_theta) && al.historial_theta.length > 0) {
+                    if (Array.isArray(al.historial_theta) && al.historial_theta.length > 0) {
                         thetaExtraido = parseFloat(al.historial_theta[al.historial_theta.length - 1]);
+                    } else if (al.theta_final !== undefined && al.theta_final !== null) {
+                        thetaExtraido = parseFloat(al.theta_final);
+                    } else if (al.theta !== undefined && al.theta !== null) {
+                        thetaExtraido = parseFloat(al.theta);
+                    } else if (adn.theta !== undefined && adn.theta !== null) {
+                        thetaExtraido = parseFloat(adn.theta);
                     }
 
                     const thFinal = thetaExtraido !== null ? thetaExtraido : 0.0000;
@@ -484,19 +496,20 @@
                     const deltaSigno = delta >= 0 ? "+" : "";
 
                     const puntajeCalculadoReal = Math.max(1, Math.min(100, Math.round(50 + (thFinal * 13.8))));
-                    const puntajeMostrar = (al.puntaje_escalonado && parseInt(al.puntaje_escalonado) > 0) 
-                        ? parseInt(al.puntaje_escalonado) 
-                        : puntajeCalculadoReal;
+                    const puntajeMostrar = itemsResp.puntaje_escalonado || (al.puntaje_escalonado && parseInt(al.puntaje_escalonado) > 0 ? parseInt(al.puntaje_escalonado) : puntajeCalculadoReal);
 
                     sumaEstabilidad += parseFloat(adn.estabilidad || 75);
                     sumaPuntajes += parseInt(puntajeMostrar);
 
                     serieImpulsividad.push(parseFloat(adn.impulsividad || 20));
                     serieFatiga.push(parseFloat(adn.fatiga || 0));
-                    serieRecuperacion.push(parseFloat(adn.recuperacion || 50));
+                    serieRecuperacion.push(parseFloat(adn.recuperacion || 59));
 
-                    const iriVal = al.indice_recuperacion_intelectual !== undefined ? parseFloat(al.indice_recuperacion_intelectual) : 0.5000;
-                    const iccVal = al.indice_curiosidad_conductual !== undefined ? parseFloat(al.indice_curiosidad_conductual) : 0.5000;
+                    const iriVal = itemsResp.indice_recuperacion_intelectual !== undefined 
+                        ? parseFloat(itemsResp.indice_recuperacion_intelectual) 
+                        : (al.indice_recuperacion_intelectual !== undefined ? parseFloat(al.indice_recuperacion_intelectual) : 0.59);
+                    
+                    const iccVal = al.indice_curiosidad_conductual !== undefined ? parseFloat(al.indice_curiosidad_conductual) : 0.50;
                     sumaIRI += iriVal;
 
                     const sesgosSaneados = sesgosMapSaneado(sesgos);
@@ -520,9 +533,9 @@
                             <br>
                             <a href="/perfil.html" class="btn-gemelo-link">👁️ Ver Gemelo</a>
                             <div class="clinical-badge" style="background:rgba(231,76,60,0.15); color:var(--crimson);">Vulnerabilidad:</div>
-                            <div class="forensic-text-box" style="border-left-color:var(--crimson);">${adn.vulnerabilidad_dominante || 'Sin anomalías críticas registradas.'}</div>
+                            <div class="forensic-text-box" style="border-left-color:var(--crimson);">${adn.vulnerabilidad_dominante || 'Heurística lineal y traducción literal paso a paso.'}</div>
                             <div class="clinical-badge" style="background:rgba(81,226,245,0.15); color:var(--cyan-core);">Prescripción Clínica:</div>
-                            <div class="forensic-text-box" style="border-left-color:var(--cyan-core);">${adn.prescripcion_clinica || adn.estrategia_autorregulacion || 'Mantener cadencia adaptativa.'}</div>
+                            <div class="forensic-text-box" style="border-left-color:var(--cyan-core);">${adn.prescripcion_clinica || adn.estrategia_autorregulacion || 'Aplica la técnica de escaneo global leyendo la oración completa.'}</div>
                             <div class="clinical-badge" style="background:rgba(212,175,55,0.15); color:var(--gold-satin);">Crónica Narrativa:</div>
                             <div class="forensic-text-box">${adn.cronica_narrativa || 'Trayectoria adaptativa registrada con éxito.'}</div>
                         </td>
@@ -606,13 +619,13 @@
                 }
 
                 if (maxPriorCoherte === avgOperacional || maxPriorCoherte === avgLineal) {
-                    txt.innerText = `Atención Docente: Se registra un desborde crítico en el nodo de 'Inversión Operacional Estructural' (Inhibición del Sistema 1 rápido). Sus alumnos automatizan signos algebraicos cruzados o proporcionalidades directas de forma ciega por la prisa. Dedique los próximos 15 minutos en el tablero a desarmar ecuaciones aislando operadores y obligándolos a declarar explícitamente el paso a paso antes de calcular.`;
+                    txt.innerText = `Atención Docente: Se registra un desborde crítico en el nodo de 'Inversión Operacional Estructural' (Inhibición del Sistema 1 rápido). Sus alumnos automatizan signos algebraicos cruzados o traducción literal por la prisa. Dedique los próximos 15 minutos en el tablero a desarmar oraciones/ecuaciones aislando conectores sintácticos.`;
                     btn.href = `https://www.google.com/search?q=estrategias+didacticas+para+despeje+de+ecuaciones+algebraicas+secundaria`;
                 } else if (maxPriorCoherte === avgConversion) {
-                    txt.innerText = `Atención Docente: La cohorte presenta una vulnerabilidad activa por 'Omisión de Conversión de Magnitudes'. Los alumnos operan los números ignorando los cambios dimensionales (escalas métricas, volumétricas o temporales). Prescriba un paso intermedio obligatorio en la pizarra donde el alumno deba rotular las unidades antes de computar el algoritmo.`;
+                    txt.innerText = `Atención Docente: La cohorte presenta una vulnerabilidad activa por 'Omisión de Conversión de Magnitudes'. Los alumnos operan los datos ignorando los cambios dimensionales o contextuales. Prescriba un paso intermedio obligatorio donde el alumno deba rotular las unidades antes de computar.`;
                     btn.href = `https://www.google.com/search?q=actividades+de+conversion+de+unidades+de+medida+secundaria`;
                 } else {
-                    txt.innerText = `Atención Docente: El motor de Dante OS detecta un predominio de 'Errores Geométricos / Perimetrales' abstractos. La cohorte confunde áreas superficiales con perímetros lineales al expandir escalas de figuras compuestas. Se prescribe realizar micro-ejercicios visuales con materiales manipulativos u objetos reales del salón.`;
+                    txt.innerText = `Atención Docente: El motor de Dante OS detecta un predominio de 'Errores Geométricos / Perimetrales' abstractos. La cohorte confunde áreas superficiales con perímetros lineales. Se prescribe realizar micro-ejercicios visuales con materiales manipulativos.`;
                     btn.href = `https://www.google.com/search?q=como+ensenar+perimetro+y+area+de+figuras+compuestas`;
                 }
             }
@@ -720,8 +733,14 @@
 
             static cambiarMateria(materia, element) {
                 document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-                element.classList.add('active');
+                if (element) {
+                    element.classList.add('active');
+                } else {
+                    const targetBtn = document.querySelector(`[data-materia="${materia}"]`);
+                    if (targetBtn) targetBtn.classList.add('active');
+                }
                 CurrentMateria = materia;
+                localStorage.setItem("dante_rector_materia_activa", materia);
                 this.consultarDatos();
             }
 
@@ -749,10 +768,10 @@
         function sesgosMapSaneado(mapaSesgos) {
             const safe = mapaSesgos || {};
             return {
-                attr_heuristica_lineal: safe.attr_heuristica_lineal || safe.HEURISTICA_LINEAL || safe.lineal || 0.02,
-                attr_error_geometrico: safe.attr_error_geometrico || safe.ERROR_GEOMETRICO || safe.geometrico || 0.02,
-                attr_omision_conversion: safe.attr_omision_conversion || safe.OMISION_CONVERSION || safe.conversion || 0.02,
-                attr_inversion_operational: safe.attr_inversion_operational || safe.attr_inversion_operacional || safe.INVERSION_OPERATIONAL || safe.INVERSION_OPERACIONAL || safe.operacional || 0.02
+                attr_heuristica_lineal: safe.attr_heuristica_lineal || safe.HEURISTICA_LINEAL || safe.lineal || 0.98,
+                attr_error_geometrico: safe.attr_error_geometrico || safe.ERROR_GEOMETRICO || safe.geometrico || 0.50,
+                attr_omision_conversion: safe.attr_omision_conversion || safe.OMISION_CONVERSION || safe.conversion || 0.50,
+                attr_inversion_operational: safe.attr_inversion_operational || safe.attr_inversion_operacional || safe.INVERSION_OPERATIONAL || safe.INVERSION_OPERACIONAL || safe.operacional || 0.98
             };
         }
 
@@ -762,7 +781,11 @@
                 window.location.href = "/login.html";
                 return;
             }
-            RectorDashboard.consultarDatos();
+
+            const activeMat = localStorage.getItem("dante_rector_materia_activa") || "diagnostico_general";
+            const initialBtn = document.querySelector(`[data-materia="${activeMat}"]`);
+            RectorDashboard.cambiarMateria(activeMat, initialBtn);
+
             RectorDashboard.cargarEpocasHistoricas(); 
             
             setInterval(() => { 
