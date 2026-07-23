@@ -1,12 +1,13 @@
-// catSelectorEngine.js - Motor de Selección Adaptativa Óptima (Dante OS v20.5.6 Enterprise)
+// catSelectorEngine.js - Motor de Selección Adaptativa Óptima (Dante OS v21.0.0 Enterprise)
 import { calcularInformacionFisher } from './engine3PL.js';
 
 const SPECTRUM_CONTROLS = {
     MIN_THETA: -4.0000,
     MAX_THETA: 4.0000,
     RESOLUTION_STEP: 0.50,
-    UMBRAL_SEM_CRITICO: 0.22,
-    MIN_ITEMS_MANDATORIOS: 12
+    UMBRAL_SEM_CRITICO: 0.38,      // Flexibilizado para permitir parada precisa
+    MIN_ITEMS_MANDATORIOS: 5,     // Evaluación mínima para reporte válido
+    MAX_ITEMS_MANDATORIOS: 15     // Límite superior garantizado de cierre
 };
 
 function validarContratoItem(item) {
@@ -34,9 +35,14 @@ export function obtenerSiguienteItem(sessionState, cacheInstancia) {
     const currentCountInt = parseInt(items_respondidos_count || 0, 10);
 
     // ====================================================================
-    // 🛡️ REGLA DE CONTROL 1: EVALUACIÓN DEL CRITERIO DE PARADA BAYESIANO
+    // 🛡️ REGLA DE CONTROL 1: EVALUACIÓN Y DETENCIÓN AUTOMÁTICA
     // ====================================================================
-    if (currentCountInt >= SPECTRUM_CONTROLS.MIN_ITEMS_MANDATORIOS && currentSemFloat < SPECTRUM_CONTROLS.UMBRAL_SEM_CRITICO) {
+    const alcanzominimo = currentCountInt >= SPECTRUM_CONTROLS.MIN_ITEMS_MANDATORIOS;
+    const alcanzoPrecision = currentSemFloat <= SPECTRUM_CONTROLS.UMBRAL_SEM_CRITICO;
+    const alcanzoMaximo = currentCountInt >= SPECTRUM_CONTROLS.MAX_ITEMS_MANDATORIOS;
+
+    if ((alcanzominimo && alcanzoPrecision) || alcanzoMaximo) {
+        console.log(`🏁 [REGLA DE PARADA DETONADA]: Ítems = ${currentCountInt}, SEM = ${currentSemFloat.toFixed(4)}`);
         return { success: true, detenerExamen: true, codigo_control: 'CRITERIO_DE_PARADA_ALCANZADO' };
     }
 
@@ -46,7 +52,6 @@ export function obtenerSiguienteItem(sessionState, cacheInstancia) {
     
     let poolCandidatosAcotado = [];
 
-    // Verificación defensiva contra buckets no inicializados en frío
     if (matrizBucketsDificultad && matrizBucketsDificultad.length > 0) {
         ventanaIndices.forEach(idx => {
             const bucket = matrizBucketsDificultad[idx] || [];
@@ -58,21 +63,20 @@ export function obtenerSiguienteItem(sessionState, cacheInstancia) {
         });
     }
 
-    // Fallback elástico: Si la vecindad inmediata fue consumida, barrer el mapa completo
     if (poolCandidatosAcotado.length === 0 && mapaParametros && mapaParametros.size > 0) {
         mapaParametros.forEach(item => {
             if (!exclusionSet.has(item.id)) poolCandidatosAcotado.push(item);
         });
     }
 
-    // Homeostasis por vaciado absoluto o Cold Start crítico
+    // Si el banco se agota completamente, detiene el examen y guarda lo acumulado
     if (poolCandidatosAcotado.length === 0) {
-        console.warn("⚠️ [HOMEOCONTROL AGOTAMIENTO]: No existen más ítems disponibles libres en RAM.");
+        console.warn("⚠️ [HOMEOCONTROL AGOTAMIENTO]: No existen más ítems en RAM. Consolidando examen.");
         return { success: true, detenerExamen: true, codigo_control: 'BANCO_CONSUMIDO_TOTALMENTE' };
     }
 
     // ====================================================================
-    // 🛡️ REGLA DE CONTROL 3: OPTIMIZACIÓN CON ANDAMIAJE PEDAGÓGICO DIRIGIDO
+    // 🛡️ REGLA DE CONTROL 2: PONDERACIÓN Y SELECCIÓN ESTOCÁSTICA
     // ====================================================================
     const estudiantePriors = priors_dinamicos || {};
 
@@ -86,7 +90,6 @@ export function obtenerSiguienteItem(sessionState, cacheInstancia) {
         const distanciaAbsoluta = Math.abs(bNum - currentThetaFloat);
         const fisherRaw = calcularInformacionFisher(currentThetaFloat, aNum, bNum, cNum);
         
-        // 🌟 INYECCIÓN DE ANDAMIAJE COGNITIVO: Cruzar priors con la Matriz Q del ítem
         let penalizacionO_InyeccionSesgo = 0.0;
         if (item.matriz_q) {
             Object.keys(item.matriz_q).forEach(attr => {
@@ -99,16 +102,13 @@ export function obtenerSiguienteItem(sessionState, cacheInstancia) {
             });
         }
 
-        // Puntuación balanceada de alta fidelidad (70% Fisher, 15% Logit Proximidad, 15% Foco en Sesgo)
         const scoreSelector = (fisherRaw * 0.70) + ((1 / (1 + distanciaAbsoluta)) * 0.15) + (penalizacionO_InyeccionSesgo * 0.15);
         
         return { ...item, a: aNum, b: bNum, c: cNum, scoreSelector };
     });
 
-    // Ordenación descendente de candidatos según el score acumulado
     reactivosEvaluados.sort((x, y) => y.scoreSelector - x.scoreSelector);
 
-    // Ventana estocástica superior para evitar memorización lineal
     const topCandidatos = reactivosEvaluados.slice(0, Math.min(3, reactivosEvaluados.length));
     const itemGanador = topCandidatos[Math.floor(Math.random() * topCandidatos.length)];
 
