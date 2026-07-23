@@ -1,24 +1,24 @@
-// src/components/StudentDashboard.jsx - Interfaz Completa de Simulacro Adaptativo Dante OS
+// src/components/StudentDashboard.jsx - Interfaz Adaptativa Dinámica Dante OS
 import React, { useState, useEffect } from 'react';
 import { useTwin } from '../context/TwinContext';
 
 export const StudentDashboard = ({ studentId, areaInicial = 'matematicas' }) => {
   const { gemelo, loading: loadingTwin, error: errorTwin, sincronizarGemelo } = useTwin();
 
-  // Estados de la prueba adaptativa
+  // Estados del Simulacro
   const [preguntaActual, setPreguntaActual] = useState(null);
   const [opcionSeleccionada, setOpcionSeleccionada] = useState('');
   const [cargandoPregunta, setCargandoPregunta] = useState(true);
   const [errorPregunta, setErrorPregunta] = useState(null);
   const [numeroPregunta, setNumeroPregunta] = useState(1);
-  const [tiempoRestante, setTiempoRestante] = useState(2700); // 45 minutos en segundos
+  const [tiempoRestante, setTiempoRestante] = useState(2700); // 45 minutos
 
-  // Sincronizar Gemelo Digital
+  // Sincronización inicial
   useEffect(() => {
     if (studentId) sincronizarGemelo(studentId);
   }, [studentId, sincronizarGemelo]);
 
-  // Temporizador dinámico
+  // Reloj regresivo
   useEffect(() => {
     if (tiempoRestante <= 0) return;
     const timer = setInterval(() => {
@@ -27,7 +27,7 @@ export const StudentDashboard = ({ studentId, areaInicial = 'matematicas' }) => 
     return () => clearInterval(timer);
   }, [tiempoRestante]);
 
-  // Cargar primera pregunta desde la API de Dante OS
+  // Carga inicial de reactivo
   useEffect(() => {
     obtenerSiguientePregunta();
   }, []);
@@ -49,18 +49,18 @@ export const StudentDashboard = ({ studentId, areaInicial = 'matematicas' }) => 
         body: JSON.stringify(payload)
       });
 
-      if (!res.ok) throw new Error('Error en el servidor de Dante OS');
+      if (!res.ok) throw new Error('Error de servidor');
 
       const data = await res.json();
 
       if (data.pregunta) {
         setPreguntaActual(data.pregunta);
       } else {
-        setErrorPregunta('No hay más preguntas disponibles para este módulo.');
+        setErrorPregunta('No hay más reactivos disponibles.');
       }
     } catch (err) {
       console.error(err);
-      setErrorPregunta('No se pudo conectar con el motor adaptativo.');
+      setErrorPregunta('Error al conectar con Dante OS.');
     } finally {
       setCargandoPregunta(false);
       setOpcionSeleccionada('');
@@ -70,11 +70,9 @@ export const StudentDashboard = ({ studentId, areaInicial = 'matematicas' }) => 
   const handleEnviarRespuesta = () => {
     if (!opcionSeleccionada) return;
 
-    // Enviar opción seleccionada (extraer solo la letra, ej: 'A')
     const letraRespuesta = opcionSeleccionada.charAt(0);
     setNumeroPregunta((prev) => prev + 1);
 
-    // Actualizar Gemelo y pedir siguiente pregunta
     if (studentId) sincronizarGemelo(studentId);
     obtenerSiguientePregunta({
       itemId: preguntaActual.id,
@@ -82,7 +80,6 @@ export const StudentDashboard = ({ studentId, areaInicial = 'matematicas' }) => 
     });
   };
 
-  // Formatear segundos a formato mm:ss
   const formatearTiempo = (segundos) => {
     const mins = Math.floor(segundos / 60);
     const segs = segundos % 60;
@@ -90,7 +87,7 @@ export const StudentDashboard = ({ studentId, areaInicial = 'matematicas' }) => 
   };
 
   if (loadingTwin && !gemelo) {
-    return <div style={styles.loading}>📡 Sincronizando con el Gateway...</div>;
+    return <div style={styles.loading}>📡 Sincronizando con Dante OS Gateway...</div>;
   }
 
   if (errorTwin) {
@@ -98,25 +95,24 @@ export const StudentDashboard = ({ studentId, areaInicial = 'matematicas' }) => 
   }
 
   const escalonamiento = gemelo?.escalonamiento_icfes || { puntaje_estimado: 250, margen_error: 15, intervalo_95: [235, 265] };
+  const tieneRecursoVisual = Boolean(preguntaActual?.recurso_visual || preguntaActual?.estimulo_texto);
 
   return (
     <div style={styles.dashboardContainer}>
-      {/* 1. ENCABEZADO Y TERMÓMETRO BAYESIANO */}
+      {/* 1. HEADER & RELEVO */}
       <header style={styles.header}>
         <div>
           <h2 style={styles.title}>DANTE OS // ENGINE CAT</h2>
-          <p style={styles.subtitle}>ESTUDIANTE: {studentId || 'DEMO'}</p>
+          <p style={styles.subtitle}>ESTUDIANTE: {studentId || 'VIVIANA'}</p>
         </div>
-        <div style={styles.timerBadge}>
-          ⏱️ {formatearTiempo(tiempoRestante)}
-        </div>
+        <div style={styles.timerBadge}>⏱️ {formatearTiempo(tiempoRestante)}</div>
       </header>
 
-      {/* Termómetro de Certeza Bayesian en Vivo */}
+      {/* 2. TERMÓMETRO BAYESIANO */}
       <div style={styles.termometroCard}>
         <div style={styles.termometroHeader}>
           <span style={styles.termometroTitle}>Termómetro de Certeza Bayesian</span>
-          <span style={styles.margenText}>Margen de Error: ±{escalonamiento.margen_error}</span>
+          <span style={styles.margenText}>±{escalonamiento.margen_error} Puntos</span>
         </div>
 
         <div style={styles.barraContenedor}>
@@ -151,84 +147,93 @@ export const StudentDashboard = ({ studentId, areaInicial = 'matematicas' }) => 
         </div>
       </div>
 
-      {/* 2. BARRA DE PROGRESO */}
+      {/* 3. BARRA DE PROGRESO */}
       <div style={styles.progresoContenedor}>
         <div style={styles.progresoHeader}>
-          <span>Pregunta Adaptativa #{numeroPregunta}</span>
-          <span>Área: {areaInicial.toUpperCase()}</span>
+          <span>Reactivo #{numeroPregunta}</span>
+          <span>Módulo: {areaInicial.toUpperCase()}</span>
         </div>
         <div style={styles.progresoTrack}>
           <div style={{ ...styles.progresoFill, width: `${Math.min((numeroPregunta / 30) * 100, 100)}%` }} />
         </div>
       </div>
 
-      {/* 3. CONTENEDOR DE PREGUNTA ADAPTATIVA */}
+      {/* 4. PREGUNTA ADAPTATIVA DINÁMICA */}
       <main style={styles.preguntaCard}>
         {cargandoPregunta ? (
-          <div style={styles.loadingInner}>⚡ Dante OS calculando el ítem óptimo según tu perfil...</div>
+          <div style={styles.loadingInner}>⚡ Calculando el ítem con máxima información de Fisher...</div>
         ) : errorPregunta ? (
           <div style={styles.errorInner}>{errorPregunta}</div>
         ) : preguntaActual ? (
-          <>
-            {/* Texto del Reactivo */}
-            <p style={styles.preguntaTexto}>{preguntaActual.texto || preguntaActual.pregunta_texto}</p>
-
-            {/* Renderizado Nativo de Gráfico SVG / Recurso Visual */}
-            {preguntaActual.recurso_visual && (
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: tieneRecursoVisual ? 'repeat(auto-fit, minmax(300px, 1fr))' : '1fr',
+            gap: '24px'
+          }}>
+            {/* Panel Izquierdo: Solo si existe recurso o lectura larga */}
+            {tieneRecursoVisual && (
               <div style={styles.visualContainer}>
-                {preguntaActual.recurso_visual.startsWith('data:image/svg+xml') ? (
-                  <img
-                    src={preguntaActual.recurso_visual}
-                    alt="Recurso Ilustrativo"
-                    style={styles.visualImage}
-                  />
-                ) : (
-                  <div dangerouslySetInnerHTML={{ __html: preguntaActual.recurso_visual }} />
+                {preguntaActual.estimulo_texto && (
+                  <p style={styles.estimuloTexto}>{preguntaActual.estimulo_texto}</p>
+                )}
+                {preguntaActual.recurso_visual && (
+                  preguntaActual.recurso_visual.startsWith('data:image/svg+xml') ? (
+                    <img
+                      src={preguntaActual.recurso_visual}
+                      alt="Recurso Ilustrativo"
+                      style={styles.visualImage}
+                    />
+                  ) : (
+                    <div dangerouslySetInnerHTML={{ __html: preguntaActual.recurso_visual }} />
+                  )
                 )}
               </div>
             )}
 
-            {/* Opciones de Respuesta */}
-            <div style={styles.opcionesGrid}>
-              {(preguntaActual.opciones || preguntaActual.opciones_respuesta || []).map((opcion, idx) => {
-                const estaSeleccionada = opcionSeleccionada === opcion;
-                return (
-                  <button
-                    key={idx}
-                    onClick={() => setOpcionSeleccionada(opcion)}
-                    style={{
-                      ...styles.opcionButton,
-                      ...(estaSeleccionada ? styles.opcionButtonSelected : {})
-                    }}
-                  >
-                    <span style={styles.opcionRadio}>{estaSeleccionada ? '●' : '○'}</span>
-                    <span style={styles.opcionTexto}>{opcion}</span>
-                  </button>
-                );
-              })}
-            </div>
+            {/* Panel Derecho: Pregunta y Opciones */}
+            <div style={{ width: '100%' }}>
+              <p style={styles.preguntaTexto}>{preguntaActual.texto || preguntaActual.pregunta_texto}</p>
 
-            {/* Botón Acción */}
-            <div style={styles.accionesContainer}>
-              <button
-                onClick={handleEnviarRespuesta}
-                disabled={!opcionSeleccionada}
-                style={{
-                  ...styles.btnEnviar,
-                  ...(!opcionSeleccionada ? styles.btnDisabled : {})
-                }}
-              >
-                Confirmar y Siguiente ➔
-              </button>
+              <div style={styles.opcionesGrid}>
+                {(preguntaActual.opciones || preguntaActual.opciones_respuesta || []).map((opcion, idx) => {
+                  const estaSeleccionada = opcionSeleccionada === opcion;
+                  return (
+                    <button
+                      key={idx}
+                      onClick={() => setOpcionSeleccionada(opcion)}
+                      style={{
+                        ...styles.opcionButton,
+                        ...(estaSeleccionada ? styles.opcionButtonSelected : {})
+                      }}
+                    >
+                      <span style={styles.opcionRadio}>{estaSeleccionada ? '●' : '○'}</span>
+                      <span style={styles.opcionTexto}>{opcion}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div style={styles.accionesContainer}>
+                <button
+                  onClick={handleEnviarRespuesta}
+                  disabled={!opcionSeleccionada}
+                  style={{
+                    ...styles.btnEnviar,
+                    ...(!opcionSeleccionada ? styles.btnDisabled : {})
+                  }}
+                >
+                  Confirmar y Siguiente ➔
+                </button>
+              </div>
             </div>
-          </>
+          </div>
         ) : null}
       </main>
     </div>
   );
 };
 
-// 🎨 Estilos CSS-in-JS Responsivos y Modo Oscuro Enterprise
+// Estilos CSS-in-JS Modo Oscuro
 const styles = {
   dashboardContainer: {
     background: '#09090b',
@@ -237,7 +242,7 @@ const styles = {
     borderRadius: '16px',
     border: '1px solid #27272a',
     fontFamily: 'system-ui, -apple-system, sans-serif',
-    maxWidth: '750px',
+    maxWidth: '1000px',
     margin: '20px auto',
     boxSizing: 'border-box'
   },
@@ -388,15 +393,25 @@ const styles = {
     lineHeight: '1.6',
     color: '#f4f4f5',
     marginTop: 0,
-    marginBottom: '20px'
+    marginBottom: '20px',
+    fontWeight: '500'
+  },
+  estimuloTexto: {
+    fontSize: '14px',
+    lineHeight: '1.5',
+    color: '#a1a1aa',
+    marginBottom: '15px'
   },
   visualContainer: {
     textAlign: 'center',
-    margin: '20px 0',
     background: '#09090b',
     padding: '12px',
     borderRadius: '8px',
-    border: '1px solid #27272a'
+    border: '1px solid #27272a',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   visualImage: {
     maxWidth: '100%',
