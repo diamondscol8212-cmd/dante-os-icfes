@@ -101,7 +101,6 @@ async function ejecutarCompilacionFriaDB(area) {
     try {
         console.log(`📡 [B2B COGNITIVE COMPILE v21.0.0]: Descargando e indexando el códice para: [${area}]...`);
         
-        // 🛠️ CONSULTA UNIFICADA A TABLA SOBERANA BANCO_ITEMS_IRT
         const resItems = await supabase.from('banco_items_irt').select(`
             id, pregunta_texto, opciones_respuesta, parametro_a_discriminacion, parametro_b_dificultad, parametro_c_adivinacion, sub_competencia, correcta
         `).eq('area_general', area);
@@ -133,6 +132,8 @@ async function ejecutarCompilacionFriaDB(area) {
                 } catch (e) {
                     opcionesNormalizadas = [item.opciones_respuesta];
                 }
+            } else if (item.opciones_respuesta && typeof item.opciones_respuesta === 'object') {
+                opcionesNormalizadas = Object.values(item.opciones_respuesta);
             }
 
             const metadatosEstructurados = {
@@ -260,18 +261,19 @@ export async function procesarInteraccionEstudiante(req, res) {
                         iriHistorico = parsedP.iri !== undefined ? parseFloat(parsedP.iri) : 0.5000;
                         iccHistorico = parsedP.icc !== undefined ? parseFloat(parsedP.icc) : 0.5000;
                     } else {
+                        // 🛠️ CONSULTA FLEXIBLE ADAPTADA A CUALQUIER MATERIA
                         const { data: historialProgreso } = await supabase
                             .from('progreso_estudiantes')
-                            .select('theta_algebra_calculo, theta_geometria_medicion, theta_estadistica_probabilidad, items_respondidos') 
+                            .select('*') 
                             .eq('estudiante', studentIdSaneado)
                             .eq('materia', areaSaneada)
                             .eq('institution_id', tenantId)
                             .maybeSingle();
 
                         if (historialProgreso) {
-                            thetaAlgebra = parseFloat(historialProgreso.theta_algebra_calculo || 0.0);
-                            thetaGeometria = parseFloat(historialProgreso.theta_geometria_medicion || 0.0);
-                            thetaEstadistica = parseFloat(historialProgreso.theta_estadistica_probabilidad || 0.0);
+                            thetaAlgebra = parseFloat(historialProgreso.theta_algebra_calculo || historialProgreso.theta || 0.0);
+                            thetaGeometria = parseFloat(historialProgreso.theta_geometria_medicion || historialProgreso.theta || 0.0);
+                            thetaEstadistica = parseFloat(historialProgreso.theta_estadistica_probabilidad || historialProgreso.theta || 0.0);
                             
                             const empaquetado = historialProgreso.items_respondidos || {};
                             const clics = empaquetado.historico_clics || [];
@@ -619,10 +621,10 @@ export async function procesarInteraccionEstudiante(req, res) {
                 mapa_calor_sesgos: nuevosPriorsAtributos
             };
 
-            // 🛠️ PERSISTENCIA TOTALMENTE Mapeada EN SUPABASE
+            // 🛠️ PERSISTENCIA TOTALMENTE NORMALIADA EN SUPABASE (Limpia variaciones de materia)
             const payloadPersistenciaBD = {
                 estudiante: studentIdSaneado,
-                materia: String(areaSaneada),
+                materia: String(areaSaneada).toLowerCase().trim(),
                 institution_id: tenantId, 
                 theta: parseFloat(thetaPromedioGlobal.toFixed(4)),
                 theta_final: parseFloat(thetaPromedioGlobal.toFixed(4)),
