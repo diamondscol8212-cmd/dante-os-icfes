@@ -41,7 +41,6 @@
 
         .font-mono { font-family: var(--font-mono) !important; }
 
-        /* Navegación por Materia Responsiva */
         .tab-materia-btn {
             background: rgba(24, 27, 38, 0.6); 
             border: 1px solid var(--graphite); 
@@ -65,7 +64,6 @@
             box-shadow: 0 0 15px var(--gold-glow);
         }
 
-        /* Tarjetas Glassmorphism con overflow visible */
         .kpi-card {
             background: var(--bg-surface); 
             border: 1px solid var(--graphite); 
@@ -99,7 +97,6 @@
             z-index: 5;
         }
 
-        /* Termómetro Bayesiano */
         .thermometer-container {
             height: 16px;
             background: rgba(39, 39, 42, 0.8);
@@ -129,7 +126,6 @@
             box-shadow: 0 0 12px #fbbf24, 0 0 24px rgba(251, 191, 36, 0.4);
         }
 
-        /* Mini Barras de Calor */
         .mini-bar-bg { 
             background: rgba(9, 10, 15, 0.9); 
             height: 8px; 
@@ -140,7 +136,6 @@
         }
         .mini-bar-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
 
-        /* --- SISTEMA DE TOOLTIPS FLOANTES DEFINITIVO --- */
         .tooltip-wrapper { 
             position: relative; 
             display: inline-flex; 
@@ -168,7 +163,6 @@
             pointer-events: none;
         }
 
-        /* Posición para KPI Superiores: Abren hacia abajo a la izquierda */
         .kpi-card .tooltip-box {
             top: calc(100% + 6px) !important;
             right: 0 !important;
@@ -176,7 +170,6 @@
             transform: none !important;
         }
 
-        /* Posición para Paneles Inferiores: Abren hacia arriba a la izquierda */
         .glass-panel .tooltip-box {
             bottom: calc(100% + 6px) !important;
             right: 0 !important;
@@ -389,7 +382,6 @@
         const rawUser = localStorage.getItem("dante_user");
         const userObj = rawUser ? JSON.parse(rawUser) : {};
         
-        // Extrae el ID limpio sin dominios quemados
         const STUDENT_ID = userObj.email ? userObj.email.split('@')[0].toLowerCase().trim() : (userObj.estudiante ? userObj.estudiante.toLowerCase().trim() : "estudiante");
         const INSTITUTION_ID = userObj.institution_id || "colegio_sandbox_default";
 
@@ -450,7 +442,8 @@
                 if (currentMateriaFiltro !== "todas") {
                     historialFiltrado = cacheHistorialCompleto.filter(h => {
                         const m = String(h.materia || h.area_general || '').toLowerCase().trim();
-                        return m === currentMateriaFiltro || currentMateriaFiltro.includes(m) || m.includes(currentMateriaFiltro);
+                        const f = currentMateriaFiltro.toLowerCase().trim();
+                        return m === f || (m.includes('lectura') && f.includes('lectura')) || m.includes(f) || f.includes(m);
                     });
                 }
 
@@ -464,7 +457,6 @@
                 let iriVal = 0.50;
                 let itemsResp = {};
 
-                // 🔄 MANEJO DINÁMICO SI NO HAY REGISTRO EN LA MATERIA
                 if (ultimoRegistro) {
                     if (Array.isArray(ultimoRegistro.historial_theta) && ultimoRegistro.historial_theta.length > 0) {
                         maxThetaVal = parseFloat(ultimoRegistro.historial_theta[ultimoRegistro.historial_theta.length - 1]);
@@ -518,7 +510,6 @@
 
                 const adn = itemsResp.adn_cognitivo || ultimoRegistro?.adn_cognitivo || cacheGemeloCompleto.adn_cognitivo || {};
                 
-                // 🟢 DINAMIZACIÓN TOTAL DE MENSAJES (Sustituye cualquier valor duro)
                 if (ultimoRegistro) {
                     document.getElementById("lblVulnerabilidadTxt").innerText = adn.vulnerabilidad_dominante || "Sensibilidad a la aceleración en el tramo final del examen.";
                     document.getElementById("lblPrescripcionTxt").innerText = adn.prescripcion_clinica || "Aplica la técnica de escaneo estructurado revisando variables antes de marcar la opción.";
@@ -559,7 +550,7 @@
                     temas.push("Regla de tres simple e inversa (Resolución de problemas de proporcionalidad).");
                     temas.push("Conversión de unidades de medida (paso de metros a cm, o minutos a horas).");
                     temas.push("Despeje de ecuaciones algebraicas y lectura e interpretación de gráficas cartesianas.");
-                } else if (materia === "lectura_critica") {
+                } else if (materia.includes("lectura")) {
                     temas.push("Identificación de la tesis principal en textos argumentativos y de opinión.");
                     temas.push("Análisis de conectores lógicos de oposición (sin embargo, no obstante, excepto).");
                     temas.push("Distinción entre premisa, evidencia y conclusión en ensayos cortos.");
