@@ -407,7 +407,7 @@
 
     <main id="viewGateway" class="app-view active">
         <div class="gateway-card">
-            <div class="system-version-tag">UI ENGINE: v21.0.0-PRO_MASTER</div>
+            <div class="system-version-tag">UI ENGINE: v21.1.0-PRO_MASTER</div>
             <div class="verification-banner" id="lblTenantBanner">AUTENTICANDO CONTEXTO MULTI-TENANT...</div>
             <h1 class="gateway-title" id="lblGatewayWelcome">Dante OS Runtime</h1>
             
@@ -503,7 +503,7 @@
 
     <main id="viewDashboard" class="app-view">
         <div class="dashboard-container">
-            <h2 style="font-weight: 300; text-transform: uppercase; color: var(--gold-satin); letter-spacing: 2px; font-size: 1.3rem;">Métricas Longitudinales (Dante OS v21.0.0)</h2>
+            <h2 style="font-weight: 300; text-transform: uppercase; color: var(--gold-satin); letter-spacing: 2px; font-size: 1.3rem;">Métricas Longitudinales (Dante OS v21.1.0)</h2>
             <p style="color: var(--text-muted); margin-top: 0.3rem; font-size: 0.78rem;" class="font-mono">Modelado Conductual Avanzado y Trayectoria Estándar del Estudiante</p>
             
             <div class="chart-box">
@@ -952,7 +952,6 @@
                 }
             }
 
-            // 🛠️ GARANTIZA QUE LA REMEDIACIÓN SEA 100% DINÁMICA SEGÚN LA MATERIA
             static resolverAndamiajeSincronizado(andamiaje) {
                 const item = AppState.itemActual || {};
                 const letraSeleccionada = AppState.seleccionActual?.id || 'A';
@@ -961,14 +960,12 @@
                 let errorTxt = andamiaje?.errorDetonado;
                 let remediacionTxt = andamiaje?.remediacionSugerida;
 
-                // 1. Extraer explicación específica de la opción si está presente en el ítem
                 if (item.explicaciones && item.explicaciones[letraSeleccionada]) {
                     remediacionTxt = item.explicaciones[letraSeleccionada];
                 } else if (item.explicacion_general) {
                     remediacionTxt = item.explicacion_general;
                 }
 
-                // 2. Si no hay explicación específica ni general, o si viene genérica de matemáticas, generar fallback por materia
                 const esTextoMatematicoGenerico = remediacionTxt && (remediacionTxt.includes("descomponer las variables") || remediacionTxt.includes("operar de forma directa"));
 
                 if (!remediacionTxt || esTextoMatematicoGenerico) {
@@ -1107,11 +1104,22 @@
                 const textoCompleto = item.pregunta_texto || '';
                 const tokens = textoCompleto.split('\n\n');
                 
+                // 🟢 SOPORTE VISUAL ICFES (Detecta si el ítem trae recurso_visual o imagen_url)
+                let contenidoVisualHTML = "";
+                const urlVisual = item.recurso_visual || item.imagen_url;
+                if (urlVisual) {
+                    contenidoVisualHTML = `
+                        <div style="margin: 1.2rem 0; text-align: center; background: rgba(10, 11, 13, 0.6); padding: 1rem; border-radius: 8px; border: 1px solid var(--graphite);">
+                            <img src="${urlVisual}" alt="Recursos visuales del examen ICFES" style="max-width: 100%; height: auto; border-radius: 6px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);" />
+                        </div>
+                    `;
+                }
+
                 if (tokens.length > 1) {
-                    uiEnunciados.innerHTML = `<p style="margin-bottom: 1rem;">${tokens.slice(0, -1).join('</p><p style="margin-bottom: 1rem;">')}</p>`;
+                    uiEnunciados.innerHTML = `<p style="margin-bottom: 1rem;">${tokens.slice(0, -1).join('</p><p style="margin-bottom: 1rem;">')}</p>` + contenidoVisualHTML;
                     uiPregunta.innerText = tokens[tokens.length - 1];
                 } else {
-                    uiEnunciados.innerHTML = `<p>> Estímulo contextual adaptativo integrado.</p>`;
+                    uiEnunciados.innerHTML = `<p>> Estímulo contextual adaptativo integrado.</p>` + contenidoVisualHTML;
                     uiPregunta.innerText = textoCompleto;
                 }
 
