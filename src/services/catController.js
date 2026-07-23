@@ -12,8 +12,8 @@ const CALIBRATION_VERSION = process.env.IRT_CALIBRATION_VERSION || 'v21.0_multit
 const REDIS_TTL_SECONDS = 86400; 
 
 const OPERATIONAL_CONTROLS = {
-    MAX_ITEMS_EXAMEN: 25,      
-    MIN_ITEMS_EXAMEN: 5,  
+    MAX_ITEMS_EXAMEN: 25,      // Límite máximo para diagnóstico profundo
+    MIN_ITEMS_EXAMEN: 5,       // Mínimo de reactivos antes de permitir parada temprana
     UMBRAL_SEM_OBJETIVO: 0.22,  
     EPS_CMD: 0.02               
 };
@@ -213,7 +213,13 @@ export async function procesarInteraccionEstudiante(req, res) {
         }
 
         const studentIdSaneado = String(studentId).toLowerCase().trim().split('@')[0];
-        const areaSaneada = areaGeneral.toLowerCase().trim();
+        
+        // Normalización preventiva del nombre de la materia
+        let areaSaneada = areaGeneral.toLowerCase().trim();
+        if (areaSaneada.includes('lectura') || areaSaneada.includes('lenguaje')) {
+            areaSaneada = 'lectura_critica';
+        }
+
         const cacheInstancia = precalentarInstOriginal(areaSaneada);
         
         if (ESTADO_CARGA_AREAS.get(areaSaneada) === 'PENDING') {
@@ -261,7 +267,6 @@ export async function procesarInteraccionEstudiante(req, res) {
                         iriHistorico = parsedP.iri !== undefined ? parseFloat(parsedP.iri) : 0.5000;
                         iccHistorico = parsedP.icc !== undefined ? parseFloat(parsedP.icc) : 0.5000;
                     } else {
-                        // 🛠️ CONSULTA FLEXIBLE ADAPTADA A CUALQUIER MATERIA
                         const { data: historialProgreso } = await supabase
                             .from('progreso_estudiantes')
                             .select('*') 
@@ -271,9 +276,9 @@ export async function procesarInteraccionEstudiante(req, res) {
                             .maybeSingle();
 
                         if (historialProgreso) {
-                            thetaAlgebra = parseFloat(historialProgreso.theta_algebra_calculo || historialProgreso.theta || 0.0);
-                            thetaGeometria = parseFloat(historialProgreso.theta_geometria_medicion || historialProgreso.theta || 0.0);
-                            thetaEstadistica = parseFloat(historialProgreso.theta_estadistica_probabilidad || historialProgreso.theta || 0.0);
+                            thetaAlgebra = parseFloat(historialProgreso.theta_algebra_calculo || 0.0);
+                            thetaGeometria = parseFloat(historialProgreso.theta_geometria_medicion || 0.0);
+                            thetaEstadistica = parseFloat(historialProgreso.theta_estadistica_probabilidad || 0.0);
                             
                             const empaquetado = historialProgreso.items_respondidos || {};
                             const clics = empaquetado.historico_clics || [];
@@ -556,6 +561,7 @@ export async function procesarInteraccionEstudiante(req, res) {
             await redis.setex(cacheKey, REDIS_TTL_SECONDS, JSON.stringify(localRuntimeState));
         });
 
+        // 🛡️ REGLA DE PARADA AUTOMÁTICA: Guarda si el selector dice detenerse O si alcanza el máximo de ítems
         const forzarDetencionExamen = conteoActualizadoItems > 0 && (resultadoSelector.detenerExamen || conteoActualizadoItems >= OPERATIONAL_CONTROLS.MAX_ITEMS_EXAMEN);
 
         if (forzarDetencionExamen) {
@@ -600,7 +606,7 @@ export async function procesarInteraccionEstudiante(req, res) {
                     desviacion_enfoque: "Foco procedimental variable durante la sesión.",
                     estrategia_autorregulacion: "Monitorear los tiempos de ejecución en problemas complejos.",
                     plan_entrenamiento: [
-                        "Días 1-3: Repasa los fundamentos de operaciones distributivas.",
+                        "Días 1-3: Repasa los fundamentos del área evaluada.",
                         "Días 4-5: Practica 5 ejercicios sin límite de tiempo.",
                         "Días 6-8: Realiza lecturas de 10 segundos antes de marcar.",
                         "Días 9-10: Ejecuta simulacros cortos."
@@ -621,22 +627,19 @@ export async function procesarInteraccionEstudiante(req, res) {
                 mapa_calor_sesgos: nuevosPriorsAtributos
             };
 
-            // 🛠️ PERSISTENCIA TOTALMENTE NORMALIADA EN SUPABASE (Limpia variaciones de materia)
+            // 🛠️ PERSISTENCIA COMPATIBLE 100% CON LAS COLUMNAS REALES DE SUPABASE
             const payloadPersistenciaBD = {
                 estudiante: studentIdSaneado,
-                materia: String(areaSaneada).toLowerCase().trim(),
+                materia: areaSaneada, 
                 institution_id: tenantId, 
-                theta: parseFloat(thetaPromedioGlobal.toFixed(4)),
-                theta_final: parseFloat(thetaPromedioGlobal.toFixed(4)),
-                puntaje_escalonado: puntajeIcfesEstandar,
-                adn_cognitivo: executivePayload,
-                mapa_calor_sesgos: nuevosPriorsAtributos,
                 theta_algebra_calculo: parseFloat(algebraTheta.toFixed(4)), 
                 theta_geometria_medicion: parseFloat(geometryTheta.toFixed(4)), 
                 theta_estadistica_probabilidad: parseFloat(estadisticaTheta.toFixed(4)), 
                 indice_recuperacion_intelectual: iriActual, 
                 indice_curiosidad_conductual: iccActual,
+                historial_theta: arrayHistoricoRespuestas.map(r => parseFloat((r.thetaSnapshot || 0.0).toFixed(4))),
                 items_respondidos: {
+                    puntaje_escalonado: puntajeIcfesEstandar,
                     historico_clics: arrayHistoricoRespuestas.map(r => ({
                         itemId: r.itemId, correcto: r.correcto, selectedOption: r.selectedOption, responseTime: r.responseTime
                     })),
@@ -658,7 +661,7 @@ export async function procesarInteraccionEstudiante(req, res) {
             await redis.del(cacheKey).catch(() => {});
             await redis.del(indexLookUpKey).catch(() => {});
             
-            console.log(`🏁 [EXAMEN FINALIZADO]: Estado purgado para ${studentIdSaneado}. Retornando reporte.`);
+            console.log(`🏁 [EXAMEN FINALIZADO]: Estado guardado y purgado para ${studentIdSaneado}. Retornando reporte.`);
 
             return res.status(200).json({
                 success: true, 
