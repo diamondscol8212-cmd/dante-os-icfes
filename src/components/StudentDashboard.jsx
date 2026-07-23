@@ -1,261 +1,423 @@
-// src/components/StudentDashboard.jsx - Interfaz Adaptativa Dinámica Dante OS
-import React, { useState, useEffect } from 'react';
+// src/components/StudentDashboard.jsx - Interfaz Adaptativa & Reporte Final Dante OS v21.1.0
+import React, { useState, useEffect, useRef } from 'react';
 import { useTwin } from '../context/TwinContext';
 
-export const StudentDashboard = ({ studentId, areaInicial = 'matematicas' }) => {
-  const { gemelo, loading: loadingTwin, error: errorTwin, sincronizarGemelo } = useTwin();
+export const StudentDashboard = ({ studentId: propStudentId, areaInicial = 'matematicas' }) => {
+  const { gemelo, sincronizarGemelo } = useTwin();
 
-  // Estados del Simulacro
+  // Contexto de Usuario / Sesión
+  const [studentId, setStudentId] = useState(propStudentId || 'viviana');
+  const [sessionId] = useState(`session_react_${Date.now()}`);
+  const [materia, setMateria] = useState(areaInicial);
+  const [institutionId] = useState('colegio_sandbox_default');
+
+  // Estados del Motor Adaptativo (Fases: 'WORKSPACE' | 'METACOGNITION' | 'FEEDBACK' | 'DASHBOARD' | 'FINAL_REPORT')
+  const [faseActual, setFaseActual] = useState('WORKSPACE');
   const [preguntaActual, setPreguntaActual] = useState(null);
   const [opcionSeleccionada, setOpcionSeleccionada] = useState('');
-  const [cargandoPregunta, setCargandoPregunta] = useState(true);
-  const [errorPregunta, setErrorPregunta] = useState(null);
-  const [numeroPregunta, setNumeroPregunta] = useState(1);
-  const [tiempoRestante, setTiempoRestante] = useState(2700); // 45 minutos
+  const [historialSeleccion, setHistorialSeleccion] = useState([]);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Sincronización inicial
+  // Telemetría & IRT
+  const [theta, setTheta] = useState(0.0);
+  const [historialTheta, setHistorialTheta] = useState([0.0]);
+  const [bayesianSEM, setBayesianSEM] = useState(0.5);
+  const [tiempoInicioReactivo, setTiempoInicioReactivo] = useState(0);
+  const [telemetriaUltima, setTelemetriaUltima] = useState({ tiempoTotal: 0, cambios: 0, certeza: '' });
+  const [andamiajeForense, setAndamiajeForense] = useState(null);
+  const [esSegundoIntento, setEsSegundoIntento] = useState(false);
+  const [reporteFinal, setReporteFinal] = useState(null);
+
+  // Reloj regresivo (45 min)
+  const [tiempoRestante, setTiempoRestante] = useState(2700);
+
   useEffect(() => {
-    if (studentId) sincronizarGemelo(studentId);
-  }, [studentId, sincronizarGemelo]);
+    const rawUser = localStorage.getItem('dante_user');
+    if (rawUser) {
+      try {
+        const u = JSON.parse(rawUser);
+        if (u.email) setStudentId(u.email.split('@')[0].toLowerCase().trim());
+      } catch (e) {}
+    }
+  }, []);
 
-  // Reloj regresivo
+  // Timer
   useEffect(() => {
     if (tiempoRestante <= 0) return;
-    const timer = setInterval(() => {
-      setTiempoRestante((prev) => prev - 1);
-    }, 1000);
+    const timer = setInterval(() => setTiempoRestante((prev) => prev - 1), 1000);
     return () => clearInterval(timer);
   }, [tiempoRestante]);
 
-  // Carga inicial de reactivo
+  // Carga Inicial del Diagnóstico
   useEffect(() => {
-    obtenerSiguientePregunta();
-  }, []);
+    iniciarExamenAdaptativo();
+  }, [materia]);
 
-  const obtenerSiguientePregunta = async (respuestaPrevia = null) => {
-    setCargandoPregunta(true);
-    setErrorPregunta(null);
+  const iniciarExamenAdaptativo = async () => {
+    setCargando(true);
+    setError(null);
+    try {
+      const token = localStorage.getItem('dante_token');
+      const res = await fetch('/api/cat/interactuar', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          studentId,
+          sessionId,
+          areaGeneral: materia,
+          itemId: null,
+          institution_id: institutionId
+        })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        procesarRespuestaMotor(data);
+      } else {
+        throw new Error(data.error || 'Error al conectar con Dante Gateway');
+      }
+    } catch (err) {
+      console.error(err);
+      setError('Cortocircuito de conexión con la pasarela Dante OS.');
+    } finally {
+      setCargando(false);
+    }
+  };
+
+  const procesarRespuestaMotor = (data) => {
+    if (data.detenerExamen) {
+      setReporteFinal(data.reporteFinal || data);
+      setFaseActual('FINAL_REPORT');
+      return;
+    }
+
+    const nTheta = data.thetaProgreso !== undefined ? data.thetaProgreso : (data.theta || 0.0);
+    setTheta(nTheta);
+    setBayesianSEM(data.bayesianSEMProgreso || data.bayesianSEM || 0.5);
+    setPreguntaActual(data.item);
+    setTiempoInicioReactivo(performance.now());
+    setHistorialSeleccion([]);
+    setOpcionSeleccionada('');
+    setEsSegundoIntento(false);
+    setFaseActual('WORKSPACE');
+  };
+
+  const handleSeleccionarOpcion = (letra) => {
+    setOpcionSeleccionada(letra);
+    setHistorialSeleccion((prev) => [...prev, { option: letra, timestamp: new Date().toISOString() }]);
+  };
+
+  const handleAbrirMetacognicion = () => {
+    if (!opcionSeleccionada) return;
+    setFaseActual('METACOGNITION');
+  };
+
+  const handleConfirmarMetacognicion = async (nivelCerteza) => {
+    setCargando(true);
+    const duracionSegundos = parseFloat(((performance.now() - tiempoInicioReactivo) / 1000).toFixed(2));
+    
+    setTelemetriaUltima({
+      tiempoTotal: duracionSegundos,
+      cambios: Math.max(0, historialSeleccion.length - 1),
+      certeza: nivelCerteza
+    });
 
     try {
+      const token = localStorage.getItem('dante_token');
       const payload = {
-        studentId: studentId || 'estudiante_demo',
-        area: areaInicial,
-        respuesta: respuestaPrevia
+        studentId,
+        sessionId,
+        itemId: String(preguntaActual.id),
+        areaGeneral: materia,
+        responseTime: duracionSegundos,
+        declaredConfidence: nivelCerteza,
+        selectionVector: historialSeleccion,
+        institution_id: institutionId
       };
 
       const res = await fetch('/api/cat/interactuar', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify(payload)
       });
 
-      if (!res.ok) throw new Error('Error de servidor');
-
       const data = await res.json();
+      if (!data.success) throw new Error(data.error);
 
-      if (data.pregunta) {
-        setPreguntaActual(data.pregunta);
-      } else {
-        setErrorPregunta('No hay más reactivos disponibles.');
+      setHistorialTheta((prev) => [...prev, data.thetaProgreso !== undefined ? data.thetaProgreso : theta]);
+
+      if (data.detenerExamen) {
+        setReporteFinal(data.reporteFinal || data);
+        setFaseActual('FINAL_REPORT');
+        return;
       }
+
+      // Pista o Andamiaje Pedagogico
+      if (!data.interaccionCorrecta) {
+        setAndamiajeForense(data.andamiajeForense);
+        if (!esSegundoIntento) {
+          setEsSegundoIntento(true);
+          setFaseActual('FEEDBACK_RETRY');
+          setCargando(false);
+          return;
+        }
+      }
+
+      if (data.interaccionCorrecta) {
+        setFaseActual('DASHBOARD');
+        setAndamiajeForense(null);
+      } else {
+        setFaseActual('FEEDBACK');
+      }
+
+      // Sincronizar Gemelo Digital
+      if (sincronizarGemelo) sincronizarGemelo(studentId);
     } catch (err) {
-      console.error(err);
-      setErrorPregunta('Error al conectar con Dante OS.');
+      alert('Error en transmisión: ' + err.message);
+      setFaseActual('WORKSPACE');
     } finally {
-      setCargandoPregunta(false);
-      setOpcionSeleccionada('');
+      setCargando(false);
     }
   };
 
-  const handleEnviarRespuesta = () => {
-    if (!opcionSeleccionada) return;
-
-    const letraRespuesta = opcionSeleccionada.charAt(0);
-    setNumeroPregunta((prev) => prev + 1);
-
-    if (studentId) sincronizarGemelo(studentId);
-    obtenerSiguientePregunta({
-      itemId: preguntaActual.id,
-      opcion: letraRespuesta
-    });
+  const formatearTiempo = (seg) => {
+    const m = Math.floor(seg / 60);
+    const s = seg % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
-  const formatearTiempo = (segundos) => {
-    const mins = Math.floor(segundos / 60);
-    const segs = segundos % 60;
-    return `${mins.toString().padStart(2, '0')}:${segs.toString().padStart(2, '0')}`;
-  };
-
-  if (loadingTwin && !gemelo) {
-    return <div style={styles.loading}>📡 Sincronizando con Dante OS Gateway...</div>;
+  if (cargando && !preguntaActual && faseActual !== 'FINAL_REPORT') {
+    return <div style={styles.centerContainer}>📡 Sincronizando modelo psicométrico con Dante OS...</div>;
   }
 
-  if (errorTwin) {
-    return <div style={styles.errorContainer}>🚨 Error perimetral: {errorTwin}</div>;
+  if (error) {
+    return <div style={styles.errorContainer}>🚨 {error}</div>;
   }
 
-  const escalonamiento = gemelo?.escalonamiento_icfes || { puntaje_estimado: 250, margen_error: 15, intervalo_95: [235, 265] };
-  const tieneRecursoVisual = Boolean(preguntaActual?.recurso_visual || preguntaActual?.estimulo_texto);
+  const tieneRecursoVisual = Boolean(preguntaActual?.recurso_visual || preguntaActual?.imagen_url);
 
   return (
-    <div style={styles.dashboardContainer}>
-      {/* 1. HEADER & RELEVO */}
+    <div style={styles.dashboardCard}>
+      {/* HEADER GLOBAL */}
       <header style={styles.header}>
         <div>
-          <h2 style={styles.title}>DANTE OS // ENGINE CAT</h2>
-          <p style={styles.subtitle}>ESTUDIANTE: {studentId || 'VIVIANA'}</p>
+          <h2 style={styles.title}>DANTE OS // SUITE ADAPTATIVA</h2>
+          <p style={styles.subtitle}>ESTUDIANTE: {studentId.toUpperCase()} | MÓDULO: {materia.toUpperCase()}</p>
         </div>
         <div style={styles.timerBadge}>⏱️ {formatearTiempo(tiempoRestante)}</div>
       </header>
 
-      {/* 2. TERMÓMETRO BAYESIANO */}
-      <div style={styles.termometroCard}>
-        <div style={styles.termometroHeader}>
-          <span style={styles.termometroTitle}>Termómetro de Certeza Bayesian</span>
-          <span style={styles.margenText}>±{escalonamiento.margen_error} Puntos</span>
-        </div>
+      {/* 🟢 VISTA 1: CUADERNILLO DE PREGUNTA (WORKSPACE) */}
+      {(faseActual === 'WORKSPACE' || faseActual === 'METACOGNITION' || faseActual === 'FEEDBACK_RETRY' || faseActual === 'FEEDBACK') && preguntaActual && (
+        <div style={styles.workspaceGrid(tieneRecursoVisual)}>
+          
+          {/* Panel Izquierdo: Gráfico/Estímulo Contextual */}
+          {tieneRecursoVisual && (
+            <div style={styles.visualCard}>
+              <span style={styles.sectionTag}>ESTÍMULO VISUAL / TABLA</span>
+              {preguntaActual.recurso_visual && preguntaActual.recurso_visual.startsWith('data:image/svg+xml') ? (
+                <img src={preguntaActual.recurso_visual} alt="Recurso SVG" style={styles.visualImg} />
+              ) : (
+                <div dangerouslySetInnerHTML={{ __html: preguntaActual.recurso_visual || preguntaActual.imagen_url }} />
+              )}
+            </div>
+          )}
 
-        <div style={styles.barraContenedor}>
-          <div
-            style={{
-              ...styles.intervaloRango,
-              left: `${(escalonamiento.intervalo_95[0] / 500) * 100}%`,
-              width: `${((escalonamiento.intervalo_95[1] - escalonamiento.intervalo_95[0]) / 500) * 100}%`
-            }}
-          />
-          <div
-            style={{
-              ...styles.marcadorPuntaje,
-              left: `${(escalonamiento.puntaje_estimado / 500) * 100}%`
-            }}
-          />
-        </div>
+          {/* Panel Derecho: Pregunta y Opciones */}
+          <div style={styles.questionCard}>
+            <div style={styles.subTag}>SUBCOMPETENCIA: {preguntaActual.sub_competencia || 'GENERAL'}</div>
+            <p style={styles.preguntaTexto}>{preguntaActual.pregunta_texto || preguntaActual.texto}</p>
 
-        <div style={styles.metricasGrid}>
-          <div style={styles.metricaBox}>
-            <span style={styles.metricaLabel}>Mínimo</span>
-            <strong style={styles.metricaVal}>{escalonamiento.intervalo_95[0]}</strong>
-          </div>
-          <div style={styles.metricaBoxHighlight}>
-            <span style={styles.metricaLabel}>Puntaje Estimado</span>
-            <strong style={styles.metricaValHighlight}>{escalonamiento.puntaje_estimado} / 500</strong>
-          </div>
-          <div style={styles.metricaBox}>
-            <span style={styles.metricaLabel}>Máximo</span>
-            <strong style={styles.metricaVal}>{escalonamiento.intervalo_95[1]}</strong>
-          </div>
-        </div>
-      </div>
+            <div style={styles.opcionesStack}>
+              {(preguntaActual.opciones_respuesta || preguntaActual.opciones || []).map((opc, idx) => {
+                const letra = ['A', 'B', 'C', 'D'][idx];
+                const estaSeleccionada = opcionSeleccionada === letra;
 
-      {/* 3. BARRA DE PROGRESO */}
-      <div style={styles.progresoContenedor}>
-        <div style={styles.progresoHeader}>
-          <span>Reactivo #{numeroPregunta}</span>
-          <span>Módulo: {areaInicial.toUpperCase()}</span>
-        </div>
-        <div style={styles.progresoTrack}>
-          <div style={{ ...styles.progresoFill, width: `${Math.min((numeroPregunta / 30) * 100, 100)}%` }} />
-        </div>
-      </div>
+                return (
+                  <button
+                    key={idx}
+                    disabled={faseActual !== 'WORKSPACE'}
+                    onClick={() => handleSeleccionarOpcion(letra)}
+                    style={{
+                      ...styles.opcionBtn,
+                      ...(estaSeleccionada ? styles.opcionBtnSelected : {})
+                    }}
+                  >
+                    <span style={styles.opcionBadge}>{letra}</span>
+                    <span style={{ flex: 1 }}>{opc}</span>
+                  </button>
+                );
+              })}
+            </div>
 
-      {/* 4. PREGUNTA ADAPTATIVA DINÁMICA */}
-      <main style={styles.preguntaCard}>
-        {cargandoPregunta ? (
-          <div style={styles.loadingInner}>⚡ Calculando el ítem con máxima información de Fisher...</div>
-        ) : errorPregunta ? (
-          <div style={styles.errorInner}>{errorPregunta}</div>
-        ) : preguntaActual ? (
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: tieneRecursoVisual ? 'repeat(auto-fit, minmax(300px, 1fr))' : '1fr',
-            gap: '24px'
-          }}>
-            {/* Panel Izquierdo: Solo si existe recurso o lectura larga */}
-            {tieneRecursoVisual && (
-              <div style={styles.visualContainer}>
-                {preguntaActual.estimulo_texto && (
-                  <p style={styles.estimuloTexto}>{preguntaActual.estimulo_texto}</p>
-                )}
-                {preguntaActual.recurso_visual && (
-                  preguntaActual.recurso_visual.startsWith('data:image/svg+xml') ? (
-                    <img
-                      src={preguntaActual.recurso_visual}
-                      alt="Recurso Ilustrativo"
-                      style={styles.visualImage}
-                    />
-                  ) : (
-                    <div dangerouslySetInnerHTML={{ __html: preguntaActual.recurso_visual }} />
-                  )
-                )}
+            {/* Acciones por Fase */}
+            {faseActual === 'WORKSPACE' && (
+              <div style={styles.accionesRow}>
+                <button
+                  disabled={!opcionSeleccionada}
+                  onClick={handleAbrirMetacognicion}
+                  style={{ ...styles.btnGold, ...(!opcionSeleccionada ? styles.btnDisabled : {}) }}
+                >
+                  Confirmar Elección ➔
+                </button>
               </div>
             )}
 
-            {/* Panel Derecho: Pregunta y Opciones */}
-            <div style={{ width: '100%' }}>
-              <p style={styles.preguntaTexto}>{preguntaActual.texto || preguntaActual.pregunta_texto}</p>
-
-              <div style={styles.opcionesGrid}>
-                {(preguntaActual.opciones || preguntaActual.opciones_respuesta || []).map((opcion, idx) => {
-                  const estaSeleccionada = opcionSeleccionada === opcion;
-                  return (
-                    <button
-                      key={idx}
-                      onClick={() => setOpcionSeleccionada(opcion)}
-                      style={{
-                        ...styles.opcionButton,
-                        ...(estaSeleccionada ? styles.opcionButtonSelected : {})
-                      }}
-                    >
-                      <span style={styles.opcionRadio}>{estaSeleccionada ? '●' : '○'}</span>
-                      <span style={styles.opcionTexto}>{opcion}</span>
-                    </button>
-                  );
-                })}
+            {/* Fase Metacognitiva */}
+            {faseActual === 'METACOGNITION' && (
+              <div style={styles.metaBox}>
+                <p style={styles.metaTitle}>¿Qué tan seguro estás de tu proceso de resolución?</p>
+                <div style={styles.metaGrid}>
+                  <button style={styles.btnMeta} onClick={() => handleConfirmarMetacognicion('alta')}>Certeza Absoluta</button>
+                  <button style={styles.btnMeta} onClick={() => handleConfirmarMetacognicion('media')}>Dudoso</button>
+                  <button style={styles.btnMeta} onClick={() => handleConfirmarMetacognicion('baja')}>Adiviné</button>
+                </div>
               </div>
+            )}
 
-              <div style={styles.accionesContainer}>
-                <button
-                  onClick={handleEnviarRespuesta}
-                  disabled={!opcionSeleccionada}
-                  style={{
-                    ...styles.btnEnviar,
-                    ...(!opcionSeleccionada ? styles.btnDisabled : {})
-                  }}
-                >
-                  Confirmar y Siguiente ➔
+            {/* Pista de Segundo Intento */}
+            {faseActual === 'FEEDBACK_RETRY' && (
+              <div style={styles.retryBox}>
+                <div style={styles.retryHeader}>🔍 SEGUNDO INTENTO ACTIVADO</div>
+                <p style={styles.retryTxt}>La opción seleccionada contiene una inconsistencia. Revisa la lógica sugerida:</p>
+                <div style={styles.pistaCaja}>
+                  💡 {andamiajeForense?.remediacionSugerida || 'Analiza de nuevo los conectores o variables.'}
+                </div>
+                <button style={styles.btnGold} onClick={() => setFaseActual('WORKSPACE')}>
+                  🔄 Intentar de Nuevo
                 </button>
               </div>
+            )}
+
+            {/* Feedback Definitivo */}
+            {faseActual === 'FEEDBACK' && (
+              <div style={styles.feedbackBox}>
+                <div style={styles.feedbackHeader}>Análisis de Desviación Cognitiva</div>
+                <p style={{ color: '#ef4444', fontSize: '13px', margin: '5px 0' }}>
+                  <strong>Sesgo Detectado:</strong> {andamiajeForense?.errorDetonado || 'Inconsistencia de Proceso'}
+                </p>
+                <p style={{ color: '#d4d4d8', fontSize: '13px' }}>
+                  <strong>Remediación:</strong> {andamiajeForense?.remediacionSugerida || 'Aplica escaneo analítico.'}
+                </p>
+                <button style={{ ...styles.btnGold, marginTop: '15px' }} onClick={() => setFaseActual('DASHBOARD')}>
+                  Continuar a Métricas ➡️
+                </button>
+              </div>
+            )}
+
+          </div>
+        </div>
+      )}
+
+      {/* 🟡 VISTA 2: DASHBOARD INTERMEDIO DE TRANSICIÓN */}
+      {faseActual === 'DASHBOARD' && (
+        <div style={styles.metricsContainer}>
+          <h3 style={styles.metricsTitle}>MÉTRICAS LONGITUDINALES (DANTE OS)</h3>
+          <p style={styles.metricsSubtitle}>Modelado Conductual y Trayectoria de Habilidad</p>
+
+          <div style={styles.kpiGrid}>
+            <div style={styles.kpiCard}>
+              <span style={styles.kpiLabel}>Tiempo Reactivo</span>
+              <strong style={styles.kpiVal}>{telemetriaUltima.tiempoTotal}s</strong>
+            </div>
+            <div style={styles.kpiCard}>
+              <span style={styles.kpiLabel}>Vacilación Real</span>
+              <strong style={styles.kpiVal}>{telemetriaUltima.cambios} cambios</strong>
+            </div>
+            <div style={styles.kpiCard}>
+              <span style={styles.kpiLabel}>Certeza Declarada</span>
+              <strong style={{ ...styles.kpiVal, color: '#fbbf24' }}>{telemetriaUltima.certeza.toUpperCase()}</strong>
+            </div>
+            <div style={styles.kpiCard}>
+              <span style={styles.kpiLabel}>Habilidad Latente (θ)</span>
+              <strong style={{ ...styles.kpiVal, color: '#38bdf8' }}>{theta.toFixed(4)}</strong>
             </div>
           </div>
-        ) : null}
-      </main>
+
+          <div style={styles.accionesRow}>
+            <button style={styles.btnGold} onClick={iniciarExamenAdaptativo}>
+              Siguiente Reactivo Adaptativo ➡️
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 🔴 VISTA 3: REPORTE FINAL DE CLAUSURA DEL PRIMER DIAGNÓSTICO */}
+      {faseActual === 'FINAL_REPORT' && (
+        <div style={styles.finalReportContainer}>
+          <h2 style={styles.reportTitle}>Perfil de Adaptación Humana</h2>
+          <p style={styles.reportSub}>Códice del ADN Cognitivo Vivo // Trazabilidad Diagnóstica Final</p>
+
+          <div style={styles.bannerAlert}>
+            ⚡ <strong>EVALUACIÓN ADAPTATIVA COMPLETADA (CAT):</strong> El motor psicométrico de Dante OS ha alcanzado la precisión estadística requerida (SEM &lt; 0.40).
+          </div>
+
+          <div style={styles.kpiGrid}>
+            <div style={styles.kpiCardHighlight}>
+              <span style={styles.kpiLabel}>PUNTACIÓN ICFES ESTIMADA</span>
+              <strong style={styles.kpiValBig}>
+                {reporteFinal?.escalonamiento_pais?.puntaje_icfes_area || Math.max(1, Math.min(100, Math.round(50 + theta * 13.8)))} / 100
+              </strong>
+            </div>
+            <div style={styles.kpiCard}>
+              <span style={styles.kpiLabel}>Índice θ Final (EAP)</span>
+              <strong style={{ ...styles.kpiVal, color: '#fbbf24' }}>{theta.toFixed(4)}</strong>
+            </div>
+            <div style={styles.kpiCard}>
+              <span style={styles.kpiLabel}>Precisión Bayesiana (SEM)</span>
+              <strong style={{ ...styles.kpiVal, color: '#38bdf8' }}>±{bayesianSEM.toFixed(4)}</strong>
+            </div>
+          </div>
+
+          {/* ADN Cognitivo */}
+          <div style={styles.narrativeCard}>
+            <h4 style={styles.narrativeHeader}>Crónica de ADN Cognitivo de {studentId.toUpperCase()}</h4>
+            <p style={styles.narrativeBody}>
+              {reporteFinal?.adn_cognitivo?.cronica_narrativa || 'Tu trayectoria adaptativa ha sido consolidada en Supabase con éxito.'}
+            </p>
+          </div>
+
+          <div style={styles.btnGridRow}>
+            <button style={styles.btnGold} onClick={() => window.location.reload()}>
+              🔄 Iniciar Nuevo Simulacro
+            </button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
 
-// Estilos CSS-in-JS Modo Oscuro
+// 🎨 Estilos CSS-in-JS Modo Oscuro
 const styles = {
-  dashboardContainer: {
+  dashboardCard: {
     background: '#09090b',
     color: '#f4f4f5',
-    padding: '20px',
+    padding: '24px',
     borderRadius: '16px',
     border: '1px solid #27272a',
     fontFamily: 'system-ui, -apple-system, sans-serif',
     maxWidth: '1000px',
-    margin: '20px auto',
-    boxSizing: 'border-box'
+    margin: '20px auto'
   },
   header: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: '20px',
-    flexWrap: 'wrap',
-    gap: '10px'
+    borderBottom: '1px solid #27272a',
+    paddingBottom: '12px'
   },
   title: {
-    margin: '0',
+    margin: 0,
     fontSize: '20px',
     background: 'linear-gradient(to right, #fbbf24, #fef08a)',
     WebkitBackgroundClip: 'text',
@@ -265,231 +427,306 @@ const styles = {
   subtitle: {
     margin: '4px 0 0 0',
     fontSize: '11px',
-    color: '#71717a',
+    color: '#a1a1aa',
     fontFamily: 'monospace'
   },
   timerBadge: {
     background: '#18181b',
     border: '1px solid #3f3f46',
-    padding: '8px 14px',
+    padding: '6px 12px',
     borderRadius: '9999px',
     fontFamily: 'monospace',
-    fontSize: '14px',
+    fontSize: '13px',
     color: '#fbbf24',
     fontWeight: 'bold'
   },
-  termometroCard: {
+  workspaceGrid: (hasVisual) => ({
+    display: 'grid',
+    gridTemplateColumns: hasVisual ? 'repeat(auto-fit, minmax(320px, 1fr))' : '1fr',
+    gap: '24px'
+  }),
+  visualCard: {
     background: '#18181b',
-    padding: '16px',
-    borderRadius: '12px',
     border: '1px solid #27272a',
-    marginBottom: '20px'
-  },
-  termometroHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    fontSize: '12px',
-    color: '#a1a1aa',
-    marginBottom: '10px'
-  },
-  termometroTitle: {
-    fontWeight: '600',
-    textTransform: 'uppercase'
-  },
-  margenText: {
-    fontFamily: 'monospace',
-    color: '#71717a'
-  },
-  barraContenedor: {
-    height: '14px',
-    background: '#27272a',
-    borderRadius: '9999px',
-    position: 'relative',
-    margin: '15px 0'
-  },
-  intervaloRango: {
-    position: 'absolute',
-    height: '100%',
-    background: 'rgba(245, 158, 11, 0.3)',
-    borderRadius: '9999px'
-  },
-  marcadorPuntaje: {
-    position: 'absolute',
-    top: '-5px',
-    transform: 'translateX(-50%)',
-    width: '24px',
-    height: '24px',
-    background: '#fbbf24',
-    borderRadius: '50%',
-    border: '3px solid #09090b',
-    boxShadow: '0 0 10px rgba(251, 191, 36, 0.5)'
-  },
-  metricasGrid: {
-    display: 'flex',
-    gap: '8px',
-    marginTop: '15px'
-  },
-  metricaBox: {
-    flex: 1,
-    background: '#09090b',
-    padding: '8px',
-    borderRadius: '6px',
+    borderRadius: '12px',
+    padding: '16px',
     textAlign: 'center'
   },
-  metricaBoxHighlight: {
-    flex: 1.2,
-    background: '#27272a',
-    padding: '8px',
-    borderRadius: '6px',
-    textAlign: 'center',
-    border: '1px solid #fbbf24'
+  visualImg: {
+    maxWidth: '100%',
+    height: 'auto',
+    borderRadius: '8px'
   },
-  metricaLabel: {
-    display: 'block',
+  sectionTag: {
     fontSize: '10px',
-    color: '#a1a1aa'
-  },
-  metricaVal: {
-    fontSize: '13px',
-    color: '#fff',
-    fontFamily: 'monospace'
-  },
-  metricaValHighlight: {
-    fontSize: '14px',
-    color: '#fbbf24',
+    color: '#71717a',
     fontFamily: 'monospace',
-    fontWeight: 'bold'
+    display: 'block',
+    marginBottom: '10px'
   },
-  progresoContenedor: {
-    marginBottom: '20px'
-  },
-  progresoHeader: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    fontSize: '12px',
-    color: '#a1a1aa',
-    marginBottom: '6px',
-    fontFamily: 'monospace'
-  },
-  progresoTrack: {
-    height: '6px',
-    background: '#27272a',
-    borderRadius: '9999px',
-    overflow: 'hidden'
-  },
-  progresoFill: {
-    height: '100%',
-    background: '#3b82f6',
-    transition: 'width 0.3s ease'
-  },
-  preguntaCard: {
+  questionCard: {
     background: '#18181b',
-    padding: '24px',
+    border: '1px solid #27272a',
     borderRadius: '12px',
-    border: '1px solid #27272a'
+    padding: '24px'
+  },
+  subTag: {
+    fontSize: '11px',
+    color: '#38bdf8',
+    fontFamily: 'monospace',
+    fontWeight: 'bold',
+    marginBottom: '12px'
   },
   preguntaTexto: {
     fontSize: '16px',
     lineHeight: '1.6',
     color: '#f4f4f5',
-    marginTop: 0,
-    marginBottom: '20px',
-    fontWeight: '500'
+    marginBottom: '20px'
   },
-  estimuloTexto: {
-    fontSize: '14px',
-    lineHeight: '1.5',
-    color: '#a1a1aa',
-    marginBottom: '15px'
-  },
-  visualContainer: {
-    textAlign: 'center',
-    background: '#09090b',
-    padding: '12px',
-    borderRadius: '8px',
-    border: '1px solid #27272a',
+  opcionesStack: {
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center'
+    gap: '12px'
   },
-  visualImage: {
-    maxWidth: '100%',
-    height: 'auto',
-    borderRadius: '6px'
-  },
-  opcionesGrid: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '12px',
-    marginBottom: '24px'
-  },
-  opcionButton: {
+  opcionBtn: {
     display: 'flex',
     alignItems: 'center',
     background: '#09090b',
     border: '1px solid #27272a',
     borderRadius: '10px',
-    padding: '14px 18px',
-    color: '#d4d4d8',
+    padding: '14px',
+    color: '#e4e4e7',
     fontSize: '14px',
     textAlign: 'left',
     cursor: 'pointer',
     transition: 'all 0.2s ease'
   },
-  opcionButtonSelected: {
+  opcionBtnSelected: {
     borderColor: '#fbbf24',
-    background: 'rgba(251, 191, 36, 0.08)',
-    color: '#ffffff',
-    boxShadow: '0 0 0 1px #fbbf24'
+    background: 'rgba(251, 191, 36, 0.1)',
+    color: '#fff',
+    boxShadow: '0 0 10px rgba(251, 191, 36, 0.2)'
   },
-  opcionRadio: {
-    marginRight: '12px',
+  opcionBadge: {
+    background: '#27272a',
     color: '#fbbf24',
-    fontSize: '16px'
-  },
-  opcionTexto: {
-    lineHeight: '1.4'
-  },
-  accionesContainer: {
+    width: '28px',
+    height: '28px',
     display: 'flex',
-    justifyContent: 'flex-end'
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: '6px',
+    fontWeight: 'bold',
+    marginRight: '12px',
+    fontFamily: 'monospace'
   },
-  btnEnviar: {
+  accionesRow: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    marginTop: '20px'
+  },
+  btnGold: {
     background: 'linear-gradient(to right, #f59e0b, #d97706)',
-    color: '#000000',
+    color: '#000',
     border: 'none',
     borderRadius: '8px',
     padding: '12px 24px',
     fontSize: '14px',
     fontWeight: 'bold',
-    cursor: 'pointer',
-    transition: 'opacity 0.2s ease'
+    cursor: 'pointer'
   },
   btnDisabled: {
     opacity: 0.4,
     cursor: 'not-allowed'
   },
-  loading: {
-    color: '#aaa',
-    fontFamily: 'monospace',
-    padding: '20px',
+  metaBox: {
+    marginTop: '20px',
+    padding: '16px',
+    background: '#09090b',
+    border: '1px solid #fbbf24',
+    borderRadius: '10px',
     textAlign: 'center'
   },
-  loadingInner: {
+  metaTitle: {
+    fontSize: '13px',
     color: '#fbbf24',
+    marginBottom: '12px',
+    fontWeight: 'bold'
+  },
+  metaGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))',
+    gap: '10px'
+  },
+  btnMeta: {
+    background: '#18181b',
+    border: '1px solid #3f3f46',
+    color: '#f4f4f5',
+    padding: '10px',
+    borderRadius: '6px',
+    fontSize: '12px',
+    cursor: 'pointer',
+    fontFamily: 'monospace'
+  },
+  retryBox: {
+    marginTop: '20px',
+    padding: '16px',
+    background: 'rgba(251, 191, 36, 0.05)',
+    border: '1px solid #fbbf24',
+    borderRadius: '10px'
+  },
+  retryHeader: {
+    color: '#fbbf24',
+    fontWeight: 'bold',
+    fontSize: '13px',
+    marginBottom: '6px',
+    fontFamily: 'monospace'
+  },
+  retryTxt: {
+    fontSize: '13px',
+    color: '#a1a1aa'
+  },
+  pistaCaja: {
+    background: '#09090b',
+    borderLeft: '4px solid #fbbf24',
+    padding: '10px',
+    fontSize: '12px',
+    margin: '12px 0',
+    borderRadius: '4px'
+  },
+  feedbackBox: {
+    marginTop: '20px',
+    padding: '16px',
+    background: 'rgba(239, 68, 68, 0.05)',
+    border: '1px solid #ef4444',
+    borderRadius: '10px'
+  },
+  feedbackHeader: {
+    color: '#ef4444',
+    fontWeight: 'bold',
+    fontSize: '13px',
+    fontFamily: 'monospace'
+  },
+  metricsContainer: {
+    background: '#18181b',
+    padding: '24px',
+    borderRadius: '12px',
+    border: '1px solid #27272a',
+    textAlign: 'center'
+  },
+  metricsTitle: {
+    color: '#fbbf24',
+    fontSize: '16px',
+    margin: 0,
+    fontWeight: 'bold'
+  },
+  metricsSubtitle: {
+    color: '#71717a',
+    fontSize: '12px',
+    fontFamily: 'monospace',
+    marginBottom: '20px'
+  },
+  kpiGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+    gap: '12px',
+    margin: '20px 0'
+  },
+  kpiCard: {
+    background: '#09090b',
+    border: '1px solid #27272a',
+    padding: '12px',
+    borderRadius: '8px'
+  },
+  kpiCardHighlight: {
+    background: '#09090b',
+    border: '1px solid #22c55e',
+    padding: '12px',
+    borderRadius: '8px',
+    gridColumn: '1 / -1'
+  },
+  kpiLabel: {
+    fontSize: '10px',
+    color: '#a1a1aa',
+    display: 'block',
+    fontFamily: 'monospace'
+  },
+  kpiVal: {
+    fontSize: '15px',
+    color: '#fff',
+    fontFamily: 'monospace',
+    marginTop: '4px',
+    display: 'block'
+  },
+  kpiValBig: {
+    fontSize: '28px',
+    color: '#22c55e',
+    fontFamily: 'monospace',
+    display: 'block',
+    marginTop: '4px'
+  },
+  finalReportContainer: {
+    background: '#18181b',
+    padding: '28px',
+    borderRadius: '12px',
+    border: '1px solid #27272a',
+    textAlign: 'center'
+  },
+  reportTitle: {
+    color: '#fbbf24',
+    fontSize: '22px',
+    margin: 0
+  },
+  reportSub: {
+    color: '#71717a',
+    fontSize: '12px',
+    fontFamily: 'monospace',
+    marginBottom: '20px'
+  },
+  bannerAlert: {
+    background: 'rgba(56, 189, 248, 0.1)',
+    border: '1px solid #38bdf8',
+    color: '#e0f2fe',
+    padding: '12px',
+    borderRadius: '8px',
+    fontSize: '12px',
+    textAlign: 'left',
+    marginBottom: '20px'
+  },
+  narrativeCard: {
+    background: '#09090b',
+    borderLeft: '4px solid #fbbf24',
+    padding: '16px',
+    borderRadius: '8px',
+    textAlign: 'left',
+    margin: '20px 0'
+  },
+  narrativeHeader: {
+    color: '#fbbf24',
+    fontSize: '13px',
+    margin: '0 0 8px 0',
+    fontFamily: 'monospace'
+  },
+  narrativeBody: {
+    fontSize: '13px',
+    color: '#d4d4d8',
+    lineHeight: '1.6',
+    margin: 0
+  },
+  btnGridRow: {
+    display: 'flex',
+    gap: '12px',
+    justifyContent: 'center'
+  },
+  centerContainer: {
+    color: '#a1a1aa',
     fontFamily: 'monospace',
     textAlign: 'center',
-    padding: '40px 0'
+    padding: '40px'
   },
   errorContainer: {
-    color: '#ff6b6b',
-    fontFamily: 'monospace',
-    padding: '20px',
-    textAlign: 'center'
-  },
-  errorInner: {
     color: '#ef4444',
+    fontFamily: 'monospace',
     textAlign: 'center',
     padding: '20px'
   }
