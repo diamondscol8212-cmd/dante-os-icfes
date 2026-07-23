@@ -388,7 +388,9 @@
         const sessionToken = localStorage.getItem("dante_token");
         const rawUser = localStorage.getItem("dante_user");
         const userObj = rawUser ? JSON.parse(rawUser) : {};
-        const STUDENT_ID = userObj.email ? userObj.email.split('@')[0].toLowerCase().trim() : (userObj.estudiante || "viviana");
+        
+        // Extrae el ID limpio sin dominios quemados
+        const STUDENT_ID = userObj.email ? userObj.email.split('@')[0].toLowerCase().trim() : (userObj.estudiante ? userObj.estudiante.toLowerCase().trim() : "estudiante");
         const INSTITUTION_ID = userObj.institution_id || "colegio_sandbox_default";
 
         let currentMateriaFiltro = "todas";
@@ -438,7 +440,8 @@
             }
 
             static procesarYRenderizarVistas() {
-                document.getElementById("lblSubtituloAlumno").innerText = `> EXPEDIENTE Y TRAYECTORIA LONGITUDINAL DE: ${STUDENT_ID.toUpperCase()}`;
+                const nombreEstudianteCapitalizado = STUDENT_ID.toUpperCase();
+                document.getElementById("lblSubtituloAlumno").innerText = `> EXPEDIENTE Y TRAYECTORIA LONGITUDINAL DE: ${nombreEstudianteCapitalizado}`;
 
                 const streak = localStorage.getItem("dante_streak_count") || "1";
                 document.getElementById("kpiRacha").innerText = `${streak} 🔥`;
@@ -447,7 +450,7 @@
                 if (currentMateriaFiltro !== "todas") {
                     historialFiltrado = cacheHistorialCompleto.filter(h => {
                         const m = String(h.materia || h.area_general || '').toLowerCase().trim();
-                        return m === currentMateriaFiltro;
+                        return m === currentMateriaFiltro || currentMateriaFiltro.includes(m) || m.includes(currentMateriaFiltro);
                     });
                 }
 
@@ -461,6 +464,7 @@
                 let iriVal = 0.50;
                 let itemsResp = {};
 
+                // 🔄 MANEJO DINÁMICO SI NO HAY REGISTRO EN LA MATERIA
                 if (ultimoRegistro) {
                     if (Array.isArray(ultimoRegistro.historial_theta) && ultimoRegistro.historial_theta.length > 0) {
                         maxThetaVal = parseFloat(ultimoRegistro.historial_theta[ultimoRegistro.historial_theta.length - 1]);
@@ -478,11 +482,15 @@
                     iriVal = itemsResp.indice_recuperacion_intelectual !== undefined 
                         ? parseFloat(itemsResp.indice_recuperacion_intelectual) 
                         : (ultimoRegistro.indice_recuperacion_intelectual || 0.50);
-                }
 
-                document.getElementById("kpiTheta").innerText = maxThetaVal.toFixed(4);
-                document.getElementById("kpiPuntaje").innerText = `${maxPuntajeVal} / 100 pts`;
-                document.getElementById("kpiIRI").innerText = `${Math.round(iriVal * 100)}%`;
+                    document.getElementById("kpiTheta").innerText = maxThetaVal.toFixed(4);
+                    document.getElementById("kpiPuntaje").innerText = `${maxPuntajeVal} / 100 pts`;
+                    document.getElementById("kpiIRI").innerText = `${Math.round(iriVal * 100)}%`;
+                } else {
+                    document.getElementById("kpiTheta").innerText = "0.0000";
+                    document.getElementById("kpiPuntaje").innerText = "0 / 100 pts";
+                    document.getElementById("kpiIRI").innerText = "0%";
+                }
 
                 let rango = "Platino II";
                 if (maxPuntajeVal > 75) rango = "Élite MÁSTER";
@@ -510,17 +518,25 @@
 
                 const adn = itemsResp.adn_cognitivo || ultimoRegistro?.adn_cognitivo || cacheGemeloCompleto.adn_cognitivo || {};
                 
-                document.getElementById("lblVulnerabilidadTxt").innerText = adn.vulnerabilidad_dominante || "Heurística lineal y traducción literal paso a paso.";
-                document.getElementById("lblPrescripcionTxt").innerText = adn.prescripcion_clinica || "Aplica la técnica de escaneo global leyendo la oración completa de atrás hacia adelante.";
-                document.getElementById("lblCronicaTxt").innerText = adn.cronica_narrativa || "Viviana, tu nivel en inglés es balanceado y reflexivo. Sin embargo, te atas a un orden lineal rígido que frena tu adaptación sintáctica.";
+                // 🟢 DINAMIZACIÓN TOTAL DE MENSAJES (Sustituye cualquier valor duro)
+                if (ultimoRegistro) {
+                    document.getElementById("lblVulnerabilidadTxt").innerText = adn.vulnerabilidad_dominante || "Sensibilidad a la aceleración en el tramo final del examen.";
+                    document.getElementById("lblPrescripcionTxt").innerText = adn.prescripcion_clinica || "Aplica la técnica de escaneo estructurado revisando variables antes de marcar la opción.";
+                    document.getElementById("lblCronicaTxt").innerText = adn.cronica_narrativa || `${nombreEstudianteCapitalizado}, tu perfil en esta materia refleja consistencia analítica. Mantiene un ritmo estable en tus sesiones.`;
+                } else {
+                    const materiaNombreTxt = currentMateriaFiltro.replace('_', ' ').toUpperCase();
+                    document.getElementById("lblVulnerabilidadTxt").innerText = `Aún no hay suficientes respuestas registradas en ${materiaNombreTxt} para establecer un diagnóstico.`;
+                    document.getElementById("lblPrescripcionTxt").innerText = `Realiza un simulacro adaptativo de ${materiaNombreTxt} para recibir tu itinerario personalizado.`;
+                    document.getElementById("lblCronicaTxt").innerText = `${nombreEstudianteCapitalizado}, aún no registras una prueba adaptativa finalizada en ${materiaNombreTxt}.`;
+                }
 
                 this.generarListaTemasEstudio(currentMateriaFiltro);
 
                 const mapaSesgos = adn.mapa_calor_sesgos || itemsResp.mapa_calor_sesgos || {
-                    attr_heuristica_lineal: 0.98,
-                    attr_inversion_operacional: 0.98,
-                    attr_omision_conversion: 0.50,
-                    attr_error_geometrico: 0.50
+                    attr_heuristica_lineal: 0.15,
+                    attr_inversion_operacional: 0.15,
+                    attr_omision_conversion: 0.15,
+                    attr_error_geometrico: 0.15
                 };
                 this.renderizarMapaCalor(mapaSesgos);
 
@@ -535,7 +551,7 @@
 
                 let temas = [];
 
-                if (materia === "ingles" || materia === "todas") {
+                if (materia === "ingles") {
                     temas.push("Comprensión de avisos publicitarios y señales de lugar público (Parte 1 ICFES).");
                     temas.push("Uso de tiempos verbales compuestos (Present Perfect vs. Past Simple).");
                     temas.push("Estrategias de lectura rápida por palabras clave (Scanning y Skimming).");
@@ -551,6 +567,10 @@
                     temas.push("Conservación de la energía y leyes de conservación en física mecánica.");
                     temas.push("Interpretación de cadenas tróficas y flujo de masa en ecosistemas.");
                     temas.push("Análisis de variables dependientes e independientes en experimentos científicos.");
+                } else {
+                    temas.push("Repaso general de Álgebra y funciones lineales.");
+                    temas.push("Lectura crítica de textos argumentativos y filosóficos.");
+                    temas.push("Análisis de gráficos de datos en Ciencias Naturales.");
                 }
 
                 temas.forEach(t => {
@@ -566,25 +586,25 @@
                     { 
                         k: "attr_heuristica_lineal", 
                         n: "Heurística Lineal", 
-                        v: sesgos.attr_heuristica_lineal || sesgos.heuristica_lineal || 0.98,
+                        v: sesgos.attr_heuristica_lineal || sesgos.heuristica_lineal || 0.15,
                         desc: "Responder por traducción secuencial literal, sin verificar el contexto global."
                     },
                     { 
                         k: "attr_inversion_operacional", 
                         n: "Inversión Operacional", 
-                        v: sesgos.attr_inversion_operacional || sesgos.inversion_operacional || 0.98,
+                        v: sesgos.attr_inversion_operacional || sesgos.inversion_operacional || 0.15,
                         desc: "Invertir la relación de adjetivos, sustantivos o conectores lógicos."
                     },
                     { 
                         k: "attr_omision_conversion", 
                         n: "Omisión de Conversión", 
-                        v: sesgos.attr_omision_conversion || sesgos.omision_conversion || 0.50,
+                        v: sesgos.attr_omision_conversion || sesgos.omision_conversion || 0.15,
                         desc: "Ignorar las variables de escala o cambios sintácticos antes de responder."
                     },
                     { 
                         k: "attr_error_geometrico", 
                         n: "Error Geométrico / Contextual", 
-                        v: sesgos.attr_error_geometrico || sesgos.error_geometrico || 0.50,
+                        v: sesgos.attr_error_geometrico || sesgos.error_geometrico || 0.15,
                         desc: "Confundir elementos del párrafo o aislar una palabra del resto del texto."
                     }
                 ];
@@ -632,7 +652,7 @@
                 body.innerHTML = "";
                 registros.forEach(r => {
                     const fecha = new Date(r.ultima_actualizacion || r.updated_at || r.created_at || Date.now()).toLocaleDateString('es-CO');
-                    const materiaNombre = String(r.materia || r.area_general || 'ingles').replace('_', ' ').toUpperCase();
+                    const materiaNombre = String(r.materia || r.area_general || 'general').replace('_', ' ').toUpperCase();
                     
                     let th = 0.0000;
                     if (Array.isArray(r.historial_theta) && r.historial_theta.length > 0) {
@@ -668,12 +688,14 @@
                         let th = 0.0000;
                         if (Array.isArray(r.historial_theta) && r.historial_theta.length > 0) {
                             th = parseFloat(r.historial_theta[r.historial_theta.length - 1]);
+                        } else if (r.theta_final !== undefined) {
+                            th = parseFloat(r.theta_final);
                         }
                         seriesData.push(parseFloat(th.toFixed(4)));
                     });
                 } else {
                     fechas = ['Línea Base'];
-                    seriesData = [-0.0265];
+                    seriesData = [0.0000];
                 }
 
                 const options = {
@@ -695,11 +717,11 @@
                     series: [{
                         name: 'Atributos Cognitivos',
                         data: [
-                            parseFloat(100 - (adn.impulsividad || 0)),
-                            parseFloat(adn.estabilidad || 50),
+                            parseFloat(100 - (adn.impulsividad || 20)),
+                            parseFloat(adn.estabilidad || 75),
                             parseFloat(100 - (adn.fatiga || 0)),
                             parseFloat(adn.recuperacion || 59),
-                            parseFloat(adn.estabilidad || 50)
+                            parseFloat(adn.estabilidad || 75)
                         ]
                     }],
                     chart: { type: 'radar', height: 260, toolbar: { show: false }, background: 'transparent' },
