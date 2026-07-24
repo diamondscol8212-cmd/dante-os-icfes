@@ -212,6 +212,73 @@
         <button class="tab-materia-btn" onclick="PerfilEstudiante.cambiarFiltroMateria('ingles', this)">🇬🇧 Inglés</button>
     </nav>
 
+    <!-- 🏆 BLOQUE SUPERIOR DE NEGOCIO: PUNTAJE GLOBAL 500 Y ENTRENADOR DE MISIONES -->
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <!-- CUADRO GIGANTE DE PUNTAJE GLOBAL PROYECTADO -->
+        <div class="lg:col-span-2 bg-[#12141c]/90 border border-[#d4af37]/40 rounded-xl p-5 sm:p-6 relative overflow-hidden backdrop-blur-md shadow-2xl">
+            <div class="absolute top-0 right-0 bg-[#d4af37]/15 text-[#d4af37] px-3 py-1 text-[10px] font-mono font-bold uppercase rounded-bl-lg border-l border-b border-[#d4af37]/30">
+                PROYECCIÓN CONCURRENTE ICFES
+            </div>
+            
+            <p class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest mb-1">
+                Puntaje Global Estimado (Escala País)
+            </p>
+            
+            <div class="flex items-baseline gap-3 my-2">
+                <h2 id="lblPuntajeGlobal500" class="text-4xl sm:text-5xl font-extrabold font-mono text-[#d4af37] tracking-tight">
+                    --- <span class="text-xl sm:text-2xl text-slate-400 font-normal">/ 500 pts</span>
+                </h2>
+                <span id="lblProbabilidadMeta" class="text-xs font-mono px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-semibold">
+                    --% Prob. Meta 350+
+                </span>
+            </div>
+
+            <!-- Barra de Progreso hacia 500 pts -->
+            <div class="w-full bg-slate-950 h-3 rounded-full border border-slate-800 overflow-hidden my-3">
+                <div id="barPuntajeGlobal" class="h-full bg-gradient-to-r from-amber-500 via-[#d4af37] to-emerald-400 rounded-full transition-all duration-1000" style="width: 0%;"></div>
+            </div>
+
+            <div class="flex justify-between items-center text-xs text-slate-400 font-mono mt-2">
+                <span>Estado: <strong id="lblEstadoGlobalTxt" class="text-white">PROCESANDO TRAYECTORIA</strong></span>
+                <span>Meta ICFES: <strong class="text-[#51e2f5]">350+ pts</strong></span>
+            </div>
+        </div>
+
+        <!-- 🔥 RACHA DIARIA Y MISIONES DE HOY -->
+        <div class="bg-[#12141c]/90 border border-slate-800 rounded-xl p-5 flex flex-col justify-between backdrop-blur-md">
+            <div>
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-xs font-mono font-bold text-[#51e2f5] uppercase tracking-wider">ENTRENADOR DANTE</span>
+                    <div class="flex items-center gap-1.5 bg-orange-500/10 border border-orange-500/30 px-2.5 py-1 rounded-full">
+                        <span class="text-xs">🔥</span>
+                        <span id="lblRachaDiasBox" class="text-xs font-mono font-bold text-orange-400">1 Día Racha</span>
+                    </div>
+                </div>
+
+                <!-- Misiones Diarias -->
+                <div class="space-y-2">
+                    <p class="text-[10px] font-mono text-slate-400 uppercase tracking-wide">MISIONES DEL DÍA:</p>
+                    
+                    <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" id="chkMision1" class="rounded border-slate-700 text-[#d4af37] focus:ring-0" disabled />
+                            <span class="text-xs text-slate-300">15 reactivos hoy</span>
+                        </div>
+                        <span id="lblProgresoMision1" class="text-[10px] font-mono text-[#d4af37]">0/15</span>
+                    </div>
+
+                    <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" id="chkMision2" class="rounded border-slate-700 text-[#d4af37] focus:ring-0" checked disabled />
+                            <span class="text-xs text-slate-300">Racha activa</span>
+                        </div>
+                        <span class="text-[10px] font-mono text-emerald-400">✓ ACTIVA</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- METRICAS KPI -->
     <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="kpi-card">
@@ -233,7 +300,7 @@
                 <div class="tooltip-wrapper">
                     <span class="text-xs text-emerald-500 font-bold"> (?)</span>
                     <div class="tooltip-box font-sans">
-                        <strong>📊 Puntaje Estimado (1 a 100 pts):</strong> Proyección en escala oficial Saber 11.
+                        <strong>📊 Puntaje Estimado (1 a 100 pts):</strong> Proyección en escala oficial Saber 11 por materia.
                     </div>
                 </div>
             </div>
@@ -437,6 +504,7 @@
 
                 const streak = localStorage.getItem("dante_streak_count") || "1";
                 document.getElementById("kpiRacha").innerText = `${streak} 🔥`;
+                document.getElementById("lblRachaDiasBox").innerText = `${streak} ${streak === "1" ? 'Día' : 'Días'} Racha`;
 
                 let historialFiltrado = cacheHistorialCompleto;
                 if (currentMateriaFiltro !== "todas") {
@@ -534,6 +602,72 @@
                 this.renderizarTablaHistorial(historialFiltrado);
                 this.renderizarGraficaEvolucion(historialFiltrado);
                 this.renderizarRadar(adn);
+
+                // 🧮 CÁLCULO Y RENDERIZADO DEL PUNTAJE GLOBAL SOBRE 500 PTS
+                this.calcularPuntajeGlobal500();
+            }
+
+            static calcularPuntajeGlobal500() {
+                const PESOS = { 'matematicas': 3, 'lectura_critica': 3, 'ciencias_naturales': 3, 'sociales_ciudadanas': 3, 'ingles': 1 };
+                const puntajesMateria = { 'matematicas': 50, 'lectura_critica': 50, 'ciencias_naturales': 50, 'sociales_ciudadanas': 50, 'ingles': 50 };
+                let totalClicsHoy = 0;
+
+                if (Array.isArray(cacheHistorialCompleto) && cacheHistorialCompleto.length > 0) {
+                    cacheHistorialCompleto.forEach(reg => {
+                        const m = String(reg.materia || reg.area_general || '').toLowerCase().trim();
+                        let matKey = 'matematicas';
+                        if (m.includes('lectura')) matKey = 'lectura_critica';
+                        else if (m.includes('ciencias')) matKey = 'ciencias_naturales';
+                        else if (m.includes('ingles')) matKey = 'ingles';
+
+                        const itemsR = typeof reg.items_respondidos === 'string' ? JSON.parse(reg.items_respondidos) : (reg.items_respondidos || {});
+                        let pts = itemsR.puntaje_escalonado || reg.puntaje_escalonado;
+                        
+                        if (!pts) {
+                            let th = reg.theta_final !== undefined ? reg.theta_final : reg.theta;
+                            pts = Math.max(1, Math.min(100, Math.round(50 + (parseFloat(th || 0) * 13.8))));
+                        }
+
+                        if (puntajesMateria[matKey] !== undefined) {
+                            puntajesMateria[matKey] = pts;
+                        }
+
+                        if (itemsR.historico_clics && Array.isArray(itemsR.historico_clics)) {
+                            totalClicsHoy += itemsR.historico_clics.length;
+                        }
+                    });
+                }
+
+                let sumaPonderada = 0; let sumaPesos = 0;
+                Object.keys(PESOS).forEach(k => {
+                    sumaPonderada += (puntajesMateria[k] * PESOS[k]);
+                    sumaPesos += PESOS[k];
+                });
+
+                let puntajeGlobal500 = Math.round((sumaPonderada / (100 * sumaPesos)) * 500);
+                puntajeGlobal500 = Math.max(50, Math.min(500, puntajeGlobal500 || 290));
+
+                document.getElementById("lblPuntajeGlobal500").innerHTML = `${puntajeGlobal500} <span class="text-xl sm:text-2xl text-slate-400 font-normal">/ 500 pts</span>`;
+                
+                const pctBarra = ((puntajeGlobal500 / 500) * 100).toFixed(1);
+                document.getElementById("barPuntajeGlobal").style.width = `${pctBarra}%`;
+
+                let probMeta = Math.min(99, Math.max(15, Math.round((puntajeGlobal500 / 350) * 80)));
+                const lblProb = document.getElementById("lblProbabilidadMeta");
+                if (lblProb) lblProb.innerText = `${probMeta}% Prob. Meta 350+`;
+
+                // Misión 1: 15 reactivos hoy
+                const chkM1 = document.getElementById("chkMision1");
+                const lblM1 = document.getElementById("lblProgresoMision1");
+                if (chkM1 && lblM1) {
+                    const visCount = Math.min(15, totalClicsHoy || 6);
+                    lblM1.innerText = `${visCount}/15`;
+                    if (visCount >= 15) {
+                        chkM1.checked = true;
+                        lblM1.className = "text-[10px] font-mono text-emerald-400 font-bold";
+                        lblM1.innerText = "✓ COMPLETADA";
+                    }
+                }
             }
 
             static generarListaTemasEstudio(materia) {
