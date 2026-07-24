@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Dante OS | CÓDICE COGNITIVO & MATRIZ ADN</title>
-    
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&family=JetBrains+Mono:wght@400;500;700;900&family=Oswald:wght@700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
+
     <style>
         :root {
             --primary: #51e2f5; 
@@ -47,7 +47,11 @@
             overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth;
             padding: 85px 15px 120px;
         }
-        .adn-viewport::-webkit-scrollbar { display: none; }
+        .adn-viewport::-webkit-scrollbar { display: none; width: 0; height: 0; }
+
+        /* OCULTAR SCROLLBAR EN PESTAÑAS HORIZONTALES */
+        .no-scrollbar::-webkit-scrollbar { display: none; width: 0; height: 0; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
         /* TARJETA MAESTRA DANTE */
         .adn-card {
@@ -82,9 +86,9 @@
         /* PESTAÑAS MATERIAS */
         .tab-materia-btn {
             background: rgba(20, 24, 35, 0.7); border: 1px solid var(--border-graphite); color: #8a8f9d;
-            padding: 0.55rem 1rem; border-radius: 8px; font-size: 0.72rem; font-weight: 800;
+            padding: 0.55rem 1.1rem; border-radius: 8px; font-size: 0.72rem; font-weight: 800;
             text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: all 0.25s ease;
-            font-family: 'JetBrains Mono', monospace; white-space: nowrap;
+            font-family: 'JetBrains Mono', monospace; white-space: nowrap; flex-shrink: 0;
         }
         .tab-materia-btn.active {
             border-color: var(--gold); color: var(--gold);
@@ -136,6 +140,17 @@
         .mini-bar-bg { background: rgba(8, 9, 13, 0.9); height: 8px; border-radius: 4px; overflow: hidden; margin-top: 0.4rem; border: 1px solid var(--border-graphite); }
         .mini-bar-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
 
+        /* TOOLTIPS Y AYUDAS (?) PEDAGÓGICAS */
+        .tooltip-wrapper { position: relative; display: inline-flex; align-items: center; cursor: pointer; }
+        .tooltip-box {
+            visibility: hidden; width: 220px; max-width: 80vw; background-color: #0c0e17; color: #f1f5f9;
+            text-align: left; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--gold);
+            position: absolute; z-index: 999999 !important; opacity: 0; transition: opacity 0.2s ease;
+            font-size: 0.72rem; line-height: 1.4; box-shadow: 0 14px 35px rgba(0, 0, 0, 0.95); backdrop-filter: blur(16px); pointer-events: none;
+            bottom: calc(100% + 6px); right: 0;
+        }
+        .tooltip-wrapper:hover .tooltip-box, .tooltip-wrapper:focus .tooltip-box { visibility: visible; opacity: 1; }
+
         /* BOTTOM NAV DOCK FLOTANTE */
         .bottom-nav { 
             position: fixed; bottom: 18px; width: 90%; left: 5%; z-index: 1000;
@@ -150,6 +165,8 @@
         
         #dante-anchor { width: 52px; height: 52px; border-radius: 50%; border: 2px solid var(--gold); background: #000; box-shadow: 0 0 20px rgba(212,175,55,0.35); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s;}
         #dante-anchor i { font-size: 20px; color: var(--gold); transition: 0.3s; }
+        #dante-anchor:active { border-color: var(--primary); box-shadow: 0 0 30px var(--primary); transform: scale(0.95);}
+        #dante-anchor:active i { color: var(--primary); }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -184,7 +201,7 @@
         </div>
     </header>
 
-    <div class="adn-viewport">
+    <div class="adn-viewport" id="viewportContainer">
         <div class="adn-card" id="main-card">
             
             <!-- HEADER DE IDENTIDAD Y CÓDICE -->
@@ -205,8 +222,8 @@
                 </div>
             </div>
 
-            <!-- NAVEGACIÓN DE FILTROS POR MATERIA -->
-            <nav class="flex gap-2 overflow-x-auto pb-2 mb-4 border-b border-zinc-800/80 no-scrollbar">
+            <!-- NAVEGACIÓN DE FILTROS POR MATERIA (SLIDER SUAVE SIN SCROLLBAR) -->
+            <nav class="flex gap-2 overflow-x-auto pb-2 mb-4 border-b border-zinc-800/80 no-scrollbar" style="-webkit-overflow-scrolling: touch;">
                 <button class="tab-materia-btn active" onclick="PerfilEstudiante.cambiarFiltroMateria('todas', this)">🌐 Diagnóstico Global</button>
                 <button class="tab-materia-btn" onclick="PerfilEstudiante.cambiarFiltroMateria('matematicas', this)">📐 Matemáticas</button>
                 <button class="tab-materia-btn" onclick="PerfilEstudiante.cambiarFiltroMateria('lectura_critica', this)">📖 Lectura Crítica</button>
@@ -281,22 +298,57 @@
                 </div>
             </div>
 
-            <!-- MÉTRICAS KPI INDIVIDUALES -->
+            <!-- MÉTRICAS KPI INDIVIDUALES CON AYUDA PEDAGÓGICA (?) -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
                 <div class="bg-slate-900/80 border border-slate-800 p-3 rounded-lg">
-                    <p class="text-[9px] font-mono text-slate-400 uppercase">Racha Activa</p>
+                    <div class="flex justify-between items-center">
+                        <p class="text-[9px] font-mono text-slate-400 uppercase">Racha Activa</p>
+                        <div class="tooltip-wrapper">
+                            <span class="text-[10px] text-amber-500 font-bold">(?)</span>
+                            <div class="tooltip-box font-sans">
+                                <strong>🔥 Racha Diaria:</strong> Días consecutivos de entrenamiento cognitivo en Dante OS.
+                            </div>
+                        </div>
+                    </div>
                     <p id="kpiRacha" class="text-lg font-mono font-bold text-amber-400 mt-0.5">1 🔥</p>
                 </div>
+
                 <div class="bg-slate-900/80 border border-slate-800 p-3 rounded-lg">
-                    <p class="text-[9px] font-mono text-slate-400 uppercase">Puntaje Materia</p>
+                    <div class="flex justify-between items-center">
+                        <p class="text-[9px] font-mono text-slate-400 uppercase">Puntaje Materia</p>
+                        <div class="tooltip-wrapper">
+                            <span class="text-[10px] text-emerald-500 font-bold">(?)</span>
+                            <div class="tooltip-box font-sans">
+                                <strong>📊 Escala Saber 11:</strong> Proyección de 1 a 100 puntos oficiales por asignatura.
+                            </div>
+                        </div>
+                    </div>
                     <p id="kpiPuntaje" class="text-lg font-mono font-bold text-emerald-400 mt-0.5">62 / 100 pts</p>
                 </div>
+
                 <div class="bg-slate-900/80 border border-slate-800 p-3 rounded-lg">
-                    <p class="text-[9px] font-mono text-slate-400 uppercase">Habilidad Latente (θ)</p>
+                    <div class="flex justify-between items-center">
+                        <p class="text-[9px] font-mono text-slate-400 uppercase">Habilidad Latente (θ)</p>
+                        <div class="tooltip-wrapper">
+                            <span class="text-[10px] text-sky-500 font-bold">(?)</span>
+                            <div class="tooltip-box font-sans">
+                                <strong>🧠 Habilidad IRT ($\theta$):</strong> Medida psicométrica real descontando la dificultad de las preguntas (-3.0 a +3.0).
+                            </div>
+                        </div>
+                    </div>
                     <p id="kpiTheta" class="text-lg font-mono font-bold text-sky-400 mt-0.5">0.8500</p>
                 </div>
+
                 <div class="bg-slate-900/80 border border-slate-800 p-3 rounded-lg">
-                    <p class="text-[9px] font-mono text-slate-400 uppercase">Resiliencia (IRI)</p>
+                    <div class="flex justify-between items-center">
+                        <p class="text-[9px] font-mono text-slate-400 uppercase">Resiliencia (IRI)</p>
+                        <div class="tooltip-wrapper">
+                            <span class="text-[10px] text-purple-500 font-bold">(?)</span>
+                            <div class="tooltip-box font-sans">
+                                <strong>🛡️ Recuperación Intelectual:</strong> Probabilidad de acertar la pregunta $N+1$ tras haber fallado la pregunta $N$.
+                            </div>
+                        </div>
+                    </div>
                     <p id="kpiIRI" class="text-lg font-mono font-bold text-purple-400 mt-0.5">65%</p>
                 </div>
             </div>
@@ -307,7 +359,12 @@
                     <h3 class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--gold)] flex items-center gap-2">
                         <span>🧬</span> Gemelo Digital // Termómetro de Certeza Bayesiano
                     </h3>
-                    <span id="lblOrigenGemelo" class="text-[9px] font-mono text-slate-400 uppercase bg-[#08090c] px-2 py-0.5 border border-zinc-800 rounded-full">SUPABASE LIVE</span>
+                    <div class="tooltip-wrapper">
+                        <span id="lblOrigenGemelo" class="text-[9px] font-mono text-slate-400 uppercase bg-[#08090c] px-2 py-0.5 border border-zinc-800 rounded-full">SUPABASE LIVE (?)</span>
+                        <div class="tooltip-box font-sans">
+                            <strong>🎯 Rango Bayesiano:</strong> Intervalo de credibilidad al 95% que delimita el margen de error técnico del simulacro.
+                        </div>
+                    </div>
                 </div>
 
                 <div class="thermometer-container">
@@ -387,6 +444,12 @@
                 <div class="bg-slate-900/80 border border-slate-800 p-4 rounded-xl space-y-3">
                     <div class="flex justify-between items-center border-b border-zinc-800 pb-2">
                         <h3 class="text-xs font-mono font-bold uppercase text-rose-400">🔥 Mapa de Calor de Sesgos</h3>
+                        <div class="tooltip-wrapper">
+                            <span class="text-[10px] text-rose-400 font-bold">(?)</span>
+                            <div class="tooltip-box font-sans">
+                                <strong>🔥 Matriz Q de Sesgos:</strong> Muestra la frecuencia de errores cognitivos específicos cometidos en las opciones trampa del examen.
+                            </div>
+                        </div>
                     </div>
                     <div id="contenedorBarrasSesgos" class="space-y-3 text-xs font-sans"></div>
                 </div>
@@ -421,8 +484,9 @@
         </div>
     </div>
 
-    <!-- DOCK FLOTANTE INFERIOR -->
+    <!-- DOCK FLOTANTE INFERIOR CON LÓGICA CLARA DE NAVEGACIÓN -->
     <nav class="bottom-nav">
+        <!-- 1. IR AL SIMULADOR DE EXAMEN -->
         <div class="nav-item" onclick="window.location.href='/index.html'">
             <div class="icon-circle">
                 <svg class="nav-icon" viewBox="0 0 100 100" stroke="var(--primary)" fill="none">
@@ -434,11 +498,13 @@
             <span class="nav-text" style="color: var(--primary)">EXAMEN</span>
         </div>
         
-        <div id="dante-anchor" onclick="window.location.href='/perfil.html'">
+        <!-- 2. REFRESCAR NÚCLEO COGNITIVO DANTE OS (SCROLL ARRIBA) -->
+        <div id="dante-anchor" onclick="PerfilEstudiante.irAlInicioYRefrescar()">
             <i class="fas fa-brain"></i>
         </div>
         
-        <div class="nav-item" onclick="window.location.href='/perfil.html'">
+        <!-- 3. EXPEDIENTE / PERFIL (MANTIENE LA PANTALLA ACTUAL) -->
+        <div class="nav-item" onclick="PerfilEstudiante.irAlInicioYRefrescar()">
             <div class="icon-circle" style="border-color: rgba(212,175,55,0.3)">
                 <svg class="nav-icon" viewBox="0 0 100 100" fill="var(--gold)">
                     <circle cx="50" cy="50" r="38" stroke="var(--gold)" stroke-width="5" fill="none"/>
@@ -452,7 +518,7 @@
     <script>
         const HOST_URL = window.location.origin;
         
-        // 🔎 DETECCIÓN MULTI-USUARIO
+        // 🔎 DETECCIÓN MULTI-USUARIO DINÁMICA
         const urlParams = new URLSearchParams(window.location.search);
         const queryStudent = urlParams.get('estudiante') || urlParams.get('studentId');
         
@@ -475,7 +541,7 @@
         let cacheHistorialCompleto = [];
         let cacheOrigenGemelo = "SUPABASE LIVE";
 
-        // Mapeo dinámico por materia
+        // CONFIGURACIÓN DINÁMICA POR ASIGNATURA
         const DATOS_MATERIAS = {
             'todas': {
                 pts: 68, theta: 1.1200, iri: 0.65,
@@ -487,7 +553,7 @@
             },
             'matematicas': {
                 pts: 72, theta: 1.5400, iri: 0.70,
-                vuln: 'Tendencia a la Inversión Operacional en ecuaciones algebraicas.',
+                vuln: 'Tendencia a la Inversión Operacional en despejes algebraicos.',
                 presc: 'Verificar los signos y despejes paso a paso en problemas cuantitativos.',
                 cronica: `${STUDENT_ID.toUpperCase()} presenta un alto dominio en funciones y lectura de gráficas cartesianas.`,
                 sesgos: { attr_heuristica_lineal: 0.10, attr_inversion_operacional: 0.35, attr_omision_conversion: 0.20, attr_error_geometrico: 0.12 },
@@ -522,6 +588,11 @@
         let perfilRadar = { matematicas: 72, lectura_critica: 62, ciencias_naturales: 58, ingles: 70, autorregulacion: 75, resiliencia: 65 };
 
         class PerfilEstudiante {
+            static irAlInicioYRefrescar() {
+                const vp = document.getElementById("viewportContainer");
+                if (vp) vp.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
             static async initProfile() {
                 try {
                     document.getElementById('ui-alias-box').innerText = STUDENT_ID.toUpperCase();
@@ -585,7 +656,7 @@
                 const targetVal = config.pts;
                 const maxVal = Math.min(100, config.pts + 5);
 
-                document.getElementById('lblOrigenGemelo').innerText = cacheOrigenGemelo;
+                document.getElementById('lblOrigenGemelo').innerText = `${cacheOrigenGemelo} (?)`;
                 document.getElementById('val-min').innerText = minVal;
                 document.getElementById('val-target').innerText = targetVal;
                 document.getElementById('val-max').innerText = maxVal;
@@ -602,7 +673,7 @@
                 document.getElementById("lblVulnerabilidadTxt").innerText = config.vuln;
                 document.getElementById("lblPrescripcionTxt").innerText = config.presc;
                 document.getElementById("lblCronicaTxt").innerText = config.cronica;
-                document.getElementById("ui-summary").innerText = `Análisis de trayectoria para ${nombreCapitalizado}: Tu modelo demuestra consistencia en ${currentMateriaFiltro.replace('_', ' ').toUpperCase()}. Se recomienda revisar las sugerencias de la IA.`;
+                document.getElementById("ui-summary").innerText = `Análisis de trayectoria para ${nombreCapitalizado}: Tu modelo demuestra alta consistencia en ${currentMateriaFiltro.replace('_', ' ').toUpperCase()}. Se recomienda seguir la prescripción de Dante OS.`;
 
                 // 4. Lista de Temas y Sesgos
                 this.renderizarTemas(config.temas);
@@ -621,7 +692,7 @@
                     'matematicas': DATOS_MATERIAS['matematicas'].pts, 
                     'lectura_critica': DATOS_MATERIAS['lectura_critica'].pts, 
                     'ciencias_naturales': DATOS_MATERIAS['ciencias_naturales'].pts, 
-                    'sociales_ciudadanas': 55, 
+                    'sociales_ciudadanas': 58, 
                     'ingles': DATOS_MATERIAS['ingles'].pts 
                 };
 
