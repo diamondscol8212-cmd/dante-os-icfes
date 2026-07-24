@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Dante Analytics OS - Enterprise Edition</title>
+    <title>Dante OS // Cabina de Evaluación Adaptativa</title>
     
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&family=JetBrains+Mono:wght@400;500;700;900&family=Oswald:wght@700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
         :root {
             --bg-deep: #08090c;
-            --bg-surface: rgba(20, 22, 29, 0.85);
-            --bg-card: rgba(26, 29, 38, 0.85);
+            --bg-surface: rgba(12, 14, 22, 0.88);
+            --bg-card: rgba(20, 24, 35, 0.85);
             --gold-satin: #d4af37;
             --gold-glow: rgba(212, 175, 55, 0.25);
             --platinum: #e5e5e5;
@@ -27,12 +27,12 @@
             --crimson: #e74c3c;
             --cyan-core: #51e2f5;
             --purple-core: #a855f7;
-            --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-main: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
+        body, html {
             background-color: var(--bg-deep); 
             color: var(--text-main); 
             font-family: var(--font-main);
@@ -48,9 +48,19 @@
         /* CANVASES Y EFECTOS COGNITIVOS */
         #dante-fractal-bg { position: fixed; inset: 0; z-index: 0; opacity: 0.18; pointer-events: none; mix-blend-mode: screen; }
         .scanline { position: fixed; inset: 0; background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.5) 51%); background-size: 100% 4px; z-index: 1; pointer-events: none; opacity: 0.2; }
+        #fx-flash { position: fixed; inset: 0; z-index: 999999; background: var(--crimson); opacity: 0; pointer-events: none; transition: opacity 0.3s; mix-blend-mode: screen; }
 
-        .app-view { display: none; min-height: 100vh; padding: 1.25rem; position: relative; z-index: 10; }
-        @media (min-width: 768px) { .app-view { padding: 2.5rem; } }
+        /* HUD SUPERIOR FLOTANTE */
+        .master-hud {
+            position: fixed; top: 0; width: 100%; z-index: 1000; padding: 18px 20px;
+            background: linear-gradient(to bottom, rgba(1,1,3,0.95) 30%, transparent 100%);
+            pointer-events: none; display: flex; justify-content: space-between; align-items: flex-start;
+        }
+        .alias-title { font-size: 15px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; color: white; margin-bottom: 2px;}
+        .geo-tag { font-family: 'JetBrains Mono'; font-size: 10px; color: var(--cyan-core); letter-spacing: 2px; text-transform: uppercase; text-shadow: 0 0 10px var(--cyan-core); }
+
+        .app-view { display: none; min-height: 100vh; padding: 85px 1.25rem 2.5rem; position: relative; z-index: 10; }
+        @media (min-width: 768px) { .app-view { padding: 90px 2.5rem 2.5rem; } }
         .app-view.active { display: flex; flex-direction: column; }
 
         #viewGateway { justify-content: center; align-items: center; }
@@ -58,26 +68,31 @@
         .gateway-card {
             background: var(--bg-surface); 
             border: 1px solid var(--graphite);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); 
-            border-radius: 12px; 
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), inset 0 0 40px rgba(255,255,255,0.02); 
+            border-radius: 14px; 
             padding: 2rem; 
             width: 100%; 
-            max-width: 540px; 
+            max-width: 560px; 
             text-align: center; 
             position: relative;
-            backdrop-filter: blur(16px);
+            backdrop-filter: blur(20px);
         }
-        @media (min-width: 640px) { .gateway-card { padding: 3.5rem; } }
+        .gateway-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px;
+            background: linear-gradient(90deg, var(--cyan-core), var(--gold-satin), var(--cyan-core)); 
+            border-radius: 14px 14px 0 0;
+        }
+        @media (min-width: 640px) { .gateway-card { padding: 3rem; } }
 
         .gateway-title { 
-            font-size: 1.5rem; 
-            font-weight: 300; 
+            font-size: 1.6rem; 
+            font-family: 'Oswald', sans-serif;
+            font-weight: 700; 
             text-transform: uppercase; 
             letter-spacing: 3px; 
             color: var(--gold-satin); 
-            margin-bottom: 0.5rem; 
+            margin-bottom: 0.3rem; 
         }
-        @media (min-width: 640px) { .gateway-title { font-size: 1.8rem; letter-spacing: 4px; } }
 
         .verification-banner {
             background: rgba(168, 85, 247, 0.12); 
@@ -89,7 +104,7 @@
             font-weight: 700; 
             text-transform: uppercase; 
             letter-spacing: 1.5px; 
-            margin-bottom: 1.8rem;
+            margin-bottom: 1.5rem;
             box-shadow: 0 0 15px rgba(81, 226, 245, 0.15);
             font-family: var(--font-mono);
         }
@@ -98,7 +113,7 @@
             position: absolute; 
             top: 1rem; 
             right: 1.2rem; 
-            font-size: 0.68rem; 
+            font-size: 0.65rem; 
             font-weight: 700;
             color: var(--cyan-core); 
             letter-spacing: 1px; 
@@ -121,7 +136,7 @@
         select {
             width: 100%; 
             padding: 0.9rem; 
-            background: rgba(26, 29, 38, 0.8); 
+            background: rgba(20, 24, 35, 0.9); 
             border: 1px solid var(--graphite);
             color: var(--text-main); 
             border-radius: 8px; 
@@ -134,8 +149,8 @@
 
         .btn-premium {
             width: 100%; 
-            padding: 1rem; 
-            background: rgba(212, 175, 55, 0.05); 
+            padding: 0.9rem 1.2rem; 
+            background: rgba(212, 175, 55, 0.08); 
             border: 1px solid var(--gold-satin);
             color: var(--gold-satin); 
             font-weight: 700; 
@@ -194,6 +209,7 @@
             color: #d1d5db;
             backdrop-filter: blur(12px);
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            border-left: 3px solid var(--cyan-core);
         }
         @media (min-width: 768px) { .panel-enunciado { padding: 2.2rem; max-height: 62vh; font-size: 1rem; } }
         .panel-enunciado p { margin-bottom: 1.2rem; line-height: 1.7; }
@@ -216,7 +232,7 @@
             backdrop-filter: blur(8px);
         }
         .opcion-card:hover { border-color: var(--gold-satin); background: rgba(24, 27, 36, 0.9); transform: translateX(3px); }
-        .opcion-card.selected-intent { border-color: var(--gold-satin); background: rgba(212, 175, 55, 0.1); box-shadow: 0 0 15px var(--gold-glow); }
+        .opcion-card.selected-intent { border-color: var(--gold-satin); background: rgba(212, 175, 55, 0.12); box-shadow: 0 0 15px var(--gold-glow); }
         
         .opcion-id {
             background: rgba(28, 31, 42, 0.9); 
@@ -226,7 +242,7 @@
             align-items: center;
             justify-content: center; 
             border-radius: 6px; 
-            font-weight: 700; 
+            font-weight: 800; 
             color: var(--gold-satin); 
             border: 1px solid var(--graphite);
             font-family: var(--font-mono);
@@ -234,8 +250,8 @@
             font-size: 0.85rem;
         }
 
-        .opcion-card.correct { border-color: var(--emerald) !important; background: rgba(46, 204, 113, 0.12) !important; }
-        .opcion-card.wrong { border-color: var(--crimson) !important; background: rgba(231, 76, 60, 0.12) !important; }
+        .opcion-card.correct { border-color: var(--emerald) !important; background: rgba(46, 204, 113, 0.15) !important; }
+        .opcion-card.wrong { border-color: var(--crimson) !important; background: rgba(231, 76, 60, 0.15) !important; }
         .opciones-grid.freno { pointer-events: none; }
 
         #uiMetacognicion {
@@ -391,23 +407,6 @@
         .clinical-card.badge-cyan { border-top: 3px solid var(--cyan-core); }
         .clinical-header-title { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.4rem; font-family: var(--font-mono); }
 
-        .feedback-error-container {
-            background: rgba(245, 158, 11, 0.05);
-            border: 1px solid rgba(245, 158, 11, 0.2);
-            padding: 1.2rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-        }
-        .pista-caja {
-            background: #0f172a;
-            border-left: 4px solid #f59e0b;
-        }
-        .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
         /* TOOLTIPS PEDAGÓGICOS (?) */
         .tooltip-wrapper { position: relative; display: inline-flex; align-items: center; cursor: pointer; }
         .tooltip-box {
@@ -457,6 +456,18 @@
     <div id="fx-flash"></div>
     <div class="scanline"></div>
     <canvas id="dante-fractal-bg"></canvas>
+
+    <!-- HEADER HUD SUPERIOR FLOTANTE -->
+    <header class="master-hud">
+        <div>
+            <div class="alias-title">RED DANTE OS</div>
+            <div class="geo-tag" id="ui-geo" data-final="SIMULADOR EN VIVO">BOGOTÁ, COLOMBIA</div>
+        </div>
+        <div class="text-right">
+            <div class="text-xl font-black italic text-white" style="text-shadow: 0 0 10px var(--cyan-core);">MODO <span id="ui-lvl" class="text-[#D4AF37]">ENTERPRISE</span></div>
+            <div class="font-mono text-[9px] text-zinc-400 uppercase tracking-[2px] mt-0.5">TENANT: <span id="ui-tenant" class="text-white">DEFAULT</span></div>
+        </div>
+    </header>
 
     <!-- VISTA 1: GATEWAY DE BIENVENIDA Y SELECCIÓN DE MATERIA -->
     <main id="viewGateway" class="app-view active">
@@ -766,6 +777,7 @@
 
                 document.getElementById("lblTenantBanner").innerText = `🔗 INQUILINO CONECTADO: T-${INSTITUTION_ID.toUpperCase()}`;
                 document.getElementById("lblGatewayWelcome").innerText = `SALA DE ${AppState.estudiante.toUpperCase()}`;
+                document.getElementById('ui-tenant').innerText = INSTITUTION_ID.toUpperCase();
             }
 
             static cerrarSesionGated() {
@@ -1337,7 +1349,7 @@
             }
         }
 
-        /* FRACTAL CANVAS ANIMATION */
+        /* FRACTAL CANVAS ANIMATION CON ESPIRAL DE FIBONACCI (137.5°) */
         const bgCanvas = document.getElementById('dante-fractal-bg'); 
         const bgCtx = bgCanvas ? bgCanvas.getContext('2d') : null;
         let qParticles = [];
@@ -1346,13 +1358,13 @@
             if (!bgCanvas || !bgCtx) return;
             bgCanvas.width = window.innerWidth; bgCanvas.height = window.innerHeight;
 
-            for(let i=0; i<60; i++) {
+            for(let i=0; i<80; i++) {
                 qParticles.push({ 
                     x: bgCanvas.width/2, 
                     y: bgCanvas.height/2, 
-                    s: Math.random() * 1.5, 
-                    v: Math.random()*0.3+0.1, 
-                    angle: i*137.5*(Math.PI/180), 
+                    s: Math.random() * 1.6, 
+                    v: Math.random()*0.35 + 0.1, 
+                    angle: i * 137.5 * (Math.PI / 180), 
                     dist: 0 
                 });
             }
@@ -1361,13 +1373,13 @@
 
         function animateCanvas() {
             if (!bgCtx) return;
-            bgCtx.clearRect(0,0,bgCanvas.width,bgCanvas.height);
+            bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
             qParticles.forEach(p => {
                 p.dist += p.v; 
-                let x = bgCanvas.width/2 + Math.cos(p.angle)*p.dist; 
-                let y = bgCanvas.height/2 + Math.sin(p.angle)*p.dist;
+                let x = bgCanvas.width/2 + Math.cos(p.angle) * p.dist; 
+                let y = bgCanvas.height/2 + Math.sin(p.angle) * p.dist;
                 if(x < 0 || x > bgCanvas.width || y < 0 || y > bgCanvas.height) p.dist = 0;
-                bgCtx.beginPath(); bgCtx.arc(x, y, p.s, 0, Math.PI*2); bgCtx.fillStyle = '#51e2f5'; bgCtx.globalAlpha = 0.25; bgCtx.fill();
+                bgCtx.beginPath(); bgCtx.arc(x, y, p.s, 0, Math.PI*2); bgCtx.fillStyle = '#51e2f5'; bgCtx.globalAlpha = 0.22; bgCtx.fill();
             });
             requestAnimationFrame(animateCanvas);
         }
