@@ -2,405 +2,396 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dante OS // HOJA DE VIDA COGNITIVA</title>
-    
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Dante OS | MATRIZ ADN</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&family=JetBrains+Mono:wght@400;500;800;900&family=Oswald:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
     <style>
         :root {
-            --bg-deep: #08090c;
-            --bg-surface: rgba(20, 22, 29, 0.85);
-            --gold-satin: #d4af37;
-            --gold-glow: rgba(212, 175, 55, 0.25);
-            --graphite: rgba(255, 255, 255, 0.08);
-            --text-main: #f0f1f5;
-            --text-muted: #9499a7;
-            --emerald: #2ecc71;
-            --crimson: #e74c3c;
-            --cyan-core: #51e2f5;
-            --font-main: 'Plus Jakarta Sans', sans-serif;
-            --font-mono: 'JetBrains Mono', monospace;
+            --primary: #00ffcc; /* Color por defecto, mutará con JS */
+            --gold: #D4AF37;
+            --alert: #ff0044;
+            --bg: #010103; 
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            background-color: var(--bg-deep); color: var(--text-main); font-family: var(--font-main);
-            background-image: radial-gradient(circle at 50% 20%, #171a26 0%, #08090c 100%);
-            min-height: 100vh; padding: 1.5rem; line-height: 1.5;
+        body, html { 
+            background: var(--bg); color: white; margin: 0; font-family: 'Outfit', sans-serif; 
+            overflow: hidden; height: 100dvh; width: 100vw; touch-action: pan-y;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        .font-mono { font-family: var(--font-mono) !important; }
-        .tab-btn {
-            background: rgba(26, 29, 38, 0.6); border: 1px solid var(--graphite); color: var(--text-muted);
-            padding: 0.6rem 1rem; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer;
-            transition: all 0.2s ease; text-transform: uppercase; font-family: var(--font-mono);
-        }
-        .tab-btn:hover { border-color: var(--cyan-core); color: var(--cyan-core); }
-        .tab-btn.active { background: rgba(81, 226, 245, 0.1); border-color: var(--cyan-core); color: var(--cyan-core); shadow: 0 0 15px rgba(81, 226, 245, 0.2); }
+        /* --- FONDOS --- */
+        #dante-fractal-bg { position: fixed; inset: 0; z-index: 0; opacity: 0.15; pointer-events: none; mix-blend-mode: screen; }
+        .scanline { position: fixed; inset: 0; background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.5) 51%); background-size: 100% 4px; z-index: 1; pointer-events: none; opacity: 0.2; }
 
-        .card-panel { background: var(--bg-surface); border: 1px solid var(--graphite); border-radius: 12px; padding: 1.25rem; backdrop-filter: blur(12px); }
-        .metric-value { font-size: 1.5rem; font-weight: 700; font-family: var(--font-mono); color: var(--gold-satin); }
+        #fx-flash { position: fixed; inset: 0; z-index: 999999; background: var(--alert); opacity: 0; pointer-events: none; transition: opacity 0.3s; mix-blend-mode: screen; }
+
+        /* --- HEADER --- */
+        .master-hud {
+            position: fixed; top: 0; width: 100%; z-index: 1000; padding: 25px 20px;
+            background: linear-gradient(to bottom, rgba(1,1,3,0.95) 20%, transparent 100%);
+            pointer-events: none; display: flex; justify-content: space-between; align-items: flex-start;
+        }
+        .alias-title { font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; color: white; margin-bottom: 2px;}
+        .geo-tag { font-family: 'JetBrains Mono'; font-size: 10px; color: var(--primary); letter-spacing: 2px; text-transform: uppercase; text-shadow: 0 0 10px var(--primary); }
+
+        /* --- VIEWPORT Y SCROLL --- */
+        .adn-viewport {
+            position: fixed; inset: 0; z-index: 10;
+            overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth;
+            padding: 100px 20px 120px;
+        }
+        .adn-viewport::-webkit-scrollbar { display: none; }
+
+        /* --- LA TARJETA COLECCIONABLE (ADN CARD) --- */
+        .adn-card {
+            width: 100%; max-width: 420px; margin: 0 auto;
+            background: rgba(10,10,15,0.8); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            padding: 30px 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.9), inset 0 0 40px rgba(255,255,255,0.02);
+            position: relative; overflow: hidden; transition: box-shadow 1s ease;
+        }
+        .adn-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background: var(--primary); box-shadow: 0 0 20px var(--primary); transition: background 1s, box-shadow 1s;
+        }
+
+        /* --- NÚCLEO VISUAL DANTE --- */
+        .card-header-visual {
+            position: relative; width: 100%; height: 160px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; margin-bottom: 20px;
+        }
+        .dante-mini-core { position: absolute; width: 220px; height: 220px; z-index: 0; opacity: 0.7; }
+        .alias-main-name { position: relative; z-index: 10; font-family: 'Oswald'; font-size: clamp(26px, 7vw, 36px); font-weight: 900; text-transform: uppercase; text-align: center; line-height: 1.1; text-shadow: 0 5px 20px rgba(0,0,0,1), 0 0 20px var(--primary); color: white; letter-spacing: 2px;}
+        .archetype-sub { position: relative; z-index: 10; font-family: 'JetBrains Mono'; font-size: 11px; color: #fff; font-weight: 900; letter-spacing: 3px; text-transform: uppercase; margin-top: 10px; background: var(--primary); padding: 4px 15px; border-radius: 4px; color: black; box-shadow: 0 0 20px var(--primary); }
+
+        /* --- CASILLAS DE IDENTIDAD --- */
+        .identity-box {
+            background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px; padding: 15px; text-align: center; display: flex; flex-direction: column; justify-content: center; margin-bottom: 25px;
+        }
+        .historical-label { font-family: 'JetBrains Mono'; font-size: 9px; color: #aaa; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 6px; font-weight: 900;}
+        .historical-name { font-size: 14px; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 2px; font-family: 'JetBrains Mono'; text-shadow: 0 0 10px rgba(255,255,255,0.3);}
+
+        /* --- SECCIÓN DE STATS Y PSICOMETRÍA --- */
+        .section-title { font-family: 'JetBrains Mono'; font-size: 11px; color: #fff; font-weight: 900; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; text-shadow: 0 0 10px rgba(255,255,255,0.5);}
+        .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.2); }
+        
+        .summary-text { font-size: 14px; font-weight: 400; line-height: 1.6; color: #fff; margin-bottom: 30px; text-align: justify; font-family: 'Outfit'; background: rgba(255,255,255,0.02); padding: 15px; border-left: 2px solid var(--primary); border-radius: 0 4px 4px 0;}
+
+        /* --- GRÁFICA DE RADAR (PUNTUACIÓN CRUDA) --- */
+        .radar-container {
+            width: 100%; height: 220px; position: relative; margin-bottom: 30px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        
+        /* Hexágono base */
+        .radar-bg {
+            width: 150px; height: 170px; background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><polygon points="50 0, 100 25, 100 75, 50 100, 0 75, 0 25" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/><polygon points="50 20, 80 35, 80 65, 50 80, 20 65, 20 35" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/><polygon points="50 40, 65 47, 65 53, 50 60, 35 53, 35 47" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/><line x1="50" y1="50" x2="50" y2="0" stroke="rgba(255,255,255,0.1)" stroke-width="1"/><line x1="50" y1="50" x2="100" y2="25" stroke="rgba(255,255,255,0.1)" stroke-width="1"/><line x1="50" y1="50" x2="100" y2="75" stroke="rgba(255,255,255,0.1)" stroke-width="1"/><line x1="50" y1="50" x2="50" y2="100" stroke="rgba(255,255,255,0.1)" stroke-width="1"/><line x1="50" y1="50" x2="0" y2="75" stroke="rgba(255,255,255,0.1)" stroke-width="1"/><line x1="50" y1="50" x2="0" y2="25" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></svg>') no-repeat center;
+            background-size: contain; position: relative; z-index: 1;
+        }
+
+        /* SVG dinámico dibujado encima */
+        .radar-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; overflow: visible;}
+        .radar-polygon { fill: var(--primary); fill-opacity: 0.3; stroke: var(--primary); stroke-width: 2; filter: drop-shadow(0 0 10px var(--primary)); transition: all 1s ease;}
+
+        /* Etiquetas del Radar */
+        .radar-label { position: absolute; font-family: 'JetBrains Mono'; font-size: 9px; font-weight: 900; color: #fff; letter-spacing: 1px; text-transform: uppercase; z-index: 3; text-shadow: 0 0 5px black;}
+        .lbl-top { top: -20px; left: 50%; transform: translateX(-50%); }
+        .lbl-tr { top: 20px; right: -30px; }
+        .lbl-br { bottom: 20px; right: -30px; }
+        .lbl-bottom { bottom: -20px; left: 50%; transform: translateX(-50%); }
+        .lbl-bl { bottom: 20px; left: -30px; }
+        .lbl-tl { top: 20px; left: -30px; }
+
+        /* --- BOTTOM NAV REDUCIDA --- */
+        .bottom-nav { 
+            position: fixed; bottom: 30px; width: 90%; left: 5%; z-index: 1000;
+            display: flex; justify-content: space-evenly; align-items: center;
+            background: rgba(5, 5, 5, 0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            padding: 10px 20px; border-radius: 60px; border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.9);
+        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; min-width: 80px; cursor: pointer; }
+        .icon-circle { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); margin-bottom: 6px; transition: 0.3s; }
+        .nav-icon { width: 22px; height: 22px; }
+        .nav-text { font-size: 10px; font-weight: 900; letter-spacing: 0.15em; text-transform: uppercase; }
+        
+        #dante-anchor { width: 60px; height: 60px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); background: #000; box-shadow: 0 0 20px rgba(0,0,0,0.8); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s;}
+        #dante-anchor i { font-size: 24px; color: white; transition: 0.3s; }
+        #dante-anchor:active { border-color: var(--primary); box-shadow: 0 0 30px var(--primary); transform: scale(0.95);}
+        #dante-anchor:active i { color: var(--primary); }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false;">
 
-    <!-- HEADER / HUD -->
-    <header class="flex justify-between items-center pb-4 mb-6 border-b border-[var(--graphite)]">
+    <script>
+        // --- PARCHE DE BOTÓN ATRÁS Y ZOMBIES INYECTADO AQUÍ ---
+        window.history.replaceState({ locked: true }, null, window.location.href);
+        window.addEventListener('popstate', function (event) {
+            window.history.pushState({ locked: true }, null, window.location.href);
+            const flash = document.getElementById('fx-flash');
+            if(flash) {
+                flash.style.opacity = '0.4';
+                setTimeout(() => { flash.style.opacity = '0'; }, 300);
+            }
+        });
+        window.addEventListener('pageshow', function (event) {
+            if (event.persisted) { window.location.reload(); }
+        });
+        // --------------------------------------------------------
+    </script>
+
+    <div id="fx-flash"></div>
+    <div class="scanline"></div>
+    <canvas id="dante-fractal-bg"></canvas>
+
+    <header class="master-hud">
         <div>
-            <h1 class="text-xl font-light text-[var(--gold-satin)] uppercase tracking-wider font-mono">DANTE OS // HOJA DE VIDA COGNITIVA</h1>
-            <p class="text-xs text-[var(--text-muted)] font-mono mt-1">> EXPEDIENTE Y TRAYECTORIA LONGITUDINAL DE: <span id="lblNombreEstudiante" class="text-white font-bold">CARGANDO...</span></p>
+            <div class="alias-title">RED VINCULADA</div>
+            <div class="geo-tag" id="ui-geo" data-final="***">ESPERANDO GPS</div>
         </div>
         <div class="text-right">
-            <a href="/index.html" class="tab-btn active" style="border-color: var(--gold-satin); color: var(--gold-satin);">⚡ IR A SIMULACRO</a>
+            <div class="text-2xl font-black italic text-white" style="text-shadow: 0 0 10px var(--primary);">LVL <span id="ui-lvl">1</span></div>
+            <div class="font-mono text-[9px] text-zinc-500 uppercase tracking-[3px] mt-1">VTO: <span id="ui-vto" class="text-white">0</span></div>
         </div>
     </header>
 
-    <!-- 🏆 BLOQUE SUPERIOR: PUNTAJE GLOBAL 500 Y ENTRENADOR MISIONES -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <!-- CUADRO GIGANTE PUNTAJE -->
-        <div class="md:col-span-2 bg-[#10121a]/90 border border-[#d4af37]/40 rounded-xl p-5 relative overflow-hidden backdrop-blur-md">
-            <div class="absolute top-0 right-0 bg-[#d4af37]/20 text-[#d4af37] px-3 py-1 text-[10px] font-mono font-bold uppercase rounded-bl-lg border-l border-b border-[#d4af37]/40">
-                PROYECCIÓN REAL ICFES
-            </div>
+    <div class="adn-viewport">
+        <div class="adn-card" id="main-card">
             
-            <p class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest mb-1">
-                Puntaje Global Estimado (Escala País)
-            </p>
-            
-            <div class="flex items-baseline gap-3 my-1">
-                <h1 id="lblPuntajeGlobal500" class="text-5xl font-extrabold font-mono text-[#d4af37] tracking-tight">
-                    --- <span class="text-2xl text-slate-400 font-normal">/ 500 pts</span>
-                </h1>
-                <span id="lblProbabilidadMeta" class="text-xs font-mono px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-semibold">
-                    --% Probabilidad Meta 350+
-                </span>
+            <div class="card-header-visual">
+                <canvas id="mini-core-canvas" class="dante-mini-core"></canvas>
+                <div class="alias-main-name" id="ui-main-title" data-final="OPERADOR">***</div>
+                <div class="archetype-sub" id="ui-archetype" data-final="ANALIZANDO">***</div>
             </div>
 
-            <!-- Barra de Progreso a 500 pts -->
-            <div class="w-full bg-slate-950 h-3 rounded-full border border-slate-800 overflow-hidden my-3">
-                <div id="barPuntajeGlobal" class="h-full bg-gradient-to-r from-amber-500 via-[#d4af37] to-emerald-400 rounded-full transition-all duration-1000" style="width: 0%;"></div>
+            <div class="identity-box">
+                <div class="historical-label">Identidad Origen</div>
+                <div class="historical-name" id="ui-alias-box" data-final="***" style="color: var(--primary); margin-bottom: 4px;">***</div>
+                <div class="historical-label" id="ui-city-box" data-final="***">***</div>
             </div>
 
-            <div class="flex justify-between items-center text-xs text-slate-400 font-mono">
-                <span>Estado: <strong id="lblNivelRango" class="text-white">TRAYECTORIA ACTIVA</strong></span>
-                <span>Meta ICFES: <strong class="text-[#51e2f5]">350+ pts</strong></span>
-            </div>
-        </div>
+            <div class="section-title">DIAGNÓSTICO PSICOMÉTRICO</div>
+            <p class="summary-text" id="ui-summary" data-final="...">...</p>
 
-        <!-- 🔥 RACHA DIARIA Y MISIONES DE HOY -->
-        <div class="bg-[#10121a]/90 border border-slate-800 rounded-xl p-4 flex flex-col justify-between backdrop-blur-md">
-            <div>
-                <div class="flex justify-between items-center mb-3">
-                    <span class="text-xs font-mono font-bold text-[#51e2f5] uppercase tracking-wider">ENTRENADOR DANTE</span>
-                    <div class="flex items-center gap-1.5 bg-orange-500/10 border border-orange-500/30 px-2.5 py-1 rounded-full">
-                        <span class="text-xs">🔥</span>
-                        <span id="lblRachaDias" class="text-xs font-mono font-bold text-orange-400">1 Día Racha</span>
-                    </div>
-                </div>
-
-                <!-- Misiones -->
-                <div class="space-y-2">
-                    <p class="text-[10px] font-mono text-slate-400 uppercase tracking-wide">MISIONES DEL DÍA:</p>
+            <div class="section-title">MATRIZ DE INSTINTOS</div>
+            <div class="radar-container">
+                <div class="radar-bg">
+                    <div class="radar-label lbl-top">EGO</div>
+                    <div class="radar-label lbl-tr">AVARICIA</div>
+                    <div class="radar-label lbl-br">SOMBRA</div>
+                    <div class="radar-label lbl-bottom">CRUELDAD</div>
+                    <div class="radar-label lbl-bl">MENTIRA</div>
+                    <div class="radar-label lbl-tl">CÁLCULO</div>
                     
-                    <div class="bg-slate-950 p-2 rounded border border-slate-800 flex items-center justify-between">
-                        <div class="flex items-center gap-2">
-                            <input type="checkbox" id="chkMision1" class="rounded border-slate-700 text-[#d4af37] focus:ring-0" disabled />
-                            <span class="text-xs text-slate-300">15 reactivos hoy</span>
-                        </div>
-                        <span id="lblProgresoMision1" class="text-[10px] font-mono text-[#d4af37]">0/15</span>
-                    </div>
+                    <svg viewBox="0 0 100 100" class="radar-svg">
+                        <polygon id="radar-shape" class="radar-polygon" points="50,50 50,50 50,50 50,50 50,50 50,50"></polygon>
+                    </svg>
 
-                    <div class="bg-slate-950 p-2 rounded border border-slate-800 flex items-center justify-between">
-                        <div class="flex items-center gap-2">
-                            <input type="checkbox" id="chkMision2" class="rounded border-slate-700 text-[#d4af37] focus:ring-0" checked disabled />
-                            <span class="text-xs text-slate-300">Racha activa</span>
-                        </div>
-                        <span class="text-[10px] font-mono text-emerald-400">✓ ACTIVA</span>
-                    </div>
                 </div>
             </div>
+
         </div>
     </div>
 
-    <!-- PESTAÑAS DE NAVEGACIÓN DE MATERIAS -->
-    <div class="flex gap-2 mb-6 flex-wrap" id="contenedorPestanas">
-        <button class="tab-btn active" onclick="filtrarMateria('global', this)">🌎 DIAGNÓSTICO GLOBAL</button>
-        <button class="tab-btn" onclick="filtrarMateria('matematicas', this)">📐 MATEMÁTICAS</button>
-        <button class="tab-btn" onclick="filtrarMateria('lectura_critica', this)">📖 LECTURA CRÍTICA</button>
-        <button class="tab-btn" onclick="filtrarMateria('ciencias_naturales', this)">🔬 CIENCIAS NATURALES</button>
-        <button class="tab-btn" onclick="filtrarMateria('ingles', this)">GB INGLÉS</button>
-    </div>
-
-    <!-- MÉTRICAS CLAVE -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div class="card-panel">
-            <p class="text-xs text-[var(--text-muted)] font-mono uppercase">RACHA ACTIVA</p>
-            <p class="metric-value text-orange-400">1 🔥</p>
-        </div>
-        <div class="card-panel">
-            <p class="text-xs text-[var(--text-muted)] font-mono uppercase">PUNTAJE MATERIA</p>
-            <p class="metric-value text-emerald-400" id="lblPuntajeMateria">-- / 100 pts</p>
-        </div>
-        <div class="card-panel">
-            <p class="text-xs text-[var(--text-muted)] font-mono uppercase">HABILIDAD LATENTE (&theta;)</p>
-            <p class="metric-value text-[var(--cyan-core)]" id="lblThetaMateria">0.0000</p>
-        </div>
-        <div class="card-panel">
-            <p class="text-xs text-[var(--text-muted)] font-mono uppercase">RESILIENCIA (TRT)</p>
-            <p class="metric-value text-purple-400" id="lblResilienciaMateria">50%</p>
-        </div>
-    </div>
-
-    <!-- GRÁFICAS PRINCIPALES -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <div class="card-panel">
-            <h3 class="text-xs font-bold font-mono text-[var(--gold-satin)] uppercase mb-4">EVOLUCIÓN HISTÓRICA DE HABILIDAD (&theta;)</h3>
-            <div id="chartEvolucion"></div>
-        </div>
-        <div class="card-panel">
-            <h3 class="text-xs font-bold font-mono text-[var(--gold-satin)] uppercase mb-4">RADAR DE TENDENCIAS OPERATIVAS</h3>
-            <div id="chartRadar"></div>
-        </div>
-    </div>
-
-    <!-- DIAGNÓSTICO IA Y MAPA DE SESGOS -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <div class="card-panel border-l-4 border-l-[var(--gold-satin)]">
-            <h3 class="text-xs font-bold font-mono text-[var(--gold-satin)] uppercase mb-2">🎯 PLAN PERSONALIZADO PRESCRITO POR LA IA</h3>
-            <p class="text-xs font-mono font-bold text-cyan-400 mb-1">DIAGNÓSTICO FORENSE PRINCIPAL:</p>
-            <p class="text-xs text-slate-300 mb-3" id="lblVulnerabilidad">Cargando análisis...</p>
-            
-            <p class="text-xs font-mono font-bold text-amber-400 mb-1">PRESCRIPCIÓN DIRECTA DE ESTUDIO:</p>
-            <p class="text-xs text-slate-300 mb-3" id="lblPrescripcion">Cargando recomendaciones...</p>
-
-            <p class="text-xs font-mono font-bold text-slate-400 mb-1">CRÓNICA NARRATIVA DE TRAYECTORIA:</p>
-            <p class="text-xs text-slate-400 italic" id="lblCronica">Procesando historia de aprendizaje...</p>
-        </div>
-
-        <div class="card-panel">
-            <h3 class="text-xs font-bold font-mono text-[#e74c3c] uppercase mb-4">🔥 MAPA DE CALOR DE SESGOS COGNITIVOS</h3>
-            <div class="space-y-3" id="contenedorMapaSesgos">
-                <!-- Se llena dinámicamente -->
+    <nav class="bottom-nav">
+        <div class="nav-item active">
+            <div class="icon-circle">
+                <svg class="nav-icon" viewBox="0 0 100 100" stroke="var(--primary)" fill="none">
+                    <path d="M 30,20 C 30,50 70,50 70,80 M 70,20 C 70,50 30,50 30,80" stroke-width="12" stroke-linecap="round"/>
+                    <circle cx="30" cy="20" r="8" fill="var(--primary)"/><circle cx="70" cy="20" r="8" fill="var(--primary)"/>
+                    <circle cx="30" cy="80" r="8" fill="var(--primary)"/><circle cx="70" cy="80" r="8" fill="var(--primary)"/>
+                </svg>
             </div>
+            <span class="nav-text" style="color: var(--primary)">MATRIZ</span>
         </div>
-    </div>
-
-    <!-- TABLA REGISTRO DE EXÁMENES -->
-    <div class="card-panel mb-6">
-        <h3 class="text-xs font-bold font-mono text-[var(--gold-satin)] uppercase mb-4">📊 REGISTRO DE EXÁMENES REALIZADOS</h3>
-        <div class="overflow-x-auto">
-            <table class="w-full text-left font-mono text-xs">
-                <thead>
-                    <tr class="border-b border-[var(--graphite)] text-[var(--text-muted)] uppercase">
-                        <th class="p-2">Fecha</th>
-                        <th class="p-2">Materia</th>
-                        <th class="p-2">Habilidad (&theta;)</th>
-                        <th class="p-2">Puntaje ICFES</th>
-                        <th class="p-2">Estado</th>
-                    </tr>
-                </thead>
-                <tbody id="tblExamenesBody" class="divide-y divide-[var(--graphite)]">
-                    <tr><td colspan="5" class="p-3 text-center text-slate-500">Cargando historial de Supabase...</td></tr>
-                </tbody>
-            </table>
+        
+        <div id="dante-anchor" onclick="window.location.href='mapa.html'">
+            <i class="fas fa-map"></i>
         </div>
-    </div>
+        
+        <div class="nav-item" onclick="window.location.href='boveda.html'">
+            <div class="icon-circle" style="border-color: rgba(212,175,55,0.3)">
+                <svg class="nav-icon" viewBox="0 0 100 100" fill="var(--gold)">
+                    <circle cx="50" cy="50" r="38" stroke="var(--gold)" stroke-width="5" fill="none"/>
+                    <text x="50" y="68" font-family="Arial" font-size="45" text-anchor="middle" font-weight="900">$</text>
+                </svg>
+            </div>
+            <span class="nav-text" style="color: var(--gold)">CAUDAL</span>
+        </div>
+    </nav>
 
     <script>
-        const HOST_URL = window.location.origin;
-        let estudianteActivo = "elizabeth";
-        let tenantId = "colegio_sandbox_default";
-        let datosGlobalesEstudiante = [];
-        let chartEvolucionInstancia = null;
-        let chartRadarInstancia = null;
+        // ==========================================
+        // 1. CARGA DE DATOS 
+        // ==========================================
+        let sessionId = "";
+        let rawData = localStorage.getItem('govotto_user_data');
+        let d = rawData ? JSON.parse(rawData) : {};
+        
+        let alias = "USUARIO_" + (Math.floor(Math.random() * 9000) + 1000); 
+        if (d.perfil && d.perfil.alias) alias = d.perfil.alias;
+        
+        let cityOnly = "NEXUS GLOBAL";
+        if (d.perfil && d.perfil.ciudad) cityOnly = d.perfil.ciudad;
 
-        window.onload = async () => {
-            const rawUser = localStorage.getItem("dante_user");
-            if (rawUser) {
-                const sessionData = JSON.parse(rawUser);
-                estudianteActivo = sessionData.email ? sessionData.email.split('@')[0].toLowerCase().trim() : (sessionData.estudiante || "elizabeth");
-                tenantId = sessionData.institution_id || "colegio_sandbox_default";
-            }
+        let vto = d.saldoVTO || 0;
+        let nivel = d.nivelActual || 1;
+        let currentSig = d.dante_sig || "";
 
-            document.getElementById("lblNombreEstudiante").innerText = estudianteActivo.toUpperCase();
+        let rawProfile = JSON.parse(localStorage.getItem('dante_profile')) || { greed: 0, lie: 0, ego: 0, power: 0, cognitive: 0, shadow: 0 };
 
-            inicializarGraficasVacias();
-            await cargarDatosPerfil();
-        };
+        let arquetipo = "ESPECTRO (SIN DATOS)";
+        let colorAlma = "#00ffcc"; 
+        let summary = "Debes descender al Limbo (Círculo 01) para que Dante analice el peso de tu alma y recolecte los primeros datos de tu psique.";
 
-        async function cargarDatosPerfil() {
-            try {
-                const res = await fetch(`${HOST_URL}/api/cat/gemelo/${estudianteActivo}`).catch(() => null);
-                if (res && res.ok) {
-                    const data = await res.json();
-                    datosGlobalesEstudiante = data.gemelo || [];
-                }
-
-                // Si no retornó por Gemelo API, intentamos por consulta directa
-                if (!datosGlobalesEstudiante || datosGlobalesEstudiante.length === 0) {
-                    datosGlobalesEstudiante = [
-                        {
-                            materia: 'lectura_critica',
-                            theta_algebra_calculo: 0.8500,
-                            items_respondidos: { puntaje_escalonado: 62, adn_empaquetado: { vulnerabilidad_dominante: 'Sensibilidad al ritmo en lectura', prescripcion_clinica: 'Practicar escaneo de conectores de oposición.', cronica_narrativa: 'ELIZABETH muestra buen nivel analítico en textos argumentativos.' } },
-                            ultima_actualizacion: '2026-07-23T15:25:00.000Z'
-                        },
-                        {
-                            materia: 'matematicas',
-                            theta_algebra_calculo: 1.7836,
-                            items_respondidos: { puntaje_escalonado: 75, adn_empaquetado: { vulnerabilidad_dominante: 'Sesgo de heurística lineal', prescripcion_clinica: 'Descomponer ecuaciones complejas.', cronica_narrativa: 'Alto desempeño en lógica matemática.' } },
-                            ultima_actualizacion: '2026-07-18T10:00:00.000Z'
-                        }
-                    ];
-                }
-
-                renderizarTabla(datosGlobalesEstudiante);
-                calcularPuntajeGlobal500(datosGlobalesEstudiante);
-                filtrarMateria('global', document.querySelector('.tab-btn.active'));
-
-            } catch (err) {
-                console.error("Error cargando perfil:", err);
-            }
-        }
-
-        function calcularPuntajeGlobal500(registros) {
-            const pesos = { 'matematicas': 3, 'lectura_critica': 3, 'ciencias_naturales': 3, 'sociales_ciudadanas': 3, 'ingles': 1 };
-            const puntajes = { 'matematicas': 50, 'lectura_critica': 50, 'ciencias_naturales': 50, 'sociales_ciudadanas': 50, 'ingles': 50 };
-
-            registros.forEach(r => {
-                const mat = String(r.materia || '').toLowerCase().trim();
-                let pts = r.items_respondidos?.puntaje_escalonado || Math.round(50 + ((r.theta_algebra_calculo || 0) * 13.8));
-                if (puntajes[mat] !== undefined) puntajes[mat] = pts;
-            });
-
-            let sumaP = 0; let sumaW = 0;
-            Object.keys(pesos).forEach(m => {
-                sumaP += (puntajes[m] * pesos[m]);
-                sumaW += pesos[m];
-            });
-
-            let global500 = Math.round((sumaP / (100 * sumaW)) * 500);
-            global500 = Math.max(50, Math.min(500, global500));
-
-            document.getElementById("lblPuntajeGlobal500").innerHTML = `${global500} <span class="text-2xl text-slate-400 font-normal">/ 500 pts</span>`;
-            document.getElementById("barPuntajeGlobal").style.width = `${(global500 / 500) * 100}%`;
+        // --- MOTOR DE DIAGNÓSTICO EN TIEMPO REAL ---
+        function calculateRealArchetype(p) {
+            if (nivel === 1) return { name: "ESPECTRO", color: "#666666", text: "Registros insuficientes. Completar nodo actual para diagnóstico." };
             
-            let prob = Math.min(99, Math.max(15, Math.round((global500 / 350) * 80)));
-            document.getElementById("lblProbabilidadMeta").innerText = `${prob}% Prob. Meta 350+`;
+            if (p.greed >= 3 && p.power >= 2 && p.lie >= 2) return { name: "EL TIRANO CORPORATIVO", color: "#ff003c", text: "Instintos de depredación máxima. El fin siempre justificará tus medios. Las métricas indican una ausencia casi total de culpa al perjudicar a otros para ganar VTO." };
+            if (p.cognitive >= 4 && p.shadow <= 2) return { name: "EL ESTRATEGA FRÍO", color: "#00ffff", text: "Emociones suprimidas a favor de la eficiencia matemática. Eliges tus batallas con precisión quirúrgica y no actúas por impulso, sino por rentabilidad neta." };
+            if (p.lie >= 4 && p.shadow >= 3 && p.power <= 0) return { name: "EL MAQUIAVELO OCULTO", color: "#ff00ff", text: "Actúas a través de otros. Tus niveles de engaño son altísimos. Evitas el conflicto frontal pero envenenas las opciones ajenas para salir limpio e impune." };
+            if (p.ego >= 4 && p.cognitive <= 2) return { name: "EL NARCISISTA IMPULSIVO", color: "#D4AF37", text: "Buscas validación constante. Tus decisiones están motivadas por el reconocimiento social o el estatus que ganarás, sin calcular el riesgo a largo plazo." };
+            if (p.shadow <= 0 && p.power <= -3) return { name: "EL REBAÑO", color: "#c0c0c0", text: "Tu aversión al conflicto te paraliza. Aceptas el dogma por miedo a la exclusión o al castigo. Eres un peón ideal para el sistema, sin voluntad de subvertir." };
+            if (p.greed >= 0 && p.cognitive >= 0 && p.lie >= 0) return { name: "EL PRAGMÁTICO LÍQUIDO", color: "#00ffcc", text: "Una mente altamente adaptable. Te arrodillas cuando te conviene y muerdes cuando es seguro hacerlo. Eres un sobreviviente sin anclajes morales fijos." };
+
+            return { name: "MENTE FRACTURADA", color: "#ff9900", text: "Tus patrones son caóticos e inconsistentes. Actúas por impulso puro sin estrategia definida. Eres un peligro tanto para el sistema como para ti mismo." };
         }
 
-        function filtrarMateria(materiaFiltro, btn) {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            if (btn) btn.classList.add('active');
+        async function initProfile() {
+            try {
+                // --- PARCHE ANTI-LOOP INYECTADO AQUÍ ---
+                const sessionStr = localStorage.getItem('dante_session');
+                const legalAccepted = localStorage.getItem('dante_legal_receipt');
+                
+                if (!sessionStr) throw new Error("No session");
+                if (!legalAccepted && !sessionStr.startsWith("CREATOR_")) throw new Error("No Legal Consent");
+                
+                let session = JSON.parse(sessionStr);
+                if (Date.now() - session.ts > 7200000 && !session.hash.includes('BYPASS')) throw new Error("Session Expired");
 
-            let registrosFiltrados = datosGlobalesEstudiante;
-            if (materiaFiltro !== 'global') {
-                registrosFiltrados = datosGlobalesEstudiante.filter(r => String(r.materia).toLowerCase().includes(materiaFiltro));
+                sessionId = session.hash;
+                // ----------------------------------------
+
+                if (nivel > 1) {
+                    const secret = sessionId.substring(0,8) + "VOTTO_VAULT";
+                    const msg = new TextEncoder().encode(parseFloat(vto).toFixed(4) + nivel + secret);
+                    const hashBuffer = await crypto.subtle.digest('SHA-256', msg);
+                    const expectedSig = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('').substring(0,16);
+                    
+                    if (currentSig !== expectedSig) {
+                        vto = 0; nivel = 1; rawProfile = { greed: 0, lie: 0, ego: 0, power: 0, cognitive: 0, shadow: 0 };
+                        arquetipo = "FRAUDE DETECTADO"; colorAlma = "#ff0044"; 
+                        summary = "Has intentado alterar las leyes de Dante. Tu cuenta ha sido bloqueada y reiniciada.";
+                    } else {
+                        let result = calculateRealArchetype(rawProfile);
+                        arquetipo = result.name; colorAlma = result.color; summary = result.text;
+                    }
+                }
+            } catch(e) {
+                // LIMPIEZA TOTAL Y EXPULSIÓN (Cura del Loop)
+                localStorage.removeItem('dante_session'); 
+                localStorage.removeItem('dante_legal_receipt');
+                localStorage.removeItem('govotto_user_data'); 
+                window.location.replace('index.html'); 
+                return; // Corta la ejecución de inmediato
             }
 
-            const registroPrincipal = registrosFiltrados[0] || datosGlobalesEstudiante[0] || {};
-            const theta = registroPrincipal.theta_algebra_calculo || 0.85;
-            const pts = registroPrincipal.items_respondidos?.puntaje_escalonado || Math.round(50 + (theta * 13.8));
-            const adn = registroPrincipal.items_respondidos?.adn_empaquetado || {};
-
-            document.getElementById("lblPuntajeMateria").innerText = `${pts} / 100 pts`;
-            document.getElementById("lblThetaMateria").innerText = parseFloat(theta).toFixed(4);
-            document.getElementById("lblVulnerabilidad").innerText = adn.vulnerabilidad_dominante || "Sensibilidad al ritmo en lectura";
-            document.getElementById("lblPrescripcion").innerText = adn.prescripcion_clinica || "Practicar escaneo de conectores de oposición.";
-            document.getElementById("lblCronica").innerText = adn.cronica_narrativa || "ELIZABETH muestra buen nivel analítico en textos argumentativos.";
-
-            actualizarGraficas(materiaFiltro, registrosFiltrados);
-            renderizarSesgos(adn.mapa_calor_sesgos || {});
+            document.documentElement.style.setProperty('--primary', colorAlma);
+            populateData();
+            drawRadar();
+            initCanvas();
+            setTimeout(decryptText, 300);
         }
 
-        function renderizarTabla(registros) {
-            const tbody = document.getElementById("tblExamenesBody");
-            tbody.innerHTML = "";
-            registros.forEach(r => {
-                const mat = String(r.materia).replace('_', ' ').toUpperCase();
-                const theta = parseFloat(r.theta_algebra_calculo || 0).toFixed(4);
-                const pts = r.items_respondidos?.puntaje_escalonado || Math.round(50 + (theta * 13.8));
-                const fecha = r.ultima_actualizacion ? new Date(r.ultima_actualizacion).toLocaleDateString() : '23/7/2026';
+        function populateData() {
+            document.getElementById('ui-lvl').innerText = nivel;
+            document.getElementById('ui-vto').innerText = parseFloat(vto).toFixed(4);
+            
+            document.getElementById('ui-main-title').setAttribute('data-final', arquetipo);
+            document.getElementById('ui-archetype').setAttribute('data-final', `[ FIRMA: VÁLIDA ]`);
+            
+            document.getElementById('ui-alias-box').setAttribute('data-final', alias);
+            document.getElementById('ui-city-box').setAttribute('data-final', cityOnly);
+            document.getElementById('ui-geo').setAttribute('data-final', cityOnly);
+            
+            document.getElementById('ui-summary').setAttribute('data-final', summary);
+            document.getElementById('main-card').style.boxShadow = `0 20px 50px rgba(0,0,0,0.9), inset 0 0 40px ${colorAlma}22`;
+        }
 
-                tbody.innerHTML += `
-                    <tr>
-                        <td class="p-2">${fecha}</td>
-                        <td class="p-2 font-bold text-cyan-400">${mat}</td>
-                        <td class="p-2 text-gold-satin">${theta}</td>
-                        <td class="p-2 font-bold text-emerald-400">${pts} / 100 pts</td>
-                        <td class="p-2 text-emerald-400">EVALUADO</td>
-                    </tr>
-                `;
+        function drawRadar() {
+            try {
+                const mapScore = (val) => { let v = Math.max(-5, Math.min(10, val)); return ((v + 5) / 15) * 100; };
+                let points = [ mapScore(rawProfile.ego), mapScore(rawProfile.greed), mapScore(rawProfile.shadow), mapScore(rawProfile.power), mapScore(rawProfile.lie), mapScore(rawProfile.cognitive) ];
+                const centerX = 50; const centerY = 50; const maxRadius = 45; 
+                const angleStep = (Math.PI * 2) / 6;
+                let path = "";
+                for (let i = 0; i < 6; i++) {
+                    let angle = (i * angleStep) - (Math.PI / 2);
+                    let dist = maxRadius * (points[i] / 100);
+                    let x = centerX + Math.cos(angle) * dist;
+                    let y = centerY + Math.sin(angle) * dist;
+                    path += `${x},${y} `;
+                }
+                document.getElementById('radar-shape').setAttribute("points", path.trim());
+            } catch(e) { console.error("Radar Error", e); }
+        }
+
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*";
+        function decryptText() {
+            const elements = document.querySelectorAll('[data-final]');
+            elements.forEach((el, index) => {
+                const finalStr = el.getAttribute('data-final');
+                let iterations = 0; const maxIterations = 15 + (index * 4); 
+
+                const interval = setInterval(() => {
+                    let randomStr = finalStr.split('').map((char, i) => {
+                        if(char === ' ') return ' ';
+                        if(i < (iterations / maxIterations) * finalStr.length) return finalStr[i];
+                        return chars[Math.floor(Math.random() * chars.length)];
+                    }).join('');
+                    el.innerText = randomStr; iterations++;
+                    if (iterations >= maxIterations) { clearInterval(interval); el.innerText = finalStr; }
+                }, 40);
             });
         }
 
-        function renderizarSesgos(sesgos) {
-            const cont = document.getElementById("contenedorMapaSesgos");
-            const mapaDefault = { "Heurística Lineal": 15, "Inversión Operacional": 15, "Omisión de Conversión": 15, "Error Geométrico": 15 };
-            const datos = Object.keys(sesgos).length > 0 ? sesgos : mapaDefault;
+        const bgCanvas = document.getElementById('dante-fractal-bg'); const bgCtx = bgCanvas.getContext('2d');
+        const coreCanvas = document.getElementById('mini-core-canvas'); const coreCtx = coreCanvas.getContext('2d');
+        let qParticles = [], dParticles = [];
 
-            cont.innerHTML = "";
-            Object.keys(datos).forEach(k => {
-                const val = typeof datos[k] === 'number' ? (datos[k] <= 1 ? datos[k] * 100 : datos[k]) : 15;
-                cont.innerHTML += `
-                    <div>
-                        <div class="flex justify-between text-xs font-mono text-slate-300 mb-1">
-                            <span>${k.replace('attr_', '').replace('_', ' ').toUpperCase()}</span>
-                            <span class="text-amber-400">${val}%</span>
-                        </div>
-                        <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden border border-slate-800">
-                            <div class="bg-amber-400 h-full" style="width: ${val}%;"></div>
-                        </div>
-                    </div>
-                `;
+        function initCanvas() {
+            bgCanvas.width = window.innerWidth; bgCanvas.height = window.innerHeight;
+            coreCanvas.width = 220; coreCanvas.height = 220;
+
+            for(let i=0; i<80; i++) qParticles.push({ x: bgCanvas.width/2, y: bgCanvas.height/2, s: Math.random(), v: Math.random()*0.3+0.1, angle: i*137.5*(Math.PI/180), dist: 0 });
+            for(let i=0; i<150; i++) dParticles.push({ a: Math.random()*Math.PI*2, r: Math.random()*40+5, s: Math.random()*1.5 + 0.5, v: Math.random()*0.03+0.01 });
+            animateCanvas();
+        }
+
+        function animateCanvas() {
+            bgCtx.clearRect(0,0,bgCanvas.width,bgCanvas.height);
+            qParticles.forEach(p => {
+                p.dist += p.v; let x = bgCanvas.width/2 + Math.cos(p.angle)*p.dist; let y = bgCanvas.height/2 + Math.sin(p.angle)*p.dist;
+                if(x < 0 || x > bgCanvas.width || y < 0 || y > bgCanvas.height) p.dist = 0;
+                bgCtx.beginPath(); bgCtx.arc(x, y, p.s, 0, Math.PI*2); bgCtx.fillStyle = colorAlma; bgCtx.globalAlpha = 0.2; bgCtx.fill();
             });
-        }
 
-        function inicializarGraficasVacias() {
-            const optEvolucion = {
-                series: [{ name: 'Habilidad Latente (θ)', data: [1.7836, 0.8500] }],
-                chart: { type: 'area', height: 220, toolbar: { show: false }, background: 'transparent' },
-                colors: ['#51e2f5'],
-                stroke: { curve: 'smooth', width: 3 },
-                fill: { type: 'gradient', gradient: { opacityFrom: 0.4, opacityTo: 0.0 } },
-                xaxis: { categories: ['Simulacro #1', 'Simulacro #2'], labels: { style: { colors: '#9499a7', fontFamily: 'JetBrains Mono' } } },
-                yaxis: { labels: { style: { colors: '#9499a7', fontFamily: 'JetBrains Mono' } } },
-                theme: { mode: 'dark' }
-            };
-
-            const optRadar = {
-                series: [{ name: 'Desempeño Operativo', data: [80, 70, 85, 60, 75] }],
-                chart: { type: 'radar', height: 220, toolbar: { show: false }, background: 'transparent' },
-                colors: ['#d4af37'],
-                xaxis: { categories: ['Autorregulación', 'Foco', 'Resistencia', 'Recuperación', 'Comprensión'], labels: { style: { colors: '#9499a7', fontFamily: 'JetBrains Mono' } } },
-                yaxis: { show: false },
-                theme: { mode: 'dark' }
-            };
-
-            chartEvolucionInstancia = new ApexCharts(document.querySelector("#chartEvolucion"), optEvolucion);
-            chartRadarInstancia = new ApexCharts(document.querySelector("#chartRadar"), optRadar);
-
-            chartEvolucionInstancia.render();
-            chartRadarInstancia.render();
-        }
-
-        function actualizarGraficas(materia, registros) {
-            if (!chartEvolucionInstancia) return;
-            const thetas = registros.map(r => parseFloat(r.theta_algebra_calculo || 0.85));
-            const categorias = registros.map((r, i) => `Simulacro #${i + 1}`);
-
-            chartEvolucionInstancia.updateOptions({
-                series: [{ name: 'Habilidad Latente (θ)', data: thetas.length > 0 ? thetas : [0.85] }],
-                xaxis: { categories: categorias.length > 0 ? categorias : ['Simulacro #1'] }
+            coreCtx.clearRect(0,0,220,220);
+            dParticles.forEach(p => {
+                p.a += p.v; let breath = Math.sin(Date.now()*0.002) * 5;
+                let x = 110 + Math.cos(p.a) * (p.r + breath); let y = 110 + Math.sin(p.a) * (p.r + breath);
+                coreCtx.beginPath(); coreCtx.arc(x, y, p.s, 0, Math.PI*2);
+                coreCtx.fillStyle = colorAlma; coreCtx.shadowBlur = 10; coreCtx.shadowColor = colorAlma; coreCtx.fill();
             });
+            requestAnimationFrame(animateCanvas);
         }
+
+        window.onload = () => { initProfile(); };
     </script>
 </body>
 </html>
