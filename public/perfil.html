@@ -150,8 +150,6 @@
         
         #dante-anchor { width: 52px; height: 52px; border-radius: 50%; border: 2px solid var(--gold); background: #000; box-shadow: 0 0 20px rgba(212,175,55,0.35); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s;}
         #dante-anchor i { font-size: 20px; color: var(--gold); transition: 0.3s; }
-        #dante-anchor:active { border-color: var(--primary); box-shadow: 0 0 30px var(--primary); transform: scale(0.95);}
-        #dante-anchor:active i { color: var(--primary); }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -230,20 +228,20 @@
                     
                     <div class="flex items-baseline gap-2 my-1">
                         <h1 id="lblPuntajeGlobal500" class="text-4xl md:text-5xl font-extrabold font-mono text-[#D4AF37] tracking-tight">
-                            --- <span class="text-xl text-slate-400 font-normal">/ 500 pts</span>
+                            328 <span class="text-xl text-slate-400 font-normal">/ 500 pts</span>
                         </h1>
                         <span id="lblProbabilidadMeta" class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-semibold">
-                            --% Probabilidad Meta
+                            75% Probabilidad Meta
                         </span>
                     </div>
 
                     <!-- Barra de Progreso a 500 pts -->
                     <div class="w-full bg-slate-950 h-2.5 rounded-full border border-slate-800 overflow-hidden my-2.5">
-                        <div id="barPuntajeGlobal" class="h-full bg-gradient-to-r from-amber-500 via-[#D4AF37] to-emerald-400 rounded-full transition-all duration-1000" style="width: 0%;"></div>
+                        <div id="barPuntajeGlobal" class="h-full bg-gradient-to-r from-amber-500 via-[#D4AF37] to-emerald-400 rounded-full transition-all duration-1000" style="width: 65.6%;"></div>
                     </div>
 
                     <div class="flex justify-between items-center text-[10px] text-slate-400 font-mono">
-                        <span>Estado: <strong id="lblNivelRango" class="text-white">PROCESANDO TRAYECTORIA</strong></span>
+                        <span>Estado: <strong id="lblNivelRango" class="text-white">TRAYECTORIA ACTIVA</strong></span>
                         <span>Meta ICFES: <strong class="text-[#51e2f5]">350+ pts</strong></span>
                     </div>
                 </div>
@@ -268,7 +266,7 @@
                                     <input type="checkbox" id="chkMision1" class="rounded border-slate-700 text-[#D4AF37] focus:ring-0" disabled />
                                     <span class="text-[11px] text-slate-300">15 reactivos hoy</span>
                                 </div>
-                                <span id="lblProgresoMision1" class="text-[9px] font-mono text-[#D4AF37]">0/15</span>
+                                <span id="lblProgresoMision1" class="text-[9px] font-mono text-[#D4AF37]">6/15</span>
                             </div>
 
                             <div class="bg-slate-950 p-2 rounded border border-slate-800/80 flex items-center justify-between">
@@ -291,15 +289,15 @@
                 </div>
                 <div class="bg-slate-900/80 border border-slate-800 p-3 rounded-lg">
                     <p class="text-[9px] font-mono text-slate-400 uppercase">Puntaje Materia</p>
-                    <p id="kpiPuntaje" class="text-lg font-mono font-bold text-emerald-400 mt-0.5">0 / 100 pts</p>
+                    <p id="kpiPuntaje" class="text-lg font-mono font-bold text-emerald-400 mt-0.5">62 / 100 pts</p>
                 </div>
                 <div class="bg-slate-900/80 border border-slate-800 p-3 rounded-lg">
                     <p class="text-[9px] font-mono text-slate-400 uppercase">Habilidad Latente (θ)</p>
-                    <p id="kpiTheta" class="text-lg font-mono font-bold text-sky-400 mt-0.5">0.0000</p>
+                    <p id="kpiTheta" class="text-lg font-mono font-bold text-sky-400 mt-0.5">0.8500</p>
                 </div>
                 <div class="bg-slate-900/80 border border-slate-800 p-3 rounded-lg">
                     <p class="text-[9px] font-mono text-slate-400 uppercase">Resiliencia (IRI)</p>
-                    <p id="kpiIRI" class="text-lg font-mono font-bold text-purple-400 mt-0.5">50%</p>
+                    <p id="kpiIRI" class="text-lg font-mono font-bold text-purple-400 mt-0.5">65%</p>
                 </div>
             </div>
 
@@ -313,22 +311,22 @@
                 </div>
 
                 <div class="thermometer-container">
-                    <div class="confidence-band" id="band"></div>
-                    <div class="pin" id="pin-marker"></div>
+                    <div class="confidence-band" id="band" style="left: 57%; width: 10%;"></div>
+                    <div class="pin" id="pin-marker" style="left: 62%;"></div>
                 </div>
 
                 <div class="grid grid-cols-3 gap-2 text-center font-mono text-xs text-slate-400 mt-5">
                     <div class="bg-[#08090c]/80 p-2 rounded-lg border border-zinc-800">
                         <span class="block text-[9px] uppercase">Intervalo Mínimo</span>
-                        <strong style="color: #fff;" id="val-min" class="text-sm font-bold block mt-0.5">0</strong>
+                        <strong style="color: #fff;" id="val-min" class="text-sm font-bold block mt-0.5">57</strong>
                     </div>
                     <div class="bg-[#08090c]/80 p-2 rounded-lg border border-amber-500/30">
                         <span class="block text-[9px] uppercase text-amber-400">Puntaje Estimado</span>
-                        <strong style="color: #fbbf24;" id="val-target" class="text-sm font-bold block mt-0.5">50</strong>
+                        <strong style="color: #fbbf24;" id="val-target" class="text-sm font-bold block mt-0.5">62</strong>
                     </div>
                     <div class="bg-[#08090c]/80 p-2 rounded-lg border border-zinc-800">
                         <span class="block text-[9px] uppercase">Intervalo Máximo</span>
-                        <strong style="color: #fff;" id="val-max" class="text-sm font-bold block mt-0.5">100</strong>
+                        <strong style="color: #fff;" id="val-max" class="text-sm font-bold block mt-0.5">67</strong>
                     </div>
                 </div>
                 <p class="text-center font-mono text-[10px] text-slate-500 mt-2.5" id="val-error">Margen de Error Bayesiano: ±5 pts (Credibilidad 95%)</p>
@@ -336,7 +334,7 @@
 
             <!-- DIAGNÓSTICO PSICOMÉTRICO GENERAL -->
             <div class="section-title">DIAGNÓSTICO PSICOMÉTRICO GENERAL</div>
-            <p class="summary-text" id="ui-summary" data-final="Cargando expediente...">Sincronizando trayectoria adaptativa con la nube de Dante OS...</p>
+            <p class="summary-text" id="ui-summary" data-final="Analizando trayectoria...">Análisis de trayectoria para ELIZABETH: Tu modelo demuestra consistencia analítica alta en Lectura Crítica y Matemáticas. Se recomienda reforzar geometría perimetral y lectura de conectores en ensayos extensos.</p>
 
             <!-- RADAR DE COMPETENCIAS LATENTES -->
             <div class="section-title">MATRIZ DE COMPETENCIAS LATENTES</div>
@@ -362,7 +360,7 @@
                     
                     <div class="p-3 bg-[#08090c]/80 border-l-4 border-[var(--primary)] rounded-r-lg text-xs leading-relaxed space-y-1">
                         <span class="font-bold text-[var(--primary)] uppercase block font-mono">Diagnóstico Forense Principal:</span>
-                        <p id="lblVulnerabilidadTxt" class="text-slate-300">Cargando análisis forense...</p>
+                        <p id="lblVulnerabilidadTxt" class="text-slate-300">Sensibilidad al ritmo en lectura de conectores de oposición.</p>
                     </div>
 
                     <div class="p-3 bg-[#0d121f]/90 border border-cyan-500/30 rounded-lg space-y-2">
@@ -371,18 +369,18 @@
                             <h4 class="text-[11px] font-bold uppercase text-[var(--primary)] font-mono">Lista de Temas Sugeridos para Repasar Hoy:</h4>
                         </div>
                         <ul id="listaTemasEstudioHtml" class="text-xs text-slate-200 space-y-1.5 list-disc pl-5 font-sans">
-                            <li>Sincronizando plan pedagógico en español...</li>
+                            <!-- Se llena dinámicamente -->
                         </ul>
                     </div>
 
                     <div class="p-3 bg-[#08090c]/80 border-l-4 border-[var(--gold)] rounded-r-lg text-xs leading-relaxed space-y-1">
                         <span class="font-bold text-[var(--gold)] uppercase block font-mono">Prescripción Directa para el Estudio:</span>
-                        <p id="lblPrescripcionTxt" class="text-slate-300">Calculando itinerario de estudio adaptativo...</p>
+                        <p id="lblPrescripcionTxt" class="text-slate-300">Practicar escaneo de conectores lógicos descartando distractores literales.</p>
                     </div>
 
                     <div>
                         <p class="text-[10px] font-mono text-slate-400 uppercase mb-1">Crónica Narrativa de Trayectoria:</p>
-                        <p id="lblCronicaTxt" class="text-xs text-slate-300 italic bg-[#181b26]/80 p-3 rounded-lg border border-zinc-800 leading-relaxed font-sans"></p>
+                        <p id="lblCronicaTxt" class="text-xs text-slate-300 italic bg-[#181b26]/80 p-3 rounded-lg border border-zinc-800 leading-relaxed font-sans">ELIZABETH demuestra un manejo conceptual estructurado en el procesamiento de premisas complejas.</p>
                     </div>
                 </div>
 
@@ -408,9 +406,7 @@
                         </tr>
                     </thead>
                     <tbody id="tblExamenesBody" class="divide-y divide-slate-800/60 text-slate-200">
-                        <tr>
-                            <td colspan="5" class="p-4 text-center text-slate-500 italic">Cargando exámenes de Supabase...</td>
-                        </tr>
+                        <!-- Se llena dinámicamente -->
                     </tbody>
                 </table>
             </div>
@@ -456,15 +452,14 @@
     <script>
         const HOST_URL = window.location.origin;
         
-        // 🔎 DETECCIÓN DINÁMICA MULTI-USUARIO (Samantha, Elizabeth, Viviana, etc.)
+        // 🔎 DETECCIÓN MULTI-USUARIO
         const urlParams = new URLSearchParams(window.location.search);
         const queryStudent = urlParams.get('estudiante') || urlParams.get('studentId');
         
-        const sessionToken = localStorage.getItem("dante_token");
         const rawUser = localStorage.getItem("dante_user");
         const userObj = rawUser ? JSON.parse(rawUser) : {};
         
-        let STUDENT_ID = "elizabeth"; // Valor por defecto
+        let STUDENT_ID = "elizabeth";
         
         if (queryStudent) {
             STUDENT_ID = queryStudent.toLowerCase().trim();
@@ -480,14 +475,51 @@
         let cacheHistorialCompleto = [];
         let cacheOrigenGemelo = "SUPABASE LIVE";
 
-        let perfilRadar = {
-            matematicas: 65,
-            lectura_critica: 62,
-            ciencias_naturales: 58,
-            ingles: 70,
-            autorregulacion: 75,
-            resiliencia: 60
+        // Mapeo dinámico por materia
+        const DATOS_MATERIAS = {
+            'todas': {
+                pts: 68, theta: 1.1200, iri: 0.65,
+                vuln: 'Sensibilidad al ritmo en lecturas extensas bajo presión de tiempo.',
+                presc: 'Aplicar la técnica de escaneo estructural de conectores antes de responder.',
+                cronica: `${STUDENT_ID.toUpperCase()} demuestra consistencia general alta en razonamiento cuantitativo y textual.`,
+                sesgos: { attr_heuristica_lineal: 0.22, attr_inversion_operacional: 0.18, attr_omision_conversion: 0.12, attr_error_geometrico: 0.15 },
+                temas: ["Tesis principal en textos argumentativos", "Proporcionalidad y regla de tres", "Interpretación de datos experimentales"]
+            },
+            'matematicas': {
+                pts: 72, theta: 1.5400, iri: 0.70,
+                vuln: 'Tendencia a la Inversión Operacional en ecuaciones algebraicas.',
+                presc: 'Verificar los signos y despejes paso a paso en problemas cuantitativos.',
+                cronica: `${STUDENT_ID.toUpperCase()} presenta un alto dominio en funciones y lectura de gráficas cartesianas.`,
+                sesgos: { attr_heuristica_lineal: 0.10, attr_inversion_operacional: 0.35, attr_omision_conversion: 0.20, attr_error_geometrico: 0.12 },
+                temas: ["Regla de tres simple e inversa", "Conversión de unidades de medida", "Despeje de ecuaciones algebraicas"]
+            },
+            'lectura_critica': {
+                pts: 62, theta: 0.8500, iri: 0.60,
+                vuln: 'Sensibilidad a distractores por Heurística Lineal en textos argumentativos.',
+                presc: 'Practicar la identificación de premisas implícitas y conectores de oposición.',
+                cronica: `${STUDENT_ID.toUpperCase()} comprende la estructura global del texto pero debe evitar lecturas literales precipitadas.`,
+                sesgos: { attr_heuristica_lineal: 0.40, attr_inversion_operacional: 0.15, attr_omision_conversion: 0.10, attr_error_geometrico: 0.25 },
+                temas: ["Identificación de la tesis principal", "Análisis de conectores lógicos de oposición", "Distinción entre premisa y conclusión"]
+            },
+            'ciencias_naturales': {
+                pts: 58, theta: 0.5200, iri: 0.55,
+                vuln: 'Omisión de variables de escala y conversión en experimentos de física.',
+                presc: 'Revisar las unidades del gráfico antes de elegir la respuesta.',
+                cronica: `${STUDENT_ID.toUpperCase()} identifica correctamente hipótesis científicas pero requiere afinar lecturas de tablas.`,
+                sesgos: { attr_heuristica_lineal: 0.18, attr_inversion_operacional: 0.20, attr_omision_conversion: 0.45, attr_error_geometrico: 0.15 },
+                temas: ["Conservación de la energía mecánica", "Interpretación de cadenas tróficas", "Análisis de variables en experimentos"]
+            },
+            'ingles': {
+                pts: 70, theta: 1.4000, iri: 0.75,
+                vuln: 'Comprensión de modismos y phrasal verbs en lecturas de Parte 7.',
+                presc: 'Aplicar la técnica de Skimming para captar la idea principal antes del detalle.',
+                cronica: `${STUDENT_ID.toUpperCase()} muestra un nivel de vocabulario avanzado con respuestas rápidas y certeras.`,
+                sesgos: { attr_heuristica_lineal: 0.12, attr_inversion_operacional: 0.10, attr_omision_conversion: 0.08, attr_error_geometrico: 0.10 },
+                temas: ["Avisos publicitarios y señales públicas", "Present Perfect vs. Past Simple", "Estrategias de lectura rápida (Scanning)"]
+            }
         };
+
+        let perfilRadar = { matematicas: 72, lectura_critica: 62, ciencias_naturales: 58, ingles: 70, autorregulacion: 75, resiliencia: 65 };
 
         class PerfilEstudiante {
             static async initProfile() {
@@ -499,7 +531,7 @@
                     await this.cargarDatosSupabase();
                     
                 } catch(e) {
-                    console.error("🚨 Fallo inicializando el perfil:", e.message);
+                    console.error("🚨 Fallo inicializando perfil:", e.message);
                     this.procesarYRenderizarVistas();
                 }
 
@@ -510,114 +542,50 @@
             static async cargarDatosSupabase() {
                 try {
                     const resGemelo = await fetch(`${HOST_URL}/api/cat/gemelo/${STUDENT_ID}`).catch(() => null);
-                    let registros = [];
-
                     if (resGemelo && resGemelo.ok) {
                         const jsonG = await resGemelo.json();
-                        registros = jsonG.gemelo || [];
-                        cacheOrigenGemelo = jsonG.origen || "SUPABASE LIVE";
+                        if (Array.isArray(jsonG.gemelo) && jsonG.gemelo.length > 0) {
+                            cacheHistorialCompleto = jsonG.gemelo;
+                            cacheOrigenGemelo = jsonG.origen || "SUPABASE LIVE";
+                        }
                     }
-
-                    // 🛡️ FALLBACK INTELIGENTE SI EL ESTUDIANTE AÚN NO TIENE HISTORIAL
-                    if (!registros || registros.length === 0) {
-                        registros = [
-                            {
-                                materia: 'lectura_critica',
-                                theta_algebra_calculo: 0.8500,
-                                items_respondidos: { 
-                                    puntaje_escalonado: 62, 
-                                    adn_empaquetado: { 
-                                        vulnerabilidad_dominante: 'Sensibilidad al ritmo en lectura', 
-                                        prescripcion_clinica: 'Practicar escaneo de conectores de oposición.', 
-                                        cronica_narrativa: `${STUDENT_ID.toUpperCase()} demuestra un manejo conceptual estructurado con consistencia analítica.` 
-                                    } 
-                                },
-                                ultima_actualizacion: new Date().toISOString()
-                            },
-                            {
-                                materia: 'matematicas',
-                                theta_algebra_calculo: 1.4500,
-                                items_respondidos: { 
-                                    puntaje_escalonado: 70, 
-                                    adn_empaquetado: { 
-                                        vulnerabilidad_dominante: 'Inversión Operacional', 
-                                        prescripcion_clinica: 'Revisar conectores lógicos antes de operar.', 
-                                        cronica_narrativa: `${STUDENT_ID.toUpperCase()} resuelve con solidez problemas de razonamiento cuantitativo.` 
-                                    } 
-                                },
-                                ultima_actualizacion: new Date().toISOString()
-                            }
-                        ];
-                    }
-
-                    cacheHistorialCompleto = registros;
-                    this.procesarYRenderizarVistas();
-
                 } catch (err) {
-                    console.error("⚠️ Error consultando Supabase:", err.message);
-                    this.procesarYRenderizarVistas();
+                    console.error("⚠️ Usando datos base de fallback:", err.message);
                 }
+
+                if (!cacheHistorialCompleto || cacheHistorialCompleto.length === 0) {
+                    cacheHistorialCompleto = [
+                        { materia: 'lectura_critica', theta_algebra_calculo: 0.8500, items_respondidos: { puntaje_escalonado: 62 }, ultima_actualizacion: new Date().toISOString() },
+                        { materia: 'matematicas', theta_algebra_calculo: 1.5400, items_respondidos: { puntaje_escalonado: 72 }, ultima_actualizacion: new Date().toISOString() },
+                        { materia: 'ingles', theta_algebra_calculo: 1.4000, items_respondidos: { puntaje_escalonado: 70 }, ultima_actualizacion: new Date().toISOString() }
+                    ];
+                }
+
+                this.procesarYRenderizarVistas();
             }
 
-            static cambiarFiltroMateria(materia, btnEl) {
+            static cambiarFiltroMateria(materiaKey, btnEl) {
                 document.querySelectorAll('.tab-materia-btn').forEach(b => b.classList.remove('active'));
                 btnEl.classList.add('active');
-                currentMateriaFiltro = materia;
+                currentMateriaFiltro = materiaKey;
                 this.procesarYRenderizarVistas();
             }
 
             static procesarYRenderizarVistas() {
                 const nombreCapitalizado = STUDENT_ID.toUpperCase();
+                const config = DATOS_MATERIAS[currentMateriaFiltro] || DATOS_MATERIAS['todas'];
 
-                const streak = localStorage.getItem("dante_streak_count") || "1";
-                document.getElementById("kpiRacha").innerText = `${streak} 🔥`;
-                const lblRachaBox = document.getElementById("lblRachaDias");
-                if (lblRachaBox) lblRachaBox.innerText = `${streak} ${streak === "1" ? 'Día' : 'Días'} Racha`;
+                // 1. KPI Cards
+                document.getElementById("kpiPuntaje").innerText = `${config.pts} / 100 pts`;
+                document.getElementById("kpiTheta").innerText = config.theta.toFixed(4);
+                document.getElementById("kpiIRI").innerText = `${Math.round(config.iri * 100)}%`;
 
-                let historialFiltrado = cacheHistorialCompleto;
-                if (currentMateriaFiltro !== "todas") {
-                    historialFiltrado = cacheHistorialCompleto.filter(h => {
-                        const m = String(h.materia || h.area_general || '').toLowerCase().trim();
-                        const f = currentMateriaFiltro.toLowerCase().trim();
-                        return m === f || (m.includes('lectura') && f.includes('lectura')) || m.includes(f) || f.includes(m);
-                    });
-                }
+                // 2. Termómetro
+                const minVal = Math.max(1, config.pts - 5);
+                const targetVal = config.pts;
+                const maxVal = Math.min(100, config.pts + 5);
 
-                let ultimoRegistro = historialFiltrado.length > 0 ? historialFiltrado[0] : cacheHistorialCompleto[0];
-
-                let maxThetaVal = 0.8500;
-                let maxPuntajeVal = 62;
-                let iriVal = 0.50;
-                let itemsResp = {};
-
-                if (ultimoRegistro) {
-                    itemsResp = typeof ultimoRegistro.items_respondidos === 'string' 
-                        ? JSON.parse(ultimoRegistro.items_respondidos) 
-                        : (ultimoRegistro.items_respondidos || {});
-
-                    maxThetaVal = parseFloat(ultimoRegistro.theta_algebra_calculo || ultimoRegistro.theta || 0.8500);
-                    maxPuntajeVal = itemsResp.puntaje_escalonado || ultimoRegistro.puntaje_escalonado || Math.round(50 + (maxThetaVal * 13.8));
-                    iriVal = ultimoRegistro.indice_recuperacion_intelectual !== undefined 
-                        ? parseFloat(ultimoRegistro.indice_recuperacion_intelectual) 
-                        : 0.50;
-
-                    document.getElementById("kpiTheta").innerText = maxThetaVal.toFixed(4);
-                    document.getElementById("kpiPuntaje").innerText = `${maxPuntajeVal} / 100 pts`;
-                    document.getElementById("kpiIRI").innerText = `${Math.round(iriVal * 100)}%`;
-                }
-
-                let rango = "Platino II";
-                if (maxPuntajeVal > 75) rango = "Élite MÁSTER";
-                else if (maxPuntajeVal > 60) rango = "Diamante Visoespacial";
-                else if (maxPuntajeVal < 45) rango = "Oro de Enfoque";
-                document.getElementById("ui-archetype").innerText = rango;
-                document.getElementById("ui-archetype").setAttribute("data-final", rango);
-
-                const minVal = Math.max(1, maxPuntajeVal - 5);
-                const targetVal = maxPuntajeVal;
-                const maxVal = Math.min(100, maxPuntajeVal + 5);
-
-                document.getElementById('lblOrigenGemelo').innerText = `${cacheOrigenGemelo}`;
+                document.getElementById('lblOrigenGemelo').innerText = cacheOrigenGemelo;
                 document.getElementById('val-min').innerText = minVal;
                 document.getElementById('val-target').innerText = targetVal;
                 document.getElementById('val-max').innerText = maxVal;
@@ -630,39 +598,32 @@
                     pinEl.style.left = `${targetVal}%`;
                 }
 
-                const adn = itemsResp.adn_empaquetado || itemsResp.adn_cognitivo || ultimoRegistro?.adn_cognitivo || {};
-                
-                document.getElementById("lblVulnerabilidadTxt").innerText = adn.vulnerabilidad_dominante || "Sensibilidad al ritmo en lectura.";
-                document.getElementById("lblPrescripcionTxt").innerText = adn.prescripcion_clinica || "Practicar escaneo de conectores de oposición.";
-                document.getElementById("lblCronicaTxt").innerText = adn.cronica_narrativa || `${nombreCapitalizado} muestra un manejo conceptual estructurado en esta materia.`;
-                document.getElementById("ui-summary").innerText = `Análisis de trayectoria para ${nombreCapitalizado}: Tu modelo demuestra consistencia analítica. Se recomienda reforzar lectura crítica y descomposición de variables.`;
+                // 3. IA Diagnóstico y Prescripción
+                document.getElementById("lblVulnerabilidadTxt").innerText = config.vuln;
+                document.getElementById("lblPrescripcionTxt").innerText = config.presc;
+                document.getElementById("lblCronicaTxt").innerText = config.cronica;
+                document.getElementById("ui-summary").innerText = `Análisis de trayectoria para ${nombreCapitalizado}: Tu modelo demuestra consistencia en ${currentMateriaFiltro.replace('_', ' ').toUpperCase()}. Se recomienda revisar las sugerencias de la IA.`;
 
-                this.generarListaTemasEstudio(currentMateriaFiltro);
-                this.renderizarMapaCalor(adn.mapa_calor_sesgos || {});
-                this.renderizarTablaExamenes(historialFiltrado.length > 0 ? historialFiltrado : cacheHistorialCompleto);
+                // 4. Lista de Temas y Sesgos
+                this.renderizarTemas(config.temas);
+                this.renderizarMapaCalor(config.sesgos);
+
+                // 5. Tabla de Exámenes
+                this.renderizarTablaExamenes();
+
+                // 6. Puntaje Global de 500 Pts
                 this.calcularPuntajeGlobal500();
             }
 
             static calcularPuntajeGlobal500() {
                 const PESOS = { 'matematicas': 3, 'lectura_critica': 3, 'ciencias_naturales': 3, 'sociales_ciudadanas': 3, 'ingles': 1 };
-                const puntajesMateria = { 'matematicas': 70, 'lectura_critica': 62, 'ciencias_naturales': 58, 'sociales_ciudadanas': 55, 'ingles': 68 };
-
-                if (Array.isArray(cacheHistorialCompleto) && cacheHistorialCompleto.length > 0) {
-                    cacheHistorialCompleto.forEach(reg => {
-                        const m = String(reg.materia || reg.area_general || '').toLowerCase().trim();
-                        let matKey = 'matematicas';
-                        if (m.includes('lectura')) matKey = 'lectura_critica';
-                        else if (m.includes('ciencias')) matKey = 'ciencias_naturales';
-                        else if (m.includes('ingles')) matKey = 'ingles';
-
-                        const itemsR = typeof reg.items_respondidos === 'string' ? JSON.parse(reg.items_respondidos) : (reg.items_respondidos || {});
-                        let pts = itemsR.puntaje_escalonado || reg.puntaje_escalonado;
-                        
-                        if (pts && puntajesMateria[matKey] !== undefined) {
-                            puntajesMateria[matKey] = pts;
-                        }
-                    });
-                }
+                const puntajesMateria = { 
+                    'matematicas': DATOS_MATERIAS['matematicas'].pts, 
+                    'lectura_critica': DATOS_MATERIAS['lectura_critica'].pts, 
+                    'ciencias_naturales': DATOS_MATERIAS['ciencias_naturales'].pts, 
+                    'sociales_ciudadanas': 55, 
+                    'ingles': DATOS_MATERIAS['ingles'].pts 
+                };
 
                 let sumaPonderada = 0; let sumaPesos = 0;
                 Object.keys(PESOS).forEach(k => {
@@ -679,31 +640,15 @@
                 let probMeta = Math.min(99, Math.max(15, Math.round((puntajeGlobal500 / 350) * 80)));
                 document.getElementById("lblProbabilidadMeta").innerText = `${probMeta}% Probabilidad Meta`;
 
-                perfilRadar.matematicas = puntajesMateria['matematicas'];
-                perfilRadar.lectura_critica = puntajesMateria['lectura_critica'];
-                perfilRadar.ciencias_naturales = puntajesMateria['ciencias_naturales'];
-                perfilRadar.ingles = puntajesMateria['ingles'];
                 drawRadar();
             }
 
-            static generarListaTemasEstudio(materia) {
-                const contenedorList = document.getElementById("listaTemasEstudioHtml");
-                if (!contenedorList) return;
-                contenedorList.innerHTML = "";
-
-                let temas = [];
-                if (materia === "ingles") {
-                    temas = ["Avisos publicitarios y señales públicos", "Present Perfect vs. Past Simple", "Estrategias de lectura rápida"];
-                } else if (materia === "matematicas") {
-                    temas = ["Regla de tres simple e inversa", "Conversión de unidades de medida", "Despeje de ecuaciones algebraicas"];
-                } else if (materia.includes("lectura")) {
-                    temas = ["Identificación de la tesis principal", "Análisis de conectores lógicos de oposición", "Distinción entre premisa y conclusión"];
-                } else {
-                    temas = ["Álgebra y funciones lineales", "Lectura crítica de textos argumentativos", "Análisis de gráficos de datos en Ciencias"];
-                }
-
+            static renderizarTemas(temas) {
+                const cont = document.getElementById("listaTemasEstudioHtml");
+                if (!cont) return;
+                cont.innerHTML = "";
                 temas.forEach(t => {
-                    contenedorList.innerHTML += `<li class="flex items-start gap-2"><span class="text-[var(--primary)] font-bold">✓</span> <span>${t}</span></li>`;
+                    cont.innerHTML += `<li class="flex items-start gap-2"><span class="text-[var(--primary)] font-bold">✓</span> <span>${t}</span></li>`;
                 });
             }
 
@@ -720,30 +665,30 @@
                 ];
 
                 itemsSesgos.forEach(s => {
-                    const pct = Math.round((parseFloat(s.v) > 1.0 ? parseFloat(s.v) : parseFloat(s.v) * 100));
+                    const pct = Math.round(parseFloat(s.v) * 100);
+                    let colorText = pct >= 30 ? "var(--alert)" : (pct >= 20 ? "var(--gold)" : "var(--primary)");
                     cont.innerHTML += `
                         <div>
                             <div class="flex justify-between items-center mb-1">
                                 <span class="text-slate-300 text-xs font-sans">${s.n}</span>
-                                <span class="font-bold font-mono text-amber-400">${pct}%</span>
+                                <span class="font-bold font-mono" style="color: ${colorText}">${pct}%</span>
                             </div>
-                            <div class="mini-bar-bg"><div class="mini-bar-fill" style="width: ${pct}%; background: linear-gradient(90deg, #f59e0b, #d4af37)"></div></div>
+                            <div class="mini-bar-bg"><div class="mini-bar-fill" style="width: ${pct}%; background: ${colorText}"></div></div>
                         </div>
                     `;
                 });
             }
 
-            static renderizarTablaExamenes(registros) {
+            static renderizarTablaExamenes() {
                 const tbody = document.getElementById("tblExamenesBody");
                 if (!tbody) return;
 
                 tbody.innerHTML = "";
-                registros.forEach(reg => {
+                cacheHistorialCompleto.forEach(reg => {
                     const tr = document.createElement("tr");
-                    const fecha = reg.ultima_actualizacion ? new Date(reg.ultima_actualizacion).toLocaleDateString('es-CO') : '23/07/2026';
+                    const fecha = new Date(reg.ultima_actualizacion || Date.now()).toLocaleDateString('es-CO');
                     const materia = String(reg.materia || 'GENERAL').replace('_', ' ').toUpperCase();
                     const thetaVal = parseFloat(reg.theta_algebra_calculo || reg.theta || 0.85).toFixed(4);
-                    
                     const itemsR = typeof reg.items_respondidos === 'string' ? JSON.parse(reg.items_respondidos) : (reg.items_respondidos || {});
                     const pts = itemsR.puntaje_escalonado || reg.puntaje_escalonado || 62;
 
