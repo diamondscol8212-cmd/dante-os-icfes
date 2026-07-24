@@ -3,85 +3,421 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Dante OS | CABINA DE EVALUACIÓN ADAPTATIVA</title>
+    <title>Dante Analytics OS - Enterprise Edition</title>
     
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&family=JetBrains+Mono:wght@400;500;700;900&family=Oswald:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
+
     <style>
         :root {
-            --primary: #51e2f5; 
-            --gold: #D4AF37;
-            --alert: #e74c3c;
-            --bg: #010103; 
-            --card-bg: rgba(12, 14, 22, 0.88);
-            --border-graphite: rgba(255, 255, 255, 0.08);
+            --bg-deep: #08090c;
+            --bg-surface: rgba(20, 22, 29, 0.85);
+            --bg-card: rgba(26, 29, 38, 0.85);
+            --gold-satin: #d4af37;
+            --gold-glow: rgba(212, 175, 55, 0.25);
+            --platinum: #e5e5e5;
+            --graphite: rgba(255, 255, 255, 0.08);
+            --text-main: #f0f1f5;
+            --text-muted: #9499a7;
+            --emerald: #2ecc71;
+            --crimson: #e74c3c;
+            --cyan-core: #51e2f5;
+            --purple-core: #a855f7;
+            --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
         }
 
-        body, html { 
-            background: var(--bg); color: #f0f1f5; margin: 0; font-family: 'Outfit', sans-serif; 
-            overflow: hidden; height: 100dvh; width: 100vw; touch-action: pan-y;
-            -webkit-tap-highlight-color: transparent;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: var(--bg-deep); 
+            color: var(--text-main); 
+            font-family: var(--font-main);
+            background-image: radial-gradient(circle at 50% 20%, #171a26 0%, #08090c 100%);
+            min-height: 100vh; 
+            line-height: 1.6;
+            overflow-x: hidden;
+            padding-bottom: 90px;
         }
 
-        .font-mono { font-family: 'JetBrains Mono', monospace !important; }
+        .font-mono { font-family: var(--font-mono) !important; }
 
-        /* EFECTOS VISUALES Y CANVASES */
+        /* CANVASES Y EFECTOS COGNITIVOS */
         #dante-fractal-bg { position: fixed; inset: 0; z-index: 0; opacity: 0.18; pointer-events: none; mix-blend-mode: screen; }
         .scanline { position: fixed; inset: 0; background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.5) 51%); background-size: 100% 4px; z-index: 1; pointer-events: none; opacity: 0.2; }
-        #fx-flash { position: fixed; inset: 0; z-index: 999999; background: var(--alert); opacity: 0; pointer-events: none; transition: opacity 0.3s; mix-blend-mode: screen; }
 
-        /* HEADER HUD PERIMETRAL */
-        .master-hud {
-            position: fixed; top: 0; width: 100%; z-index: 1000; padding: 18px 20px;
-            background: linear-gradient(to bottom, rgba(1,1,3,0.95) 30%, transparent 100%);
-            pointer-events: none; display: flex; justify-content: space-between; align-items: flex-start;
-        }
-        .alias-title { font-size: 15px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; color: white; margin-bottom: 2px;}
-        .geo-tag { font-family: 'JetBrains Mono'; font-size: 10px; color: var(--primary); letter-spacing: 2px; text-transform: uppercase; text-shadow: 0 0 10px var(--primary); }
+        .app-view { display: none; min-height: 100vh; padding: 1.25rem; position: relative; z-index: 10; }
+        @media (min-width: 768px) { .app-view { padding: 2.5rem; } }
+        .app-view.active { display: flex; flex-direction: column; }
 
-        /* VIEWPORT PRINCIPAL */
-        .adn-viewport {
-            position: fixed; inset: 0; z-index: 10;
-            overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth;
-            padding: 85px 15px 120px;
+        #viewGateway { justify-content: center; align-items: center; }
+        
+        .gateway-card {
+            background: var(--bg-surface); 
+            border: 1px solid var(--graphite);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); 
+            border-radius: 12px; 
+            padding: 2rem; 
+            width: 100%; 
+            max-width: 540px; 
+            text-align: center; 
+            position: relative;
+            backdrop-filter: blur(16px);
         }
-        .adn-viewport::-webkit-scrollbar { display: none; width: 0; height: 0; }
+        @media (min-width: 640px) { .gateway-card { padding: 3.5rem; } }
 
-        /* CONTAINER CARD */
-        .adn-card {
-            width: 100%; max-width: 850px; margin: 0 auto;
-            background: var(--card-bg); border: 1px solid var(--border-graphite);
-            border-radius: 14px; backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-            padding: 24px 18px; box-shadow: 0 20px 50px rgba(0,0,0,0.95), inset 0 0 40px rgba(255,255,255,0.02);
-            position: relative; overflow: visible;
+        .gateway-title { 
+            font-size: 1.5rem; 
+            font-weight: 300; 
+            text-transform: uppercase; 
+            letter-spacing: 3px; 
+            color: var(--gold-satin); 
+            margin-bottom: 0.5rem; 
         }
-        .adn-card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px;
-            background: linear-gradient(90deg, var(--primary), var(--gold), var(--primary)); 
-            box-shadow: 0 0 20px var(--gold); border-radius: 14px 14px 0 0;
+        @media (min-width: 640px) { .gateway-title { font-size: 1.8rem; letter-spacing: 4px; } }
+
+        .verification-banner {
+            background: rgba(168, 85, 247, 0.12); 
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            padding: 0.6rem; 
+            border-radius: 6px; 
+            color: var(--cyan-core); 
+            font-size: 0.72rem;
+            font-weight: 700; 
+            text-transform: uppercase; 
+            letter-spacing: 1.5px; 
+            margin-bottom: 1.8rem;
+            box-shadow: 0 0 15px rgba(81, 226, 245, 0.15);
+            font-family: var(--font-mono);
         }
 
-        /* OPCIONES MATRIZ */
+        .system-version-tag {
+            position: absolute; 
+            top: 1rem; 
+            right: 1.2rem; 
+            font-size: 0.68rem; 
+            font-weight: 700;
+            color: var(--cyan-core); 
+            letter-spacing: 1px; 
+            text-transform: uppercase;
+            font-family: var(--font-mono);
+        }
+
+        .selector-group { margin-bottom: 1.5rem; text-align: left; }
+        .selector-label { 
+            display: block; 
+            color: var(--text-muted); 
+            margin-bottom: 0.5rem; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            font-size: 0.72rem; 
+            letter-spacing: 1px; 
+            font-family: var(--font-mono);
+        }
+        
+        select {
+            width: 100%; 
+            padding: 0.9rem; 
+            background: rgba(26, 29, 38, 0.8); 
+            border: 1px solid var(--graphite);
+            color: var(--text-main); 
+            border-radius: 8px; 
+            font-size: 0.88rem; 
+            outline: none;
+            font-family: var(--font-mono);
+            transition: border-color 0.25s ease;
+        }
+        select:focus { border-color: var(--cyan-core); }
+
+        .btn-premium {
+            width: 100%; 
+            padding: 1rem; 
+            background: rgba(212, 175, 55, 0.05); 
+            border: 1px solid var(--gold-satin);
+            color: var(--gold-satin); 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            letter-spacing: 1.5px;
+            border-radius: 8px; 
+            cursor: pointer; 
+            transition: all 0.25s ease; 
+            margin-top: 0.8rem;
+            display: inline-block; 
+            text-align: center; 
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-family: var(--font-mono);
+            backdrop-filter: blur(8px);
+        }
+        .btn-premium:hover { 
+            background: var(--gold-satin); 
+            color: var(--bg-deep); 
+            box-shadow: 0 0 20px var(--gold-glow); 
+        }
+        .btn-premium:disabled { border-color: var(--graphite); color: var(--text-muted); cursor: not-allowed; background: transparent; }
+
+        .workspace-header {
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            border-bottom: 1px solid var(--graphite); 
+            padding-bottom: 1rem; 
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap; 
+            gap: 0.8rem;
+        }
+        .meta-tag { 
+            background: rgba(26, 29, 38, 0.6); 
+            padding: 0.5rem 1rem; 
+            border-radius: 6px; 
+            border: 1px solid var(--graphite); 
+            font-size: 0.75rem; 
+            color: var(--gold-satin); 
+            font-family: var(--font-mono);
+            backdrop-filter: blur(8px);
+        }
+        
+        .content-layout { display: grid; grid-template-columns: 1fr; gap: 1.5rem; flex-grow: 1; }
+        @media (min-width: 950px) { .content-layout { grid-template-columns: 1fr 1fr; gap: 2.5rem; } }
+
+        .panel-enunciado {
+            background: var(--bg-surface); 
+            border: 1px solid var(--graphite);
+            border-radius: 12px; 
+            padding: 1.5rem; 
+            overflow-y: auto; 
+            max-height: 50vh; 
+            font-size: 0.95rem; 
+            color: #d1d5db;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        @media (min-width: 768px) { .panel-enunciado { padding: 2.2rem; max-height: 62vh; font-size: 1rem; } }
+        .panel-enunciado p { margin-bottom: 1.2rem; line-height: 1.7; }
+
+        .panel-reactivo { display: flex; flex-direction: column; gap: 1.2rem; position: relative; }
+        .pregunta-txt { font-size: 1.05rem; font-weight: 600; color: #fff; margin-bottom: 0.8rem; }
+        @media (min-width: 768px) { .pregunta-txt { font-size: 1.15rem; } }
+        
+        .opciones-grid { display: flex; flex-direction: column; gap: 0.8rem; }
         .opcion-card {
-            background: rgba(20, 24, 35, 0.75);
-            border: 1px solid var(--border-graphite);
-            border-radius: 10px; padding: 14px; cursor: pointer;
-            display: flex; align-items: center; gap: 12px;
-            transition: all 0.25s ease; backdrop-filter: blur(8px);
+            background: var(--bg-surface); 
+            border: 1px solid var(--graphite); 
+            border-radius: 8px;
+            padding: 1rem; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            gap: 1rem; 
+            transition: all 0.25s ease;
+            backdrop-filter: blur(8px);
         }
-        .opcion-card:hover { border-color: var(--gold); background: rgba(212, 175, 55, 0.08); transform: translateX(3px); }
-        .opcion-card.selected-intent { border-color: var(--gold); background: rgba(212, 175, 55, 0.15); box-shadow: 0 0 15px rgba(212, 175, 55, 0.3); }
-        .opcion-card.correct { border-color: #2ecc71 !important; background: rgba(46, 204, 113, 0.15) !important; }
-        .opcion-card.wrong { border-color: var(--alert) !important; background: rgba(231, 76, 60, 0.15) !important; }
-
+        .opcion-card:hover { border-color: var(--gold-satin); background: rgba(24, 27, 36, 0.9); transform: translateX(3px); }
+        .opcion-card.selected-intent { border-color: var(--gold-satin); background: rgba(212, 175, 55, 0.1); box-shadow: 0 0 15px var(--gold-glow); }
+        
         .opcion-id {
-            background: rgba(0, 0, 0, 0.6); width: 34px; height: 32px;
-            display: flex; align-items: center; justify-content: center;
-            border-radius: 6px; font-weight: 800; color: var(--gold);
-            border: 1px solid var(--border-graphite); font-family: 'JetBrains Mono'; flex-shrink: 0;
+            background: rgba(28, 31, 42, 0.9); 
+            width: 32px; 
+            height: 32px; 
+            display: flex; 
+            align-items: center;
+            justify-content: center; 
+            border-radius: 6px; 
+            font-weight: 700; 
+            color: var(--gold-satin); 
+            border: 1px solid var(--graphite);
+            font-family: var(--font-mono);
+            flex-shrink: 0;
+            font-size: 0.85rem;
         }
+
+        .opcion-card.correct { border-color: var(--emerald) !important; background: rgba(46, 204, 113, 0.12) !important; }
+        .opcion-card.wrong { border-color: var(--crimson) !important; background: rgba(231, 76, 60, 0.12) !important; }
+        .opciones-grid.freno { pointer-events: none; }
+
+        #uiMetacognicion {
+            background: var(--bg-surface); 
+            border: 1px solid var(--gold-satin);
+            border-radius: 12px; 
+            padding: 1.5rem; 
+            margin-top: 1.2rem; 
+            display: none; 
+            text-align: center;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 0 20px var(--gold-glow);
+        }
+        .meta-grid { display: grid; grid-template-columns: 1fr; gap: 0.8rem; margin-top: 1rem; }
+        @media (min-width: 640px) { .meta-grid { grid-template-columns: repeat(3, 1fr); } }
+        
+        .btn-meta {
+            background: rgba(26, 29, 38, 0.8); 
+            border: 1px solid var(--graphite); 
+            color: var(--text-main);
+            padding: 0.85rem; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            font-size: 0.82rem; 
+            transition: all 0.25s ease;
+            font-family: var(--font-mono);
+        }
+        .btn-meta:hover { border-color: var(--gold-satin); color: var(--gold-satin); background: rgba(212, 175, 55, 0.1); }
+
+        #uiFeedback {
+            background: rgba(26, 19, 21, 0.95); 
+            border: 1px solid var(--crimson); 
+            border-radius: 12px; 
+            padding: 1.5rem; 
+            margin-top: 1.2rem; 
+            display: none;
+            backdrop-filter: blur(12px);
+        }
+        .feedback-header { color: var(--crimson); font-size: 0.88rem; font-weight: 700; text-transform: uppercase; margin-bottom: 1rem; font-family: var(--font-mono); letter-spacing: 1px; }
+        .forensic-box { display: flex; flex-direction: column; gap: 1rem; }
+        .forensic-row { border-left: 3px solid var(--gold-satin); padding-left: 1rem; }
+        .forensic-row.trampa { border-left-color: var(--crimson); }
+        .forensic-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; margin-bottom: 0.2rem; font-family: var(--font-mono); }
+        .forensic-txt { font-size: 0.88rem; color: #cbd5e0; line-height: 1.5; }
+
+        #uiIntervencionClinica {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(13, 15, 20, 0.96); border: 2px solid var(--crimson); border-radius: 12px;
+            padding: 1.8rem; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+            box-shadow: 0 0 40px rgba(231, 76, 60, 0.3); z-index: 50; backdrop-filter: blur(16px);
+        }
+        .pulse-warning { animation: pulse-border 2s infinite; }
+        
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 15px rgba(231, 76, 60, 0.2); }
+            50% { box-shadow: 0 0 35px rgba(231, 76, 60, 0.5); border-color: var(--gold-satin); }
+            100% { box-shadow: 0 0 15px rgba(231, 76, 60, 0.2); }
+        }
+
+        .dashboard-container {
+            background: var(--bg-surface); 
+            border: 1px solid var(--graphite); 
+            border-radius: 12px; 
+            padding: 1.8rem; 
+            width: 100%; 
+            max-width: 850px; 
+            text-align: center; 
+            margin: 0 auto;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        @media (min-width: 640px) { .dashboard-container { padding: 3rem; } }
+
+        .chart-box { 
+            background: rgba(9, 10, 13, 0.9); 
+            border: 1px solid var(--graphite); 
+            border-radius: 8px; 
+            padding: 1rem; 
+            margin: 2rem 0; 
+            display: flex; 
+            justify-content: center; 
+            overflow-x: auto;
+        }
+        
+        .telemetry-badge-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.8rem; margin-top: 1.2rem; text-align: left; }
+        @media(min-width: 600px) { .telemetry-badge-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media(min-width: 800px) { .telemetry-badge-grid { grid-template-columns: repeat(6, 1fr); } }
+        
+        .telemetry-card { 
+            background: rgba(17, 19, 26, 0.8); 
+            border: 1px solid var(--graphite); 
+            padding: 0.85rem; 
+            border-radius: 8px; 
+            backdrop-filter: blur(8px);
+            position: relative;
+        }
+        .telemetry-num { font-size: 1rem; font-weight: 700; font-family: var(--font-mono); color: var(--gold-satin); margin-top: 0.2rem; }
+
+        .report-grid { display: grid; grid-template-columns: 1fr; gap: 0.8rem; text-align: left; margin: 1.5rem 0; }
+        @media (min-width: 600px) { .report-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; } }
+
+        .heatmap-container {
+            background: rgba(9, 10, 13, 0.9); 
+            border: 1px solid var(--graphite); 
+            border-radius: 8px;
+            padding: 1.5rem; 
+            margin-top: 1.5rem; 
+            text-align: left;
+        }
+        .heatmap-title { 
+            font-size: 0.82rem; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            color: var(--gold-satin); 
+            letter-spacing: 1.5px; 
+            margin-bottom: 1.2rem; 
+            border-bottom: 1px dashed var(--graphite); 
+            padding-bottom: 0.5rem; 
+            font-family: var(--font-mono);
+        }
+        .heatmap-row { margin-bottom: 1rem; }
+        .heatmap-row:last-child { margin-bottom: 0; }
+        .heatmap-meta { display: flex; justify-content: space-between; font-size: 0.75rem; text-transform: uppercase; margin-bottom: 0.3rem; color: var(--text-muted); }
+        .heatmap-bar-bg { background: rgba(20, 22, 29, 0.9); height: 8px; border-radius: 4px; border: 1px solid var(--graphite); overflow: hidden; }
+        .heatmap-bar-fill { height: 100%; width: 0%; border-radius: 4px; transition: width 1.5s cubic-bezier(0.1, 1, 0.1, 1); }
+
+        .narrative-card {
+            background: linear-gradient(135deg, rgba(22, 25, 34, 0.85) 0%, rgba(17, 19, 26, 0.9) 100%);
+            border: 1px solid var(--graphite); 
+            border-left: 4px solid var(--gold-satin);
+            border-radius: 8px; 
+            padding: 1.4rem; 
+            text-align: left; 
+            margin-top: 1.2rem;
+            backdrop-filter: blur(8px);
+        }
+        .narrative-title { font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--gold-satin); margin-bottom: 0.5rem; font-family: var(--font-mono); }
+        .narrative-p { font-size: 0.88rem; color: #d1d5db; line-height: 1.6; text-align: justify; }
+
+        .clinical-box-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-top: 1.2rem; }
+        @media(min-width: 700px) { .clinical-box-grid { grid-template-columns: 1fr 1fr; } }
+        
+        .clinical-card {
+            background: rgba(17, 19, 26, 0.8); 
+            border: 1px solid var(--graphite); 
+            border-radius: 8px; 
+            padding: 1.2rem; 
+            text-align: left;
+            backdrop-filter: blur(8px);
+        }
+        .clinical-card.badge-crimson { border-top: 3px solid var(--gold-satin); }
+        .clinical-card.badge-cyan { border-top: 3px solid var(--cyan-core); }
+        .clinical-header-title { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.4rem; font-family: var(--font-mono); }
+
+        .feedback-error-container {
+            background: rgba(245, 158, 11, 0.05);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            padding: 1.2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        .pista-caja {
+            background: #0f172a;
+            border-left: 4px solid #f59e0b;
+        }
+        .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* TOOLTIPS PEDAGÓGICOS (?) */
+        .tooltip-wrapper { position: relative; display: inline-flex; align-items: center; cursor: pointer; }
+        .tooltip-box {
+            visibility: hidden; width: 220px; max-width: 80vw; background-color: #0c0e17; color: #f1f5f9;
+            text-align: left; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--gold-satin);
+            position: absolute; z-index: 999999 !important; opacity: 0; transition: opacity 0.2s ease;
+            font-size: 0.72rem; line-height: 1.4; box-shadow: 0 14px 35px rgba(0, 0, 0, 0.95); backdrop-filter: blur(16px); pointer-events: none;
+            bottom: calc(100% + 6px); right: 0;
+        }
+        .tooltip-wrapper:hover .tooltip-box, .tooltip-wrapper:focus .tooltip-box { visibility: visible; opacity: 1; }
 
         /* DOCK FLOTANTE INFERIOR */
         .bottom-nav { 
@@ -95,41 +431,43 @@
         .icon-circle { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); margin-bottom: 4px; transition: 0.3s; }
         .nav-text { font-size: 9px; font-weight: 900; letter-spacing: 0.15em; text-transform: uppercase; }
         
-        #dante-anchor { width: 52px; height: 52px; border-radius: 50%; border: 2px solid var(--gold); background: #000; box-shadow: 0 0 20px rgba(212,175,55,0.35); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s;}
-        #dante-anchor i { font-size: 20px; color: var(--gold); transition: 0.3s; }
+        #dante-anchor { width: 52px; height: 52px; border-radius: 50%; border: 2px solid var(--gold-satin); background: #000; box-shadow: 0 0 20px rgba(212,175,55,0.35); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s;}
+        #dante-anchor i { font-size: 20px; color: var(--gold-satin); transition: 0.3s; }
+        #dante-anchor:active { border-color: var(--cyan-core); box-shadow: 0 0 30px var(--cyan-core); transform: scale(0.95);}
+        #dante-anchor:active i { color: var(--cyan-core); }
     </style>
 </head>
 <body oncontextmenu="return false;">
+
+    <script>
+        window.history.replaceState({ locked: true }, null, window.location.href);
+        window.addEventListener('popstate', function (event) {
+            window.history.pushState({ locked: true }, null, window.location.href);
+            const flash = document.getElementById('fx-flash');
+            if(flash) {
+                flash.style.opacity = '0.4';
+                setTimeout(() => { flash.style.opacity = '0'; }, 300);
+            }
+        });
+        window.addEventListener('pageshow', function (event) {
+            if (event.persisted) { window.location.reload(); }
+        });
+    </script>
 
     <div id="fx-flash"></div>
     <div class="scanline"></div>
     <canvas id="dante-fractal-bg"></canvas>
 
-    <!-- HEADER HUD PERIMETRAL -->
-    <header class="master-hud">
-        <div>
-            <div class="alias-title">RED DANTE OS</div>
-            <div class="geo-tag" id="ui-geo" data-final="CABINA DE SIMULACIÓN">BOGOTÁ, COLOMBIA</div>
-        </div>
-        <div class="text-right">
-            <div class="text-xl font-black italic text-white" style="text-shadow: 0 0 10px var(--primary);">MODO <span id="ui-lvl" class="text-[#D4AF37]">ENTERPRISE</span></div>
-            <div class="font-mono text-[9px] text-zinc-400 uppercase tracking-[2px] mt-0.5">TENANT: <span id="ui-tenant" class="text-white">DEFAULT</span></div>
-        </div>
-    </header>
-
-    <div class="adn-viewport" id="viewportContainer">
-        
-        <!-- VISTA 1: CONFIGURACIÓN Y ARRANQUE DE SESIÓN -->
-        <div class="adn-card" id="viewGateway">
-            <div class="text-center mb-6">
-                <h1 class="text-2xl font-mono font-bold text-[#D4AF37] uppercase tracking-wider mb-1" id="lblGatewayWelcome">DANTE OS // RUNTIME</h1>
-                <p class="text-xs text-slate-400 font-mono" id="lblTenantBanner">AUTENTICANDO CONTEXTO MULTI-TENANT...</p>
-            </div>
-
-            <!-- SELECCIÓN DE MATERIA -->
-            <div class="mb-6">
-                <label class="block text-xs font-mono font-bold uppercase text-slate-400 mb-2">Módulo de Competencia Evaluativa:</label>
-                <select id="selMateria" class="w-full bg-slate-900 border border-slate-700 text-slate-200 p-3 rounded-lg font-mono text-xs focus:border-[#51e2f5] outline-none">
+    <!-- VISTA 1: GATEWAY DE BIENVENIDA Y SELECCIÓN DE MATERIA -->
+    <main id="viewGateway" class="app-view active">
+        <div class="gateway-card">
+            <div class="system-version-tag">UI ENGINE: v21.1.0-PRO_MASTER</div>
+            <div class="verification-banner" id="lblTenantBanner">AUTENTICANDO CONTEXTO MULTI-TENANT...</div>
+            <h1 class="gateway-title" id="lblGatewayWelcome">Dante OS Runtime</h1>
+            
+            <div class="selector-group" style="margin-top: 1.5rem;">
+                <label class="selector-label">Módulo de Competencia Evaluativa</label>
+                <select id="selMateria">
                     <option value="matematicas">Matemáticas</option>
                     <option value="lectura_critica">Lectura Crítica</option>
                     <option value="ciencias_naturales">Ciencias Naturales</option>
@@ -137,90 +475,230 @@
                 </select>
             </div>
 
-            <!-- NARRATIVA DE TRAYECTORIA EN ARRANQUE -->
-            <div id="uiContenedorCronicaArranque" class="bg-slate-900/90 border-l-4 border-[#51e2f5] p-4 rounded-r-lg mb-6 hidden">
-                <span class="text-xs font-mono font-bold text-[#51e2f5] uppercase block mb-1">📖 MEMORIA DE TRAYECTORIA COGNITIVA:</span>
-                <p id="lblTextoCronicaArranque" class="text-xs text-slate-300 leading-relaxed font-sans"></p>
-                <button onclick="AppController.liberarEntornoHaciaWorkspace()" class="mt-3 w-full py-2 bg-[#51e2f5]/10 border border-[#51e2f5] text-[#51e2f5] font-mono font-bold text-xs uppercase tracking-wider rounded hover:bg-[#51e2f5] hover:text-black transition">
-                    DESPLEGAR DESAFÍO COGNITIVO
-                </button>
+            <div id="uiContenedorCronicaArranque" class="narrative-card" style="display: none; margin-bottom: 1.5rem; border-left-color: var(--cyan-core);">
+                <div class="narrative-title" style="color: var(--cyan-core); letter-spacing: 2px;">📖 MEMORIA DE TRAYECTORIA COGNITIVA</div>
+                <p class="narrative-p" id="lblTextoCronicaArranque" style="font-size: 0.88rem; color: #e2e8f0;"></p>
+                <button class="btn-premium" style="margin-top: 1rem; padding: 0.6rem; font-size: 0.75rem; border-color: var(--cyan-core); color: var(--cyan-core);" onclick="AppController.liberarEntornoHaciaWorkspace()">Desplegar Desafío</button>
             </div>
 
-            <button id="btnIngresar" onclick="AppController.inicializarSesion()" class="w-full py-3.5 bg-[#D4AF37]/10 border border-[#D4AF37] text-[#D4AF37] font-mono font-bold text-xs uppercase tracking-widest rounded-lg hover:bg-[#D4AF37] hover:text-black transition shadow-lg mb-3">
-                ⚡ SINCRONIZAR SIMULADOR ADAPTATIVO
-            </button>
-
-            <a href="/perfil.html" class="block w-full py-3 text-center border border-slate-700 text-slate-300 font-mono text-xs uppercase tracking-wider rounded-lg hover:bg-slate-800 transition">
-                👤 CONSULTAR EXPEDIENTE COMPLETO
-            </a>
-        </div>
-
-        <!-- VISTA 2: ARENA DE EVALUACIÓN EN VIVO (WORKSPACE) -->
-        <div class="adn-card hidden" id="viewWorkspace">
+            <button class="btn-premium" id="btnIngresar" onclick="AppController.inicializarSesion()">Sincronizar Entorno</button>
             
-            <div class="flex justify-between items-center border-b border-zinc-800 pb-3 mb-4 flex-wrap gap-2">
-                <div>
-                    <h2 id="lblEstudiante" class="text-lg font-mono font-bold text-[#D4AF37]">Estudiante: -</h2>
-                    <p id="lblMateria" class="text-[10px] font-mono text-slate-400 uppercase">Módulo Analítico</p>
-                </div>
-                <div class="bg-slate-900 border border-slate-800 px-3 py-1 rounded text-[10px] font-mono text-[#51e2f5]" id="lblCompetence">
-                    Competencia: Cargando...
-                </div>
+            <a href="/perfil.html" class="btn-premium" style="border-color: var(--cyan-core); color: var(--cyan-core); margin-top: 0.8rem;">
+                👤 CONSULTAR MI PERFIL / HISTORIAL
+            </a>
+
+            <button class="btn-premium" style="border-color:var(--crimson); color:var(--crimson); margin-top:0.5rem;" onclick="AppController.cerrarSesionGated()">Cerrar Portal</button>
+        </div>
+    </main>
+
+    <!-- VISTA 2: WORKSPACE DEL EXAMEN -->
+    <main id="viewWorkspace" class="app-view">
+        <header class="workspace-header">
+            <div>
+                <h2 id="lblEstudiante" style="font-weight: 400; color: var(--gold-satin); font-size: 1.2rem;">Estudiante: -</h2>
+                <p id="lblMateria" style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; margin-top: 0.2rem;" class="font-mono">Módulo Analítico</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                <!-- ENUNCIADO / CONTEXTO -->
-                <div class="bg-slate-900/90 border border-slate-800 p-4 rounded-xl max-h-[50vh] overflow-y-auto text-xs leading-relaxed text-slate-300 font-sans" id="uiEnunciados">
-                    <p>Cargando estímulo adaptativo...</p>
+            <div style="display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap;">
+                <a href="/perfil.html" class="btn-premium" style="margin-top:0; padding: 0.5rem 0.8rem; font-size: 0.7rem; border-color: var(--cyan-core); color: var(--cyan-core);">
+                    👤 MI PERFIL / PROGRESO
+                </a>
+                <div class="meta-tag" id="lblCompetence">Competencia: Cargando...</div>
+            </div>
+        </header>
+
+        <div class="content-layout">
+            <section class="panel-enunciado" id="uiEnunciados">
+            </section>
+
+            <section class="panel-reactivo">
+                <div id="uiContenedorPreguntaCore">
+                    <div class="pregunta-txt" id="uiPregunta">-</div>
+                    <div class="opciones-grid" id="uiOpcionesGrid"></div>
+                    <button class="btn-premium" id="btnConfirmarSeleccion" style="margin-top: 1rem; display: none;" onclick="QuizEngine.abrirFaseMetacognitiva()">Confirmar Elección</button>
                 </div>
 
-                <!-- PREGUNTA Y OPCIONES -->
-                <div class="space-y-3 relative">
-                    <div id="uiContenedorPreguntaCore">
-                        <p class="text-sm font-bold text-white mb-3" id="uiPregunta">-</p>
-                        <div class="space-y-2" id="uiOpcionesGrid"></div>
-                        
-                        <button id="btnConfirmarSeleccion" onclick="QuizEngine.abrirFaseMetacognitiva()" class="w-full mt-4 py-3 bg-[#D4AF37] text-black font-mono font-bold text-xs uppercase tracking-widest rounded-lg hidden shadow-lg hover:bg-amber-400 transition">
-                            CONFIRMAR ELECCIÓN
-                        </button>
+                <div id="uiIntervencionClinica" class="pulse-warning">
+                    <h3 id="lblIntervencionTitulo" style="color: var(--crimson); font-size: 1rem; text-transform: uppercase; font-weight: bold; letter-spacing: 1.5px;" class="font-mono">-</h3>
+                    <p id="lblIntervencionCuerpo" style="color: #cbd5e1; font-size: 0.88rem; margin-top: 1rem; line-height: 1.6; text-align: justify;"></p>
+                    
+                    <div style="margin-top: 1.5rem;">
+                        <span id="lblContadorSegundos" style="font-size: 2.5rem; font-weight: 300; color: var(--gold-satin);" class="font-mono">10</span>
+                        <p style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; margin-top: 0.2rem; letter-spacing: 1px;" class="font-mono">Segundos de desaceleración obligatoria del Sistema 1</p>
                     </div>
+                    <button id="btnDesbloquearFreno" class="btn-premium" style="margin-top: 1.2rem; display: none; border-color: var(--emerald); color: var(--emerald);" onclick="QuizEngine.liberarFrenoIntervencion()">Activar Sistema 2 Analítico</button>
+                </div>
 
-                    <!-- METACOGNICIÓN -->
-                    <div id="uiMetacognicion" class="bg-slate-900 border border-[#D4AF37] p-4 rounded-xl text-center hidden">
-                        <p class="text-xs font-mono font-bold text-[#D4AF37] mb-3">¿Qué tan seguro estás de tu procedimiento?</p>
-                        <div class="grid grid-cols-3 gap-2">
-                            <button onclick="QuizEngine.confirmarMetacognicion('alta')" class="p-2 bg-slate-950 border border-slate-800 text-xs font-mono text-emerald-400 rounded hover:border-emerald-500">Alta Certeza</button>
-                            <button onclick="QuizEngine.confirmarMetacognicion('media')" class="p-2 bg-slate-950 border border-slate-800 text-xs font-mono text-amber-400 rounded hover:border-amber-500">Dudoso</button>
-                            <button onclick="QuizEngine.confirmarMetacognicion('baja')" class="p-2 bg-slate-950 border border-slate-800 text-xs font-mono text-rose-400 rounded hover:border-rose-500">Adiviné</button>
+                <div id="uiMetacognicion">
+                    <p style="font-size: 0.88rem; font-weight: 500; color: var(--gold-satin);">¿Qué tan seguro estás de tu proceso de resolución?</p>
+                    <div class="meta-grid">
+                        <button class="btn-meta" onclick="QuizEngine.confirmarMetacognicion('alta')">Certeza Absoluta</button>
+                        <button class="btn-meta" onclick="QuizEngine.confirmarMetacognicion('media')">Dudoso</button>
+                        <button class="btn-meta" onclick="QuizEngine.confirmarMetacognicion('baja')">Adiviné</button>
+                    </div>
+                </div>
+
+                <div id="uiFeedback">
+                    <div class="feedback-header">Análisis de Desviación Cognitiva</div>
+                    <div class="forensic-box" id="uiFeedbackCuerpoAndamiaje">
+                        <div class="forensic-row trampa">
+                            <div class="forensic-label" style="color: var(--crimson);">HEURÍSTICA / SESGO DETECTADO</div>
+                            <div class="forensic-txt" id="forensicTrampa">-</div>
+                        </div>
+                        <div class="forensic-row" style="margin-top: 0.8rem;">
+                            <div class="forensic-label" style="color: var(--gold-satin);">LÓGICA DE REMEDIACIÓN</div>
+                            <div class="forensic-txt" id="forensicRealidad">-</div>
                         </div>
                     </div>
+                    <button class="btn-premium" id="btnContinuarFeedback" style="margin-top: 1.2rem; padding: 0.8rem;" onclick="QuizEngine.procesarFrenoComprension()">Continuar Evaluación</button>
+                </div>
+            </section>
+        </div>
+    </main>
 
-                    <!-- FEEDBACK Y ANDAMIAJE DE IA -->
-                    <div id="uiFeedback" class="bg-slate-900/95 border border-rose-500 p-4 rounded-xl hidden space-y-3">
-                        <span class="text-xs font-mono font-bold text-rose-400 uppercase block tracking-wider">ANÁLISIS DE DESVIACIÓN COGNITIVA</span>
-                        <div id="uiFeedbackCuerpoAndamiaje" class="text-xs space-y-2 text-slate-300"></div>
-                        <button id="btnContinuarFeedback" onclick="QuizEngine.procesarFrenoComprension()" class="w-full py-2.5 bg-rose-500/20 border border-rose-500 text-rose-300 font-mono font-bold text-xs uppercase tracking-wider rounded hover:bg-rose-500 hover:text-white transition">
-                            Continuar Evaluación ➡️
-                        </button>
+    <!-- VISTA 3: DASHBOARD INTERMEDIO DE TELEMETRÍA -->
+    <main id="viewDashboard" class="app-view">
+        <div class="dashboard-container">
+            <h2 style="font-weight: 300; text-transform: uppercase; color: var(--gold-satin); letter-spacing: 2px; font-size: 1.3rem;">Métricas Longitudinales (Dante OS v21.1.0)</h2>
+            <p style="color: var(--text-muted); margin-top: 0.3rem; font-size: 0.78rem;" class="font-mono">Modelado Conductual Avanzado y Trayectoria Estándar del Estudiante</p>
+            
+            <div class="chart-box">
+                <svg id="svgChart" width="550" height="220" viewBox="0 0 550 220" style="background: rgba(10, 11, 13, 0.9); border-radius: 8px;"></svg>
+            </div>
+
+            <div class="telemetry-badge-grid">
+                <div class="telemetry-card">
+                    <div class="flex justify-between items-center">
+                        <p style="font-size: 0.62rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;" class="font-mono">Tiempo Reactivo</p>
+                        <div class="tooltip-wrapper"><span class="text-[10px] text-amber-500 font-bold">(?)</span><div class="tooltip-box font-sans">Duración en segundos dedicada a analizar este ítem antes del primer clic.</div></div>
                     </div>
+                    <p class="telemetry-num" id="telemetryTime">0.0s</p>
+                </div>
+                <div class="telemetry-card">
+                    <div class="flex justify-between items-center">
+                        <p style="font-size: 0.62rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;" class="font-mono">Vacilación Real</p>
+                        <div class="tooltip-wrapper"><span class="text-[10px] text-amber-500 font-bold">(?)</span><div class="tooltip-box font-sans">Conteo de cambios de opción efectuados antes de confirmar la respuesta.</div></div>
+                    </div>
+                    <p class="telemetry-num" id="telemetryHesitation">0 hits</p>
+                </div>
+                <div class="telemetry-card">
+                    <div class="flex justify-between items-center">
+                        <p style="font-size: 0.62rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;" class="font-mono">Calibración Certeza</p>
+                        <div class="tooltip-wrapper"><span class="text-[10px] text-amber-500 font-bold">(?)</span><div class="tooltip-box font-sans">Autoevaluación metacognitiva del grado de confianza al marcar la opción.</div></div>
+                    </div>
+                    <p class="telemetry-num" id="telemetryConfidence">-</p>
+                </div>
+                <div class="telemetry-card">
+                    <div class="flex justify-between items-center">
+                        <p style="font-size: 0.62rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;" class="font-mono">Perfil Conductual</p>
+                        <div class="tooltip-wrapper"><span class="text-[10px] text-amber-500 font-bold">(?)</span><div class="tooltip-box font-sans">Clasificación de procesamiento (Sistema 1 Impulsivo vs Sistema 2 Analítico).</div></div>
+                    </div>
+                    <p class="telemetry-num" id="telemetryProfile" style="color: var(--gold-satin);">-</p>
+                </div>
+                <div class="telemetry-card" style="border-bottom: 2px solid var(--emerald);">
+                    <div class="flex justify-between items-center">
+                        <p style="font-size: 0.62rem; color: var(--emerald); text-transform: uppercase; font-weight: 700;" class="font-mono">Recuperación IRI</p>
+                        <div class="tooltip-wrapper"><span class="text-[10px] text-emerald-400 font-bold">(?)</span><div class="tooltip-box font-sans">Índice de Recuperación Intelectual tras un fallo previo.</div></div>
+                    </div>
+                    <p class="telemetry-num" id="telemetryIRI" style="color: var(--emerald);">50%</p>
+                </div>
+                <div class="telemetry-card" style="border-bottom: 2px solid var(--cyan-core);">
+                    <div class="flex justify-between items-center">
+                        <p style="font-size: 0.62rem; color: var(--cyan-core); text-transform: uppercase; font-weight: 700;" class="font-mono">Curiosidad ICC</p>
+                        <div class="tooltip-wrapper"><span class="text-[10px] text-cyan-400 font-bold">(?)</span><div class="tooltip-box font-sans">Índice de Curiosidad Conductual explorando reactivos complejos.</div></div>
+                    </div>
+                    <p class="telemetry-num" id="telemetryICC" style="color: var(--cyan-core);">50%</p>
                 </div>
             </div>
 
+            <div style="display: flex; gap: 1rem; justify-content: space-between; align-items: center; margin-top: 2rem; border-top: 1px solid var(--graphite); padding-top: 1.2rem; flex-wrap: wrap;">
+                <div style="text-align: left;">
+                    <p style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;" class="font-mono">Índice de Habilidad Latente</p>
+                    <p id="lblThetaActual" style="font-size: 1.3rem; font-weight: 600; color: var(--gold-satin);" class="font-mono">&theta; = 0.00</p>
+                </div>
+                <button class="btn-premium" style="width: auto; padding: 0.8rem 2rem; margin-top: 0;" onclick="AppController.avanzarSiguienteFase()">Siguiente Reactivo ➡️</button>
+            </div>
         </div>
+    </main>
 
-    </div>
+    <!-- VISTA 4: REPORTE FINAL DE CLAUSURA -->
+    <main id="viewFinalReport" class="app-view" style="justify-content: center; align-items: center;">
+        <div class="gateway-card" style="max-width: 780px; text-align: center; padding: 2rem;">
+            <h1 class="gateway-title" style="color: var(--gold-satin); margin-bottom: 0.4rem; font-weight: 300;">Perfil de Adaptación Humana</h1>
+            <p style="color: var(--text-muted); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 1.5rem;" class="font-mono">Códice del ADN Cognitivo Vivo // Trazabilidad Final</p>
+
+            <div style="background: rgba(81, 226, 245, 0.08); border: 1px solid rgba(81, 226, 245, 0.3); border-radius: 8px; padding: 0.85rem; margin-bottom: 1.5rem; text-align: left;" class="font-sans">
+                <span class="font-mono text-xs font-bold text-[var(--cyan-core)] uppercase block mb-1">⚡ EVALUACIÓN ADAPTATIVA COMPLETADA (CAT):</span>
+                <p style="font-size: 0.78rem; color: #cbd5e1; line-height: 1.5;">
+                    El examen ha concluido tempranamente porque el motor psicométrico alcanzó un nivel de certidumbre estadística superior (SEM &lt; 0.40). Tu puntaje refleja con precisión matemática tu nivel de habilidad actual en esta materia.
+                </p>
+            </div>
+            
+            <div class="report-grid">
+                <div class="telemetry-card" style="background: rgba(17, 19, 26, 0.9); border-left: 3px solid #eab308;"><p style="font-size: 0.62rem; color: var(--text-muted); font-weight: 600; letter-spacing: 1px;" class="font-mono">&theta; ESTIMADO (EAP FIN)</p><p class="telemetry-num" style="color: #eab308; font-size: 1.5rem;" id="repTheta">0.0000</p></div>
+                <div class="telemetry-card" style="background: rgba(17, 19, 26, 0.9); border-left: 3px solid var(--emerald);"><p style="font-size: 0.62rem; color: var(--emerald); font-weight: 700; letter-spacing: 1px;" class="font-mono">EQUIVALENCIA ICFES REAL</p><p class="telemetry-num" style="color: var(--emerald); font-size: 1.6rem; font-weight: bold;" id="repIcfes">0 / 100</p></div>
+                <div class="telemetry-card" style="background: rgba(17, 19, 26, 0.9); border-left: 3px solid var(--cyan-core);"><p style="font-size: 0.62rem; color: var(--text-muted); font-weight: 600; letter-spacing: 1px;" class="font-mono">PRECISIÓN BAYESIANA (SEM)</p><p class="telemetry-num" style="color: var(--cyan-core); font-size: 1.5rem;" id="repBsem">0.0000</p></div>
+                <div class="telemetry-card" style="background: rgba(17, 19, 26, 0.9); border-left: 3px solid var(--purple-core);"><p style="font-size: 0.62rem; color: var(--text-muted); font-weight: 600; letter-spacing: 1px;" class="font-mono">PROBABILIDAD DE MAESTRÍA AVANZADA</p><p class="telemetry-num" style="color: var(--purple-core); font-size: 1.5rem;" id="repMaestria">0.0%</p></div>
+            </div>
+            
+            <div class="telemetry-card" style="text-align: left; margin-bottom: 1.5rem; background: rgba(12, 13, 19, 0.9); border: 1px dashed var(--graphite);">
+                <p style="font-size: 0.62rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: 1px;" class="font-mono">Intervalo de Certeza Concurrente Escala País (95% Credibilidad)</p>
+                <p id="repIntervalo" style="color: var(--text-main); font-weight: 600; text-align: center; font-size: 1.1rem; margin-top: 0.3rem; letter-spacing: 1px;" class="font-mono">[-1, 1]</p>
+            </div>
+
+            <div class="telemetry-badge-grid" style="margin-bottom: 1.2rem;" id="uiAdnFinalContainer">
+                <div class="telemetry-card" style="background:rgba(14, 17, 24, 0.9); border-bottom: 2px solid var(--crimson);"><p style="font-size:0.58rem; color:var(--text-muted); font-weight:700;" class="font-mono">IMPULSIVIDAD (S1)</p><p class="telemetry-num" id="repAdnImpulsividad">0%</p></div>
+                <div class="telemetry-card" style="background:rgba(14, 17, 24, 0.9); border-bottom: 2px solid #e67e22;"><p style="font-size:0.58rem; color:var(--text-muted); font-weight:700;" class="font-mono">ÍNDICE DE FATIGA</p><p class="telemetry-num" id="repAdnFatiga">0%</p></div>
+                <div class="telemetry-card" style="background:rgba(14, 17, 24, 0.9); border-bottom: 2px solid var(--emerald);"><p style="font-size:0.58rem; color:var(--text-muted); font-weight:700;" class="font-mono">RECUPERACIÓN ERROR</p><p class="telemetry-num" id="repAdnRecuperacion">0%</p></div>
+                <div class="telemetry-card" style="background:rgba(14, 17, 24, 0.9); border-bottom: 2px solid var(--cyan-core);"><p style="font-size:0.58rem; color:var(--text-muted); font-weight:700;" class="font-mono">ESTABILIDAD GLOBAL</p><p class="telemetry-num" id="repAdnEstabilidad" style="color:var(--cyan-core);">0%</p></div>
+            </div>
+
+            <div class="narrative-card">
+                <h4 class="narrative-title" id="lblNarrativeHeader">Crónica de la Trayectoria Cognitiva</h4>
+                <p class="narrative-p" id="lblNarrativeBody">Analizando fluctuaciones en la serie temporal...</p>
+            </div>
+
+            <div class="clinical-box-grid">
+                <div class="clinical-card badge-crimson">
+                    <h5 class="clinical-header-title" style="color: var(--gold-satin);">Área de Enfoque Prioritario</h5>
+                    <p id="lblClinicalVulnerabilidad" style="font-size: 0.82rem; color: #cbd5e1; line-height: 1.5;"></p>
+                </div>
+                <div class="clinical-card badge-cyan">
+                    <h5 class="clinical-header-title" style="color: var(--cyan-core);">Recomendación de Aprendizaje Práctico</h5>
+                    <p id="lblClinicalPrescripcion" style="font-size: 0.82rem; color: #cbd5e1; line-height: 1.5;"></p>
+                </div>
+            </div>
+
+            <div class="narrative-card" id="uiContenedorPlanEntrenamiento" style="margin-top: 1.2rem; border-left-color: var(--cyan-core); display: none;">
+                <h4 class="narrative-title" style="color: var(--cyan-core); letter-spacing: 1px;">🎯 PLAN DE ENTRENAMIENTO PERSONALIZADO (10 DÍAS)</h4>
+                <div id="uiPlanEntrenamientoCuerpo" style="display: flex; flex-direction: column; gap: 0.6rem; margin-top: 0.6rem; text-align: left;"></div>
+            </div>
+
+            <div class="heatmap-container" style="margin-top: 1.5rem;">
+                <h3 class="heatmap-title" id="repHeatmapTitle">Mapa de Calor: Diagnóstico de Sesgos Cognitivos</h3>
+                <div id="uiHeatmapBody"></div>
+            </div>
+
+            <div style="display: flex; gap: 0.8rem; margin-top: 2rem; flex-wrap: wrap;">
+                <a href="/perfil.html" class="btn-premium" style="flex: 1; border-color: var(--cyan-core); color: var(--cyan-core); border-radius: 8px;">
+                    👤 IR A MI PERFIL COMPLETO
+                </a>
+                <button class="btn-premium" style="flex: 1; border-radius: 8px;" onclick="location.reload()">Sincronizar Nuevo Simulacro</button>
+            </div>
+        </div>
+    </main>
 
     <!-- DOCK FLOTANTE INFERIOR -->
     <nav class="bottom-nav">
-        <div class="nav-item" onclick="window.location.href='/index.html'">
+        <div class="nav-item" onclick="window.location.reload()">
             <div class="icon-circle">
-                <svg class="nav-icon" viewBox="0 0 100 100" stroke="var(--primary)" fill="none">
+                <svg class="nav-icon" viewBox="0 0 100 100" stroke="var(--cyan-core)" fill="none" style="width: 22px; height: 22px;">
                     <path d="M 30,20 C 30,50 70,50 70,80 M 70,20 C 70,50 30,50 30,80" stroke-width="12" stroke-linecap="round"/>
-                    <circle cx="30" cy="20" r="8" fill="var(--primary)"/><circle cx="70" cy="20" r="8" fill="var(--primary)"/>
-                    <circle cx="30" cy="80" r="8" fill="var(--primary)"/><circle cx="70" cy="80" r="8" fill="var(--primary)"/>
+                    <circle cx="30" cy="20" r="8" fill="var(--cyan-core)"/><circle cx="70" cy="20" r="8" fill="var(--cyan-core)"/>
+                    <circle cx="30" cy="80" r="8" fill="var(--cyan-core)"/><circle cx="70" cy="80" r="8" fill="var(--cyan-core)"/>
                 </svg>
             </div>
-            <span class="nav-text" style="color: var(--primary)">EXAMEN</span>
+            <span class="nav-text" style="color: var(--cyan-core)">EXAMEN</span>
         </div>
         
         <div id="dante-anchor" onclick="window.location.reload()">
@@ -229,71 +707,92 @@
         
         <div class="nav-item" onclick="window.location.href='/perfil.html'">
             <div class="icon-circle" style="border-color: rgba(212,175,55,0.3)">
-                <svg class="nav-icon" viewBox="0 0 100 100" fill="var(--gold)">
-                    <circle cx="50" cy="50" r="38" stroke="var(--gold)" stroke-width="5" fill="none"/>
+                <svg class="nav-icon" viewBox="0 0 100 100" fill="var(--gold-satin)" style="width: 22px; height: 22px;">
+                    <circle cx="50" cy="50" r="38" stroke="var(--gold-satin)" stroke-width="5" fill="none"/>
                     <text x="50" y="68" font-family="Arial" font-size="45" text-anchor="middle" font-weight="900">$</text>
                 </svg>
             </div>
-            <span class="nav-text" style="color: var(--gold)">PERFIL</span>
+            <span class="nav-text" style="color: var(--gold-satin)">PERFIL</span>
         </div>
     </nav>
 
     <script>
         const HOST_URL = window.location.origin;
         const GATEWAY_URL = `${HOST_URL}/api/cat/interactuar`;
+        
         let INSTITUTION_ID = "colegio_sandbox_default";
 
         const AppState = {
-            estudiante: "elizabeth",
-            materia: "matematicas",
-            sessionId: null,
-            theta: 0.0,
+            estudiante: "", 
+            materia: "", 
+            sessionId: null, 
+            theta: 0.0, 
             historialTheta: [0.0],
             itemActual: null,
             timestamps: { inicioReactivo: 0 },
-            historialSeleccion: [],
+            historialSeleccion: [], 
             seleccionActual: null,
-            telemetriaActual: { tiempoTotal: 0, certeza: "" },
+            telemetriaActual: { tiempoTotal: 0, conteoMutaciones: 0, certeza: "" },
             bufferRetornoSiguiente: null,
-            integrityToken: "",
+            bufferEventosCognitivos: [],
+            controlIntervencion: { interval: null, segundosRestantes: 0 },
+            integrityToken: "", 
             itemHash: "",
             esSegundoIntento: false
         };
+
+        class EventSourcingEngine {
+            static registrarEvento(tipo, payload = {}) {
+                AppState.bufferEventosCognitivos.push({ tipo: tipo, timestamp: Date.now(), payload: payload });
+                console.log(`📡 [ES COGNITIVO LOGGED]: ${tipo}`, payload);
+            }
+        }
 
         class AppController {
             static resolverContextoAutenticado() {
                 const rawUser = localStorage.getItem("dante_user");
                 const token = localStorage.getItem("dante_token");
 
-                if (rawUser) {
-                    const sessionData = JSON.parse(rawUser);
-                    AppState.estudiante = sessionData.email ? sessionData.email.split('@')[0].toLowerCase().trim() : (sessionData.estudiante || "elizabeth");
-                    INSTITUTION_ID = sessionData.institution_id || "colegio_sandbox_default";
+                if (!rawUser || !token) {
+                    alert("🚨 CONTROL PERIMETRAL: Sesión ausente o expirada. Redirigiendo al portal.");
+                    window.location.href = "/login.html";
+                    return;
                 }
-                
-                AppState.integrityToken = token || "token_sandbox_default";
 
-                document.getElementById("lblTenantBanner").innerText = `INQUILINO ACTIVO: T-${INSTITUTION_ID.toUpperCase()}`;
+                const sessionData = JSON.parse(rawUser);
+                AppState.estudiante = sessionData.email ? sessionData.email.split('@')[0].toLowerCase().trim() : (sessionData.estudiante || "viviana");
+                INSTITUTION_ID = sessionData.institution_id || "colegio_sandbox_default";
+                AppState.integrityToken = token;
+
+                document.getElementById("lblTenantBanner").innerText = `🔗 INQUILINO CONECTADO: T-${INSTITUTION_ID.toUpperCase()}`;
                 document.getElementById("lblGatewayWelcome").innerText = `SALA DE ${AppState.estudiante.toUpperCase()}`;
-                document.getElementById('ui-tenant').innerText = INSTITUTION_ID.toUpperCase();
+            }
+
+            static cerrarSesionGated() {
+                localStorage.removeItem("dante_token");
+                localStorage.removeItem("dante_user");
+                window.location.href = "/login.html";
             }
 
             static async inicializarSesion() {
                 const btn = document.getElementById("btnIngresar");
-                btn.innerText = "SINCRO EN CURSO..."; btn.disabled = true;
+                btn.innerText = "Sincronizando Dante OS Gateway..."; btn.disabled = true;
 
                 AppState.materia = document.getElementById("selMateria").value;
-                AppState.sessionId = `session_web_${Date.now()}`;
+                AppState.historialTheta = [0.0]; 
+
+                localStorage.removeItem("dante_session_active");
+                AppState.sessionId = `session_web_clean_${Date.now()}`;
 
                 document.getElementById("lblEstudiante").innerText = `Estudiante: ${AppState.estudiante.toUpperCase()}`;
-                document.getElementById("lblMateria").innerText = `Módulo: ${AppState.materia.replace('_', ' ').toUpperCase()}`;
+                document.getElementById("lblMateria").innerText = `Módulo Analítico: ${AppState.materia.replace('_', ' ').toUpperCase()}`;
 
                 try {
                     const res = await fetch(GATEWAY_URL, {
                         method: 'POST',
                         headers: { 
                             'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${localStorage.getItem("dante_token") || ''}`
+                            'Authorization': `Bearer ${localStorage.getItem("dante_token")}`
                         },
                         body: JSON.stringify({ 
                             studentId: String(AppState.estudiante), 
@@ -310,81 +809,183 @@
                         
                         if (data.cronicaBienvenida) {
                             document.getElementById("lblTextoCronicaArranque").innerText = data.cronicaBienvenida;
-                            document.getElementById("uiContenedorCronicaArranque").classList.remove("hidden");
+                            document.getElementById("uiContenedorCronicaArranque").style.display = "block";
                             btn.innerText = "Sincronizar Entorno";
                             AppState.bufferRetornoSiguiente = data; 
                         } else {
                             btn.innerText = "Sincronizar Entorno"; btn.disabled = false;
-                            this.cambiarVistaWorkspace();
+                            this.cambiarVista("viewWorkspace");
                             this.procesarRetornoMotor(data);
                         }
                     } else {
-                        throw new Error(data.error || "Fallo en el Gateway");
+                        throw new Error(data.error);
                     }
                 } catch (err) {
-                    console.error("⚠️ Fallo en inicialización:", err.message);
+                    alert("Fallo de conexión con el Servidor Node.js: " + err.message);
                     btn.innerText = "Sincronizar Entorno"; btn.disabled = false;
-                    this.cambiarVistaWorkspace();
                 }
             }
 
             static liberarEntornoHaciaWorkspace() {
-                document.getElementById("uiContenedorCronicaArranque").classList.add("hidden");
+                document.getElementById("uiContenedorCronicaArranque").style.display = "none";
                 document.getElementById("btnIngresar").disabled = false;
-                this.cambiarVistaWorkspace();
-                if (AppState.bufferRetornoSiguiente) {
-                    this.procesarRetornoMotor(AppState.bufferRetornoSiguiente);
-                }
-            }
-
-            static cambiarVistaWorkspace() {
-                document.getElementById("viewGateway").classList.add("hidden");
-                document.getElementById("viewWorkspace").classList.remove("hidden");
+                this.cambiarVista("viewWorkspace");
+                this.procesarRetornoMotor(AppState.bufferRetornoSiguiente);
             }
 
             static procesarRetornoMotor(data) {
                 if (data.detenerExamen) {
-                    window.location.href = "/perfil.html";
+                    EventSourcingEngine.registrarEvento("EXAMEN_CONCLUIDO_CRITERIO_PARADA", { thetaFinal: AppState.theta });
+                    this.desplegarClausuraExamen(data.reporteFinal || data);
                     return;
                 }
 
                 AppState.theta = data.thetaProgreso !== undefined ? data.thetaProgreso : (data.theta || 0.0);
-                AppState.itemActual = data.item || { id: "item_01", pregunta_texto: "Identifica la opción correcta.", opciones_respuesta: ["A", "B", "C", "D"] };
+                AppState.itemActual = data.item;
                 AppState.itemHash = data.itemHash || "";
                 AppState.timestamps.inicioReactivo = performance.now();
                 AppState.historialSeleccion = [];
                 AppState.seleccionActual = null;
                 AppState.esSegundoIntento = false;
+                document.getElementById("btnConfirmarSeleccion").style.display = "none";
+
+                DOMRenderer.sincronizarCuadernillo(AppState.itemActual, data.bayesianSEMProgreso || data.bayesianSEM || 0.5);
+            }
+
+            static deploymentAnomaliaControl(accs) {
+                document.getElementById("uiContenedorPreguntaCore").style.display = "none";
+                document.getElementById("uiIntervencionClinica").style.display = "flex";
+                document.getElementById("btnDesbloquearFreno").style.display = "none";
+
+                const andamiaje = AppState.bufferRetornoSiguiente?.andamiajeForense || {};
+
+                document.getElementById("lblIntervencionTitulo").innerText = andamiaje.errorDetonado || "DESACELERACIÓN SISTEMA 1";
+                document.getElementById("lblIntervencionCuerpo").innerText = andamiaje.remediacionSugerida || "Tómate 10 segundos para releer la pregunta antes de responder.";
+
+                AppState.controlIntervencion.segundosRestantes = accs.intervencion_activa === "IMPULSIVITY_BLOCK" ? 10 : 30;
+                document.getElementById("lblContadorSegundos").innerText = AppState.controlIntervencion.segundosRestantes;
+
+                clearInterval(AppState.controlIntervencion.interval);
+                AppState.controlIntervencion.interval = setInterval(() => {
+                    AppState.controlIntervencion.segundosRestantes--;
+                    document.getElementById("lblContadorSegundos").innerText = AppState.controlIntervencion.segundosRestantes;
+                    
+                    if (AppState.controlIntervencion.segundosRestantes <= 0) {
+                        clearInterval(AppState.controlIntervencion.interval);
+                        document.getElementById("btnDesbloquearFreno").style.display = "block";
+                    }
+                }, 1000);
+            }
+
+            static desplegarClausuraExamen(reporte) {
+                const theta = parseFloat(reporte.thetaEstimado !== undefined ? reporte.thetaEstimado : (reporte.theta || 0.0));
+                const bsem = parseFloat(reporte.precisionMetrica !== undefined ? reporte.precisionMetrica : (reporte.bayesianSEM || 0.5));
                 
-                document.getElementById("btnConfirmarSeleccion").classList.add("hidden");
-                DOMRenderer.sincronizarCuadernillo(AppState.itemActual);
+                document.getElementById("repTheta").innerText = theta.toFixed(4);
+                document.getElementById("repBsem").innerText = `\u00B1${bsem.toFixed(4)}`;
+                document.getElementById("repMaestria").innerText = reporte.probMaestriaAvanzada || '0.0%';
+                
+                if (reporte.escalonamiento_pais) {
+                    document.getElementById("repIcfes").innerText = `${reporte.escalonamiento_pais.puntaje_icfes_area} / 100`;
+                    document.getElementById("repIntervalo").innerText = `[ ${reporte.escalonamiento_pais.intervalo_certeza_95.join('  ,  ')} ] pts Escala País`;
+                } else {
+                    const pts = Math.max(1, Math.min(100, Math.round(50 + (theta * 13.8))));
+                    document.getElementById("repIcfes").innerText = `${pts} / 100`;
+                    document.getElementById("repIntervalo").innerText = `[ ${Math.max(1, pts - 5)} , ${Math.min(100, pts + 5)} ] pts Escala País`;
+                }
+
+                const adn = reporte.adn_cognitivo ? reporte.adn_cognitivo : reporte;
+                
+                const impulsividadVal = adn.impulsividad !== undefined ? adn.impulsividad : 20;
+                const fatigaVal = adn.fatiga !== undefined ? adn.fatiga : 0;
+                const recuperacionVal = adn.recuperacion !== undefined ? adn.recuperacion : 59;
+                const estabilidadVal = adn.estabilidad !== undefined ? adn.estabilidad : 75;
+
+                document.getElementById("repAdnImpulsividad").innerText = `${impulsividadVal}%`;
+                document.getElementById("repAdnFatiga").innerText = `${fatigaVal}%`;
+                document.getElementById("repAdnRecuperacion").innerText = `${recuperacionVal}%`;
+                document.getElementById("repAdnEstabilidad").innerText = `${estabilidadVal}%`;
+                
+                document.getElementById("lblNarrativeHeader").innerText = `Crónica del ADN Cognitivo de ${AppState.estudiante.toUpperCase()}`;
+                
+                document.getElementById("lblNarrativeBody").innerText = adn.cronica_narrativa || "Tu rendimiento fue evaluado bajo un modelo de alta precisión. Tu perfil cognitivo demuestra estabilidad con áreas puntuales para reforzar en sintaxis y comprensión global.";
+                document.getElementById("lblClinicalVulnerabilidad").innerText = adn.vulnerabilidad_dominante || "Heurística lineal y traducción literal paso a paso.";
+                document.getElementById("lblClinicalPrescripcion").innerText = adn.prescripcion_clinica || "Aplica la técnica de escaneo global leyendo la oración completa de atrás hacia adelante.";
+                
+                const planContainer = document.getElementById("uiContenedorPlanEntrenamiento");
+                const planCuerpo = document.getElementById("uiPlanEntrenamientoCuerpo");
+                const planArray = adn.plan_entrenamiento || reporte.plan_entrenamiento;
+
+                if (planArray && Array.isArray(planArray) && planArray.length > 0) {
+                    planCuerpo.innerHTML = "";
+                    planArray.forEach((accion, index) => {
+                        const item = document.createElement("div");
+                        item.style.background = "rgba(81, 226, 245, 0.03)";
+                        item.style.border = "1px solid rgba(81, 226, 245, 0.1)";
+                        item.style.padding = "0.8rem 1.2rem";
+                        item.style.borderRadius = "6px";
+                        item.style.fontSize = "0.85rem";
+                        item.style.color = "#d1d5db";
+                        item.innerHTML = `<strong style="color: var(--cyan-core); margin-right: 0.5rem;" class="font-mono">Fase ${index + 1}:</strong> ${accion}`;
+                        planCuerpo.appendChild(item);
+                    });
+                    planContainer.style.display = "block";
+                } else {
+                    planContainer.style.display = "none";
+                }
+
+                DOMRenderer.construirMapaCalorForense(reporte.mapCalorSesgos || reporte.mapaCalorSesgos || adn.mapa_calor_sesgos || {});
+                this.cambiarVista("viewFinalReport");
+            }
+
+            static avanzarSiguienteFase() {
+                if (AppState.bufferRetornoSiguiente && AppState.bufferRetornoSiguiente.detenerExamen) {
+                    this.desplegarClausuraExamen(AppState.bufferRetornoSiguiente.reporteFinal || AppState.bufferRetornoSiguiente);
+                } else {
+                    this.cambiarVista("viewWorkspace");
+                    this.procesarRetornoMotor(AppState.bufferRetornoSiguiente);
+                }
+            }
+
+            static cambiarVista(viewId) {
+                document.querySelectorAll('.app-view').forEach(view => view.classList.remove('active'));
+                document.getElementById(viewId).classList.add('active');
             }
         }
 
         class QuizEngine {
-            static registrarSeleccionPreliminar(cardElement, letra) {
-                AppState.historialSeleccion.push({ option: letra, timestamp: new Date().toISOString() });
-                AppState.seleccionActual = { element: cardElement, id: letra };
+            static registrarSeleccionPreliminar(cardElement, tipo, id) {
+                AppState.historialSeleccion.push({ option: id, timestamp: new Date().toISOString() });
+                AppState.seleccionActual = { element: cardElement, tipo: tipo, id: id };
 
                 document.querySelectorAll('.opcion-card').forEach(el => el.classList.remove('selected-intent'));
                 cardElement.classList.add('selected-intent');
-                document.getElementById("btnConfirmarSeleccion").classList.remove("hidden");
+                document.getElementById("btnConfirmarSeleccion").style.display = "block";
+                
+                const segsParaPerfil = ((performance.now() - AppState.timestamps.inicioReactivo) / 1000).toFixed(1);
+                document.getElementById("telemetryTime").innerText = `${segsParaPerfil}s`;
+                document.getElementById("telemetryHesitation").innerText = `${AppState.historialSeleccion.length - 1} cambios`;
             }
 
             static abrirFaseMetacognitiva() {
                 if (!AppState.seleccionActual) return;
-                document.getElementById("btnConfirmarSeleccion").classList.add("hidden");
-                document.getElementById("uiMetacognicion").classList.remove("hidden");
+                document.getElementById("btnConfirmarSeleccion").style.display = "none";
+                document.getElementById("uiOpcionesGrid").classList.add("freno");
+                document.getElementById("uiMetacognicion").style.display = "block";
             }
 
             static async confirmarMetacognicion(nivelCerteza) {
-                document.getElementById("uiMetacognicion").classList.add("hidden");
+                document.getElementById("uiMetacognicion").style.display = "none";
                 const segundosTotales = (performance.now() - AppState.timestamps.inicioReactivo) / 1000;
+
+                AppState.telemetriaActual.tiempoTotal = segundosTotales.toFixed(1);
+                AppState.telemetriaActual.conteoMutaciones = AppState.historialSeleccion.length - 1;
+                AppState.telemetriaActual.certeza = nivelCerteza;
 
                 try {
                     const payloadSaneado = {
                         studentId: String(AppState.estudiante), sessionId: String(AppState.sessionId), 
-                        itemId: String(AppState.itemActual.id || 'item_01'), areaGeneral: String(AppState.materia),
+                        itemId: String(AppState.itemActual.id), areaGeneral: String(AppState.materia),
                         responseTime: parseFloat(segundosTotales.toFixed(2)), declaredConfidence: String(nivelCerteza), selectionVector: AppState.historialSeleccion,
                         integrityToken: AppState.integrityToken, itemHash: AppState.itemHash,
                         institution_id: INSTITUTION_ID 
@@ -394,7 +995,7 @@
                         method: 'POST',
                         headers: { 
                             'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${localStorage.getItem("dante_token") || ''}`
+                            'Authorization': `Bearer ${localStorage.getItem("dante_token")}`
                         },
                         body: JSON.stringify(payloadSaneado)
                     });
@@ -403,116 +1004,376 @@
                     if (!data.success) throw new Error(data.error || "Fallo transaccional.");
 
                     AppState.bufferRetornoSiguiente = data;
+                    AppState.historialTheta.push(data.thetaProgreso !== undefined ? data.thetaProgreso : AppState.theta);
+
+                    if (data.detenerExamen) {
+                        const card = AppState.seleccionActual.element;
+                        card.classList.add(data.interaccionCorrecta ? "correct" : "wrong");
+                        setTimeout(() => {
+                            AppController.desplegarClausuraExamen(data.reporteFinal || data);
+                        }, 1200);
+                        return;
+                    }
+
+                    if (data.accs_telemetria && data.accs_telemetria.intervencion_activa !== "NONE") {
+                        AppController.deploymentAnomaliaControl(data.accs_telemetria);
+                        return;
+                    }
+
                     const card = AppState.seleccionActual.element;
+                    
+                    if (!data.interaccionCorrecta && !AppState.esSegundoIntento) {
+                        AppState.esSegundoIntento = true;
+                        card.classList.add("wrong");
+                        this.renderizarSegundoIntentoPista(data.andamiajeForense);
+                        return;
+                    }
 
                     if (data.interaccionCorrecta) {
                         card.classList.add("correct");
-                        setTimeout(() => { AppController.procesarRetornoMotor(data); }, 1000);
+                        setTimeout(() => { this.transicionarADashboard(); }, 1200);
                     } else {
                         card.classList.add("wrong");
-                        this.renderizarFeedbackIA(data.andamiajeForense);
+                        this.renderizarAndamiajePedagogico(data.andamiajeForense);
                     }
                 } catch (err) {
-                    console.error("⚠️ Fallo enviando respuesta:", err.message);
-                    setTimeout(() => { window.location.href = "/perfil.html"; }, 1000);
+                    alert("Fallo de enlace: " + err.message);
                 }
             }
 
-            static renderizarFeedbackIA(andamiaje) {
+            static liberarFrenoIntervencion() {
+                document.getElementById("uiIntervencionClinica").style.display = "none";
+                document.getElementById("uiContenedorPreguntaCore").style.display = "block";
+                
+                const card = AppState.seleccionActual.element;
+                if (AppState.bufferRetornoSiguiente.interaccionCorrecta) {
+                    card.classList.add("correct");
+                    this.transicionarADashboard();
+                } else {
+                    card.classList.add("wrong");
+                    this.renderizarAndamiajePedagogico(AppState.bufferRetornoSiguiente.andamiajeForense);
+                }
+            }
+
+            static resolverAndamiajeSincronizado(andamiaje) {
+                const item = AppState.itemActual || {};
+                const letraSeleccionada = AppState.seleccionActual?.id || 'A';
+                const materia = (AppState.materia || 'matematicas').toLowerCase();
+                
+                let errorTxt = andamiaje?.errorDetonado;
+                let remediacionTxt = andamiaje?.remediacionSugerida;
+
+                if (item.explicaciones && item.explicaciones[letraSeleccionada]) {
+                    remediacionTxt = item.explicaciones[letraSeleccionada];
+                } else if (item.explicacion_general) {
+                    remediacionTxt = item.explicacion_general;
+                }
+
+                const esTextoMatematicoGenerico = remediacionTxt && (remediacionTxt.includes("descomponer las variables") || remediacionTxt.includes("operar de forma directa"));
+
+                if (!remediacionTxt || esTextoMatematicoGenerico) {
+                    if (materia === 'ingles') {
+                        remediacionTxt = `Identifica la función comunicativa y el contexto global del texto en inglés. Evita traducir palabra por palabra la opción [ ${letraSeleccionada} ].`;
+                    } else if (materia === 'lectura_critica') {
+                        remediacionTxt = `Evalúa si la opción [ ${letraSeleccionada} ] se queda en una lectura literal o si realmente responde al sentido implícito y a la intención del autor.`;
+                    } else if (materia === 'ciencias_naturales') {
+                        remediacionTxt = `Analiza la relación de causa y efecto en la evidencia científica del enunciado antes de validar la opción [ ${letraSeleccionada} ].`;
+                    } else {
+                        remediacionTxt = `Descompón las variables y verifica la relación operacional del problema. La opción [ ${letraSeleccionada} ] no satisface el algoritmo planteado.`;
+                    }
+                }
+
+                if (!errorTxt) {
+                    if (materia === 'ingles' || materia === 'lectura_critica') {
+                        errorTxt = `Sesgo de Traducción Literal / Heurística de Lectura Superficial.`;
+                    } else if (materia === 'ciencias_naturales') {
+                        errorTxt = `Inconsistencia en la Inferencia Experimental / Análisis de Variables.`;
+                    } else {
+                        errorTxt = `Inconsistencia Operacional en la opción [ ${letraSeleccionada} ].`;
+                    }
+                }
+
+                return { errorDetonado: errorTxt, remediacionSugerida: remediacionTxt };
+            }
+
+            static renderizarSegundoIntentoPista(andamiajeBruto) {
+                const andamiaje = this.resolverAndamiajeSincronizado(andamiajeBruto);
                 const uiFeedback = document.getElementById("uiFeedback");
                 const uiCuerpo = document.getElementById("uiFeedbackCuerpoAndamiaje");
+                const btnContinuar = document.getElementById("btnContinuarFeedback");
+
+                uiFeedback.querySelector(".feedback-header").innerText = "🔍 DETECCIÓN COGNITIVA // SEGUNDO INTENTO ACTIVADO";
+                uiFeedback.querySelector(".feedback-header").style.color = "var(--gold-satin)";
+                uiFeedback.style.borderColor = "var(--gold-satin)";
 
                 uiCuerpo.innerHTML = `
-                    <div class="border-l-2 border-rose-500 pl-3">
-                        <p class="font-bold text-rose-400 uppercase text-[10px]">Sesgo Detectado:</p>
-                        <p>${andamiaje?.errorDetonado || 'Divergencia procedimental'}</p>
-                    </div>
-                    <div class="border-l-2 border-[#D4AF37] pl-3 mt-2">
-                        <p class="font-bold text-[#D4AF37] uppercase text-[10px]">Orientación Dante IA:</p>
-                        <p>${andamiaje?.remediacionSugerida || 'Analiza las variables antes de responder.'}</p>
+                    <div class="feedback-error-container animate-fade-in">
+                        <p class="text-sm mb-3" style="color: #cbd5e1;">
+                            La opción seleccionada no resuelve correctamente esta pregunta. Revisa la recomendación específica para este enunciado:
+                        </p>
+                        <div class="pista-caja bg-slate-900/90 p-3.5 rounded-lg mb-3" style="border-left: 4px solid var(--gold-satin);">
+                            <span class="text-xs font-semibold text-amber-400 font-mono uppercase tracking-wider block">💡 Orientación para este Ítem:</span>
+                            <p class="text-xs mt-1" style="color: #e2e8f0; line-height: 1.5;">${andamiaje.remediacionSugerida}</p>
+                        </div>
+                        <p class="text-[11px] text-slate-400 font-sans">Dante OS habilita un segundo intento para reajustar tu estrategia antes de enviar el registro definitivo.</p>
                     </div>
                 `;
-                uiFeedback.classList.remove("hidden");
+
+                btnContinuar.innerText = "🔄 Intentar de nuevo";
+                btnContinuar.disabled = false;
+                btnContinuar.onclick = () => { this.habilitarFlujoDeReintento(); };
+                
+                uiFeedback.style.display = "block";
+            }
+
+            static habilitarFlujoDeReintento() {
+                document.getElementById("uiFeedback").style.display = "none";
+                document.getElementById("uiOpcionesGrid").classList.remove("freno");
+                
+                document.querySelectorAll('.opcion-card').forEach(el => {
+                    el.classList.remove('selected-intent');
+                    el.classList.remove('wrong');
+                });
+
+                AppState.seleccionActual = null;
+                document.getElementById("btnConfirmarSeleccion").style.display = "none";
+            }
+
+            static renderizarAndamiajePedagogico(andamiajeBruto) {
+                const andamiaje = this.resolverAndamiajeSincronizado(andamiajeBruto);
+                const uiFeedback = document.getElementById("uiFeedback");
+                const uiCuerpo = document.getElementById("uiFeedbackCuerpoAndamiaje");
+                const btnContinuar = document.getElementById("btnContinuarFeedback");
+
+                uiFeedback.querySelector(".feedback-header").innerText = "Análisis de Desviación Cognitiva";
+                uiFeedback.querySelector(".feedback-header").style.color = "var(--crimson)";
+                uiFeedback.style.borderColor = "var(--crimson)";
+
+                uiCuerpo.innerHTML = `
+                    <div class="forensic-row trampa">
+                        <div class="forensic-label" style="color: var(--crimson);">HEURÍSTICA / SESGO DETECTADO</div>
+                        <div class="forensic-txt" id="forensicTrampa">${andamiaje.errorDetonado}</div>
+                    </div>
+                    <div class="forensic-row" style="margin-top: 0.8rem;">
+                        <div class="forensic-label" style="color: var(--gold-satin);">LÓGICA DE REMEDIACIÓN</div>
+                        <div class="forensic-txt" id="forensicRealidad">${andamiaje.remediacionSugerida}</div>
+                    </div>
+                `;
+
+                let segundosRestantes = 8;
+                btnContinuar.disabled = true;
+                btnContinuar.innerText = `Asimilando corrección cognitiva... (${segundosRestantes}s)`;
+                btnContinuar.onclick = () => { QuizEngine.procesarFrenoComprension(); };
+
+                const intervalId = setInterval(() => {
+                    segundosRestantes--;
+                    if (segundosRestantes <= 0) {
+                        clearInterval(intervalId);
+                        btnContinuar.disabled = false;
+                        btnContinuar.innerText = "Continuar Evaluación ➡️";
+                    } else {
+                        btnContinuar.innerText = `Asimilando corrección cognitiva... (${segundosRestantes}s)`;
+                    }
+                }, 1000);
+
+                uiFeedback.style.display = "block";
             }
 
             static procesarFrenoComprension() {
-                document.getElementById("uiFeedback").classList.add("hidden");
-                if (AppState.bufferRetornoSiguiente) {
-                    AppController.procesarRetornoMotor(AppState.bufferRetornoSiguiente);
-                }
+                document.getElementById("uiFeedback").style.display = "none";
+                this.transicionarADashboard();
+            }
+
+            static transicionarADashboard() {
+                DOMRenderer.renderizarGraficaYTelemetria();
+                AppController.cambiarVista("viewDashboard");
             }
         }
 
         class DOMRenderer {
-            static sincronizarCuadernillo(item) {
+            static sincronizarCuadernillo(item, bSEM) {
                 const uiPregunta = document.getElementById("uiPregunta");
                 const uiOpcionesGrid = document.getElementById("uiOpcionesGrid");
                 const uiEnunciados = document.getElementById("uiEnunciados");
                 const lblCompetence = document.getElementById("lblCompetence");
 
+                document.getElementById("uiFeedback").style.display = "none";
+                document.getElementById("uiMetacognicion").style.display = "none";
+                document.getElementById("uiIntervencionClinica").style.display = "none";
+                document.getElementById("uiContenedorPreguntaCore").style.display = "block";
+
                 lblCompetence.innerText = `Sub-competencia: ${String(item.sub_competencia || 'General').toUpperCase()}`;
                 
-                const textoCompleto = item.pregunta_texto || 'Estímulo evaluativo en curso.';
-                uiEnunciados.innerHTML = `<p style="margin-bottom: 1rem;">${textoCompleto}</p>`;
-                uiPregunta.innerText = "Selecciona la alternativa que satisface la condición lógica:";
+                const textoCompleto = item.pregunta_texto || '';
+                const tokens = textoCompleto.split('\n\n');
+                
+                let contenidoVisualHTML = "";
+                const urlVisual = item.recurso_visual || item.imagen_url;
+                if (urlVisual) {
+                    contenidoVisualHTML = `
+                        <div style="margin: 1.2rem 0; text-align: center; background: rgba(10, 11, 13, 0.6); padding: 1rem; border-radius: 8px; border: 1px solid var(--graphite);">
+                            <img src="${urlVisual}" alt="Recursos visuales del examen ICFES" style="max-width: 100%; height: auto; border-radius: 6px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);" />
+                        </div>
+                    `;
+                }
+
+                if (tokens.length > 1) {
+                    uiEnunciados.innerHTML = `<p style="margin-bottom: 1rem;">${tokens.slice(0, -1).join('</p><p style="margin-bottom: 1rem;">')}</p>` + contenidoVisualHTML;
+                    uiPregunta.innerText = tokens[tokens.length - 1];
+                } else {
+                    uiEnunciados.innerHTML = `<p>> Estímulo contextual adaptativo integrado.</p>` + contenidoVisualHTML;
+                    uiPregunta.innerText = textoCompleto;
+                }
 
                 uiOpcionesGrid.innerHTML = "";
+                uiOpcionesGrid.classList.remove("freno");
+
                 const listado = item.opciones_respuesta || ["A", "B", "C", "D"];
                 listado.forEach((opc, idx) => {
-                    const letra = ["A", "B", "C", "D"][idx] || "A";
+                    const letra = ["A", "B", "C", "D"][idx];
                     const card = document.createElement("div");
                     card.className = "opcion-card";
-                    card.onclick = () => { QuizEngine.registrarSeleccionPreliminar(card, letra); };
+                    card.onclick = () => { QuizEngine.registrarSeleccionPreliminar(card, "standard", letra); };
 
-                    card.innerHTML = `
-                        <div class="opcion-id">${letra}</div>
-                        <span class="text-xs text-slate-200 font-sans">${opc}</span>
-                    `;
-                    uiOpcionesGrid.appendChild(card);
+                    const idBox = document.createElement("div"); idBox.className = "opcion-id"; idBox.innerText = letra;
+                    const strokeBox = document.createElement("span"); strokeBox.innerText = opc;
+
+                    card.appendChild(idBox); card.appendChild(strokeBox); uiOpcionesGrid.appendChild(card);
                 });
+            }
+
+            static renderizarGraficaYTelemetria() {
+                document.getElementById("telemetryTime").innerText = `${AppState.telemetriaActual.tiempoTotal}s`;
+                document.getElementById("telemetryHesitation").innerText = `${AppState.telemetriaActual.conteoMutaciones} hits`;
+                document.getElementById("telemetryConfidence").innerText = AppState.telemetriaActual.certeza.toUpperCase();
+                document.getElementById("lblThetaActual").innerHTML = `&theta; = ${AppState.theta.toFixed(4)}`;
+
+                if (AppState.bufferRetornoSiguiente && AppState.bufferRetornoSiguiente.accs_telemetria) {
+                    const idx = AppState.bufferRetornoSiguiente.accs_telemetria.indices_avanzados || {};
+                    document.getElementById("telemetryIRI").innerText = `${((idx.iri || 0.59) * 100).toFixed(0)}%`;
+                    document.getElementById("telemetryICC").innerText = `${((idx.icc || 0.50) * 100).toFixed(0)}%`;
+                }
+
+                const segs = parseFloat(AppState.telemetriaActual.tiempoTotal);
+                const lblProfile = document.getElementById("telemetryProfile");
+                if (segs < 4.0) { lblProfile.innerText = "S1 IMPULSIVO"; lblProfile.style.color = "var(--crimson)"; }
+                else if (segs < 12.0) { lblProfile.innerText = "TRANSICIÓN"; lblProfile.style.color = "var(--gold-satin)"; }
+                else { lblProfile.innerText = "S2 NOMINAL"; lblProfile.style.color = "var(--emerald)"; }
+
+                const svg = document.getElementById("svgChart");
+                svg.innerHTML = "";
+
+                if (AppState.historialTheta.length > 0) {
+                    let puntosPath = "";
+                    AppState.historialTheta.forEach((val, i) => {
+                        const x = AppState.historialTheta.length === 1 ? 275 : i * (470 / (AppState.historialTheta.length - 1)) + 40;
+                        const y = 110 - (val * 40);
+                        if (i === 0) puntosPath += `M ${x} ${y}`;
+                        else puntosPath += ` L ${x} ${y}`;
+                        
+                        const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                        dot.setAttribute("cx", x); dot.setAttribute("cy", y); dot.setAttribute("r", "5");
+                        dot.setAttribute("fill", i === AppState.historialTheta.length - 1 ? "#d4af37" : "#ffffff");
+                        svg.appendChild(dot);
+                    });
+
+                    if (AppState.historialTheta.length > 1) {
+                        const pathLine = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                        pathLine.setAttribute("d", puntosPath); pathLine.setAttribute("fill", "none");
+                        pathLine.setAttribute("stroke", "#d4af37"); pathLine.setAttribute("stroke-width", "3");
+                        svg.appendChild(pathLine);
+                    }
+                }
+            }
+
+            static construirMapaCalorForense(mapaSesgos) {
+                const container = document.getElementById("uiHeatmapBody");
+                container.innerHTML = "";
+                
+                const mapeoNombres = {
+                    "attr_heuristica_lineal": "Heurística Lineal (Sistema 1)",
+                    "attr_inversion_operacional": "Inversión Operacional Estructural",
+                    "attr_omision_conversion": "Omisión de Conversión de Magnitudes",
+                    "attr_error_geometrico": "Errores Geométricos / Perimetrales",
+                    "heuristica_lineal": "Heurística Lineal (Sistema 1)",
+                    "inversion_operacional": "Inversión Operacional Estructural",
+                    "omision_conversion": "Omisión de Conversión de Magnitudes",
+                    "error_geometrico": "Errores Geométricos / Perimetrales"
+                };
+
+                const sesgosIterar = Object.keys(mapaSesgos).length > 0 ? mapaSesgos : { 
+                    "attr_heuristica_lineal": 0.98, 
+                    "attr_inversion_operacional": 0.98, 
+                    "attr_omision_conversion": 0.50, 
+                    "attr_error_geometrico": 0.50 
+                };
+
+                for (const [sesgo, probabilidad] of Object.entries(sesgosIterar)) {
+                    const probabilidadSaneada = parseFloat(probabilidad || 0);
+                    const porcentajeVisual = (probabilidadSaneada <= 1.0 ? probabilidadSaneada * 100 : probabilidadSaneada).toFixed(1);
+                    const fraccion = parseFloat(porcentajeVisual) / 100;
+                    
+                    let colorFill = "var(--emerald)";
+                    if (fraccion >= 0.25 && fraccion < 0.55) {
+                        colorFill = "var(--gold-satin)";
+                    } else if (fraccion >= 0.55) {
+                        colorFill = "var(--crimson)";
+                    }
+
+                    const nombreAmigable = mapeoNombres[sesgo] || sesgo.replace('attr_', '').replace(/_/g, ' ').toUpperCase();
+
+                    const row = document.createElement("div");
+                    row.className = "heatmap-row";
+                    row.innerHTML = `
+                        <div class="heatmap-meta font-sans">
+                            <span>${nombreAmigable}</span>
+                            <span style="font-weight: 600; color: ${colorFill};" class="font-mono">${porcentajeVisual}%</span>
+                        </div>
+                        <div class="heatmap-bar-bg">
+                            <div class="heatmap-bar-fill" style="background: ${colorFill}; width: ${porcentajeVisual}%;"></div>
+                        </div>`;
+                    container.appendChild(row);
+                }
             }
         }
 
-        /* FRACTAL CANVAS FIBONACCI ANIMATION */
+        /* FRACTAL CANVAS ANIMATION */
         const bgCanvas = document.getElementById('dante-fractal-bg'); 
-        const bgCtx = bgCanvas.getContext('2d');
-        const coreCanvas = document.getElementById('mini-core-canvas'); 
-        const coreCtx = coreCanvas ? coreCanvas.getContext('2d') : null;
-        let qParticles = [], dParticles = [];
+        const bgCtx = bgCanvas ? bgCanvas.getContext('2d') : null;
+        let qParticles = [];
 
         function initCanvas() {
+            if (!bgCanvas || !bgCtx) return;
             bgCanvas.width = window.innerWidth; bgCanvas.height = window.innerHeight;
-            if (coreCanvas) { coreCanvas.width = 190; coreCanvas.height = 190; }
 
-            for(let i=0; i<60; i++) qParticles.push({ x: bgCanvas.width/2, y: bgCanvas.height/2, s: Math.random(), v: Math.random()*0.3+0.1, angle: i*137.5*(Math.PI/180), dist: 0 });
-            if (coreCanvas) {
-                for(let i=0; i<100; i++) dParticles.push({ a: Math.random()*Math.PI*2, r: Math.random()*35+5, s: Math.random()*1.2 + 0.5, v: Math.random()*0.03+0.01 });
+            for(let i=0; i<60; i++) {
+                qParticles.push({ 
+                    x: bgCanvas.width/2, 
+                    y: bgCanvas.height/2, 
+                    s: Math.random() * 1.5, 
+                    v: Math.random()*0.3+0.1, 
+                    angle: i*137.5*(Math.PI/180), 
+                    dist: 0 
+                });
             }
             animateCanvas();
         }
 
         function animateCanvas() {
+            if (!bgCtx) return;
             bgCtx.clearRect(0,0,bgCanvas.width,bgCanvas.height);
             qParticles.forEach(p => {
-                p.dist += p.v; let x = bgCanvas.width/2 + Math.cos(p.angle)*p.dist; let y = bgCanvas.height/2 + Math.sin(p.angle)*p.dist;
+                p.dist += p.v; 
+                let x = bgCanvas.width/2 + Math.cos(p.angle)*p.dist; 
+                let y = bgCanvas.height/2 + Math.sin(p.angle)*p.dist;
                 if(x < 0 || x > bgCanvas.width || y < 0 || y > bgCanvas.height) p.dist = 0;
-                bgCtx.beginPath(); bgCtx.arc(x, y, p.s, 0, Math.PI*2); bgCtx.fillStyle = '#51e2f5'; bgCtx.globalAlpha = 0.2; bgCtx.fill();
+                bgCtx.beginPath(); bgCtx.arc(x, y, p.s, 0, Math.PI*2); bgCtx.fillStyle = '#51e2f5'; bgCtx.globalAlpha = 0.25; bgCtx.fill();
             });
-
-            if (coreCtx) {
-                coreCtx.clearRect(0,0,190,190);
-                dParticles.forEach(p => {
-                    p.a += p.v; let breath = Math.sin(Date.now()*0.002) * 4;
-                    let x = 95 + Math.cos(p.a) * (p.r + breath); let y = 95 + Math.sin(p.a) * (p.r + breath);
-                    coreCtx.beginPath(); coreCtx.arc(x, y, p.s, 0, Math.PI*2);
-                    coreCtx.fillStyle = '#D4AF37'; coreCtx.shadowBlur = 8; coreCtx.shadowColor = '#D4AF37'; coreCtx.fill();
-                });
-            }
             requestAnimationFrame(animateCanvas);
         }
 
-        window.onload = () => {
-            AppController.resolverContextoAutenticado();
+        window.onload = () => { 
+            AppController.resolverContextoAutenticado(); 
             initCanvas();
         };
     </script>
