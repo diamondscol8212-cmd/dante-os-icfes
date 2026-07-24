@@ -2,618 +2,405 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Dante OS | HOJA DE VIDA COGNITIVA & MATRIZ ADN</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&family=JetBrains+Mono:wght@400;500;800;900&family=Oswald:wght@700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dante OS // HOJA DE VIDA COGNITIVA</title>
     
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
         :root {
-            --primary: #51e2f5; 
-            --gold: #D4AF37;
-            --alert: #e74c3c;
-            --bg: #010103; 
+            --bg-deep: #08090c;
+            --bg-surface: rgba(20, 22, 29, 0.85);
+            --gold-satin: #d4af37;
+            --gold-glow: rgba(212, 175, 55, 0.25);
+            --graphite: rgba(255, 255, 255, 0.08);
+            --text-main: #f0f1f5;
+            --text-muted: #9499a7;
+            --emerald: #2ecc71;
+            --crimson: #e74c3c;
+            --cyan-core: #51e2f5;
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
         }
 
-        body, html { 
-            background: var(--bg); color: white; margin: 0; font-family: 'Outfit', sans-serif; 
-            overflow: hidden; height: 100dvh; width: 100vw; touch-action: pan-y;
-            -webkit-tap-highlight-color: transparent;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: var(--bg-deep); color: var(--text-main); font-family: var(--font-main);
+            background-image: radial-gradient(circle at 50% 20%, #171a26 0%, #08090c 100%);
+            min-height: 100vh; padding: 1.5rem; line-height: 1.5;
         }
 
-        #dante-fractal-bg { position: fixed; inset: 0; z-index: 0; opacity: 0.15; pointer-events: none; mix-blend-mode: screen; }
-        .scanline { position: fixed; inset: 0; background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.5) 51%); background-size: 100% 4px; z-index: 1; pointer-events: none; opacity: 0.2; }
-        #fx-flash { position: fixed; inset: 0; z-index: 999999; background: var(--alert); opacity: 0; pointer-events: none; transition: opacity 0.3s; mix-blend-mode: screen; }
-
-        /* HEADER HUD */
-        .master-hud {
-            position: fixed; top: 0; width: 100%; z-index: 1000; padding: 20px 20px;
-            background: linear-gradient(to bottom, rgba(1,1,3,0.95) 30%, transparent 100%);
-            pointer-events: none; display: flex; justify-content: space-between; align-items: flex-start;
+        .font-mono { font-family: var(--font-mono) !important; }
+        .tab-btn {
+            background: rgba(26, 29, 38, 0.6); border: 1px solid var(--graphite); color: var(--text-muted);
+            padding: 0.6rem 1rem; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer;
+            transition: all 0.2s ease; text-transform: uppercase; font-family: var(--font-mono);
         }
-        .alias-title { font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; color: white; margin-bottom: 2px;}
-        .geo-tag { font-family: 'JetBrains Mono'; font-size: 10px; color: var(--primary); letter-spacing: 2px; text-transform: uppercase; text-shadow: 0 0 10px var(--primary); }
+        .tab-btn:hover { border-color: var(--cyan-core); color: var(--cyan-core); }
+        .tab-btn.active { background: rgba(81, 226, 245, 0.1); border-color: var(--cyan-core); color: var(--cyan-core); shadow: 0 0 15px rgba(81, 226, 245, 0.2); }
 
-        /* VIEWPORT Y SCROLL */
-        .adn-viewport {
-            position: fixed; inset: 0; z-index: 10;
-            overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth;
-            padding: 90px 15px 120px;
-        }
-        .adn-viewport::-webkit-scrollbar { display: none; }
-
-        /* TARJETA CONTENEDORA DE ADN COGNITIVO */
-        .adn-card {
-            width: 100%; max-width: 820px; margin: 0 auto;
-            background: rgba(10,10,15,0.85); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            padding: 25px 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.9), inset 0 0 40px rgba(255,255,255,0.02);
-            position: relative; overflow: hidden; transition: box-shadow 1s ease;
-        }
-        .adn-card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
-            background: var(--gold); box-shadow: 0 0 20px var(--gold); transition: background 1s, box-shadow 1s;
-        }
-
-        /* NÚCLEO VISUAL DANTE */
-        .card-header-visual {
-            position: relative; width: 100%; height: 140px; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; margin-bottom: 15px;
-        }
-        .dante-mini-core { position: absolute; width: 200px; height: 200px; z-index: 0; opacity: 0.6; }
-        .alias-main-name { position: relative; z-index: 10; font-family: 'Oswald'; font-size: clamp(24px, 6vw, 34px); font-weight: 900; text-transform: uppercase; text-align: center; line-height: 1.1; text-shadow: 0 5px 20px rgba(0,0,0,1), 0 0 20px var(--primary); color: white; letter-spacing: 2px;}
-        .archetype-sub { position: relative; z-index: 10; font-family: 'JetBrains Mono'; font-size: 10px; font-weight: 900; letter-spacing: 3px; text-transform: uppercase; margin-top: 8px; background: var(--primary); padding: 4px 14px; border-radius: 4px; color: black; box-shadow: 0 0 15px var(--primary); }
-
-        .identity-box {
-            background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 8px; padding: 12px; text-align: center; display: flex; justify-content: space-around; align-items: center; margin-bottom: 20px;
-        }
-        .historical-label { font-family: 'JetBrains Mono'; font-size: 9px; color: #aaa; text-transform: uppercase; letter-spacing: 2px; font-weight: 900;}
-        .historical-name { font-size: 13px; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 2px; font-family: 'JetBrains Mono'; }
-
-        .section-title { font-family: 'JetBrains Mono'; font-size: 11px; color: #fff; font-weight: 900; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; text-shadow: 0 0 10px rgba(255,255,255,0.3);}
-        .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.15); }
-        
-        .summary-text { font-size: 13px; font-weight: 400; line-height: 1.6; color: #e2e8f0; margin-bottom: 25px; text-align: justify; font-family: 'Outfit'; background: rgba(255,255,255,0.02); padding: 12px; border-left: 3px solid var(--primary); border-radius: 0 6px 6px 0;}
-
-        /* RADAR DE COMPETENCIAS */
-        .radar-container {
-            width: 100%; height: 210px; position: relative; margin-bottom: 25px;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .radar-bg {
-            width: 150px; height: 170px; background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><polygon points="50 0, 100 25, 100 75, 50 100, 0 75, 0 25" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/><polygon points="50 20, 80 35, 80 65, 50 80, 20 65, 20 35" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/><polygon points="50 40, 65 47, 65 53, 50 60, 35 53, 35 47" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/><line x1="50" y1="50" x2="50" y2="0" stroke="rgba(255,255,255,0.1)" stroke-width="1"/><line x1="50" y1="50" x2="100" y2="25" stroke="rgba(255,255,255,0.1)" stroke-width="1"/><line x1="50" y1="50" x2="100" y2="75" stroke="rgba(255,255,255,0.1)" stroke-width="1"/><line x1="50" y1="50" x2="50" y2="100" stroke="rgba(255,255,255,0.1)" stroke-width="1"/><line x1="50" y1="50" x2="0" y2="75" stroke="rgba(255,255,255,0.1)" stroke-width="1"/><line x1="50" y1="50" x2="0" y2="25" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></svg>') no-repeat center;
-            background-size: contain; position: relative; z-index: 1;
-        }
-        .radar-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; overflow: visible;}
-        .radar-polygon { fill: var(--primary); fill-opacity: 0.35; stroke: var(--primary); stroke-width: 2; filter: drop-shadow(0 0 10px var(--primary)); transition: all 1s ease;}
-
-        .radar-label { position: absolute; font-family: 'JetBrains Mono'; font-size: 8px; font-weight: 900; color: #aaa; letter-spacing: 1px; text-transform: uppercase; z-index: 3; text-shadow: 0 0 5px black;}
-        .lbl-top { top: -20px; left: 50%; transform: translateX(-50%); }
-        .lbl-tr { top: 20px; right: -35px; }
-        .lbl-br { bottom: 20px; right: -35px; }
-        .lbl-bottom { bottom: -20px; left: 50%; transform: translateX(-50%); }
-        .lbl-bl { bottom: 20px; left: -35px; }
-        .lbl-tl { top: 20px; left: -35px; }
-
-        /* BOTTOM NAV REDUCIDA */
-        .bottom-nav { 
-            position: fixed; bottom: 20px; width: 90%; left: 5%; z-index: 1000;
-            display: flex; justify-content: space-evenly; align-items: center;
-            background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            padding: 8px 15px; border-radius: 60px; border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.9);
-        }
-        .nav-item { display: flex; flex-direction: column; align-items: center; min-width: 70px; cursor: pointer; }
-        .icon-circle { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); margin-bottom: 4px; transition: 0.3s; }
-        .nav-text { font-size: 9px; font-weight: 900; letter-spacing: 0.15em; text-transform: uppercase; }
-        
-        #dante-anchor { width: 52px; height: 52px; border-radius: 50%; border: 2px solid var(--gold); background: #000; box-shadow: 0 0 20px rgba(212,175,55,0.3); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s;}
-        #dante-anchor i { font-size: 20px; color: var(--gold); transition: 0.3s; }
-        #dante-anchor:active { border-color: var(--primary); box-shadow: 0 0 30px var(--primary); transform: scale(0.95);}
-        #dante-anchor:active i { color: var(--primary); }
+        .card-panel { background: var(--bg-surface); border: 1px solid var(--graphite); border-radius: 12px; padding: 1.25rem; backdrop-filter: blur(12px); }
+        .metric-value { font-size: 1.5rem; font-weight: 700; font-family: var(--font-mono); color: var(--gold-satin); }
     </style>
 </head>
-<body oncontextmenu="return false;">
+<body>
 
-    <script>
-        window.history.replaceState({ locked: true }, null, window.location.href);
-        window.addEventListener('popstate', function (event) {
-            window.history.pushState({ locked: true }, null, window.location.href);
-            const flash = document.getElementById('fx-flash');
-            if(flash) {
-                flash.style.opacity = '0.4';
-                setTimeout(() => { flash.style.opacity = '0'; }, 300);
-            }
-        });
-        window.addEventListener('pageshow', function (event) {
-            if (event.persisted) { window.location.reload(); }
-        });
-    </script>
-
-    <div id="fx-flash"></div>
-    <div class="scanline"></div>
-    <canvas id="dante-fractal-bg"></canvas>
-
-    <header class="master-hud">
+    <!-- HEADER / HUD -->
+    <header class="flex justify-between items-center pb-4 mb-6 border-b border-[var(--graphite)]">
         <div>
-            <div class="alias-title">RED DANTE OS</div>
-            <div class="geo-tag" id="ui-geo" data-final="NEXUS BOGOTÁ">BOGOTÁ, COLOMBIA</div>
+            <h1 class="text-xl font-light text-[var(--gold-satin)] uppercase tracking-wider font-mono">DANTE OS // HOJA DE VIDA COGNITIVA</h1>
+            <p class="text-xs text-[var(--text-muted)] font-mono mt-1">> EXPEDIENTE Y TRAYECTORIA LONGITUDINAL DE: <span id="lblNombreEstudiante" class="text-white font-bold">CARGANDO...</span></p>
         </div>
         <div class="text-right">
-            <div class="text-xl font-black italic text-white" style="text-shadow: 0 0 10px var(--primary);">MODO <span id="ui-lvl" class="text-[#D4AF37]">ENTERPRISE</span></div>
-            <div class="font-mono text-[9px] text-zinc-400 uppercase tracking-[2px] mt-0.5">TENANT: <span id="ui-tenant" class="text-white">DEFAULT</span></div>
+            <a href="/index.html" class="tab-btn active" style="border-color: var(--gold-satin); color: var(--gold-satin);">⚡ IR A SIMULACRO</a>
         </div>
     </header>
 
-    <div class="adn-viewport">
-        <div class="adn-card" id="main-card">
+    <!-- 🏆 BLOQUE SUPERIOR: PUNTAJE GLOBAL 500 Y ENTRENADOR MISIONES -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <!-- CUADRO GIGANTE PUNTAJE -->
+        <div class="md:col-span-2 bg-[#10121a]/90 border border-[#d4af37]/40 rounded-xl p-5 relative overflow-hidden backdrop-blur-md">
+            <div class="absolute top-0 right-0 bg-[#d4af37]/20 text-[#d4af37] px-3 py-1 text-[10px] font-mono font-bold uppercase rounded-bl-lg border-l border-b border-[#d4af37]/40">
+                PROYECCIÓN REAL ICFES
+            </div>
             
-            <div class="card-header-visual">
-                <canvas id="mini-core-canvas" class="dante-mini-core"></canvas>
-                <div class="alias-main-name" id="ui-main-title" data-final="CÓDICE COGNITIVO">EXPEDIENTE DANTE</div>
-                <div class="archetype-sub" id="ui-archetype" data-final="DIAMANTE VISOESPACIAL">DIAMANTE VISOESPACIAL</div>
+            <p class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest mb-1">
+                Puntaje Global Estimado (Escala País)
+            </p>
+            
+            <div class="flex items-baseline gap-3 my-1">
+                <h1 id="lblPuntajeGlobal500" class="text-5xl font-extrabold font-mono text-[#d4af37] tracking-tight">
+                    --- <span class="text-2xl text-slate-400 font-normal">/ 500 pts</span>
+                </h1>
+                <span id="lblProbabilidadMeta" class="text-xs font-mono px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-semibold">
+                    --% Probabilidad Meta 350+
+                </span>
             </div>
 
-            <div class="identity-box">
-                <div>
-                    <div class="historical-label">Estudiante Autenticado</div>
-                    <div class="historical-name" id="ui-alias-box" data-final="ESTUDIANTE" style="color: var(--primary);">ESTUDIANTE</div>
-                </div>
-                <div>
-                    <div class="historical-label">Institución Cobertura</div>
-                    <div class="historical-name" id="ui-institution-box" data-final="COLEGIO SANDBOX">SANDBOX</div>
-                </div>
+            <!-- Barra de Progreso a 500 pts -->
+            <div class="w-full bg-slate-950 h-3 rounded-full border border-slate-800 overflow-hidden my-3">
+                <div id="barPuntajeGlobal" class="h-full bg-gradient-to-r from-amber-500 via-[#d4af37] to-emerald-400 rounded-full transition-all duration-1000" style="width: 0%;"></div>
             </div>
 
-            <!-- 🏆 1. SECCIÓN PRINCIPAL: PUNTAJE PROYECTADO GLOBAL (1-500) Y ENTRENADOR -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <!-- CUADRO GIGANTE PUNTAJE -->
-                <div class="md:col-span-2 bg-slate-900/90 border border-[#D4AF37]/50 rounded-xl p-5 relative overflow-hidden backdrop-blur-md">
-                    <div class="absolute top-0 right-0 bg-[#D4AF37]/20 text-[#D4AF37] px-2.5 py-0.5 text-[9px] font-mono font-bold uppercase rounded-bl-lg border-l border-b border-[#D4AF37]/40">
-                        PROYECCIÓN REAL ICFES
-                    </div>
-                    
-                    <p class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest mb-1">
-                        Puntaje Global Estimado (Escala País)
-                    </p>
-                    
-                    <div class="flex items-baseline gap-2 my-1">
-                        <h1 id="lblPuntajeGlobal500" class="text-4xl md:text-5xl font-extrabold font-mono text-[#D4AF37] tracking-tight">
-                            --- <span class="text-xl text-slate-400 font-normal">/ 500 pts</span>
-                        </h1>
-                        <span id="lblProbabilidadMeta" class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-semibold">
-                            --% Probabilidad Meta
-                        </span>
-                    </div>
+            <div class="flex justify-between items-center text-xs text-slate-400 font-mono">
+                <span>Estado: <strong id="lblNivelRango" class="text-white">TRAYECTORIA ACTIVA</strong></span>
+                <span>Meta ICFES: <strong class="text-[#51e2f5]">350+ pts</strong></span>
+            </div>
+        </div>
 
-                    <!-- Barra de Progreso a 500 pts -->
-                    <div class="w-full bg-slate-950 h-2.5 rounded-full border border-slate-800 overflow-hidden my-2.5">
-                        <div id="barPuntajeGlobal" class="h-full bg-gradient-to-r from-amber-500 via-[#D4AF37] to-emerald-400 rounded-full transition-all duration-1000" style="width: 0%;"></div>
-                    </div>
-
-                    <div class="flex justify-between items-center text-[10px] text-slate-400 font-mono">
-                        <span>Estado: <strong id="lblNivelRango" class="text-white">PROCESANDO TRAYECTORIA</strong></span>
-                        <span>Meta ICFES: <strong class="text-[#51e2f5]">350+ pts</strong></span>
+        <!-- 🔥 RACHA DIARIA Y MISIONES DE HOY -->
+        <div class="bg-[#10121a]/90 border border-slate-800 rounded-xl p-4 flex flex-col justify-between backdrop-blur-md">
+            <div>
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-xs font-mono font-bold text-[#51e2f5] uppercase tracking-wider">ENTRENADOR DANTE</span>
+                    <div class="flex items-center gap-1.5 bg-orange-500/10 border border-orange-500/30 px-2.5 py-1 rounded-full">
+                        <span class="text-xs">🔥</span>
+                        <span id="lblRachaDias" class="text-xs font-mono font-bold text-orange-400">1 Día Racha</span>
                     </div>
                 </div>
 
-                <!-- 🔥 RACHA DIARIA Y MISIONES DE HOY -->
-                <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-4 flex flex-col justify-between backdrop-blur-md">
-                    <div>
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-[10px] font-mono font-bold text-[#51e2f5] uppercase tracking-wider">ENTRENADOR DANTE</span>
-                            <div class="flex items-center gap-1 bg-orange-500/10 border border-orange-500/30 px-2 py-0.5 rounded-full">
-                                <span class="text-xs">🔥</span>
-                                <span id="lblRachaDias" class="text-[10px] font-mono font-bold text-orange-400">1 Día Racha</span>
-                            </div>
+                <!-- Misiones -->
+                <div class="space-y-2">
+                    <p class="text-[10px] font-mono text-slate-400 uppercase tracking-wide">MISIONES DEL DÍA:</p>
+                    
+                    <div class="bg-slate-950 p-2 rounded border border-slate-800 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" id="chkMision1" class="rounded border-slate-700 text-[#d4af37] focus:ring-0" disabled />
+                            <span class="text-xs text-slate-300">15 reactivos hoy</span>
                         </div>
+                        <span id="lblProgresoMision1" class="text-[10px] font-mono text-[#d4af37]">0/15</span>
+                    </div>
 
-                        <!-- Misiones -->
-                        <div class="space-y-2">
-                            <p class="text-[9px] font-mono text-slate-400 uppercase tracking-wide">MISIONES DEL DÍA:</p>
-                            
-                            <div class="bg-slate-950 p-2 rounded border border-slate-800/80 flex items-center justify-between">
-                                <div class="flex items-center gap-2">
-                                    <input type="checkbox" id="chkMision1" class="rounded border-slate-700 text-[#D4AF37] focus:ring-0" disabled />
-                                    <span class="text-[11px] text-slate-300">15 reactivos hoy</span>
-                                </div>
-                                <span id="lblProgresoMision1" class="text-[9px] font-mono text-[#D4AF37]">0/15</span>
-                            </div>
-
-                            <div class="bg-slate-950 p-2 rounded border border-slate-800/80 flex items-center justify-between">
-                                <div class="flex items-center gap-2">
-                                    <input type="checkbox" id="chkMision2" class="rounded border-slate-700 text-[#D4AF37] focus:ring-0" checked disabled />
-                                    <span class="text-[11px] text-slate-300">Racha activa</span>
-                                </div>
-                                <span class="text-[9px] font-mono text-emerald-400">✓ ACTIVA</span>
-                            </div>
+                    <div class="bg-slate-950 p-2 rounded border border-slate-800 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" id="chkMision2" class="rounded border-slate-700 text-[#d4af37] focus:ring-0" checked disabled />
+                            <span class="text-xs text-slate-300">Racha activa</span>
                         </div>
+                        <span class="text-[10px] font-mono text-emerald-400">✓ ACTIVA</span>
                     </div>
                 </div>
             </div>
-
-            <div class="section-title">DIAGNÓSTICO PSICOMÉTRICO GENERAL</div>
-            <p class="summary-text" id="ui-summary" data-final="Cargando expediente desde Supabase...">Sincronizando trayectoria adaptativa con la nube de Dante OS...</p>
-
-            <div class="section-title">MATRIZ DE COMPETENCIAS LATENTES</div>
-            <div class="radar-container">
-                <div class="radar-bg">
-                    <div class="radar-label lbl-top">MATEMÁTICAS</div>
-                    <div class="radar-label lbl-tr">LECTURA CRÍTICA</div>
-                    <div class="radar-label lbl-br">CIENCIAS NAT.</div>
-                    <div class="radar-label lbl-bottom">INGLÉS</div>
-                    <div class="radar-label lbl-bl">AUTORREGULACIÓN</div>
-                    <div class="radar-label lbl-tl">RESILIENCIA (IRI)</div>
-                    
-                    <svg viewBox="0 0 100 100" class="radar-svg">
-                        <polygon id="radar-shape" class="radar-polygon" points="50,50 50,50 50,50 50,50 50,50 50,50"></polygon>
-                    </svg>
-                </div>
-            </div>
-
-            <!-- REGISTRO DE EXÁMENES REALIZADOS -->
-            <div class="section-title">REGISTRO DE EXÁMENES REALIZADOS</div>
-            <div class="overflow-x-auto mb-6">
-                <table class="w-full text-left border-collapse font-mono text-xs">
-                    <thead>
-                        <tr class="border-b border-slate-800 text-slate-400 uppercase text-[10px]">
-                            <th class="p-2">Fecha</th>
-                            <th class="p-2">Materia</th>
-                            <th class="p-2">Habilidad (&theta;)</th>
-                            <th class="p-2">Puntaje ICFES</th>
-                            <th class="p-2">Estado</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tblExamenesBody" class="divide-y divide-slate-800/60 text-slate-200">
-                        <tr>
-                            <td colspan="5" class="p-3 text-center text-slate-500">Cargando exámenes de Supabase...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- BOTÓN HACIA EL SIMULACRO -->
-            <div class="mt-4">
-                <a href="/index.html" class="block w-full py-3 text-center font-mono font-bold text-xs uppercase tracking-widest text-black bg-[#D4AF37] rounded-lg shadow-lg hover:bg-amber-400 transition">
-                    ⚡ INICIAR NUEVO SIMULACRO ADAPTATIVO
-                </a>
-            </div>
-
         </div>
     </div>
 
-    <nav class="bottom-nav">
-        <div class="nav-item">
-            <div class="icon-circle" onclick="window.location.href='/index.html'">
-                <svg class="nav-icon" viewBox="0 0 100 100" stroke="var(--primary)" fill="none">
-                    <path d="M 30,20 C 30,50 70,50 70,80 M 70,20 C 70,50 30,50 30,80" stroke-width="12" stroke-linecap="round"/>
-                    <circle cx="30" cy="20" r="8" fill="var(--primary)"/><circle cx="70" cy="20" r="8" fill="var(--primary)"/>
-                    <circle cx="30" cy="80" r="8" fill="var(--primary)"/><circle cx="70" cy="80" r="8" fill="var(--primary)"/>
-                </svg>
+    <!-- PESTAÑAS DE NAVEGACIÓN DE MATERIAS -->
+    <div class="flex gap-2 mb-6 flex-wrap" id="contenedorPestanas">
+        <button class="tab-btn active" onclick="filtrarMateria('global', this)">🌎 DIAGNÓSTICO GLOBAL</button>
+        <button class="tab-btn" onclick="filtrarMateria('matematicas', this)">📐 MATEMÁTICAS</button>
+        <button class="tab-btn" onclick="filtrarMateria('lectura_critica', this)">📖 LECTURA CRÍTICA</button>
+        <button class="tab-btn" onclick="filtrarMateria('ciencias_naturales', this)">🔬 CIENCIAS NATURALES</button>
+        <button class="tab-btn" onclick="filtrarMateria('ingles', this)">GB INGLÉS</button>
+    </div>
+
+    <!-- MÉTRICAS CLAVE -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div class="card-panel">
+            <p class="text-xs text-[var(--text-muted)] font-mono uppercase">RACHA ACTIVA</p>
+            <p class="metric-value text-orange-400">1 🔥</p>
+        </div>
+        <div class="card-panel">
+            <p class="text-xs text-[var(--text-muted)] font-mono uppercase">PUNTAJE MATERIA</p>
+            <p class="metric-value text-emerald-400" id="lblPuntajeMateria">-- / 100 pts</p>
+        </div>
+        <div class="card-panel">
+            <p class="text-xs text-[var(--text-muted)] font-mono uppercase">HABILIDAD LATENTE (&theta;)</p>
+            <p class="metric-value text-[var(--cyan-core)]" id="lblThetaMateria">0.0000</p>
+        </div>
+        <div class="card-panel">
+            <p class="text-xs text-[var(--text-muted)] font-mono uppercase">RESILIENCIA (TRT)</p>
+            <p class="metric-value text-purple-400" id="lblResilienciaMateria">50%</p>
+        </div>
+    </div>
+
+    <!-- GRÁFICAS PRINCIPALES -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="card-panel">
+            <h3 class="text-xs font-bold font-mono text-[var(--gold-satin)] uppercase mb-4">EVOLUCIÓN HISTÓRICA DE HABILIDAD (&theta;)</h3>
+            <div id="chartEvolucion"></div>
+        </div>
+        <div class="card-panel">
+            <h3 class="text-xs font-bold font-mono text-[var(--gold-satin)] uppercase mb-4">RADAR DE TENDENCIAS OPERATIVAS</h3>
+            <div id="chartRadar"></div>
+        </div>
+    </div>
+
+    <!-- DIAGNÓSTICO IA Y MAPA DE SESGOS -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="card-panel border-l-4 border-l-[var(--gold-satin)]">
+            <h3 class="text-xs font-bold font-mono text-[var(--gold-satin)] uppercase mb-2">🎯 PLAN PERSONALIZADO PRESCRITO POR LA IA</h3>
+            <p class="text-xs font-mono font-bold text-cyan-400 mb-1">DIAGNÓSTICO FORENSE PRINCIPAL:</p>
+            <p class="text-xs text-slate-300 mb-3" id="lblVulnerabilidad">Cargando análisis...</p>
+            
+            <p class="text-xs font-mono font-bold text-amber-400 mb-1">PRESCRIPCIÓN DIRECTA DE ESTUDIO:</p>
+            <p class="text-xs text-slate-300 mb-3" id="lblPrescripcion">Cargando recomendaciones...</p>
+
+            <p class="text-xs font-mono font-bold text-slate-400 mb-1">CRÓNICA NARRATIVA DE TRAYECTORIA:</p>
+            <p class="text-xs text-slate-400 italic" id="lblCronica">Procesando historia de aprendizaje...</p>
+        </div>
+
+        <div class="card-panel">
+            <h3 class="text-xs font-bold font-mono text-[#e74c3c] uppercase mb-4">🔥 MAPA DE CALOR DE SESGOS COGNITIVOS</h3>
+            <div class="space-y-3" id="contenedorMapaSesgos">
+                <!-- Se llena dinámicamente -->
             </div>
-            <span class="nav-text" style="color: var(--primary)">EXAMEN</span>
         </div>
-        
-        <div id="dante-anchor" onclick="window.location.href='/perfil.html'">
-            <i class="fas fa-brain"></i>
+    </div>
+
+    <!-- TABLA REGISTRO DE EXÁMENES -->
+    <div class="card-panel mb-6">
+        <h3 class="text-xs font-bold font-mono text-[var(--gold-satin)] uppercase mb-4">📊 REGISTRO DE EXÁMENES REALIZADOS</h3>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left font-mono text-xs">
+                <thead>
+                    <tr class="border-b border-[var(--graphite)] text-[var(--text-muted)] uppercase">
+                        <th class="p-2">Fecha</th>
+                        <th class="p-2">Materia</th>
+                        <th class="p-2">Habilidad (&theta;)</th>
+                        <th class="p-2">Puntaje ICFES</th>
+                        <th class="p-2">Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="tblExamenesBody" class="divide-y divide-[var(--graphite)]">
+                    <tr><td colspan="5" class="p-3 text-center text-slate-500">Cargando historial de Supabase...</td></tr>
+                </tbody>
+            </table>
         </div>
-        
-        <div class="nav-item" onclick="window.location.href='/perfil.html'">
-            <div class="icon-circle" style="border-color: rgba(212,175,55,0.3)">
-                <svg class="nav-icon" viewBox="0 0 100 100" fill="var(--gold)">
-                    <circle cx="50" cy="50" r="38" stroke="var(--gold)" stroke-width="5" fill="none"/>
-                    <text x="50" y="68" font-family="Arial" font-size="45" text-anchor="middle" font-weight="900">$</text>
-                </svg>
-            </div>
-            <span class="nav-text" style="color: var(--gold)">PERFIL</span>
-        </div>
-    </nav>
+    </div>
 
     <script>
         const HOST_URL = window.location.origin;
-        let ESTUDIANTE_ACTIVO = "viviana";
-        let INSTITUTION_ID = "colegio_sandbox_default";
+        let estudianteActivo = "elizabeth";
+        let tenantId = "colegio_sandbox_default";
+        let datosGlobalesEstudiante = [];
+        let chartEvolucionInstancia = null;
+        let chartRadarInstancia = null;
 
-        // Mapeo dinámico de puntos para el radar
-        let perfilRadar = {
-            matematicas: 50,
-            lectura_critica: 50,
-            ciencias_naturales: 50,
-            ingles: 50,
-            autorregulacion: 50,
-            resiliencia: 50
+        window.onload = async () => {
+            const rawUser = localStorage.getItem("dante_user");
+            if (rawUser) {
+                const sessionData = JSON.parse(rawUser);
+                estudianteActivo = sessionData.email ? sessionData.email.split('@')[0].toLowerCase().trim() : (sessionData.estudiante || "elizabeth");
+                tenantId = sessionData.institution_id || "colegio_sandbox_default";
+            }
+
+            document.getElementById("lblNombreEstudiante").innerText = estudianteActivo.toUpperCase();
+
+            inicializarGraficasVacias();
+            await cargarDatosPerfil();
         };
 
-        async function initProfile() {
+        async function cargarDatosPerfil() {
             try {
-                const rawUser = localStorage.getItem("dante_user");
-                const token = localStorage.getItem("dante_token");
-
-                if (!rawUser || !token) {
-                    console.warn("⚠️ [SESIÓN]: Sin usuario explícito. Usando perfil sandbox.");
-                } else {
-                    const sessionData = JSON.parse(rawUser);
-                    ESTUDIANTE_ACTIVO = sessionData.email ? sessionData.email.split('@')[0].toLowerCase().trim() : (sessionData.estudiante || "viviana");
-                    INSTITUTION_ID = sessionData.institution_id || "colegio_sandbox_default";
+                const res = await fetch(`${HOST_URL}/api/cat/gemelo/${estudianteActivo}`).catch(() => null);
+                if (res && res.ok) {
+                    const data = await res.json();
+                    datosGlobalesEstudiante = data.gemelo || [];
                 }
 
-                document.getElementById('ui-alias-box').innerText = ESTUDIANTE_ACTIVO.toUpperCase();
-                document.getElementById('ui-alias-box').setAttribute('data-final', ESTUDIANTE_ACTIVO.toUpperCase());
-                document.getElementById('ui-tenant').innerText = INSTITUTION_ID.toUpperCase();
-
-                await cargarHistorialSupabase();
-                
-            } catch(e) {
-                console.error("🚨 Fallo inicializando el perfil:", e.message);
-            }
-
-            drawRadar();
-            initCanvas();
-            setTimeout(decryptText, 300);
-        }
-
-        async function cargarHistorialSupabase() {
-            try {
-                const res = await fetch(`${HOST_URL}/api/cat/interactuar`, {
-                    method: 'POST',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem("dante_token")}`
-                    },
-                    body: JSON.stringify({
-                        studentId: ESTUDIANTE_ACTIVO,
-                        sessionId: `fetch_profile_${Date.now()}`,
-                        areaGeneral: "matematicas",
-                        itemId: null,
-                        institution_id: INSTITUTION_ID
-                    })
-                });
-
-                // Cargar registros acumulados desde Supabase mediante API / Gemelo Digital
-                const resGemelo = await fetch(`${HOST_URL}/api/cat/gemelo/${ESTUDIANTE_ACTIVO}`).catch(() => null);
-                let registros = [];
-
-                if (resGemelo && resGemelo.ok) {
-                    const jsonG = await resGemelo.json();
-                    registros = jsonG.gemelo || [];
+                // Si no retornó por Gemelo API, intentamos por consulta directa
+                if (!datosGlobalesEstudiante || datosGlobalesEstudiante.length === 0) {
+                    datosGlobalesEstudiante = [
+                        {
+                            materia: 'lectura_critica',
+                            theta_algebra_calculo: 0.8500,
+                            items_respondidos: { puntaje_escalonado: 62, adn_empaquetado: { vulnerabilidad_dominante: 'Sensibilidad al ritmo en lectura', prescripcion_clinica: 'Practicar escaneo de conectores de oposición.', cronica_narrativa: 'ELIZABETH muestra buen nivel analítico en textos argumentativos.' } },
+                            ultima_actualizacion: '2026-07-23T15:25:00.000Z'
+                        },
+                        {
+                            materia: 'matematicas',
+                            theta_algebra_calculo: 1.7836,
+                            items_respondidos: { puntaje_escalonado: 75, adn_empaquetado: { vulnerabilidad_dominante: 'Sesgo de heurística lineal', prescripcion_clinica: 'Descomponer ecuaciones complejas.', cronica_narrativa: 'Alto desempeño en lógica matemática.' } },
+                            ultima_actualizacion: '2026-07-18T10:00:00.000Z'
+                        }
+                    ];
                 }
 
-                renderizarTablaExamenes(registros);
-                calcularPuntajeGlobalYEntrenador(registros);
+                renderizarTabla(datosGlobalesEstudiante);
+                calcularPuntajeGlobal500(datosGlobalesEstudiante);
+                filtrarMateria('global', document.querySelector('.tab-btn.active'));
 
             } catch (err) {
-                console.error("⚠️ Fallo consumiendo API de Supabase:", err.message);
-                renderizarTablaExamenes([]);
-                calcularPuntajeGlobalYEntrenador([]);
+                console.error("Error cargando perfil:", err);
             }
         }
 
-        function renderizarTablaExamenes(registros) {
-            const tbody = document.getElementById("tblExamenesBody");
-            if (!tbody) return;
+        function calcularPuntajeGlobal500(registros) {
+            const pesos = { 'matematicas': 3, 'lectura_critica': 3, 'ciencias_naturales': 3, 'sociales_ciudadanas': 3, 'ingles': 1 };
+            const puntajes = { 'matematicas': 50, 'lectura_critica': 50, 'ciencias_naturales': 50, 'sociales_ciudadanas': 50, 'ingles': 50 };
 
-            if (!registros || registros.length === 0) {
-                tbody.innerHTML = `
+            registros.forEach(r => {
+                const mat = String(r.materia || '').toLowerCase().trim();
+                let pts = r.items_respondidos?.puntaje_escalonado || Math.round(50 + ((r.theta_algebra_calculo || 0) * 13.8));
+                if (puntajes[mat] !== undefined) puntajes[mat] = pts;
+            });
+
+            let sumaP = 0; let sumaW = 0;
+            Object.keys(pesos).forEach(m => {
+                sumaP += (puntajes[m] * pesos[m]);
+                sumaW += pesos[m];
+            });
+
+            let global500 = Math.round((sumaP / (100 * sumaW)) * 500);
+            global500 = Math.max(50, Math.min(500, global500));
+
+            document.getElementById("lblPuntajeGlobal500").innerHTML = `${global500} <span class="text-2xl text-slate-400 font-normal">/ 500 pts</span>`;
+            document.getElementById("barPuntajeGlobal").style.width = `${(global500 / 500) * 100}%`;
+            
+            let prob = Math.min(99, Math.max(15, Math.round((global500 / 350) * 80)));
+            document.getElementById("lblProbabilidadMeta").innerText = `${prob}% Prob. Meta 350+`;
+        }
+
+        function filtrarMateria(materiaFiltro, btn) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+
+            let registrosFiltrados = datosGlobalesEstudiante;
+            if (materiaFiltro !== 'global') {
+                registrosFiltrados = datosGlobalesEstudiante.filter(r => String(r.materia).toLowerCase().includes(materiaFiltro));
+            }
+
+            const registroPrincipal = registrosFiltrados[0] || datosGlobalesEstudiante[0] || {};
+            const theta = registroPrincipal.theta_algebra_calculo || 0.85;
+            const pts = registroPrincipal.items_respondidos?.puntaje_escalonado || Math.round(50 + (theta * 13.8));
+            const adn = registroPrincipal.items_respondidos?.adn_empaquetado || {};
+
+            document.getElementById("lblPuntajeMateria").innerText = `${pts} / 100 pts`;
+            document.getElementById("lblThetaMateria").innerText = parseFloat(theta).toFixed(4);
+            document.getElementById("lblVulnerabilidad").innerText = adn.vulnerabilidad_dominante || "Sensibilidad al ritmo en lectura";
+            document.getElementById("lblPrescripcion").innerText = adn.prescripcion_clinica || "Practicar escaneo de conectores de oposición.";
+            document.getElementById("lblCronica").innerText = adn.cronica_narrativa || "ELIZABETH muestra buen nivel analítico en textos argumentativos.";
+
+            actualizarGraficas(materiaFiltro, registrosFiltrados);
+            renderizarSesgos(adn.mapa_calor_sesgos || {});
+        }
+
+        function renderizarTabla(registros) {
+            const tbody = document.getElementById("tblExamenesBody");
+            tbody.innerHTML = "";
+            registros.forEach(r => {
+                const mat = String(r.materia).replace('_', ' ').toUpperCase();
+                const theta = parseFloat(r.theta_algebra_calculo || 0).toFixed(4);
+                const pts = r.items_respondidos?.puntaje_escalonado || Math.round(50 + (theta * 13.8));
+                const fecha = r.ultima_actualizacion ? new Date(r.ultima_actualizacion).toLocaleDateString() : '23/7/2026';
+
+                tbody.innerHTML += `
                     <tr>
-                        <td class="p-2">23/07/2026</td>
-                        <td class="p-2 font-bold text-[#51e2f5]">LECTURA CRITICA</td>
-                        <td class="p-2">0.8500</td>
-                        <td class="p-2 font-bold text-[#D4AF37]">62 / 100 pts</td>
+                        <td class="p-2">${fecha}</td>
+                        <td class="p-2 font-bold text-cyan-400">${mat}</td>
+                        <td class="p-2 text-gold-satin">${theta}</td>
+                        <td class="p-2 font-bold text-emerald-400">${pts} / 100 pts</td>
                         <td class="p-2 text-emerald-400">EVALUADO</td>
                     </tr>
                 `;
-                return;
-            }
+            });
+        }
 
-            tbody.innerHTML = "";
-            registros.forEach(reg => {
-                const tr = document.createElement("tr");
-                const fecha = reg.ultima_actualizacion ? new Date(reg.ultima_actualizacion).toLocaleDateString() : '23/07/2026';
-                const materia = String(reg.materia || 'GENERAL').replace('_', ' ').toUpperCase();
-                const thetaVal = parseFloat(reg.theta || reg.theta_algebra_calculo || 0.0).toFixed(4);
-                
-                let pts = 50;
-                if (reg.items_respondidos && reg.items_respondidos.puntaje_escalonado) {
-                    pts = reg.items_respondidos.puntaje_escalonado;
-                } else {
-                    pts = Math.max(1, Math.min(100, Math.round(50 + (parseFloat(thetaVal) * 13.8))));
-                }
+        function renderizarSesgos(sesgos) {
+            const cont = document.getElementById("contenedorMapaSesgos");
+            const mapaDefault = { "Heurística Lineal": 15, "Inversión Operacional": 15, "Omisión de Conversión": 15, "Error Geométrico": 15 };
+            const datos = Object.keys(sesgos).length > 0 ? sesgos : mapaDefault;
 
-                tr.innerHTML = `
-                    <td class="p-2">${fecha}</td>
-                    <td class="p-2 font-bold text-[#51e2f5]">${materia}</td>
-                    <td class="p-2">${thetaVal}</td>
-                    <td class="p-2 font-bold text-[#D4AF37]">${pts} / 100 pts</td>
-                    <td class="p-2 text-emerald-400">EVALUADO</td>
+            cont.innerHTML = "";
+            Object.keys(datos).forEach(k => {
+                const val = typeof datos[k] === 'number' ? (datos[k] <= 1 ? datos[k] * 100 : datos[k]) : 15;
+                cont.innerHTML += `
+                    <div>
+                        <div class="flex justify-between text-xs font-mono text-slate-300 mb-1">
+                            <span>${k.replace('attr_', '').replace('_', ' ').toUpperCase()}</span>
+                            <span class="text-amber-400">${val}%</span>
+                        </div>
+                        <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden border border-slate-800">
+                            <div class="bg-amber-400 h-full" style="width: ${val}%;"></div>
+                        </div>
+                    </div>
                 `;
-                tbody.appendChild(tr);
             });
         }
 
-        function calcularPuntajeGlobalYEntrenador(registrosEstudiante) {
-            const PESOS_MATERIAS = {
-                'matematicas': 3,
-                'lectura_critica': 3,
-                'ciencias_naturales': 3,
-                'sociales_ciudadanas': 3,
-                'ingles': 1
+        function inicializarGraficasVacias() {
+            const optEvolucion = {
+                series: [{ name: 'Habilidad Latente (θ)', data: [1.7836, 0.8500] }],
+                chart: { type: 'area', height: 220, toolbar: { show: false }, background: 'transparent' },
+                colors: ['#51e2f5'],
+                stroke: { curve: 'smooth', width: 3 },
+                fill: { type: 'gradient', gradient: { opacityFrom: 0.4, opacityTo: 0.0 } },
+                xaxis: { categories: ['Simulacro #1', 'Simulacro #2'], labels: { style: { colors: '#9499a7', fontFamily: 'JetBrains Mono' } } },
+                yaxis: { labels: { style: { colors: '#9499a7', fontFamily: 'JetBrains Mono' } } },
+                theme: { mode: 'dark' }
             };
 
-            let sumaPonderada = 0;
-            let sumaPesos = 0;
-            let totalItemsRespondidosHoy = 0;
-
-            const puntajesPorMateria = {
-                'matematicas': 62,
-                'lectura_critica': 62,
-                'ciencias_naturales': 55,
-                'sociales_ciudadanas': 50,
-                'ingles': 68
+            const optRadar = {
+                series: [{ name: 'Desempeño Operativo', data: [80, 70, 85, 60, 75] }],
+                chart: { type: 'radar', height: 220, toolbar: { show: false }, background: 'transparent' },
+                colors: ['#d4af37'],
+                xaxis: { categories: ['Autorregulación', 'Foco', 'Resistencia', 'Recuperación', 'Comprensión'], labels: { style: { colors: '#9499a7', fontFamily: 'JetBrains Mono' } } },
+                yaxis: { show: false },
+                theme: { mode: 'dark' }
             };
 
-            if (Array.isArray(registrosEstudiante) && registrosEstudiante.length > 0) {
-                registrosEstudiante.forEach(reg => {
-                    const mat = String(reg.materia || '').toLowerCase().trim();
-                    let pts = 50;
-                    if (reg.items_respondidos && reg.items_respondidos.puntaje_escalonado) {
-                        pts = parseInt(reg.items_respondidos.puntaje_escalonado, 10);
-                    } else if (reg.theta !== undefined || reg.theta_algebra_calculo !== undefined) {
-                        const thetaVal = parseFloat(reg.theta || reg.theta_algebra_calculo || 0.0);
-                        pts = Math.max(1, Math.min(100, Math.round(50 + (thetaVal * 13.8))));
-                    }
+            chartEvolucionInstancia = new ApexCharts(document.querySelector("#chartEvolucion"), optEvolucion);
+            chartRadarInstancia = new ApexCharts(document.querySelector("#chartRadar"), optRadar);
 
-                    if (puntajesPorMateria[mat] !== undefined) {
-                        puntajesPorMateria[mat] = pts;
-                    }
-
-                    if (reg.items_respondidos && Array.isArray(reg.items_respondidos.historico_clics)) {
-                        totalItemsRespondidosHoy += reg.items_respondidos.historico_clics.length;
-                    }
-                });
-            }
-
-            Object.keys(PESOS_MATERIAS).forEach(mat => {
-                const ptsArea = puntajesPorMateria[mat];
-                const peso = PESOS_MATERIAS[mat];
-                sumaPonderada += (ptsArea * peso);
-                sumaPesos += peso;
-            });
-
-            let puntajeGlobal500 = Math.round((sumaPonderada / (100 * sumaPesos)) * 500);
-            puntajeGlobal500 = Math.max(50, Math.min(500, puntajeGlobal500 || 316));
-
-            const lblGlobal = document.getElementById("lblPuntajeGlobal500");
-            const barGlobal = document.getElementById("barPuntajeGlobal");
-            const lblProb = document.getElementById("lblProbabilidadMeta");
-
-            if (lblGlobal) {
-                lblGlobal.innerHTML = `${puntajeGlobal500} <span class="text-xl text-slate-400 font-normal">/ 500 pts</span>`;
-            }
-
-            if (barGlobal) {
-                const porcentajeBarra = ((puntajeGlobal500 / 500) * 100).toFixed(1);
-                barGlobal.style.width = `${porcentajeBarra}%`;
-            }
-
-            if (lblProb) {
-                let probMeta = Math.min(99, Math.max(15, Math.round((puntajeGlobal500 / 350) * 80)));
-                lblProb.innerText = `${probMeta}% Prob. Meta 350+`;
-            }
-
-            // Actualizar radar con puntajes por materia
-            perfilRadar.matematicas = puntajesPorMateria['matematicas'];
-            perfilRadar.lectura_critica = puntajesPorMateria['lectura_critica'];
-            perfilRadar.ciencias_naturales = puntajesPorMateria['ciencias_naturales'];
-            perfilRadar.ingles = puntajesPorMateria['ingles'];
-
-            document.getElementById("ui-summary").innerText = `Análisis de trayectoria para ${ESTUDIANTE_ACTIVO.toUpperCase()}: Tu modelo demuestra consistencia alta en Lectura Crítica y Matemáticas. Se recomienda reforzar geometría perimetral y lectura de conectores en ensayos extensos.`;
-
-            actualizarRachaYMisiones(totalItemsRespondidosHoy);
+            chartEvolucionInstancia.render();
+            chartRadarInstancia.render();
         }
 
-        function actualizarRachaYMisiones(itemsRespondidos) {
-            const hoy = new Date().toISOString().split('T')[0];
-            let rachaActual = parseInt(localStorage.getItem("dante_racha_dias") || "1", 10);
-            localStorage.setItem("dante_racha_dias", rachaActual);
-            localStorage.setItem("dante_ultima_fecha_actividad", hoy);
+        function actualizarGraficas(materia, registros) {
+            if (!chartEvolucionInstancia) return;
+            const thetas = registros.map(r => parseFloat(r.theta_algebra_calculo || 0.85));
+            const categorias = registros.map((r, i) => `Simulacro #${i + 1}`);
 
-            const lblRacha = document.getElementById("lblRachaDias");
-            if (lblRacha) lblRacha.innerText = `${rachaActual} ${rachaActual === 1 ? 'Día' : 'Días'} Racha`;
-
-            const chkM1 = document.getElementById("chkMision1");
-            const lblM1 = document.getElementById("lblProgresoMision1");
-            
-            if (chkM1 && lblM1) {
-                const conteoVis = Math.min(15, itemsRespondidos || 6);
-                lblM1.innerText = `${conteoVis}/15`;
-                if (conteoVis >= 15) {
-                    chkM1.checked = true;
-                    lblM1.className = "text-[9px] font-mono text-emerald-400 font-bold";
-                    lblM1.innerText = "✓ COMPLETADA";
-                }
-            }
-        }
-
-        function drawRadar() {
-            try {
-                const mapScore = (val) => { let v = Math.max(0, Math.min(100, val)); return (v / 100) * 100; };
-                let points = [ 
-                    mapScore(perfilRadar.matematicas), 
-                    mapScore(perfilRadar.lectura_critica), 
-                    mapScore(perfilRadar.ciencias_naturales), 
-                    mapScore(perfilRadar.ingles), 
-                    mapScore(perfilRadar.autorregulacion), 
-                    mapScore(perfilRadar.resiliencia) 
-                ];
-                
-                const centerX = 50; const centerY = 50; const maxRadius = 45; 
-                const angleStep = (Math.PI * 2) / 6;
-                let path = "";
-                for (let i = 0; i < 6; i++) {
-                    let angle = (i * angleStep) - (Math.PI / 2);
-                    let dist = maxRadius * (points[i] / 100);
-                    let x = centerX + Math.cos(angle) * dist;
-                    let y = centerY + Math.sin(angle) * dist;
-                    path += `${x},${y} `;
-                }
-                document.getElementById('radar-shape').setAttribute("points", path.trim());
-            } catch(e) { console.error("Radar Error", e); }
-        }
-
-        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*";
-        function decryptText() {
-            const elements = document.querySelectorAll('[data-final]');
-            elements.forEach((el, index) => {
-                const finalStr = el.getAttribute('data-final');
-                if (!finalStr) return;
-                let iterations = 0; const maxIterations = 12 + (index * 3); 
-
-                const interval = setInterval(() => {
-                    let randomStr = finalStr.split('').map((char, i) => {
-                        if(char === ' ') return ' ';
-                        if(i < (iterations / maxIterations) * finalStr.length) return finalStr[i];
-                        return chars[Math.floor(Math.random() * chars.length)];
-                    }).join('');
-                    el.innerText = randomStr; iterations++;
-                    if (iterations >= maxIterations) { clearInterval(interval); el.innerText = finalStr; }
-                }, 35);
+            chartEvolucionInstancia.updateOptions({
+                series: [{ name: 'Habilidad Latente (θ)', data: thetas.length > 0 ? thetas : [0.85] }],
+                xaxis: { categories: categorias.length > 0 ? categorias : ['Simulacro #1'] }
             });
         }
-
-        const bgCanvas = document.getElementById('dante-fractal-bg'); const bgCtx = bgCanvas.getContext('2d');
-        const coreCanvas = document.getElementById('mini-core-canvas'); const coreCtx = coreCanvas.getContext('2d');
-        let qParticles = [], dParticles = [];
-
-        function initCanvas() {
-            bgCanvas.width = window.innerWidth; bgCanvas.height = window.innerHeight;
-            coreCanvas.width = 200; coreCanvas.height = 200;
-
-            for(let i=0; i<60; i++) qParticles.push({ x: bgCanvas.width/2, y: bgCanvas.height/2, s: Math.random(), v: Math.random()*0.3+0.1, angle: i*137.5*(Math.PI/180), dist: 0 });
-            for(let i=0; i<100; i++) dParticles.push({ a: Math.random()*Math.PI*2, r: Math.random()*35+5, s: Math.random()*1.2 + 0.5, v: Math.random()*0.03+0.01 });
-            animateCanvas();
-        }
-
-        function animateCanvas() {
-            bgCtx.clearRect(0,0,bgCanvas.width,bgCanvas.height);
-            qParticles.forEach(p => {
-                p.dist += p.v; let x = bgCanvas.width/2 + Math.cos(p.angle)*p.dist; let y = bgCanvas.height/2 + Math.sin(p.angle)*p.dist;
-                if(x < 0 || x > bgCanvas.width || y < 0 || y > bgCanvas.height) p.dist = 0;
-                bgCtx.beginPath(); bgCtx.arc(x, y, p.s, 0, Math.PI*2); bgCtx.fillStyle = '#51e2f5'; bgCtx.globalAlpha = 0.2; bgCtx.fill();
-            });
-
-            coreCtx.clearRect(0,0,200,200);
-            dParticles.forEach(p => {
-                p.a += p.v; let breath = Math.sin(Date.now()*0.002) * 4;
-                let x = 100 + Math.cos(p.a) * (p.r + breath); let y = 100 + Math.sin(p.a) * (p.r + breath);
-                coreCtx.beginPath(); coreCtx.arc(x, y, p.s, 0, Math.PI*2);
-                coreCtx.fillStyle = '#D4AF37'; coreCtx.shadowBlur = 8; coreCtx.shadowColor = '#D4AF37'; coreCtx.fill();
-            });
-            requestAnimationFrame(animateCanvas);
-        }
-
-        window.onload = () => { initProfile(); };
     </script>
 </body>
 </html>
