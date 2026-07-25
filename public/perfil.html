@@ -32,24 +32,24 @@
         .scanline { position: fixed; inset: 0; background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.5) 51%); background-size: 100% 4px; z-index: 1; pointer-events: none; opacity: 0.2; }
         #fx-flash { position: fixed; inset: 0; z-index: 999999; background: var(--alert); opacity: 0; pointer-events: none; transition: opacity 0.3s; mix-blend-mode: screen; }
 
-        /* HEADER HUD PERIMETRAL */
+        /* HEADER HUD PERIMETRAL RESPONSIVO */
         .master-hud {
-            position: fixed; top: 0; width: 100%; z-index: 1000; padding: 18px 20px;
-            background: linear-gradient(to bottom, rgba(1,1,3,0.95) 30%, transparent 100%);
-            pointer-events: none; display: flex; justify-content: space-between; align-items: flex-start;
+            position: fixed; top: 0; width: 100%; z-index: 1000; padding: 10px 16px;
+            background: rgba(1, 1, 3, 0.95); backdrop-filter: blur(12px);
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--border-graphite);
         }
-        .alias-title { font-size: 15px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; color: white; margin-bottom: 2px;}
-        .geo-tag { font-family: 'JetBrains Mono'; font-size: 10px; color: var(--primary); letter-spacing: 2px; text-transform: uppercase; text-shadow: 0 0 10px var(--primary); }
+        .alias-title { font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; color: white; margin-bottom: 1px;}
+        .geo-tag { font-family: 'JetBrains Mono'; font-size: 8px; color: var(--primary); letter-spacing: 1px; text-transform: uppercase; }
 
         /* VIEWPORT Y SCROLLBAR INVISIBLE */
         .adn-viewport {
             position: fixed; inset: 0; z-index: 10;
             overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth;
-            padding: 85px 15px 120px;
+            padding: 70px 12px 110px;
         }
         .adn-viewport::-webkit-scrollbar { display: none; width: 0; height: 0; }
 
-        /* OCULTAR SCROLLBAR EN PESTAÑAS HORIZONTALES */
         .no-scrollbar::-webkit-scrollbar { display: none; width: 0; height: 0; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
@@ -58,7 +58,7 @@
             width: 100%; max-width: 850px; margin: 0 auto;
             background: var(--card-bg); border: 1px solid var(--border-graphite);
             border-radius: 14px; backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-            padding: 24px 18px; box-shadow: 0 20px 50px rgba(0,0,0,0.95), inset 0 0 40px rgba(255,255,255,0.02);
+            padding: 20px 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.95);
             position: relative; overflow: visible;
         }
         .adn-card::before {
@@ -69,24 +69,24 @@
 
         /* CARD HEADER Y CORE */
         .card-header-visual {
-            position: relative; width: 100%; height: 130px; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; margin-bottom: 12px;
+            position: relative; width: 100%; height: 110px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; margin-bottom: 10px;
         }
-        .dante-mini-core { position: absolute; width: 190px; height: 190px; z-index: 0; opacity: 0.65; }
-        .alias-main-name { position: relative; z-index: 10; font-family: 'Oswald'; font-size: clamp(24px, 6vw, 36px); font-weight: 900; text-transform: uppercase; text-align: center; line-height: 1.1; text-shadow: 0 5px 20px rgba(0,0,0,1), 0 0 20px var(--primary); color: white; letter-spacing: 2px;}
-        .archetype-sub { position: relative; z-index: 10; font-family: 'JetBrains Mono'; font-size: 10px; font-weight: 900; letter-spacing: 3px; text-transform: uppercase; margin-top: 6px; background: var(--primary); padding: 3px 14px; border-radius: 4px; color: #000; box-shadow: 0 0 15px var(--primary); }
+        .dante-mini-core { position: absolute; width: 170px; height: 170px; z-index: 0; opacity: 0.65; }
+        .alias-main-name { position: relative; z-index: 10; font-family: 'Oswald'; font-size: clamp(22px, 5vw, 34px); font-weight: 900; text-transform: uppercase; text-align: center; line-height: 1.1; text-shadow: 0 5px 20px rgba(0,0,0,1), 0 0 20px var(--primary); color: white; letter-spacing: 2px;}
+        .archetype-sub { position: relative; z-index: 10; font-family: 'JetBrains Mono'; font-size: 9px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; background: var(--primary); padding: 3px 12px; border-radius: 4px; color: #000; box-shadow: 0 0 15px var(--primary); }
 
         .identity-box {
             background: rgba(0,0,0,0.65); border: 1px solid var(--border-graphite);
-            border-radius: 10px; padding: 12px; text-align: center; display: flex; justify-content: space-around; align-items: center; margin-bottom: 20px;
+            border-radius: 10px; padding: 10px; text-align: center; display: flex; justify-content: space-around; align-items: center; margin-bottom: 16px;
         }
-        .historical-label { font-family: 'JetBrains Mono'; font-size: 9px; color: #8a8f9d; text-transform: uppercase; letter-spacing: 2px; font-weight: 800;}
-        .historical-name { font-size: 13px; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 2px; font-family: 'JetBrains Mono'; }
+        .historical-label { font-family: 'JetBrains Mono'; font-size: 8px; color: #8a8f9d; text-transform: uppercase; letter-spacing: 1px; font-weight: 800;}
+        .historical-name { font-size: 12px; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 1px; font-family: 'JetBrains Mono'; }
 
         /* PESTAÑAS MATERIAS */
         .tab-materia-btn {
             background: rgba(20, 24, 35, 0.7); border: 1px solid var(--border-graphite); color: #8a8f9d;
-            padding: 0.55rem 1.1rem; border-radius: 8px; font-size: 0.72rem; font-weight: 800;
+            padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.68rem; font-weight: 800;
             text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: all 0.25s ease;
             font-family: 'JetBrains Mono', monospace; white-space: nowrap; flex-shrink: 0;
         }
@@ -96,58 +96,57 @@
         }
 
         /* SECCIONES Y TITULOS */
-        .section-title { font-family: 'JetBrains Mono'; font-size: 11px; color: #fff; font-weight: 900; letter-spacing: 3px; text-transform: uppercase; margin: 22px 0 14px; display: flex; align-items: center; gap: 8px; text-shadow: 0 0 10px rgba(255,255,255,0.3);}
+        .section-title { font-family: 'JetBrains Mono'; font-size: 10px; color: #fff; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin: 18px 0 10px; display: flex; align-items: center; gap: 8px; }
         .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.12); }
         
-        .summary-text { font-size: 13px; font-weight: 400; line-height: 1.6; color: #e2e8f0; margin-bottom: 20px; text-align: justify; font-family: 'Outfit'; background: rgba(255,255,255,0.02); padding: 14px; border-left: 3px solid var(--primary); border-radius: 0 6px 6px 0;}
+        .summary-text { font-size: 12.5px; font-weight: 400; line-height: 1.6; color: #e2e8f0; margin-bottom: 16px; text-align: justify; font-family: 'Outfit'; background: rgba(255,255,255,0.02); padding: 12px; border-left: 3px solid var(--primary); border-radius: 0 6px 6px 0;}
 
         /* TERMÓMETRO BAYESIANO */
         .thermometer-container {
-            height: 14px; background: rgba(25, 28, 38, 0.9); border-radius: 9999px;
-            position: relative; margin: 20px 0 12px 0; border: 1px solid var(--border-graphite);
+            height: 12px; background: rgba(25, 28, 38, 0.9); border-radius: 9999px;
+            position: relative; margin: 16px 0 10px 0; border: 1px solid var(--border-graphite);
         }
         .confidence-band {
             position: absolute; height: 100%;
             background: linear-gradient(90deg, rgba(245, 158, 11, 0.2), rgba(245, 158, 11, 0.5), rgba(245, 158, 11, 0.2));
-            border-radius: 9999px; transition: all 0.5s ease; box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+            border-radius: 9999px; transition: all 0.5s ease;
         }
         .pin {
-            position: absolute; top: -6px; width: 26px; height: 26px; background: #fbbf24;
+            position: absolute; top: -5px; width: 22px; height: 22px; background: #fbbf24;
             border-radius: 50%; border: 3px solid #09090b; transform: translateX(-50%);
-            transition: all 0.5s ease; box-shadow: 0 0 12px #fbbf24, 0 0 24px rgba(251, 191, 36, 0.4);
+            transition: all 0.5s ease; box-shadow: 0 0 12px #fbbf24;
         }
 
         /* RADAR SVG COGNITIVO */
         .radar-container {
-            width: 100%; height: 210px; position: relative; margin-bottom: 20px;
+            width: 100%; height: 200px; position: relative; margin-bottom: 16px;
             display: flex; align-items: center; justify-content: center;
         }
         .radar-bg {
-            width: 150px; height: 170px; background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><polygon points="50 0, 100 25, 100 75, 50 100, 0 75, 0 25" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1"/><polygon points="50 20, 80 35, 80 65, 50 80, 20 65, 20 35" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1"/><polygon points="50 40, 65 47, 65 53, 50 60, 35 53, 35 47" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1"/><line x1="50" y1="50" x2="50" y2="0" stroke="rgba(255,255,255,0.12)" stroke-width="1"/><line x1="50" y1="50" x2="100" y2="25" stroke="rgba(255,255,255,0.12)" stroke-width="1"/><line x1="50" y1="50" x2="100" y2="75" stroke="rgba(255,255,255,0.12)" stroke-width="1"/><line x1="50" y1="50" x2="50" y2="100" stroke="rgba(255,255,255,0.12)" stroke-width="1"/><line x1="50" y1="50" x2="0" y2="75" stroke="rgba(255,255,255,0.12)" stroke-width="1"/><line x1="50" y1="50" x2="0" y2="25" stroke="rgba(255,255,255,0.12)" stroke-width="1"/></svg>') no-repeat center;
+            width: 140px; height: 160px; background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><polygon points="50 0, 100 25, 100 75, 50 100, 0 75, 0 25" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1"/><polygon points="50 20, 80 35, 80 65, 50 80, 20 65, 20 35" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1"/><polygon points="50 40, 65 47, 65 53, 50 60, 35 53, 35 47" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1"/><line x1="50" y1="50" x2="50" y2="0" stroke="rgba(255,255,255,0.12)" stroke-width="1"/><line x1="50" y1="50" x2="100" y2="25" stroke="rgba(255,255,255,0.12)" stroke-width="1"/><line x1="50" y1="50" x2="100" y2="75" stroke="rgba(255,255,255,0.12)" stroke-width="1"/><line x1="50" y1="50" x2="50" y2="100" stroke="rgba(255,255,255,0.12)" stroke-width="1"/><line x1="50" y1="50" x2="0" y2="75" stroke="rgba(255,255,255,0.12)" stroke-width="1"/><line x1="50" y1="50" x2="0" y2="25" stroke="rgba(255,255,255,0.12)" stroke-width="1"/></svg>') no-repeat center;
             background-size: contain; position: relative; z-index: 1;
         }
         .radar-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; overflow: visible;}
         .radar-polygon { fill: var(--primary); fill-opacity: 0.35; stroke: var(--primary); stroke-width: 2; filter: drop-shadow(0 0 10px var(--primary)); transition: all 1s ease;}
 
-        .radar-label { position: absolute; font-family: 'JetBrains Mono'; font-size: 8px; font-weight: 900; color: #aaa; letter-spacing: 1px; text-transform: uppercase; z-index: 3; text-shadow: 0 0 5px black;}
-        .lbl-top { top: -20px; left: 50%; transform: translateX(-50%); }
-        .lbl-tr { top: 20px; right: -35px; }
-        .lbl-br { bottom: 20px; right: -35px; }
-        .lbl-bottom { bottom: -20px; left: 50%; transform: translateX(-50%); }
-        .lbl-bl { bottom: 20px; left: -35px; }
-        .lbl-tl { top: 20px; left: -35px; }
+        .radar-label { position: absolute; font-family: 'JetBrains Mono'; font-size: 7.5px; font-weight: 900; color: #aaa; letter-spacing: 1px; text-transform: uppercase; z-index: 3; text-shadow: 0 0 5px black;}
+        .lbl-top { top: -18px; left: 50%; transform: translateX(-50%); }
+        .lbl-tr { top: 18px; right: -30px; }
+        .lbl-br { bottom: 18px; right: -30px; }
+        .lbl-bottom { bottom: -18px; left: 50%; transform: translateX(-50%); }
+        .lbl-bl { bottom: 18px; left: -30px; }
+        .lbl-tl { top: 18px; left: -30px; }
 
-        .mini-bar-bg { background: rgba(8, 9, 13, 0.9); height: 8px; border-radius: 4px; overflow: hidden; margin-top: 0.4rem; border: 1px solid var(--border-graphite); }
-        .mini-bar-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
+        .mini-bar-bg { background: rgba(8, 9, 13, 0.9); height: 6px; border-radius: 3px; overflow: hidden; margin-top: 0.3rem; border: 1px solid var(--border-graphite); }
+        .mini-bar-fill { height: 100%; border-radius: 3px; transition: width 1s ease; }
 
         /* TOOLTIPS Y AYUDAS (?) PEDAGÓGICAS */
         .tooltip-wrapper { position: relative; display: inline-flex; align-items: center; cursor: pointer; }
         .tooltip-box {
-            visibility: hidden; width: 220px; max-width: 80vw; background-color: #0c0e17; color: #f1f5f9;
-            text-align: left; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--gold);
+            visibility: hidden; width: 200px; max-width: 80vw; background-color: #0c0e17; color: #f1f5f9;
+            text-align: left; padding: 0.65rem; border-radius: 8px; border: 1px solid var(--gold);
             position: absolute; z-index: 999999 !important; opacity: 0; transition: opacity 0.2s ease;
-            font-size: 0.72rem; line-height: 1.4; box-shadow: 0 14px 35px rgba(0, 0, 0, 0.95); backdrop-filter: blur(16px); pointer-events: none;
-            bottom: calc(100% + 6px); right: 0;
+            font-size: 0.7rem; line-height: 1.3; bottom: calc(100% + 6px); right: 0; pointer-events: none;
         }
         .tooltip-wrapper:hover .tooltip-box, .tooltip-wrapper:focus .tooltip-box { visibility: visible; opacity: 1; }
 
@@ -160,13 +159,11 @@
             box-shadow: 0 10px 40px rgba(0,0,0,0.95);
         }
         .nav-item { display: flex; flex-direction: column; align-items: center; min-width: 70px; cursor: pointer; }
-        .icon-circle { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); margin-bottom: 4px; transition: 0.3s; }
-        .nav-text { font-size: 9px; font-weight: 900; letter-spacing: 0.15em; text-transform: uppercase; }
+        .icon-circle { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); margin-bottom: 3px; transition: 0.3s; }
+        .nav-text { font-size: 9px; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; }
         
-        #dante-anchor { width: 52px; height: 52px; border-radius: 50%; border: 2px solid var(--gold); background: #000; box-shadow: 0 0 20px rgba(212,175,55,0.35); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s;}
-        #dante-anchor i { font-size: 20px; color: var(--gold); transition: 0.3s; }
-        #dante-anchor:active { border-color: var(--primary); box-shadow: 0 0 30px var(--primary); transform: scale(0.95);}
-        #dante-anchor:active i { color: var(--primary); }
+        #dante-anchor { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--gold); background: #000; box-shadow: 0 0 20px rgba(212,175,55,0.35); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s;}
+        #dante-anchor i { font-size: 18px; color: var(--gold); transition: 0.3s; }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -196,8 +193,8 @@
             <div class="geo-tag" id="ui-geo" data-final="NEXUS BOGOTÁ">BOGOTÁ, COLOMBIA</div>
         </div>
         <div class="text-right">
-            <div class="text-xl font-black italic text-white" style="text-shadow: 0 0 10px var(--primary);">MODO <span id="ui-lvl" class="text-[#D4AF37]">ENTERPRISE</span></div>
-            <div class="font-mono text-[9px] text-zinc-400 uppercase tracking-[2px] mt-0.5">TENANT: <span id="ui-tenant" class="text-white">DEFAULT</span></div>
+            <div class="text-xs sm:text-base font-black italic text-white font-mono" style="text-shadow: 0 0 10px var(--primary);">MODO <span id="ui-lvl" class="text-[#D4AF37]">ENTERPRISE</span></div>
+            <div class="font-mono text-[8px] sm:text-[9px] text-zinc-400 uppercase tracking-[1px] mt-0.5">TENANT: <span id="ui-tenant" class="text-white">DEFAULT</span></div>
         </div>
     </header>
 
@@ -222,7 +219,7 @@
                 </div>
             </div>
 
-            <!-- NAVEGACIÓN DE FILTROS POR MATERIA (SLIDER SUAVE SIN SCROLLBAR) -->
+            <!-- NAVEGACIÓN DE FILTROS POR MATERIA -->
             <nav class="flex gap-2 overflow-x-auto pb-2 mb-4 border-b border-zinc-800/80 no-scrollbar" style="-webkit-overflow-scrolling: touch;">
                 <button class="tab-materia-btn active" onclick="PerfilEstudiante.cambiarFiltroMateria('todas', this)">🌐 Diagnóstico Global</button>
                 <button class="tab-materia-btn" onclick="PerfilEstudiante.cambiarFiltroMateria('matematicas', this)">📐 Matemáticas</button>
@@ -234,7 +231,7 @@
             <!-- 🏆 1. SECCIÓN PRINCIPAL: PUNTAJE PROYECTADO GLOBAL (1-500) Y ENTRENADOR -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
                 <!-- CUADRO GIGANTE PUNTAJE -->
-                <div class="lg:col-span-2 bg-slate-900/90 border border-[#D4AF37]/50 rounded-xl p-5 relative overflow-hidden backdrop-blur-md shadow-2xl">
+                <div class="lg:col-span-2 bg-slate-900/90 border border-[#D4AF37]/50 rounded-xl p-4 sm:p-5 relative overflow-hidden backdrop-blur-md shadow-2xl">
                     <div class="absolute top-0 right-0 bg-[#D4AF37]/20 text-[#D4AF37] px-2.5 py-0.5 text-[9px] font-mono font-bold uppercase rounded-bl-lg border-l border-b border-[#D4AF37]/40">
                         PROYECCIÓN REAL ICFES
                     </div>
@@ -243,9 +240,9 @@
                         Puntaje Global Estimado (Escala País)
                     </p>
                     
-                    <div class="flex items-baseline gap-2 my-1">
-                        <h1 id="lblPuntajeGlobal500" class="text-4xl md:text-5xl font-extrabold font-mono text-[#D4AF37] tracking-tight">
-                            328 <span class="text-xl text-slate-400 font-normal">/ 500 pts</span>
+                    <div class="flex items-baseline gap-2 my-1 flex-wrap">
+                        <h1 id="lblPuntajeGlobal500" class="text-3xl sm:text-4xl md:text-5xl font-extrabold font-mono text-[#D4AF37] tracking-tight">
+                            328 <span class="text-lg sm:text-xl text-slate-400 font-normal">/ 500 pts</span>
                         </h1>
                         <span id="lblProbabilidadMeta" class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-semibold">
                             75% Probabilidad Meta
@@ -391,7 +388,7 @@
 
             <!-- DIAGNÓSTICO PSICOMÉTRICO GENERAL -->
             <div class="section-title">DIAGNÓSTICO PSICOMÉTRICO GENERAL</div>
-            <p class="summary-text" id="ui-summary" data-final="Analizando trayectoria...">Análisis de trayectoria para ELIZABETH: Tu modelo demuestra consistencia analítica alta en Lectura Crítica y Matemáticas. Se recomienda reforzar geometría perimetral y lectura de conectores en ensayos extensos.</p>
+            <p class="summary-text" id="ui-summary">Análisis de trayectoria para ELIZABETH: Tu modelo demuestra alta consistencia en la evaluación general. Se recomienda seguir la prescripción de Dante OS.</p>
 
             <!-- RADAR DE COMPETENCIAS LATENTES -->
             <div class="section-title">MATRIZ DE COMPETENCIAS LATENTES</div>
@@ -489,7 +486,7 @@
         <!-- 1. IR AL SIMULADOR DE EXAMEN -->
         <div class="nav-item" onclick="window.location.href='/index.html'">
             <div class="icon-circle">
-                <svg class="nav-icon" viewBox="0 0 100 100" stroke="var(--primary)" fill="none">
+                <svg class="nav-icon" viewBox="0 0 100 100" stroke="var(--primary)" fill="none" style="width: 20px; height: 20px;">
                     <path d="M 30,20 C 30,50 70,50 70,80 M 70,20 C 70,50 30,50 30,80" stroke-width="12" stroke-linecap="round"/>
                     <circle cx="30" cy="20" r="8" fill="var(--primary)"/><circle cx="70" cy="20" r="8" fill="var(--primary)"/>
                     <circle cx="30" cy="80" r="8" fill="var(--primary)"/><circle cx="70" cy="80" r="8" fill="var(--primary)"/>
@@ -503,10 +500,10 @@
             <i class="fas fa-brain"></i>
         </div>
         
-        <!-- 3. EXPEDIENTE / PERFIL (MANTIENE LA PANTALLA ACTUAL) -->
+        <!-- 3. EXPEDIENTE / PERFIL -->
         <div class="nav-item" onclick="PerfilEstudiante.irAlInicioYRefrescar()">
             <div class="icon-circle" style="border-color: rgba(212,175,55,0.3)">
-                <svg class="nav-icon" viewBox="0 0 100 100" fill="var(--gold)">
+                <svg class="nav-icon" viewBox="0 0 100 100" fill="var(--gold)" style="width: 20px; height: 20px;">
                     <circle cx="50" cy="50" r="38" stroke="var(--gold)" stroke-width="5" fill="none"/>
                     <text x="50" y="68" font-family="Arial" font-size="45" text-anchor="middle" font-weight="900">$</text>
                 </svg>
@@ -518,7 +515,6 @@
     <script>
         const HOST_URL = window.location.origin;
         
-        // 🔎 DETECCIÓN MULTI-USUARIO DINÁMICA
         const urlParams = new URLSearchParams(window.location.search);
         const queryStudent = urlParams.get('estudiante') || urlParams.get('studentId');
         
@@ -541,7 +537,6 @@
         let cacheHistorialCompleto = [];
         let cacheOrigenGemelo = "SUPABASE LIVE";
 
-        // CONFIGURACIÓN DINÁMICA POR ASIGNATURA
         const DATOS_MATERIAS = {
             'todas': {
                 pts: 68, theta: 1.1200, iri: 0.65,
@@ -673,7 +668,13 @@
                 document.getElementById("lblVulnerabilidadTxt").innerText = config.vuln;
                 document.getElementById("lblPrescripcionTxt").innerText = config.presc;
                 document.getElementById("lblCronicaTxt").innerText = config.cronica;
-                document.getElementById("ui-summary").innerText = `Análisis de trayectoria para ${nombreCapitalizado}: Tu modelo demuestra alta consistencia en ${currentMateriaFiltro.replace('_', ' ').toUpperCase()}. Se recomienda seguir la prescripción de Dante OS.`;
+                
+                const summaryTxt = `Análisis de trayectoria para ${nombreCapitalizado}: Tu modelo demuestra consistencia analítica alta en ${currentMateriaFiltro.replace('_', ' ').toUpperCase()}. Se recomienda seguir la prescripción de Dante OS.`;
+                const summaryEl = document.getElementById("ui-summary");
+                if (summaryEl) {
+                    summaryEl.innerText = summaryTxt;
+                    summaryEl.setAttribute("data-final", summaryTxt);
+                }
 
                 // 4. Lista de Temas y Sesgos
                 this.renderizarTemas(config.temas);
@@ -705,7 +706,7 @@
                 let puntajeGlobal500 = Math.round((sumaPonderada / (100 * sumaPesos)) * 500);
                 puntajeGlobal500 = Math.max(50, Math.min(500, puntajeGlobal500));
 
-                document.getElementById("lblPuntajeGlobal500").innerHTML = `${puntajeGlobal500} <span class="text-xl text-slate-400 font-normal">/ 500 pts</span>`;
+                document.getElementById("lblPuntajeGlobal500").innerHTML = `${puntajeGlobal500} <span class="text-lg sm:text-xl text-slate-400 font-normal">/ 500 pts</span>`;
                 document.getElementById("barPuntajeGlobal").style.width = `${((puntajeGlobal500 / 500) * 100).toFixed(1)}%`;
 
                 let probMeta = Math.min(99, Math.max(15, Math.round((puntajeGlobal500 / 350) * 80)));
@@ -829,10 +830,10 @@
 
         function initCanvas() {
             bgCanvas.width = window.innerWidth; bgCanvas.height = window.innerHeight;
-            coreCanvas.width = 190; coreCanvas.height = 190;
+            coreCanvas.width = 170; coreCanvas.height = 170;
 
             for(let i=0; i<60; i++) qParticles.push({ x: bgCanvas.width/2, y: bgCanvas.height/2, s: Math.random(), v: Math.random()*0.3+0.1, angle: i*137.5*(Math.PI/180), dist: 0 });
-            for(let i=0; i<100; i++) dParticles.push({ a: Math.random()*Math.PI*2, r: Math.random()*35+5, s: Math.random()*1.2 + 0.5, v: Math.random()*0.03+0.01 });
+            for(let i=0; i<100; i++) dParticles.push({ a: Math.random()*Math.PI*2, r: Math.random()*30+5, s: Math.random()*1.2 + 0.5, v: Math.random()*0.03+0.01 });
             animateCanvas();
         }
 
@@ -844,10 +845,10 @@
                 bgCtx.beginPath(); bgCtx.arc(x, y, p.s, 0, Math.PI*2); bgCtx.fillStyle = '#51e2f5'; bgCtx.globalAlpha = 0.2; bgCtx.fill();
             });
 
-            coreCtx.clearRect(0,0,190,190);
+            coreCtx.clearRect(0,0,170,170);
             dParticles.forEach(p => {
                 p.a += p.v; let breath = Math.sin(Date.now()*0.002) * 4;
-                let x = 95 + Math.cos(p.a) * (p.r + breath); let y = 95 + Math.sin(p.a) * (p.r + breath);
+                let x = 85 + Math.cos(p.a) * (p.r + breath); let y = 85 + Math.sin(p.a) * (p.r + breath);
                 coreCtx.beginPath(); coreCtx.arc(x, y, p.s, 0, Math.PI*2);
                 coreCtx.fillStyle = '#D4AF37'; coreCtx.shadowBlur = 8; coreCtx.shadowColor = '#D4AF37'; coreCtx.fill();
             });
