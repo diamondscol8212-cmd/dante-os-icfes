@@ -37,9 +37,30 @@
         .scanline { position: fixed; inset: 0; background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.5) 51%); background-size: 100% 4px; z-index: 1; pointer-events: none; opacity: 0.2; }
         #fx-flash { position: fixed; inset: 0; z-index: 999999; background: var(--alert); opacity: 0; pointer-events: none; transition: opacity 0.3s; mix-blend-mode: screen; }
 
-        /* HEADER HUD PERIMETRAL */
+        /* SUGERENCIA VISUAL DE MODO HORIZONTAL EN MÓVILES PORTRAIT */
+        @media screen and (max-width: 600px) and (orientation: portrait) {
+            body::before {
+                content: "🔄 Para una mejor auditoría, gira tu celular horizontalmente.";
+                position: fixed;
+                top: 55px;
+                left: 5%;
+                width: 90%;
+                z-index: 9999;
+                background: rgba(212, 175, 55, 0.95);
+                color: #000;
+                font-family: 'JetBrains Mono', monospace;
+                font-size: 10px;
+                font-weight: 800;
+                text-align: center;
+                padding: 6px 10px;
+                border-radius: 8px;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+            }
+        }
+
+        /* HEADER HUD RESPONSIVO */
         .master-hud {
-            position: fixed; top: 0; width: 100%; z-index: 1000; padding: 12px 20px;
+            position: fixed; top: 0; width: 100%; z-index: 1000; padding: 10px 15px;
             background: rgba(1, 1, 3, 0.95); backdrop-filter: blur(12px);
             display: flex; justify-content: space-between; align-items: center; 
             border-bottom: 1px solid var(--border-graphite);
@@ -47,6 +68,7 @@
         .alias-title { font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; color: white;}
         .geo-tag { font-family: 'JetBrains Mono'; font-size: 8px; color: var(--primary); letter-spacing: 1px; text-transform: uppercase; }
 
+        /* CONTENEDOR PRINCIPAL */
         .suite-viewport {
             position: relative; z-index: 10;
             padding: 70px 12px 40px; max-width: 1400px; margin: 0 auto;
@@ -142,7 +164,7 @@
             border-radius: 12px; padding: 1rem; margin-bottom: 1.2rem; backdrop-filter: blur(16px);
         }
         
-        /* CONTENEDOR DE TABLA CON SCROLL HORIZONTAL */
+        /* CONTENEDOR DE TABLA RESPONSIVO CON SCROLL SUAVE */
         .table-container { 
             background: var(--card-bg); border: 1px solid var(--border-graphite); 
             border-radius: 12px; overflow-x: auto; -webkit-overflow-scrolling: touch;
@@ -225,7 +247,7 @@
     </header>
 
     <div class="suite-viewport">
-        <!-- BARRA DE SELECCIÓN DE MATERIAS -->
+        <!-- BARRA DE SELECCIÓN DE MATERIAS & EXPORTACIÓN -->
         <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
             <div class="materia-tabs">
                 <button class="tab-btn active" data-materia="diagnostico_general" onclick="ProfesorDashboard.cambiarMateria('diagnostico_general', this)">🌐 General</button>
@@ -243,7 +265,7 @@
         <!-- METRICAS DE AULA (KPIS CON PROYECCIÓN A 500 PTS) -->
         <div class="kpi-grid">
             <div class="kpi-card">
-                <p style="font-size: 0.65rem; text-transform: uppercase; color: #8a8f9d; font-weight: 800;" class="font-mono">Estudiantes Auditados</p>
+                <p style="font-size: 0.65rem; text-transform: uppercase; color: #8a8f9d; font-weight: 800;" class="font-mono">Estudiantes</p>
                 <div class="kpi-val" id="kpiTotalEstudiantes">0</div>
             </div>
             <div class="kpi-card">
@@ -260,18 +282,18 @@
             </div>
         </div>
 
-        <!-- BANNER DE INTERVENCIÓN PARA EL AULA -->
+        <!-- BANNER DE INTERVENCIÓN -->
         <div class="remediation-box" id="uiPrescripcionAulaContenedor" style="display: none;">
-            <div class="remediation-title">🎯 INTERVENCIÓN DIRECTA RECOMENDADA PARA EL AULA (15 MIN)</div>
+            <div class="remediation-title">🎯 INTERVENCIÓN RECOMENDADA PARA EL AULA (15 MIN)</div>
             <p class="remediation-text" id="lblPrescripcionAulaTexto"></p>
-            <a id="btnBuscarEstrategiaWeb" target="_blank" class="btn-web-search">🔍 Explorar Didácticas Avanzadas en Web</a>
+            <a id="btnBuscarEstrategiaWeb" target="_blank" class="btn-web-search">🔍 Explorar Didácticas en Web</a>
         </div>
 
-        <!-- LAYOUT PRINCIPAL CON FILTRO DE ALERTA -->
+        <!-- LAYOUT PRINCIPAL -->
         <div class="layout-main">
             <aside class="sidebar">
                 <div class="control-panel">
-                    <div class="panel-title">Filtro Rápido de Cohorte</div>
+                    <div class="panel-title">Filtro de Cohorte</div>
                     <input type="text" id="txtBuscarEstudiante" class="input-premium" placeholder="Buscar por nombre..." oninput="ProfesorDashboard.filtrarTablaPorNombre(this.value)">
                     
                     <div class="mt-3 pt-3 border-t border-zinc-800 space-y-1">
@@ -283,14 +305,14 @@
                 </div>
 
                 <div class="control-panel hidden sm:block">
-                    <div class="panel-title">Estatus de Sesión Docente</div>
-                    <p style="font-size: 0.75rem; color: #cbd5e1; line-height: 1.4;">Protección Metacognitiva del Alumno activa. Los datos agregados y Fichas de Tutoría se actualizan en vivo.</p>
+                    <div class="panel-title">Estatus Docente</div>
+                    <p style="font-size: 0.75rem; color: #cbd5e1; line-height: 1.4;">Protección Metacognitiva del Alumno activa. Fichas de Tutoría disponibles en tiempo real.</p>
                 </div>
             </aside>
 
             <main class="workspace">
                 <div class="chart-box">
-                    <div class="panel-title" id="lblTituloRadar">Evolución Atributos ADN Cognitivo Colectivo</div>
+                    <div class="panel-title" id="lblTituloRadar">Evolución ADN Cognitivo Colectivo</div>
                     <div id="chartAdnColectivo"></div>
                 </div>
 
@@ -305,7 +327,7 @@
                                 <th>Base (θ)</th>
                                 <th>Concurrente (θ)</th>
                                 <th>Δ Delta</th>
-                                <th>Puntaje Estimado</th>
+                                <th>Puntaje Actual</th>
                             </tr>
                         </thead>
                         <tbody id="tbodyAlumnos">
@@ -609,7 +631,6 @@
                 document.getElementById("kpiTotalEstudiantes").innerText = total;
                 document.getElementById("kpiEstabilidadMedia").innerText = `${isNaN(estabilidad) ? 0 : estabilidad}%`;
                 
-                // 🚀 CÁLCULO DE PROYECCIÓN GLOBAL COHORTE SOBRE 500 PTS
                 const p500 = Math.round((puntaje100 / 100) * 500);
                 document.getElementById("kpiPuntaje500Promedio").innerText = `${isNaN(p500) ? 0 : p500} / 500 pts`;
                 document.getElementById("kpiResilienciaMedia").innerText = `${isNaN(resiliencia) ? 0 : resiliencia}%`;
