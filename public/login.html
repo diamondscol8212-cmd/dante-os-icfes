@@ -2,99 +2,153 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Dante OS // Autenticación Perimetral de Portal</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&family=JetBrains+Mono:wght@400;500;700;900&family=Oswald:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
     <style>
         :root {
-            --bg-deep: #0b0c10;
-            --bg-surface: #14161d;
-            --gold-satin: #d4af37;
-            --gold-glow: rgba(212, 175, 55, 0.15);
-            --text-main: #f0f1f5;
-            --text-muted: #9499a7;
-            --graphite: #2b2e3a;
-            --cyan-core: #51e2f5;
+            --primary: #51e2f5; 
+            --gold: #D4AF37;
+            --alert: #e74c3c;
+            --bg: #010103; 
+            --card-bg: rgba(12, 14, 22, 0.88);
+            --border-graphite: rgba(255, 255, 255, 0.08);
+            --emerald: #2ecc71;
             --purple-core: #a855f7;
-            --font-editorial: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            background-color: var(--bg-deep); color: var(--text-main); font-family: var(--font-editorial);
-            background-image: radial-gradient(circle at 50% 30%, #191c26 0%, #0b0c10 100%);
-            min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between; padding: 2.5rem; line-height: 1.6;
+        body, html { 
+            background: var(--bg); color: #f0f1f5; margin: 0; font-family: 'Outfit', sans-serif; 
+            min-height: 100vh; overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+            display: flex; flex-direction: column; justify-content: space-between;
         }
 
-        .gateway-container { display: flex; justify-content: center; align-items: center; flex-grow: 1; }
+        .font-mono { font-family: 'JetBrains Mono', monospace !important; }
+
+        /* CANVASES Y EFECTOS COGNITIVOS */
+        #dante-fractal-bg { position: fixed; inset: 0; z-index: 0; opacity: 0.18; pointer-events: none; mix-blend-mode: screen; }
+        .scanline { position: fixed; inset: 0; background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.5) 51%); background-size: 100% 4px; z-index: 1; pointer-events: none; opacity: 0.2; }
+        #fx-flash { position: fixed; inset: 0; z-index: 999999; background: var(--alert); opacity: 0; pointer-events: none; transition: opacity 0.3s; mix-blend-mode: screen; }
+
+        /* HEADER HUD PERIMETRAL RESPONSIVO */
+        .master-hud {
+            position: fixed; top: 0; width: 100%; z-index: 1000; padding: 12px 20px;
+            background: rgba(1, 1, 3, 0.95); backdrop-filter: blur(12px);
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--border-graphite);
+        }
+        .alias-title { font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; color: white; }
+        .geo-tag { font-family: 'JetBrains Mono'; font-size: 8px; color: var(--primary); letter-spacing: 1px; text-transform: uppercase; }
+
+        .gateway-container { display: flex; justify-content: center; align-items: center; flex-grow: 1; padding: 75px 15px 40px; position: relative; z-index: 10; }
+        
         .gateway-card {
-            background: var(--bg-surface); border: 1px solid var(--graphite);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); border-radius: 8px; padding: 3.5rem; width: 100%; max-width: 540px; text-align: center; position: relative;
+            background: var(--card-bg); border: 1px solid var(--border-graphite);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.95); border-radius: 14px; 
+            padding: 2rem 1.5rem; width: 100%; max-width: 520px; text-align: center; position: relative;
+            backdrop-filter: blur(24px);
         }
-        .gateway-title { font-size: 1.8rem; font-weight: 300; text-transform: uppercase; letter-spacing: 4px; color: var(--gold-satin); margin-bottom: 0.5rem; }
+        @media (min-width: 640px) { .gateway-card { padding: 3rem 2.5rem; } }
+
+        .gateway-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--gold), var(--primary)); 
+            box-shadow: 0 0 20px var(--gold); border-radius: 14px 14px 0 0;
+        }
+
+        .gateway-title { font-size: 1.6rem; font-family: 'Oswald', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; color: white; margin-bottom: 0.2rem; }
         
         .verification-banner {
-            background: rgba(168, 85, 247, 0.15); border: 1px solid var(--purple-core);
-            padding: 0.6rem; border-radius: 4px; color: var(--cyan-core); font-size: 0.8rem;
-            font-weight: bold; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 2rem;
-            box-shadow: 0 0 15px rgba(81, 226, 245, 0.1);
+            background: rgba(168, 85, 247, 0.12); border: 1px solid rgba(168, 85, 247, 0.3);
+            padding: 0.5rem; border-radius: 6px; color: var(--primary); font-size: 0.72rem;
+            font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 1.5rem;
+            box-shadow: 0 0 15px rgba(81, 226, 245, 0.12); font-family: 'JetBrains Mono';
         }
 
         .system-version-tag {
-            position: absolute; top: 1.5rem; right: 1.5rem; font-size: 0.75rem; font-weight: bold;
-            color: var(--cyan-core); letter-spacing: 1px; text-transform: uppercase;
+            position: absolute; top: 1.2rem; right: 1.2rem; font-size: 0.65rem; font-weight: 900;
+            color: var(--primary); letter-spacing: 1px; text-transform: uppercase; font-family: 'JetBrains Mono';
         }
 
-        .role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem; text-align: left; }
+        /* REJILLA DE SELECCIÓN DE ROLES TRIPARTITA */
+        .role-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; margin-top: 1.2rem; text-align: center; }
         .role-selection-card {
-            background: #1a1d26; border: 1px solid var(--graphite); border-radius: 6px; padding: 1.2rem; cursor: pointer; transition: all 0.2s ease;
+            background: rgba(20, 24, 35, 0.7); border: 1px solid var(--border-graphite); border-radius: 8px; padding: 0.8rem 0.4rem; cursor: pointer; transition: all 0.2s ease;
         }
-        .role-selection-card:hover { border-color: var(--gold-satin); background: #1f232e; }
-        .role-selection-card.active { border-color: var(--gold-satin); background: rgba(212, 175, 55, 0.04); box-shadow: 0 0 15px var(--gold-glow); }
-        .role-emoji { font-size: 1.5rem; margin-bottom: 0.4rem; display: block; }
-        .role-title { font-size: 0.85rem; font-weight: 600; text-transform: uppercase; color: #fff; letter-spacing: 1px; }
+        .role-selection-card:hover { border-color: var(--gold); background: rgba(212, 175, 55, 0.08); }
+        .role-selection-card.active { border-color: var(--gold); background: rgba(212, 175, 55, 0.15); box-shadow: 0 0 15px rgba(212, 175, 55, 0.25); }
+        .role-emoji { font-size: 1.3rem; margin-bottom: 0.2rem; display: block; }
+        .role-title { font-size: 0.68rem; font-weight: 800; text-transform: uppercase; color: #fff; letter-spacing: 0.5px; font-family: 'JetBrains Mono'; }
 
-        .input-group { text-align: left; margin-top: 1.2rem; }
-        .input-label { display: block; color: var(--text-muted); margin-bottom: 0.4rem; font-weight: 600; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; }
+        .input-group { text-align: left; margin-top: 1rem; }
+        .input-label { display: block; color: #8a8f9d; margin-bottom: 0.3rem; font-weight: 800; text-transform: uppercase; font-size: 0.68rem; letter-spacing: 1px; font-family: 'JetBrains Mono'; }
         
         .input-cyber {
-            width: 100%; padding: 1rem; background: #1a1d26; border: 1px solid var(--graphite);
-            color: #fff; border-radius: 4px; outline: none; font-size: 0.9rem; transition: all 0.2s;
+            width: 100%; padding: 0.85rem; background: rgba(10, 10, 15, 0.9); border: 1px solid var(--border-graphite);
+            color: #fff; border-radius: 6px; outline: none; font-size: 0.82rem; transition: all 0.2s; font-family: 'JetBrains Mono';
         }
-        .input-cyber:focus { border-color: var(--gold-satin); box-shadow: 0 0 10px rgba(212, 175, 55, 0.2); }
+        .input-cyber:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(81, 226, 245, 0.2); }
 
         .btn-premium {
-            width: 100%; padding: 1.2rem; background: transparent; border: 1px solid var(--gold-satin);
-            color: var(--gold-satin); font-weight: 600; text-transform: uppercase; letter-spacing: 2px;
-            border-radius: 4px; cursor: pointer; transition: all 0.3s ease; margin-top: 2rem;
+            width: 100%; padding: 0.95rem; background: rgba(212, 175, 55, 0.1); border: 1px solid var(--gold);
+            color: var(--gold); font-weight: 900; text-transform: uppercase; letter-spacing: 2px;
+            border-radius: 8px; cursor: pointer; transition: all 0.25s ease; margin-top: 1.5rem;
+            font-size: 0.78rem; font-family: 'JetBrains Mono';
         }
-        .btn-premium:hover { background: var(--gold-satin); color: var(--bg-deep); box-shadow: 0 0 20px var(--gold-glow); }
-        .btn-premium:disabled { border-color: var(--graphite); color: var(--text-muted); cursor: not-allowed; }
+        .btn-premium:hover { background: var(--gold); color: #000; box-shadow: 0 0 25px rgba(212, 175, 55, 0.4); }
+        .btn-premium:disabled { border-color: var(--border-graphite); color: #8a8f9d; cursor: not-allowed; }
 
-        footer { text-align: center; font-size: 10px; font-mono: true; color: #2b2e3a; letter-spacing: 1px; text-transform: uppercase; }
+        footer { text-align: center; padding: 15px; font-size: 9px; color: #8a8f9d; letter-spacing: 1px; text-transform: uppercase; font-family: 'JetBrains Mono'; position: relative; z-index: 10; }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false;">
+
+    <div id="fx-flash"></div>
+    <div class="scanline"></div>
+    <canvas id="dante-fractal-bg"></canvas>
+
+    <!-- HEADER HUD PERIMETRAL -->
+    <header class="master-hud">
+        <div>
+            <div class="alias-title" data-final="DANTE OS // AUTENTICACIÓN">DANTE OS // AUTENTICACIÓN</div>
+            <div class="geo-tag" id="ui-geo">BOGOTÁ, COLOMBIA</div>
+        </div>
+        <div class="text-right">
+            <div class="text-xs font-black italic text-white font-mono">MODO <span class="text-[#D4AF37]">ENTERPRISE</span></div>
+        </div>
+    </header>
 
     <div class="gateway-container">
         <div class="gateway-card">
-            <div class="system-version-tag">GATEWAY: v20.6.3</div>
+            <div class="system-version-tag">v20.6.3</div>
             <div class="verification-banner">> AUTENTICACIÓN PERIMETRAL CORE</div>
             
-            <h1 class="gateway-title">Dante OS</h1>
-            <p style="font-size: 0.75rem; font-family: monospace; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">Pasarela de Verificación PBKDF2 & Multi-Tenancy</p>
+            <h1 class="gateway-title" data-final="PASARELA DE ACCESO">PASARELA DE ACCESO</h1>
+            <p style="font-size: 0.72rem; color: #8a8f9d; text-transform: uppercase; letter-spacing: 1px;" class="font-mono">Verificación PBKDF2 & Multi-Tenancy</p>
 
             <div class="role-grid">
                 <div id="cardRoleEstudiante" class="role-selection-card active" onclick="PortalAuth.seleccionarRol('estudiante')">
                     <span class="role-emoji">🧠</span>
-                    <div class="role-title">Sala Alumno</div>
+                    <div class="role-title">Alumno</div>
+                </div>
+                <div id="cardRoleProfesor" class="role-selection-card" onclick="PortalAuth.seleccionarRol('profesor')">
+                    <span class="role-emoji">👨‍🏫</span>
+                    <div class="role-title">Docente</div>
                 </div>
                 <div id="cardRoleRector" class="role-selection-card" onclick="PortalAuth.seleccionarRol('rector')">
                     <span class="role-emoji">🏛️</span>
-                    <div class="role-title">Suite Rector</div>
+                    <div class="role-title">Rector</div>
                 </div>
             </div>
 
-            <div class="input-group" style="margin-top: 1.8rem;">
+            <div class="input-group" style="margin-top: 1.5rem;">
                 <label class="input-label">ID de Institución (Tenant)</label>
                 <input type="text" id="txtInstitutionId" class="input-cyber" value="colegio_sandbox_default" placeholder="colegio_id">
             </div>
@@ -119,20 +173,22 @@
 
     <script>
         const HOST_URL = window.location.origin;
-        let SelectedRoleTarget = "estudiante"; // Rol por defecto en el arranque en frío
+        let SelectedRoleTarget = "estudiante";
 
         class PortalAuth {
             static seleccionarRol(rol) {
                 SelectedRoleTarget = rol;
                 document.getElementById("cardRoleEstudiante").classList.remove("active");
+                document.getElementById("cardRoleProfesor").classList.remove("active");
                 document.getElementById("cardRoleRector").classList.remove("active");
 
                 if (rol === "estudiante") {
                     document.getElementById("cardRoleEstudiante").classList.add("active");
+                } else if (rol === "profesor") {
+                    document.getElementById("cardRoleProfesor").classList.add("active");
                 } else {
                     document.getElementById("cardRoleRector").classList.add("active");
                 }
-                console.log(`🔒 [ROLE SELECTION CHANGED]: Objetivo alterado a -> [${rol.toUpperCase()}]`);
             }
 
             static async ejecutarLoginPerimetral() {
@@ -156,20 +212,18 @@
                         body: JSON.stringify({
                             email: email,
                             password: password,
-                            institution_id: institutionId
+                            institution_id: institutionId,
+                            role_target: SelectedRoleTarget
                         })
                     });
 
                     const json = await res.json();
 
                     if (json && json.success) {
-                        // 🪐 PERSISTENCIA DE CONTROL COMPATIBLE CON index.html Y rector.html
                         localStorage.setItem("dante_token", json.token_session);
                         localStorage.setItem("dante_user", JSON.stringify(json.user));
 
-                        console.log("✅ [AUTENTICACIÓN EXITOSA]: Contextos inyectados localmente en caché.");
-                        
-                        // Redirección inteligente dictaminada directamente por el rol de Supabase
+                        console.log("✅ [AUTENTICACIÓN EXITOSA]: Contextos inyectados localmente.");
                         window.location.href = json.redireccion;
                     } else {
                         alert(`❌ ACCESO DENEGADO PERIMETRAL:\n\n${json.error || "Credenciales inválidas."}`);
@@ -184,6 +238,66 @@
                 }
             }
         }
+
+        /* ANIMACIÓN DESENCRIPTADO Y ESPIRAL FIBONACCI */
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*";
+        function decryptText() {
+            const elements = document.querySelectorAll('[data-final]');
+            elements.forEach((el, index) => {
+                const finalStr = el.getAttribute('data-final');
+                if (!finalStr) return;
+                let iterations = 0; const maxIterations = 10 + (index * 2); 
+
+                const interval = setInterval(() => {
+                    let randomStr = finalStr.split('').map((char, i) => {
+                        if(char === ' ') return ' ';
+                        if(i < (iterations / maxIterations) * finalStr.length) return finalStr[i];
+                        return chars[Math.floor(Math.random() * chars.length)];
+                    }).join('');
+                    el.innerText = randomStr; iterations++;
+                    if (iterations >= maxIterations) { clearInterval(interval); el.innerText = finalStr; }
+                }, 30);
+            });
+        }
+
+        const bgCanvas = document.getElementById('dante-fractal-bg'); 
+        const bgCtx = bgCanvas ? bgCanvas.getContext('2d') : null;
+        let qParticles = [];
+
+        function initCanvas() {
+            if (!bgCanvas || !bgCtx) return;
+            bgCanvas.width = window.innerWidth; bgCanvas.height = window.innerHeight;
+
+            for(let i=0; i<60; i++) {
+                qParticles.push({ 
+                    x: bgCanvas.width/2, 
+                    y: bgCanvas.height/2, 
+                    s: Math.random() * 1.5, 
+                    v: Math.random()*0.35 + 0.1, 
+                    angle: i * 137.5 * (Math.PI / 180), 
+                    dist: 0 
+                });
+            }
+            animateCanvas();
+        }
+
+        function animateCanvas() {
+            if (!bgCtx) return;
+            bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+            qParticles.forEach(p => {
+                p.dist += p.v; 
+                let x = bgCanvas.width/2 + Math.cos(p.angle) * p.dist; 
+                let y = bgCanvas.height/2 + Math.sin(p.angle) * p.dist;
+                if(x < 0 || x > bgCanvas.width || y < 0 || y > bgCanvas.height) p.dist = 0;
+                bgCtx.beginPath(); bgCtx.arc(x, y, p.s, 0, Math.PI*2); bgCtx.fillStyle = '#51e2f5'; bgCtx.globalAlpha = 0.22; bgCtx.fill();
+            });
+            requestAnimationFrame(animateCanvas);
+        }
+
+        window.onload = () => {
+            initCanvas();
+            setTimeout(decryptText, 300);
+        };
     </script>
 </body>
 </html>
