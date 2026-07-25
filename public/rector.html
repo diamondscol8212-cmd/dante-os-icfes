@@ -2,364 +2,316 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Dante OS // Suite de Observabilidad del Rector</title>
+
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&family=JetBrains+Mono:wght@400;500;700;900&family=Oswald:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
     <style>
         :root {
-            --bg-deep: #08090c;
-            --bg-surface: rgba(20, 22, 29, 0.85);
-            --bg-card: rgba(26, 29, 38, 0.85);
-            --gold-satin: #d4af37;
-            --gold-glow: rgba(212, 175, 55, 0.2);
-            --text-main: #f0f1f5;
-            --text-muted: #9499a7;
-            --graphite: rgba(255, 255, 255, 0.08);
+            --primary: #51e2f5; 
+            --gold: #D4AF37;
+            --alert: #e74c3c;
+            --bg: #010103; 
+            --card-bg: rgba(12, 14, 22, 0.88);
+            --border-graphite: rgba(255, 255, 255, 0.08);
             --emerald: #2ecc71;
-            --crimson: #e74c3c;
-            --cyan-core: #51e2f5;
-            --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-            --font-mono: 'JetBrains Mono', monospace;
+            --purple-core: #a855f7;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            background-color: var(--bg-deep); 
-            color: var(--text-main); 
-            font-family: var(--font-main);
-            background-image: radial-gradient(circle at 50% 20%, #171a26 0%, #08090c 100%);
-            min-height: 100vh; 
-            padding: 1.25rem; 
-            line-height: 1.6;
-            overflow-x: hidden;
+        body, html { 
+            background: var(--bg); color: #f0f1f5; margin: 0; font-family: 'Outfit', sans-serif; 
+            min-height: 100vh; overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
         }
-        @media (min-width: 768px) { body { padding: 2.5rem; } }
 
-        .font-mono { font-family: var(--font-mono) !important; }
+        .font-mono { font-family: 'JetBrains Mono', monospace !important; }
 
-        header {
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
-            border-bottom: 1px solid var(--graphite); 
-            padding-bottom: 1.5rem; 
-            margin-bottom: 2rem;
-            flex-wrap: wrap; 
-            gap: 1rem;
+        /* CANVASES Y EFECTOS COGNITIVOS */
+        #dante-fractal-bg { position: fixed; inset: 0; z-index: 0; opacity: 0.18; pointer-events: none; mix-blend-mode: screen; }
+        .scanline { position: fixed; inset: 0; background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.5) 51%); background-size: 100% 4px; z-index: 1; pointer-events: none; opacity: 0.2; }
+        #fx-flash { position: fixed; inset: 0; z-index: 999999; background: var(--alert); opacity: 0; pointer-events: none; transition: opacity 0.3s; mix-blend-mode: screen; }
+
+        /* HEADER HUD PERIMETRAL RESPONSIVO */
+        .master-hud {
+            position: fixed; top: 0; width: 100%; z-index: 1000; padding: 10px 16px;
+            background: rgba(1, 1, 3, 0.95); backdrop-filter: blur(12px);
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--border-graphite);
+        }
+        .alias-title { font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; color: white; margin-bottom: 1px;}
+        .geo-tag { font-family: 'JetBrains Mono'; font-size: 8px; color: var(--primary); letter-spacing: 1px; text-transform: uppercase; }
+
+        .suite-viewport {
+            position: relative; z-index: 10;
+            padding: 75px 12px 40px; max-width: 1400px; margin: 0 auto;
         }
 
         .live-indicator {
-            display: flex; 
-            align-items: center; 
-            gap: 0.5rem; 
-            font-size: 0.72rem;
-            font-family: var(--font-mono);
-            text-transform: uppercase; 
-            color: var(--emerald); 
-            letter-spacing: 1px;
-            background: rgba(46, 204, 113, 0.1); 
-            padding: 0.4rem 1rem; 
-            border-radius: 9999px; 
-            border: 1px solid rgba(46, 204, 113, 0.3);
-            backdrop-filter: blur(8px);
+            display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.65rem;
+            font-family: 'JetBrains Mono'; text-transform: uppercase; color: var(--emerald);
+            background: rgba(46, 204, 113, 0.1); padding: 0.3rem 0.6rem;
+            border-radius: 9999px; border: 1px solid rgba(46, 204, 113, 0.3);
         }
-        .pulse-dot { width: 8px; height: 8px; background: var(--emerald); border-radius: 50%; animation: pulse 1.5s infinite; }
+        .pulse-dot { width: 6px; height: 6px; background: var(--emerald); border-radius: 50%; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
 
-        .materia-tabs { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+        /* PESTAÑAS MATERIAS SLIDER OCULTO */
+        .materia-tabs { display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
+        .materia-tabs::-webkit-scrollbar { display: none; }
+        
         .tab-btn {
-            background: rgba(26, 29, 38, 0.6); 
-            border: 1px solid var(--graphite); 
-            color: var(--text-muted);
-            padding: 0.6rem 1.1rem; 
-            border-radius: 6px; 
-            cursor: pointer; 
-            text-transform: uppercase;
-            font-size: 0.72rem; 
-            font-weight: 700; 
-            letter-spacing: 1px;
-            transition: all 0.25s ease;
-            backdrop-filter: blur(8px);
-            font-family: var(--font-mono);
-            white-space: nowrap;
+            background: rgba(20, 24, 35, 0.7); border: 1px solid var(--border-graphite); color: #8a8f9d;
+            padding: 0.5rem 0.9rem; border-radius: 8px; cursor: pointer; text-transform: uppercase;
+            font-size: 0.68rem; font-weight: 800; letter-spacing: 1px; transition: all 0.25s ease;
+            backdrop-filter: blur(8px); font-family: 'JetBrains Mono'; white-space: nowrap; flex-shrink: 0;
         }
-        .tab-btn.active { 
-            border-color: var(--gold-satin); 
-            color: var(--gold-satin); 
-            background: rgba(212, 175, 55, 0.12); 
-            box-shadow: 0 0 15px var(--gold-glow);
+        .tab-btn.active {
+            border-color: var(--gold); color: var(--gold);
+            background: rgba(212, 175, 55, 0.12); box-shadow: 0 0 15px rgba(212, 175, 55, 0.25);
         }
 
-        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.25rem; margin-bottom: 2rem; }
+        /* GRID DE KPIS RECTOR */
+        .kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 1.2rem; }
+        @media (min-width: 768px) { .kpi-grid { grid-template-columns: repeat(4, 1fr); gap: 1.25rem; } }
+        
         .kpi-card { 
-            background: var(--bg-surface); 
-            border: 1px solid var(--graphite); 
-            padding: 1.5rem; 
-            border-radius: 12px;
-            backdrop-filter: blur(12px);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-            transition: transform 0.2s ease, border-color 0.2s ease;
+            background: var(--card-bg); border: 1px solid var(--border-graphite);
+            padding: 1rem; border-radius: 12px; backdrop-filter: blur(16px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
         }
-        .kpi-card:hover { transform: translateY(-3px); border-color: rgba(212, 175, 55, 0.4); }
-        .kpi-card.gold-premium { border: 1px solid var(--gold-satin); box-shadow: 0 0 20px var(--gold-glow); }
-        .kpi-val { 
-            font-size: 1.75rem !important; 
-            font-weight: 600; 
-            font-family: var(--font-mono) !important; 
-            color: var(--gold-satin); 
-            margin-top: 0.4rem; 
-            white-space: nowrap !important;
+        .kpi-card.gold-premium { border: 1px solid var(--gold); box-shadow: 0 0 15px rgba(212,175,55,0.2); }
+        .kpi-val { font-size: 1.4rem !important; font-weight: 900; font-family: 'JetBrains Mono' !important; color: var(--gold); margin-top: 0.2rem; white-space: nowrap !important; }
+        @media (min-width: 768px) { .kpi-val { font-size: 1.8rem !important; } }
+
+        /* PRESCRIPCIÓN RECTOR */
+        .remediation-box {
+            background: linear-gradient(135deg, rgba(20, 27, 45, 0.88) 0%, rgba(13, 17, 26, 0.95) 100%);
+            border: 1px solid rgba(81, 226, 245, 0.3); border-left: 4px solid var(--gold);
+            border-radius: 12px; padding: 1rem 1.2rem; margin-bottom: 1.2rem;
+            backdrop-filter: blur(16px);
+        }
+        .remediation-title { 
+            font-size: 0.75rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; 
+            color: var(--gold); margin-bottom: 0.4rem; font-family: 'JetBrains Mono';
+        }
+        .remediation-text { font-size: 0.82rem; color: #d1d5db; text-align: justify; line-height: 1.5; }
+        .btn-web-search {
+            display: inline-block; margin-top: 0.6rem; padding: 0.45rem 0.8rem; background: rgba(81,226,245,0.1); 
+            border: 1px solid var(--primary); color: var(--primary); text-transform: uppercase; 
+            font-size: 0.65rem; font-weight: 800; letter-spacing: 1px; border-radius: 6px; cursor: pointer; text-decoration: none;
+            font-family: 'JetBrains Mono';
         }
 
-        .layout-main { display: grid; grid-template-columns: 320px 1fr; gap: 2rem; }
-        @media (max-width: 990px) { .layout-main { grid-template-columns: 1fr; } }
-        
-        .sidebar { display: flex; flex-direction: column; gap: 1.5rem; }
-        
+        /* LAYOUT PRINCIPAL */
+        .layout-main { display: grid; grid-template-columns: 1fr; gap: 1.2rem; }
+        @media (min-width: 990px) { .layout-main { grid-template-columns: 300px 1fr; gap: 1.5rem; } }
+
+        .sidebar { display: flex; flex-direction: column; gap: 1rem; }
         .control-panel { 
-            background: var(--bg-surface); 
-            border: 1px solid var(--graphite); 
-            border-radius: 12px; 
-            padding: 1.5rem;
-            backdrop-filter: blur(12px);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            background: var(--card-bg); border: 1px solid var(--border-graphite); 
+            border-radius: 12px; padding: 1rem; backdrop-filter: blur(16px);
         }
         .panel-title { 
-            font-size: 0.8rem; 
-            font-weight: 700; 
-            text-transform: uppercase; 
-            color: var(--gold-satin); 
-            margin-bottom: 1rem; 
-            letter-spacing: 1px;
-            font-family: var(--font-mono);
+            font-size: 0.75rem; font-weight: 900; text-transform: uppercase; color: var(--gold); 
+            margin-bottom: 0.6rem; letter-spacing: 1px; font-family: 'JetBrains Mono';
         }
 
         .btn-action {
-            width: 100%; 
-            padding: 0.85rem; 
-            background: transparent; 
-            border: 1px solid var(--crimson);
-            color: var(--crimson); 
-            font-weight: 700; 
-            text-transform: uppercase; 
-            font-size: 0.72rem;
-            letter-spacing: 1px; 
-            border-radius: 6px; 
-            cursor: pointer; 
-            transition: all 0.25s ease;
-            font-family: var(--font-mono);
+            width: 100%; padding: 0.7rem; background: transparent; 
+            border: 1px solid var(--alert); color: var(--alert); 
+            font-weight: 800; text-transform: uppercase; font-size: 0.68rem;
+            letter-spacing: 1px; border-radius: 6px; cursor: pointer; transition: all 0.25s ease;
+            font-family: 'JetBrains Mono';
         }
-        .btn-action:hover { background: var(--crimson); color: #fff; box-shadow: 0 0 15px rgba(231, 76, 60, 0.4); }
+        .btn-action:hover { background: var(--alert); color: #fff; box-shadow: 0 0 15px rgba(231, 76, 60, 0.4); }
 
-        .input-premium {
-            width: 100%; 
-            padding: 0.8rem; 
-            background: rgba(13, 15, 23, 0.8); 
-            border: 1px solid var(--graphite);
-            color: #fff; 
-            border-radius: 6px; 
-            outline: none; 
-            font-size: 0.85rem; 
-            margin-bottom: 0.8rem;
-            font-family: var(--font-mono);
-        }
-        .input-premium:focus { border-color: var(--cyan-core); }
-
-        select.select-premium {
-            width: 100%; 
-            padding: 0.8rem; 
-            background: rgba(13, 15, 23, 0.8); 
-            border: 1px solid var(--graphite);
-            color: var(--gold-satin); 
-            border-radius: 6px; 
-            outline: none; 
-            font-size: 0.82rem; 
-            font-weight: 700; 
-            margin-bottom: 0.8rem;
-            font-family: var(--font-mono);
+        .input-premium, select.select-premium {
+            width: 100%; padding: 0.65rem; background: rgba(10, 10, 15, 0.9); 
+            border: 1px solid var(--border-graphite); color: #fff; border-radius: 6px; 
+            outline: none; font-size: 0.8rem; font-family: 'JetBrains Mono'; margin-bottom: 0.6rem;
         }
 
         .chart-box { 
-            background: var(--bg-surface); 
-            border: 1px solid var(--graphite); 
-            border-radius: 12px; 
-            padding: 1.5rem; 
-            margin-bottom: 2rem;
-            backdrop-filter: blur(12px);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            background: var(--card-bg); border: 1px solid var(--border-graphite); 
+            border-radius: 12px; padding: 1rem; margin-bottom: 1.2rem; backdrop-filter: blur(16px);
         }
         
+        /* CONTENEDOR DE TABLA CON SCROLL HORIZONTAL */
         .table-container { 
-            background: var(--bg-surface); 
-            border: 1px solid var(--graphite); 
-            border-radius: 12px; 
-            overflow-x: auto;
-            backdrop-filter: blur(12px);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            background: var(--card-bg); border: 1px solid var(--border-graphite); 
+            border-radius: 12px; overflow-x: auto; -webkit-overflow-scrolling: touch;
+            width: 100%;
         }
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        th { 
-            background: rgba(26, 29, 38, 0.9); 
-            color: var(--gold-satin); 
-            text-transform: uppercase; 
-            font-size: 0.7rem; 
-            letter-spacing: 1px; 
-            padding: 1.1rem; 
-            border-bottom: 1px solid var(--graphite);
-            font-family: var(--font-mono);
-            white-space: nowrap;
-        }
-        td { padding: 1.1rem; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.85rem; vertical-align: top; }
-        tr:hover { background: rgba(255,255,255,0.02); }
-
-        .badge-delta { font-weight: bold; padding: 0.2rem 0.6rem; border-radius: 9999px; font-size: 0.75rem; font-family: var(--font-mono); display: inline-block; }
-        .delta-sube { background: rgba(46, 204, 113, 0.12); border: 1px solid rgba(46, 204, 113, 0.3); color: var(--emerald); }
-        .delta-baja { background: rgba(231, 76, 60, 0.12); border: 1px solid rgba(231, 76, 60, 0.3); color: var(--crimson); }
         
-        .forensic-text-box { font-size: 0.82rem; color: #cbd5e1; margin-top: 0.4rem; padding-left: 0.8rem; border-left: 2px solid var(--gold-satin); text-align: justify; }
-        .clinical-badge { display: inline-block; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; padding: 0.15rem 0.5rem; border-radius: 4px; margin-top: 0.4rem; margin-right: 0.5rem; font-family: var(--font-mono); }
+        table { width: 100%; border-collapse: collapse; text-align: left; min-width: 800px; }
+        th { 
+            background: rgba(10, 10, 15, 0.95); color: var(--gold); 
+            text-transform: uppercase; font-size: 0.65rem; letter-spacing: 1px; 
+            padding: 0.85rem; border-bottom: 1px solid var(--border-graphite);
+            font-family: 'JetBrains Mono'; white-space: nowrap; font-weight: 900;
+        }
+        td { padding: 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.8rem; vertical-align: top; }
 
-        .mini-heatmap-bar { background: rgba(0,0,0,0.5); height: 6px; border-radius: 3px; overflow: hidden; margin-top: 0.3rem; width: 110px; border: 1px solid var(--graphite); }
+        .badge-delta { font-weight: 900; padding: 0.15rem 0.5rem; border-radius: 9999px; font-size: 0.72rem; font-family: 'JetBrains Mono'; }
+        .delta-sube { background: rgba(46, 204, 113, 0.12); border: 1px solid rgba(46, 204, 113, 0.3); color: var(--emerald); }
+        .delta-baja { background: rgba(231, 76, 60, 0.12); border: 1px solid rgba(231, 76, 60, 0.3); color: var(--alert); }
+
+        .mini-heatmap-bar { background: rgba(0,0,0,0.5); height: 5px; border-radius: 3px; overflow: hidden; margin-top: 0.2rem; width: 100px; border: 1px solid var(--border-graphite); }
         .mini-heatmap-fill { height: 100%; border-radius: 3px; }
 
-        .clinical-alert-box {
-            background: rgba(231, 76, 60, 0.08); 
-            border: 1px solid rgba(231, 76, 60, 0.4);
-            border-left: 4px solid var(--crimson); 
-            border-radius: 8px; 
-            padding: 1.2rem;
-            margin-bottom: 1rem; 
-            backdrop-filter: blur(8px);
-        }
-        .clinical-alert-title { font-size: 0.75rem; font-weight: 800; color: var(--crimson); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.3rem; font-family: var(--font-mono); }
-        .clinical-alert-body { font-size: 0.82rem; color: #cbd5e1; text-align: justify; line-height: 1.4; }
-
-        .remediation-box {
-            background: linear-gradient(135deg, rgba(20, 27, 45, 0.85) 0%, rgba(13, 17, 26, 0.9) 100%);
-            border: 1px solid rgba(81, 226, 245, 0.3); 
-            border-left: 4px solid var(--gold-satin);
-            border-radius: 12px; 
-            padding: 1.5rem; 
-            margin-bottom: 2rem;
-            backdrop-filter: blur(12px);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-        }
-        .remediation-title { font-size: 0.88rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--gold-satin); margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.5rem; font-family: var(--font-mono); }
-        .remediation-text { font-size: 0.85rem; color: #d1d5db; text-align: justify; line-height: 1.6; }
-        .btn-web-search {
-            display: inline-block; margin-top: 1rem; padding: 0.5rem 1rem; background: transparent; 
-            border: 1px solid var(--cyan-core); color: var(--cyan-core); text-transform: uppercase; 
-            font-size: 0.72rem; font-weight: bold; letter-spacing: 1px; border-radius: 6px; cursor: pointer; text-decoration: none; transition: all 0.25s ease;
-            font-family: var(--font-mono);
-        }
-        .btn-web-search:hover { background: var(--cyan-core); color: var(--bg-deep); box-shadow: 0 0 12px rgba(81, 226, 245, 0.4); }
-
         .btn-gemelo-link {
-            display: inline-block;
-            margin-top: 8px;
-            padding: 5px 10px;
-            background: rgba(212, 175, 55, 0.1);
-            border: 1px solid var(--gold-satin);
-            color: var(--gold-satin);
-            border-radius: 6px;
-            font-size: 0.68rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            text-decoration: none;
-            transition: all 0.2s ease;
-            font-family: var(--font-mono);
+            display: inline-block; margin-top: 5px; padding: 4px 8px;
+            background: rgba(212, 175, 55, 0.1); border: 1px solid var(--gold);
+            color: var(--gold); border-radius: 6px; font-size: 0.62rem; font-weight: 800;
+            text-transform: uppercase; text-decoration: none; transition: all 0.2s ease; font-family: 'JetBrains Mono';
         }
-        .btn-gemelo-link:hover {
-            background: var(--gold-satin);
-            color: #000;
-            box-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+        .btn-gemelo-link:hover { background: var(--gold); color: #000; box-shadow: 0 0 10px rgba(212, 175, 55, 0.4); }
+
+        .clinical-alert-box {
+            background: rgba(231, 76, 60, 0.08); border: 1px solid rgba(231, 76, 60, 0.4);
+            border-left: 4px solid var(--alert); border-radius: 8px; padding: 0.85rem; margin-bottom: 0.8rem;
+        }
+        .clinical-alert-title { font-size: 0.72rem; font-weight: 900; color: var(--alert); text-transform: uppercase; font-family: 'JetBrains Mono'; }
+        .clinical-alert-body { font-size: 0.78rem; color: #cbd5e1; line-height: 1.4; margin-top: 0.2rem; }
+
+        @media print {
+            .master-hud, .sidebar, .materia-tabs, .btn-gemelo-link, .btn-web-search { display: none !important; }
+            .suite-viewport { padding: 0 !important; max-width: 100% !important; }
+            body { background: #fff !important; color: #000 !important; }
+            .kpi-card, .remediation-box, .chart-box, .table-container { border: 1px solid #ccc !important; box-shadow: none !important; background: #fff !important; color: #000 !important; }
+            .kpi-val, .panel-title, th { color: #000 !important; }
         }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false;">
 
-    <header>
+    <div id="fx-flash"></div>
+    <div class="scanline"></div>
+    <canvas id="dante-fractal-bg"></canvas>
+
+    <!-- HEADER HUD SUPERIOR RECTOR -->
+    <header class="master-hud">
         <div>
-            <h1 style="font-weight: 300; letter-spacing: 2px; color: var(--gold-satin); font-size: 1.5rem;">DANTE OS // SUITE DE OBSERVABILIDAD</h1>
-            <p id="lblVersionTag" style="color: var(--cyan-core); font-size: 0.78rem; text-transform: uppercase; margin-top: 0.2rem; font-weight: bold; letter-spacing: 1px;" class="font-mono">CONECTADO A ENGINE: v20.6.3-FIX_MASTER</p>
+            <div class="alias-title" data-final="DANTE OS // SUITE DE OBSERVABILIDAD">DANTE OS // SUITE DE OBSERVABILIDAD</div>
+            <div class="geo-tag" id="ui-geo">BOGOTÁ, COLOMBIA</div>
         </div>
-        <div class="materia-tabs">
-            <button class="tab-btn active" data-materia="diagnostico_general" onclick="RectorDashboard.cambiarMateria('diagnostico_general', this)">Diagnóstico General</button>
-            <button class="tab-btn" data-materia="matematicas" onclick="RectorDashboard.cambiarMateria('matematicas', this)">Matemáticas</button>
-            <button class="tab-btn" data-materia="lectura_critica" onclick="RectorDashboard.cambiarMateria('lectura_critica', this)">Lectura Crítica</button>
-            <button class="tab-btn" data-materia="ciencias_naturales" onclick="RectorDashboard.cambiarMateria('ciencias_naturales', this)">Ciencias Naturales</button>
-            <button class="tab-btn" data-materia="ingles" onclick="RectorDashboard.cambiarMateria('ingles', this)">Inglés</button>
+
+        <div class="flex items-center gap-2">
+            <div class="live-indicator id="uiStatusStream" hidden sm:inline-flex><div class="pulse-dot"></div>Stream Activo</div>
+            
+            <a href="/index.html" class="px-2.5 py-1 bg-[#181b26] hover:bg-zinc-800 border border-zinc-700 text-slate-200 rounded text-[10px] font-mono font-bold uppercase tracking-wider transition-all">
+                ⚡ Simulador
+            </a>
+
+            <div class="text-right pl-2 border-l border-zinc-800">
+                <div class="text-xs font-black italic text-white font-mono">MODO <span class="text-[#D4AF37]">ENTERPRISE</span></div>
+                <div class="font-mono text-[8px] text-zinc-400 uppercase" id="lblTenantBannerHeader">TENANT: DEFAULT</div>
+            </div>
         </div>
-        <div class="live-indicator" id="uiStatusStream"><div class="pulse-dot"></div>Stream Activo</div>
     </header>
 
-    <div class="kpi-grid">
-        <div class="kpi-card"><p style="font-size: 0.72rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;" class="font-mono">Estudiantes Auditados</p><div class="kpi-val" id="kpiTotalEstudiantes">0</div></div>
-        <div class="kpi-card"><p style="font-size: 0.72rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;" class="font-mono">Estabilidad Cognitiva Media</p><div class="kpi-val" id="kpiEstabilidadMedia">0%</div></div>
-        <div class="kpi-card"><p style="font-size: 0.72rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700;" class="font-mono">Puntaje Equivalente Promedio</p><div class="kpi-val" id="kpiPuntajePromedio">0 / 100 pts</div></div>
-        <div class="kpi-card gold-premium"><p style="font-size: 0.72rem; text-transform: uppercase; color: var(--gold-satin); font-weight: 700; letter-spacing: 0.5px;" class="font-mono">Índice Resiliencia (Destrabados)</p><div class="kpi-val" id="kpiResilienciaMedia" style="color: #fff; font-weight: bold;">0%</div></div>
-    </div>
-
-    <div class="remediation-box" id="uiPrescripcionAulaContenedor" style="display: none;">
-        <div class="remediation-title">🎯 INTERVENCIÓN DIRECTA RECOMENDADA PARA EL AULA (CLASE DE 15 MINUTOS)</div>
-        <p class="remediation-text" id="lblPrescripcionAulaTexto"></p>
-        <a id="btnBuscarEstrategiaWeb" target="_blank" class="btn-web-search">🔍 Explorar Didácticas Avanzadas en la Web</a>
-    </div>
-
-    <div class="layout-main">
-        <aside class="sidebar">
-            <div id="uiAlertasContenedor"></div>
-
-            <div class="control-panel">
-                <div class="panel-title">Línea de Tiempo Épocas</div>
-                <select id="selEpocaHistorica" class="select-premium" onchange="RectorDashboard.cambiarEpocaFiltro(this.value)">
-                    <option value="LIVE_NOW">🟢 ÉPOCA VIVA (REDIS RUNTIME)</option>
-                </select>
-                <button id="btnExportarPDF" class="btn-action" style="border-color: var(--gold-satin); color: var(--gold-satin); display: none; margin-top: 0.8rem;" onclick="RectorDashboard.descargarReporteClinico()">📁 Exportar Reporte PDF</button>
+    <div class="suite-viewport">
+        <!-- BARRA DE SELECCIÓN DE MATERIAS & EXPORTACIÓN -->
+        <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+            <div class="materia-tabs">
+                <button class="tab-btn active" data-materia="diagnostico_general" onclick="RectorDashboard.cambiarMateria('diagnostico_general', this)">🌐 Diagnóstico General</button>
+                <button class="tab-btn" data-materia="matematicas" onclick="RectorDashboard.cambiarMateria('matematicas', this)">📐 Matemáticas</button>
+                <button class="tab-btn" data-materia="lectura_critica" onclick="RectorDashboard.cambiarMateria('lectura_critica', this)">📖 Lectura Crítica</button>
+                <button class="tab-btn" data-materia="ciencias_naturales" onclick="RectorDashboard.cambiarMateria('ciencias_naturales', this)">🧪 Ciencias Naturales</button>
+                <button class="tab-btn" data-materia="ingles" onclick="RectorDashboard.cambiarMateria('ingles', this)">🇬🇧 Inglés</button>
             </div>
 
-            <div class="control-panel">
-                <div class="panel-title">Mandos de Épocas</div>
-                <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 1.2rem;">Guarda una instantánea inmutable en Supabase antes de vaciar las llaves volátiles de Redis.</p>
-                <button class="btn-action" onclick="RectorDashboard.ejecutarCierreEpoca()">🚨 Purgar y Guardar Reporte</button>
-            </div>
+            <button onclick="window.print()" class="px-3 py-1 bg-amber-500/10 border border-[#D4AF37] text-[#D4AF37] rounded text-[10px] font-mono font-bold uppercase tracking-wider hover:bg-[#D4AF37] hover:text-black transition">
+                📄 Exportar Informe Institucional (PDF)
+            </button>
+        </div>
 
-            <div class="control-panel">
-                <div class="panel-title">Cohorte Nominal</div>
-                <input type="text" id="txtNuevoAlumno" class="input-premium" placeholder="Identificador alumno...">
-                <button class="btn-action" style="border-color: var(--cyan-core); color: var(--cyan-core);" onclick="RectorDashboard.matricularEstudiante()">+ Matricular en Cohorte</button>
+        <!-- METRICAS DE AULA RECTOR (PROYECCIÓN A 500 PTS) -->
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <p style="font-size: 0.65rem; text-transform: uppercase; color: #8a8f9d; font-weight: 800;" class="font-mono">Estudiantes Auditados</p>
+                <div class="kpi-val" id="kpiTotalEstudiantes">0</div>
             </div>
-        </aside>
+            <div class="kpi-card">
+                <p style="font-size: 0.65rem; text-transform: uppercase; color: #8a8f9d; font-weight: 800;" class="font-mono">Estabilidad Cognitiva Media</p>
+                <div class="kpi-val" id="kpiEstabilidadMedia">0%</div>
+            </div>
+            <div class="kpi-card gold-premium">
+                <p style="font-size: 0.65rem; text-transform: uppercase; color: var(--gold); font-weight: 800;" class="font-mono">Proyección Institucional (500 Pts)</p>
+                <div class="kpi-val" id="kpiPuntaje500Promedio" style="color: var(--gold);">0 / 500 pts</div>
+            </div>
+            <div class="kpi-card">
+                <p style="font-size: 0.65rem; text-transform: uppercase; color: #8a8f9d; font-weight: 800;" class="font-mono">Resiliencia (IRI)</p>
+                <div class="kpi-val" id="kpiResilienciaMedia" style="color: var(--emerald); font-weight: bold;">0%</div>
+            </div>
+        </div>
 
-        <main class="workspace">
-            <div class="chart-box">
-                <div class="panel-title" id="lblTituloRadar">Evolución de Atributos del ADN Cognitivo Colectivo</div>
-                <div id="chartAdnColectivo"></div>
-            </div>
+        <!-- BANNER DE INTERVENCIÓN PARA EL AULA -->
+        <div class="remediation-box" id="uiPrescripcionAulaContenedor" style="display: none;">
+            <div class="remediation-title">🎯 INTERVENCIÓN DIRECTA RECOMENDADA PARA EL AULA (CLASE DE 15 MINUTOS)</div>
+            <p class="remediation-text" id="lblPrescripcionAulaTexto"></p>
+            <a id="btnBuscarEstrategiaWeb" target="_blank" class="btn-web-search">🔍 Explorar Didácticas Avanzadas en Web</a>
+        </div>
 
-            <div class="panel-title" style="margin-bottom: 0.8rem;">Auditoría Longitudinal Nominal de Alumnos</div>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Identificador Alumno</th>
-                            <th>Métricas de Plasticidad</th>
-                            <th>Habilidad Base (θ)</th>
-                            <th>Habilidad Concurrente (θ)</th>
-                            <th>Δ Evolución Delta</th>
-                            <th>Puntaje Estimado Actual</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tbodyAlumnos">
-                        <tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding: 2rem;" class="font-mono">Sincronizando clúster de datos...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </main>
+        <!-- LAYOUT PRINCIPAL -->
+        <div class="layout-main">
+            <aside class="sidebar">
+                <div id="uiAlertasContenedor"></div>
+
+                <div class="control-panel">
+                    <div class="panel-title">Línea de Tiempo Épocas</div>
+                    <select id="selEpocaHistorica" class="select-premium" onchange="RectorDashboard.cambiarEpocaFiltro(this.value)">
+                        <option value="LIVE_NOW">🟢 ÉPOCA VIVA (REDIS RUNTIME)</option>
+                    </select>
+                    <button id="btnExportarPDF" class="btn-action" style="border-color: var(--gold); color: var(--gold); display: none; margin-top: 0.6rem;" onclick="RectorDashboard.descargarReporteClinico()">📁 Exportar Reporte PDF</button>
+                </div>
+
+                <div class="control-panel">
+                    <div class="panel-title">Mandos de Épocas</div>
+                    <p style="font-size: 0.72rem; color: #cbd5e1; margin-bottom: 0.8rem; line-height: 1.4;">Guarda una instantánea inmutable en Supabase antes de vaciar las llaves volátiles de Redis.</p>
+                    <button class="btn-action" onclick="RectorDashboard.ejecutarCierreEpoca()">🚨 Purgar y Guardar Reporte</button>
+                </div>
+
+                <div class="control-panel">
+                    <div class="panel-title">Cohorte Nominal</div>
+                    <input type="text" id="txtNuevoAlumno" class="input-premium" placeholder="Identificador alumno...">
+                    <button class="btn-action" style="border-color: var(--primary); color: var(--primary);" onclick="RectorDashboard.matricularEstudiante()">+ Matricular en Cohorte</button>
+                </div>
+            </aside>
+
+            <main class="workspace">
+                <div class="chart-box">
+                    <div class="panel-title" id="lblTituloRadar">Evolución de Atributos del ADN Cognitivo Colectivo</div>
+                    <div id="chartAdnColectivo"></div>
+                </div>
+
+                <div class="panel-title" style="margin-bottom: 0.6rem;">Auditoría Longitudinal Nominal de Alumnos</div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Identificador Alumno</th>
+                                <th>Métricas de Plasticidad</th>
+                                <th>Habilidad Base (θ)</th>
+                                <th>Habilidad Concurrente (θ)</th>
+                                <th>Δ Evolución Delta</th>
+                                <th>Puntaje Estimado Actual</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyAlumnos">
+                            <tr><td colspan="6" style="text-align:center; color:#8a8f9d; padding: 1.5rem;" class="font-mono">Sincronizando clúster de datos...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </main>
+        </div>
     </div>
 
     <script>
@@ -407,6 +359,9 @@
 
             static async consultarDatos() {
                 try {
+                    const headerTenant = document.getElementById("lblTenantBannerHeader");
+                    if(headerTenant) headerTenant.innerText = `TENANT: ${INSTITUTION_ID.toUpperCase()}`;
+
                     let url = `${HOST_URL}/api/cat/auditoria?institution_id=${INSTITUTION_ID}&epoca=${CurrentEpoca}`;
                     if (CurrentMateria && CurrentMateria !== 'diagnostico_general' && CurrentMateria !== 'todas') {
                         url += `&materia=${CurrentMateria}`;
@@ -437,7 +392,7 @@
                     contenedor.innerHTML = "";
                     return;
                 }
-                let html = `<div class="panel-title" style="color:var(--crimson);">Alertas de Fatiga de Época</div>`;
+                let html = `<div class="panel-title" style="color:var(--alert);">Alertas de Fatiga de Época</div>`;
                 alertas.forEach(a => {
                     html += `
                         <div class="clinical-alert-box">
@@ -454,7 +409,7 @@
                 
                 if (!alumnos || alumnos.length === 0) {
                     const materiaNombre = CurrentMateria.replace('_', ' ').toUpperCase();
-                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--text-muted); padding:2rem;" class="font-mono">Ninguna sesión viva o progreso activo registrado para esta época en ${materiaNombre}.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#8a8f9d; padding:1.5rem;" class="font-mono">Ninguna sesión viva o progreso activo registrado para esta época en ${materiaNombre}.</td></tr>`;
                     this.actualizarKPIs(0, 0, 0, 0);
                     this.dibujarGraficaColectiva([], [], []);
                     document.getElementById("uiPrescripcionAulaContenedor").style.display = "none";
@@ -470,7 +425,7 @@
                 let serieFatiga = [];
                 let serieRecuperacion = [];
 
-                let totalPriorsAcumulados = { lineal: 0, geometrico: 0, conversion: 0, operational: 0, count: 0 };
+                let totalPriorsAcumulados = { lineal: 0, geometrico: 0, conversion: 0, operacional: 0, count: 0 };
 
                 alumnos.forEach(al => {
                     const itemsResp = typeof al.items_respondidos === 'string' ? JSON.parse(al.items_respondidos) : (al.items_respondidos || {});
@@ -523,37 +478,31 @@
                     let tramoColor = "var(--emerald)";
                     if (adn.impulsividad > 50) {
                         tramoTxt = "IMPULSIVO (S1)";
-                        tramoColor = "var(--crimson)";
+                        tramoColor = "var(--alert)";
                     }
 
                     const tr = document.createElement("tr");
                     tr.innerHTML = `
                         <td>
-                            <strong style="color:var(--gold-satin); text-transform:uppercase;">${al.estudiante}</strong>
+                            <strong style="color:var(--gold); text-transform:uppercase;">${al.estudiante}</strong>
                             <br>
-                            <a href="/perfil.html" class="btn-gemelo-link">👁️ Ver Gemelo</a>
-                            <div class="clinical-badge" style="background:rgba(231,76,60,0.15); color:var(--crimson);">Vulnerabilidad:</div>
-                            <div class="forensic-text-box" style="border-left-color:var(--crimson);">${adn.vulnerabilidad_dominante || 'Heurística lineal y traducción literal paso a paso.'}</div>
-                            <div class="clinical-badge" style="background:rgba(81,226,245,0.15); color:var(--cyan-core);">Prescripción Clínica:</div>
-                            <div class="forensic-text-box" style="border-left-color:var(--cyan-core);">${adn.prescripcion_clinica || adn.estrategia_autorregulacion || 'Aplica la técnica de escaneo global leyendo la oración completa.'}</div>
-                            <div class="clinical-badge" style="background:rgba(212,175,55,0.15); color:var(--gold-satin);">Crónica Narrativa:</div>
-                            <div class="forensic-text-box">${adn.cronica_narrativa || 'Trayectoria adaptativa registrada con éxito.'}</div>
+                            <a href="/perfil.html?estudiante=${al.estudiante}" class="btn-gemelo-link">👁️ Ver Gemelo Digital</a>
                         </td>
                         <td>
-                            <div style="font-size:0.75rem; text-transform:uppercase; font-weight:bold; color:var(--emerald);" class="font-mono">Recuperación (IRI): <span style="float:right;">${(iriVal * 100).toFixed(0)}%</span></div>
+                            <div style="font-size:0.68rem; font-weight:bold; color:var(--emerald);" class="font-mono">IRI: <span style="float:right;">${(iriVal * 100).toFixed(0)}%</span></div>
                             <div class="mini-heatmap-bar"><div class="mini-heatmap-fill" style="width:${iriVal * 100}%; background:var(--emerald);"></div></div>
                             
-                            <div style="font-size:0.75rem; text-transform:uppercase; font-weight:bold; color:var(--cyan-core); margin-top:0.6rem;" class="font-mono">Curiosidad (ICC): <span style="float:right;">${(iccVal * 100).toFixed(0)}%</span></div>
-                            <div class="mini-heatmap-bar"><div class="mini-heatmap-fill" style="width:${iccVal * 100}%; background:var(--cyan-core);"></div></div>
+                            <div style="font-size:0.68rem; font-weight:bold; color:var(--primary); margin-top:0.3rem;" class="font-mono">ICC: <span style="float:right;">${(iccVal * 100).toFixed(0)}%</span></div>
+                            <div class="mini-heatmap-bar"><div class="mini-heatmap-fill" style="width:${iccVal * 100}%; background:var(--primary);"></div></div>
                             
-                            <div style="font-size:0.7rem; text-transform:uppercase; font-weight:bold; color:${tramoColor}; margin-top:0.6rem;" class="font-mono">Estado Motor: ${tramoTxt}</div>
+                            <div style="font-size:0.65rem; font-weight:bold; color:${tramoColor}; margin-top:0.3rem;" class="font-mono">Estado: ${tramoTxt}</div>
                         </td>
                         <td class="font-mono text-slate-400">${thInicial.toFixed(4)}</td>
                         <td class="font-mono font-bold text-sky-400">${thFinal.toFixed(4)}</td>
                         <td><span class="badge-delta ${deltaClass}">${deltaSigno}${delta.toFixed(4)}</span></td>
                         <td>
-                            <div style="font-size:1.1rem; font-weight:bold; color:var(--emerald);" class="font-mono">${puntajeMostrar} / 100</div>
-                            <div style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; margin-top:0.4rem; font-weight:bold;" class="font-mono">Mapa de Calor de Sesgos:</div>
+                            <div style="font-size:1rem; font-weight:bold; color:var(--emerald);" class="font-mono">${puntajeMostrar} / 100</div>
+                            <div style="font-size:0.6rem; color:#8a8f9d; text-transform:uppercase; margin-top:0.3rem; font-weight:bold;" class="font-mono">Sesgos:</div>
                             ${this.construirMiniBarrasSesgos(sesgosSaneados)}
                         </td>
                     `;
@@ -571,13 +520,13 @@
                 for (const [key, val] of Object.entries(sesgos)) {
                     const porc = (parseFloat(val) > 1.0 ? parseFloat(val) : parseFloat(val) * 100).toFixed(0);
                     let color = "var(--emerald)";
-                    if (porc >= 25) color = "var(--gold-satin)";
-                    if (porc >= 55) color = "var(--crimson)";
+                    if (porc >= 25) color = "var(--gold)";
+                    if (porc >= 55) color = "var(--alert)";
                     
                     html += `
-                        <div style="margin-top:0.3rem; display:flex; align-items:center; justify-content:space-between; font-size:0.68rem;" class="font-mono">
-                            <span style="color:var(--text-muted); font-size:0.65rem;">${key.replace('attr_','').replace(/_/g,' ').toUpperCase()}</span>
-                            <span style="color:${color}; font-weight:bold; margin-left:10px;">${porc}%</span>
+                        <div style="margin-top:0.2rem; display:flex; align-items:center; justify-content:space-between; font-size:0.62rem;" class="font-mono">
+                            <span style="color:#8a8f9d; font-size:0.6rem;">${key.replace('attr_','').replace(/_/g,' ').toUpperCase()}</span>
+                            <span style="color:${color}; font-weight:bold; margin-left:6px;">${porc}%</span>
                         </div>
                         <div class="mini-heatmap-bar"><div class="mini-heatmap-fill" style="width:${porc}%; background:${color};"></div></div>
                     `;
@@ -585,10 +534,13 @@
                 return html;
             }
 
-            static actualizarKPIs(total, estabilidad, puntaje, resiliencia) {
+            static actualizarKPIs(total, estabilidad, puntaje100, resiliencia) {
                 document.getElementById("kpiTotalEstudiantes").innerText = total;
                 document.getElementById("kpiEstabilidadMedia").innerText = `${isNaN(estabilidad) ? 0 : estabilidad}%`;
-                document.getElementById("kpiPuntajePromedio").innerText = `${isNaN(puntaje) ? 0 : puntaje} / 100 pts`;
+                
+                // 🚀 CÁLCULO DE PROYECCIÓN INSTITUCIONAL SOBRE 500 PTS
+                const p500 = Math.round((puntaje100 / 100) * 500);
+                document.getElementById("kpiPuntaje500Promedio").innerText = `${isNaN(p500) ? 0 : p500} / 500 pts`;
                 document.getElementById("kpiResilienciaMedia").innerText = `${isNaN(resiliencia) ? 0 : resiliencia}%`;
             }
 
@@ -613,19 +565,19 @@
                 let materiaCapitalizada = CurrentMateria.replace('_', ' ').toUpperCase();
 
                 if (maxPriorCoherte <= 0.15) {
-                    txt.innerText = `Felicidades Profesor. La cohorte actual demuestra un control óptimo de sesgos en ${materiaCapitalizada}. Se aconseja continuar el Blueprint adaptativo expandiendo el nivel del banco a ítems de alta abstracción compleja.`;
+                    txt.innerText = `Felicidades Rector. La cohorte institucional demuestra un control óptimo de sesgos en ${materiaCapitalizada}. Se aconseja elevar la exigencia de las pruebas globales a ítems de alta complejidad.`;
                     btn.href = `https://www.google.com/search?q=ejercicios+avanzados+icfes+${CurrentMateria}`;
                     return;
                 }
 
                 if (maxPriorCoherte === avgOperacional || maxPriorCoherte === avgLineal) {
-                    txt.innerText = `Atención Docente: Se registra un desborde crítico en el nodo de 'Inversión Operacional Estructural' (Inhibición del Sistema 1 rápido). Sus alumnos automatizan signos algebraicos cruzados o traducción literal por la prisa. Dedique los próximos 15 minutos en el tablero a desarmar oraciones/ecuaciones aislando conectores sintácticos.`;
+                    txt.innerText = `Atención Rector: Se registra un desborde crítico en el nodo de 'Inversión Operacional Estructural' (Sistema 1). Los docentes deben dedicar los próximos 15 minutos en el tablero a desarmar oraciones/ecuaciones aislando conectores sintácticos.`;
                     btn.href = `https://www.google.com/search?q=estrategias+didacticas+para+despeje+de+ecuaciones+algebraicas+secundaria`;
                 } else if (maxPriorCoherte === avgConversion) {
-                    txt.innerText = `Atención Docente: La cohorte presenta una vulnerabilidad activa por 'Omisión de Conversión de Magnitudes'. Los alumnos operan los datos ignorando los cambios dimensionales o contextuales. Prescriba un paso intermedio obligatorio donde el alumno deba rotular las unidades antes de computar.`;
+                    txt.innerText = `Atención Rector: La cohorte presenta una vulnerabilidad por 'Omisión de Conversión de Magnitudes'. Prescriba un paso intermedio obligatorio en guías académicas donde se rotulen unidades antes de computar.`;
                     btn.href = `https://www.google.com/search?q=actividades+de+conversion+de+unidades+de+medida+secundaria`;
                 } else {
-                    txt.innerText = `Atención Docente: El motor de Dante OS detecta un predominio de 'Errores Geométricos / Perimetrales' abstractos. La cohorte confunde áreas superficiales con perímetros lineales. Se prescribe realizar micro-ejercicios visuales con materiales manipulativos.`;
+                    txt.innerText = `Atención Rector: El motor de Dante OS detecta un predominio de 'Errores Geométricos / Perimetrales' en la promoción. Se prescribe realizar micro-ejercicios visuales en el área de ciencias/matemáticas.`;
                     btn.href = `https://www.google.com/search?q=como+ensenar+perimetro+y+area+de+figuras+compuestas`;
                 }
             }
@@ -634,7 +586,7 @@
                 let datosImp = [...impulsividad];
                 let datosFat = [...fatiga];
                 let datosRec = [...recuperacion];
-                let categorias = Array.from({length: datosImp.length}, (_, i) => `Alumno #${i+1}`);
+                let categorias = Array.from({length: datosImp.length}, (_, i) => `Al. #${i+1}`);
 
                 if (datosImp.length === 0) {
                     datosImp = [0, 0, 0]; datosFat = [0, 0, 0]; datosRec = [0, 0, 0];
@@ -653,17 +605,17 @@
                         { name: 'Fatiga %', data: datosFat },
                         { name: 'Recuperación Error %', data: datosRec }
                     ],
-                    chart: { type: 'radar', height: 280, toolbar: { show: false }, background: 'transparent', animations: { enabled: false } },
+                    chart: { type: 'radar', height: 260, toolbar: { show: false }, background: 'transparent', animations: { enabled: false } },
                     colors: ['#e74c3c', '#e67e22', '#2ecc71'],
                     stroke: { width: 2 },
                     fill: { opacity: 0.12 },
-                    markers: { size: 4 },
+                    markers: { size: 3 },
                     theme: { mode: 'dark' },
                     xaxis: { 
                         categories: categorias,
-                        labels: { style: { colors: ['#9499a7', '#9499a7', '#9499a7'], fontSize: '11px', fontFamily: 'JetBrains Mono' } }
+                        labels: { style: { colors: ['#9499a7', '#9499a7', '#9499a7'], fontSize: '10px', fontFamily: 'JetBrains Mono' } }
                     },
-                    yaxis: { show: true, max: 100, tickAmount: 5, labels: { style: { colors: '#2b2e3a', fontFamily: 'JetBrains Mono' } } }
+                    yaxis: { show: false, max: 100 }
                 };
 
                 const el = document.getElementById("chartAdnColectivo");
@@ -678,7 +630,7 @@
             }
 
             static async ejecutarCierreEpoca() {
-                if (!confirm("🚨 ADVERTENCIA DANTE OS:\n¿Está seguro de cerrar la Época actual? Se consolidará un reporte inmutable en Supabase y se purgará la cache de Redis.")) return;
+                if (!confirm("🚨 ADVERTENCIA DANTE OS:\n¿Está seguro de cerrar la Época actual? Se consolidará un reporte inmutable en Supabase y se purgará la memoria volátil de Redis.")) return;
                 try {
                     const res = await fetch(`${HOST_URL}/api/admin/reset-epoca`, {
                         method: 'POST',
@@ -691,7 +643,7 @@
                     });
                     const json = await res.json();
                     
-                    alert(`✅ CONSOLIDACIÓN EXITOSA:\n\n${json.message || "Instantánea guardada con éxito."}`);
+                    alert(`✅ CONSOLIDACIÓN EXITOSA:\n\n${json.message || "Instantánea guardada con éxito en Supabase."}`);
                     location.reload();
                 } catch(e) {
                     console.error(e);
@@ -723,7 +675,7 @@
                         body: JSON.stringify({ nombreEstudiante: nombre, institution_id: INSTITUTION_ID })
                     });
                     const json = await res.json();
-                    alert(json.message || "Estudiante registrado.");
+                    alert(json.message || "Estudiante matriculado con éxito.");
                     input.value = "";
                     location.reload();
                 } catch (err) {
@@ -757,7 +709,7 @@
                     btnPDF.style.display = "none";
                 } else {
                     streamTag.innerHTML = `📁 Reporte Archivo`;
-                    streamTag.style.color = "var(--gold-satin)";
+                    streamTag.style.color = "var(--gold)";
                     radarTitle.innerText = `Instantánea de Épocas Históricas Consolidadas`;
                     btnPDF.style.display = "block";
                 }
@@ -775,6 +727,61 @@
             };
         }
 
+        /* ANIMACIÓN DESENCRIPTADO Y ESPIRAL FIBONACCI */
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*";
+        function decryptText() {
+            const elements = document.querySelectorAll('[data-final]');
+            elements.forEach((el, index) => {
+                const finalStr = el.getAttribute('data-final');
+                if (!finalStr) return;
+                let iterations = 0; const maxIterations = 10 + (index * 2); 
+
+                const interval = setInterval(() => {
+                    let randomStr = finalStr.split('').map((char, i) => {
+                        if(char === ' ') return ' ';
+                        if(i < (iterations / maxIterations) * finalStr.length) return finalStr[i];
+                        return chars[Math.floor(Math.random() * chars.length)];
+                    }).join('');
+                    el.innerText = randomStr; iterations++;
+                    if (iterations >= maxIterations) { clearInterval(interval); el.innerText = finalStr; }
+                }, 30);
+            });
+        }
+
+        const bgCanvas = document.getElementById('dante-fractal-bg'); 
+        const bgCtx = bgCanvas ? bgCanvas.getContext('2d') : null;
+        let qParticles = [];
+
+        function initCanvas() {
+            if (!bgCanvas || !bgCtx) return;
+            bgCanvas.width = window.innerWidth; bgCanvas.height = window.innerHeight;
+
+            for(let i=0; i<60; i++) {
+                qParticles.push({ 
+                    x: bgCanvas.width/2, 
+                    y: bgCanvas.height/2, 
+                    s: Math.random() * 1.5, 
+                    v: Math.random()*0.35 + 0.1, 
+                    angle: i * 137.5 * (Math.PI / 180), 
+                    dist: 0 
+                });
+            }
+            animateCanvas();
+        }
+
+        function animateCanvas() {
+            if (!bgCtx) return;
+            bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+            qParticles.forEach(p => {
+                p.dist += p.v; 
+                let x = bgCanvas.width/2 + Math.cos(p.angle) * p.dist; 
+                let y = bgCanvas.height/2 + Math.sin(p.angle) * p.dist;
+                if(x < 0 || x > bgCanvas.width || y < 0 || y > bgCanvas.height) p.dist = 0;
+                bgCtx.beginPath(); bgCtx.arc(x, y, p.s, 0, Math.PI*2); bgCtx.fillStyle = '#51e2f5'; bgCtx.globalAlpha = 0.22; bgCtx.fill();
+            });
+            requestAnimationFrame(animateCanvas);
+        }
+
         window.onload = () => {
             if (!sessionToken) {
                 alert("🚨 CONTROL PORTAL: Credenciales ausentes. Redirigiendo a pasarela.");
@@ -787,6 +794,8 @@
             RectorDashboard.cambiarMateria(activeMat, initialBtn);
 
             RectorDashboard.cargarEpocasHistoricas(); 
+            initCanvas();
+            setTimeout(decryptText, 300);
             
             setInterval(() => { 
                 if (CurrentEpoca === "LIVE_NOW" && !document.hidden) {
