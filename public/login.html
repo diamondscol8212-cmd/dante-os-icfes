@@ -224,7 +224,18 @@
                         localStorage.setItem("dante_user", JSON.stringify(json.user));
 
                         console.log("✅ [AUTENTICACIÓN EXITOSA]: Contextos inyectados localmente.");
-                        window.location.href = json.redireccion;
+
+                        // REDIRECCIÓN INTELIGENTE (FILTRO ONBOARDING)
+                        const userObj = json.user || {};
+                        const esEstudiante = (SelectedRoleTarget === "estudiante" || userObj.role === "estudiante");
+                        const tieneArquetipo = userObj.arquetipo || (userObj.perfil && userObj.perfil.arquetipo);
+
+                        if (esEstudiante && !tieneArquetipo) {
+                            window.location.href = "onboarding.html";
+                        } else {
+                            window.location.href = json.redireccion || "index.html";
+                        }
+
                     } else {
                         alert(`❌ ACCESO DENEGADO PERIMETRAL:\n\n${json.error || "Credenciales inválidas."}`);
                         btn.innerText = "Validar Firmas Criptográficas";
