@@ -17,8 +17,8 @@
             --gold: #D4AF37;
             --alert: #ff0044;
             --bg: #010103; 
-            --card-bg: rgba(12, 14, 22, 0.92);
-            --border-graphite: rgba(255, 255, 255, 0.08);
+            --card-bg: rgba(12, 14, 22, 0.94);
+            --border-graphite: rgba(255, 255, 255, 0.12);
         }
 
         body, html { 
@@ -33,22 +33,23 @@
 
         .onboard-card {
             background: var(--card-bg); border: 1px solid var(--border-graphite);
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95); border-radius: 14px; 
-            padding: 2.5rem 2rem; width: 100%; max-width: 540px; text-align: center; position: relative; z-index: 10;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95); border-radius: 16px; 
+            padding: 3rem 2.5rem; width: 92%; max-width: 720px; text-align: center; position: relative; z-index: 10;
             backdrop-filter: blur(24px);
         }
         .onboard-card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px;
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
             background: linear-gradient(90deg, var(--primary), var(--gold), var(--primary)); 
-            box-shadow: 0 0 20px var(--gold); border-radius: 14px 14px 0 0;
+            box-shadow: 0 0 20px var(--gold); border-radius: 16px 16px 0 0;
         }
 
         .option-btn {
-            background: rgba(20, 24, 35, 0.8); border: 1px solid var(--border-graphite); border-radius: 8px;
-            padding: 1.1rem; width: 100%; text-align: left; font-size: 0.88rem; font-weight: 600; color: #fff;
-            transition: all 0.2s ease; cursor: pointer; font-family: 'JetBrains Mono'; margin-top: 0.8rem;
+            background: rgba(20, 24, 35, 0.85); border: 1px solid var(--border-graphite); border-radius: 10px;
+            padding: 1.3rem 1.5rem; width: 100%; text-align: left; font-size: 1.05rem; font-weight: 600; color: #fff;
+            transition: all 0.2s ease; cursor: pointer; font-family: 'JetBrains Mono'; margin-top: 1rem;
+            line-height: 1.5;
         }
-        .option-btn:hover { border-color: var(--gold); background: rgba(212, 175, 55, 0.08); transform: translateY(-1px); }
+        .option-btn:hover { border-color: var(--gold); background: rgba(212, 175, 55, 0.12); transform: translateY(-2px); box-shadow: 0 0 15px rgba(212, 175, 55, 0.2); }
         .option-btn:active { transform: scale(0.98); }
     </style>
 </head>
@@ -58,19 +59,19 @@
     <canvas id="dante-fractal-bg"></canvas>
 
     <div class="onboard-card" id="card-main">
-        <div class="font-mono text-[9px] text-[#D4AF37] tracking-[0.4em] uppercase mb-2">NÚCLEO DANTE // CALIBRACIÓN DE ENTRADA</div>
-        <h1 class="oswald font-black text-xl tracking-wider text-white mb-6 uppercase" id="step-title">DILEMA 01 / 03</h1>
+        <div class="font-mono text-xs md:text-sm text-[#D4AF37] tracking-[0.4em] uppercase mb-3 font-bold">NÚCLEO DANTE // CALIBRACIÓN DE ENTRADA</div>
+        <h1 class="oswald font-black text-2xl md:text-3xl tracking-wider text-white mb-6 uppercase" id="step-title">DILEMA 01 / 03</h1>
         
-        <p id="dilema-text" class="text-sm font-light text-zinc-300 mb-6 font-mono leading-relaxed text-left bg-black/40 p-4 rounded border border-white/5">
+        <p id="dilema-text" class="text-base md:text-lg font-light text-zinc-200 mb-6 font-mono leading-relaxed text-left bg-black/50 p-5 rounded-lg border border-white/10 shadow-inner">
             Sincronizando estímulo conductual...
         </p>
 
-        <div id="options-container" class="space-y-2">
+        <div id="options-container" class="space-y-3">
             <!-- Inyección dinámica de opciones -->
         </div>
 
-        <div class="mt-6 flex justify-between items-center text-[10px] font-mono text-zinc-500 uppercase tracking-widest">
-            <span>Latencia: <span id="timer-val" class="text-cyan-400">0.0s</span></span>
+        <div class="mt-8 flex justify-between items-center text-xs md:text-sm font-mono text-zinc-400 uppercase tracking-widest pt-2 border-t border-white/10">
+            <span>Latencia: <span id="timer-val" class="text-cyan-400 font-bold">0.0s</span></span>
             <span>Seguridad: Activa</span>
         </div>
     </div>
@@ -179,18 +180,18 @@
                         puntajes_crudos: scores
                     }, { onConflict: 'id_sesion' });
                 } catch(err) {
-                    console.error("Sincronización en segundo plano completada:", err);
+                    console.error("Sincronización completada:", err);
                 }
             }
 
             const card = document.getElementById('card-main');
             card.innerHTML = `
-                <div class="font-mono text-[9px] text-[#51e2f5] tracking-[0.4em] uppercase mb-3">SISTEMA RECALIBRADO</div>
-                <h2 class="oswald font-black text-2xl text-white mb-2 uppercase">PERFIL AUTÉNTICO ACTIVADO</h2>
-                <div class="my-4 p-3 bg-cyan-950/40 border border-cyan-500/30 rounded font-mono text-cyan-400 text-xs tracking-widest uppercase">
+                <div class="font-mono text-xs text-[#51e2f5] tracking-[0.4em] uppercase mb-3 font-bold">SISTEMA RECALIBRADO</div>
+                <h2 class="oswald font-black text-3xl text-white mb-3 uppercase">PERFIL AUTÉNTICO ACTIVADO</h2>
+                <div class="my-5 p-4 bg-cyan-950/50 border border-cyan-500/40 rounded-lg font-mono text-cyan-400 text-sm md:text-base tracking-widest uppercase font-bold shadow-[0_0_20px_rgba(81,226,245,0.2)]">
                     ${arquetipoFinal}
                 </div>
-                <p class="text-xs font-mono text-zinc-400 leading-relaxed">Conectando con el Motor AdAPTATIVO de Examen...</p>
+                <p class="text-sm font-mono text-zinc-300 leading-relaxed">Conectando con la Cabina de Examen...</p>
             `;
 
             setTimeout(() => {
@@ -198,7 +199,7 @@
             }, 1200);
         }
 
-        // Canvas Fractal de Fondo
+        // Canvas Fractal
         const canvas = document.getElementById('dante-fractal-bg'); 
         const ctx = canvas ? canvas.getContext('2d') : null;
         let parts = [];
