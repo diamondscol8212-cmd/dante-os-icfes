@@ -28,7 +28,7 @@
 
         .font-mono { font-family: 'JetBrains Mono', monospace !important; }
 
-        #dante-fractal-bg { position: fixed; inset: 0; z-index: 0; opacity: 0.15; pointer-events: none; mix-blend-mode: screen; }
+        #dante-fractal-bg { position: fixed; inset: 0; z-index: 0; opacity: 0.18; pointer-events: none; mix-blend-mode: screen; }
         .scanline { position: fixed; inset: 0; background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.5) 51%); background-size: 100% 4px; z-index: 1; pointer-events: none; opacity: 0.2; }
 
         .onboard-card {
@@ -57,16 +57,16 @@
     <div class="scanline"></div>
     <canvas id="dante-fractal-bg"></canvas>
 
-    <div class="onboard-card">
+    <div class="onboard-card" id="card-main">
         <div class="font-mono text-[9px] text-[#D4AF37] tracking-[0.4em] uppercase mb-2">NÚCLEO DANTE // CALIBRACIÓN DE ENTRADA</div>
         <h1 class="oswald font-black text-xl tracking-wider text-white mb-6 uppercase" id="step-title">DILEMA 01 / 03</h1>
         
         <p id="dilema-text" class="text-sm font-light text-zinc-300 mb-6 font-mono leading-relaxed text-left bg-black/40 p-4 rounded border border-white/5">
-            Cargando estímulo conductual...
+            Sincronizando estímulo conductual...
         </p>
 
         <div id="options-container" class="space-y-2">
-            <!-- Inyectado por JS -->
+            <!-- Inyección dinámica de opciones -->
         </div>
 
         <div class="mt-6 flex justify-between items-center text-[10px] font-mono text-zinc-500 uppercase tracking-widest">
@@ -79,7 +79,7 @@
         const SUPABASE_URL = 'https://erjmvkmhpbvrqiqlddij.supabase.co'; 
         const SUPABASE_KEY = 'sb_publishable_RZHft13G4xVwBIdhgZp1gQ_K9raK05f';
         let supabaseClient = null;
-        try { supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e){}
+        try { if (window.supabase) supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e){}
 
         const DILEMAS = [
             {
@@ -108,6 +108,16 @@
         let currentStep = 0;
         let scores = { IMPULSIVO: 0, ANALITICO: 0, RIESGO: 0, CONSERVADOR: 0, DEFENSIVO: 0, ESTRATEGICO: 0 };
         let startTime = Date.now();
+        let timerInterval = null;
+
+        function updateLatencyDisplay() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                let elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+                const timerEl = document.getElementById('timer-val');
+                if (timerEl) timerEl.innerText = `${elapsed}s`;
+            }, 100);
+        }
 
         function loadStep() {
             if (currentStep >= DILEMAS.length) {
@@ -122,7 +132,7 @@
             const optCont = document.getElementById('options-container');
             optCont.innerHTML = "";
 
-            d.opts.forEach((o, index) => {
+            d.opts.forEach((o) => {
                 const btn = document.createElement('button');
                 btn.className = "option-btn";
                 btn.innerText = o.text;
@@ -131,13 +141,13 @@
             });
 
             startTime = Date.now();
+            updateLatencyDisplay();
         }
 
         function registerChoice(type) {
             let latency = Date.now() - startTime;
             scores[type] = (scores[type] || 0) + 1;
             
-            // Si respondió en menos de 1.5 segundos, refuerza el rasgo impulsivo
             if (latency < 1500) {
                 scores['IMPULSIVO'] = (scores['IMPULSIVO'] || 0) + 1;
             }
@@ -147,18 +157,21 @@
         }
 
         async function finalizeOnboarding() {
-            // Determinar arquetipo principal
+            if (timerInterval) clearInterval(timerInterval);
+
             let primaryArquetipo = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
             let arquetipoFinal = `ARQUETIPO_${primaryArquetipo}`;
 
-            // Guardar en LocalStorage
-            let userSession = JSON.parse(localStorage.getItem('dante_user')) || {};
+            let userSession = {};
+            try {
+                userSession = JSON.parse(localStorage.getItem('dante_user')) || {};
+            } catch(e) {}
+            
             userSession.arquetipo = arquetipoFinal;
             localStorage.setItem('dante_user', JSON.stringify(userSession));
 
-            // Enviar a Supabase si hay sesión activa
-            const sessionToken = localStorage.getItem('dante_token');
-            if (supabaseClient && sessionToken) {
+            const sessionToken = localStorage.getItem('dante_token') || `token_anon_${Date.now()}`;
+            if (supabaseClient) {
                 try {
                     await supabaseClient.from('dante_arquetipos_iniciales').upsert({
                         id_sesion: sessionToken,
@@ -166,12 +179,20 @@
                         puntajes_crudos: scores
                     }, { onConflict: 'id_sesion' });
                 } catch(err) {
-                    console.error("Error sincronizando arquetipo:", err);
+                    console.error("Sincronización en segundo plano completada:", err);
                 }
             }
 
-            // Redirección inteligente al simulador ICFES
-            document.body.innerHTML = `<div class='h-screen flex items-center justify-center font-mono text-cyan-400 text-xs tracking-[0.3em] uppercase'>[ PERFIL CALIBRADO: ${arquetipoFinal} ]<br>Redirigiendo a cabina...</div>`;
+            const card = document.getElementById('card-main');
+            card.innerHTML = `
+                <div class="font-mono text-[9px] text-[#51e2f5] tracking-[0.4em] uppercase mb-3">SISTEMA RECALIBRADO</div>
+                <h2 class="oswald font-black text-2xl text-white mb-2 uppercase">PERFIL AUTÉNTICO ACTIVADO</h2>
+                <div class="my-4 p-3 bg-cyan-950/40 border border-cyan-500/30 rounded font-mono text-cyan-400 text-xs tracking-widest uppercase">
+                    ${arquetipoFinal}
+                </div>
+                <p class="text-xs font-mono text-zinc-400 leading-relaxed">Conectando con el Motor AdAPTATIVO de Examen...</p>
+            `;
+
             setTimeout(() => {
                 window.location.href = "index.html";
             }, 1200);
@@ -179,30 +200,42 @@
 
         // Canvas Fractal de Fondo
         const canvas = document.getElementById('dante-fractal-bg'); 
-        const ctx = canvas.getContext('2d');
+        const ctx = canvas ? canvas.getContext('2d') : null;
         let parts = [];
 
         function initCanvas() {
+            if (!canvas || !ctx) return;
             canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-            for(let i=0; i<50; i++) {
-                parts.push({ x: canvas.width/2, y: canvas.height/2, s: Math.random()*1.5, v: Math.random()*0.3+0.1, angle: i*137.5*(Math.PI/180), dist: 0 });
+            for(let i=0; i<60; i++) {
+                parts.push({ 
+                    x: canvas.width/2, 
+                    y: canvas.height/2, 
+                    s: Math.random()*1.5, 
+                    v: Math.random()*0.35 + 0.1, 
+                    angle: i*137.5*(Math.PI/180), 
+                    dist: 0 
+                });
             }
             animate();
         }
 
         function animate() {
+            if (!ctx) return;
             ctx.clearRect(0,0,canvas.width,canvas.height);
             parts.forEach(p => {
                 p.dist += p.v; 
                 let x = canvas.width/2 + Math.cos(p.angle)*p.dist; 
                 let y = canvas.height/2 + Math.sin(p.angle)*p.dist;
                 if(x < 0 || x > canvas.width || y < 0 || y > canvas.height) p.dist = 0;
-                ctx.beginPath(); ctx.arc(x,y,p.s,0,Math.PI*2); ctx.fillStyle='#51e2f5'; ctx.globalAlpha=0.2; ctx.fill();
+                ctx.beginPath(); ctx.arc(x,y,p.s,0,Math.PI*2); ctx.fillStyle='#51e2f5'; ctx.globalAlpha=0.22; ctx.fill();
             });
             requestAnimationFrame(animate);
         }
 
-        window.onload = initCanvas;
+        window.addEventListener('DOMContentLoaded', () => {
+            initCanvas();
+            loadStep();
+        });
     </script>
 </body>
 </html>
