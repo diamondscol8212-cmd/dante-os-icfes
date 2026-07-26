@@ -44,8 +44,9 @@
             display: flex; justify-content: space-between; align-items: center;
             border-bottom: 1px solid var(--border-graphite);
         }
-        .alias-title { font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; color: white; margin-bottom: 1px;}
-        .geo-tag { font-family: 'JetBrains Mono'; font-size: 8px; color: var(--primary); letter-spacing: 1px; text-transform: uppercase; }
+        .alias-title { font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; color: white; white-space: nowrap; }
+        @media (min-width: 640px) { .alias-title { font-size: 13px; } }
+        .geo-tag { font-family: 'JetBrains Mono'; font-size: 8px; color: var(--primary); letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; }
 
         .suite-viewport {
             position: relative; z-index: 10;
@@ -61,7 +62,7 @@
         .pulse-dot { width: 6px; height: 6px; background: var(--emerald); border-radius: 50%; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
 
-        /* PESTAÑAS MATERIAS SLIDER OCULTO */
+        /* PESTAÑAS MATERIAS */
         .materia-tabs { display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
         .materia-tabs::-webkit-scrollbar { display: none; }
         
@@ -203,7 +204,7 @@
         </div>
 
         <div class="flex items-center gap-2">
-            <div class="live-indicator id="uiStatusStream" hidden sm:inline-flex><div class="pulse-dot"></div>Stream Activo</div>
+            <div class="live-indicator" id="uiStatusStream" hidden sm:inline-flex><div class="pulse-dot"></div>Stream Activo</div>
             
             <a href="/index.html" class="px-2.5 py-1 bg-[#181b26] hover:bg-zinc-800 border border-zinc-700 text-slate-200 rounded text-[10px] font-mono font-bold uppercase tracking-wider transition-all">
                 ⚡ Simulador
@@ -538,7 +539,6 @@
                 document.getElementById("kpiTotalEstudiantes").innerText = total;
                 document.getElementById("kpiEstabilidadMedia").innerText = `${isNaN(estabilidad) ? 0 : estabilidad}%`;
                 
-                // 🚀 CÁLCULO DE PROYECCIÓN INSTITUCIONAL SOBRE 500 PTS
                 const p500 = Math.round((puntaje100 / 100) * 500);
                 document.getElementById("kpiPuntaje500Promedio").innerText = `${isNaN(p500) ? 0 : p500} / 500 pts`;
                 document.getElementById("kpiResilienciaMedia").innerText = `${isNaN(resiliencia) ? 0 : resiliencia}%`;
