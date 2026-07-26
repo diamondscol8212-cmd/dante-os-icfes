@@ -127,11 +127,11 @@
 
     <div class="gateway-container">
         <div class="gateway-card">
-            <div class="system-version-tag">v20.6.3</div>
-            <div class="verification-banner">> AUTENTICACIÓN PERIMETRAL CORE</div>
+            <div class="system-version-tag">v21.1.0</div>
+            <div class="verification-banner" id="uiBannerEstado">> AUTENTICACIÓN PERIMETRAL CORE</div>
             
             <h1 class="gateway-title" data-final="PASARELA DE ACCESO">PASARELA DE ACCESO</h1>
-            <p style="font-size: 0.72rem; color: #8a8f9d; text-transform: uppercase; letter-spacing: 1px;" class="font-mono">Verificación PBKDF2 & Multi-Tenancy</p>
+            <p style="font-size: 0.72rem; color: #8a8f9d; text-transform: uppercase; letter-spacing: 1px;" class="font-mono" id="uiSubtitulo">Sincronización de Trayectoria Cognitiva</p>
 
             <div class="role-grid">
                 <div id="cardRoleEstudiante" class="role-selection-card active" onclick="PortalAuth.seleccionarRol('estudiante')">
@@ -168,7 +168,7 @@
     </div>
 
     <footer>
-        DANTE OS v20.6.3 // INFRAESTRUCTURA UNICORNIO PARA TOMA DE DECISIONES BAJO INCERTIDUMBRE
+        DANTE OS v21.1.0 // INFRAESTRUCTURA UNICORNIO PARA TOMA DE DECISIONES BAJO INCERTIDUMBRE
     </footer>
 
     <script>
@@ -193,6 +193,7 @@
 
             static async ejecutarLoginPerimetral() {
                 const btn = document.getElementById("btnValidar");
+                const banner = document.getElementById("uiBannerEstado");
                 const institutionId = document.getElementById("txtInstitutionId").value.trim();
                 const email = document.getElementById("txtEmail").value.trim();
                 const password = document.getElementById("txtPassword").value;
@@ -202,7 +203,9 @@
                     return;
                 }
 
-                btn.innerText = "Procesando Algoritmo Criptográfico PBKDF2...";
+                btn.innerText = "Sincronizando trayectoria cognitiva...";
+                banner.innerText = "> RECONOCIENDO HISTORIAL Y PERFIL";
+                banner.style.color = "var(--gold)";
                 btn.disabled = true;
 
                 try {
@@ -223,27 +226,34 @@
                         localStorage.setItem("dante_token", json.token_session);
                         localStorage.setItem("dante_user", JSON.stringify(json.user));
 
-                        console.log("✅ [AUTENTICACIÓN EXITOSA]: Contextos inyectados localmente.");
+                        btn.innerText = "¡Bienvenido! Cargando entorno...";
+                        banner.innerText = "✓ ACCESO AUTORIZADO Y RESTAURADO";
+                        banner.style.color = "var(--emerald)";
 
-                        // REDIRECCIÓN INTELIGENTE (FILTRO ONBOARDING)
                         const userObj = json.user || {};
                         const esEstudiante = (SelectedRoleTarget === "estudiante" || userObj.role === "estudiante");
                         const tieneArquetipo = userObj.arquetipo || (userObj.perfil && userObj.perfil.arquetipo);
 
-                        if (esEstudiante && !tieneArquetipo) {
-                            window.location.href = "onboarding.html";
-                        } else {
-                            window.location.href = json.redireccion || "index.html";
-                        }
+                        setTimeout(() => {
+                            if (esEstudiante && !tieneArquetipo) {
+                                window.location.href = "onboarding.html";
+                            } else {
+                                window.location.href = json.redireccion || "index.html";
+                            }
+                        }, 800);
 
                     } else {
                         alert(`❌ ACCESO DENEGADO PERIMETRAL:\n\n${json.error || "Credenciales inválidas."}`);
+                        banner.innerText = "> AUTENTICACIÓN PERIMETRAL CORE";
+                        banner.style.color = "var(--primary)";
                         btn.innerText = "Validar Firmas Criptográficas";
                         btn.disabled = false;
                     }
                 } catch (err) {
                     console.error("🚨 [GATEWAY AUTH CRASH]:", err.message);
                     alert("Cortocircuito crítico en la pasarela perimetral de autenticación web.");
+                    banner.innerText = "> AUTENTICACIÓN PERIMETRAL CORE";
+                    banner.style.color = "var(--primary)";
                     btn.innerText = "Validar Firmas Criptográficas";
                     btn.disabled = false;
                 }
