@@ -488,7 +488,7 @@
                     document.getElementById('ui-alias-box').setAttribute('data-final', nombreUpper);
                     document.getElementById('ui-tenant').innerText = INSTITUTION_ID.toUpperCase();
 
-                    // Ajustar link dinámico del PDF
+                    // Ajustar link dinámico del PDF de descarga
                     document.getElementById('btnDescargarPdfExpediente').href = `/reporte.html?rol=estudiante&estudiante=${STUDENT_ID}`;
 
                     await this.cargarDatosSupabase();
@@ -530,7 +530,7 @@
             static procesarYRenderizarVistas() {
                 const nombreCapitalizado = STUDENT_ID.toUpperCase();
 
-                // Filtrar según la materia seleccionada
+                // Filtrar estrictamente según la materia seleccionada
                 let examenesFiltrados = [...cacheHistorialCompleto];
                 if (currentMateriaFiltro !== 'todas') {
                     examenesFiltrados = cacheHistorialCompleto.filter(x => String(x.materia).toLowerCase().trim() === currentMateriaFiltro);
@@ -539,7 +539,7 @@
                 const tieneExamenes = examenesFiltrados.length > 0;
 
                 if (!tieneExamenes) {
-                    // SI NO TIENE EXÁMENES: MOSTRAR ESTADO EN CERO Y LIMPIO
+                    // SI NO TIENE EXÁMENES REALIZADOS: MOSTRAR ESTADO EN CERO SIN DATOS FALSOS
                     document.getElementById("kpiPuntaje").innerText = `0 / 100 pts`;
                     document.getElementById("kpiTheta").innerText = `0.0000`;
                     document.getElementById("kpiIRI").innerText = `50%`;
@@ -549,9 +549,9 @@
                     document.getElementById('val-target').innerText = "0";
                     document.getElementById('val-max').innerText = "0";
 
-                    document.getElementById("lblVulnerabilidadTxt").innerText = "Sin evaluaciones registradas aún.";
+                    document.getElementById("lblVulnerabilidadTxt").innerText = "Sin evaluaciones registradas aún para este filtro.";
                     document.getElementById("lblPrescripcionTxt").innerText = "Inicia un simulacro para generar la primera prescripción.";
-                    document.getElementById("lblCronicaTxt").innerText = `${nombreCapitalizado} aún no ha iniciado pruebas en ${currentMateriaFiltro.replace('_', ' ').toUpperCase()}.`;
+                    document.getElementById("lblCronicaTxt").innerText = `${nombreCapitalizado} aún no registra pruebas en ${currentMateriaFiltro.replace('_', ' ').toUpperCase()}.`;
                     document.getElementById("ui-summary").innerText = `Análisis de trayectoria para ${nombreCapitalizado}: Sin registros de evaluación en el sistema.`;
 
                     this.renderizarTemas(["Completa tu primer examen adaptativo"]);
@@ -561,7 +561,7 @@
                     return;
                 }
 
-                // SI TIENE EXÁMENES REALES: CALCULAR MÉTRIAS A PARTIR DE SUPABASE
+                // SI TIENE EXÁMENES REALES: RENDERIZAR ÚNICAMENTE LOS DATOS DE SUPABASE
                 const ultimoExamen = examenesFiltrados[0];
                 const itemsR = typeof ultimoExamen.items_respondidos === 'string' ? JSON.parse(ultimoExamen.items_respondidos) : (ultimoExamen.items_respondidos || {});
                 const adn = itemsR.adn_empaquetado || ultimoExamen.adn_cognitivo || {};
