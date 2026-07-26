@@ -221,7 +221,7 @@
     </header>
 
     <div class="suite-viewport">
-        <!-- BARRA DE SELECCIÓN DE MATERIAS & EXPORTACIÓN -->
+        <!-- BARRA DE SELECCIÓN DE MATERIAS & EXPORTACIÓN CON ENLACE AL REPORTE DOCENTE -->
         <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
             <div class="materia-tabs">
                 <button class="tab-btn active" data-materia="diagnostico_general" onclick="ProfesorDashboard.cambiarMateria('diagnostico_general', this)">🌐 General</button>
@@ -231,8 +231,9 @@
                 <button class="tab-btn" data-materia="ingles" onclick="ProfesorDashboard.cambiarMateria('ingles', this)">🇬🇧 Inglés</button>
             </div>
 
-            <button onclick="window.print()" class="px-3 py-1 bg-amber-500/10 border border-[#D4AF37] text-[#D4AF37] rounded text-[10px] font-mono font-bold uppercase tracking-wider hover:bg-[#D4AF37] hover:text-black transition">
-                📄 Exportar Informe (PDF)
+            <!-- ENLACE AL REPORTE EN PDF PARA EL ROL DOCENTE -->
+            <button onclick="window.open('/reporte.html?rol=profesor', '_blank')" class="px-3 py-1 bg-amber-500/10 border border-[#D4AF37] text-[#D4AF37] rounded text-[10px] font-mono font-bold uppercase tracking-wider hover:bg-[#D4AF37] hover:text-black transition flex items-center gap-1.5 shadow-lg">
+                <span>👨‍🏫</span> Exportar Informe Docente (PDF)
             </button>
         </div>
 
@@ -413,7 +414,7 @@
                 
                 if (!alumnos || alumnos.length === 0) {
                     const materiaNombre = CurrentMateria.replace('_', ' ').toUpperCase();
-                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#8a8f9d; padding:1.5rem;" class="font-mono">Ninguna sesión viva o progreso activo registrado para ${materiaNombre}.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#8a8f9d; padding: 1.5rem;" class="font-mono">Ninguna sesión viva o progreso activo registrado para ${materiaNombre}.</td></tr>`;
                     this.actualizarKPIs(0, 0, 0, 0);
                     this.dibujarGraficaColectiva([], [], []);
                     document.getElementById("uiPrescripcionAulaContenedor").style.display = "none";
