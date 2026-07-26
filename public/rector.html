@@ -226,7 +226,7 @@
     </header>
 
     <div class="suite-viewport">
-        <!-- BARRA DE SELECCIÓN DE MATERIAS & EXPORTACIÓN -->
+        <!-- BARRA DE SELECCIÓN DE MATERIAS & EXPORTACIÓN CON SELLO EJECUTIVO -->
         <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
             <div class="materia-tabs">
                 <button class="tab-btn active" data-materia="diagnostico_general" onclick="RectorDashboard.cambiarMateria('diagnostico_general', this)">🌐 General</button>
@@ -236,8 +236,9 @@
                 <button class="tab-btn" data-materia="ingles" onclick="RectorDashboard.cambiarMateria('ingles', this)">🇬🇧 Inglés</button>
             </div>
 
-            <button onclick="window.print()" class="px-3 py-1 bg-amber-500/10 border border-[#D4AF37] text-[#D4AF37] rounded text-[10px] font-mono font-bold uppercase tracking-wider hover:bg-[#D4AF37] hover:text-black transition">
-                📄 Exportar Informe (PDF)
+            <!-- ENLACE DIRECTO HACIA REPORTE.HTML CON SELLO EJECUTIVO -->
+            <button onclick="window.open('/reporte.html?rol=rector', '_blank')" class="px-3 py-1 bg-amber-500/10 border border-[#D4AF37] text-[#D4AF37] rounded text-[10px] font-mono font-bold uppercase tracking-wider hover:bg-[#D4AF37] hover:text-black transition flex items-center gap-1.5 shadow-lg">
+                <span>🏛️</span> Exportar Informe Institucional (PDF)
             </button>
         </div>
 
@@ -661,7 +662,7 @@
 
             static descargarReporteClinico() {
                 if (CurrentEpoca === "LIVE_NOW") {
-                    alert("Por favor seleccione un Snapshot Histórico guardado en Supabase para exportar el PDF.");
+                    window.open('/reporte.html?rol=rector', '_blank');
                     return;
                 }
                 window.open(`${HOST_URL}/api/cat/reporte-pdf/${CurrentEpoca}`, '_blank');
