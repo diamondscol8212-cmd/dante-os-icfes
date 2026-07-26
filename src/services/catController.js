@@ -626,7 +626,6 @@ export async function procesarInteraccionEstudiante(req, res) {
                 mapa_calor_sesgos: nuevosPriorsAtributos
             };
 
-            // 🛠️ PERSISTENCIA COMPATIBLE
             const payloadPersistenciaBD = {
                 estudiante: studentIdSaneado,
                 materia: areaSaneada, 
@@ -650,7 +649,6 @@ export async function procesarInteraccionEstudiante(req, res) {
             const { error: upsertErr } = await supabase.from('progreso_estudiantes').upsert(payloadPersistenciaBD, { onConflict: 'estudiante,materia,institution_id' });
             if (upsertErr) {
                 console.error("🚨 [UPSERT PROGRESO ERROR]:", upsertErr.message);
-                // Intento secundario de inserción directa
                 await supabase.from('progreso_estudiantes').insert([payloadPersistenciaBD]).catch(() => {});
             }
 
@@ -720,17 +718,17 @@ export async function procesarInteraccionEstudiante(req, res) {
     }
 }
 
-// 🧬 ENDPOINT CONTINGENTE PARA RECONSTRUCCIÓN EN VIVO DEL GEMELO DIGITAL Y EL PERFIL
+// 🧬 ENDPOINT DE CONSULTA DEL GEMELO CON ARREGLO DE RESPUESTA DIRECTA
 export async function obtenerGemeloEstudiante(req, res) {
     try {
-        const studentIdRaw = req.params.studentId;
+        const studentIdRaw = req.params.id || req.params.studentId;
         if (!studentIdRaw) {
             return res.status(400).json({ success: false, error: "Identificador de estudiante requerido." });
         }
 
         const studentIdSaneado = String(studentIdRaw).toLowerCase().trim().split('@')[0];
 
-        // 1. Intentar consultar en la tabla de progreso consolidado
+        // 1. Consultar la tabla de progreso consolidado
         let { data: progreso, error: progErr } = await supabase
             .from('progreso_estudiantes')
             .select('*')
@@ -741,7 +739,7 @@ export async function obtenerGemeloEstudiante(req, res) {
             console.warn("⚠️ [CONSULTA PROGRESO WARN]:", progErr.message);
         }
 
-        // 2. RECONSTRUCCIÓN EN VIVO: Si progreso está vacío, consultar respuestas reales en registro_eventos
+        // 2. CONTINGENCIA Y RECONSTRUCCIÓN EN VIVO: Si progreso está vacío, consultar respuestas reales en registro_eventos
         if (!progreso || progreso.length === 0) {
             console.log(`🔍 [RECONSTRUCCIÓN EN VIVO]: Reconstruyendo perfil para ${studentIdSaneado} desde registro_eventos...`);
             
@@ -779,6 +777,7 @@ export async function obtenerGemeloEstudiante(req, res) {
             }
         }
 
+        // 3. Garantizar un Arreglo en `gemelo` para compatibilidad total con perfil.html
         return res.status(200).json({
             success: true,
             origen: "SUPABASE LIVE",
