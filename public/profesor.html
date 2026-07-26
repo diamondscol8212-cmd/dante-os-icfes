@@ -37,23 +37,13 @@
         .scanline { position: fixed; inset: 0; background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.5) 51%); background-size: 100% 4px; z-index: 1; pointer-events: none; opacity: 0.2; }
         #fx-flash { position: fixed; inset: 0; z-index: 999999; background: var(--alert); opacity: 0; pointer-events: none; transition: opacity 0.3s; mix-blend-mode: screen; }
 
-        /* SUGERENCIA VISUAL DE MODO HORIZONTAL EN MÓVILES PORTRAIT */
         @media screen and (max-width: 600px) and (orientation: portrait) {
             body::before {
                 content: "🔄 Para una mejor auditoría, gira tu celular horizontalmente.";
-                position: fixed;
-                top: 55px;
-                left: 5%;
-                width: 90%;
-                z-index: 9999;
-                background: rgba(212, 175, 55, 0.95);
-                color: #000;
-                font-family: 'JetBrains Mono', monospace;
-                font-size: 10px;
-                font-weight: 800;
-                text-align: center;
-                padding: 6px 10px;
-                border-radius: 8px;
+                position: fixed; top: 55px; left: 5%; width: 90%; z-index: 9999;
+                background: rgba(212, 175, 55, 0.95); color: #000;
+                font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 800;
+                text-align: center; padding: 6px 10px; border-radius: 8px;
                 box-shadow: 0 10px 25px rgba(0,0,0,0.8);
             }
         }
@@ -68,22 +58,11 @@
         .alias-title { font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; color: white;}
         .geo-tag { font-family: 'JetBrains Mono'; font-size: 8px; color: var(--primary); letter-spacing: 1px; text-transform: uppercase; }
 
-        /* CONTENEDOR PRINCIPAL */
         .suite-viewport {
             position: relative; z-index: 10;
             padding: 70px 12px 40px; max-width: 1400px; margin: 0 auto;
         }
 
-        .live-indicator {
-            display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.65rem;
-            font-family: 'JetBrains Mono'; text-transform: uppercase; color: var(--emerald);
-            background: rgba(46, 204, 113, 0.1); padding: 0.3rem 0.6rem;
-            border-radius: 9999px; border: 1px solid rgba(46, 204, 113, 0.3);
-        }
-        .pulse-dot { width: 6px; height: 6px; background: var(--emerald); border-radius: 50%; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
-
-        /* PESTAÑAS MATERIAS */
         .materia-tabs { display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
         .materia-tabs::-webkit-scrollbar { display: none; }
         
@@ -98,7 +77,6 @@
             background: rgba(212, 175, 55, 0.12); box-shadow: 0 0 15px rgba(212, 175, 55, 0.25);
         }
 
-        /* GRID DE KPIS DE AULA */
         .kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 1.2rem; }
         @media (min-width: 768px) { .kpi-grid { grid-template-columns: repeat(4, 1fr); gap: 1.25rem; } }
         
@@ -111,7 +89,6 @@
         .kpi-val { font-size: 1.4rem !important; font-weight: 900; font-family: 'JetBrains Mono' !important; color: var(--gold); margin-top: 0.2rem; white-space: nowrap !important; }
         @media (min-width: 768px) { .kpi-val { font-size: 1.8rem !important; } }
 
-        /* PRESCRIPCIÓN DOCENTE DE AULA */
         .remediation-box {
             background: linear-gradient(135deg, rgba(20, 27, 45, 0.88) 0%, rgba(13, 17, 26, 0.95) 100%);
             border: 1px solid rgba(81, 226, 245, 0.3); border-left: 4px solid var(--gold);
@@ -130,7 +107,6 @@
             font-family: 'JetBrains Mono';
         }
 
-        /* LAYOUT PRINCIPAL */
         .layout-main { display: grid; grid-template-columns: 1fr; gap: 1.2rem; }
         @media (min-width: 990px) { .layout-main { grid-template-columns: 280px 1fr; gap: 1.5rem; } }
 
@@ -164,7 +140,6 @@
             border-radius: 12px; padding: 1rem; margin-bottom: 1.2rem; backdrop-filter: blur(16px);
         }
         
-        /* CONTENEDOR DE TABLA RESPONSIVO CON SCROLL SUAVE */
         .table-container { 
             background: var(--card-bg); border: 1px solid var(--border-graphite); 
             border-radius: 12px; overflow-x: auto; -webkit-overflow-scrolling: touch;
@@ -194,7 +169,6 @@
             text-transform: uppercase; cursor: pointer; font-family: 'JetBrains Mono';
         }
 
-        /* MODAL RESPONSIVO */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(1, 1, 3, 0.88); backdrop-filter: blur(12px);
@@ -262,7 +236,7 @@
             </button>
         </div>
 
-        <!-- METRICAS DE AULA (KPIS CON PROYECCIÓN A 500 PTS) -->
+        <!-- METRICAS DE AULA -->
         <div class="kpi-grid">
             <div class="kpi-card">
                 <p style="font-size: 0.65rem; text-transform: uppercase; color: #8a8f9d; font-weight: 800;" class="font-mono">Estudiantes</p>
@@ -503,10 +477,10 @@
                     totalPriorsAcumulados.operacional += parseFloat(sesgosSaneados.attr_inversion_operational || 0);
                     totalPriorsAcumulados.count++;
 
-                    let tramoTxt = "NOMINAL (S2)";
+                    let tramoTxt = "S2 ANALÍTICO";
                     let tramoColor = "var(--emerald)";
                     if (adn.impulsividad > 50) {
-                        tramoTxt = "IMPULSIVO (S1)";
+                        tramoTxt = "S1 IMPULSIVO";
                         tramoColor = "var(--alert)";
                     }
 
@@ -733,7 +707,6 @@
             };
         }
 
-        /* ANIMACIÓN DESENCRIPTADO Y ESPIRAL FIBONACCI */
         const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*";
         function decryptText() {
             const elements = document.querySelectorAll('[data-final]');
