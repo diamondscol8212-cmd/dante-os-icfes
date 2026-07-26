@@ -560,7 +560,7 @@ export async function procesarInteraccionEstudiante(req, res) {
             await redis.setex(cacheKey, REDIS_TTL_SECONDS, JSON.stringify(localRuntimeState));
         });
 
-        // 🛡️ REGLA DE PARADA AUTOMÁTICA
+        // REGLA DE PARADA AUTOMÁTICA
         const forzarDetencionExamen = conteoActualizadoItems > 0 && (resultadoSelector.detenerExamen || conteoActualizadoItems >= OPERATIONAL_CONTROLS.MAX_ITEMS_EXAMEN);
 
         if (forzarDetencionExamen) {
@@ -718,7 +718,7 @@ export async function procesarInteraccionEstudiante(req, res) {
     }
 }
 
-// 🧬 ENDPOINT DE CONSULTA DEL GEMELO CON ARREGLO DE RESPUESTA DIRECTA
+// 🧬 ENDPOINT DE CONSULTA DEL GEMELO MULTI-CASO CON SANITIZACIÓN ROBUSTA
 export async function obtenerGemeloEstudiante(req, res) {
     try {
         const studentIdRaw = req.params.id || req.params.studentId;
@@ -739,7 +739,7 @@ export async function obtenerGemeloEstudiante(req, res) {
             console.warn("⚠️ [CONSULTA PROGRESO WARN]:", progErr.message);
         }
 
-        // 2. CONTINGENCIA Y RECONSTRUCCIÓN EN VIVO: Si progreso está vacío, consultar respuestas reales en registro_eventos
+        // 2. RECONSTRUCCIÓN EN VIVO PARSEANDO REGISTRO_EVENTOS MULTI-TIPO
         if (!progreso || progreso.length === 0) {
             console.log(`🔍 [RECONSTRUCCIÓN EN VIVO]: Reconstruyendo perfil para ${studentIdSaneado} desde registro_eventos...`);
             
@@ -751,14 +751,24 @@ export async function obtenerGemeloEstudiante(req, res) {
 
             if (!evErr && eventos && eventos.length > 0) {
                 const totalRespuestas = eventos.length;
-                const aciertos = eventos.filter(e => e.is_correct === true || e.is_correct === 'TRUE' || String(e.is_correct).toLowerCase() === 'true').length;
+                
+                // Sanitización exhaustiva de respuestas correctas (Booleano, String, Uppercase)
+                const aciertos = eventos.filter(e => {
+                    if (e.is_correct === true) return true;
+                    if (typeof e.is_correct === 'string') {
+                        const str = e.is_correct.toLowerCase().trim();
+                        return str === 'true' || str === 't' || str === '1';
+                    }
+                    return false;
+                }).length;
+
                 const porcentajeAcierto = Math.round((aciertos / (totalRespuestas || 1)) * 100);
                 const puntajeEstimado = Math.max(15, Math.min(100, Math.round(porcentajeAcierto)));
 
                 progreso = [{
                     estudiante: studentIdSaneado,
                     materia: 'lectura_critica',
-                    theta_algebra_calculo: 0.5000,
+                    theta_algebra_calculo: parseFloat(((puntajeEstimado - 50) / 13.8).toFixed(4)),
                     theta_geometria_medicion: 0.5000,
                     theta_estadistica_probabilidad: 0.5000,
                     indice_recuperacion_intelectual: 0.50,
@@ -766,10 +776,16 @@ export async function obtenerGemeloEstudiante(req, res) {
                     items_respondidos: {
                         puntaje_escalonado: puntajeEstimado,
                         adn_empaquetado: {
-                            vulnerabilidad_dominante: "Atención al detalle en distractores de alta complejidad.",
+                            vulnerabilidad_dominante: "Discriminación de opciones trampa en lecturas extensas.",
                             prescripcion_clinica: "Ejecutar lecturas analíticas desacelerando en los conectores de oposición.",
-                            cronica_narrativa: `Se registran ${totalRespuestas} respuestas guardadas en Supabase con ${aciertos} aciertos para ${studentIdSaneado.toUpperCase()}.`,
-                            plan_entrenamiento: ["Revisión de técnicas de lectura crítica", "Práctica de discriminación de premisas"]
+                            cronica_narrativa: `Se registran ${totalRespuestas} respuestas guardadas en Supabase con ${aciertos} aciertos acumulados para ${studentIdSaneado.toUpperCase()}.`,
+                            plan_entrenamiento: ["Revisión de técnicas de lectura crítica", "Práctica de discriminación de premisas"],
+                            mapa_calor_sesgos: {
+                                attr_heuristica_lineal: 0.15,
+                                attr_inversion_operacional: 0.10,
+                                attr_omision_conversion: 0.05,
+                                attr_error_geometrico: 0.05
+                            }
                         }
                     },
                     ultima_actualizacion: eventos[0].created_at || new Date().toISOString()
@@ -777,7 +793,7 @@ export async function obtenerGemeloEstudiante(req, res) {
             }
         }
 
-        // 3. Garantizar un Arreglo en `gemelo` para compatibilidad total con perfil.html
+        // 3. Garantizar el retorno de un Arreglo `gemelo` para renderizado dinámico en perfil.html
         return res.status(200).json({
             success: true,
             origen: "SUPABASE LIVE",
