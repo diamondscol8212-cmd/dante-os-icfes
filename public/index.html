@@ -163,6 +163,7 @@
         .opcion-card.correct { border-color: var(--emerald) !important; background: rgba(46, 204, 113, 0.12) !important; }
         .opcion-card.wrong { border-color: var(--crimson) !important; background: rgba(231, 76, 60, 0.12) !important; }
 
+        /* CAJA DE CERTEZA DE ALTA VISIBILIDAD */
         #uiMetacognicion {
             background: rgba(12, 14, 24, 0.96); border: 2px solid var(--gold-satin); border-radius: 14px; 
             padding: 1.4rem 1rem; margin-top: 1rem; display: none; text-align: center;
@@ -182,7 +183,6 @@
             padding: 1.2rem; margin-top: 0.8rem; display: none; backdrop-filter: blur(12px);
         }
 
-        /* 🛠️ RESTRUCTURACIÓN PERFECTA DE DASHBOARD Y TARJETAS */
         .dashboard-container {
             background: var(--bg-surface); border: 1px solid var(--graphite); border-radius: 14px; 
             padding: 1.8rem 1.2rem; width: 100%; max-width: 820px; text-align: center; margin: 0 auto;
@@ -209,7 +209,7 @@
         }
         .telemetry-num { font-size: 1.05rem; font-weight: 800; font-family: var(--font-mono); color: var(--gold-satin); margin-top: 0.3rem; }
 
-        /* 🛠️ TOOLTIPS CORREGIDOS (AISLADOS $100\%$, SIN SUPERPOSICIÓN) */
+        /* TOOLTIPS CORREGIDOS (AISLADOS 100%, SIN SUPERPOSICIÓN) */
         .tooltip-wrapper { position: relative; display: inline-flex; align-items: center; cursor: pointer; }
         .tooltip-box {
             display: none; 
@@ -339,6 +339,14 @@
                     <option value="ciencias_naturales">Ciencias Naturales</option>
                     <option value="ingles">Inglés</option>
                 </select>
+            </div>
+
+            <!-- AVISO DE SECUENCIA INTELIGENTE Y DETENCIÓN AUTOMÁTICA -->
+            <div class="p-3 bg-amber-500/10 border border-[#D4AF37]/30 rounded-lg my-3 text-left">
+                <span class="text-[10px] font-mono font-bold text-[#D4AF37] uppercase tracking-wider block mb-1">🏷️ SECUENCIA: PRUEBA DE DIAGNÓSTICO ADAPTATIVO</span>
+                <p class="text-[11px] text-zinc-300 font-sans leading-relaxed">
+                    ⏱️ <strong>Nota:</strong> Dante OS mide la velocidad y estabilidad de tus respuestas. <strong>La prueba se detendrá automáticamente</strong> apenas el algoritmo alcance la certeza de tu nivel.
+                </p>
             </div>
 
             <div id="uiContenedorCronicaArranque" class="narrative-card" style="display: none; margin-bottom: 1.2rem; border-left-color: var(--cyan-core);">
@@ -517,7 +525,7 @@
         </div>
     </main>
 
-    <!-- VISTA 4: CLAUSURA Y TRANSICIÓN HACIA EL PERFIL -->
+    <!-- VISTA 4: CLAUSURA Y PANTALLA DE RECOMPENSA COGNITIVA -->
     <main id="viewFinalReport" class="app-view" style="justify-content: center; align-items: center;"></main>
 
     <!-- DOCK FLOTANTE INFERIOR -->
@@ -778,6 +786,7 @@
                 }, 1000);
             }
 
+            /* 🏆 PANTALLA MÁSTER DE RECOMPENSA Y DESBLOQUEO DE INSIGNIA */
             static desplegarClausuraExamen(reporte) {
                 document.querySelectorAll('.app-view').forEach(view => view.classList.remove('active'));
                 
@@ -786,23 +795,37 @@
                 viewFinal.classList.add("active");
                 
                 viewFinal.innerHTML = `
-                    <div class="gateway-card" style="max-width: 520px; text-align: center; padding: 3rem 2rem;">
-                        <div class="system-version-tag">DANTE OS // ENGINE</div>
-                        <div class="w-16 h-16 mx-auto mb-4 rounded-full border-2 border-[#D4AF37] flex items-center justify-center shadow-[0_0_25px_rgba(212,175,55,0.4)] animate-pulse">
-                            <i class="fas fa-brain text-2xl text-[#D4AF37]"></i>
+                    <div class="gateway-card animate-fade-in" style="max-width: 520px; text-align: center; padding: 2.5rem 1.8rem; border: 2px solid var(--gold-satin); box-shadow: 0 0 50px rgba(212,175,55,0.3);">
+                        <div class="system-version-tag">DANTE OS // RECOMPENSA</div>
+                        
+                        <div class="w-20 h-20 mx-auto mb-4 rounded-full border-4 border-[#D4AF37] bg-amber-500/10 flex items-center justify-center shadow-[0_0_35px_rgba(212,175,55,0.6)] animate-bounce">
+                            <span class="text-3xl">🏆</span>
                         </div>
-                        <h2 class="gateway-title" style="color: white; font-size: 1.4rem;">CONSOLIDANDO ADN COGNITIVO</h2>
-                        <p class="font-mono text-xs text-[#51e2f5] uppercase tracking-widest my-2">Sincronizando Gemelo Digital con Supabase...</p>
-                        <div class="w-full bg-slate-950 h-2 rounded-full border border-slate-800 overflow-hidden my-4">
+                        
+                        <h2 class="gateway-title" style="color: white; font-size: 1.5rem; margin-bottom: 0.2rem;">¡PRUEBA DE DIAGNÓSTICO COMPLETADA!</h2>
+                        <p class="font-mono text-xs text-[#51e2f5] uppercase tracking-widest my-2">Precisión Estadística Alcanzada</p>
+
+                        <div class="my-4 p-3 bg-slate-900/90 border border-[#D4AF37]/40 rounded-lg text-left">
+                            <div class="flex items-center gap-3">
+                                <span class="text-2xl">🎖️</span>
+                                <div>
+                                    <div class="text-xs font-mono font-bold text-[#D4AF37] uppercase">Insignia Desbloqueada</div>
+                                    <div class="text-sm font-bold text-white">Mente Calibrada +150 XP</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="w-full bg-slate-950 h-2.5 rounded-full border border-slate-800 overflow-hidden my-4">
                             <div class="h-full bg-gradient-to-r from-[#51e2f5] to-[#D4AF37] animate-pulse" style="width: 100%;"></div>
                         </div>
-                        <p class="text-[11px] text-slate-400 font-sans">Calculando actualización de habilidad latente (&theta;) y proyección ICFES país.</p>
+                        
+                        <p class="text-xs text-slate-300 font-mono">Consolidando Gemelo Digital en Supabase...</p>
                     </div>
                 `;
 
                 setTimeout(() => {
                     window.location.href = `/perfil.html?estudiante=${AppState.estudiante}`;
-                }, 1500);
+                }, 2800);
             }
 
             static avanzarSiguienteFase() {
