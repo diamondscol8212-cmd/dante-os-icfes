@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Dante Analytics OS - Enterprise Edition</title>
+    <title>Dante OS - Plataforma Adaptativa Enterprise</title>
     
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -18,7 +18,7 @@
             --bg-surface: rgba(20, 22, 29, 0.85);
             --bg-card: rgba(26, 29, 38, 0.85);
             --gold-satin: #d4af37;
-            --gold-glow: rgba(212, 175, 55, 0.4);
+            --gold-glow: rgba(212, 175, 55, 0.35);
             --platinum: #e5e5e5;
             --graphite: rgba(255, 255, 255, 0.08);
             --text-main: #f0f1f5;
@@ -52,147 +52,147 @@
 
         /* HEADER HUD */
         .master-hud {
-            position: fixed; top: 0; width: 100%; z-index: 1000; padding: 8px 12px;
+            position: fixed; top: 0; width: 100%; z-index: 1000; padding: 10px 16px;
             background: rgba(5, 6, 10, 0.95); backdrop-filter: blur(16px);
             border-bottom: 1px solid var(--graphite);
             pointer-events: none; display: flex; justify-content: space-between; align-items: center;
         }
-        .alias-title { font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; color: white; white-space: nowrap; }
-        @media (min-width: 640px) { .alias-title { font-size: 14px; letter-spacing: 2px; } }
-        .geo-tag { font-family: 'JetBrains Mono'; font-size: 8px; color: var(--cyan-core); letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; }
+        .alias-title { font-size: 13px; font-weight: 800; letter-spacing: 1.5px; color: white; white-space: nowrap; }
+        @media (min-width: 640px) { .alias-title { font-size: 15px; letter-spacing: 2px; } }
+        .geo-tag { font-family: var(--font-mono); font-size: 9px; color: var(--cyan-core); letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; }
 
-        .app-view { display: none; min-height: 100vh; padding: 68px 1rem 2.5rem; position: relative; z-index: 10; }
-        @media (min-width: 768px) { .app-view { padding: 75px 2.5rem 2.5rem; } }
-        .app-view.active { display: flex; flex-direction: column; }
+        .app-view { display: none; min-height: 100vh; padding: 75px 1rem 2.5rem; position: relative; z-index: 10; transition: opacity 0.3s ease; }
+        @media (min-width: 768px) { .app-view { padding: 85px 2.5rem 2.5rem; } }
+        .app-view.active { display: flex; flex-direction: column; opacity: 1; }
 
         #viewGateway { justify-content: center; align-items: center; }
         
         .gateway-card {
             background: var(--bg-surface); border: 1px solid var(--graphite);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); border-radius: 12px; 
-            padding: 1.8rem 1.2rem; width: 100%; max-width: 540px; text-align: center; position: relative;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); border-radius: 14px; 
+            padding: 2rem 1.4rem; width: 100%; max-width: 560px; text-align: center; position: relative;
             backdrop-filter: blur(16px);
         }
-        @media (min-width: 640px) { .gateway-card { padding: 3.5rem; } }
+        @media (min-width: 640px) { .gateway-card { padding: 3.2rem 2.5rem; } }
 
-        .gateway-title { font-size: 1.4rem; font-weight: 300; text-transform: uppercase; letter-spacing: 2px; color: var(--gold-satin); margin-bottom: 0.5rem; }
+        .gateway-title { font-size: 1.5rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem; letter-spacing: -0.5px; }
 
         .verification-banner {
             background: rgba(168, 85, 247, 0.12); border: 1px solid rgba(168, 85, 247, 0.3);
-            padding: 0.5rem; border-radius: 6px; color: var(--cyan-core); font-size: 0.68rem;
-            font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1.2rem;
-            box-shadow: 0 0 15px rgba(81, 226, 245, 0.15); font-family: var(--font-mono);
+            padding: 0.55rem; border-radius: 8px; color: var(--cyan-core); font-size: 0.72rem;
+            font-weight: 700; letter-spacing: 0.5px; margin-bottom: 1.2rem;
+            box-shadow: 0 0 15px rgba(81, 226, 245, 0.12); font-family: var(--font-mono);
         }
 
         .system-version-tag {
-            position: absolute; top: 1rem; right: 1.2rem; font-size: 0.65rem; font-weight: 700;
-            color: var(--cyan-core); letter-spacing: 1px; text-transform: uppercase; font-family: var(--font-mono);
+            position: absolute; top: 1.2rem; right: 1.2rem; font-size: 0.65rem; font-weight: 700;
+            color: var(--cyan-core); letter-spacing: 1px; font-family: var(--font-mono);
         }
 
         .selector-group { margin-bottom: 1.2rem; text-align: left; }
-        .selector-label { display: block; color: var(--text-muted); margin-bottom: 0.4rem; font-weight: 700; text-transform: uppercase; font-size: 0.68rem; letter-spacing: 1px; font-family: var(--font-mono); }
+        .selector-label { display: block; color: var(--text-muted); margin-bottom: 0.5rem; font-weight: 700; font-size: 0.75rem; letter-spacing: 0.5px; font-family: var(--font-mono); }
         
         select {
-            width: 100%; padding: 0.85rem; background: rgba(26, 29, 38, 0.8); border: 1px solid var(--graphite);
-            color: var(--text-main); border-radius: 8px; font-size: 0.85rem; outline: none; font-family: var(--font-mono);
-            transition: border-color 0.25s ease;
+            width: 100%; padding: 1rem; background: rgba(26, 29, 38, 0.95); border: 1.5px solid var(--gold-satin);
+            color: #fff; border-radius: 10px; font-size: 0.95rem; outline: none; font-family: var(--font-main);
+            font-weight: 700; transition: all 0.25s ease; box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
         }
-        select:focus { border-color: var(--cyan-core); }
+        select:focus { border-color: var(--cyan-core); box-shadow: 0 0 20px rgba(81, 226, 245, 0.25); }
 
         .btn-premium {
-            width: 100%; padding: 0.95rem 1.2rem; background: rgba(212, 175, 55, 0.12); 
-            border: 2px solid var(--gold-satin); color: var(--gold-satin); font-weight: 900; 
-            text-transform: uppercase; letter-spacing: 2px; border-radius: 8px; cursor: pointer; 
+            width: 100%; padding: 1rem 1.4rem; background: rgba(212, 175, 55, 0.12); 
+            border: 2px solid var(--gold-satin); color: var(--gold-satin); font-weight: 800; 
+            letter-spacing: 1px; border-radius: 10px; cursor: pointer; 
             transition: all 0.25s ease; margin-top: 0.8rem; display: inline-block; text-align: center; 
-            text-decoration: none; font-size: 0.85rem; font-family: var(--font-mono); backdrop-filter: blur(8px);
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+            text-decoration: none; font-size: 0.9rem; font-family: var(--font-mono); backdrop-filter: blur(8px);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.25);
         }
         .btn-premium:hover { background: var(--gold-satin); color: var(--bg-deep); box-shadow: 0 0 30px var(--gold-glow); transform: translateY(-2px); }
 
-        .btn-pulse-glow { animation: pulseGlow 1.5s infinite alternate; }
+        .btn-pulse-glow { animation: pulseGlow 1.8s infinite alternate; }
         @keyframes pulseGlow {
-            0% { box-shadow: 0 0 10px rgba(212, 175, 55, 0.4); transform: scale(1); }
-            100% { box-shadow: 0 0 25px rgba(212, 175, 55, 0.85); transform: scale(1.01); }
+            0% { box-shadow: 0 0 12px rgba(81, 226, 245, 0.3); transform: scale(1); }
+            100% { box-shadow: 0 0 28px rgba(81, 226, 245, 0.75); transform: scale(1.015); }
         }
 
         .workspace-header {
             display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid var(--graphite); padding-bottom: 0.6rem; margin-bottom: 0.8rem;
+            border-bottom: 1px solid var(--graphite); padding-bottom: 0.8rem; margin-bottom: 1rem;
             flex-wrap: wrap; gap: 0.5rem; max-width: 1200px; margin-left: auto; margin-right: auto; width: 100%;
         }
-        .meta-tag { background: rgba(26, 29, 38, 0.6); padding: 0.35rem 0.7rem; border-radius: 6px; border: 1px solid var(--graphite); font-size: 0.68rem; color: var(--gold-satin); font-family: var(--font-mono); backdrop-filter: blur(8px); }
+        .meta-tag { background: rgba(26, 29, 38, 0.6); padding: 0.4rem 0.8rem; border-radius: 8px; border: 1px solid var(--graphite); font-size: 0.72rem; color: var(--cyan-core); font-family: var(--font-mono); backdrop-filter: blur(8px); font-weight: 600; }
         
         .content-layout { display: grid; grid-template-columns: 1fr; gap: 1rem; flex-grow: 1; max-width: 1200px; margin: 0 auto; width: 100%; }
         @media (min-width: 950px) { 
             .content-layout { grid-template-columns: 1fr 1fr; gap: 2rem; }
-            .content-layout.single-panel { grid-template-columns: 1fr; max-width: 820px; }
+            .content-layout.single-panel { grid-template-columns: 1fr; max-width: 840px; }
         }
 
         .panel-enunciado {
-            background: var(--bg-surface); border: 1px solid var(--graphite); border-radius: 12px; 
-            padding: 1.2rem; overflow-y: auto; max-height: 48vh; font-size: 0.92rem; color: #d1d5db;
+            background: var(--bg-surface); border: 1px solid var(--graphite); border-radius: 14px; 
+            padding: 1.4rem; overflow-y: auto; max-height: 52vh; font-size: 0.95rem; color: #d1d5db;
             backdrop-filter: blur(12px); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); line-height: 1.6;
         }
 
         .panel-reactivo { display: flex; flex-direction: column; gap: 0.8rem; position: relative; }
         
         .pregunta-txt { 
-            font-size: 0.98rem; font-weight: 700; color: #fff; margin-bottom: 0.6rem; line-height: 1.5;
-            background: var(--bg-surface); padding: 1rem 1.1rem; border-radius: 10px; border: 1px solid var(--graphite);
+            font-size: 1rem; font-weight: 600; color: #fff; margin-bottom: 0.6rem; line-height: 1.55;
+            background: var(--bg-surface); padding: 1.2rem; border-radius: 12px; border: 1px solid var(--graphite);
         }
-        @media (min-width: 640px) { .pregunta-txt { font-size: 1.08rem; padding: 1.2rem 1.4rem; } }
+        @media (min-width: 640px) { .pregunta-txt { font-size: 1.1rem; padding: 1.4rem; } }
         
-        .opciones-grid { display: flex; flex-direction: column; gap: 0.65rem; }
+        .opciones-grid { display: flex; flex-direction: column; gap: 0.75rem; }
         
         .opcion-card {
-            background: var(--bg-surface); border: 1px solid var(--graphite); border-radius: 8px;
-            padding: 0.85rem 1rem; cursor: pointer; display: flex; align-items: center; gap: 0.8rem; 
-            transition: all 0.25s ease; backdrop-filter: blur(8px); font-size: 0.88rem;
+            background: var(--bg-surface); border: 1px solid var(--graphite); border-radius: 10px;
+            padding: 0.95rem 1.2rem; cursor: pointer; display: flex; align-items: center; gap: 1rem; 
+            transition: all 0.22s ease; backdrop-filter: blur(8px); font-size: 0.92rem; color: #e2e8f0;
         }
-        @media (min-width: 640px) { .opcion-card { font-size: 0.95rem; padding: 1rem 1.2rem; } }
 
-        .opcion-card:hover { border-color: var(--gold-satin); background: rgba(24, 27, 36, 0.9); transform: translateX(3px); }
-        .opcion-card.selected-intent { border-color: var(--gold-satin); background: rgba(212, 175, 55, 0.15); box-shadow: 0 0 20px var(--gold-glow); }
+        .opcion-card:hover { border-color: var(--cyan-core); background: rgba(24, 27, 36, 0.95); transform: translateX(4px); }
+        .opcion-card.selected-intent { border-color: var(--cyan-core); background: rgba(81, 226, 245, 0.12); box-shadow: 0 0 20px rgba(81, 226, 245, 0.25); }
         
         .opcion-id {
-            background: rgba(28, 31, 42, 0.9); width: 30px; height: 30px; display: flex; align-items: center;
-            justify-content: center; border-radius: 6px; font-weight: 700; color: var(--gold-satin); 
-            border: 1px solid var(--graphite); font-family: var(--font-mono); flex-shrink: 0; font-size: 0.82rem;
+            background: rgba(28, 31, 42, 0.9); width: 32px; height: 32px; display: flex; align-items: center;
+            justify-content: center; border-radius: 8px; font-weight: 700; color: var(--cyan-core); 
+            border: 1px solid var(--graphite); font-family: var(--font-mono); flex-shrink: 0; font-size: 0.85rem;
         }
 
         .opcion-card.correct { border-color: var(--emerald) !important; background: rgba(46, 204, 113, 0.12) !important; }
         .opcion-card.wrong { border-color: var(--crimson) !important; background: rgba(231, 76, 60, 0.12) !important; }
 
-        /* CAJA DE CERTEZA DE ALTA VISIBILIDAD */
+        /* CAJA DE CERTEZA */
         #uiMetacognicion {
-            background: rgba(12, 14, 24, 0.96); border: 2px solid var(--gold-satin); border-radius: 14px; 
+            background: rgba(12, 14, 24, 0.96); border: 2px solid var(--cyan-core); border-radius: 14px; 
             padding: 1.4rem 1rem; margin-top: 1rem; display: none; text-align: center;
-            backdrop-filter: blur(16px); box-shadow: 0 0 30px rgba(212, 175, 55, 0.3);
+            backdrop-filter: blur(16px); box-shadow: 0 0 30px rgba(81, 226, 245, 0.25);
             animation: pulseGlow 2s infinite alternate;
         }
         .meta-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; margin-top: 1rem; }
         .btn-meta {
-            background: rgba(26, 29, 38, 0.9); border: 1px solid var(--gold-satin); color: #fff;
-            padding: 0.85rem 0.4rem; border-radius: 8px; cursor: pointer; font-weight: 800; 
-            font-size: 0.78rem; font-family: var(--font-mono); transition: all 0.2s;
+            background: rgba(26, 29, 38, 0.9); border: 1px solid var(--cyan-core); color: #fff;
+            padding: 0.85rem 0.4rem; border-radius: 8px; cursor: pointer; font-weight: 700; 
+            font-size: 0.8rem; font-family: var(--font-mono); transition: all 0.2s;
         }
-        .btn-meta:hover { background: var(--gold-satin); color: #000; box-shadow: 0 0 15px var(--gold-glow); }
+        .btn-meta:hover { background: var(--cyan-core); color: #000; box-shadow: 0 0 15px rgba(81, 226, 245, 0.4); }
 
         #uiFeedback {
-            background: rgba(26, 19, 21, 0.95); border: 1px solid var(--crimson); border-radius: 12px; 
-            padding: 1.2rem; margin-top: 0.8rem; display: none; backdrop-filter: blur(12px);
+            background: rgba(20, 22, 32, 0.96); border: 1.5px solid var(--gold-satin); border-radius: 14px; 
+            padding: 1.4rem; margin-top: 1rem; display: none; backdrop-filter: blur(16px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
         }
 
         .dashboard-container {
-            background: var(--bg-surface); border: 1px solid var(--graphite); border-radius: 14px; 
-            padding: 1.8rem 1.2rem; width: 100%; max-width: 820px; text-align: center; margin: 0 auto;
+            background: var(--bg-surface); border: 1px solid var(--graphite); border-radius: 16px; 
+            padding: 2rem 1.4rem; width: 100%; max-width: 840px; text-align: center; margin: 0 auto;
             backdrop-filter: blur(16px);
         }
 
         .telemetry-badge-grid { 
             display: grid; 
             grid-template-columns: repeat(2, 1fr); 
-            gap: 0.8rem; 
+            gap: 0.9rem; 
             margin-top: 1.2rem; 
             text-align: left; 
         }
@@ -203,11 +203,11 @@
         .telemetry-card { 
             background: rgba(14, 16, 24, 0.9); 
             border: 1px solid var(--graphite); 
-            padding: 0.9rem 1rem; 
-            border-radius: 10px; 
+            padding: 1rem; 
+            border-radius: 12px; 
             position: relative;
         }
-        .telemetry-num { font-size: 1.05rem; font-weight: 800; font-family: var(--font-mono); color: var(--gold-satin); margin-top: 0.3rem; }
+        .telemetry-num { font-size: 1.1rem; font-weight: 800; font-family: var(--font-mono); color: var(--gold-satin); margin-top: 0.35rem; }
 
         .tooltip-wrapper { position: relative; display: inline-flex; align-items: center; cursor: pointer; }
         .tooltip-box {
@@ -215,16 +215,16 @@
             position: absolute; 
             bottom: 125%; 
             right: 0; 
-            width: 200px; 
+            width: 210px; 
             background-color: #080910; 
             color: #f1f5f9;
             text-align: left; 
-            padding: 0.6rem 0.8rem; 
+            padding: 0.65rem 0.85rem; 
             border-radius: 8px; 
             border: 1px solid var(--gold-satin);
             box-shadow: 0 10px 25px rgba(0,0,0,0.9);
             z-index: 9999; 
-            font-size: 0.72rem; 
+            font-size: 0.75rem; 
             line-height: 1.35; 
             pointer-events: none;
             font-family: var(--font-main);
@@ -233,17 +233,17 @@
 
         /* DOCK FLOTANTE */
         .bottom-nav { 
-            position: fixed; bottom: 12px; width: 92%; max-width: 480px; left: 50%; transform: translateX(-50%); z-index: 1000;
+            position: fixed; bottom: 14px; width: 92%; max-width: 480px; left: 50%; transform: translateX(-50%); z-index: 1000;
             display: flex; justify-content: space-evenly; align-items: center;
             background: rgba(5, 5, 8, 0.94); backdrop-filter: blur(20px);
-            padding: 6px 12px; border-radius: 60px; border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 8px 16px; border-radius: 60px; border: 1px solid rgba(255, 255, 255, 0.12);
             box-shadow: 0 10px 40px rgba(0,0,0,0.95);
         }
         .nav-item { display: flex; flex-direction: column; align-items: center; min-width: 65px; cursor: pointer; }
-        .icon-circle { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); margin-bottom: 2px; }
-        .nav-text { font-size: 8.5px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; }
+        .icon-circle { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); margin-bottom: 2px; }
+        .nav-text { font-size: 8.5px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
         
-        #dante-anchor { width: 46px; height: 48px; border-radius: 50%; border: 2px solid var(--gold-satin); background: #000; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        #dante-anchor { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--gold-satin); background: #000; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         #dante-anchor i { font-size: 18px; color: var(--gold-satin); }
 
         /* TUTORIAL */
@@ -252,14 +252,14 @@
             z-index: 99999; display: flex; justify-content: center; align-items: center; padding: 1.5rem;
         }
         .tutorial-card {
-            background: rgba(15, 18, 28, 0.98); border: 1px solid var(--gold-satin); border-radius: 16px;
-            padding: 2rem 1.5rem; max-width: 500px; width: 100%; text-align: center;
+            background: rgba(15, 18, 28, 0.98); border: 1.5px solid var(--gold-satin); border-radius: 16px;
+            padding: 2.2rem 1.6rem; max-width: 500px; width: 100%; text-align: center;
             box-shadow: 0 20px 60px rgba(212, 175, 55, 0.25); position: relative;
         }
         .tutorial-step-badge {
             background: rgba(81, 226, 245, 0.15); border: 1px solid var(--cyan-core); color: var(--cyan-core);
-            padding: 4px 10px; border-radius: 20px; font-size: 10px; font-family: var(--font-mono); font-weight: 800;
-            text-transform: uppercase; letter-spacing: 1px; display: inline-block; margin-bottom: 1rem;
+            padding: 4px 12px; border-radius: 20px; font-size: 10.5px; font-family: var(--font-mono); font-weight: 700;
+            letter-spacing: 0.5px; display: inline-block; margin-bottom: 1rem;
         }
     </style>
 </head>
@@ -287,20 +287,20 @@
     <!-- TUTORIAL GUIADO INTERACTIVO -->
     <div id="modalTutorial" class="tutorial-overlay" style="display: none;">
         <div class="tutorial-card">
-            <span class="tutorial-step-badge" id="lblTutorialStep">Paso 1 de 4: La Dinámica</span>
+            <span class="tutorial-step-badge" id="lblTutorialStep">Paso 1 de 4: Dinámica de Evaluación</span>
             <h3 class="font-mono text-lg font-bold text-white mb-2 uppercase" id="lblTutorialTitle">¿Cómo funciona Dante OS?</h3>
             <p class="text-xs text-zinc-300 font-sans leading-relaxed mb-6" id="lblTutorialText">
-                Dante OS no solo mide tus aciertos, mide **CÓMO piensas**. Te explicamos el flujo en 30 segundos.
+                Dante OS evalúa tu precisión y tu estrategia de razonamiento en tiempo real.
             </p>
 
             <div class="flex gap-2">
-                <button class="btn-premium text-xs py-2" id="btnTutorialSkip" onclick="InteractiveTutorial.omitirTutorial()" style="border-color: rgba(255,255,255,0.2); color: #8a8f9d;">Omitir Guía</button>
-                <button class="btn-premium text-xs py-2 btn-pulse-glow" id="btnTutorialNext" onclick="InteractiveTutorial.siguientePaso()">Entendido, Continuar ➡️</button>
+                <button class="btn-premium text-xs py-2.5" id="btnTutorialSkip" onclick="InteractiveTutorial.omitirTutorial()" style="border-color: rgba(255,255,255,0.2); color: #8a8f9d;">Omitir Guía</button>
+                <button class="btn-premium text-xs py-2.5 btn-pulse-glow" id="btnTutorialNext" onclick="InteractiveTutorial.siguientePaso()">Entendido, Continuar ➡️</button>
             </div>
         </div>
     </div>
 
-    <!-- HEADER HUD SUPERIOR CON TELEMETRÍA GLOBAL -->
+    <!-- HEADER HUD SUPERIOR -->
     <header class="master-hud">
         <div>
             <div class="alias-title" id="ui-main-title" data-final="RED DANTE OS">RED DANTE OS</div>
@@ -330,30 +330,30 @@
             <div class="verification-banner" id="lblTenantBanner">AUTENTICANDO CONTEXTO...</div>
             <h1 class="gateway-title" id="lblGatewayWelcome" data-final="DANTE OS RUNTIME">Dante OS Runtime</h1>
             
-            <div class="selector-group" style="margin-top: 1rem;">
+            <div class="selector-group" style="margin-top: 1.2rem;">
                 <label class="selector-label">Módulo de Competencia Evaluativa</label>
                 <select id="selMateria">
-                    <option value="matematicas">Matemáticas</option>
-                    <option value="lectura_critica">Lectura Crítica</option>
-                    <option value="ciencias_naturales">Ciencias Naturales</option>
-                    <option value="ingles">Inglés</option>
+                    <option value="matematicas">📐 Matemáticas</option>
+                    <option value="lectura_critica">📖 Lectura Crítica</option>
+                    <option value="ciencias_naturales">🧪 Ciencias Naturales</option>
+                    <option value="ingles">🇬🇧 Inglés</option>
                 </select>
             </div>
 
             <div class="p-3 bg-amber-500/10 border border-[#D4AF37]/30 rounded-lg my-3 text-left">
                 <span class="text-[10px] font-mono font-bold text-[#D4AF37] uppercase tracking-wider block mb-1">🏷️ SECUENCIA: PRUEBA DE DIAGNÓSTICO ADAPTATIVO</span>
                 <p class="text-[11px] text-zinc-300 font-sans leading-relaxed">
-                    ⏱️ <strong>Nota:</strong> Dante OS mide la velocidad y estabilidad de tus respuestas. <strong>La prueba se detendrá automáticamente</strong> apenas el algoritmo alcance la certeza de tu nivel.
+                    ⏱️ <strong>Nota:</strong> Dante OS mide la velocidad y precisión de tus respuestas. La prueba finalizará automáticamente cuando el algoritmo alcance la certeza sobre tu nivel.
                 </p>
             </div>
 
-            <div id="uiContenedorCronicaArranque" class="narrative-card" style="display: none; margin-bottom: 1.2rem; border-left-color: var(--cyan-core);">
-                <div class="narrative-title" style="color: var(--cyan-core);">📖 MEMORIA DE TRAYECTORIA COGNITIVA</div>
-                <p class="narrative-p" id="lblTextoCronicaArranque"></p>
-                <button class="btn-premium" style="margin-top: 0.8rem; border-color: var(--cyan-core); color: var(--cyan-core);" onclick="AppController.liberarEntornoHaciaWorkspace()">Desplegar Desafío</button>
+            <div id="uiContenedorCronicaArranque" class="narrative-card" style="display: none; margin-bottom: 1.2rem; border-left: 4px solid var(--cyan-core); background: rgba(10,12,20,0.8); padding: 1rem; rounded-radius: 8px;">
+                <div class="narrative-title font-mono text-xs font-bold mb-1" style="color: var(--cyan-core);">📖 MEMORIA DE TRAYECTORIA COGNITIVA</div>
+                <p class="narrative-p text-xs text-slate-300" id="lblTextoCronicaArranque"></p>
+                <button class="btn-premium btn-pulse-glow" style="margin-top: 0.8rem; border-color: var(--cyan-core); color: var(--cyan-core);" onclick="AppController.liberarEntornoHaciaWorkspace()">🚀 DESPLEGAR DESAFÍO</button>
             </div>
 
-            <button class="btn-premium btn-pulse-glow" id="btnIngresar" onclick="AppController.inicializarSesion()">Sincronizar Entorno</button>
+            <button class="btn-premium btn-pulse-glow" id="btnIngresar" onclick="AppController.inicializarSesion()">🚀 INICIAR SIMULACRO ADAPTATIVO</button>
             
             <a href="/perfil.html" class="btn-premium" style="border-color: var(--cyan-core); color: var(--cyan-core);">
                 👤 CONSULTAR MI PERFIL / HISTORIAL
@@ -367,7 +367,7 @@
         <header class="workspace-header">
             <div>
                 <h2 id="lblEstudiante" style="color: var(--gold-satin); font-size: 1rem;" class="font-mono">Estudiante: -</h2>
-                <p id="lblMateria" style="color: var(--text-muted); font-size: 0.7rem;" class="font-mono">Módulo Analítico</p>
+                <p id="lblMateria" style="color: var(--text-muted); font-size: 0.72rem;" class="font-mono">Módulo Analítico</p>
             </div>
 
             <div style="display: flex; align-items: center; gap: 0.6rem;">
@@ -376,8 +376,7 @@
         </header>
 
         <div class="content-layout" id="containerLayout">
-            <section class="panel-enunciado" id="uiEnunciados">
-            </section>
+            <section class="panel-enunciado" id="uiEnunciados"></section>
 
             <section class="panel-reactivo">
                 <div id="uiContenedorPreguntaCore">
@@ -385,42 +384,35 @@
                     <div class="opciones-grid" id="uiOpcionesGrid"></div>
                     
                     <button class="btn-premium btn-pulse-glow" id="btnConfirmarSeleccion" style="margin-top: 1.2rem; display: none;" onclick="QuizEngine.abrirFaseMetacognitiva()">
-                        ⚡ CONFIRMAR MI ELECCIÓN
+                        ⚡ CONFIRMAR ELECCIÓN
                     </button>
                 </div>
 
-                <div id="uiIntervencionClinica" class="pulse-warning">
-                    <h3 id="lblIntervencionTitulo" style="color: var(--crimson); font-size: 0.95rem;" class="font-mono">-</h3>
-                    <p id="lblIntervencionCuerpo" style="color: #cbd5e1; font-size: 0.85rem; margin-top: 0.8rem;"></p>
+                <div id="uiIntervencionClinica" class="pulse-warning" style="display:none; background: rgba(20,10,12,0.95); border: 2px solid var(--crimson); padding: 1.4rem; border-radius: 12px; text-align: center;">
+                    <h3 id="lblIntervencionTitulo" style="color: var(--crimson); font-size: 1rem;" class="font-mono font-bold">-</h3>
+                    <p id="lblIntervencionCuerpo" style="color: #cbd5e1; font-size: 0.88rem; margin-top: 0.8rem;"></p>
                     
                     <div style="margin-top: 1.2rem;">
                         <span id="lblContadorSegundos" style="font-size: 2.2rem; color: var(--gold-satin);" class="font-mono">10</span>
-                        <p style="font-size: 0.62rem; color: var(--text-muted);" class="font-mono">Desaceleración obligatoria del Sistema 1</p>
+                        <p style="font-size: 0.68rem; color: var(--text-muted);" class="font-mono">Pausa estratégica de autorregulación</p>
                     </div>
-                    <button id="btnDesbloquearFreno" class="btn-premium" style="margin-top: 1rem; display: none; border-color: var(--emerald); color: var(--emerald);" onclick="QuizEngine.liberarFrenoIntervencion()">Activar Sistema 2 Analítico</button>
+                    <button id="btnDesbloquearFreno" class="btn-premium" style="margin-top: 1rem; display: none; border-color: var(--emerald); color: var(--emerald);" onclick="QuizEngine.liberarFrenoIntervencion()">Activar Análisis Detallado</button>
                 </div>
 
                 <div id="uiMetacognicion">
-                    <div class="font-mono text-xs text-[#D4AF37] uppercase tracking-widest font-bold mb-1">PASO OBLIGATORIO: EVALUACIÓN DE CERTEZA</div>
-                    <p style="font-size: 0.85rem; color: #fff;" class="font-sans font-semibold">¿Con qué grado de seguridad respondiste esta pregunta?</p>
+                    <div class="font-mono text-xs text-[#51e2f5] uppercase tracking-widest font-bold mb-1">EVALUACIÓN DE CERTEZA</div>
+                    <p style="font-size: 0.88rem; color: #fff;" class="font-sans font-semibold">¿Con qué grado de confianza respondiste este ejercicio?</p>
                     <div class="meta-grid">
-                        <button class="btn-meta" onclick="QuizEngine.confirmarMetacognicion('alta')">🟢 Certeza Absoluta</button>
+                        <button class="btn-meta" onclick="QuizEngine.confirmarMetacognicion('alta')">🟢 Seguro</button>
                         <button class="btn-meta" onclick="QuizEngine.confirmarMetacognicion('media')">🟡 Dudoso</button>
                         <button class="btn-meta" onclick="QuizEngine.confirmarMetacognicion('baja')">🔴 Adiviné</button>
                     </div>
                 </div>
 
                 <div id="uiFeedback">
-                    <div class="feedback-header">Análisis de Desviación Cognitiva</div>
+                    <div class="feedback-header font-mono text-xs font-bold text-amber-400 mb-2 uppercase">💡 Pista de Orientación:</div>
                     <div class="forensic-box" id="uiFeedbackCuerpoAndamiaje">
-                        <div class="forensic-row trampa">
-                            <div class="forensic-label" style="color: var(--crimson);">HEURÍSTICA / SESGO DETECTADO</div>
-                            <div class="forensic-txt" id="forensicTrampa">-</div>
-                        </div>
-                        <div class="forensic-row" style="margin-top: 0.8rem;">
-                            <div class="forensic-label" style="color: var(--gold-satin);">LÓGICA DE REMEDIACIÓN</div>
-                            <div class="forensic-txt" id="forensicRealidad">-</div>
-                        </div>
+                        <p class="text-xs text-slate-200 leading-relaxed" id="forensicRealidad">-</p>
                     </div>
                     <button class="btn-premium btn-pulse-glow" id="btnContinuarFeedback" style="margin-top: 1rem;" onclick="QuizEngine.procesarFrenoComprension()">Continuar Evaluación ➡️</button>
                 </div>
@@ -431,18 +423,18 @@
     <!-- VISTA 3: DASHBOARD INTERMEDIO TRADUCIDO -->
     <main id="viewDashboard" class="app-view">
         <div class="dashboard-container">
-            <h2 style="color: var(--gold-satin); font-size: 1.15rem;" class="font-mono font-bold">Resumen de Decisión (Dante OS v21.1.0)</h2>
-            <p style="color: var(--text-muted); font-size: 0.72rem;" class="font-mono">Análisis Humano de tu Aprendizaje</p>
+            <h2 style="color: var(--gold-satin); font-size: 1.15rem;" class="font-mono font-bold">Resumen de Decisión</h2>
+            <p style="color: var(--text-muted); font-size: 0.72rem;" class="font-mono">Análisis de tu Estrategia de Razonamiento</p>
             
             <button class="btn-premium btn-pulse-glow" style="margin: 1rem 0; font-size: 0.88rem;" onclick="AppController.avanzarSiguienteFase()">
                 🚀 CONTINUAR A LA SIGUIENTE PREGUNTA ➡️
             </button>
 
             <div class="chart-box" style="margin-top: 0.5rem; margin-bottom: 1rem;">
-                <svg id="svgChart" width="100%" height="220" viewBox="0 0 600 220" style="background: rgba(10, 11, 13, 0.9); border-radius: 8px; border: 1px solid var(--graphite);"></svg>
+                <svg id="svgChart" width="100%" height="220" viewBox="0 0 600 220" style="background: rgba(10, 11, 13, 0.9); border-radius: 10px; border: 1px solid var(--graphite);"></svg>
             </div>
 
-            <!-- TARJETAS DE MÉTRICAS EN TRADUCCIÓN HUMANA -->
+            <!-- TARJETAS DE MÉTRICAS -->
             <div class="telemetry-badge-grid">
                 <div class="telemetry-card">
                     <div class="flex justify-between items-center">
@@ -482,7 +474,7 @@
                         <p style="font-size: 0.65rem;" class="font-mono text-slate-400 font-bold">Estrategia Mental</p>
                         <div class="tooltip-wrapper">
                             <span class="text-[10px] text-amber-500 font-bold">(?)</span>
-                            <div class="tooltip-box font-sans">Impulsividad Sistema 1 vs Análisis Sistema 2.</div>
+                            <div class="tooltip-box font-sans">Respuesta impulsiva vs Análisis reflexivo.</div>
                         </div>
                     </div>
                     <p class="telemetry-num" id="telemetryProfile" style="color: var(--gold-satin);">-</p>
@@ -493,7 +485,7 @@
                         <p style="font-size: 0.65rem;" class="font-mono text-emerald-400 font-bold">Recuperación Error</p>
                         <div class="tooltip-wrapper">
                             <span class="text-[10px] text-emerald-400 font-bold">(?)</span>
-                            <div class="tooltip-box font-sans">Dante detectó que necesitas 1 reactivo para volver a tu nivel habitual.</div>
+                            <div class="tooltip-box font-sans">Capacidad de retomar precisión tras una respuesta incorrecta.</div>
                         </div>
                     </div>
                     <p class="telemetry-num" id="telemetryIRI" style="color: var(--emerald);">1 Reactivo</p>
@@ -504,7 +496,7 @@
                         <p style="font-size: 0.65rem;" class="font-mono text-cyan-400 font-bold">Curiosidad Cognitiva</p>
                         <div class="tooltip-wrapper">
                             <span class="text-[10px] text-cyan-400 font-bold">(?)</span>
-                            <div class="tooltip-box font-sans">Dante observó que antes de responder exploras varias posibilidades.</div>
+                            <div class="tooltip-box font-sans">Grado de exploración de alternativas antes de decidir.</div>
                         </div>
                     </div>
                     <p class="telemetry-num" id="telemetryICC" style="color: var(--cyan-core);">Alta</p>
@@ -513,7 +505,7 @@
 
             <div style="display: flex; gap: 1rem; justify-content: space-between; align-items: center; margin-top: 1.5rem; border-top: 1px solid var(--graphite); padding-top: 1rem;">
                 <div style="text-align: left;">
-                    <p style="font-size: 0.65rem; color: var(--text-muted);" class="font-mono">Nivel de Dominio Cognitivo</p>
+                    <p style="font-size: 0.65rem; color: var(--text-muted);" class="font-mono">Nivel de Dominio Estimado</p>
                     <p id="lblThetaActual" style="font-size: 0.95rem; color: var(--gold-satin);" class="font-mono">Superas al 72% de estudiantes similares</p>
                 </div>
                 <button class="btn-premium btn-pulse-glow" style="width: auto; padding: 0.7rem 1.4rem; margin-top: 0;" onclick="AppController.avanzarSiguienteFase()">
@@ -523,7 +515,7 @@
         </div>
     </main>
 
-    <!-- VISTA 4: CLAUSURA -->
+    <!-- VISTA 4: TRANSICIÓN LIMPIA DE CLAUSURA -->
     <main id="viewFinalReport" class="app-view" style="justify-content: center; align-items: center;"></main>
 
     <!-- DOCK FLOTANTE INFERIOR -->
@@ -579,7 +571,6 @@
             esSegundoIntento: false
         };
 
-        /* TUTORIAL INTERACTIVO */
         class InteractiveTutorial {
             static currentStep = 1;
             static steps = [
@@ -589,19 +580,19 @@
                     text: "Lee detenidamente la pregunta y haz clic en la opción que consideres correcta (A, B, C o D)."
                 },
                 {
-                    badge: "Paso 2 de 4: Botón Confirmar",
+                    badge: "Paso 2 de 4: Confirmación",
                     title: "2. Confirma tu Elección",
-                    text: "Un botón brillante 'CONFIRMAR ELECCIÓN' aparecerá debajo de las opciones. Haz clic en él para proceder."
+                    text: "Haz clic en el botón 'CONFIRMAR ELECCIÓN' para guardar tu intento."
                 },
                 {
-                    badge: "Paso 3 de 4: Indicar Certeza",
-                    title: "3. Declara tu Certeza",
-                    text: "Dante OS te preguntará si estabas seguro, dudoso o si adivinaste. Esto permite medir tu nivel de confianza metacognitiva."
+                    badge: "Paso 3 de 4: Declaración de Certeza",
+                    title: "3. Indica tu Confianza",
+                    text: "Indica si estabas seguro, dudoso o si adivinaste para calibrar tu precisión metacognitiva."
                 },
                 {
-                    badge: "Paso 4 de 4: Métricas y Avance",
-                    title: "4. Revisa y Sigue",
-                    text: "Verás una pantalla con tus Métricas Longitudinales en tiempo real. Para continuar, haz clic en el botón grande 'SIGUIENTE REACTIVO'."
+                    badge: "Paso 4 de 4: Progreso Adaptativo",
+                    title: "4. Revisa tu Diagnóstico",
+                    text: "Visualiza tus métricas en tiempo real y presiona 'SIGUIENTE REACTIVO' para avanzar."
                 }
             ];
 
@@ -620,7 +611,7 @@
                 document.getElementById('lblTutorialText').innerText = step.text;
 
                 if (this.currentStep === this.steps.length) {
-                    document.getElementById('btnTutorialNext').innerText = "🚀 ¡Entendido, Empezar Examen!";
+                    document.getElementById('btnTutorialNext').innerText = "🚀 ¡Entendido, Empezar!";
                 } else {
                     document.getElementById('btnTutorialNext').innerText = "Siguiente Paso ➡️";
                 }
@@ -641,13 +632,6 @@
             }
         }
 
-        class EventSourcingEngine {
-            static registrarEvento(tipo, payload = {}) {
-                AppState.bufferEventosCognitivos.push({ tipo: tipo, timestamp: Date.now(), payload: payload });
-                console.log(`📡 [ES COGNITIVO LOGGED]: ${tipo}`, payload);
-            }
-        }
-
         class AppController {
             static resolverContextoAutenticado() {
                 const rawUser = localStorage.getItem("dante_user");
@@ -660,14 +644,14 @@
                 }
 
                 const sessionData = JSON.parse(rawUser);
-                AppState.estudiante = sessionData.email ? sessionData.email.split('@')[0].toLowerCase().trim() : (sessionData.estudiante || "viviana");
+                AppState.estudiante = sessionData.email ? sessionData.email.split('@')[0].toLowerCase().trim() : (sessionData.estudiante || "usuario");
                 INSTITUTION_ID = sessionData.institution_id || "colegio_sandbox_default";
                 AppState.integrityToken = token;
 
                 const streak = localStorage.getItem("dante_streak_count") || "1";
                 document.getElementById("lblRachaDias").innerText = `${streak} ${streak === "1" ? 'Día' : 'Días'}`;
 
-                document.getElementById("lblTenantBanner").innerText = `🔗 INQUILINO CONECTADO: T-${INSTITUTION_ID.toUpperCase()}`;
+                document.getElementById("lblTenantBanner").innerText = `🔗 CONECTADO: T-${INSTITUTION_ID.toUpperCase()}`;
                 document.getElementById("lblTenantBannerHeader").innerText = `TENANT: ${INSTITUTION_ID.toUpperCase()}`;
                 document.getElementById("lblGatewayWelcome").innerText = `SALA DE ${AppState.estudiante.toUpperCase()}`;
                 document.getElementById("lblGatewayWelcome").setAttribute("data-final", `SALA DE ${AppState.estudiante.toUpperCase()}`);
@@ -681,7 +665,7 @@
 
             static async inicializarSesion() {
                 const btn = document.getElementById("btnIngresar");
-                btn.innerText = "Sincronizando tu trayectoria cognitiva..."; btn.disabled = true;
+                btn.innerText = "Sincronizando trayectoria cognitiva..."; btn.disabled = true;
 
                 AppState.materia = document.getElementById("selMateria").value;
                 AppState.historialTheta = [0.0]; 
@@ -690,7 +674,7 @@
                 AppState.sessionId = `session_web_clean_${Date.now()}`;
 
                 document.getElementById("lblEstudiante").innerText = `Estudiante: ${AppState.estudiante.toUpperCase()}`;
-                document.getElementById("lblMateria").innerText = `Módulo Analítico: ${AppState.materia.replace('_', ' ').toUpperCase()}`;
+                document.getElementById("lblMateria").innerText = `Módulo: ${AppState.materia.replace('_', ' ').toUpperCase()}`;
 
                 try {
                     const res = await fetch(GATEWAY_URL, {
@@ -715,10 +699,10 @@
                         if (data.cronicaBienvenida) {
                             document.getElementById("lblTextoCronicaArranque").innerText = data.cronicaBienvenida;
                             document.getElementById("uiContenedorCronicaArranque").style.display = "block";
-                            btn.innerText = "Sincronizar Entorno";
+                            btn.innerText = "🚀 INICIAR SIMULACRO ADAPTATIVO";
                             AppState.bufferRetornoSiguiente = data; 
                         } else {
-                            btn.innerText = "Sincronizar Entorno"; btn.disabled = false;
+                            btn.innerText = "🚀 INICIAR SIMULACRO ADAPTATIVO"; btn.disabled = false;
                             this.cambiarVista("viewWorkspace");
                             this.procesarRetornoMotor(data);
                             InteractiveTutorial.verificarMostrar();
@@ -728,7 +712,7 @@
                     }
                 } catch (err) {
                     alert("Fallo de conexión con el Servidor Node.js: " + err.message);
-                    btn.innerText = "Sincronizar Entorno"; btn.disabled = false;
+                    btn.innerText = "🚀 INICIAR SIMULACRO ADAPTATIVO"; btn.disabled = false;
                 }
             }
 
@@ -742,7 +726,6 @@
 
             static procesarRetornoMotor(data) {
                 if (data.detenerExamen) {
-                    EventSourcingEngine.registrarEvento("EXAMEN_CONCLUIDO_CRITERIO_PARADA", { thetaFinal: AppState.theta });
                     this.desplegarClausuraExamen(data.reporteFinal || data);
                     return;
                 }
@@ -761,13 +744,13 @@
 
             static deploymentAnomaliaControl(accs) {
                 document.getElementById("uiContenedorPreguntaCore").style.display = "none";
-                document.getElementById("uiIntervencionClinica").style.display = "flex";
+                document.getElementById("uiIntervencionClinica").style.display = "block";
                 document.getElementById("btnDesbloquearFreno").style.display = "none";
 
                 const andamiaje = AppState.bufferRetornoSiguiente?.andamiajeForense || {};
 
-                document.getElementById("lblIntervencionTitulo").innerText = andamiaje.errorDetonado || "DESACELERACIÓN SISTEMA 1";
-                document.getElementById("lblIntervencionCuerpo").innerText = andamiaje.remediacionSugerida || "Tómate 10 segundos para releer la pregunta antes de responder.";
+                document.getElementById("lblIntervencionTitulo").innerText = andamiaje.errorDetonado || "PAUSA DE AUTORREGULACIÓN";
+                document.getElementById("lblIntervencionCuerpo").innerText = andamiaje.remediacionSugerida || "Tómate 10 segundos para releer la pregunta antes de marcar.";
 
                 AppState.controlIntervencion.segundosRestantes = accs.intervencion_activa === "IMPULSIVITY_BLOCK" ? 10 : 30;
                 document.getElementById("lblContadorSegundos").innerText = AppState.controlIntervencion.segundosRestantes;
@@ -779,7 +762,7 @@
                     
                     if (AppState.controlIntervencion.segundosRestantes <= 0) {
                         clearInterval(AppState.controlIntervencion.interval);
-                        document.getElementById("btnDesbloquearFreno").style.display = "block";
+                        document.getElementById("btnDesbloquearFreno").style.display = "inline-block";
                     }
                 }, 1000);
             }
@@ -792,37 +775,25 @@
                 viewFinal.classList.add("active");
                 
                 viewFinal.innerHTML = `
-                    <div class="gateway-card animate-fade-in" style="max-width: 520px; text-align: center; padding: 2.5rem 1.8rem; border: 2px solid var(--gold-satin); box-shadow: 0 0 50px rgba(212,175,55,0.3);">
-                        <div class="system-version-tag">DANTE OS // RECOMPENSA</div>
+                    <div class="gateway-card" style="max-width: 520px; text-align: center; padding: 2.5rem 1.8rem; border: 2px solid var(--gold-satin); box-shadow: 0 0 50px rgba(212,175,55,0.25);">
+                        <div class="system-version-tag">DANTE OS // PROCESANDO</div>
                         
-                        <div class="w-20 h-20 mx-auto mb-4 rounded-full border-4 border-[#D4AF37] bg-amber-500/10 flex items-center justify-center shadow-[0_0_35px_rgba(212,175,55,0.6)] animate-bounce">
-                            <span class="text-3xl">🏆</span>
+                        <div class="w-16 h-16 mx-auto mb-4 rounded-full border-2 border-[#D4AF37] bg-amber-500/10 flex items-center justify-center">
+                            <i class="fas fa-spinner fa-spin text-2xl text-[#D4AF37]"></i>
                         </div>
                         
-                        <h2 class="gateway-title" style="color: white; font-size: 1.5rem; margin-bottom: 0.2rem;">¡PRUEBA DE DIAGNÓSTICO COMPLETADA!</h2>
-                        <p class="font-mono text-xs text-[#51e2f5] uppercase tracking-widest my-2">Precisión Estadística Alcanzada</p>
+                        <h2 class="gateway-title" style="color: white; font-size: 1.3rem; margin-bottom: 0.2rem;">¡PRUEBA COMPLETADA!</h2>
+                        <p class="font-mono text-xs text-[#51e2f5] my-2">Consolidando expediente de diagnóstico...</p>
 
-                        <div class="my-4 p-3 bg-slate-900/90 border border-[#D4AF37]/40 rounded-lg text-left">
-                            <div class="flex items-center gap-3">
-                                <span class="text-2xl">🎖️</span>
-                                <div>
-                                    <div class="text-xs font-mono font-bold text-[#D4AF37] uppercase">Insignia Desbloqueada</div>
-                                    <div class="text-sm font-bold text-white">Mente Calibrada +150 XP</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="w-full bg-slate-950 h-2.5 rounded-full border border-slate-800 overflow-hidden my-4">
+                        <div class="w-full bg-slate-950 h-2 rounded-full border border-slate-800 overflow-hidden my-4">
                             <div class="h-full bg-gradient-to-r from-[#51e2f5] to-[#D4AF37] animate-pulse" style="width: 100%;"></div>
                         </div>
-                        
-                        <p class="text-xs text-slate-300 font-mono">Consolidando Gemelo Digital en Supabase...</p>
                     </div>
                 `;
 
                 setTimeout(() => {
                     window.location.href = `/perfil.html?estudiante=${AppState.estudiante}`;
-                }, 2800);
+                }, 1500);
             }
 
             static avanzarSiguienteFase() {
@@ -864,7 +835,6 @@
             static abrirFaseMetacognitiva() {
                 if (!AppState.seleccionActual) return;
                 document.getElementById("btnConfirmarSeleccion").style.display = "none";
-                document.getElementById("uiOpcionesGrid").classList.add("freno");
                 
                 const uiMeta = document.getElementById("uiMetacognicion");
                 uiMeta.style.display = "block";
@@ -911,7 +881,7 @@
                         card.classList.add(data.interaccionCorrecta ? "correct" : "wrong");
                         setTimeout(() => {
                             AppController.desplegarClausuraExamen(data.reporteFinal || data);
-                        }, 1200);
+                        }, 1000);
                         return;
                     }
 
@@ -931,7 +901,7 @@
 
                     if (data.interaccionCorrecta) {
                         card.classList.add("correct");
-                        setTimeout(() => { this.transicionarADashboard(); }, 1200);
+                        setTimeout(() => { this.transicionarADashboard(); }, 1000);
                     } else {
                         card.classList.add("wrong");
                         this.renderizarAndamiajePedagogico(data.andamiajeForense);
@@ -960,7 +930,6 @@
                 const letraSeleccionada = AppState.seleccionActual?.id || 'A';
                 const materia = (AppState.materia || 'matematicas').toLowerCase();
                 
-                let errorTxt = andamiaje?.errorDetonado;
                 let remediacionTxt = andamiaje?.remediacionSugerida;
 
                 if (item.explicaciones && item.explicaciones[letraSeleccionada]) {
@@ -969,31 +938,19 @@
                     remediacionTxt = item.explicacion_general;
                 }
 
-                const esTextoMatematicoGenerico = remediacionTxt && (remediacionTxt.includes("descomponer las variables") || remediacionTxt.includes("operar de forma directa"));
-
-                if (!remediacionTxt || esTextoMatematicoGenerico) {
+                if (!remediacionTxt || remediacionTxt.includes("descomponer las variables")) {
                     if (materia === 'ingles') {
                         remediacionTxt = `Identifica la función comunicativa y el contexto global del texto en inglés. Evita traducir palabra por palabra la opción [ ${letraSeleccionada} ].`;
                     } else if (materia === 'lectura_critica') {
-                        remediacionTxt = `Evalúa si la opción [ ${letraSeleccionada} ] se queda en una lectura literal o si realmente responde al sentido implícito y a la intención del autor.`;
+                        remediacionTxt = `Evalúa si la opción [ ${letraSeleccionada} ] responde a la intención implícita del autor o si se queda en una lectura literal.`;
                     } else if (materia === 'ciencias_naturales') {
                         remediacionTxt = `Analiza la relación de causa y efecto en la evidencia científica del enunciado antes de validar la opción [ ${letraSeleccionada} ].`;
                     } else {
-                        remediacionTxt = `Descompón las variables y verifica la relación operacional del problema. La opción [ ${letraSeleccionada} ] no satisface el algoritmo planteado.`;
+                        remediacionTxt = `Revisa las variables del problema y verifica si la opción [ ${letraSeleccionada} ] satisface la ecuación planteada.`;
                     }
                 }
 
-                if (!errorTxt) {
-                    if (materia === 'ingles' || materia === 'lectura_critica') {
-                        errorTxt = `Sesgo de Traducción Literal / Heurística de Lectura Superficial.`;
-                    } else if (materia === 'ciencias_naturales') {
-                        errorTxt = `Inconsistencia en la Inferencia Experimental / Análisis de Variables.`;
-                    } else {
-                        errorTxt = `Inconsistencia Operacional en la opción [ ${letraSeleccionada} ].`;
-                    }
-                }
-
-                return { errorDetonado: errorTxt, remediacionSugerida: remediacionTxt };
+                return { remediacionSugerida: remediacionTxt };
             }
 
             static renderizarSegundoIntentoPista(andamiajeBruto) {
@@ -1002,24 +959,15 @@
                 const uiCuerpo = document.getElementById("uiFeedbackCuerpoAndamiaje");
                 const btnContinuar = document.getElementById("btnContinuarFeedback");
 
-                uiFeedback.querySelector(".feedback-header").innerText = "🔍 DETECCIÓN COGNITIVA // SEGUNDO INTENTO ACTIVADO";
+                uiFeedback.querySelector(".feedback-header").innerText = "💡 PISTA DE REVISION // SEGUNDO INTENTO ACTIVADO";
                 uiFeedback.querySelector(".feedback-header").style.color = "var(--gold-satin)";
-                uiFeedback.style.borderColor = "var(--gold-satin)";
 
                 uiCuerpo.innerHTML = `
-                    <div class="feedback-error-container animate-fade-in">
-                        <p class="text-sm mb-3" style="color: #cbd5e1;">
-                            La opción seleccionada no resuelve correctamente esta pregunta. Revisa la recomendación específica para este enunciado:
-                        </p>
-                        <div class="pista-caja bg-slate-900/90 p-3.5 rounded-lg mb-3" style="border-left: 4px solid var(--gold-satin);">
-                            <span class="text-xs font-semibold text-amber-400 font-mono uppercase tracking-wider block">💡 Orientación para este Ítem:</span>
-                            <p class="text-xs mt-1" style="color: #e2e8f0; line-height: 1.5;">${andamiaje.remediacionSugerida}</p>
-                        </div>
-                        <p class="text-[11px] text-slate-400 font-sans">Dante OS habilita un segundo intento para reajustar tu estrategia antes de enviar el registro definitivo.</p>
-                    </div>
+                    <p class="text-xs text-slate-200 leading-relaxed mb-2">${andamiaje.remediacionSugerida}</p>
+                    <p class="text-[11px] text-slate-400">Puedes ajustar tu estrategia antes de enviar la opción definitiva.</p>
                 `;
 
-                btnContinuar.innerText = "🔄 INTENTAR DE NUEVO";
+                btnContinuar.innerText = "🔄 REINTENTAR RESPUESTA";
                 btnContinuar.disabled = false;
                 btnContinuar.onclick = () => { this.habilitarFlujoDeReintento(); };
                 
@@ -1028,7 +976,6 @@
 
             static habilitarFlujoDeReintento() {
                 document.getElementById("uiFeedback").style.display = "none";
-                document.getElementById("uiOpcionesGrid").classList.remove("freno");
                 
                 document.querySelectorAll('.opcion-card').forEach(el => {
                     el.classList.remove('selected-intent');
@@ -1045,24 +992,14 @@
                 const uiCuerpo = document.getElementById("uiFeedbackCuerpoAndamiaje");
                 const btnContinuar = document.getElementById("btnContinuarFeedback");
 
-                uiFeedback.querySelector(".feedback-header").innerText = "Análisis de Desviación Cognitiva";
-                uiFeedback.querySelector(".feedback-header").style.color = "var(--crimson)";
-                uiFeedback.style.borderColor = "var(--crimson)";
+                uiFeedback.querySelector(".feedback-header").innerText = "💡 PISTA DE ORIENTACIÓN";
+                uiFeedback.querySelector(".feedback-header").style.color = "var(--gold-satin)";
 
-                uiCuerpo.innerHTML = `
-                    <div class="forensic-row trampa">
-                        <div class="forensic-label" style="color: var(--crimson);">HEURÍSTICA / SESGO DETECTADO</div>
-                        <div class="forensic-txt" id="forensicTrampa">${andamiaje.errorDetonado}</div>
-                    </div>
-                    <div class="forensic-row" style="margin-top: 0.8rem;">
-                        <div class="forensic-label" style="color: var(--gold-satin);">LÓGICA DE REMEDIACIÓN</div>
-                        <div class="forensic-txt" id="forensicRealidad">${andamiaje.remediacionSugerida}</div>
-                    </div>
-                `;
+                uiCuerpo.innerHTML = `<p class="text-xs text-slate-200 leading-relaxed">${andamiaje.remediacionSugerida}</p>`;
 
-                let segundosRestantes = 8;
+                let segundosRestantes = 4;
                 btnContinuar.disabled = true;
-                btnContinuar.innerText = `Asimilando corrección cognitiva... (${segundosRestantes}s)`;
+                btnContinuar.innerText = `Procesando pista... (${segundosRestantes}s)`;
                 btnContinuar.onclick = () => { QuizEngine.procesarFrenoComprension(); };
 
                 const intervalId = setInterval(() => {
@@ -1072,7 +1009,7 @@
                         btnContinuar.disabled = false;
                         btnContinuar.innerText = "Continuar Evaluación ➡️";
                     } else {
-                        btnContinuar.innerText = `Asimilando corrección cognitiva... (${segundosRestantes}s)`;
+                        btnContinuar.innerText = `Procesando pista... (${segundosRestantes}s)`;
                     }
                 }, 1000);
 
@@ -1103,7 +1040,7 @@
                 document.getElementById("uiIntervencionClinica").style.display = "none";
                 document.getElementById("uiContenedorPreguntaCore").style.display = "block";
 
-                lblCompetence.innerText = `Sub-competencia: ${String(item.sub_competencia || 'General').toUpperCase()}`;
+                lblCompetence.innerText = `Competencia: ${String(item.sub_competencia || 'General').toUpperCase()}`;
                 
                 const textoCompleto = item.pregunta_texto || '';
                 const tokens = textoCompleto.split('\n\n');
@@ -1113,7 +1050,7 @@
                 if (urlVisual) {
                     contenidoVisualHTML = `
                         <div style="margin: 1rem 0; text-align: center; background: rgba(10, 11, 13, 0.6); padding: 0.8rem; border-radius: 8px; border: 1px solid var(--graphite);">
-                            <img src="${urlVisual}" alt="Recursos visuales del examen ICFES" style="max-width: 100%; height: auto; border-radius: 6px; box-shadow: 0 4px 15px rgba(0,0,0,0.5);" />
+                            <img src="${urlVisual}" alt="Recurso visual del examen" style="max-width: 100%; height: auto; border-radius: 6px;" />
                         </div>
                     `;
                 }
@@ -1126,7 +1063,7 @@
                 } else if (urlVisual) {
                     if (containerLayout) containerLayout.classList.remove("single-panel");
                     uiEnunciados.style.display = "block";
-                    uiEnunciados.innerHTML = `<p style="margin-bottom: 0.4rem; font-family: var(--font-mono); font-size: 0.72rem; color: var(--cyan-core);">> ESTÍMULO VISUAL EVALUATIVO:</p>` + contenidoVisualHTML;
+                    uiEnunciados.innerHTML = `<p style="margin-bottom: 0.4rem; font-family: var(--font-mono); font-size: 0.72rem; color: var(--cyan-core);">> ESTÍMULO VISUAL:</p>` + contenidoVisualHTML;
                     uiPregunta.innerText = textoCompleto;
                 } else {
                     if (containerLayout) containerLayout.classList.add("single-panel");
@@ -1135,7 +1072,6 @@
                 }
 
                 uiOpcionesGrid.innerHTML = "";
-                uiOpcionesGrid.classList.remove("freno");
 
                 const listado = item.opciones_respuesta || ["A", "B", "C", "D"];
                 listado.forEach((opc, idx) => {
@@ -1159,13 +1095,13 @@
                 document.getElementById("telemetryConfidence").innerText = AppState.telemetriaActual.certeza.toUpperCase();
                 
                 let percentilSuperado = Math.min(99, Math.max(15, Math.round(50 + (AppState.theta * 20))));
-                document.getElementById("lblThetaActual").innerHTML = `Has superado al ${percentilSuperado}% de estudiantes con patrón similar`;
+                document.getElementById("lblThetaActual").innerHTML = `Superas al ${percentilSuperado}% de estudiantes en tu nivel`;
 
                 const segs = parseFloat(AppState.telemetriaActual.tiempoTotal);
                 const lblProfile = document.getElementById("telemetryProfile");
-                if (segs < 4.0) { lblProfile.innerText = "S1 Impulsivo"; lblProfile.style.color = "var(--crimson)"; }
+                if (segs < 4.0) { lblProfile.innerText = "Impulsivo"; lblProfile.style.color = "var(--crimson)"; }
                 else if (segs < 12.0) { lblProfile.innerText = "Transición"; lblProfile.style.color = "var(--gold-satin)"; }
-                else { lblProfile.innerText = "S2 Analítico"; lblProfile.style.color = "var(--emerald)"; }
+                else { lblProfile.innerText = "Reflexivo"; lblProfile.style.color = "var(--emerald)"; }
 
                 const svg = document.getElementById("svgChart");
                 svg.innerHTML = "";
@@ -1208,7 +1144,6 @@
             }
         }
 
-        /* ANIMACIÓN DESENCRIPTADO Y ESPIRAL FIBONACCI */
         const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*";
         function decryptText() {
             const elements = document.querySelectorAll('[data-final]');
