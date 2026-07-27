@@ -231,7 +231,7 @@
         }
         .tooltip-wrapper:hover .tooltip-box { display: block !important; }
 
-        /* DOCK FLOTANTE */
+        /* DOCK FLOTANTE CORREGIDO */
         .bottom-nav { 
             position: fixed; bottom: 14px; width: 92%; max-width: 480px; left: 50%; transform: translateX(-50%); z-index: 1000;
             display: flex; justify-content: space-evenly; align-items: center;
@@ -243,7 +243,7 @@
         .icon-circle { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); margin-bottom: 2px; }
         .nav-text { font-size: 8.5px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
         
-        #dante-anchor { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--gold-satin); background: #000; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        #dante-anchor { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--gold-satin); background: #000; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(212,175,55,0.3); }
         #dante-anchor i { font-size: 18px; color: var(--gold-satin); }
 
         /* TUTORIAL */
@@ -347,12 +347,13 @@
                 </p>
             </div>
 
-            <div id="uiContenedorCronicaArranque" class="narrative-card" style="display: none; margin-bottom: 1.2rem; border-left: 4px solid var(--cyan-core); background: rgba(10,12,20,0.8); padding: 1rem; rounded-radius: 8px;">
+            <div id="uiContenedorCronicaArranque" class="narrative-card" style="display: none; margin-bottom: 1.2rem; border-left: 4px solid var(--cyan-core); background: rgba(10,12,20,0.85); padding: 1.1rem; border-radius: 10px; text-align: left;">
                 <div class="narrative-title font-mono text-xs font-bold mb-1" style="color: var(--cyan-core);">📖 MEMORIA DE TRAYECTORIA COGNITIVA</div>
-                <p class="narrative-p text-xs text-slate-300" id="lblTextoCronicaArranque"></p>
-                <button class="btn-premium btn-pulse-glow" style="margin-top: 0.8rem; border-color: var(--cyan-core); color: var(--cyan-core);" onclick="AppController.liberarEntornoHaciaWorkspace()">🚀 DESPLEGAR DESAFÍO</button>
+                <p class="narrative-p text-xs text-slate-300 leading-relaxed" id="lblTextoCronicaArranque"></p>
+                <button class="btn-premium btn-pulse-glow" style="margin-top: 1rem; border-color: var(--cyan-core); color: var(--cyan-core);" onclick="AppController.liberarEntornoHaciaWorkspace()">🚀 DESPLEGAR DESAFÍO</button>
             </div>
 
+            <!-- BOTÓN PRINCIPAL: SE OCULTA AUTOMÁTICAMENTE SI APARECE LA CRÓNICA -->
             <button class="btn-premium btn-pulse-glow" id="btnIngresar" onclick="AppController.inicializarSesion()">🚀 INICIAR SIMULACRO ADAPTATIVO</button>
             
             <a href="/perfil.html" class="btn-premium" style="border-color: var(--cyan-core); color: var(--cyan-core);">
@@ -424,7 +425,7 @@
     <main id="viewDashboard" class="app-view">
         <div class="dashboard-container">
             <h2 style="color: var(--gold-satin); font-size: 1.15rem;" class="font-mono font-bold">Resumen de Decisión</h2>
-            <p style="color: var(--text-muted); font-size: 0.72rem;" class="font-mono">Análisis de tu Estrategia de Razonamiento</p>
+            <p style="color: var(--text-muted); font-size: 0.72rem;" class="font-mono font-semibold">Análisis de tu Estrategia de Razonamiento</p>
             
             <button class="btn-premium btn-pulse-glow" style="margin: 1rem 0; font-size: 0.88rem;" onclick="AppController.avanzarSiguienteFase()">
                 🚀 CONTINUAR A LA SIGUIENTE PREGUNTA ➡️
@@ -506,7 +507,7 @@
             <div style="display: flex; gap: 1rem; justify-content: space-between; align-items: center; margin-top: 1.5rem; border-top: 1px solid var(--graphite); padding-top: 1rem;">
                 <div style="text-align: left;">
                     <p style="font-size: 0.65rem; color: var(--text-muted);" class="font-mono">Nivel de Dominio Estimado</p>
-                    <p id="lblThetaActual" style="font-size: 0.95rem; color: var(--gold-satin);" class="font-mono">Superas al 72% de estudiantes similares</p>
+                    <p id="lblThetaActual" style="font-size: 0.95rem; color: var(--gold-satin);" class="font-mono font-semibold">Superas al 72% de estudiantes en tu nivel</p>
                 </div>
                 <button class="btn-premium btn-pulse-glow" style="width: auto; padding: 0.7rem 1.4rem; margin-top: 0;" onclick="AppController.avanzarSiguienteFase()">
                     Siguiente Reactivo ➡️
@@ -518,15 +519,11 @@
     <!-- VISTA 4: TRANSICIÓN LIMPIA DE CLAUSURA -->
     <main id="viewFinalReport" class="app-view" style="justify-content: center; align-items: center;"></main>
 
-    <!-- DOCK FLOTANTE INFERIOR -->
+    <!-- DOCK FLOTANTE INFERIOR CORREGIDO CON ÍCONOS PROFESIONALES -->
     <nav class="bottom-nav">
         <div class="nav-item" onclick="window.location.reload()">
             <div class="icon-circle">
-                <svg class="nav-icon" viewBox="0 0 100 100" stroke="var(--cyan-core)" fill="none" style="width: 18px; height: 18px;">
-                    <path d="M 30,20 C 30,50 70,50 70,80 M 70,20 C 70,50 30,50 30,80" stroke-width="12" stroke-linecap="round"/>
-                    <circle cx="30" cy="20" r="8" fill="var(--cyan-core)"/><circle cx="70" cy="20" r="8" fill="var(--cyan-core)"/>
-                    <circle cx="30" cy="80" r="8" fill="var(--cyan-core)"/><circle cx="70" cy="80" r="8" fill="var(--cyan-core)"/>
-                </svg>
+                <i class="fas fa-layer-group text-[var(--cyan-core)] text-sm"></i>
             </div>
             <span class="nav-text" style="color: var(--cyan-core)">EXAMEN</span>
         </div>
@@ -537,10 +534,7 @@
         
         <div class="nav-item" onclick="window.location.href='/perfil.html'">
             <div class="icon-circle" style="border-color: rgba(212,175,55,0.3)">
-                <svg class="nav-icon" viewBox="0 0 100 100" fill="var(--gold-satin)" style="width: 18px; height: 18px;">
-                    <circle cx="50" cy="50" r="38" stroke="var(--gold-satin)" stroke-width="5" fill="none"/>
-                    <text x="50" y="68" font-family="Arial" font-size="45" text-anchor="middle" font-weight="900">$</text>
-                </svg>
+                <i class="fas fa-user-astronaut text-[var(--gold-satin)] text-sm"></i>
             </div>
             <span class="nav-text" style="color: var(--gold-satin)">PERFIL</span>
         </div>
@@ -699,7 +693,9 @@
                         if (data.cronicaBienvenida) {
                             document.getElementById("lblTextoCronicaArranque").innerText = data.cronicaBienvenida;
                             document.getElementById("uiContenedorCronicaArranque").style.display = "block";
-                            btn.innerText = "🚀 INICIAR SIMULACRO ADAPTATIVO";
+                            
+                            // 💡 OCULTAR EL BOTÓN PRINCIPAL CUANDO LA CRÓNICA ESTÉ VISIBLE
+                            btn.style.display = "none";
                             AppState.bufferRetornoSiguiente = data; 
                         } else {
                             btn.innerText = "🚀 INICIAR SIMULACRO ADAPTATIVO"; btn.disabled = false;
@@ -718,6 +714,7 @@
 
             static liberarEntornoHaciaWorkspace() {
                 document.getElementById("uiContenedorCronicaArranque").style.display = "none";
+                document.getElementById("btnIngresar").style.display = "block";
                 document.getElementById("btnIngresar").disabled = false;
                 this.cambiarVista("viewWorkspace");
                 this.procesarRetornoMotor(AppState.bufferRetornoSiguiente);
@@ -959,12 +956,12 @@
                 const uiCuerpo = document.getElementById("uiFeedbackCuerpoAndamiaje");
                 const btnContinuar = document.getElementById("btnContinuarFeedback");
 
-                uiFeedback.querySelector(".feedback-header").innerText = "💡 PISTA DE REVISION // SEGUNDO INTENTO ACTIVADO";
+                uiFeedback.querySelector(".feedback-header").innerText = "💡 PISTA DE REVISIÓN // SEGUNDO INTENTO ACTIVADO";
                 uiFeedback.querySelector(".feedback-header").style.color = "var(--gold-satin)";
 
                 uiCuerpo.innerHTML = `
                     <p class="text-xs text-slate-200 leading-relaxed mb-2">${andamiaje.remediacionSugerida}</p>
-                    <p class="text-[11px] text-slate-400">Puedes ajustar tu estrategia antes de enviar la opción definitiva.</p>
+                    <p class="text-[11px] text-slate-400">Puedes reajustar tu estrategia antes de enviar la opción definitiva.</p>
                 `;
 
                 btnContinuar.innerText = "🔄 REINTENTAR RESPUESTA";
