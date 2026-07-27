@@ -50,7 +50,7 @@
         .scanline { position: fixed; inset: 0; background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.5) 51%); background-size: 100% 4px; z-index: 1; pointer-events: none; opacity: 0.2; }
         #fx-flash { position: fixed; inset: 0; z-index: 999999; background: var(--crimson); opacity: 0; pointer-events: none; transition: opacity 0.3s; mix-blend-mode: screen; }
 
-        /* HEADER HUD SUPERIOR REDISEÑADO Y DISCRETO */
+        /* HEADER HUD SUPERIOR CON MAPA DE RUTA */
         .master-hud {
             position: fixed; top: 0; width: 100%; z-index: 1000; padding: 10px 16px;
             background: rgba(5, 6, 10, 0.95); backdrop-filter: blur(16px);
@@ -241,7 +241,7 @@
         }
         .tooltip-wrapper:hover .tooltip-box { display: block !important; }
 
-        /* DOCK FLOTANTE CORREGIDO CON ÍCONOS DE EXPEDIENTE */
+        /* DOCK FLOTANTE CON ÍCONOS SANITIZADOS */
         .bottom-nav { 
             position: fixed; bottom: 14px; width: 92%; max-width: 480px; left: 50%; transform: translateX(-50%); z-index: 1000;
             display: flex; justify-content: space-evenly; align-items: center;
@@ -310,11 +310,11 @@
         </div>
     </div>
 
-    <!-- HEADER HUD SUPERIOR -->
+    <!-- HEADER HUD SUPERIOR CON MAPA DE RUTA Y SECUENCIA -->
     <header class="master-hud">
         <div>
             <div class="alias-title" id="ui-main-title" data-final="RED DANTE OS">RED DANTE OS</div>
-            <div class="geo-tag" id="ui-geo">BOGOTÁ, COLOMBIA</div>
+            <div class="geo-tag" id="lblRutaHeaderTag">SECUENCIA ADAPTATIVA: MATEMÁTICAS (1/5)</div>
         </div>
 
         <div class="flex items-center gap-2 sm:gap-3">
@@ -333,7 +333,7 @@
         </div>
     </header>
 
-    <!-- VISTA 1: GATEWAY DE ENTRADA -->
+    <!-- VISTA 1: GATEWAY DE ENTRADA CON MAPA DE RUTA -->
     <main id="viewGateway" class="app-view active">
         <div class="gateway-card">
             <div class="system-version-tag">v21.1.0-PRO</div>
@@ -341,19 +341,20 @@
             <h1 class="gateway-title" id="lblGatewayWelcome" data-final="DANTE OS RUNTIME">Dante OS Runtime</h1>
             
             <div class="selector-group" style="margin-top: 1.2rem;">
-                <label class="selector-label">Módulo de Competencia Evaluativa</label>
-                <select id="selMateria">
-                    <option value="matematicas">📐 Matemáticas</option>
-                    <option value="lectura_critica">📖 Lectura Crítica</option>
-                    <option value="ciencias_naturales">🧪 Ciencias Naturales</option>
-                    <option value="ingles">🇬🇧 Inglés</option>
+                <label class="selector-label">Secuencia de Diagnóstico (Prueba <span id="lblPasoActualNum">1</span> de 5)</label>
+                <select id="selMateria" onchange="AppController.actualizarIndicadorSecuencia()">
+                    <option value="matematicas">📐 1. Matemáticas</option>
+                    <option value="lectura_critica">📖 2. Lectura Crítica</option>
+                    <option value="ciencias_naturales">🧪 3. Ciencias Naturales</option>
+                    <option value="sociales_ciudadanas">🏛️ 4. Sociales y Ciudadanas</option>
+                    <option value="ingles">🇬🇧 5. Inglés</option>
                 </select>
             </div>
 
             <div class="p-3 bg-amber-500/10 border border-[#D4AF37]/30 rounded-lg my-3 text-left">
-                <span class="text-[10px] font-mono font-bold text-[#D4AF37] uppercase tracking-wider block mb-1">🏷️ SECUENCIA: PRUEBA DE DIAGNÓSTICO ADAPTATIVO</span>
-                <p class="text-[11px] text-zinc-300 font-sans leading-relaxed">
-                    ⏱️ <strong>Nota:</strong> Dante OS mide la velocidad y precisión de tus respuestas. La prueba finalizará automáticamente cuando el algoritmo alcance la certeza sobre tu nivel.
+                <span class="text-[10px] font-mono font-bold text-[#D4AF37] uppercase tracking-wider block mb-1">🏷️ MAPA DE RUTA ADAPTATIVO</span>
+                <p class="text-[11px] text-zinc-300 font-sans leading-relaxed" id="lblRutaExplicacionTexto">
+                    ⏱️ Completa cada módulo en orden. Dante OS calibrará tu habilidad y te guiará automáticamente al siguiente módulo al terminar.
                 </p>
             </div>
 
@@ -363,7 +364,7 @@
                 <button class="btn-premium btn-pulse-glow" style="margin-top: 1rem; border-color: var(--cyan-core); color: var(--cyan-core);" onclick="AppController.liberarEntornoHaciaWorkspace()">🚀 DESPLEGAR DESAFÍO</button>
             </div>
 
-            <!-- BOTÓN PRINCIPAL: SE OCULTA CUANDO APARECE LA CRÓNICA -->
+            <!-- BOTÓN ÚNICO: SE OCULTA CUANDO APARECE LA CRÓNICA -->
             <button class="btn-premium btn-pulse-glow" id="btnIngresar" onclick="AppController.inicializarSesion()">🚀 INICIAR SIMULACRO ADAPTATIVO</button>
             
             <a href="/perfil.html" class="btn-premium" style="border-color: var(--cyan-core); color: var(--cyan-core);">
@@ -382,7 +383,6 @@
             </div>
 
             <div style="display: flex; align-items: center; gap: 0.6rem;">
-                <!-- INDICADOR DE PROGRESSO DE REGISTRO EN VIVO -->
                 <div class="meta-tag" id="lblProgressCount">Reactivo 1 / Adaptativo</div>
                 <div class="meta-tag" id="lblCompetence">Competencia: General</div>
             </div>
@@ -447,7 +447,7 @@
                 <svg id="svgChart" width="100%" height="220" viewBox="0 0 600 220" style="background: rgba(10, 11, 13, 0.9); border-radius: 10px; border: 1px solid var(--graphite);"></svg>
             </div>
 
-            <!-- TARJETAS DE MÉTRICAS HUMANA -->
+            <!-- TARJETAS DE MÉTRICAS -->
             <div class="telemetry-badge-grid">
                 <div class="telemetry-card">
                     <div class="flex justify-between items-center">
@@ -528,7 +528,7 @@
         </div>
     </main>
 
-    <!-- VISTA 4: TRANSICIÓN LIMPIA DE CLAUSURA -->
+    <!-- VISTA 4: CLAUSURA Y PANTALLA DE RECOMPENSA CON RUTA SIGUIENTE -->
     <main id="viewFinalReport" class="app-view" style="justify-content: center; align-items: center;"></main>
 
     <!-- DOCK FLOTANTE INFERIOR CON ÍCONOS DE EXPEDIENTE -->
@@ -558,6 +558,9 @@
         
         let INSTITUTION_ID = "colegio_sandbox_default";
 
+        // SECUENCIA OFICIAL DE MÓDULOS DE RUTA
+        const SECUENCIA_MATERIAS = ["matematicas", "lectura_critica", "ciencias_naturales", "sociales_ciudadanas", "ingles"];
+
         const AppState = {
             estudiante: "", 
             materia: "", 
@@ -569,6 +572,7 @@
             historialSeleccion: [], 
             seleccionActual: null,
             telemetriaActual: { tiempoTotal: 0, conteoMutaciones: 0, certeza: "" },
+            opcionesDescartadas: [], // NUEVA MÉTRICA CONDUCTUAL
             bufferRetornoSiguiente: null,
             bufferEventosCognitivos: [],
             controlIntervencion: { interval: null, segundosRestantes: 0 },
@@ -662,6 +666,37 @@
                 document.getElementById("lblTenantBannerHeader").innerText = `TENANT: ${INSTITUTION_ID.toUpperCase()}`;
                 document.getElementById("lblGatewayWelcome").innerText = `SALA DE ${AppState.estudiante.toUpperCase()}`;
                 document.getElementById("lblGatewayWelcome").setAttribute("data-final", `SALA DE ${AppState.estudiante.toUpperCase()}`);
+
+                // Sincronizar automáticamente la materia según el progreso guardado
+                this.autoselectSiguienteMateria();
+            }
+
+            static autoselectSiguienteMateria() {
+                const sel = document.getElementById("selMateria");
+                for (let i = 0; i < SECUENCIA_MATERIAS.length; i++) {
+                    const mat = SECUENCIA_MATERIAS[i];
+                    const completada = localStorage.getItem(`dante_completado_${mat}_${AppState.estudiante}`);
+                    if (!completada) {
+                        sel.value = mat;
+                        break;
+                    }
+                }
+                this.actualizarIndicadorSecuencia();
+            }
+
+            static actualizarIndicadorSecuencia() {
+                const selValue = document.getElementById("selMateria").value;
+                const idx = SECUENCIA_MATERIAS.indexOf(selValue) + 1;
+                document.getElementById("lblPasoActualNum").innerText = idx;
+                
+                const nombresMap = {
+                    "matematicas": "1. MATEMÁTICAS",
+                    "lectura_critica": "2. LECTURA CRÍTICA",
+                    "ciencias_naturales": "3. CIENCIAS NATURALES",
+                    "sociales_ciudadanas": "4. SOCIALES Y CIUDADANAS",
+                    "ingles": "5. INGLÉS"
+                };
+                document.getElementById("lblRutaHeaderTag").innerText = `SECUENCIA ADAPTATIVA: ${nombresMap[selValue] || selValue.toUpperCase()} (${idx}/5)`;
             }
 
             static cerrarSesionGated() {
@@ -707,7 +742,7 @@
                             document.getElementById("lblTextoCronicaArranque").innerText = data.cronicaBienvenida;
                             document.getElementById("uiContenedorCronicaArranque").style.display = "block";
                             
-                            // MEJORA: OCULTAR EL BOTÓN DUPLICADO
+                            // OCULTAR EL BOTÓN REPETIDO AL DESPLEGAR LA CRÓNICA
                             btn.style.display = "none";
                             AppState.bufferRetornoSiguiente = data; 
                         } else {
@@ -748,6 +783,7 @@
                 AppState.itemHash = data.itemHash || "";
                 AppState.timestamps.inicioReactivo = performance.now();
                 AppState.historialSeleccion = [];
+                AppState.opcionesDescartadas = []; // Reiniciar vector de descartes
                 AppState.seleccionActual = null;
                 AppState.esSegundoIntento = false;
                 document.getElementById("btnConfirmarSeleccion").style.display = "none";
@@ -780,33 +816,70 @@
                 }, 1000);
             }
 
+            /* PANTALLA DE CLAUSURA CON MAPA DE RUTA HACIA EL SIGUIENTE MÓDULO */
             static desplegarClausuraExamen(reporte) {
+                // Guardar la materia actual como completada
+                localStorage.setItem(`dante_completado_${AppState.materia}_${AppState.estudiante}`, 'true');
+
+                const idxActual = SECUENCIA_MATERIAS.indexOf(AppState.materia);
+                const tieneSiguiente = idxActual >= 0 && idxActual < SECUENCIA_MATERIAS.length - 1;
+                const siguienteMateriaKey = tieneSiguiente ? SECUENCIA_MATERIAS[idxActual + 1] : null;
+
+                const nombresMap = {
+                    "lectura_critica": "📖 Lectura Crítica",
+                    "ciencias_naturales": "🧪 Ciencias Naturales",
+                    "sociales_ciudadanas": "🏛️ Sociales y Ciudadanas",
+                    "ingles": "🇬🇧 Inglés"
+                };
+
                 document.querySelectorAll('.app-view').forEach(view => view.classList.remove('active'));
                 
                 const viewFinal = document.getElementById("viewFinalReport");
                 viewFinal.style.display = "flex";
                 viewFinal.classList.add("active");
                 
-                viewFinal.innerHTML = `
-                    <div class="gateway-card" style="max-width: 520px; text-align: center; padding: 2.5rem 1.8rem; border: 2px solid var(--gold-satin); box-shadow: 0 0 50px rgba(212,175,55,0.25);">
-                        <div class="system-version-tag">DANTE OS // PROCESANDO</div>
-                        
-                        <div class="w-16 h-16 mx-auto mb-4 rounded-full border-2 border-[#D4AF37] bg-amber-500/10 flex items-center justify-center">
-                            <i class="fas fa-spinner fa-spin text-2xl text-[#D4AF37]"></i>
+                let botonAccionHTML = "";
+                if (tieneSiguiente) {
+                    botonAccionHTML = `
+                        <button class="btn-premium btn-pulse-glow" style="margin-top: 1rem; border-color: var(--cyan-core); color: var(--cyan-core);" onclick="AppController.iniciarSiguienteModuloRuta('${siguienteMateriaKey}')">
+                            🚀 AVANZAR A PRUEBA ${idxActual + 2}: ${nombresMap[siguienteMateriaKey].toUpperCase()} ➡️
+                        </button>
+                        <a href="/perfil.html?estudiante=${AppState.estudiante}" class="block text-xs text-slate-400 font-mono mt-3 underline hover:text-white">
+                            Ver mi expediente hasta aquí
+                        </a>
+                    `;
+                } else {
+                    botonAccionHTML = `
+                        <div class="my-3 p-2 bg-emerald-500/10 border border-emerald-500/30 rounded text-emerald-400 font-mono text-xs">
+                            🎉 ¡HAS COMPLETADO LAS 5 PRUEBAS DEL DIAGNÓSTICO GLOBAL!
                         </div>
-                        
-                        <h2 class="gateway-title" style="color: white; font-size: 1.3rem; margin-bottom: 0.2rem;">¡PRUEBA COMPLETADA!</h2>
-                        <p class="font-mono text-xs text-[#51e2f5] my-2">Consolidando expediente de diagnóstico...</p>
+                        <a href="/perfil.html?estudiante=${AppState.estudiante}" class="btn-premium btn-pulse-glow" style="margin-top: 1rem; border-color: var(--gold-satin); color: var(--gold-satin);">
+                            📜 CONSULTAR EXPEDIENTE FINAL Y REPORTE 🏆
+                        </a>
+                    `;
+                }
 
-                        <div class="w-full bg-slate-950 h-2 rounded-full border border-slate-800 overflow-hidden my-4">
-                            <div class="h-full bg-gradient-to-r from-[#51e2f5] to-[#D4AF37] animate-pulse" style="width: 100%;"></div>
+                viewFinal.innerHTML = `
+                    <div class="gateway-card animate-fade-in" style="max-width: 520px; text-align: center; padding: 2.5rem 1.8rem; border: 2px solid var(--gold-satin); box-shadow: 0 0 50px rgba(212,175,55,0.25);">
+                        <div class="system-version-tag">DANTE OS // DIAGNÓSTICO</div>
+                        
+                        <div class="w-16 h-16 mx-auto mb-4 rounded-full border-2 border-[#D4AF37] bg-amber-500/10 flex items-center justify-center shadow-[0_0_25px_rgba(212,175,55,0.4)]">
+                            <i class="fas fa-check text-2xl text-[#D4AF37]"></i>
                         </div>
+                        
+                        <h2 class="gateway-title" style="color: white; font-size: 1.3rem; margin-bottom: 0.2rem;">¡MÓDULO DE ${AppState.materia.replace('_', ' ').toUpperCase()} FINALIZADO!</h2>
+                        <p class="font-mono text-xs text-[#51e2f5] my-2">Prueba ${idxActual + 1} de 5 Completada con Éxito</p>
+
+                        ${botonAccionHTML}
                     </div>
                 `;
+            }
 
-                setTimeout(() => {
-                    window.location.href = `/perfil.html?estudiante=${AppState.estudiante}`;
-                }, 1500);
+            static iniciarSiguienteModuloRuta(siguienteMateria) {
+                document.getElementById("selMateria").value = siguienteMateria;
+                this.actualizarIndicadorSecuencia();
+                this.cambiarVista("viewGateway");
+                this.inicializarSesion();
             }
 
             static avanzarSiguienteFase() {
@@ -827,7 +900,7 @@
 
         class QuizEngine {
             static registrarSeleccionPreliminar(cardElement, tipo, id) {
-                if (cardElement.classList.contains('discarded')) return; // No seleccionar si está tachada
+                if (cardElement.classList.contains('discarded')) return; 
 
                 AppState.historialSeleccion.push({ option: id, timestamp: new Date().toISOString() });
                 AppState.seleccionActual = { element: cardElement, tipo: tipo, id: id };
@@ -847,9 +920,18 @@
                 document.getElementById("telemetryHesitation").innerText = `${AppState.historialSeleccion.length - 1} cambios`;
             }
 
-            static toggleTacharOpcion(event, cardElement) {
-                event.stopPropagation(); // Evitar seleccionar la opción al tacharla
+            static toggleTacharOpcion(event, cardElement, letraOption) {
+                event.stopPropagation(); 
                 cardElement.classList.toggle('discarded');
+                
+                if (cardElement.classList.contains('discarded')) {
+                    if (!AppState.opcionesDescartadas.includes(letraOption)) {
+                        AppState.opcionesDescartadas.push(letraOption);
+                    }
+                } else {
+                    AppState.opcionesDescartadas = AppState.opcionesDescartadas.filter(x => x !== letraOption);
+                }
+
                 if (cardElement.classList.contains('selected-intent')) {
                     cardElement.classList.remove('selected-intent');
                     AppState.seleccionActual = null;
@@ -881,7 +963,9 @@
                     const payloadSaneado = {
                         studentId: String(AppState.estudiante), sessionId: String(AppState.sessionId), 
                         itemId: String(AppState.itemActual.id), areaGeneral: String(AppState.materia),
-                        responseTime: parseFloat(segundosTotales.toFixed(2)), declaredConfidence: String(nivelCerteza), selectionVector: AppState.historialSeleccion,
+                        responseTime: parseFloat(segundosTotales.toFixed(2)), declaredConfidence: String(nivelCerteza), 
+                        selectionVector: AppState.historialSeleccion,
+                        opcionesDescartadas: AppState.opcionesDescartadas, // INYECCIÓN DE LA NUEVA MÉTRICA
                         integrityToken: AppState.integrityToken, itemHash: AppState.itemHash,
                         institution_id: INSTITUTION_ID 
                     };
@@ -1108,12 +1192,12 @@
                     const idBox = document.createElement("div"); idBox.className = "opcion-id"; idBox.innerText = letra;
                     const strokeBox = document.createElement("span"); strokeBox.innerText = opc;
 
-                    // MEJORA: BOTÓN DISCRETO PARA TACHAR OPCIÓN
+                    // BOTÓN PARA TACHAR OPCIÓN
                     const btnDiscard = document.createElement("button");
                     btnDiscard.className = "btn-discard-action";
                     btnDiscard.title = "Descartar esta opción";
                     btnDiscard.innerHTML = `<i class="fas fa-eye-slash"></i>`;
-                    btnDiscard.onclick = (e) => { QuizEngine.toggleTacharOpcion(e, card); };
+                    btnDiscard.onclick = (e) => { QuizEngine.toggleTacharOpcion(e, card, letra); };
 
                     card.appendChild(idBox); 
                     card.appendChild(strokeBox); 
