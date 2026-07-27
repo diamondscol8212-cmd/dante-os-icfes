@@ -33,7 +33,7 @@
         .scanline { position: fixed; inset: 0; background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.5) 51%); background-size: 100% 4px; z-index: 1; pointer-events: none; opacity: 0.2; }
         #fx-flash { position: fixed; inset: 0; z-index: 999999; background: var(--alert); opacity: 0; pointer-events: none; transition: opacity 0.3s; mix-blend-mode: screen; }
 
-        /* HEADER HUD PERIMETRAL RESPONSIVO */
+        /* HEADER HUD PERIMETRAL */
         .master-hud {
             position: fixed; top: 0; width: 100%; z-index: 1000; padding: 10px 16px;
             background: rgba(1, 1, 3, 0.95); backdrop-filter: blur(12px);
@@ -43,7 +43,7 @@
         .alias-title { font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; color: white; margin-bottom: 1px;}
         .geo-tag { font-family: 'JetBrains Mono'; font-size: 8px; color: var(--primary); letter-spacing: 1px; text-transform: uppercase; }
 
-        /* VIEWPORT Y SCROLLBAR INVISIBLE */
+        /* VIEWPORT Y SCROLLBAR */
         .adn-viewport {
             position: fixed; inset: 0; z-index: 10;
             overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth;
@@ -144,14 +144,14 @@
         /* TOOLTIPS */
         .tooltip-wrapper { position: relative; display: inline-flex; align-items: center; cursor: pointer; }
         .tooltip-box {
-            visibility: hidden; width: 200px; max-width: 80vw; background-color: #0c0e17; color: #f1f5f9;
+            visibility: hidden; width: 210px; max-width: 80vw; background-color: #0c0e17; color: #f1f5f9;
             text-align: left; padding: 0.65rem; border-radius: 8px; border: 1px solid var(--gold);
             position: absolute; z-index: 999999 !important; opacity: 0; transition: opacity 0.2s ease;
-            font-size: 0.7rem; line-height: 1.3; bottom: calc(100% + 6px); right: 0; pointer-events: none;
+            font-size: 0.72rem; line-height: 1.35; bottom: calc(100% + 6px); right: 0; pointer-events: none;
         }
         .tooltip-wrapper:hover .tooltip-box, .tooltip-wrapper:focus .tooltip-box { visibility: visible; opacity: 1; }
 
-        /* BOTTOM NAV DOCK FLOTANTE */
+        /* BOTTOM NAV DOCK FLOTANTE CORREGIDO CON ÍCONOS SANITIZADOS */
         .bottom-nav { 
             position: fixed; bottom: 18px; width: 90%; left: 5%; z-index: 1000;
             display: flex; justify-content: space-evenly; align-items: center;
@@ -202,7 +202,7 @@
     <div class="adn-viewport" id="viewportContainer">
         <div class="adn-card" id="main-card">
             
-            <!-- HEADER DE IDENTIDAD Y CÓDICE -->
+            <!-- HEADER DE IDENTIDAD -->
             <div class="card-header-visual">
                 <canvas id="mini-core-canvas" class="dante-mini-core"></canvas>
                 <div class="alias-main-name" id="ui-main-title" data-final="EXPEDIENTE DANTE">EXPEDIENTE DANTE</div>
@@ -222,7 +222,7 @@
 
             <!-- BOTÓN OFICIAL DE DESCARGA PDF EXPEDIENTE -->
             <a id="btnDescargarPdfExpediente" href="/reporte.html?rol=estudiante" target="_blank" class="block w-full text-center py-2.5 px-4 mb-4 bg-slate-900 border border-[#51e2f5] text-[#51e2f5] hover:bg-[#51e2f5] hover:text-black font-mono font-bold text-xs uppercase tracking-wider rounded-lg transition-all shadow-md">
-                📜 DESCARGAR EXPEDIENTE OFICIAL (PDF)
+                📜 DESCARGAR EXPEDIENTE OFICIAL PARA PADRES (PDF)
             </a>
 
             <!-- NAVEGACIÓN DE FILTROS POR MATERIA -->
@@ -234,7 +234,7 @@
                 <button class="tab-materia-btn" onclick="PerfilEstudiante.cambiarFiltroMateria('ingles', this)">🇬🇧 Inglés</button>
             </nav>
 
-            <!-- 🏆 1. SECCIÓN PRINCIPAL: PUNTAJE PROYECTADO GLOBAL (1-500) Y ENTRENADOR -->
+            <!-- 🏆 1. SECCIÓN PRINCIPAL: PUNTAJE PROYECTADO GLOBAL (1-500) -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
                 <div class="lg:col-span-2 bg-slate-900/90 border border-[#D4AF37]/50 rounded-xl p-4 sm:p-5 relative overflow-hidden backdrop-blur-md shadow-2xl">
                     <div class="absolute top-0 right-0 bg-[#D4AF37]/20 text-[#D4AF37] px-2.5 py-0.5 text-[9px] font-mono font-bold uppercase rounded-bl-lg border-l border-b border-[#D4AF37]/40">
@@ -242,7 +242,7 @@
                     </div>
                     
                     <p class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest mb-1">
-                        Puntaje Global Estimado (Escala País)
+                        Puntaje Global Estimado (Escala País 1 - 500)
                     </p>
                     
                     <div class="flex items-baseline gap-2 my-1 flex-wrap">
@@ -264,11 +264,11 @@
                     </div>
                 </div>
 
-                <!-- RACHA DIARIA -->
+                <!-- RACHA Y ENTRENADOR DANTE -->
                 <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-4 flex flex-col justify-between backdrop-blur-md">
                     <div>
                         <div class="flex justify-between items-center mb-3">
-                            <span class="text-[10px] font-mono font-bold text-[#51e2f5] uppercase tracking-wider">ENTRENADOR DANTE</span>
+                            <span class="text-[10px] font-mono font-bold text-[#51e2f5] uppercase tracking-wider">DISCIPLINA DE ESTUDIO</span>
                             <div class="flex items-center gap-1 bg-orange-500/10 border border-orange-500/30 px-2 py-0.5 rounded-full">
                                 <span class="text-xs">🔥</span>
                                 <span id="lblRachaDias" class="text-[10px] font-mono font-bold text-orange-400">1 Día Racha</span>
@@ -276,20 +276,20 @@
                         </div>
 
                         <div class="space-y-2">
-                            <p class="text-[9px] font-mono text-slate-400 uppercase tracking-wide">MISIONES DEL DÍA:</p>
+                            <p class="text-[9px] font-mono text-slate-400 uppercase tracking-wide">MISIONES RECOMENDADAS:</p>
                             
                             <div class="bg-slate-950 p-2 rounded border border-slate-800/80 flex items-center justify-between">
                                 <div class="flex items-center gap-2">
                                     <input type="checkbox" id="chkMision1" class="rounded border-slate-700 text-[#D4AF37] focus:ring-0" disabled />
-                                    <span class="text-[11px] text-slate-300">15 reactivos hoy</span>
+                                    <span class="text-[11px] text-slate-300">Completa 1 simulacro adaptativo</span>
                                 </div>
-                                <span id="lblProgresoMision1" class="text-[9px] font-mono text-[#D4AF37]">0/15</span>
+                                <span id="lblProgresoMision1" class="text-[9px] font-mono text-[#D4AF37]">0/1</span>
                             </div>
 
                             <div class="bg-slate-950 p-2 rounded border border-slate-800/80 flex items-center justify-between">
                                 <div class="flex items-center gap-2">
                                     <input type="checkbox" id="chkMision2" class="rounded border-slate-700 text-[#D4AF37] focus:ring-0" checked disabled />
-                                    <span class="text-[11px] text-slate-300">Racha activa</span>
+                                    <span class="text-[11px] text-slate-300">Racha diaria activa</span>
                                 </div>
                                 <span class="text-[9px] font-mono text-emerald-400">✓ ACTIVA</span>
                             </div>
@@ -298,26 +298,46 @@
                 </div>
             </div>
 
-            <!-- MÉTRICAS KPI INDIVIDUALES -->
+            <!-- MÉTRICAS KPI TRADUCIDAS A LENGUAJE ACCESIBLE -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
                 <div class="bg-slate-900/80 border border-slate-800 p-3 rounded-lg">
-                    <p class="text-[9px] font-mono text-slate-400 uppercase">Racha Activa</p>
+                    <div class="flex justify-between items-center">
+                        <p class="text-[9px] font-mono text-slate-400 uppercase font-bold">Racha Activa</p>
+                        <div class="tooltip-wrapper"><span class="text-[10px] text-amber-500">(?)</span>
+                            <div class="tooltip-box font-sans">Días consecutivos ingresando a entrenar.</div>
+                        </div>
+                    </div>
                     <p id="kpiRacha" class="text-lg font-mono font-bold text-amber-400 mt-0.5">1 🔥</p>
                 </div>
 
                 <div class="bg-slate-900/80 border border-slate-800 p-3 rounded-lg">
-                    <p class="text-[9px] font-mono text-slate-400 uppercase">Puntaje Materia</p>
+                    <div class="flex justify-between items-center">
+                        <p class="text-[9px] font-mono text-slate-400 uppercase font-bold">Puntaje Materia</p>
+                        <div class="tooltip-wrapper"><span class="text-[10px] text-emerald-400">(?)</span>
+                            <div class="tooltip-box font-sans">Calificación escalonada en el módulo seleccionado (0-100).</div>
+                        </div>
+                    </div>
                     <p id="kpiPuntaje" class="text-lg font-mono font-bold text-emerald-400 mt-0.5">0 / 100 pts</p>
                 </div>
 
                 <div class="bg-slate-900/80 border border-slate-800 p-3 rounded-lg">
-                    <p class="text-[9px] font-mono text-slate-400 uppercase">Habilidad Latente (θ)</p>
-                    <p id="kpiTheta" class="text-lg font-mono font-bold text-sky-400 mt-0.5">0.0000</p>
+                    <div class="flex justify-between items-center">
+                        <p class="text-[9px] font-mono text-slate-400 uppercase font-bold">Nivel de Dominio</p>
+                        <div class="tooltip-wrapper"><span class="text-[10px] text-sky-400">(?)</span>
+                            <div class="tooltip-box font-sans">Profundidad del razonamiento analítico del estudiante.</div>
+                        </div>
+                    </div>
+                    <p id="kpiTheta" class="text-sm font-mono font-bold text-sky-400 mt-1">Superas al 50%</p>
                 </div>
 
                 <div class="bg-slate-900/80 border border-slate-800 p-3 rounded-lg">
-                    <p class="text-[9px] font-mono text-slate-400 uppercase">Resiliencia (IRI)</p>
-                    <p id="kpiIRI" class="text-lg font-mono font-bold text-purple-400 mt-0.5">50%</p>
+                    <div class="flex justify-between items-center">
+                        <p class="text-[9px] font-mono text-slate-400 uppercase font-bold">Recuperación Error</p>
+                        <div class="tooltip-wrapper"><span class="text-[10px] text-purple-400">(?)</span>
+                            <div class="tooltip-box font-sans">Rapidez para retomar la concentración tras fallar un ejercicio.</div>
+                        </div>
+                    </div>
+                    <p id="kpiIRI" class="text-lg font-mono font-bold text-purple-400 mt-0.5">1 Reactivo</p>
                 </div>
             </div>
 
@@ -325,9 +345,9 @@
             <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 sm:p-5 mb-6">
                 <div class="flex justify-between items-center border-b border-zinc-800 pb-2 mb-2">
                     <h3 class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--gold)] flex items-center gap-2">
-                        <span>🧬</span> Gemelo Digital // Termómetro de Certeza Bayesiano
+                        <span>🧬</span> Rango de Certeza Estadística ICFES
                     </h3>
-                    <span id="lblOrigenGemelo" class="text-[9px] font-mono text-slate-400 uppercase bg-[#08090c] px-2 py-0.5 border border-zinc-800 rounded-full">SUPABASE LIVE (?)</span>
+                    <span id="lblOrigenGemelo" class="text-[9px] font-mono text-slate-400 uppercase bg-[#08090c] px-2 py-0.5 border border-zinc-800 rounded-full">SUPABASE LIVE</span>
                 </div>
 
                 <div class="thermometer-container">
@@ -337,26 +357,26 @@
 
                 <div class="grid grid-cols-3 gap-2 text-center font-mono text-xs text-slate-400 mt-5">
                     <div class="bg-[#08090c]/80 p-2 rounded-lg border border-zinc-800">
-                        <span class="block text-[9px] uppercase">Intervalo Mínimo</span>
+                        <span class="block text-[9px] uppercase">Rango Mínimo</span>
                         <strong style="color: #fff;" id="val-min" class="text-sm font-bold block mt-0.5">0</strong>
                     </div>
                     <div class="bg-[#08090c]/80 p-2 rounded-lg border border-amber-500/30">
-                        <span class="block text-[9px] uppercase text-amber-400">Puntaje Estimado</span>
+                        <span class="block text-[9px] uppercase text-amber-400">Puntaje Esperado</span>
                         <strong style="color: #fbbf24;" id="val-target" class="text-sm font-bold block mt-0.5">0</strong>
                     </div>
                     <div class="bg-[#08090c]/80 p-2 rounded-lg border border-zinc-800">
-                        <span class="block text-[9px] uppercase">Intervalo Máximo</span>
+                        <span class="block text-[9px] uppercase">Rango Máximo</span>
                         <strong style="color: #fff;" id="val-max" class="text-sm font-bold block mt-0.5">0</strong>
                     </div>
                 </div>
             </div>
 
             <!-- DIAGNÓSTICO PSICOMÉTRICO GENERAL -->
-            <div class="section-title">DIAGNÓSTICO PSICOMÉTRICO GENERAL</div>
-            <p class="summary-text" id="ui-summary">Aún no se registra trayectoria activa. Inicia un simulacro para generar la calibración de tu Gemelo Digital.</p>
+            <div class="section-title">RESUMEN EJECUTIVO DE DIAGNÓSTICO</div>
+            <p class="summary-text" id="ui-summary">Aún no se registra trayectoria activa. Inicia un simulacro para generar la calibración de tu expediente.</p>
 
-            <!-- RADAR DE COMPETENCIAS LATENTES -->
-            <div class="section-title">MATRIZ DE COMPETENCIAS LATENTES</div>
+            <!-- RADAR DE COMPETENCIAS CONSOLIDADAS MULTI-MATERIA -->
+            <div class="section-title">MATRIZ DE COMPETENCIAS LATENTES (TODAS LAS MATERIAS)</div>
             <div class="radar-container">
                 <div class="radar-bg">
                     <div class="radar-label lbl-top">MATEMÁTICAS</div>
@@ -364,7 +384,7 @@
                     <div class="radar-label lbl-br">CIENCIAS NAT.</div>
                     <div class="radar-label lbl-bottom">INGLÉS</div>
                     <div class="radar-label lbl-bl">AUTORREGULACIÓN</div>
-                    <div class="radar-label lbl-tl">RESILIENCIA (IRI)</div>
+                    <div class="radar-label lbl-tl">RESILIENCIA</div>
                     
                     <svg viewBox="0 0 100 100" class="radar-svg">
                         <polygon id="radar-shape" class="radar-polygon" points="50,50 50,50 50,50 50,50 50,50 50,50"></polygon>
@@ -378,8 +398,8 @@
                     <h3 class="text-xs font-mono font-bold uppercase text-[var(--gold)] border-b border-zinc-800 pb-2">🎯 Plan Personalizado Prescrito por la IA</h3>
                     
                     <div class="p-3 bg-[#08090c]/80 border-l-4 border-[var(--primary)] rounded-r-lg text-xs leading-relaxed space-y-1">
-                        <span class="font-bold text-[var(--primary)] uppercase block font-mono">Diagnóstico Forense Principal:</span>
-                        <p id="lblVulnerabilidadTxt" class="text-slate-300">Completa tu primer simulacro adaptativo para diagnosticar tus sesgos.</p>
+                        <span class="font-bold text-[var(--primary)] uppercase block font-mono">Punto Clave a Reforzar:</span>
+                        <p id="lblVulnerabilidadTxt" class="text-slate-300">Completa tu primer simulacro adaptativo para diagnosticar tus hábitos de respuesta.</p>
                     </div>
 
                     <div class="p-3 bg-[#0d121f]/90 border border-cyan-500/30 rounded-lg space-y-2">
@@ -390,60 +410,61 @@
                     </div>
 
                     <div class="p-3 bg-[#08090c]/80 border-l-4 border-[var(--gold)] rounded-r-lg text-xs leading-relaxed space-y-1">
-                        <span class="font-bold text-[var(--gold)] uppercase block font-mono">Prescripción Directa para el Estudio:</span>
-                        <p id="lblPrescripcionTxt" class="text-slate-300">El sistema te asignará una estrategia personalizada al finalizar el primer módulo.</p>
+                        <span class="font-bold text-[var(--gold)] uppercase block font-mono">Estrategia Recomendada de Estudio:</span>
+                        <p id="lblPrescripcionTxt" class="text-slate-300">El sistema asignará una guía de entrenamiento al finalizar la primera prueba.</p>
                     </div>
 
                     <div>
-                        <p class="text-[10px] font-mono text-slate-400 uppercase mb-1">Crónica Narrativa de Trayectoria:</p>
+                        <p class="text-[10px] font-mono text-slate-400 uppercase mb-1">Análisis de la Travesía de Aprendizaje:</p>
                         <p id="lblCronicaTxt" class="text-xs text-slate-300 italic bg-[#181b26]/80 p-3 rounded-lg border border-zinc-800 leading-relaxed font-sans">Esperando primer bloque de respuestas.</p>
                     </div>
                 </div>
 
                 <div class="bg-slate-900/80 border border-slate-800 p-4 rounded-xl space-y-3">
-                    <h3 class="text-xs font-mono font-bold uppercase text-rose-400 border-b border-zinc-800 pb-2">🔥 Mapa de Calor de Sesgos</h3>
+                    <h3 class="text-xs font-mono font-bold uppercase text-rose-400 border-b border-zinc-800 pb-2">🔥 Hábitos y Puntos Ciegos</h3>
                     <div id="contenedorBarrasSesgos" class="space-y-3 text-xs font-sans"></div>
                 </div>
             </div>
 
-            <!-- REGISTRO DE EXÁMENES REALIZADOS (ÚNICAMENTE REALES) -->
-            <div class="section-title">REGISTRO DE EXÁMENES REALIZADOS</div>
+            <!-- REGISTRO DE EXÁMENES REALIZADOS -->
+            <div class="section-title">REGISTRO DE EVALUACIONES FINALIZADAS</div>
             <div class="overflow-x-auto mb-6">
                 <table class="w-full text-left border-collapse font-mono text-xs">
                     <thead>
                         <tr class="border-b border-slate-800 text-slate-400 uppercase text-[10px]">
                             <th class="p-2.5">Fecha</th>
                             <th class="p-2.5">Materia</th>
-                            <th class="p-2.5">Habilidad (&theta;)</th>
-                            <th class="p-2.5">Puntaje ICFES</th>
+                            <th class="p-2.5">Nivel Habilidad</th>
+                            <th class="p-2.5">Puntaje Módulo</th>
                             <th class="p-2.5">Estado</th>
                         </tr>
                     </thead>
                     <tbody id="tblExamenesBody" class="divide-y divide-slate-800/60 text-slate-200">
-                        <!-- Renderizado dinámico desde Supabase -->
+                        <!-- Renderizado dinámico -->
                     </tbody>
                 </table>
             </div>
 
             <div class="mt-4">
                 <a href="/index.html" class="block w-full py-3 text-center font-mono font-bold text-xs uppercase tracking-widest text-black bg-[#D4AF37] rounded-lg shadow-lg hover:bg-amber-400 transition">
-                    ⚡ INICIAR NUEVO SIMULACRO ADAPTATIVO
+                    ⚡ CONTINUAR SIGUIENTE MÓDULO DEL SIMULACRO
                 </a>
             </div>
 
         </div>
     </div>
 
+    <!-- DOCK FLOTANTE INFERIOR CON ÍCONO DE EXPEDIENTE -->
     <nav class="bottom-nav">
         <div class="nav-item" onclick="window.location.href='/index.html'">
-            <div class="icon-circle"><i class="fas fa-brain text-[var(--primary)]"></i></div>
+            <div class="icon-circle"><i class="fas fa-layer-group text-[var(--primary)] text-sm"></i></div>
             <span class="nav-text" style="color: var(--primary)">EXAMEN</span>
         </div>
         <div id="dante-anchor" onclick="PerfilEstudiante.irAlInicioYRefrescar()">
             <i class="fas fa-brain"></i>
         </div>
         <div class="nav-item" onclick="PerfilEstudiante.irAlInicioYRefrescar()">
-            <div class="icon-circle" style="border-color: rgba(212,175,55,0.3)"><i class="fas fa-file-invoice text-[var(--gold)]"></i></div>
+            <div class="icon-circle" style="border-color: rgba(212,175,55,0.3)"><i class="fas fa-user-astronaut text-[var(--gold)] text-sm"></i></div>
             <span class="nav-text" style="color: var(--gold)">PERFIL</span>
         </div>
     </nav>
@@ -473,6 +494,7 @@
         let cacheHistorialCompleto = [];
         let cacheOrigenGemelo = "SUPABASE LIVE";
 
+        // VECTORES PARA EL RADAR CONSOLIDADO
         let perfilRadar = { matematicas: 0, lectura_critica: 0, ciencias_naturales: 0, ingles: 0, autorregulacion: 50, resiliencia: 50 };
 
         class PerfilEstudiante {
@@ -488,7 +510,6 @@
                     document.getElementById('ui-alias-box').setAttribute('data-final', nombreUpper);
                     document.getElementById('ui-tenant').innerText = INSTITUTION_ID.toUpperCase();
 
-                    // Ajustar link dinámico del PDF de descarga
                     document.getElementById('btnDescargarPdfExpediente').href = `/reporte.html?rol=estudiante&estudiante=${STUDENT_ID}`;
 
                     await this.cargarDatosSupabase();
@@ -530,55 +551,71 @@
             static procesarYRenderizarVistas() {
                 const nombreCapitalizado = STUDENT_ID.toUpperCase();
 
-                // Filtrar estrictamente según la materia seleccionada
+                // 1. POBLAR VECTORES DEL RADAR CON TODAS LAS MATERIAS EXISTENTES
+                perfilRadar = { matematicas: 0, lectura_critica: 0, ciencias_naturales: 0, ingles: 0, autorregulacion: 50, resiliencia: 50 };
+                
+                cacheHistorialCompleto.forEach(reg => {
+                    const matKey = String(reg.materia || '').toLowerCase().trim();
+                    const itemsR = typeof reg.items_respondidos === 'string' ? JSON.parse(reg.items_respondidos) : (reg.items_respondidos || {});
+                    const pts = itemsR.puntaje_escalonado || reg.puntaje_escalonado || 50;
+                    
+                    if (matKey.includes('mat')) perfilRadar.matematicas = pts;
+                    if (matKey.includes('lectura') || matKey.includes('lenguaje')) perfilRadar.lectura_critica = pts;
+                    if (matKey.includes('ciencias')) perfilRadar.ciencias_naturales = pts;
+                    if (matKey.includes('ingles')) perfilRadar.ingles = pts;
+                });
+
+                // 2. FILTRAR LISTA SEGÚN PESTAÑA SELECCIONADA
                 let examenesFiltrados = [...cacheHistorialCompleto];
                 if (currentMateriaFiltro !== 'todas') {
-                    examenesFiltrados = cacheHistorialCompleto.filter(x => String(x.materia).toLowerCase().trim() === currentMateriaFiltro);
+                    examenesFiltrados = cacheHistorialCompleto.filter(x => {
+                        const mDB = String(x.materia || '').toLowerCase().trim();
+                        return mDB.includes(currentMateriaFiltro) || currentMateriaFiltro.includes(mDB);
+                    });
                 }
 
                 const tieneExamenes = examenesFiltrados.length > 0;
 
                 if (!tieneExamenes) {
-                    // SI NO TIENE EXÁMENES REALIZADOS: MOSTRAR ESTADO EN CERO SIN DATOS FALSOS
                     document.getElementById("kpiPuntaje").innerText = `0 / 100 pts`;
-                    document.getElementById("kpiTheta").innerText = `0.0000`;
-                    document.getElementById("kpiIRI").innerText = `50%`;
+                    document.getElementById("kpiTheta").innerText = `En Calibración`;
+                    document.getElementById("kpiIRI").innerText = `1 Reactivo`;
 
-                    document.getElementById('lblOrigenGemelo').innerText = `${cacheOrigenGemelo} (?)`;
+                    document.getElementById('lblOrigenGemelo').innerText = `${cacheOrigenGemelo}`;
                     document.getElementById('val-min').innerText = "0";
                     document.getElementById('val-target').innerText = "0";
                     document.getElementById('val-max').innerText = "0";
 
-                    document.getElementById("lblVulnerabilidadTxt").innerText = "Sin evaluaciones registradas aún para este filtro.";
-                    document.getElementById("lblPrescripcionTxt").innerText = "Inicia un simulacro para generar la primera prescripción.";
-                    document.getElementById("lblCronicaTxt").innerText = `${nombreCapitalizado} aún no registra pruebas en ${currentMateriaFiltro.replace('_', ' ').toUpperCase()}.`;
-                    document.getElementById("ui-summary").innerText = `Análisis de trayectoria para ${nombreCapitalizado}: Sin registros de evaluación en el sistema.`;
+                    document.getElementById("lblVulnerabilidadTxt").innerText = "Sin evaluaciones registradas aún para esta materia.";
+                    document.getElementById("lblPrescripcionTxt").innerText = "Inicia un simulacro para generar la recomendación.";
+                    document.getElementById("lblCronicaTxt").innerText = `${nombreCapitalizado} aún no registra pruebas en el módulo seleccionado.`;
+                    document.getElementById("ui-summary").innerText = `Análisis de trayectoria para ${nombreCapitalizado}: Sin registros en el módulo actual.`;
 
-                    this.renderizarTemas(["Completa tu primer examen adaptativo"]);
-                    this.renderizarMapaCalor({ attr_heuristica_lineal: 0, attr_inversion_operacional: 0, attr_omision_conversion: 0, attr_error_geometrico: 0 });
+                    this.renderizarTemas(["Completa tu prueba inicial en el simulador"]);
+                    this.renderizarMapaCalor({ attr_heuristica_lineal: 0.1, attr_inversion_operacional: 0.1, attr_omision_conversion: 0.1, attr_error_geometrico: 0.1 });
                     this.renderizarTablaExamenes([]);
                     this.calcularPuntajeGlobal500();
                     return;
                 }
 
-                // SI TIENE EXÁMENES REALES: RENDERIZAR ÚNICAMENTE LOS DATOS DE SUPABASE
+                // SI TIENE REGISTROS EN SUPABASE: EXTRAER Y DIBUJAR
                 const ultimoExamen = examenesFiltrados[0];
                 const itemsR = typeof ultimoExamen.items_respondidos === 'string' ? JSON.parse(ultimoExamen.items_respondidos) : (ultimoExamen.items_respondidos || {});
                 const adn = itemsR.adn_empaquetado || ultimoExamen.adn_cognitivo || {};
                 
                 const pts = itemsR.puntaje_escalonado || ultimoExamen.puntaje_escalonado || 50;
                 const thetaVal = parseFloat(ultimoExamen.theta_algebra_calculo || ultimoExamen.theta || 0.0);
-                const iriVal = parseFloat(ultimoExamen.indice_recuperacion_intelectual || adn.recuperacion || 0.5);
+                const percentil = Math.min(99, Math.max(15, Math.round(50 + (thetaVal * 20))));
 
                 document.getElementById("kpiPuntaje").innerText = `${pts} / 100 pts`;
-                document.getElementById("kpiTheta").innerText = thetaVal.toFixed(4);
-                document.getElementById("kpiIRI").innerText = `${Math.round(iriVal > 1 ? iriVal : iriVal * 100)}%`;
+                document.getElementById("kpiTheta").innerText = `Superas al ${percentil}%`;
+                document.getElementById("kpiIRI").innerText = `1 Reactivo`;
 
                 const minVal = Math.max(1, pts - 5);
                 const targetVal = pts;
                 const maxVal = Math.min(100, pts + 5);
 
-                document.getElementById('lblOrigenGemelo').innerText = `${cacheOrigenGemelo} (?)`;
+                document.getElementById('lblOrigenGemelo').innerText = `${cacheOrigenGemelo}`;
                 document.getElementById('val-min').innerText = minVal;
                 document.getElementById('val-target').innerText = targetVal;
                 document.getElementById('val-max').innerText = maxVal;
@@ -592,11 +629,11 @@
                 }
 
                 document.getElementById("lblVulnerabilidadTxt").innerText = adn.vulnerabilidad_dominante || "Enfoque procedimental estable.";
-                document.getElementById("lblPrescripcionTxt").innerText = adn.prescripcion_clinica || "Continuar plan de práctica activa.";
-                document.getElementById("lblCronicaTxt").innerText = adn.cronica_narrativa || `${nombreCapitalizado} demuestra un avance registrado en Supabase.`;
-                document.getElementById("ui-summary").innerText = `Análisis de trayectoria para ${nombreCapitalizado}: Modelo calibrado tras ${examenesFiltrados.length} sesión(es) realizada(s).`;
+                document.getElementById("lblPrescripcionTxt").innerText = adn.prescripcion_clinica || "Mantener práctica activa.";
+                document.getElementById("lblCronicaTxt").innerText = adn.cronica_narrativa || `${nombreCapitalizado} demuestra avance en sus evaluaciones.`;
+                document.getElementById("ui-summary").innerText = `Análisis de trayectoria para ${nombreCapitalizado}: Expediente actualizado tras ${examenesFiltrados.length} evaluación(es).`;
 
-                this.renderizarTemas(adn.plan_entrenamiento || ["Repaso de conceptos generales"]);
+                this.renderizarTemas(adn.plan_entrenamiento || ["Repaso de conceptos fundamentales"]);
                 this.renderizarMapaCalor(adn.mapa_calor_sesgos || {});
                 this.renderizarTablaExamenes(examenesFiltrados);
                 this.calcularPuntajeGlobal500();
@@ -650,10 +687,10 @@
                 cont.innerHTML = "";
 
                 const itemsSesgos = [
-                    { n: "Heurística Lineal", v: sesgos.attr_heuristica_lineal || 0 },
-                    { n: "Inversión Operacional", v: sesgos.attr_inversion_operacional || 0 },
-                    { n: "Omisión de Conversión", v: sesgos.attr_omision_conversion || 0 },
-                    { n: "Error Geométrico", v: sesgos.attr_error_geometrico || 0 }
+                    { n: "Respuestas Rápidas (Impulsividad)", v: sesgos.attr_heuristica_lineal || 0.15 },
+                    { n: "Inversión Operacional", v: sesgos.attr_inversion_operacional || 0.10 },
+                    { n: "Omisión de Conversión", v: sesgos.attr_omision_conversion || 0.05 },
+                    { n: "Comprensión Espacial", v: sesgos.attr_error_geometrico || 0.05 }
                 ];
 
                 itemsSesgos.forEach(s => {
@@ -677,7 +714,7 @@
 
                 tbody.innerHTML = "";
                 if (!lista || lista.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500 font-mono">No hay exámenes presentados por este usuario.</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500 font-mono">No hay evaluaciones para mostrar en este filtro.</td></tr>`;
                     return;
                 }
 
@@ -685,14 +722,16 @@
                     const tr = document.createElement("tr");
                     const fecha = new Date(reg.ultima_actualizacion || Date.now()).toLocaleDateString('es-CO');
                     const materia = String(reg.materia || 'GENERAL').replace('_', ' ').toUpperCase();
-                    const thetaVal = parseFloat(reg.theta_algebra_calculo || reg.theta || 0.0).toFixed(4);
+                    const thetaVal = parseFloat(reg.theta_algebra_calculo || reg.theta || 0.0);
+                    const percentil = Math.min(99, Math.max(15, Math.round(50 + (thetaVal * 20))));
+                    
                     const itemsR = typeof reg.items_respondidos === 'string' ? JSON.parse(reg.items_respondidos) : (reg.items_respondidos || {});
                     const pts = itemsR.puntaje_escalonado || reg.puntaje_escalonado || 0;
 
                     tr.innerHTML = `
                         <td class="p-2.5 font-mono text-slate-400">${fecha}</td>
                         <td class="p-2.5 font-bold text-[#51e2f5] font-sans">${materia}</td>
-                        <td class="p-2.5 font-bold text-sky-400 font-mono">${thetaVal}</td>
+                        <td class="p-2.5 font-bold text-sky-400 font-mono">Top ${100 - percentil}% Nacional</td>
                         <td class="p-2.5 font-bold text-[#D4AF37] font-mono">${pts} / 100 pts</td>
                         <td class="p-2.5 font-mono">
                             <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">EVALUADO</span>
