@@ -77,14 +77,15 @@
             color: var(--primary); letter-spacing: 1px; text-transform: uppercase; font-family: 'JetBrains Mono';
         }
 
-        /* REJILLA DE SELECCIÓN DE ROLES TRIPARTITA */
+        /* REJILLA DE SELECCIÓN DE ROLES CON ÍCONOS ESTILIZADOS */
         .role-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; margin-top: 1.2rem; text-align: center; }
         .role-selection-card {
             background: rgba(20, 24, 35, 0.7); border: 1px solid var(--border-graphite); border-radius: 8px; padding: 0.8rem 0.4rem; cursor: pointer; transition: all 0.2s ease;
         }
         .role-selection-card:hover { border-color: var(--gold); background: rgba(212, 175, 55, 0.08); }
         .role-selection-card.active { border-color: var(--gold); background: rgba(212, 175, 55, 0.15); box-shadow: 0 0 15px rgba(212, 175, 55, 0.25); }
-        .role-emoji { font-size: 1.3rem; margin-bottom: 0.2rem; display: block; }
+        .role-icon { font-size: 1.2rem; margin-bottom: 0.3rem; display: block; color: var(--primary); }
+        .role-selection-card.active .role-icon { color: var(--gold); }
         .role-title { font-size: 0.68rem; font-weight: 800; text-transform: uppercase; color: #fff; letter-spacing: 0.5px; font-family: 'JetBrains Mono'; }
 
         .input-group { text-align: left; margin-top: 1rem; }
@@ -130,20 +131,20 @@
             <div class="system-version-tag">v21.1.0</div>
             <div class="verification-banner" id="uiBannerEstado">> AUTENTICACIÓN PERIMETRAL CORE</div>
             
-            <h1 class="gateway-title" data-final="PASARELA DE ACCESO">PASARELA DE ACCESO</h1>
+            <h1 class="gateway-title" data-final="PORTAL DE ACCESO UNIFICADO">PORTAL DE ACCESO UNIFICADO</h1>
             <p style="font-size: 0.72rem; color: #8a8f9d; text-transform: uppercase; letter-spacing: 1px;" class="font-mono" id="uiSubtitulo">Sincronización de Trayectoria Cognitiva</p>
 
             <div class="role-grid">
                 <div id="cardRoleEstudiante" class="role-selection-card active" onclick="PortalAuth.seleccionarRol('estudiante')">
-                    <span class="role-emoji">🧠</span>
+                    <i class="fas fa-brain role-icon"></i>
                     <div class="role-title">Alumno</div>
                 </div>
                 <div id="cardRoleProfesor" class="role-selection-card" onclick="PortalAuth.seleccionarRol('profesor')">
-                    <span class="role-emoji">👨‍🏫</span>
+                    <i class="fas fa-chalkboard-user role-icon"></i>
                     <div class="role-title">Docente</div>
                 </div>
                 <div id="cardRoleRector" class="role-selection-card" onclick="PortalAuth.seleccionarRol('rector')">
-                    <span class="role-emoji">🏛️</span>
+                    <i class="fas fa-shield-halved role-icon"></i>
                     <div class="role-title">Rector</div>
                 </div>
             </div>
@@ -156,6 +157,7 @@
             <div class="input-group">
                 <label class="input-label">Credencial de Correo</label>
                 <input type="email" id="txtEmail" class="input-cyber" placeholder="usuario@danteos.edu.co" autocomplete="username">
+                <span class="text-[9px] font-mono text-slate-500 mt-1 block">Ingresa el correo institucional registrado en la plataforma</span>
             </div>
 
             <div class="input-group">
@@ -168,12 +170,24 @@
     </div>
 
     <footer>
-        DANTE OS v21.1.0 // INFRAESTRUCTURA UNICORNIO PARA TOMA DE DECISIONES BAJO INCERTIDUMBRE
+        DANTE OS ENTERPRISE EDITION // INFRAESTRUCTURA BIOMÉTRICA Y PSICOMÉTRICA ADAPTATIVA
     </footer>
 
     <script>
         const HOST_URL = window.location.origin;
         let SelectedRoleTarget = "estudiante";
+
+        // SOPORTE DINÁMICO DE TENANT POR PARÁMETRO URL (CÓDIGO QR / ENLACE DIRECTO)
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const tenantParam = urlParams.get('tenant') || urlParams.get('institution_id');
+            if (tenantParam) {
+                const tenantInput = document.getElementById("txtInstitutionId");
+                tenantInput.value = tenantParam.toLowerCase().trim();
+                tenantInput.readOnly = true;
+                tenantInput.style.opacity = "0.7";
+            }
+        });
 
         class PortalAuth {
             static seleccionarRol(rol) {
@@ -260,7 +274,7 @@
             }
         }
 
-        /* ANIMACIÓN DESENCRIPTADO Y ESPIRAL FIBONACCI */
+        /* ANIMACIÓN DESENCRIPTADO */
         const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*";
         function decryptText() {
             const elements = document.querySelectorAll('[data-final]');
