@@ -205,7 +205,7 @@ export function precalentarInstOriginal(area) {
 export async function procesarInteraccionEstudiante(req, res) {
     const timestampInicio = Date.now();
     try {
-        const { studentId, sessionId, itemId, areaGeneral, responseTime, tiempo, declaredConfidence, certeza, selectionVector, institution_id, integrityToken, itemHash } = req.body;
+        const { studentId, sessionId, itemId, areaGeneral, responseTime, tiempo, declaredConfidence, certeza, selectionVector, opcionesDescartadas, institution_id, integrityToken, itemHash } = req.body;
         const tenantId = String(institution_id || "colegio_sandbox_default").toLowerCase().trim();
 
         if (!studentId || !areaGeneral) {
@@ -227,6 +227,8 @@ export async function procesarInteraccionEstudiante(req, res) {
 
         const cronometriaSegundos = parseFloat(responseTime || tiempo || 15.0);
         const certezaSaneada = String(declaredConfidence || certeza || 'alta').toLowerCase().trim(); 
+        const listadoDescartadas = Array.isArray(opcionesDescartadas) ? opcionesDescartadas : [];
+
         const llavesAtributos = CACHE_ESQUEMA_ATRIBUTOS.get(areaSaneada) || ['attr_heuristica_lineal', 'attr_inversion_operacional', 'attr_omision_conversion', 'attr_error_geometrico'];
         
         const indexLookUpKey = `dante:active_index:${areaSaneada}:${studentIdSaneado}`;
@@ -363,15 +365,24 @@ export async function procesarInteraccionEstudiante(req, res) {
                 interaccionCorrecta = (opcionMarcada === respuestaCorrectaDB);
                 itemsExcluidosExamen.add(idRealMapeado);
 
+                // 💡 AJUSTE PSICOMÉTRICO DINÁMICO DE ADIVINACIÓN (c):
+                // Si el alumno descartó opciones, la probabilidad de adivinar al azar aumenta entre las restantes
+                let cEfectivo = metadatosItem.c;
+                if (listadoDescartadas.length > 0 && listadoDescartadas.length < 3) {
+                    const opcionesRestantes = Math.max(1, 4 - listadoDescartadas.length);
+                    cEfectivo = parseFloat((1.0 / opcionesRestantes).toFixed(4));
+                }
+
                 arrayHistoricoRespuestas.push({
                     itemId: idRealMapeado, 
                     correcto: interaccionCorrecta,
                     isCorrect: interaccionCorrecta, 
                     selectedOption: opcionMarcada,
+                    opcionesDescartadas: listadoDescartadas,
                     timestampEpoch: Date.now(), 
                     thetaSnapshot: parseFloat(sessionState.thetas?.[metadatosItem.sub_competencia] || sessionState.thetas?.algebra || 0.0),
                     responseTime: cronometriaSegundos,
-                    irt: { a: metadatosItem.a, b: metadatosItem.b, c: metadatosItem.c, calibrationVersion: CALIBRATION_VERSION }
+                    irt: { a: metadatosItem.a, b: metadatosItem.b, c: cEfectivo, calibrationVersion: CALIBRATION_VERSION }
                 });
 
                 try {
@@ -384,6 +395,7 @@ export async function procesarInteraccionEstudiante(req, res) {
                             response_time: cronometriaSegundos,
                             declared_confidence: certezaSaneada,
                             opcion_marcada: opcionMarcada, 
+                            opciones_descartadas: listadoDescartadas, // INYECCIÓN EN SUPABASE
                             institution_id: tenantId,
                             created_at: new Date().toISOString()
                         }]);
@@ -391,7 +403,7 @@ export async function procesarInteraccionEstudiante(req, res) {
                     if (insertError) {
                         console.error(`🚨 [SUPABASE REJECTION]: La DB rechazó el registro. Código: ${insertError.code}. Mensaje: ${insertError.message}`);
                     } else {
-                        console.log(`✅ [DANTE BASE DE DATOS REAL]: Fila inyectada con éxito total para: [${studentIdSaneado}] en ítem ${idRealMapeado}`);
+                        console.log(`✅ [DANTE BASE DE DATOS REAL]: Fila e interacciones de descarte inyectadas con éxito para: [${studentIdSaneado}] en ítem ${idRealMapeado}`);
                     }
                 } catch (dbErr) {
                     console.error("🚨 [CRITICAL CANAL INSERTION FAILED]:", dbErr.message);
@@ -639,7 +651,7 @@ export async function procesarInteraccionEstudiante(req, res) {
                 items_respondidos: {
                     puntaje_escalonado: puntajeIcfesEstandar,
                     historico_clics: arrayHistoricoRespuestas.map(r => ({
-                        itemId: r.itemId, correcto: r.correcto, selectedOption: r.selectedOption, responseTime: r.responseTime
+                        itemId: r.itemId, correcto: r.correcto, selectedOption: r.selectedOption, opcionesDescartadas: r.opcionesDescartadas, responseTime: r.responseTime
                     })),
                     adn_empaquetado: executivePayload
                 },
