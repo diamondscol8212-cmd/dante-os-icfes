@@ -210,25 +210,25 @@
                 stepNum: 1,
                 totalSteps: 5,
                 numOpts: 2,
-                title: "DILEMA 01 / 05 // NIVELES DE LATENCIA (2 OPCIONES)",
-                tutorialTip: "Evolución mecánica (Paso 1 de 5). Dante está midiendo tu velocidad de decisión pura (Latencia en milisegundos) ante preguntas directas.",
-                text: "Ante una pregunta de opción múltiple en el ICFES que parece requerir mucho análisis, tu primer impulso natural es:",
+                title: "DILEMA 01 / 05 // RITMO DE DECISIÓN (2 OPCIONES)",
+                tutorialTip: "Evolución mecánica (Paso 1 de 5). Dante mide tu ritmo natural de procesamiento (Latencia en milisegundos) ante estímulos directos.",
+                text: "Ante una pregunta de opción múltiple en el ICFES que requiere análisis, tu primer impulso natural es:",
                 opts: [
-                    { text: "A) Decidir de inmediato confiando en la primera opción que parezca lógica (Impulso Sistema 1).", type: "IMPULSIVO", id: "opt_a" },
-                    { text: "B) Detenerte a releer minuciosamente el enunciado antes de revisar las alternativas (Análisis Sistema 2).", type: "ANALITICO", id: "opt_b" }
+                    { text: "A) Seleccionar la alternativa que tu intuición señala de inmediato (Ritmo Dinámico / Sistema 1).", type: "DECISION_INMEDIATA", id: "opt_a" },
+                    { text: "B) Detenerte a verificar la premisa minuciosamente antes de evaluar las respuestas (Ritmo Analítico / Sistema 2).", type: "ANALISIS_MINUCIOSO", id: "opt_b" }
                 ]
             },
             {
                 stepNum: 2,
                 totalSteps: 5,
                 numOpts: 3,
-                title: "DILEMA 02 / 05 // GESTIÓN DEL ESTRÉS Y BLOQUEO (3 OPCIONES)",
-                tutorialTip: "Evolución mecánica (Paso 2 de 5). Evaluamos tu reacción emocional y nivel de ansiedad frente a situaciones de atascamiento cognitivo.",
-                text: "Encuentras un texto denso en Lectura Crítica que te desconcierta y no entiendes a la primera lectura. ¿Cuál es tu reacción habitual?",
+                title: "DILEMA 02 / 05 // GESTIÓN DEL ENFOQUE Y AUTORREGULACIÓN (3 OPCIONES)",
+                tutorialTip: "Evolución mecánica (Paso 2 de 5). Evaluamos tus estrategias de autorregulación ante pasajes complejos o extensos.",
+                text: "Encuentras un texto denso en Lectura Crítica que te requiere mayor esfuerzo de interpretación. ¿Cómo reacciona tu mente?",
                 opts: [
-                    { text: "A) Siento taquicardia o pánico por el tiempo corrido y me quedo atascado intentando reinterpretarlo.", type: "ANSIEDAD_ALTA", id: "opt_a" },
-                    { text: "B) Elijo una respuesta al azar rápidamente para salir de la pregunta sin gastar energía.", type: "EVASIVO", id: "opt_b" },
-                    { text: "C) Guardo la calma, busco la idea central del párrafo y elimino los distractores irrelevantes.", type: "ESTRATEGICO", id: "opt_c" }
+                    { text: "A) Noto que mi ritmo de respiración se acelera ante el conteo del reloj de la prueba.", type: "SENSIBILIDAD_TIEMPO", id: "opt_a" },
+                    { text: "B) Prefiero marcar la opción más lógica disponible y avanzar sin estancarme.", type: "DESCARTE_INICIAL", id: "opt_b" },
+                    { text: "C) Guardo la calma, busco la idea central del párrafo y elimino las opciones irrelevantes.", type: "CONTROL_REGULADO", id: "opt_c" }
                 ]
             },
             {
@@ -237,13 +237,13 @@
                 numOpts: 4,
                 title: "DILEMA 03 / 05 // SIMULADOR CABINA REAL & HERRAMIENTA DESCARTE (4 OPCIONES)",
                 isRealIcfesSim: true,
-                tutorialTip: "⚡ TUTORIAL HERRAMIENTA DE DESCARTE: Haz clic en el botón [✂️ Tachar] de cualquier opción que consideres un distractor para descartarla antes de elegir la correcta.",
+                tutorialTip: "⚡ TUTORIAL HERRAMIENTA DE DESCARTE: Haz clic en el botón [✂️ Tachar] de cualquier opción que consideres un distractor para descartarla visualmente.",
                 text: "PREGUNTA DE SIMULACIÓN REAL DANTE OS / LECTURA Y SOCIALES:\n\nUn municipio enfrenta un dilema de inversión pública. Un análisis riguroso para responder en el ICFES exige descartar primero los distractores más débiles. ¿Cómo procederías en la interfaz?",
                 opts: [
                     { text: "A) Descarto primero las opciones con términos absolutistas como 'siempre', 'nunca' o 'jamás'.", type: "DESCARTE_METODICO", id: "opt_a" },
-                    { text: "B) Busco la opción más larga o técnicamente estructurada asumiendo que es la verdadera.", type: "SESGO_ESTRUCTURAL", id: "opt_b" },
-                    { text: "C) Me guío por impresiones personales sin contrastar directamente contra la evidencia del texto.", type: "SUBJETIVO", id: "opt_c" },
-                    { text: "D) Comparo cada alternativa minuciosamente comprobando su veracidad lógica con la premisa.", type: "ANALITICO_RIGUROSO", id: "opt_d" }
+                    { text: "B) Evalúo la opción más estructurada técnicamente para contrastar la premisa.", type: "HIPOTESIS_INICIAL", id: "opt_b" },
+                    { text: "C) Contrasto las opciones con el contexto general presentado en el enunciado.", type: "PERSPECTIVA_CREATIVA", id: "opt_c" },
+                    { text: "D) Comparo cada alternativa minuciosamente comprobando su veracidad lógica con la fuente.", type: "ANALITICO_RIGUROSO", id: "opt_d" }
                 ]
             },
             {
@@ -251,26 +251,26 @@
                 totalSteps: 5,
                 numOpts: 4,
                 title: "DILEMA 04 / 05 // AUTOEVALUACIÓN METACOGNITIVA (4 OPCIONES)",
-                tutorialTip: "Evolución psicométrica (Paso 4 de 5). Diagnóstico directo de autoconfianza y áreas de mayor vulnerabilidad académica.",
-                text: "¿Cómo evalúas honestamente tu nivel actual de preparación y confianza frente al examen Saber 11?",
+                tutorialTip: "Evolución psicométrica (Paso 4 de 5). Diagnóstico directo de autoconfianza y metas de desarrollo académico.",
+                text: "¿Cómo evalúas tu oportunidad de crecimiento actual frente al examen Saber 11?",
                 opts: [
-                    { text: "A) Siento alta incertidumbre y temor a no alcanzar el puntaje requerido para mi meta universitaria.", type: "INSEGURIDAD_CRITICA", id: "opt_a" },
-                    { text: "B) Dominio comprensivo alto, pero me preocupa no administrar bien las 4.5 horas por sesión.", type: "GESTION_TIEMPO_VULNERABLE", id: "opt_b" },
-                    { text: "C) Presento vacíos conceptuales específicos en áreas cuantitativas o ciencias naturales.", type: "VACIO_ACADEMICO", id: "opt_c" },
-                    { text: "D) Me siento preparado estratégicamente para dominar la estructura del examen.", type: "ALTA_AUTOEFICACIA", id: "opt_d" }
+                    { text: "A) Quiero consolidar mi seguridad y aprender técnicas para dominar la presión del día D.", type: "ENFOQUE_DESARROLLO", id: "opt_a" },
+                    { text: "B) Tengo buena comprensión, pero quiero optimizar la gestión del tiempo por sesión (4.5 horas).", type: "OPTIMIZACION_CRONOMETRICA", id: "opt_b" },
+                    { text: "C) Deseo fortalecer temas puntuales en componentes cuantitativos o ciencias naturales.", type: "CONSOLIDACION_CONCEPTUAL", id: "opt_c" },
+                    { text: "D) Me siento preparado estratégicamente y busco maximizar mi puntaje global (400+).", type: "ALTO_RENDIMIENTO", id: "opt_d" }
                 ]
             },
             {
                 stepNum: 5,
                 totalSteps: 5,
                 numOpts: 4,
-                title: "DILEMA 05 / 05 // RESILIENCIA ADAPTATIVA Y TOLERANCIA AL ERROR (4 OPCIONES)",
-                tutorialTip: "Última calibración (Paso 5 de 5). Determina cómo procesa tu cerebro las equivocaciones para programar tu Misión Psico-Táctica #1.",
-                text: "Cuando la IA Dante te notifique que fallaste 3 preguntas seguidas en un simulacro, tu acción inmediata será:",
+                title: "DILEMA 05 / 05 // RESILIENCIA ADAPTATIVA Y MENTALIDAD DE CRECIMIENTO (4 OPCIONES)",
+                tutorialTip: "Última calibración (Paso 5 de 5). Determina tu curva de aprendizaje para programar tu Misión Psico-Táctica #1.",
+                text: "Cuando la IA Dante te notifique que tuviste desaciertos continuos en un simulacro, tu acción inmediata será:",
                 opts: [
-                    { text: "A) Sentir frustración e interrumpir la práctica por falta de confianza.", type: "BAJA_TOLERANCIA_ERROR", id: "opt_a" },
+                    { text: "A) Hacer una pausa reflexiva para restablecer la concentración antes de continuar.", type: "SENSIBILIDAD_EVALUATIVA", id: "opt_a" },
                     { text: "B) Abrir inmediatamente el análisis del distractor para comprender la trampa cognitiva.", type: "RESILIENTE_PROACTIVO", id: "opt_b" },
-                    { text: "C) Repetir la prueba inmediatamente a toda velocidad sin revisar las explicaciones.", type: "IMPULSIVO_REPETITIVO", id: "opt_c" },
+                    { text: "C) Retomar la práctica de inmediato aplicando un ritmo más acelerado.", type: "RITMO_DINAMICO", id: "opt_c" },
                     { text: "D) Solicitar a Dante OS una micro-misión de entrenamiento específica en ese tema.", type: "AUTONOMO_ESTRATEGICO", id: "opt_d" }
                 ]
             }
@@ -382,39 +382,39 @@
         async function finalizeOnboarding() {
             if (timerInterval) clearInterval(timerInterval);
 
-            // 1. Diagnóstico del Arquetipo Dominante
-            let primaryType = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b, 'ESTRATEGICO');
+            // 1. Diagnóstico del Arquetipo Dominante en Enfoque Constructivo
+            let primaryType = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b, 'ANALISIS_MINUCIOSO');
             
-            let arquetipoNombre = "Estratega Reflexivo";
+            let arquetipoNombre = "Estratega Reflexivo de Alto Rendimiento";
             let misionInmediata = {
-                titulo: "Misión Psico-Táctica #1: Calibración de Lectura y Control de Tiempo",
-                instruccion: "En tu primera sesión de entrenamiento, realiza 3 respiraciones profundas antes de iniciar. Utiliza el botón de Tachar Opciones en las primeras 5 preguntas.",
+                titulo: "Misión Psico-Táctica #1: Calibración de Lectura y Control de Ritmo",
+                instruccion: "En tu primera sesión de entrenamiento, realiza 3 respiraciones pausadas antes de responder. Utiliza el botón de [✂️ Tachar Opciones] en las primeras 5 preguntas.",
                 protocolo: "MANTENER_LATENCIA_ESTABLE",
                 foco_cognitivo: "Comprensión Lectora y Descarte Metódico"
             };
 
-            if (scores['ANSIEDAD_ALTA'] || scores['INSEGURIDAD_CRITICA'] || scores['BAJA_TOLERANCIA_ERROR']) {
-                arquetipoNombre = "Guerrero Sensible bajo Presión";
+            if (scores['SENSIBILIDAD_TIEMPO'] || scores['ENFOQUE_DESARROLLO'] || scores['SENSIBILIDAD_EVALUATIVA']) {
+                arquetipoNombre = "Estratega Enfocado bajo Presión";
                 misionInmediata = {
                     titulo: "Misión Psico-Táctica #1: Descompresión Cognitiva & Pausa de Seguridad",
-                    instruccion: "Tu cerebro tiende a acelerarse bajo presión. Antes de responder la primera pregunta hoy, realiza el Protocolo 4-7-8 (Inhala 4s, sostén 7s, exhala 8s). Recuerda: No hay apuro en las primeras 3 preguntas.",
+                    instruccion: "Para maximizar tu lucidez bajo presión: Antes de responder tu primera pregunta hoy, realiza el Protocolo 4-7-8 (Inhala 4s, sostén 7s, exhala 8s). Tómate el tiempo necesario sin afán.",
                     protocolo: "DESCOMPRESION_ANSIEDAD",
-                    foco_cognitivo: "Control del Ritmo Cardiaco y Enfrentamiento Directo"
+                    foco_cognitivo: "Regulación de Oxigenación y Enfoque Directo"
                 };
-            } else if (scores['IMPULSIVO'] || scores['LATENCIA_IMPULSIVA']) {
-                arquetipoNombre = "Velocista de Respuesta Rápida";
+            } else if (scores['DECISION_INMEDIATA'] || scores['LATENCIA_IMPULSIVA']) {
+                arquetipoNombre = "Velocista de Precisión Táctica";
                 misionInmediata = {
-                    titulo: "Misión Psico-Táctica #1: Freno de Mano y Verificación de Trampas",
-                    instruccion: "Tienes una velocidad sobresaliente pero riesgo de caer en distractores trampa. Tu misión hoy: Tacha OBLIGATORIAMENTE al menos 1 distractor antes de confirmar tu respuesta.",
+                    titulo: "Misión Psico-Táctica #1: Freno de Mano y Verificación de Premisas",
+                    instruccion: "Tienes una velocidad de respuesta envidiable. Tu misión hoy: Tacha OBLIGATORIAMENTE al menos 1 distractor con la herramienta [✂️ Tachar] antes de confirmar tu respuesta.",
                     protocolo: "FRENO_DESCARTE_OBLIGATORIO",
                     foco_cognitivo: "Verificación de Premisa y Eliminación de Distractores"
                 };
-            } else if (scores['VACIO_ACADEMICO'] || scores['GESTION_TIEMPO_VULNERABLE']) {
-                arquetipoNombre = "Analista Táctico en Construcción";
+            } else if (scores['CONSOLIDACION_CONCEPTUAL'] || scores['OPTIMIZACION_CRONOMETRICA']) {
+                arquetipoNombre = "Analista Metódico en Ascenso";
                 misionInmediata = {
-                    titulo: "Misión Psico-Táctica #1: Ataque a Puntos Críticos y Dominio del Reloj",
-                    instruccion: "Enfócate en mantener un ritmo sostenido de 1.5 minutos por pregunta. Si una pregunta toma más de 2 minutos, aplica descarte e introduce un marcador táctico.",
-                    protocolo: "RITMO_SOSTENIDO_150S",
+                    titulo: "Misión Psico-Táctica #1: Ritmo Armónico y Dominio del Cronómetro",
+                    instruccion: "Enfócate en mantener un ritmo sostenido de 1.5 a 2 minutos por pregunta. Si un ítem se extiende más de 2 minutos, aplica la técnica de descarte y marca tu opción táctica.",
+                    protocolo: "RITMO_SOSTENIDO_120S",
                     foco_cognitivo: "Cronometría Adaptativa y Descarte Eficiente"
                 };
             }
