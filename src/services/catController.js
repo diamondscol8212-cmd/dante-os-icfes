@@ -12,10 +12,10 @@ const CALIBRATION_VERSION = process.env.IRT_CALIBRATION_VERSION || 'v21.0_multit
 const REDIS_TTL_SECONDS = 86400; 
 
 const OPERATIONAL_CONTROLS = {
-    MAX_ITEMS_EXAMEN: 25,      // Límite máximo para diagnóstico profundo
+    MAX_ITEMS_EXAMEN: 25,       // Límite máximo para diagnóstico profundo
     MIN_ITEMS_EXAMEN: 5,       // Mínimo de reactivos antes de permitir parada temprana
     UMBRAL_SEM_OBJETIVO: 0.22,  
-    EPS_CMD: 0.02               
+    EPS_CMD: 0.02              
 };
 
 const METACONTROL_THRESHOLDS = {
@@ -365,8 +365,6 @@ export async function procesarInteraccionEstudiante(req, res) {
                 interaccionCorrecta = (opcionMarcada === respuestaCorrectaDB);
                 itemsExcluidosExamen.add(idRealMapeado);
 
-                // 💡 AJUSTE PSICOMÉTRICO DINÁMICO DE ADIVINACIÓN (c):
-                // Si el alumno descartó opciones, la probabilidad de adivinar al azar aumenta entre las restantes
                 let cEfectivo = metadatosItem.c;
                 if (listadoDescartadas.length > 0 && listadoDescartadas.length < 3) {
                     const opcionesRestantes = Math.max(1, 4 - listadoDescartadas.length);
@@ -386,7 +384,7 @@ export async function procesarInteraccionEstudiante(req, res) {
                 });
 
                 try {
-                    const { data: insertData, error: insertError } = await supabase
+                    const { error: insertError } = await supabase
                         .from('registro_eventos')
                         .insert([{
                             student_id: studentIdSaneado,
@@ -395,7 +393,7 @@ export async function procesarInteraccionEstudiante(req, res) {
                             response_time: cronometriaSegundos,
                             declared_confidence: certezaSaneada,
                             opcion_marcada: opcionMarcada, 
-                            opciones_descartadas: listadoDescartadas, // INYECCIÓN EN SUPABASE
+                            opciones_descartadas: listadoDescartadas,
                             institution_id: tenantId,
                             created_at: new Date().toISOString()
                         }]);
@@ -572,7 +570,6 @@ export async function procesarInteraccionEstudiante(req, res) {
             await redis.setex(cacheKey, REDIS_TTL_SECONDS, JSON.stringify(localRuntimeState));
         });
 
-        // REGLA DE PARADA AUTOMÁTICA
         const forzarDetencionExamen = conteoActualizadoItems > 0 && (resultadoSelector.detenerExamen || conteoActualizadoItems >= OPERATIONAL_CONTROLS.MAX_ITEMS_EXAMEN);
 
         if (forzarDetencionExamen) {
@@ -647,6 +644,7 @@ export async function procesarInteraccionEstudiante(req, res) {
                 theta_estadistica_probabilidad: parseFloat(estadisticaTheta.toFixed(4)), 
                 indice_recuperacion_intelectual: iriActual, 
                 indice_curiosidad_conductual: iccActual,
+                bayesian_sem: parseFloat(semActual.toFixed(4)), // INCLUSIÓN DEL SEM REAL
                 historial_theta: arrayHistoricoRespuestas.map(r => parseFloat((r.thetaSnapshot || 0.0).toFixed(4))),
                 items_respondidos: {
                     puntaje_escalonado: puntajeIcfesEstandar,
@@ -668,7 +666,7 @@ export async function procesarInteraccionEstudiante(req, res) {
                 thetas: { algebra: algebraTheta, geometria: geometryTheta, estadistica: estadisticaTheta },
                 escalonamiento_icfes: { puntaje_estimated: puntajeIcfesEstandar },
                 adn_cognitivo: executivePayload, mapa_calor_sesgos: nuevosPriorsAtributos,
-                iri: iriActual, icc: iccActual
+                iri: iriActual, icc: iccActual, bayesian_sem: semActual
             };
             
             await redis.setex(`dante:profile:${areaSaneada}:${studentIdSaneado}`, REDIS_TTL_SECONDS, JSON.stringify(payloadPerfilFinal)).catch(() => {});
@@ -730,7 +728,6 @@ export async function procesarInteraccionEstudiante(req, res) {
     }
 }
 
-// 🧬 ENDPOINT DE CONSULTA DEL GEMELO MULTI-CASO CON SANITIZACIÓN ROBUSTA
 export async function obtenerGemeloEstudiante(req, res) {
     try {
         const studentIdRaw = req.params.id || req.params.studentId;
@@ -740,7 +737,6 @@ export async function obtenerGemeloEstudiante(req, res) {
 
         const studentIdSaneado = String(studentIdRaw).toLowerCase().trim().split('@')[0];
 
-        // 1. Consultar la tabla de progreso consolidado
         let { data: progreso, error: progErr } = await supabase
             .from('progreso_estudiantes')
             .select('*')
@@ -751,7 +747,6 @@ export async function obtenerGemeloEstudiante(req, res) {
             console.warn("⚠️ [CONSULTA PROGRESO WARN]:", progErr.message);
         }
 
-        // 2. RECONSTRUCCIÓN EN VIVO PARSEANDO REGISTRO_EVENTOS MULTI-TIPO
         if (!progreso || progreso.length === 0) {
             console.log(`🔍 [RECONSTRUCCIÓN EN VIVO]: Reconstruyendo perfil para ${studentIdSaneado} desde registro_eventos...`);
             
@@ -764,7 +759,6 @@ export async function obtenerGemeloEstudiante(req, res) {
             if (!evErr && eventos && eventos.length > 0) {
                 const totalRespuestas = eventos.length;
                 
-                // Sanitización exhaustiva de respuestas correctas (Booleano, String, Uppercase)
                 const aciertos = eventos.filter(e => {
                     if (e.is_correct === true) return true;
                     if (typeof e.is_correct === 'string') {
@@ -785,6 +779,7 @@ export async function obtenerGemeloEstudiante(req, res) {
                     theta_estadistica_probabilidad: 0.5000,
                     indice_recuperacion_intelectual: 0.50,
                     indice_curiosidad_conductual: 0.50,
+                    bayesian_sem: 0.35,
                     items_respondidos: {
                         puntaje_escalonado: puntajeEstimado,
                         adn_empaquetado: {
@@ -805,7 +800,6 @@ export async function obtenerGemeloEstudiante(req, res) {
             }
         }
 
-        // 3. Garantizar el retorno de un Arreglo `gemelo` para renderizado dinámico en perfil.html
         return res.status(200).json({
             success: true,
             origen: "SUPABASE LIVE",
