@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import { supabase } from '../../supabaseClient.js';
 
 const router = Router();
-const SERVER_VERSION = "v21.0.0-ENTERPRISE_PRODUCTION";
+const SERVER_VERSION = "v21.1.0-ENTERPRISE_PRODUCTION";
 
 // ====================================================================
 // 🧠 MOTOR DE FUNCIONES CRIPTOGRÁFICAS PURAS DE DANTE OS (SHA-512 / 10K ITERACIONES)
@@ -88,15 +88,16 @@ router.post('/login-perimetral', async (req, res) => {
 
         const userRole = (role_target || usuario.rol || 'estudiante').toLowerCase().trim();
         const sessionToken = crypto.randomBytes(24).toString('hex');
+        const studentAlias = emailClean.split('@')[0];
 
-        // 🔍 CONSULTA DE ARQUETIPO INICIAL EN SUPABASE
+        // 🔍 CONSULTA DEFENSIVA DE ARQUETIPO INICIAL
         let arquetipoRegistrado = null;
         if (userRole === 'estudiante') {
             try {
                 const { data: arquetipoData } = await supabase
                     .from('dante_arquetipos_iniciales')
                     .select('arquetipo')
-                    .or(`id_sesion.eq.${emailClean},id_sesion.eq.${sessionToken}`)
+                    .eq('id_sesion', emailClean)
                     .maybeSingle();
 
                 if (arquetipoData && arquetipoData.arquetipo) {
@@ -108,13 +109,13 @@ router.post('/login-perimetral', async (req, res) => {
         }
 
         // 🎯 LÓGICA DE REDIRECCIÓN DINÁMICA
-        let rutaRedireccion = '/index.html';
+        let rutaRedireccion = 'index.html';
         if (userRole === 'rector') {
-            rutaRedireccion = '/rector.html';
+            rutaRedireccion = 'rector.html';
         } else if (userRole === 'profesor') {
-            rutaRedireccion = '/profesor.html';
+            rutaRedireccion = 'profesor.html';
         } else if (userRole === 'estudiante' && !arquetipoRegistrado) {
-            rutaRedireccion = '/onboarding.html';
+            rutaRedireccion = 'onboarding.html';
         }
 
         return res.status(200).json({
@@ -123,6 +124,8 @@ router.post('/login-perimetral', async (req, res) => {
             token_session: sessionToken,
             user: { 
                 email: usuario.email, 
+                estudiante: studentAlias,
+                role: userRole,
                 rol: userRole, 
                 institution_id: usuario.institution_id,
                 arquetipo: arquetipoRegistrado 
