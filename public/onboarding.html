@@ -549,18 +549,16 @@
                     </div>
                 </div>
 
-                <div class="flex items-center justify-center gap-2 text-sm font-mono text-cyan-300 leading-relaxed mt-2">
-                    <svg class="animate-spin h-4 w-4 text-cyan-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    <span>Cargando Cabina de Entrenamiento Adaptativo...</span>
+                <div class="mt-4 pt-2 border-t border-cyan-500/20">
+                    <button type="button" onclick="window.location.href='index.html'" class="w-full py-3 px-4 bg-amber-500/20 hover:bg-amber-500/30 border-2 border-amber-400 text-amber-300 font-mono font-bold text-sm rounded-xl uppercase tracking-wider transition-all duration-300 shadow-[0_0_20px_rgba(212,175,55,0.25)] hover:scale-[1.02] cursor-pointer flex items-center justify-center gap-2">
+                        <span>🚀 INGRESAR A MI CABINA DE ENTRENAMIENTO</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                    <p class="text-[11px] font-mono text-cyan-300/70 text-center mt-2.5">
+                        Tómate tu tiempo para leer tu diagnóstico. Haz clic arriba para comenzar.
+                    </p>
                 </div>
             `;
-
-            setTimeout(() => {
-                window.location.href = "index.html";
-            }, 2500);
         }
 
         // Canvas Fractal
