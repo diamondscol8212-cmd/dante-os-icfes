@@ -90,7 +90,7 @@
         body.light-mode .modal-overlay { background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); }
         body.light-mode footer { color: #475569 !important; font-weight: 600 !important; }
 
-        /* MODALES EN MODO CLARO */
+        /* MODALES Y ELEMENTOS EN MODO CLARO */
         body.light-mode .modal-overlay .gateway-card {
             background: #ffffff !important;
             border-color: #cbd5e1 !important;
@@ -103,26 +103,26 @@
         body.light-mode .modal-overlay p {
             color: #1e293b !important;
         }
-        body.light-mode .modal-overlay .bg-zinc-900\/90 {
+        body.light-mode .sso-status-badge {
             background: #f1f5f9 !important;
             border-color: #cbd5e1 !important;
             color: #92400e !important;
         }
-        body.light-mode .modal-overlay .bg-zinc-800 {
+        body.light-mode .modal-btn-close {
             background: #e2e8f0 !important;
             color: #334155 !important;
         }
-        body.light-mode .modal-overlay .bg-zinc-800:hover {
+        body.light-mode .modal-btn-close:hover {
             background: #cbd5e1 !important;
         }
-        body.light-mode .border-zinc-800 {
+        body.light-mode .modal-overlay .border-zinc-800 {
             border-color: #e2e8f0 !important;
         }
         body.light-mode .text-slate-300,
         body.light-mode .text-slate-400 {
             color: #475569 !important;
         }
-        body.light-mode .text-[#51e2f5] {
+        body.light-mode .text-cyan-brand {
             color: #0284c7 !important;
         }
 
@@ -358,7 +358,7 @@
 
             <!-- ACCESO DEMO SANDBOX RÁPIDO PARA EVALUADORES Y PRUEBAS -->
             <div class="mt-3">
-                <button type="button" onclick="PortalAuth.cargarAccesoDemo()" class="text-[10px] font-mono text-[#51e2f5] hover:underline transition bg-transparent border-0 cursor-pointer">
+                <button type="button" onclick="PortalAuth.cargarAccesoDemo()" class="text-[10px] font-mono text-cyan-brand hover:underline transition bg-transparent border-0 cursor-pointer">
                     ⚡ ¿Eres evaluador? Cargar credenciales de prueba
                 </button>
             </div>
@@ -390,14 +390,14 @@
             <p class="text-xs text-slate-300 font-mono mb-3 leading-relaxed">
                 El inicio de sesión único (Single Sign-On) permite a estudiantes y docentes autenticarse en Dante OS con su cuenta institucional de Google Workspace sin recordar contraseñas adicionales.
             </p>
-            <div class="p-3 bg-zinc-900/90 border border-zinc-800 rounded-lg text-[11px] font-mono text-amber-400 mb-4">
+            <div class="p-3 bg-zinc-900/90 sso-status-badge border border-zinc-800 rounded-lg text-[11px] font-mono text-amber-400 mb-4">
                 🔒 <strong>Estado Tenant:</strong> Sincronización Google Workspace activa para colegios aliados.
             </div>
             <div class="flex gap-2">
                 <button type="button" class="btn-premium py-2 mt-0 w-full" onclick="document.getElementById('modalGoogleSSO').style.display = 'none'; PortalAuth.cargarAccesoDemo();">
                     Probar Acceso SSO Institucional
                 </button>
-                <button type="button" class="py-2 px-3 bg-zinc-800 text-slate-300 font-mono text-xs rounded-lg hover:bg-zinc-700 cursor-pointer" onclick="document.getElementById('modalGoogleSSO').style.display = 'none'">
+                <button type="button" class="py-2 px-3 bg-zinc-800 modal-btn-close text-slate-300 font-mono text-xs rounded-lg hover:bg-zinc-700 cursor-pointer" onclick="document.getElementById('modalGoogleSSO').style.display = 'none'">
                     Cerrar
                 </button>
             </div>
