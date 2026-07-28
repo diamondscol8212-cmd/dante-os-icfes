@@ -127,13 +127,15 @@ router.post('/login-perimetral', async (req, res) => {
             }
         }
 
+        const onboardingCompletado = usuario.onboarding_completed || Boolean(arquetipoRegistrado) || Boolean(usuario.arquetipo);
+
         // 🎯 LÓGICA DE REDIRECCIÓN DINÁMICA
         let rutaRedireccion = 'index.html';
         if (userRole === 'rector') {
             rutaRedireccion = 'rector.html';
         } else if (userRole === 'profesor') {
             rutaRedireccion = 'profesor.html';
-        } else if (userRole === 'estudiante' && !arquetipoRegistrado) {
+        } else if (userRole === 'estudiante' && !onboardingCompletado) {
             rutaRedireccion = 'onboarding.html';
         }
 
@@ -148,7 +150,8 @@ router.post('/login-perimetral', async (req, res) => {
                 role: userRole,
                 rol: userRole, 
                 institution_id: usuario.institution_id,
-                arquetipo: arquetipoRegistrado 
+                arquetipo: arquetipoRegistrado || usuario.arquetipo || null,
+                onboarding_completed: onboardingCompletado
             },
             redireccion: rutaRedireccion,
             version: SERVER_VERSION
