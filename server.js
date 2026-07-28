@@ -14,7 +14,7 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const SERVER_VERSION = "v20.6.3-FIX_MASTER";
+const SERVER_VERSION = "v21.1.0-ENTERPRISE_PRODUCTION";
 
 const ALLOWED_ORIGINS = [
     'http://localhost:5173', 'http://127.0.0.1:5173',
@@ -45,6 +45,11 @@ app.use((req, res, next) => {
 // ====================================================================
 app.use('/api/cat', catRouter);
 app.use('/api/auth', authRouter); 
+
+// ENDPOINT DE MONITOREO DE SALUD DEL CLÚSTER (HEALTHCHECK)
+app.get('/api/health', (req, res) => {
+    return res.status(200).json({ success: true, status: "HEALTHY", version: SERVER_VERSION, timestamp: new Date().toISOString() });
+});
 
 // ====================================================================
 // 🪐 PIPELINE ADMINISTRATIVO DE CONTROL DE ENTORNO
@@ -148,7 +153,7 @@ app.post('/api/admin/reset-epoca', async (req, res) => {
             total_estudiantes_evaluados: conteoAlumnos, 
             puntaje_promedio_icfes: promedioIcfesArea,
             matriz_desglose_snapshot: {
-                metadata_ajuste_b2b: { version_engine: "v20.6.3-CORPORATE", export_iva_compliant: true },
+                metadata_ajuste_b2b: { version_engine: "v21.1.0-CORPORATE", export_iva_compliant: true },
                 alumnos: desgloseAlumnos
             }, 
             creado_at: fechaBogota
