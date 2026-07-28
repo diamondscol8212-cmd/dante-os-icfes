@@ -375,6 +375,57 @@
                 scores['LATENCIA_REFLEXIVA'] = (scores['LATENCIA_REFLEXIVA'] || 0) + 1;
             }
 
+            // Si estamos en el último dilema (Paso 5/5), mostramos la herramienta de Evaluación de Certeza
+            if (currentStep === DILEMAS.length - 1) {
+                mostrarTutorialCerteza();
+            } else {
+                currentStep++;
+                loadStep();
+            }
+        }
+
+        function mostrarTutorialCerteza() {
+            if (timerInterval) clearInterval(timerInterval);
+
+            // Ocultar opciones anteriores y desplegar panel metacognitivo
+            const optCont = document.getElementById('options-container');
+            if (!optCont) return;
+
+            optCont.innerHTML = `
+                <div class="p-4 bg-cyan-950/70 border border-cyan-400/50 rounded-xl text-left shadow-2xl space-y-3">
+                    <div class="flex items-center gap-2 text-cyan-300 font-mono text-xs font-bold uppercase tracking-wider">
+                        <i class="fa-solid fa-gauge-high text-amber-400 text-sm"></i>
+                        <span>⚡ TUTORIAL DE CERTEZA METACOGNITIVA (SISTEMA DANTE OS)</span>
+                    </div>
+                    <p class="text-xs text-slate-200 font-sans leading-relaxed">
+                        En la aplicación (<code>index.html</code>), después de elegir cada respuesta, calificarás tu <strong>Grado de Certeza</strong>. Esto enseña al motor adaptativo si tu acierto responde a dominio real o a intuición/azar.
+                    </p>
+                    <div class="p-3 bg-black/50 rounded-lg border border-white/10">
+                        <p class="text-xs font-mono text-amber-300 font-bold mb-2 uppercase tracking-wide flex items-center gap-2">
+                            <i class="fa-solid fa-[#D4AF37] fa-circle-question"></i>
+                            <span>¿Con qué grado de confianza respondiste esta última pregunta?</span>
+                        </p>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-2">
+                            <button type="button" onclick="confirmarCertezaOnboarding('alta')" class="p-3 bg-emerald-950/70 hover:bg-emerald-800/80 border border-emerald-500/50 rounded-lg text-emerald-300 font-mono text-xs font-bold transition-all flex flex-col items-center gap-1 cursor-pointer hover:scale-105">
+                                <span class="text-base">🟢 SEGURO</span>
+                                <span class="text-[9.5px] text-emerald-400/90 font-normal">Alta Certeza</span>
+                            </button>
+                            <button type="button" onclick="confirmarCertezaOnboarding('media')" class="p-3 bg-amber-950/70 hover:bg-amber-800/80 border border-amber-500/50 rounded-lg text-amber-300 font-mono text-xs font-bold transition-all flex flex-col items-center gap-1 cursor-pointer hover:scale-105">
+                                <span class="text-base">🟡 DUDOSO</span>
+                                <span class="text-[9.5px] text-amber-400/90 font-normal">Media Certeza</span>
+                            </button>
+                            <button type="button" onclick="confirmarCertezaOnboarding('baja')" class="p-3 bg-rose-950/70 hover:bg-rose-800/80 border border-rose-500/50 rounded-lg text-rose-300 font-mono text-xs font-bold transition-all flex flex-col items-center gap-1 cursor-pointer hover:scale-105">
+                                <span class="text-base">🔴 ADIVINÉ</span>
+                                <span class="text-[9.5px] text-rose-400/90 font-normal">Baja Certeza</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function confirmarCertezaOnboarding(nivel) {
+            scores['CERTEZA_METACOGNITIVA_INICIAL'] = nivel;
             currentStep++;
             loadStep();
         }
