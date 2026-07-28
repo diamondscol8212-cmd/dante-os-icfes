@@ -423,6 +423,19 @@
             </div>
         </header>
 
+        <!-- BANNER MISIÓN PSICO-TÁCTICA DERIVADA DEL ONBOARDING -->
+        <div id="uiBannerOnboardingMision" style="display: none; background: rgba(15, 23, 42, 0.95); border: 1.5px solid var(--gold-satin); border-radius: 12px; padding: 0.85rem 1.1rem; margin-bottom: 1.2rem; box-shadow: 0 8px 25px rgba(0,0,0,0.6);" class="text-left font-mono max-w-[1200px] mx-auto">
+            <div class="flex items-center justify-between gap-2 flex-wrap mb-1">
+                <span class="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-2" id="lblBannerArquetipo">
+                    <i class="fa-solid fa-crosshairs text-amber-400"></i> ARQUETIPO: ESTRATEGA REFLEXIVO
+                </span>
+                <span class="text-[10px] text-cyan-300 bg-cyan-950/80 px-2.5 py-0.5 rounded-full border border-cyan-400/40 font-bold uppercase tracking-wider">🎯 MISIÓN PSICO-TÁCTICA ACTIVA</span>
+            </div>
+            <p class="text-xs text-slate-200 font-sans leading-relaxed" id="lblBannerMisionInstruccion">
+                Misión #1: Ejecuta lecturas pausadas y utiliza el descarte metódico de opciones antes de confirmar.
+            </p>
+        </div>
+
         <div class="content-layout" id="containerLayout">
             <section class="panel-enunciado" id="uiEnunciados"></section>
 
@@ -741,6 +754,26 @@
                     if (welcomeEl) {
                         welcomeEl.innerText = `SALA DE ${AppState.estudiante.toUpperCase()}`;
                         welcomeEl.setAttribute("data-final", `SALA DE ${AppState.estudiante.toUpperCase()}`);
+                    }
+
+                    // Cargar Misión Psico-Táctica e información del Onboarding
+                    const onboardingProfileRaw = localStorage.getItem("dante_onboarding_profile");
+                    const onboardingProfile = onboardingProfileRaw ? JSON.parse(onboardingProfileRaw) : null;
+                    const arquetipo = sessionData.arquetipo || (onboardingProfile && onboardingProfile.arquetipo) || "Estratega Reflexivo de Alto Rendimiento";
+                    const misionObj = sessionData.mision_activa || (onboardingProfile && onboardingProfile.mision) || null;
+
+                    const bannerEl = document.getElementById("uiBannerOnboardingMision");
+                    const arquetipoEl = document.getElementById("lblBannerArquetipo");
+                    const misionEl = document.getElementById("lblBannerMisionInstruccion");
+
+                    if (bannerEl && arquetipoEl && misionEl) {
+                        arquetipoEl.innerHTML = `<i class="fa-solid fa-crosshairs text-amber-400"></i> ARQUETIPO: ${arquetipo.toUpperCase()}`;
+                        if (misionObj && misionObj.instruccion) {
+                            misionEl.innerText = `🎯 ${misionObj.titulo || 'Misión Psico-Táctica #1'}: ${misionObj.instruccion}`;
+                        } else {
+                            misionEl.innerText = `🎯 Misión #1: Ejecuta lecturas pausadas y utiliza la herramienta de descarte de opciones [✂️ Tachar] antes de responder.`;
+                        }
+                        bannerEl.style.display = "block";
                     }
 
                     this.autoselectSiguienteMateria();
