@@ -2,157 +2,394 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dante OS 3.0 - Simulador de Calibración 3PL</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Dante OS | LAB & SIMULADOR IRT 3PL</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=JetBrains+Mono:wght@400;500;700;900&family=Oswald:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #0b0f19;
-            color: #e2e8f0;
-            padding: 30px;
-            max-width: 800px;
-            margin: 0 auto;
+        :root {
+            --primary: #51e2f5; 
+            --gold: #D4AF37;
+            --alert: #e74c3c;
+            --bg: #010103; 
+            --card-bg: rgba(12, 14, 22, 0.88);
+            --border-graphite: rgba(255, 255, 255, 0.08);
+            --emerald: #2ecc71;
+            --purple-core: #a855f7;
         }
-        h1 { color: #38bdf8; border-bottom: 2px solid #1e293b; padding-bottom: 10px; }
-        .card {
-            background-color: #1e293b;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            margin-bottom: 20px;
+
+        body, html { 
+            background: var(--bg); color: #f0f1f5; margin: 0; font-family: 'Outfit', sans-serif; 
+            overflow-x: hidden; min-height: 100vh; touch-action: pan-y;
+            -webkit-tap-highlight-color: transparent;
         }
-        .control-group {
-            margin-bottom: 15px;
+
+        .font-mono { font-family: 'JetBrains Mono', monospace !important; }
+
+        #dante-fractal-bg { position: fixed; inset: 0; z-index: 0; opacity: 0.18; pointer-events: none; mix-blend-mode: screen; }
+        .scanline { position: fixed; inset: 0; background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.5) 51%); background-size: 100% 4px; z-index: 1; pointer-events: none; opacity: 0.2; }
+
+        .master-hud {
+            position: fixed; top: 0; width: 100%; z-index: 1000; padding: 10px 16px;
+            background: rgba(1, 1, 3, 0.95); backdrop-filter: blur(12px);
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--border-graphite);
         }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #94a3b8;
+        .alias-title { font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; color: white; }
+        .geo-tag { font-family: 'JetBrains Mono'; font-size: 8px; color: var(--primary); letter-spacing: 1px; text-transform: uppercase; }
+
+        .viewport-container {
+            position: relative; z-index: 10;
+            padding: 75px 16px 110px; max-width: 980px; margin: 0 auto;
         }
-        input[type="range"] {
-            width: 100%;
-            accent-color: #38bdf8;
+
+        .lab-card {
+            background: var(--card-bg); border: 1px solid var(--border-graphite);
+            border-radius: 16px; backdrop-filter: blur(24px);
+            padding: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.95);
+            margin-bottom: 20px; position: relative;
         }
-        .valor {
-            float: right;
-            color: #38bdf8;
-            font-family: monospace;
-            font-size: 1.1em;
+        .lab-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--gold), var(--purple-core)); 
+            border-radius: 16px 16px 0 0;
         }
-        .resultado-box {
-            text-align: center;
-            background-color: #0f172a;
-            padding: 25px;
-            border-radius: 8px;
-            border: 1px solid #38bdf8;
+
+        .bottom-nav { 
+            position: fixed; bottom: 14px; width: 92%; max-width: 520px; left: 50%; transform: translateX(-50%); z-index: 1000;
+            display: flex; justify-content: space-evenly; align-items: center;
+            background: rgba(5, 5, 8, 0.94); backdrop-filter: blur(20px);
+            padding: 8px 16px; border-radius: 60px; border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.95);
         }
-        .porcentaje {
-            font-size: 3rem;
-            font-weight: bold;
-            color: #4ade80;
-            margin: 10px 0;
-        }
-        .formula {
-            font-family: monospace;
-            background-color: #0f172a;
-            padding: 10px;
-            border-radius: 6px;
-            color: #cbd5e1;
-            text-align: center;
-        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; min-width: 65px; cursor: pointer; }
+        .icon-circle { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); margin-bottom: 2px; }
+        .nav-text { font-size: 8.5px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
+        
+        #dante-anchor { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--gold); background: #000; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(212,175,55,0.3); }
+        #dante-anchor i { font-size: 18px; color: var(--gold); }
     </style>
 </head>
 <body>
 
-    <h1>🧠 Dante OS 3.0: Motor Adaptativo 3PL</h1>
-    <p>Mueve los controles para simular cómo el algoritmo calcula la probabilidad de éxito de las niñas neutralizando el azar.</p>
+    <div class="scanline"></div>
+    <canvas id="dante-fractal-bg"></canvas>
 
-    <div class="card">
-        <h3>👤 Parámetro del Estudiante</h3>
-        <div class="control-group">
-            <label>Habilidad del Estudiante (Theta &theta;): <span id="valTheta" class="valor">0.0</span></label>
-            <input type="range" id="theta" min="-3" max="3" step="0.1" value="0">
-            <small style="color:#64748b;">-3 significa principiante | +3 significa genio/maestría</small>
+    <!-- HEADER HUD -->
+    <header class="master-hud">
+        <div>
+            <div class="alias-title">SIMULADOR 3PL // LAB IRT</div>
+            <div class="geo-tag">TEORÍA DE RESPUESTA AL ÍTEM & DANTE OS</div>
         </div>
-    </div>
+        <div class="flex items-center gap-2">
+            <span class="text-[10px] font-mono text-cyan-400 bg-cyan-500/10 border border-cyan-500/30 px-2 py-0.5 rounded">
+                EAP BAYESIANO ACTIVE
+            </span>
+        </div>
+    </header>
 
-    <div class="card">
-        <h3>📝 Parámetros del Ítem (Pregunta del ICFES)</h3>
-        
-        <div class="control-group">
-            <label>Dificultad (b): <span id="valB" class="valor">0.0</span></label>
-            <input type="range" id="param_b" min="-3" max="3" step="0.1" value="0">
+    <main class="viewport-container">
+
+        <!-- INTRODUCCIÓN LAB -->
+        <div class="lab-card">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <h1 class="text-xl font-bold font-mono text-white flex items-center gap-2">
+                        <i class="fas fa-chart-line text-[#51e2f5]"></i> Laboratorio de Calibración 3PL
+                    </h1>
+                    <p class="text-xs text-slate-400 font-sans mt-1">
+                        Ajusta los parámetros psicométricos del ítem para observar la Curva Característica (CCI) y la Función de Información en tiempo real.
+                    </p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                <!-- CONTROLES DE PARÁMETROS -->
+                <div class="space-y-4 bg-slate-950/80 p-4 rounded-xl border border-zinc-800">
+                    <h3 class="text-xs font-mono font-bold text-[#D4AF37] uppercase tracking-wider mb-2">
+                        🎛️ PARÁMETROS PSICOMÉTRICOS
+                    </h3>
+
+                    <!-- PARAMETRO THETA (ESTUDIANTE) -->
+                    <div>
+                        <div class="flex justify-between text-xs font-mono mb-1">
+                            <span class="text-emerald-400 font-bold">Habilidad (&theta;):</span>
+                            <span id="valTheta" class="text-white font-bold">0.0</span>
+                        </div>
+                        <input type="range" id="theta" min="-3.0" max="3.0" step="0.1" value="0.0" 
+                               class="w-full accent-emerald-400 cursor-pointer" oninput="actualizarSimulacion()">
+                        <p class="text-[10px] text-slate-400 mt-1">-3.0 Principiante | +3.0 Maestría</p>
+                    </div>
+
+                    <!-- PARAMETRO A (DISCRIMINACION) -->
+                    <div>
+                        <div class="flex justify-between text-xs font-mono mb-1">
+                            <span class="text-cyan-400 font-bold">a (Discriminación):</span>
+                            <span id="valA" class="text-white font-bold">1.0</span>
+                        </div>
+                        <input type="range" id="param_a" min="0.5" max="2.5" step="0.1" value="1.0" 
+                               class="w-full accent-[#51e2f5] cursor-pointer" oninput="actualizarSimulacion()">
+                        <p class="text-[10px] text-slate-400 mt-1">Calidad de separación entre niveles de habilidad.</p>
+                    </div>
+
+                    <!-- PARAMETRO B (DIFICULTAD) -->
+                    <div>
+                        <div class="flex justify-between text-xs font-mono mb-1">
+                            <span class="text-amber-400 font-bold">b (Dificultad):</span>
+                            <span id="valB" class="text-white font-bold">0.0</span>
+                        </div>
+                        <input type="range" id="param_b" min="-3.0" max="3.0" step="0.1" value="0.0" 
+                               class="w-full accent-amber-400 cursor-pointer" oninput="actualizarSimulacion()">
+                        <p class="text-[10px] text-slate-400 mt-1">Nivel de exigencia intrínseco de la pregunta.</p>
+                    </div>
+
+                    <!-- PARAMETRO C (AZAR) -->
+                    <div>
+                        <div class="flex justify-between text-xs font-mono mb-1">
+                            <span class="text-purple-400 font-bold">c (Pseudoadivinación):</span>
+                            <span id="valC" class="text-white font-bold">0.25</span>
+                        </div>
+                        <input type="range" id="param_c" min="0.0" max="0.5" step="0.05" value="0.25" 
+                               class="w-full accent-purple-400 cursor-pointer" oninput="actualizarSimulacion()">
+                        <p class="text-[10px] text-slate-400 mt-1">Probabilidad de acierto por azar (0.25 = 4 opciones).</p>
+                    </div>
+                </div>
+
+                <!-- GRAFICA EN TIEMPO REAL -->
+                <div class="lg:col-span-2 flex flex-col">
+                    <div class="bg-slate-950 p-3 rounded-t-xl border border-zinc-800 flex justify-between items-center text-xs font-mono">
+                        <span class="text-slate-300">📈 CURVA CARACTERÍSTICA DEL ÍTEM (CCI)</span>
+                        <div class="flex gap-3 text-[10px]">
+                            <span class="text-[#51e2f5] font-bold">━ P(&theta;) Probabilidad</span>
+                            <span class="text-[#2ecc71] font-bold">● Posición Estudiante</span>
+                        </div>
+                    </div>
+                    <div class="bg-[#080910] border-x border-b border-zinc-800 p-2 rounded-b-xl flex-1 flex items-center justify-center">
+                        <canvas id="canvas3PL" width="580" height="280" class="w-full h-auto max-h-[300px]"></canvas>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="control-group">
-            <label>Discriminación / Calidad (a): <span id="valA" class="valor">1.0</span></label>
-            <input type="range" id="param_a" min="0.5" max="2.5" step="0.1" value="1.0">
+        <!-- PANEL DE RESULTADO DIAGNÓSTICO -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-slate-900/90 border border-zinc-800 p-5 rounded-xl text-center flex flex-col justify-center items-center">
+                <span class="text-xs font-mono text-slate-400 uppercase">Probabilidad Calculada de Acierto</span>
+                <span id="pantallaPorcentaje" class="text-4xl font-mono font-bold text-emerald-400 my-2">62.50%</span>
+                <span id="analisisTexto" class="text-xs text-slate-400 font-sans">La pregunta está perfectamente calibrada para su nivel.</span>
+            </div>
+
+            <div class="bg-slate-900/90 border border-zinc-800 p-5 rounded-xl space-y-3">
+                <h3 class="text-xs font-mono font-bold text-white uppercase border-b border-zinc-800 pb-2">⚡ ACCIONES ADAPTATIVAS DEL MOTOR</h3>
+                <div class="flex gap-2">
+                    <button type="button" onclick="simularRespuesta(true)" class="flex-1 py-2 bg-emerald-500/20 border border-emerald-500/50 text-emerald-400 rounded-lg font-mono text-xs font-bold hover:bg-emerald-500 hover:text-black transition">
+                        ✓ ACIERTO (+&theta;)
+                    </button>
+                    <button type="button" onclick="simularRespuesta(false)" class="flex-1 py-2 bg-rose-500/20 border border-rose-500/50 text-rose-400 rounded-lg font-mono text-xs font-bold hover:bg-rose-500 hover:text-white transition">
+                        ✕ ERROR (-&theta;)
+                    </button>
+                </div>
+                <button type="button" onclick="resetSimulacion()" class="w-full py-1.5 bg-slate-800 border border-slate-700 text-slate-300 rounded-lg font-mono text-xs hover:bg-slate-700 transition">
+                    🔄 REINICIAR PARÁMETROS
+                </button>
+            </div>
         </div>
 
-        <div class="control-group">
-            <label>Adivinación / Azar (c): <span id="valC" class="valor">0.25</span></label>
-            <input type="range" id="param_c" min="0" max="0.5" step="0.05" value="0.25">
-            <small style="color:#64748b;">0.25 significa examen de 4 opciones múltiples (ICFES base)</small>
-        </div>
-    </div>
+    </main>
 
-    <div class="resultado-box">
-        <h3>🎯 Probabilidad Calculada de Acierto:</h3>
-        <div id="pantallaPorcentaje" class="porcentaje">62.50%</div>
-        <div id="analisisTexto" style="color: #94a3b8;">La pregunta está perfectamente calibrada para su nivel.</div>
-    </div>
+    <!-- DOCK FLOTANTE INFERIOR -->
+    <nav class="bottom-nav">
+        <div class="nav-item" onclick="window.location.href='index.html'">
+            <div class="icon-circle"><i class="fas fa-layer-group text-slate-400 text-sm"></i></div>
+            <span class="nav-text" style="color: #94a3b8">EXAMEN</span>
+        </div>
+        <div class="nav-item" onclick="window.location.href='simulador3pl.html'">
+            <div class="icon-circle" style="border-color: rgba(81,226,245,0.8); background: rgba(81,226,245,0.15)">
+                <i class="fas fa-chart-line text-[#51e2f5] text-sm"></i>
+            </div>
+            <span class="nav-text" style="color: #51e2f5">SIM 3PL</span>
+        </div>
+        <div id="dante-anchor" onclick="window.location.href='index.html'"><i class="fas fa-brain"></i></div>
+        <div class="nav-item" onclick="window.location.href='auditor.html'">
+            <div class="icon-circle" style="border-color: rgba(168,85,247,0.3)"><i class="fas fa-shield-halved text-purple-400 text-sm"></i></div>
+            <span class="nav-text" style="color: #a855f7">TELEMETRÍA</span>
+        </div>
+        <div class="nav-item" onclick="window.location.href='perfil.html'">
+            <div class="icon-circle" style="border-color: rgba(212,175,55,0.3)"><i class="fas fa-user-astronaut text-[var(--gold)] text-sm"></i></div>
+            <span class="nav-text" style="color: var(--gold)">PERFIL</span>
+        </div>
+    </nav>
 
     <script>
-        // LA FUNCIÓN JAVASCRIPT CORREGIDA (Sintaxis limpia)
         function calcularProbabilidadAcierto3PL(theta, a, b, c) {
             const exponente = -a * (theta - b);
             const denominador = 1 + Math.exp(exponente);
-            const probabilidad = c + ((1 - c) / denominador);
-            return probabilidad;
+            return c + ((1 - c) / denominador);
         }
 
-        // Captura de elementos de la interfaz para interactividad
-        const sliders = ['theta', 'param_a', 'param_b', 'param_c'];
-        
         function actualizarSimulacion() {
             const th = parseFloat(document.getElementById('theta').value);
             const a = parseFloat(document.getElementById('param_a').value);
             const b = parseFloat(document.getElementById('param_b').value);
             const c = parseFloat(document.getElementById('param_c').value);
 
-            // Actualizar textos visuales de los sliders
-            document.getElementById('valTheta').innerText = th.toFixed(1);
+            document.getElementById('valTheta').innerText = (th >= 0 ? '+' : '') + th.toFixed(1);
             document.getElementById('valA').innerText = a.toFixed(1);
-            document.getElementById('valB').innerText = b.toFixed(1);
+            document.getElementById('valB').innerText = (b >= 0 ? '+' : '') + b.toFixed(1);
             document.getElementById('valC').innerText = c.toFixed(2);
 
-            // Ejecutar la matemática corregida
-            const resultadoIntermedio = calcularProbabilidadAcierto3PL(th, a, b, c);
-            const porcentajeFinal = (resultadoIntermedio * 100).toFixed(2);
+            const probabilidad = calcularProbabilidadAcierto3PL(th, a, b, c);
+            const porcentajeFinal = (probabilidad * 100).toFixed(2);
 
-            // Pintar resultado
             const contenedorPct = document.getElementById('pantallaPorcentaje');
             contenedorPct.innerText = porcentajeFinal + "%";
 
-            // Diagnóstico adaptativo en tiempo real
             const analisis = document.getElementById('analisisTexto');
-            if (resultadoIntermedio > 0.85) {
-                contenedorPct.style.color = "#ef4444"; // Rojo (Muy fácil, peligro de aburrimiento)
-                analisis.innerText = "🚨 Pregunta demasiado FÁCIL. Las niñas se van a aburrir. El motor debe subir la dificultad.";
-            } else if (resultadoIntermedio < (c + 0.08)) {
-                contenedorPct.style.color = "#eab308"; // Amarillo (Adivinación pura)
-                analisis.innerText = "⚠️ Pregunta muy DIFÍCIL. Alta probabilidad de responder por 'chiripa'. El motor debe bajar la dificultad.";
+            if (probabilidad > 0.85) {
+                contenedorPct.style.color = "#e74c3c";
+                analisis.innerText = "🚨 Pregunta demasiado FÁCIL. Peligro de aburrimiento. El motor debe subir la dificultad.";
+            } else if (probabilidad < (c + 0.08)) {
+                contenedorPct.style.color = "#D4AF37";
+                analisis.innerText = "⚠️ Pregunta muy DIFÍCIL. Alta probabilidad de adivinación (chiripa). El motor debe bajar la dificultad.";
             } else {
-                contenedorPct.style.color = "#4ade80"; // Verde (Zona Óptima de Aprendizaje)
-                analisis.innerText = "🟢 ¡ZONA ÓPTIMA! Desafío perfecto para Samantha o Elizabeth. Máxima retención cognitiva.";
+                contenedorPct.style.color = "#2ecc71";
+                analisis.innerText = "🟢 ¡ZONA ÓPTIMA DE APRENDIZAJE! Desafío perfecto. Máxima retención cognitiva.";
             }
+
+            drawChart(a, b, c, th);
         }
 
-        // Escuchar los movimientos de los controles
-        sliders.forEach(id => {
-            document.getElementById(id).addEventListener('input', actualizarSimulacion);
-        });
+        function drawChart(a, b, c, currentTheta) {
+            const canvas = document.getElementById('canvas3PL');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+
+            ctx.clearRect(0, 0, w, h);
+
+            const padL = 40, padR = 20, padT = 20, padB = 40;
+            const graphW = w - padL - padR;
+            const graphH = h - padT - padB;
+
+            ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+            ctx.lineWidth = 1;
+
+            for (let i = 0; i <= 4; i++) {
+                const y = padT + (graphH * (i / 4));
+                ctx.beginPath();
+                ctx.moveTo(padL, y);
+                ctx.lineTo(w - padR, y);
+                ctx.stroke();
+
+                ctx.fillStyle = 'rgba(255,255,255,0.4)';
+                ctx.font = '10px JetBrains Mono';
+                ctx.fillText(`${100 - i * 25}%`, 8, y + 3);
+            }
+
+            for (let t = -3; t <= 3; t += 1) {
+                const x = padL + ((t + 3) / 6) * graphW;
+                ctx.beginPath();
+                ctx.moveTo(x, padT);
+                ctx.lineTo(x, h - padB);
+                ctx.stroke();
+
+                ctx.fillStyle = 'rgba(255,255,255,0.5)';
+                ctx.font = '10px JetBrains Mono';
+                ctx.fillText((t >= 0 ? '+' : '') + t, x - 8, h - padB + 16);
+            }
+
+            ctx.beginPath();
+            ctx.strokeStyle = '#51e2f5';
+            ctx.lineWidth = 3;
+
+            for (let px = 0; px <= graphW; px += 2) {
+                const t = -3.0 + (px / graphW) * 6.0;
+                const p = calcularProbabilidadAcierto3PL(t, a, b, c);
+                const py = padT + graphH * (1.0 - p);
+
+                if (px === 0) ctx.moveTo(padL + px, py);
+                else ctx.lineTo(padL + px, py);
+            }
+            ctx.stroke();
+
+            const thetaX = padL + ((currentTheta + 3) / 6) * graphW;
+            const currentP = calcularProbabilidadAcierto3PL(currentTheta, a, b, c);
+            const currentY = padT + graphH * (1.0 - currentP);
+
+            ctx.beginPath();
+            ctx.strokeStyle = '#2ecc71';
+            ctx.lineWidth = 1.5;
+            ctx.moveTo(thetaX, padT);
+            ctx.lineTo(thetaX, h - padB);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(thetaX, currentY, 6, 0, Math.PI * 2);
+            ctx.fillStyle = '#2ecc71';
+            ctx.fill();
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        function simularRespuesta(esCorrecto) {
+            const thetaSlider = document.getElementById('theta');
+            let current = parseFloat(thetaSlider.value);
+            current = esCorrecto ? Math.min(3.0, current + 0.25) : Math.max(-3.0, current - 0.20);
+            thetaSlider.value = current.toFixed(1);
+            actualizarSimulacion();
+        }
+
+        function resetSimulacion() {
+            document.getElementById('param_a').value = "1.0";
+            document.getElementById('param_b').value = "0.0";
+            document.getElementById('param_c').value = "0.25";
+            document.getElementById('theta').value = "0.0";
+            actualizarSimulacion();
+        }
+
+        const bgCanvas = document.getElementById('dante-fractal-bg'); 
+        const bgCtx = bgCanvas ? bgCanvas.getContext('2d') : null;
+        let qParticles = [];
+
+        function initCanvas() {
+            if (!bgCanvas || !bgCtx) return;
+            bgCanvas.width = window.innerWidth; bgCanvas.height = window.innerHeight;
+
+            for(let i=0; i<60; i++) {
+                qParticles.push({ 
+                    x: bgCanvas.width/2, y: bgCanvas.height/2, 
+                    s: Math.random() * 1.5, v: Math.random()*0.3 + 0.1, 
+                    angle: i * 137.5 * (Math.PI / 180), dist: 0 
+                });
+            }
+            animateCanvas();
+        }
+
+        function animateCanvas() {
+            if (!bgCtx) return;
+            bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+            qParticles.forEach(p => {
+                p.dist += p.v; 
+                let x = bgCanvas.width/2 + Math.cos(p.angle) * p.dist; 
+                let y = bgCanvas.height/2 + Math.sin(p.angle) * p.dist;
+                if(x < 0 || x > bgCanvas.width || y < 0 || y > bgCanvas.height) p.dist = 0;
+                bgCtx.beginPath(); bgCtx.arc(x, y, p.s, 0, Math.PI*2); bgCtx.fillStyle = '#51e2f5'; bgCtx.globalAlpha = 0.2; bgCtx.fill();
+            });
+            requestAnimationFrame(animateCanvas);
+        }
+
+        window.onload = () => {
+            initCanvas();
+            actualizarSimulacion();
+        };
     </script>
 </body>
 </html>
