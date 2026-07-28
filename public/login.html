@@ -27,21 +27,38 @@
 
         /* TEMA DE ALTO CONTRASTE / MODO AULA PROYECTOR */
         body.light-mode {
-            --bg: #f1f5f9;
-            --card-bg: rgba(255, 255, 255, 0.98);
-            --border-graphite: rgba(0, 0, 0, 0.15);
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --border-graphite: rgba(0, 0, 0, 0.12);
             --text-main: #0f172a;
             --primary: #0284c7;
             --gold: #b45309;
             --alert: #dc2626;
+            background-color: #f8fafc !important;
+            background-image: none !important;
         }
-        body.light-mode .input-label { color: #475569; }
-        body.light-mode .input-cyber { background: #ffffff !important; color: #0f172a !important; border-color: #cbd5e1 !important; }
-        body.light-mode .gateway-card { box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12); }
-        body.light-mode .role-selection-card { background: #f8fafc; border-color: #cbd5e1; }
-        body.light-mode .role-selection-card.active { background: #fef3c7; border-color: #b45309; }
-        body.light-mode .modal-overlay { background: rgba(15, 23, 42, 0.85); }
-        body.light-mode footer { color: #64748b; }
+        body.light-mode .master-hud { background: rgba(255, 255, 255, 0.98) !important; border-bottom-color: #e2e8f0 !important; }
+        body.light-mode .alias-title { color: #0f172a !important; }
+        body.light-mode .input-label { color: #334155 !important; font-weight: 800; }
+        body.light-mode .input-cyber { background: #ffffff !important; color: #0f172a !important; border: 1.5px solid #cbd5e1 !important; }
+        body.light-mode .input-cyber::placeholder { color: #94a3b8 !important; }
+        body.light-mode .gateway-card { background: #ffffff !important; border: 1px solid #cbd5e1 !important; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08) !important; }
+        body.light-mode #uiSubtitulo { color: #475569 !important; }
+        body.light-mode .help-text { color: #475569 !important; }
+        body.light-mode .chk-label { color: #334155 !important; }
+        body.light-mode .role-selection-card { background: #f8fafc !important; border-color: #cbd5e1 !important; color: #1e293b !important; }
+        body.light-mode .role-selection-card .role-title { color: #334155 !important; }
+        body.light-mode .role-selection-card .role-icon { color: #0284c7 !important; }
+        body.light-mode .role-selection-card.active { background: #fef3c7 !important; border-color: #b45309 !important; }
+        body.light-mode .role-selection-card.active .role-title { color: #78350f !important; }
+        body.light-mode .role-selection-card.active .role-icon { color: #b45309 !important; }
+        body.light-mode .verification-banner { background: #f0f9ff !important; border-color: #0284c7 !important; color: #0284c7 !important; }
+        body.light-mode .system-version-tag { color: #0284c7 !important; }
+        body.light-mode .domain-pill { background: #e0f2fe !important; border-color: #0284c7 !important; color: #0284c7 !important; }
+        body.light-mode .btn-google { background: #ffffff !important; color: #1e293b !important; border: 1px solid #cbd5e1 !important; }
+        body.light-mode .btn-google:hover { background: #f1f5f9 !important; border-color: #0284c7 !important; }
+        body.light-mode .modal-overlay { background: rgba(15, 23, 42, 0.75); }
+        body.light-mode footer { color: #475569 !important; }
 
         body, html { 
             background: var(--bg); color: var(--text-main); margin: 0; font-family: 'Outfit', sans-serif; 
@@ -211,13 +228,13 @@
 
                 <div class="input-group">
                     <div class="flex justify-between items-center mb-1">
-                        <label for="txtEmail" class="input-label mb-0">Credencial de Correo</label>
+                        <label for="txtEmail" class="input-label mb-0">Credencial (Correo o N° Documento TI / CC)</label>
                         <div class="space-x-1">
                             <button type="button" class="domain-pill" onclick="PortalAuth.autocompletarDominio('@danteos.edu.co')">+@danteos.edu.co</button>
                         </div>
                     </div>
-                    <input type="email" id="txtEmail" class="input-cyber" placeholder="usuario@danteos.edu.co" autocomplete="username" required>
-                    <span class="text-[9px] font-mono text-slate-500 mt-1 block">Ingresa el correo institucional registrado en la plataforma</span>
+                    <input type="text" id="txtEmail" class="input-cyber" placeholder="Correo o N° Documento (TI / CC)" autocomplete="username" required oninput="PortalAuth.detectarTipoIdentificador(this.value)">
+                    <span class="text-[9px] font-mono help-text text-slate-400 mt-1 block">Ingresa tu correo institucional o número de documento (TI / CC) registrado</span>
                 </div>
 
                 <div class="input-group">
@@ -238,13 +255,13 @@
                 <div class="mt-3 text-left space-y-2">
                     <label class="flex items-center gap-2 cursor-pointer">
                         <input type="checkbox" id="chkRecordarCredenciales" checked class="rounded border-slate-700 bg-slate-900 text-[#51e2f5] focus:ring-0">
-                        <span class="text-[9.5px] font-mono text-slate-300 leading-tight">
+                        <span class="text-[9.5px] font-mono chk-label text-slate-300 leading-tight">
                             🔐 Recordar Firma y Credenciales en este navegador.
                         </span>
                     </label>
                     <label class="flex items-center gap-2 cursor-pointer">
                         <input type="checkbox" id="chkHabeasData" checked class="rounded border-slate-700 bg-slate-900 text-[#51e2f5] focus:ring-0">
-                        <span class="text-[9.5px] font-mono text-slate-400 leading-tight">
+                        <span class="text-[9.5px] font-mono chk-label text-slate-300 leading-tight">
                             Acepto la Política de Protección de Datos Escolar (Habeas Data Ley 1581).
                         </span>
                     </label>
@@ -253,6 +270,23 @@
                 <button type="submit" class="btn-premium" id="btnValidar">
                     <span id="btnValidarIcon"><i class="fas fa-key"></i></span>
                     <span id="btnValidarText">Validar Firmas Criptográficas</span>
+                </button>
+
+                <!-- DIVIDER & BOTÓN DE GOOGLE SSO INSTITUCIONAL -->
+                <div class="relative flex py-3 items-center">
+                    <div class="flex-grow border-t border-zinc-800"></div>
+                    <span class="flex-shrink mx-2 text-[9px] font-mono text-slate-400 uppercase">o autenticación SSO</span>
+                    <div class="flex-grow border-t border-zinc-800"></div>
+                </div>
+
+                <button type="button" onclick="PortalAuth.iniciarGoogleSSO()" class="w-full py-2.5 px-3 rounded-lg border border-zinc-700 bg-zinc-900/80 hover:bg-zinc-800 transition text-xs font-mono font-bold flex items-center justify-center gap-2 text-slate-200 cursor-pointer btn-google">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                    </svg>
+                    <span>Iniciar con Google Institucional</span>
                 </button>
             </form>
 
@@ -278,6 +312,29 @@
                 <li>Modo de alto contraste para proyección en aula.</li>
             </ul>
             <button type="button" class="btn-premium py-2 mt-0" onclick="document.getElementById('modalReleaseNotes').style.display = 'none'">Cerrar Novedades</button>
+        </div>
+    </div>
+
+    <!-- MODAL GOOGLE WORKSPACE SSO -->
+    <div id="modalGoogleSSO" class="modal-overlay">
+        <div class="gateway-card max-w-md text-left">
+            <h3 class="font-mono text-sm font-bold text-[#4285F4] uppercase border-b border-zinc-800 pb-2 mb-3 flex items-center gap-2">
+                <i class="fab fa-google"></i> SSO GOOGLE WORKSPACE
+            </h3>
+            <p class="text-xs text-slate-300 font-mono mb-3 leading-relaxed">
+                El inicio de sesión único (Single Sign-On) permite a estudiantes y docentes autenticarse en Dante OS con su cuenta institucional de Google Workspace sin recordar contraseñas adicionales.
+            </p>
+            <div class="p-3 bg-zinc-900/90 border border-zinc-800 rounded-lg text-[11px] font-mono text-amber-400 mb-4">
+                🔒 <strong>Estado Tenant:</strong> Sincronización Google Workspace activa para colegios aliados.
+            </div>
+            <div class="flex gap-2">
+                <button type="button" class="btn-premium py-2 mt-0 w-full" onclick="document.getElementById('modalGoogleSSO').style.display = 'none'; PortalAuth.cargarAccesoDemo();">
+                    Probar Acceso SSO Institucional
+                </button>
+                <button type="button" class="py-2 px-3 bg-zinc-800 text-slate-300 font-mono text-xs rounded-lg hover:bg-zinc-700 cursor-pointer" onclick="document.getElementById('modalGoogleSSO').style.display = 'none'">
+                    Cerrar
+                </button>
+            </div>
         </div>
     </div>
 
@@ -467,6 +524,30 @@
                 alert(`📧 SOLICITUD REGISTRADA:\n\nSe ha notificado al soporte técnico para restablecer la clave de [${email}].`);
             }
 
+            static detectarTipoIdentificador(val) {
+                const cleaned = val.trim();
+                const banner = document.getElementById("uiBannerEstado");
+                if (!cleaned) {
+                    this.seleccionarRol(SelectedRoleTarget);
+                    return;
+                }
+                if (cleaned.includes("@")) {
+                    if (banner) banner.innerText = "> IDENTIFICADOR DETECTADO: CORREO INSTITUCIONAL";
+                } else if (/^\d+$/.test(cleaned) || /^(ti|cc|ce|pas)-\d+$/i.test(cleaned)) {
+                    if (banner) banner.innerText = "> IDENTIFICADOR DETECTADO: DOCUMENTO DE IDENTIDAD (TI / CC)";
+                }
+            }
+
+            static iniciarGoogleSSO() {
+                const tenant = document.getElementById("txtInstitutionId").value.trim() || "colegio_sandbox_default";
+                const modal = document.getElementById("modalGoogleSSO");
+                if (modal) {
+                    modal.style.display = "flex";
+                } else {
+                    alert(`🌐 AUTENTICACIÓN GOOGLE WORKSPACE INSTITUCIONAL:\n\nTenant [${tenant}]: Para iniciar sesión con tu cuenta de Google Institucional (@colegio.edu.co), autoriza los permisos de acceso de tu colegio.`);
+                }
+            }
+
             static async ejecutarLoginPerimetral(event) {
                 if (event && event.preventDefault) event.preventDefault();
 
@@ -482,10 +563,10 @@
                 const banner = document.getElementById("uiBannerEstado");
 
                 const institutionId = document.getElementById("txtInstitutionId").value.trim();
-                const email = document.getElementById("txtEmail").value.trim();
+                const rawIdentifier = document.getElementById("txtEmail").value.trim();
                 const password = document.getElementById("txtPassword").value;
 
-                if (!email || !password || !institutionId) {
+                if (!rawIdentifier || !password || !institutionId) {
                     alert("🚨 CONTROL DE SEGURIDAD: Todos los campos son requeridos.");
                     return;
                 }
@@ -494,7 +575,7 @@
                 const chkRecordar = document.getElementById("chkRecordarCredenciales");
                 if (chkRecordar && chkRecordar.checked) {
                     localStorage.setItem("dante_remembered_credentials", JSON.stringify({
-                        email: email,
+                        email: rawIdentifier,
                         institution_id: institutionId,
                         password: password,
                         role: SelectedRoleTarget
@@ -516,7 +597,8 @@
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            email: email,
+                            identity: rawIdentifier,
+                            email: rawIdentifier,
                             password: password,
                             institution_id: institutionId,
                             role_target: SelectedRoleTarget
@@ -532,10 +614,11 @@
                     if (json && json.success) {
                         localStorage.setItem("dante_token", json.token_session || `token_live_${Date.now()}`);
                         localStorage.setItem("dante_user", JSON.stringify(json.user || {
-                            email: email,
+                            email: rawIdentifier.includes('@') ? rawIdentifier : `${rawIdentifier}@danteos.edu.co`,
+                            document_id: rawIdentifier.includes('@') ? null : rawIdentifier,
                             institution_id: institutionId,
                             role: SelectedRoleTarget,
-                            estudiante: email.split('@')[0]
+                            estudiante: rawIdentifier.split('@')[0]
                         }));
 
                         if (btnText) btnText.innerText = "¡Bienvenido! Cargando entorno...";
@@ -572,10 +655,11 @@
                     
                     // MODO FALLBACK SANDBOX GRACIOSO SI EL SERVIDOR NO RESPONDE AÚN
                     const userLocal = {
-                        email: email,
+                        email: rawIdentifier.includes('@') ? rawIdentifier : `${rawIdentifier}@danteos.edu.co`,
+                        document_id: rawIdentifier.includes('@') ? null : rawIdentifier,
                         institution_id: institutionId,
                         role: SelectedRoleTarget,
-                        estudiante: email.split('@')[0],
+                        estudiante: rawIdentifier.split('@')[0],
                         arquetipo: "ARQUETIPO_ESTRATEGIAS"
                     };
 
