@@ -93,7 +93,7 @@
             cursor: pointer; text-decoration: underline;
         }
 
-        /* REJILLA DE SELECCIÓN DE ROLES */
+        /* REJILLA DE SELECCIÓN DE ROLES CON ÍCONOS ESTILIZADOS */
         .role-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; margin-top: 1rem; text-align: center; }
         .role-selection-card {
             background: rgba(20, 24, 35, 0.7); border: 1px solid var(--border-graphite); border-radius: 8px; padding: 0.8rem 0.4rem; cursor: pointer; transition: all 0.2s ease;
@@ -148,7 +148,7 @@
     <div class="scanline"></div>
     <canvas id="dante-fractal-bg"></canvas>
 
-    <!-- HEADER HUD PERIMETRAL CON SELECTOR MULTI-IDIOMA Y CONTRASTE -->
+    <!-- HEADER HUD PERIMETRAL -->
     <header class="master-hud">
         <div>
             <div class="alias-title" id="lblHudTitle" data-final="DANTE OS // AUTENTICACIÓN">DANTE OS // AUTENTICACIÓN</div>
@@ -156,14 +156,7 @@
         </div>
         
         <div class="flex items-center gap-3">
-            <!-- MEJORA 9: SELECTOR MULTI-IDIOMA -->
-            <select id="selIdioma" class="bg-black/60 border border-zinc-700 text-[10px] font-mono text-cyan-400 rounded px-1.5 py-0.5 outline-none" onchange="PortalAuth.cambiarIdioma(this.value)">
-                <option value="es">🇪🇸 ES</option>
-                <option value="en">🇺🇸 EN</option>
-                <option value="pt">🇧🇷 PT</option>
-            </select>
-
-            <!-- MEJORA 6: MODO CONTRASTE AULA/PROYECTOR -->
+            <!-- BOTÓN MODO CONTRASTE (AULA / PROYECTOR) -->
             <button onclick="PortalAuth.toggleContraste()" class="text-xs text-amber-400 hover:text-white p-1" title="Cambiar modo de contraste">
                 <i class="fas fa-sun" id="iconContrast"></i>
             </button>
@@ -176,10 +169,10 @@
 
     <div class="gateway-container">
         <div class="gateway-card">
-            <!-- MEJORA 29: MODAL RELEASE NOTES AL HACER CLIC -->
+            <!-- ETIQUETA DE VERSIÓN E HISTORIAL DE NOVEDADES -->
             <div class="system-version-tag" onclick="PortalAuth.abrirReleaseNotes()" title="Ver novedades v21.1.0">v21.1.0 ℹ️</div>
             
-            <div class="verification-banner" id="uiBannerEstado">> AUTENTICACIÓN PERIMETRAL CORE</div>
+            <div class="verification-banner" id="uiBannerEstado">> AUTENTICACIÓN ALUMNO // MODO ADAPTATIVO</div>
             
             <h1 class="gateway-title" id="lblGatewayTitle" data-final="PORTAL DE ACCESO UNIFICADO">PORTAL DE ACCESO UNIFICADO</h1>
             <p style="font-size: 0.72rem; color: #8a8f9d; text-transform: uppercase; letter-spacing: 1px;" class="font-mono" id="uiSubtitulo">Sincronización de Trayectoria Cognitiva</p>
@@ -187,44 +180,44 @@
             <div class="role-grid">
                 <div id="cardRoleEstudiante" class="role-selection-card active" onclick="PortalAuth.seleccionarRol('estudiante')">
                     <i class="fas fa-brain role-icon"></i>
-                    <div class="role-title" id="lblRoleAlumno">Alumno</div>
+                    <div class="role-title">Alumno</div>
                 </div>
                 <div id="cardRoleProfesor" class="role-selection-card" onclick="PortalAuth.seleccionarRol('profesor')">
                     <i class="fas fa-chalkboard-user role-icon"></i>
-                    <div class="role-title" id="lblRoleDocente">Docente</div>
+                    <div class="role-title">Docente</div>
                 </div>
                 <div id="cardRoleRector" class="role-selection-card" onclick="PortalAuth.seleccionarRol('rector')">
                     <i class="fas fa-shield-halved role-icon"></i>
-                    <div class="role-title" id="lblRoleRector">Rector</div>
+                    <div class="role-title">Rector</div>
                 </div>
             </div>
 
             <div class="input-group" style="margin-top: 1.4rem;">
-                <label class="input-label" id="lblTenantLabel">ID de Institución (Tenant)</label>
+                <label class="input-label">ID de Institución (Tenant)</label>
                 <input type="text" id="txtInstitutionId" class="input-cyber" value="colegio_sandbox_default" placeholder="colegio_id">
             </div>
 
             <div class="input-group">
                 <div class="flex justify-between items-center mb-1">
-                    <label class="input-label mb-0" id="lblEmailLabel">Credencial de Correo</label>
+                    <label class="input-label mb-0">Credencial de Correo</label>
                     <div class="space-x-1">
                         <span class="domain-pill" onclick="PortalAuth.autocompletarDominio('@danteos.edu.co')">+@danteos.edu.co</span>
                     </div>
                 </div>
                 <input type="email" id="txtEmail" class="input-cyber" placeholder="usuario@danteos.edu.co" autocomplete="username">
-                <span class="text-[9px] font-mono text-slate-500 mt-1 block" id="lblEmailHelper">Ingresa el correo institucional registrado en la plataforma</span>
+                <span class="text-[9px] font-mono text-slate-500 mt-1 block">Ingresa el correo institucional registrado en la plataforma</span>
             </div>
 
             <div class="input-group">
                 <div class="flex justify-between items-center mb-1">
-                    <label class="input-label mb-0" id="lblPwdLabel">Firma Secreta Acceso</label>
-                    <a href="#" onclick="PortalAuth.solicitarRecuperacion()" class="text-[9px] font-mono text-[#51e2f5] hover:underline" id="lblForgotPwd">¿Olvidaste tu Firma?</a>
+                    <label class="input-label mb-0">Firma Secreta Acceso</label>
+                    <a href="#" onclick="PortalAuth.solicitarRecuperacion()" class="text-[9px] font-mono text-[#51e2f5] hover:underline">¿Olvidaste tu Firma?</a>
                 </div>
                 <input type="password" id="txtPassword" class="input-cyber" placeholder="••••••••" autocomplete="current-password" oninput="PortalAuth.evaluarFortalezaPwd(this.value)">
                 <div id="pwdBar" class="pwd-strength-bar"></div>
             </div>
 
-            <!-- MEJORA 26: CHECKBOX HABEAS DATA PRIVACIDAD ESCOLAR -->
+            <!-- CHECKBOX HABEAS DATA PRIVACIDAD ESCOLAR -->
             <div class="mt-3 text-left">
                 <label class="flex items-center gap-2 cursor-pointer">
                     <input type="checkbox" id="chkHabeasData" checked class="rounded border-slate-700 bg-slate-900 text-[#51e2f5] focus:ring-0">
@@ -236,7 +229,7 @@
 
             <button class="btn-premium" id="btnValidar" onclick="PortalAuth.ejecutarLoginPerimetral()">Validar Firmas Criptográficas</button>
 
-            <!-- MEJORA 28: ACCESO DEMO SANDBOX RÁPIDO -->
+            <!-- ACCESO DEMO SANDBOX RÁPIDO PARA EVALUADORES Y PRUEBAS -->
             <div class="mt-3">
                 <button type="button" onclick="PortalAuth.cargarAccesoDemo()" class="text-[10px] font-mono text-[#51e2f5] hover:underline transition">
                     ⚡ ¿Eres evaluador? Cargar credenciales de prueba
@@ -253,7 +246,7 @@
             </h3>
             <ul class="text-xs text-slate-300 space-y-2 font-mono list-disc pl-4 mb-4">
                 <li>Motor Bayesiano IRT 3PL calibrado en tiempo real.</li>
-                <li>Telemetria de descarte de opciones e índice de hesitación.</li>
+                <li>Telemetría de descarte de opciones e índice de hesitación.</li>
                 <li>Ruta adaptativa secuencial de 5 módulos ICFES.</li>
                 <li>Modo de alto contraste para proyección en aula.</li>
             </ul>
@@ -269,31 +262,14 @@
         const HOST_URL = window.location.origin;
         let SelectedRoleTarget = "estudiante";
 
-        // DICCIONARIO TRADUCCIÓN MULTI-IDIOMA
-        const TRADUCCIONES = {
-            es: {
-                title: "PORTAL DE ACCESO UNIFICADO",
-                sub_estudiante: "Sincronización de Trayectoria Cognitiva",
-                sub_profesor: "Consola de Gestión Pedagógica & Cohortes",
-                sub_rector: "Tablero de Control Directivo & Métricas B2B",
-                btn: "Validar Firmas Criptográficas"
-            },
-            en: {
-                title: "UNIFIED ACCESS PORTAL",
-                sub_estudiante: "Cognitive Trajectory Synchronization",
-                sub_profesor: "Pedagogical Management & Cohorts Console",
-                sub_rector: "Executive Control Board & B2B Metrics",
-                btn: "Validate Cryptographic Signatures"
-            },
-            pt: {
-                title: "PORTAL DE ACESSO UNIFICADO",
-                sub_estudiante: "Sincronização de Trajetória Cognitiva",
-                sub_profesor: "Consola de Gestão Pedagógica e Coortes",
-                sub_rector: "Painel de Controle Executivo e Métricas B2B",
-                btn: "Validar Assinaturas Criptográficas"
-            }
+        // DICCIONARIOS DE SUBTÍTULOS POR ROL
+        const SUBTITULOS_ROL = {
+            estudiante: "Sincronización de Trayectoria Cognitiva",
+            profesor: "Consola de Gestión Pedagógica & Cohortes",
+            rector: "Tablero de Control Directivo & Métricas B2B"
         };
 
+        // SOPORTE DINÁMICO DE TENANT POR PARÁMETRO URL (CÓDIGO QR / ENLACE DIRECTO)
         window.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             const tenantParam = urlParams.get('tenant') || urlParams.get('institution_id');
@@ -306,16 +282,7 @@
         });
 
         class PortalAuth {
-            // MEJORA 8: FEEDBACK HÁPTICO SUTIL
-            static ejecutarVibracion() {
-                if ('vibrate' in navigator) {
-                    navigator.vibrate(35);
-                }
-            }
-
-            // MEJORA 6: MODO CONTRASTE AULA
             static toggleContraste() {
-                this.ejecutarVibracion();
                 document.body.classList.toggle('light-mode');
                 const icon = document.getElementById("iconContrast");
                 if (document.body.classList.contains('light-mode')) {
@@ -325,24 +292,14 @@
                 }
             }
 
-            // MEJORA 9: CAMBIO DE IDIOMA NATIVO
-            static cambiarIdioma(lang) {
-                this.ejecutarVibracion();
-                const t = TRADUCCIONES[lang] || TRADUCCIONES.es;
-                document.getElementById("lblGatewayTitle").innerText = t.title;
-                document.getElementById("btnValidar").innerText = t.btn;
-                this.actualizarTextoSubtitulo(lang);
-            }
-
-            // MEJORA 10: MENSAJE DINÁMICO POR ROL
             static seleccionarRol(rol) {
-                this.ejecutarVibracion();
                 SelectedRoleTarget = rol;
                 document.getElementById("cardRoleEstudiante").classList.remove("active");
                 document.getElementById("cardRoleProfesor").classList.remove("active");
                 document.getElementById("cardRoleRector").classList.remove("active");
 
                 const banner = document.getElementById("uiBannerEstado");
+                const sub = document.getElementById("uiSubtitulo");
 
                 if (rol === "estudiante") {
                     document.getElementById("cardRoleEstudiante").classList.add("active");
@@ -355,36 +312,22 @@
                     banner.innerText = "> AUTENTICACIÓN RECTOR // ACCESO AUDITORÍA";
                 }
 
-                const currentLang = document.getElementById("selIdioma").value;
-                this.actualizarTextoSubtitulo(currentLang);
+                sub.innerText = SUBTITULOS_ROL[rol] || SUBTITULOS_ROL.estudiante;
             }
 
-            static actualizarTextoSubtitulo(lang) {
-                const t = TRADUCCIONES[lang] || TRADUCCIONES.es;
-                const sub = document.getElementById("uiSubtitulo");
-                if (SelectedRoleTarget === "estudiante") sub.innerText = t.sub_estudiante;
-                else if (SelectedRoleTarget === "profesor") sub.innerText = t.sub_profesor;
-                else sub.innerText = t.sub_rector;
-            }
-
-            // MEJORA 28: DEMO ACCESO RÁPIDO
             static cargarAccesoDemo() {
-                this.ejecutarVibracion();
                 document.getElementById("txtInstitutionId").value = "colegio_sandbox_default";
                 document.getElementById("txtEmail").value = "adriana@danteos.edu.co";
                 document.getElementById("txtPassword").value = "12345678";
                 this.evaluarFortalezaPwd("12345678");
-                alert("⚡ Credenciales de demostración cargadas para 'ADRIANA'. Haz clic en 'Validar Firmas' para ingresar.");
+                alert("⚡ Credenciales de prueba cargadas para 'ADRIANA'. Haz clic en 'Validar Firmas' para ingresar.");
             }
 
-            // MEJORA 29: MODAL RELEASE NOTES
             static abrirReleaseNotes() {
-                this.ejecutarVibracion();
                 document.getElementById("modalReleaseNotes").style.display = "flex";
             }
 
             static autocompletarDominio(dominio) {
-                this.ejecutarVibracion();
                 const inputEmail = document.getElementById("txtEmail");
                 let val = inputEmail.value.trim();
                 if (val.includes("@")) {
@@ -406,7 +349,6 @@
             }
 
             static solicitarRecuperacion() {
-                this.ejecutarVibracion();
                 const email = document.getElementById("txtEmail").value.trim();
                 if (!email) {
                     alert("💡 Escribe tu correo institucional primero para solicitar el restablecimiento.");
@@ -416,7 +358,6 @@
             }
 
             static async ejecutarLoginPerimetral() {
-                this.ejecutarVibracion();
                 const chkHabeas = document.getElementById("chkHabeasData");
                 if (!chkHabeas.checked) {
                     alert("🚨 REQUISITO LEGAL: Debes aceptar la política de protección de datos (Habeas Data) para continuar.");
