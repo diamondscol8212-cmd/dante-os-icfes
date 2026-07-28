@@ -27,13 +27,21 @@
 
         /* TEMA DE ALTO CONTRASTE / MODO AULA PROYECTOR */
         body.light-mode {
-            --bg: #e2e8f0;
-            --card-bg: rgba(255, 255, 255, 0.95);
+            --bg: #f1f5f9;
+            --card-bg: rgba(255, 255, 255, 0.98);
             --border-graphite: rgba(0, 0, 0, 0.15);
             --text-main: #0f172a;
             --primary: #0284c7;
             --gold: #b45309;
+            --alert: #dc2626;
         }
+        body.light-mode .input-label { color: #475569; }
+        body.light-mode .input-cyber { background: #ffffff !important; color: #0f172a !important; border-color: #cbd5e1 !important; }
+        body.light-mode .gateway-card { box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12); }
+        body.light-mode .role-selection-card { background: #f8fafc; border-color: #cbd5e1; }
+        body.light-mode .role-selection-card.active { background: #fef3c7; border-color: #b45309; }
+        body.light-mode .modal-overlay { background: rgba(15, 23, 42, 0.85); }
+        body.light-mode footer { color: #64748b; }
 
         body, html { 
             background: var(--bg); color: var(--text-main); margin: 0; font-family: 'Outfit', sans-serif; 
@@ -91,7 +99,7 @@
         .system-version-tag {
             position: absolute; top: 1.2rem; right: 1.2rem; font-size: 0.65rem; font-weight: 900;
             color: var(--primary); letter-spacing: 1px; text-transform: uppercase; font-family: 'JetBrains Mono';
-            cursor: pointer; text-decoration: underline; background: transparent; border: 0;
+            cursor: pointer; text-decoration: underline;
         }
 
         /* REJILLA DE SELECCIÓN DE ROLES */
@@ -178,7 +186,7 @@
             <h1 class="gateway-title" id="lblGatewayTitle" data-final="PORTAL DE ACCESO UNIFICADO">PORTAL DE ACCESO UNIFICADO</h1>
             <p style="font-size: 0.72rem; color: #8a8f9d; text-transform: uppercase; letter-spacing: 1px;" class="font-mono" id="uiSubtitulo">Sincronización de Trayectoria Cognitiva</p>
 
-            <!-- FORMULARIO DE ACCESO FORMAL CON EVENTO SUBMIT -->
+            <!-- FORMULARIO DE ACCESO FORMAL -->
             <form id="frmLogin" onsubmit="PortalAuth.ejecutarLoginPerimetral(event); return false;">
                 
                 <div class="role-grid" role="radiogroup" aria-label="Selección de Rol">
@@ -217,12 +225,23 @@
                         <label for="txtPassword" class="input-label mb-0">Firma Secreta Acceso</label>
                         <button type="button" onclick="PortalAuth.solicitarRecuperacion()" class="text-[9px] font-mono text-[#51e2f5] hover:underline bg-transparent border-0 p-0 cursor-pointer">¿Olvidaste tu Firma?</button>
                     </div>
-                    <input type="password" id="txtPassword" class="input-cyber" placeholder="••••••••" autocomplete="current-password" required oninput="PortalAuth.evaluarFortalezaPwd(this.value)">
+                    <div class="relative flex items-center">
+                        <input type="password" id="txtPassword" class="input-cyber pr-10" placeholder="••••••••" autocomplete="current-password" required oninput="PortalAuth.evaluarFortalezaPwd(this.value)">
+                        <button type="button" id="btnTogglePassword" onclick="PortalAuth.toggleMostrarPassword()" class="absolute right-2 text-slate-400 hover:text-[#51e2f5] p-2 bg-transparent border-0 cursor-pointer text-xs" title="Mostrar u ocultar contraseña" aria-label="Mostrar u ocultar contraseña">
+                            <i class="fas fa-eye" id="iconEye"></i>
+                        </button>
+                    </div>
                     <div id="pwdBar" class="pwd-strength-bar"></div>
                 </div>
 
-                <!-- CHECKBOX HABEAS DATA PRIVACIDAD ESCOLAR -->
-                <div class="mt-3 text-left">
+                <!-- CHECKBOXES RECORDAR Y HABEAS DATA -->
+                <div class="mt-3 text-left space-y-2">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" id="chkRecordarCredenciales" checked class="rounded border-slate-700 bg-slate-900 text-[#51e2f5] focus:ring-0">
+                        <span class="text-[9.5px] font-mono text-slate-300 leading-tight">
+                            🔐 Recordar Firma y Credenciales en este navegador.
+                        </span>
+                    </label>
                     <label class="flex items-center gap-2 cursor-pointer">
                         <input type="checkbox" id="chkHabeasData" checked class="rounded border-slate-700 bg-slate-900 text-[#51e2f5] focus:ring-0">
                         <span class="text-[9.5px] font-mono text-slate-400 leading-tight">
@@ -270,6 +289,7 @@
         const HOST_URL = window.location.origin;
         let SelectedRoleTarget = "estudiante";
 
+        // DICCIONARIOS DE SUBTÍTULOS POR ROL
         const SUBTITULOS_ROL = {
             estudiante: "Sincronización de Trayectoria Cognitiva",
             profesor: "Consola de Gestión Pedagógica & Cohortes",
@@ -282,8 +302,17 @@
             rector: "rector.html"
         };
 
-        // SOPORTE DINÁMICO DE TENANT POR PARÁMETRO URL
+        // SOPORTE DINÁMICO DE TENANT POR PARÁMETRO URL Y RESTAURACIÓN DE RECORDAR FIRMA Y TEMA
         window.addEventListener('DOMContentLoaded', () => {
+            // Restaurar tema
+            const savedTheme = localStorage.getItem("dante_theme");
+            if (savedTheme === "light") {
+                document.body.classList.add("light-mode");
+                const icon = document.getElementById("iconContrast");
+                if (icon) icon.className = "fas fa-moon";
+            }
+
+            // Tenant URL param
             const urlParams = new URLSearchParams(window.location.search);
             const tenantParam = urlParams.get('tenant') || urlParams.get('institution_id');
             if (tenantParam) {
@@ -294,14 +323,63 @@
                     tenantInput.style.opacity = "0.75";
                 }
             }
+
+            // Cargar credenciales recordadas si existen
+            try {
+                const savedCreds = localStorage.getItem("dante_remembered_credentials");
+                if (savedCreds) {
+                    const parsed = JSON.parse(savedCreds);
+                    if (parsed.email) {
+                        const emailInput = document.getElementById("txtEmail");
+                        if (emailInput) emailInput.value = parsed.email;
+                    }
+                    if (parsed.institution_id) {
+                        const tenantInput = document.getElementById("txtInstitutionId");
+                        if (tenantInput) tenantInput.value = parsed.institution_id;
+                    }
+                    if (parsed.password) {
+                        const pwdInput = document.getElementById("txtPassword");
+                        if (pwdInput) {
+                            pwdInput.value = parsed.password;
+                            PortalAuth.evaluarFortalezaPwd(parsed.password);
+                        }
+                    }
+                    if (parsed.role) {
+                        PortalAuth.seleccionarRol(parsed.role);
+                    }
+                    const chkRecordar = document.getElementById("chkRecordarCredenciales");
+                    if (chkRecordar) chkRecordar.checked = true;
+                }
+            } catch (e) {
+                console.warn("No se pudieron cargar las credenciales recordadas", e);
+            }
         });
 
         class PortalAuth {
+            static toggleMostrarPassword() {
+                const input = document.getElementById("txtPassword");
+                const icon = document.getElementById("iconEye");
+                if (!input) return;
+                if (input.type === "password") {
+                    input.type = "text";
+                    if (icon) icon.className = "fas fa-eye-slash text-[#51e2f5]";
+                } else {
+                    input.type = "password";
+                    if (icon) icon.className = "fas fa-eye text-slate-400";
+                }
+            }
+
             static toggleContraste() {
                 document.body.classList.toggle('light-mode');
+                const isLight = document.body.classList.contains('light-mode');
+                localStorage.setItem("dante_theme", isLight ? "light" : "dark");
                 const icon = document.getElementById("iconContrast");
                 if (icon) {
-                    icon.className = document.body.classList.contains('light-mode') ? "fas fa-moon" : "fas fa-sun";
+                    if (isLight) {
+                        icon.className = "fas fa-moon";
+                    } else {
+                        icon.className = "fas fa-sun";
+                    }
                 }
             }
 
@@ -410,6 +488,19 @@
                 if (!email || !password || !institutionId) {
                     alert("🚨 CONTROL DE SEGURIDAD: Todos los campos son requeridos.");
                     return;
+                }
+
+                // Guardar o limpiar credenciales recordadas
+                const chkRecordar = document.getElementById("chkRecordarCredenciales");
+                if (chkRecordar && chkRecordar.checked) {
+                    localStorage.setItem("dante_remembered_credentials", JSON.stringify({
+                        email: email,
+                        institution_id: institutionId,
+                        password: password,
+                        role: SelectedRoleTarget
+                    }));
+                } else {
+                    localStorage.removeItem("dante_remembered_credentials");
                 }
 
                 if (btnText) btnText.innerText = "Sincronizando trayectoria cognitiva...";
