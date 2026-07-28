@@ -87,16 +87,21 @@
         .historical-label { font-family: 'JetBrains Mono'; font-size: 8px; color: #8a8f9d; text-transform: uppercase; letter-spacing: 1px; font-weight: 800;}
         .historical-name { font-size: 12px; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 1px; font-family: 'JetBrains Mono'; }
 
-        /* PESTAÑAS MATERIAS */
-        .tab-materia-btn {
-            background: rgba(20, 24, 35, 0.7); border: 1px solid var(--border-graphite); color: #8a8f9d;
-            padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.68rem; font-weight: 800;
-            text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: all 0.25s ease;
-            font-family: 'JetBrains Mono', monospace; white-space: nowrap; flex-shrink: 0;
+        /* PESTAÑAS MATERIAS CON WRAP RESPONSIVO PERFECTO */
+        .tabs-container {
+            display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin-bottom: 1rem;
+            padding-bottom: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.08);
         }
+        .tab-materia-btn {
+            background: rgba(20, 24, 35, 0.8); border: 1px solid var(--border-graphite); color: #8a8f9d;
+            padding: 0.55rem 0.9rem; border-radius: 8px; font-size: 0.68rem; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: all 0.25s ease;
+            font-family: 'JetBrains Mono', monospace; white-space: nowrap;
+        }
+        .tab-materia-btn:hover { border-color: var(--primary); color: #fff; }
         .tab-materia-btn.active {
             border-color: var(--gold); color: var(--gold);
-            background: rgba(212, 175, 55, 0.12); box-shadow: 0 0 15px rgba(212, 175, 55, 0.25);
+            background: rgba(212, 175, 55, 0.15); box-shadow: 0 0 15px rgba(212, 175, 55, 0.25);
         }
 
         /* SECCIONES Y TITULOS */
@@ -192,7 +197,6 @@
             <div class="geo-tag" id="ui-geo" data-final="NEXUS BOGOTÁ">BOGOTÁ, COLOMBIA</div>
         </div>
 
-        <!-- MEJORA 7: INTERRUPTOR VISTA PADRE VS VISTA DOCENTE/FORENSE -->
         <div class="flex items-center gap-2">
             <button id="btnToggleMode" onclick="PerfilEstudiante.toggleModoVista()" class="px-2.5 py-1 rounded bg-slate-900 border border-amber-500/40 text-[9.5px] font-mono font-bold text-amber-400 hover:bg-amber-500 hover:text-black transition shadow">
                 👁️ VISTA: PADRE (CLARA)
@@ -228,8 +232,8 @@
                 📜 DESCARGAR EXPEDIENTE OFICIAL PARA PADRES (PDF)
             </a>
 
-            <!-- NAVEGACIÓN DE FILTROS POR MATERIA (DYNAMIC CONTEXT SWITCHER) -->
-            <nav class="flex gap-2 overflow-x-auto pb-2 mb-4 border-b border-zinc-800/80 no-scrollbar" style="-webkit-overflow-scrolling: touch;">
+            <!-- NAVEGACIÓN DE FILTROS POR MATERIA (FLEX-WRAP CORREGIDO) -->
+            <nav class="tabs-container">
                 <button class="tab-materia-btn active" onclick="PerfilEstudiante.cambiarFiltroMateria('todas', this)">🌐 Diagnóstico Global</button>
                 <button class="tab-materia-btn" onclick="PerfilEstudiante.cambiarFiltroMateria('matematicas', this)">📐 Matemáticas</button>
                 <button class="tab-materia-btn" onclick="PerfilEstudiante.cambiarFiltroMateria('lectura_critica', this)">📖 Lectura Crítica</button>
@@ -253,7 +257,6 @@
                         <h1 id="lblPuntajeGlobal500" class="text-3xl sm:text-4xl md:text-5xl font-extrabold font-mono text-[#D4AF37] tracking-tight">
                             0 <span class="text-lg sm:text-xl text-slate-400 font-normal" id="lblEscalaUnidad">/ 500 pts</span>
                         </h1>
-                        <!-- MEJORA 2: EQUIVALENCIA MARCO EUROPEO MCER EN INGLÉS -->
                         <span id="lblBadgeMCER" class="hidden text-[10px] font-mono px-2.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold">
                             NIVEL MCER: B1
                         </span>
@@ -272,7 +275,7 @@
                     </div>
                 </div>
 
-                <!-- 🟢 SEMÁFORO DE ACCIÓN RÁPIDA (SUB-COMPETENCIAL CUANDO FILTRA MATERIA) -->
+                <!-- 🟢 SEMÁFORO DE ACCIÓN RÁPIDA -->
                 <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-4 flex flex-col justify-between backdrop-blur-md space-y-2">
                     <div class="flex justify-between items-center">
                         <span class="text-[10px] font-mono font-bold text-[#51e2f5] uppercase tracking-wider block" id="lblSemaforoTitulo">🚦 SEMÁFORO SUB-COMPETENCIAL</span>
@@ -293,7 +296,6 @@
                         </div>
                     </div>
 
-                    <!-- MEJORA 4: DISPARADOR DE MICRO-ENTRENAMIENTO -->
                     <button onclick="window.location.href='/index.html'" class="w-full py-1.5 bg-[#D4AF37]/10 border border-[#D4AF37]/40 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black font-mono font-bold text-[9.5px] uppercase rounded transition">
                         ⚡ FIX EN 3 MINS: RESOLVER REPOSITORIO DEBIL
                     </button>
@@ -315,7 +317,7 @@
                     </p>
                 </div>
 
-                <!-- MEJORA 1: SINERGIA COGNITIVA Y SIMULADOR DE DECISIONES -->
+                <!-- SINERGIA COGNITIVA Y SIMULADOR DE DECISIONES -->
                 <div class="bg-slate-900/90 border border-[#D4AF37]/30 p-4 rounded-xl space-y-2">
                     <div class="flex justify-between items-center border-b border-zinc-800 pb-2">
                         <h3 class="text-xs font-mono font-bold uppercase text-[#D4AF37] flex items-center gap-1.5">
@@ -341,7 +343,6 @@
                     <p id="kpiCuadrante" class="text-sm font-mono font-bold text-amber-400 mt-1">Estratega Eficiente</p>
                 </div>
 
-                <!-- MEJORA 3: ÍNDICE DE HESITACIÓN POR SUB-COMPETENCIA -->
                 <div class="bg-slate-900/80 border border-slate-800 p-3 rounded-lg">
                     <div class="flex justify-between items-center">
                         <p class="text-[9px] font-mono text-slate-400 uppercase font-bold">Índice Duda/Hesitación</p>
@@ -405,14 +406,13 @@
 
             <!-- NARRATIVA DE EVOLUCIÓN HISTÓRICA Y VELOCIDAD DE CRECIMIENTO -->
             <div class="section-title">HISTORIA DE EVOLUCIÓN Y VELOCIDAD DE APRENDIZAJE</div>
-            <!-- MEJORA 5: VELOCIDAD DE CRECIMIENTO DEL THETA POR SESIÓN -->
             <div class="mb-2 p-2 bg-slate-950 border border-cyan-500/30 rounded flex justify-between items-center text-[10.5px] font-mono text-slate-300">
                 <span>🚀 VELOCIDAD DE CRECIMIENTO (&Delta;&theta;):</span>
                 <strong class="text-cyan-400" id="lblVelocidadTheta">+0.15 &theta; / Sesión (Crecimiento Acelerado)</strong>
             </div>
             <p class="summary-text" id="ui-summary">Aún no se registra trayectoria activa. Inicia un simulacro para generar la calibración de tu expediente.</p>
 
-            <!-- RADAR DINÁMICO DE COMPETENCIAS CONSOLIDADAS (ADAPTA EJES SEGÚN FILTRO) -->
+            <!-- RADAR DINÁMICO DE COMPETENCIAS CONSOLIDADAS -->
             <div class="section-title" id="lblRadarTitulo">MATRIZ DE COMPETENCIAS LATENTES (GLOBAL)</div>
             <div class="radar-container">
                 <div class="radar-bg">
@@ -452,7 +452,7 @@
                     </div>
                 </div>
 
-                <!-- MAPA DE CALOR CONTEXTUAL DE SESGOS DE LA MATERIA -->
+                <!-- MAPA DE CALOR CONTEXTUAL DE SESGOS -->
                 <div class="bg-slate-900/80 border border-slate-800 p-4 rounded-xl space-y-3 flex flex-col justify-between">
                     <div>
                         <h3 class="text-xs font-mono font-bold uppercase text-rose-400 border-b border-zinc-800 pb-2 mb-3" id="lblSesgosTitulo">🔥 Puntos Ciegos y Sesgos</h3>
@@ -533,14 +533,14 @@
         const rawUser = localStorage.getItem("dante_user");
         const userObj = rawUser ? JSON.parse(rawUser) : {};
         
-        let STUDENT_ID = "elizabeth";
-        
+        // RECUPERACIÓN ROBUSTA DE USUARIO
+        let STUDENT_ID = "adriana";
         if (queryStudent) {
             STUDENT_ID = queryStudent.toLowerCase().trim();
-        } else if (userObj.email) {
-            STUDENT_ID = userObj.email.split('@')[0].toLowerCase().trim();
         } else if (userObj.estudiante) {
             STUDENT_ID = userObj.estudiante.toLowerCase().trim();
+        } else if (userObj.email) {
+            STUDENT_ID = userObj.email.split('@')[0].toLowerCase().trim();
         }
 
         const INSTITUTION_ID = userObj.institution_id || "colegio_sandbox_default";
@@ -550,7 +550,6 @@
         let cacheOrigenGemelo = "SUPABASE LIVE";
         let esModoForense = false;
 
-        // DICCIONARIOS DE SESGOS Y SUB-COMPETENCIAS POR DISCIPLINA
         const CATALOGO_MATERIAS = {
             todas: {
                 radar_ejes: ["Matemáticas", "Lectura Crítica", "Ciencias Nat.", "Inglés", "Sociales", "Autorregulación"],
@@ -679,7 +678,7 @@
                 const nombreCapitalizado = STUDENT_ID.toUpperCase();
                 const configm = CATALOGO_MATERIAS[currentMateriaFiltro] || CATALOGO_MATERIAS.todas;
 
-                // 1. ADAPTAR EJES DEL RADAR SEGÚN CONTEXTO DE LA PESTAÑA
+                // 1. ADAPTAR EJES DEL RADAR SEGÚN MATERIA
                 document.getElementById("lblEje1").innerText = configm.radar_ejes[0];
                 document.getElementById("lblEje2").innerText = configm.radar_ejes[1];
                 document.getElementById("lblEje3").innerText = configm.radar_ejes[2];
@@ -687,7 +686,7 @@
                 document.getElementById("lblEje5").innerText = configm.radar_ejes[4];
                 document.getElementById("lblEje6").innerText = configm.radar_ejes[5];
 
-                // 2. FILTRAR EXÁMENES HISTÓRICOS
+                // 2. FILTRAR HISTORIAL
                 let examenesFiltrados = [...cacheHistorialCompleto];
                 if (currentMateriaFiltro !== 'todas') {
                     examenesFiltrados = cacheHistorialCompleto.filter(x => {
@@ -697,8 +696,6 @@
                 }
 
                 const tieneExamenes = examenesFiltrados.length > 0;
-
-                // 3. RECONFIGURAR ESCALA VISUAL (GLOBAL 500 VS MATERIA 100)
                 const isGlobal = currentMateriaFiltro === 'todas';
                 const badgeMCER = document.getElementById("lblBadgeMCER");
 
@@ -742,7 +739,7 @@
                     return;
                 }
 
-                // SI TIENE DATO EN SUPABASE
+                // SI TIENE DATO
                 const ultimoExamen = examenesFiltrados[0];
                 const itemsR = typeof ultimoExamen.items_respondidos === 'string' ? JSON.parse(ultimoExamen.items_respondidos) : (ultimoExamen.items_respondidos || {});
                 const adn = itemsR.adn_empaquetado || ultimoExamen.adn_cognitivo || {};
@@ -755,13 +752,11 @@
 
                 document.getElementById("kpiTheta").innerText = `Superas al ${percentil}%`;
                 
-                // METER DATO MCER
                 if (pts >= 75) badgeMCER.innerText = "NIVEL MCER: B+";
                 else if (pts >= 60) badgeMCER.innerText = "NIVEL MCER: B1";
                 else if (pts >= 45) badgeMCER.innerText = "NIVEL MCER: A2";
                 else badgeMCER.innerText = "NIVEL MCER: A1";
 
-                // CUADRANTE Y HESITACIÓN
                 const impulsividadPct = adn.impulsividad || 15;
                 if (impulsividadPct > 30) {
                     document.getElementById("kpiCuadrante").innerText = "Impulsivo - Inexacto";
@@ -778,7 +773,6 @@
                 const ptsPerdidosImp = Math.round(impulsividadPct * 0.4);
                 document.getElementById("kpiPuntosImpulsividad").innerText = `-${ptsPerdidosImp} pts en riesgo`;
 
-                // TERMÓMETRO BAYESIANO CON SEM REAL
                 const deltaPtsSEM = Math.round(semVal * 15);
                 const minVal = Math.max(1, pts - deltaPtsSEM);
                 const targetVal = pts;
@@ -797,7 +791,6 @@
                     pinEl.style.left = `${targetVal}%`;
                 }
 
-                // NARRATIVA
                 document.getElementById("lblVulnerabilidadTxt").innerText = adn.vulnerabilidad_dominante || "Estructura de razonamiento estable.";
                 document.getElementById("lblPrescripcionTxt").innerText = adn.prescripcion_clinica || "Fortalecer velocidad de lectura activa.";
                 
@@ -805,7 +798,6 @@
 
                 document.getElementById("lblPrediccionProactiva").innerText = `🔮 Predicción IA: En la próxima sesión de ${currentMateriaFiltro.replace('_', ' ').toUpperCase()}, existe un ${Math.round(impulsividadPct + 35)}% de probabilidad de fallar en reactivos que combinen tablas complejas con distractores directos.`;
 
-                // SINERGIA COGNITIVA TRANSVERSAL
                 document.getElementById("lblSimuladorImpactoTexto").innerHTML = `🔗 <strong>Sinergia Transversal:</strong> La impulsividad detectada en esta ciencia (-${ptsPerdidosImp} pts) afecta el tiempo de lectura en Lectura Crítica. Si corriges este sesgo, ganarás <strong class="text-[#51e2f5]">+14 puntos globales ICFES</strong>.`;
 
                 this.renderizarSemaforo(configm.subcompetencias, [pts + 5, pts - 5, pts - 12]);
@@ -814,7 +806,6 @@
                 this.renderizarTablaExamenes(examenesFiltrados);
                 this.calcularPuntajeGlobal500();
 
-                // DIBUJAR RADAR ESPECÍFICO
                 perfilRadar = { e1: pts, e2: Math.max(30, pts - 8), e3: Math.max(35, pts - 12), e4: Math.max(40, pts - 5), e5: Math.max(30, pts - 10), e6: 75 };
                 drawRadar();
             }
