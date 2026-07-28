@@ -423,7 +423,7 @@
                 </div>
             </div>
 
-            <!-- NARRATIVA DE EVOLUCIÓN HISTÓRICA Y VELOCIDAD DE CRECIMIENTO -->
+            <!-- NARRATIVA DE EVOLUCIÓN HISTÓRICA Y VELOCIDAD DE APRENDIZAJE -->
             <div class="section-title">HISTORIA DE EVOLUCIÓN Y VELOCIDAD DE APRENDIZAJE</div>
             <div class="mb-2 p-2 bg-slate-950 border border-cyan-500/30 rounded flex justify-between items-center text-[10.5px] font-mono text-slate-300">
                 <span>🚀 VELOCIDAD DE CRECIMIENTO (&Delta;&theta;):</span>
@@ -645,11 +645,7 @@
                 localStorage.setItem("dante_theme", isLight ? "light" : "dark");
                 const icon = document.getElementById("iconContrast");
                 if (icon) {
-                    if (isLight) {
-                        icon.className = "fas fa-moon";
-                    } else {
-                        icon.className = "fas fa-sun";
-                    }
+                    icon.className = isLight ? "fas fa-moon" : "fas fa-sun";
                 }
             }
 
