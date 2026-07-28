@@ -25,7 +25,7 @@
 
         body, html { 
             background: var(--bg); color: #f0f1f5; margin: 0; font-family: 'Outfit', sans-serif; 
-            overflow: hidden; height: 100dvh; width: 100vw; touch-action: pan-y;
+            overflow-x: hidden; min-height: 100vh; touch-action: pan-y;
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -46,20 +46,13 @@
         .alias-title { font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; color: white; margin-bottom: 1px;}
         .geo-tag { font-family: 'JetBrains Mono'; font-size: 8px; color: var(--primary); letter-spacing: 1px; text-transform: uppercase; }
 
-        /* VIEWPORT Y SCROLLBAR */
         .adn-viewport {
-            position: fixed; inset: 0; z-index: 10;
-            overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth;
-            padding: 70px 12px 110px;
+            position: relative; z-index: 10;
+            padding: 75px 12px 110px; max-width: 960px; margin: 0 auto;
         }
-        .adn-viewport::-webkit-scrollbar { display: none; width: 0; height: 0; }
 
-        .no-scrollbar::-webkit-scrollbar { display: none; width: 0; height: 0; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-        /* TARJETA MAESTRA DANTE */
         .adn-card {
-            width: 100%; max-width: 900px; margin: 0 auto;
+            width: 100%;
             background: var(--card-bg); border: 1px solid var(--border-graphite);
             border-radius: 14px; backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
             padding: 20px 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.95);
@@ -71,14 +64,13 @@
             box-shadow: 0 0 20px var(--gold); border-radius: 14px 14px 0 0;
         }
 
-        /* CARD HEADER Y CORE */
         .card-header-visual {
             position: relative; width: 100%; height: 110px; display: flex; flex-direction: column;
             align-items: center; justify-content: center; margin-bottom: 10px;
         }
         .dante-mini-core { position: absolute; width: 170px; height: 170px; z-index: 0; opacity: 0.65; }
-        .alias-main-name { position: relative; z-index: 10; font-family: 'Oswald'; font-size: clamp(22px, 5vw, 34px); font-weight: 900; text-transform: uppercase; text-align: center; line-height: 1.1; text-shadow: 0 5px 20px rgba(0,0,0,1), 0 0 20px var(--primary); color: white; letter-spacing: 2px;}
-        .archetype-sub { position: relative; z-index: 10; font-family: 'JetBrains Mono'; font-size: 9px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; background: var(--primary); padding: 3px 12px; border-radius: 4px; color: #000; box-shadow: 0 0 15px var(--primary); }
+        .alias-main-name { position: relative; z-index: 10; font-family: 'Oswald', sans-serif; font-size: clamp(22px, 5vw, 34px); font-weight: 900; text-transform: uppercase; text-align: center; line-height: 1.1; text-shadow: 0 5px 20px rgba(0,0,0,1), 0 0 20px var(--primary); color: white; letter-spacing: 2px;}
+        .archetype-sub { position: relative; z-index: 10; font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; background: var(--primary); padding: 3px 12px; border-radius: 4px; color: #000; box-shadow: 0 0 15px var(--primary); }
 
         .identity-box {
             background: rgba(0,0,0,0.65); border: 1px solid var(--border-graphite);
@@ -87,7 +79,6 @@
         .historical-label { font-family: 'JetBrains Mono'; font-size: 8px; color: #8a8f9d; text-transform: uppercase; letter-spacing: 1px; font-weight: 800;}
         .historical-name { font-size: 12px; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 1px; font-family: 'JetBrains Mono'; }
 
-        /* PESTAÑAS MATERIAS CON WRAP RESPONSIVO PERFECTO */
         .tabs-container {
             display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin-bottom: 1rem;
             padding-bottom: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.08);
@@ -104,13 +95,11 @@
             background: rgba(212, 175, 55, 0.15); box-shadow: 0 0 15px rgba(212, 175, 55, 0.25);
         }
 
-        /* SECCIONES Y TITULOS */
         .section-title { font-family: 'JetBrains Mono'; font-size: 10px; color: #fff; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin: 18px 0 10px; display: flex; align-items: center; gap: 8px; }
         .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.12); }
         
         .summary-text { font-size: 12.5px; font-weight: 400; line-height: 1.6; color: #e2e8f0; margin-bottom: 16px; text-align: justify; font-family: 'Outfit'; background: rgba(255,255,255,0.02); padding: 12px; border-left: 3px solid var(--primary); border-radius: 0 6px 6px 0;}
 
-        /* TERMÓMETRO BAYESIANO */
         .thermometer-container {
             height: 12px; background: rgba(25, 28, 38, 0.9); border-radius: 9999px;
             position: relative; margin: 16px 0 10px 0; border: 1px solid var(--border-graphite);
@@ -126,7 +115,6 @@
             transition: all 0.5s ease; box-shadow: 0 0 12px #fbbf24;
         }
 
-        /* RADAR SVG COGNITIVO */
         .radar-container {
             width: 100%; height: 210px; position: relative; margin-bottom: 16px;
             display: flex; align-items: center; justify-content: center;
@@ -149,7 +137,6 @@
         .mini-bar-bg { background: rgba(8, 9, 13, 0.9); height: 6px; border-radius: 3px; overflow: hidden; margin-top: 0.3rem; border: 1px solid var(--border-graphite); }
         .mini-bar-fill { height: 100%; border-radius: 3px; transition: width 1s ease; }
 
-        /* TOOLTIPS */
         .tooltip-wrapper { position: relative; display: inline-flex; align-items: center; cursor: pointer; }
         .tooltip-box {
             visibility: hidden; width: 210px; max-width: 80vw; background-color: #0c0e17; color: #f1f5f9;
@@ -159,9 +146,8 @@
         }
         .tooltip-wrapper:hover .tooltip-box, .tooltip-wrapper:focus .tooltip-box { visibility: visible; opacity: 1; }
 
-        /* DOCK FLOTANTE */
         .bottom-nav { 
-            position: fixed; bottom: 18px; width: 90%; left: 5%; z-index: 1000;
+            position: fixed; bottom: 18px; width: 90%; max-width: 480px; left: 50%; transform: translateX(-50%); z-index: 1000;
             display: flex; justify-content: space-evenly; align-items: center;
             background: rgba(5, 5, 8, 0.88); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             padding: 8px 15px; border-radius: 60px; border: 1px solid rgba(255, 255, 255, 0.1);
@@ -179,7 +165,6 @@
             z-index: 99999; display: none; align-items: center; justify-content: center; padding: 1rem;
         }
 
-        /* MODO VISUALIZACIÓN PADRE VS FORENSE */
         .mode-forensic { display: none; }
         body.is-forensic-mode .mode-forensic { display: block; }
         body.is-forensic-mode .mode-parent { display: none; }
@@ -198,7 +183,7 @@
         </div>
 
         <div class="flex items-center gap-2">
-            <button id="btnToggleMode" onclick="PerfilEstudiante.toggleModoVista()" class="px-2.5 py-1 rounded bg-slate-900 border border-amber-500/40 text-[9.5px] font-mono font-bold text-amber-400 hover:bg-amber-500 hover:text-black transition shadow">
+            <button type="button" id="btnToggleMode" onclick="PerfilEstudiante.toggleModoVista()" class="px-2.5 py-1 rounded bg-slate-900 border border-amber-500/40 text-[9.5px] font-mono font-bold text-amber-400 hover:bg-amber-500 hover:text-black transition shadow">
                 👁️ VISTA: PADRE (CLARA)
             </button>
             <div class="text-right hidden sm:block">
@@ -232,14 +217,14 @@
                 📜 DESCARGAR EXPEDIENTE OFICIAL PARA PADRES (PDF)
             </a>
 
-            <!-- NAVEGACIÓN DE FILTROS POR MATERIA (FLEX-WRAP CORREGIDO) -->
+            <!-- NAVEGACIÓN DE FILTROS POR MATERIA -->
             <nav class="tabs-container">
-                <button class="tab-materia-btn active" onclick="PerfilEstudiante.cambiarFiltroMateria('todas', this)">🌐 Diagnóstico Global</button>
-                <button class="tab-materia-btn" onclick="PerfilEstudiante.cambiarFiltroMateria('matematicas', this)">📐 Matemáticas</button>
-                <button class="tab-materia-btn" onclick="PerfilEstudiante.cambiarFiltroMateria('lectura_critica', this)">📖 Lectura Crítica</button>
-                <button class="tab-materia-btn" onclick="PerfilEstudiante.cambiarFiltroMateria('ciencias_naturales', this)">🧪 Ciencias Naturales</button>
-                <button class="tab-materia-btn" onclick="PerfilEstudiante.cambiarFiltroMateria('sociales_ciudadanas', this)">🏛️ Sociales</button>
-                <button class="tab-materia-btn" onclick="PerfilEstudiante.cambiarFiltroMateria('ingles', this)">🇬🇧 Inglés</button>
+                <button type="button" class="tab-materia-btn active" onclick="PerfilEstudiante.cambiarFiltroMateria('todas', this)">🌐 Diagnóstico Global</button>
+                <button type="button" class="tab-materia-btn" onclick="PerfilEstudiante.cambiarFiltroMateria('matematicas', this)">📐 Matemáticas</button>
+                <button type="button" class="tab-materia-btn" onclick="PerfilEstudiante.cambiarFiltroMateria('lectura_critica', this)">📖 Lectura Crítica</button>
+                <button type="button" class="tab-materia-btn" onclick="PerfilEstudiante.cambiarFiltroMateria('ciencias_naturales', this)">🧪 Ciencias Naturales</button>
+                <button type="button" class="tab-materia-btn" onclick="PerfilEstudiante.cambiarFiltroMateria('sociales_ciudadanas', this)">🏛️ Sociales</button>
+                <button type="button" class="tab-materia-btn" onclick="PerfilEstudiante.cambiarFiltroMateria('ingles', this)">🇬🇧 Inglés</button>
             </nav>
 
             <!-- 🏆 1. PROYECCIÓN ADAPTATIVA (GLOBAL 500 VS MATERIA 100 + MARCO MCER EN INGLÉS) -->
@@ -296,7 +281,7 @@
                         </div>
                     </div>
 
-                    <button onclick="window.location.href='/index.html'" class="w-full py-1.5 bg-[#D4AF37]/10 border border-[#D4AF37]/40 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black font-mono font-bold text-[9.5px] uppercase rounded transition">
+                    <button type="button" onclick="window.location.href='/index.html'" class="w-full py-1.5 bg-[#D4AF37]/10 border border-[#D4AF37]/40 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black font-mono font-bold text-[9.5px] uppercase rounded transition">
                         ⚡ FIX EN 3 MINS: RESOLVER REPOSITORIO DEBIL
                     </button>
                 </div>
@@ -459,7 +444,7 @@
                         <div id="contenedorBarrasSesgos" class="space-y-3 text-xs font-sans"></div>
                     </div>
                     
-                    <button class="w-full py-2 bg-rose-500/10 border border-rose-500/30 text-rose-400 hover:bg-rose-500 hover:text-black font-mono font-bold text-[10.5px] uppercase rounded transition" onclick="window.location.href='/index.html'">
+                    <button type="button" class="w-full py-2 bg-rose-500/10 border border-rose-500/30 text-rose-400 hover:bg-rose-500 hover:text-black font-mono font-bold text-[10.5px] uppercase rounded transition" onclick="window.location.href='/index.html'">
                         ⚡ ENTRENAR MI PEOR SESGO EN ESTA ÁREA
                     </button>
                 </div>
@@ -500,12 +485,12 @@
                 <h3 class="font-mono text-xs font-bold text-[#51e2f5] uppercase" id="lblModalForenseTitulo">
                     🔍 INSPECCIÓN FORENSE DE EXAMEN
                 </h3>
-                <button onclick="document.getElementById('modalForense').style.display='none'" class="text-slate-400 hover:text-white font-mono text-sm">✕</button>
+                <button type="button" onclick="document.getElementById('modalForense').style.display='none'" class="text-slate-400 hover:text-white font-mono text-sm">✕</button>
             </div>
             <div id="lblModalForenseCuerpo" class="text-xs text-slate-300 font-mono space-y-2 max-h-60 overflow-y-auto">
                 Cargando datos del examen...
             </div>
-            <button class="w-full mt-4 py-2 bg-slate-800 border border-slate-700 text-slate-300 font-mono text-xs rounded hover:bg-slate-700" onclick="document.getElementById('modalForense').style.display='none'">Cerrar Inspección</button>
+            <button type="button" class="w-full mt-4 py-2 bg-slate-800 border border-slate-700 text-slate-300 font-mono text-xs rounded hover:bg-slate-700" onclick="document.getElementById('modalForense').style.display='none'">Cerrar Inspección</button>
         </div>
     </div>
 
@@ -615,28 +600,40 @@
                 esModoForense = !esModoForense;
                 document.body.classList.toggle('is-forensic-mode', esModoForense);
                 const btn = document.getElementById("btnToggleMode");
-                if (esModoForense) {
-                    btn.innerText = "🔍 VISTA: DOCENTE / FORENSE";
-                    btn.className = "px-2.5 py-1 rounded bg-purple-900 border border-purple-400 text-[9.5px] font-mono font-bold text-purple-200 hover:bg-purple-800 transition shadow";
-                } else {
-                    btn.innerText = "👁️ VISTA: PADRE (CLARA)";
-                    btn.className = "px-2.5 py-1 rounded bg-slate-900 border border-amber-500/40 text-[9.5px] font-mono font-bold text-amber-400 hover:bg-amber-500 hover:text-black transition shadow";
+                if (btn) {
+                    if (esModoForense) {
+                        btn.innerText = "🔍 VISTA: DOCENTE / FORENSE";
+                        btn.className = "px-2.5 py-1 rounded bg-purple-900 border border-purple-400 text-[9.5px] font-mono font-bold text-purple-200 hover:bg-purple-800 transition shadow";
+                    } else {
+                        btn.innerText = "👁️ VISTA: PADRE (CLARA)";
+                        btn.className = "px-2.5 py-1 rounded bg-slate-900 border border-amber-500/40 text-[9.5px] font-mono font-bold text-amber-400 hover:bg-amber-500 hover:text-black transition shadow";
+                    }
                 }
             }
 
             static irAlInicioYRefrescar() {
                 const vp = document.getElementById("viewportContainer");
                 if (vp) vp.scrollTo({ top: 0, behavior: 'smooth' });
+                else window.scrollTo({ top: 0, behavior: 'smooth' });
             }
 
             static async initProfile() {
                 try {
                     const nombreUpper = STUDENT_ID.toUpperCase();
-                    document.getElementById('ui-alias-box').innerText = nombreUpper;
-                    document.getElementById('ui-alias-box').setAttribute('data-final', nombreUpper);
-                    document.getElementById('ui-tenant').innerText = INSTITUTION_ID.toUpperCase();
+                    const elAlias = document.getElementById('ui-alias-box');
+                    const elTenant = document.getElementById('ui-institution-box');
+                    const elPdfBtn = document.getElementById('btnDescargarPdfExpediente');
 
-                    document.getElementById('btnDescargarPdfExpediente').href = `/reporte.html?rol=estudiante&estudiante=${STUDENT_ID}`;
+                    if (elAlias) {
+                        elAlias.innerText = nombreUpper;
+                        elAlias.setAttribute('data-final', nombreUpper);
+                    }
+                    if (elTenant) {
+                        elTenant.innerText = INSTITUTION_ID.toUpperCase();
+                    }
+                    if (elPdfBtn) {
+                        elPdfBtn.href = `/reporte.html?rol=estudiante&estudiante=${STUDENT_ID}`;
+                    }
 
                     await this.cargarDatosSupabase();
                     
@@ -651,7 +648,11 @@
 
             static async cargarDatosSupabase() {
                 try {
-                    const resGemelo = await fetch(`${HOST_URL}/api/cat/gemelo/${STUDENT_ID}`).catch(() => null);
+                    const token = localStorage.getItem("dante_token");
+                    const headers = { 'Content-Type': 'application/json' };
+                    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+                    const resGemelo = await fetch(`${HOST_URL}/api/cat/gemelo/${STUDENT_ID}`, { headers }).catch(() => null);
                     if (resGemelo && resGemelo.ok) {
                         const jsonG = await resGemelo.json();
                         if (Array.isArray(jsonG.gemelo)) {
@@ -660,7 +661,7 @@
                         }
                     }
                 } catch (err) {
-                    console.error("⚠️ Error conectando a Supabase:", err.message);
+                    console.error("⚠️ Error conectando a API backend:", err.message);
                     cacheHistorialCompleto = [];
                 }
 
@@ -669,7 +670,7 @@
 
             static cambiarFiltroMateria(materiaKey, btnEl) {
                 document.querySelectorAll('.tab-materia-btn').forEach(b => b.classList.remove('active'));
-                btnEl.classList.add('active');
+                if (btnEl) btnEl.classList.add('active');
                 currentMateriaFiltro = materiaKey;
                 this.procesarYRenderizarVistas();
             }
@@ -679,12 +680,19 @@
                 const configm = CATALOGO_MATERIAS[currentMateriaFiltro] || CATALOGO_MATERIAS.todas;
 
                 // 1. ADAPTAR EJES DEL RADAR SEGÚN MATERIA
-                document.getElementById("lblEje1").innerText = configm.radar_ejes[0];
-                document.getElementById("lblEje2").innerText = configm.radar_ejes[1];
-                document.getElementById("lblEje3").innerText = configm.radar_ejes[2];
-                document.getElementById("lblEje4").innerText = configm.radar_ejes[3];
-                document.getElementById("lblEje5").innerText = configm.radar_ejes[4];
-                document.getElementById("lblEje6").innerText = configm.radar_ejes[5];
+                const e1 = document.getElementById("lblEje1");
+                const e2 = document.getElementById("lblEje2");
+                const e3 = document.getElementById("lblEje3");
+                const e4 = document.getElementById("lblEje4");
+                const e5 = document.getElementById("lblEje5");
+                const e6 = document.getElementById("lblEje6");
+
+                if (e1) e1.innerText = configm.radar_ejes[0];
+                if (e2) e2.innerText = configm.radar_ejes[1];
+                if (e3) e3.innerText = configm.radar_ejes[2];
+                if (e4) e4.innerText = configm.radar_ejes[3];
+                if (e5) e5.innerText = configm.radar_ejes[4];
+                if (e6) e6.innerText = configm.radar_ejes[5];
 
                 // 2. FILTRAR HISTORIAL
                 let examenesFiltrados = [...cacheHistorialCompleto];
@@ -699,35 +707,59 @@
                 const isGlobal = currentMateriaFiltro === 'todas';
                 const badgeMCER = document.getElementById("lblBadgeMCER");
 
-                if (currentMateriaFiltro === 'ingles') {
-                    badgeMCER.classList.remove("hidden");
-                } else {
-                    badgeMCER.classList.add("hidden");
+                if (badgeMCER) {
+                    if (currentMateriaFiltro === 'ingles') {
+                        badgeMCER.classList.remove("hidden");
+                    } else {
+                        badgeMCER.classList.add("hidden");
+                    }
                 }
 
                 if (!tieneExamenes) {
-                    document.getElementById("lblBannerProyeccion").innerText = isGlobal ? "PROYECCIÓN REAL ICFES" : `DIAGNÓSTICO DE ${currentMateriaFiltro.toUpperCase()}`;
-                    document.getElementById("lblEscalaTitulo").innerText = isGlobal ? "Puntaje Global Estimado (Media Ponderada 1 - 500)" : `Calificación en ${currentMateriaFiltro.replace('_', ' ').toUpperCase()} (Escala 1 - 100)`;
-                    document.getElementById("lblEscalaUnidad").innerText = isGlobal ? "/ 500 pts" : "/ 100 pts";
-                    document.getElementById("lblPuntajeGlobal500").innerHTML = `0 <span class="text-lg sm:text-xl text-slate-400 font-normal">${isGlobal ? '/ 500 pts' : '/ 100 pts'}</span>`;
-                    document.getElementById("barPuntajeGlobal").style.width = `0%`;
+                    const banner = document.getElementById("lblBannerProyeccion");
+                    const escalaTitle = document.getElementById("lblEscalaTitulo");
+                    const escalaUnit = document.getElementById("lblEscalaUnidad");
+                    const global500 = document.getElementById("lblPuntajeGlobal500");
+                    const barGlobal = document.getElementById("barPuntajeGlobal");
 
-                    document.getElementById("kpiTheta").innerText = `En Calibración`;
-                    document.getElementById("kpiCuadrante").innerText = "Sin Datos";
-                    document.getElementById("kpiHesitacion").innerText = "0%";
-                    document.getElementById("kpiPuntosImpulsividad").innerText = "0 pts";
+                    if (banner) banner.innerText = isGlobal ? "PROYECCIÓN REAL ICFES" : `DIAGNÓSTICO DE ${currentMateriaFiltro.toUpperCase()}`;
+                    if (escalaTitle) escalaTitle.innerText = isGlobal ? "Puntaje Global Estimado (Media Ponderada 1 - 500)" : `Calificación en ${currentMateriaFiltro.replace('_', ' ').toUpperCase()} (Escala 1 - 100)`;
+                    if (escalaUnit) escalaUnit.innerText = isGlobal ? "/ 500 pts" : "/ 100 pts";
+                    if (global500) global500.innerHTML = `0 <span class="text-lg sm:text-xl text-slate-400 font-normal">${isGlobal ? '/ 500 pts' : '/ 100 pts'}</span>`;
+                    if (barGlobal) barGlobal.style.width = `0%`;
 
-                    document.getElementById('lblOrigenGemelo').innerText = `${cacheOrigenGemelo}`;
-                    document.getElementById('val-min').innerText = "0";
-                    document.getElementById('val-target').innerText = "0";
-                    document.getElementById('val-max').innerText = "0";
+                    const kpiTh = document.getElementById("kpiTheta");
+                    const kpiCuad = document.getElementById("kpiCuadrante");
+                    const kpiHes = document.getElementById("kpiHesitacion");
+                    const kpiImp = document.getElementById("kpiPuntosImpulsividad");
 
-                    document.getElementById("lblVulnerabilidadTxt").innerText = "Sin evaluaciones registradas aún para este módulo.";
-                    document.getElementById("lblPrescripcionTxt").innerText = "Inicia un simulacro para activar el diagnóstico de esta área.";
-                    document.getElementById("ui-summary").innerText = `Análisis de trayectoria para ${nombreCapitalizado}: Sin registros en el módulo actual.`;
+                    if (kpiTh) kpiTh.innerText = `En Calibración`;
+                    if (kpiCuad) kpiCuad.innerText = "Sin Datos";
+                    if (kpiHes) kpiHes.innerText = "0%";
+                    if (kpiImp) kpiImp.innerText = "0 pts";
 
-                    document.getElementById("lblPrediccionProactiva").innerText = "Sin datos suficientes para predecir puntos ciegos futuros. Completa tu primera evaluación.";
-                    document.getElementById("lblSimuladorImpactoTexto").innerText = "Al completar un módulo, la calculadora de impacto estimará cuántos puntos puedes subir.";
+                    const lblOrig = document.getElementById('lblOrigenGemelo');
+                    const vMin = document.getElementById('val-min');
+                    const vTarget = document.getElementById('val-target');
+                    const vMax = document.getElementById('val-max');
+
+                    if (lblOrig) lblOrig.innerText = `${cacheOrigenGemelo}`;
+                    if (vMin) vMin.innerText = "0";
+                    if (vTarget) vTarget.innerText = "0";
+                    if (vMax) vMax.innerText = "0";
+
+                    const vul = document.getElementById("lblVulnerabilidadTxt");
+                    const pres = document.getElementById("lblPrescripcionTxt");
+                    const sum = document.getElementById("ui-summary");
+                    const pred = document.getElementById("lblPrediccionProactiva");
+                    const sim = document.getElementById("lblSimuladorImpactoTexto");
+
+                    if (vul) vul.innerText = "Sin evaluaciones registradas aún para este módulo.";
+                    if (pres) pres.innerText = "Inicia un simulacro para activar el diagnóstico de esta área.";
+                    if (sum) sum.innerText = `Análisis de trayectoria para ${nombreCapitalizado}: Sin registros en el módulo actual.`;
+
+                    if (pred) pred.innerText = "Sin datos suficientes para predecir puntos ciegos futuros. Completa tu primera evaluación.";
+                    if (sim) sim.innerText = "Al completar un módulo, la calculadora de impacto estimará cuántos puntos puedes subir.";
 
                     this.renderizarSemaforo(configm.subcompetencias, [40, 40, 40]);
                     this.renderizarTemas(["Completa tu prueba inicial en el simulador"]);
@@ -739,7 +771,7 @@
                     return;
                 }
 
-                // SI TIENE DATO
+                // SI TIENE REGISTROS
                 const ultimoExamen = examenesFiltrados[0];
                 const itemsR = typeof ultimoExamen.items_respondidos === 'string' ? JSON.parse(ultimoExamen.items_respondidos) : (ultimoExamen.items_respondidos || {});
                 const adn = itemsR.adn_empaquetado || ultimoExamen.adn_cognitivo || {};
@@ -750,38 +782,52 @@
                 
                 const percentil = Math.min(99, Math.max(15, Math.round(50 + (thetaVal * 20))));
 
-                document.getElementById("kpiTheta").innerText = `Superas al ${percentil}%`;
+                const kpiTh = document.getElementById("kpiTheta");
+                if (kpiTh) kpiTh.innerText = `Superas al ${percentil}%`;
                 
-                if (pts >= 75) badgeMCER.innerText = "NIVEL MCER: B+";
-                else if (pts >= 60) badgeMCER.innerText = "NIVEL MCER: B1";
-                else if (pts >= 45) badgeMCER.innerText = "NIVEL MCER: A2";
-                else badgeMCER.innerText = "NIVEL MCER: A1";
-
-                const impulsividadPct = adn.impulsividad || 15;
-                if (impulsividadPct > 30) {
-                    document.getElementById("kpiCuadrante").innerText = "Impulsivo - Inexacto";
-                    document.getElementById("kpiCuadrante").style.color = "var(--alert)";
-                } else if (pts >= 70) {
-                    document.getElementById("kpiCuadrante").innerText = "Estratega Eficiente";
-                    document.getElementById("kpiCuadrante").style.color = "var(--emerald)";
-                } else {
-                    document.getElementById("kpiCuadrante").innerText = "Reflexivo en Desarrollo";
-                    document.getElementById("kpiCuadrante").style.color = "var(--gold)";
+                if (badgeMCER) {
+                    if (pts >= 75) badgeMCER.innerText = "NIVEL MCER: B+";
+                    else if (pts >= 60) badgeMCER.innerText = "NIVEL MCER: B1";
+                    else if (pts >= 45) badgeMCER.innerText = "NIVEL MCER: A2";
+                    else badgeMCER.innerText = "NIVEL MCER: A1";
                 }
 
-                document.getElementById("kpiHesitacion").innerText = `${Math.round(15 + (impulsividadPct * 0.5))}% (Baja Vacilación)`;
+                const impulsividadPct = adn.impulsividad || 15;
+                const kpiCuad = document.getElementById("kpiCuadrante");
+                if (kpiCuad) {
+                    if (impulsividadPct > 30) {
+                        kpiCuad.innerText = "Impulsivo - Inexacto";
+                        kpiCuad.style.color = "var(--alert)";
+                    } else if (pts >= 70) {
+                        kpiCuad.innerText = "Estratega Eficiente";
+                        kpiCuad.style.color = "var(--emerald)";
+                    } else {
+                        kpiCuad.innerText = "Reflexivo en Desarrollo";
+                        kpiCuad.style.color = "var(--gold)";
+                    }
+                }
+
+                const kpiHes = document.getElementById("kpiHesitacion");
+                if (kpiHes) kpiHes.innerText = `${Math.round(15 + (impulsividadPct * 0.5))}% (Baja Vacilación)`;
+                
                 const ptsPerdidosImp = Math.round(impulsividadPct * 0.4);
-                document.getElementById("kpiPuntosImpulsividad").innerText = `-${ptsPerdidosImp} pts en riesgo`;
+                const kpiImp = document.getElementById("kpiPuntosImpulsividad");
+                if (kpiImp) kpiImp.innerText = `-${ptsPerdidosImp} pts en riesgo`;
 
                 const deltaPtsSEM = Math.round(semVal * 15);
                 const minVal = Math.max(1, pts - deltaPtsSEM);
                 const targetVal = pts;
                 const maxVal = Math.min(100, pts + deltaPtsSEM);
 
-                document.getElementById('lblOrigenGemelo').innerText = `${cacheOrigenGemelo}`;
-                document.getElementById('val-min').innerText = minVal;
-                document.getElementById('val-target').innerText = targetVal;
-                document.getElementById('val-max').innerText = maxVal;
+                const lblOrig = document.getElementById('lblOrigenGemelo');
+                const vMin = document.getElementById('val-min');
+                const vTarget = document.getElementById('val-target');
+                const vMax = document.getElementById('val-max');
+
+                if (lblOrig) lblOrig.innerText = `${cacheOrigenGemelo}`;
+                if (vMin) vMin.innerText = minVal;
+                if (vTarget) vTarget.innerText = targetVal;
+                if (vMax) vMax.innerText = maxVal;
 
                 const bandEl = document.getElementById('band');
                 const pinEl = document.getElementById('pin-marker');
@@ -791,14 +837,19 @@
                     pinEl.style.left = `${targetVal}%`;
                 }
 
-                document.getElementById("lblVulnerabilidadTxt").innerText = adn.vulnerabilidad_dominante || "Estructura de razonamiento estable.";
-                document.getElementById("lblPrescripcionTxt").innerText = adn.prescripcion_clinica || "Fortalecer velocidad de lectura activa.";
-                
-                document.getElementById("ui-summary").innerText = `Crónica para ${nombreCapitalizado}: En la última evaluación de ${currentMateriaFiltro.replace('_', ' ').toUpperCase()} alcanzaste ${pts} pts. Tu tasa de resiliencia ante errores es de ${adn.recuperacion || 80}%.`;
+                const vul = document.getElementById("lblVulnerabilidadTxt");
+                const pres = document.getElementById("lblPrescripcionTxt");
+                const sum = document.getElementById("ui-summary");
+                const pred = document.getElementById("lblPrediccionProactiva");
+                const sim = document.getElementById("lblSimuladorImpactoTexto");
 
-                document.getElementById("lblPrediccionProactiva").innerText = `🔮 Predicción IA: En la próxima sesión de ${currentMateriaFiltro.replace('_', ' ').toUpperCase()}, existe un ${Math.round(impulsividadPct + 35)}% de probabilidad de fallar en reactivos que combinen tablas complejas con distractores directos.`;
+                if (vul) vul.innerText = adn.vulnerabilidad_dominante || "Estructura de razonamiento estable.";
+                if (pres) pres.innerText = adn.prescripcion_clinica || "Fortalecer velocidad de lectura activa.";
+                if (sum) sum.innerText = `Crónica para ${nombreCapitalizado}: En la última evaluación de ${currentMateriaFiltro.replace('_', ' ').toUpperCase()} alcanzaste ${pts} pts. Tu tasa de resiliencia ante errores es de ${adn.recuperacion || 80}%.`;
 
-                document.getElementById("lblSimuladorImpactoTexto").innerHTML = `🔗 <strong>Sinergia Transversal:</strong> La impulsividad detectada en esta ciencia (-${ptsPerdidosImp} pts) afecta el tiempo de lectura en Lectura Crítica. Si corriges este sesgo, ganarás <strong class="text-[#51e2f5]">+14 puntos globales ICFES</strong>.`;
+                if (pred) pred.innerText = `🔮 Predicción IA: En la próxima sesión de ${currentMateriaFiltro.replace('_', ' ').toUpperCase()}, existe un ${Math.round(impulsividadPct + 35)}% de probabilidad de fallar en reactivos que combinen tablas complejas con distractores directos.`;
+
+                if (sim) sim.innerHTML = `🔗 <strong>Sinergia Transversal:</strong> La impulsividad detectada en esta ciencia (-${ptsPerdidosImp} pts) afecta el tiempo de lectura en Lectura Crítica. Si corriges este sesgo, ganarás <strong class="text-[#51e2f5]">+14 puntos globales ICFES</strong>.`;
 
                 this.renderizarSemaforo(configm.subcompetencias, [pts + 5, pts - 5, pts - 12]);
                 this.renderizarTemas(adn.plan_entrenamiento || ["Misión 1: Repaso de conceptos clave", "Misión 2: Taller de descarte"]);
@@ -811,9 +862,13 @@
             }
 
             static renderizarSemaforo(subcomps, valores) {
-                document.getElementById("lblSemaforoFortaleza").innerText = `${subcomps[0] || 'Competencia 1'} (${valores[0] || 60} pts)`;
-                document.getElementById("lblSemaforoRiesgo").innerText = `${subcomps[1] || 'Competencia 2'} (${valores[1] || 50} pts)`;
-                document.getElementById("lblSemaforoPrioridad").innerText = `${subcomps[2] || 'Competencia 3'} (${valores[2] || 40} pts)`;
+                const fort = document.getElementById("lblSemaforoFortaleza");
+                const ries = document.getElementById("lblSemaforoRiesgo");
+                const prio = document.getElementById("lblSemaforoPrioridad");
+
+                if (fort) fort.innerText = `${subcomps[0] || 'Competencia 1'} (${valores[0] || 60} pts)`;
+                if (ries) ries.innerText = `${subcomps[1] || 'Competencia 2'} (${valores[1] || 50} pts)`;
+                if (prio) prio.innerText = `${subcomps[2] || 'Competencia 3'} (${valores[2] || 40} pts)`;
             }
 
             static calcularPuntajeGlobal500() {
@@ -834,22 +889,28 @@
                 let promedio100 = sumaPonderada / (pesoTotal || 1);
                 let puntajeGlobal500 = Math.round((promedio100 / 100) * 500);
 
+                const global500 = document.getElementById("lblPuntajeGlobal500");
+                const barGlobal = document.getElementById("barPuntajeGlobal");
+
                 if (currentMateriaFiltro === 'todas') {
-                    document.getElementById("lblPuntajeGlobal500").innerHTML = `${puntajeGlobal500} <span class="text-lg sm:text-xl text-slate-400 font-normal">/ 500 pts</span>`;
-                    document.getElementById("barPuntajeGlobal").style.width = `${((puntajeGlobal500 / 500) * 100).toFixed(1)}%`;
+                    if (global500) global500.innerHTML = `${puntajeGlobal500} <span class="text-lg sm:text-xl text-slate-400 font-normal">/ 500 pts</span>`;
+                    if (barGlobal) barGlobal.style.width = `${((puntajeGlobal500 / 500) * 100).toFixed(1)}%`;
                 } else {
                     const examFil = cacheHistorialCompleto.filter(x => String(x.materia || '').toLowerCase().includes(currentMateriaFiltro));
                     const ult = examFil[0] || {};
                     const itemsR = typeof ult.items_respondidos === 'string' ? JSON.parse(ult.items_respondidos) : (ult.items_respondidos || {});
                     const ptsMat = itemsR.puntaje_escalonado || ult.puntaje_escalonado || 50;
 
-                    document.getElementById("lblPuntajeGlobal500").innerHTML = `${ptsMat} <span class="text-lg sm:text-xl text-slate-400 font-normal">/ 100 pts</span>`;
-                    document.getElementById("barPuntajeGlobal").style.width = `${ptsMat}%`;
+                    if (global500) global500.innerHTML = `${ptsMat} <span class="text-lg sm:text-xl text-slate-400 font-normal">/ 100 pts</span>`;
+                    if (barGlobal) barGlobal.style.width = `${ptsMat}%`;
                 }
 
                 let probMeta = Math.min(99, Math.max(10, Math.round((puntajeGlobal500 / 350) * 80)));
-                document.getElementById("lblProbabilidadMeta").innerText = `${probMeta}% Probabilidad Meta`;
-                document.getElementById("lblNivelRango").innerText = "TRAYECTORIA EVALUADA";
+                const lblProb = document.getElementById("lblProbabilidadMeta");
+                const lblRango = document.getElementById("lblNivelRango");
+
+                if (lblProb) lblProb.innerText = `${probMeta}% Probabilidad Meta`;
+                if (lblRango) lblRango.innerText = "TRAYECTORIA EVALUADA";
             }
 
             static renderizarTemas(temas) {
@@ -928,7 +989,7 @@
                         <td class="p-2.5 font-bold text-sky-400 font-mono">Top ${100 - percentil}% Nacional</td>
                         <td class="p-2.5 font-bold text-[#D4AF37] font-mono">${pts} / 100 pts</td>
                         <td class="p-2.5 font-mono">
-                            <button onclick="PerfilEstudiante.abrirInspeccionForense(${idx})" class="px-2 py-0.5 rounded text-[9px] font-bold bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500 hover:text-black transition">
+                            <button type="button" onclick="PerfilEstudiante.abrirInspeccionForense(${idx})" class="px-2 py-0.5 rounded text-[9px] font-bold bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500 hover:text-black transition">
                                 🔍 DETALLE FORENSE
                             </button>
                         </td>
@@ -944,7 +1005,8 @@
                 const itemsR = typeof reg.items_respondidos === 'string' ? JSON.parse(reg.items_respondidos) : (reg.items_respondidos || {});
                 const clics = itemsR.historico_clics || [];
 
-                document.getElementById("lblModalForenseTitulo").innerText = `🔍 INSPECCIÓN FORENSE: ${String(reg.materia).toUpperCase()}`;
+                const titleEl = document.getElementById("lblModalForenseTitulo");
+                if (titleEl) titleEl.innerText = `🔍 INSPECCIÓN FORENSE: ${String(reg.materia).toUpperCase()}`;
                 
                 let htmlCuerpo = `<div class="p-2 bg-slate-950 rounded mb-2 border border-zinc-800">
                     <p class="text-slate-300">Puntaje Módulo: <strong class="text-[#D4AF37]">${itemsR.puntaje_escalonado || 50} pts</strong></p>
@@ -966,8 +1028,10 @@
                     htmlCuerpo += `</div>`;
                 }
 
-                document.getElementById("lblModalForenseCuerpo").innerHTML = htmlCuerpo;
-                document.getElementById("modalForense").style.display = "flex";
+                const bodyEl = document.getElementById("lblModalForenseCuerpo");
+                const modal = document.getElementById("modalForense");
+                if (bodyEl) bodyEl.innerHTML = htmlCuerpo;
+                if (modal) modal.style.display = "flex";
             }
         }
 
@@ -993,7 +1057,8 @@
                     let y = centerY + Math.sin(angle) * dist;
                     path += `${x},${y} `;
                 }
-                document.getElementById('radar-shape').setAttribute("points", path.trim());
+                const shape = document.getElementById('radar-shape');
+                if (shape) shape.setAttribute("points", path.trim());
             } catch(e) { console.error("Radar Error", e); }
         }
 
