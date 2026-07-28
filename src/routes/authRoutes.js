@@ -48,27 +48,46 @@ router.post('/register-secure-user', async (req, res) => {
 });
 
 // ====================================================================
-// 🪐 ENDPOINT 2: LOGIN DE PORTAL CON CONSULTA DE ARQUETIPO Y DIRECCIONAMIENTO INTELIGENTE
+// 🪐 ENDPOINT 2: LOGIN DE PORTAL CON DUAL-IDENTIFIER (EMAIL O DOCUMENTO TI/CC)
 // ====================================================================
 router.post('/login-perimetral', async (req, res) => {
     try {
-        const { email, password, institution_id, role_target } = req.body;
+        const { email, identity, password, institution_id, role_target } = req.body;
         const tenantClean = String(institution_id || "colegio_sandbox_default").toLowerCase().trim();
-        const emailClean = String(email).toLowerCase().trim();
+        const rawIdentifier = String(identity || email || "").trim();
+        const identifierClean = rawIdentifier.toLowerCase();
 
-        if (!email || !password) {
+        if (!identifierClean || !password) {
             return res.status(400).json({ success: false, error: "Credenciales incompletas." });
         }
 
-        const { data: usuario, error } = await supabase
-            .from('usuarios')
-            .select('*')
-            .eq('email', emailClean)
-            .eq('institution_id', tenantClean)
-            .maybeSingle();
+        let usuario = null;
+        let queryError = null;
 
-        if (error || !usuario) {
-            return res.status(401).json({ success: false, error: "Acceso denegado: Credenciales no válidas para esta institución." });
+        // Si contiene '@', buscar directamente por email
+        if (identifierClean.includes('@')) {
+            const { data, error } = await supabase
+                .from('usuarios')
+                .select('*')
+                .eq('email', identifierClean)
+                .eq('institution_id', tenantClean)
+                .maybeSingle();
+            usuario = data;
+            queryError = error;
+        } else {
+            // Es un número de documento (TI / CC) o alias: buscar por document_id o email
+            const { data, error } = await supabase
+                .from('usuarios')
+                .select('*')
+                .or(`document_id.eq.${identifierClean},email.eq.${identifierClean}`)
+                .eq('institution_id', tenantClean)
+                .maybeSingle();
+            usuario = data;
+            queryError = error;
+        }
+
+        if (queryError || !usuario) {
+            return res.status(401).json({ success: false, error: "Acceso denegado: Credenciales no válidas o usuario no registrado para esta institución." });
         }
 
         const saltLimpio = String(usuario.salt || "").trim();
@@ -88,7 +107,7 @@ router.post('/login-perimetral', async (req, res) => {
 
         const userRole = (role_target || usuario.rol || 'estudiante').toLowerCase().trim();
         const sessionToken = crypto.randomBytes(24).toString('hex');
-        const studentAlias = emailClean.split('@')[0];
+        const studentAlias = usuario.email ? usuario.email.split('@')[0] : (usuario.document_id || identifierClean);
 
         // 🔍 CONSULTA DEFENSIVA DE ARQUETIPO INICIAL
         let arquetipoRegistrado = null;
@@ -97,7 +116,7 @@ router.post('/login-perimetral', async (req, res) => {
                 const { data: arquetipoData } = await supabase
                     .from('dante_arquetipos_iniciales')
                     .select('arquetipo')
-                    .eq('id_sesion', emailClean)
+                    .or(`id_sesion.eq.${usuario.email},id_sesion.eq.${usuario.document_id}`)
                     .maybeSingle();
 
                 if (arquetipoData && arquetipoData.arquetipo) {
@@ -123,7 +142,8 @@ router.post('/login-perimetral', async (req, res) => {
             message: "Autenticación perimetral exitosa.",
             token_session: sessionToken,
             user: { 
-                email: usuario.email, 
+                email: usuario.email || `${identifierClean}@danteos.edu.co`, 
+                document_id: usuario.document_id || (identifierClean.includes('@') ? null : identifierClean),
                 estudiante: studentAlias,
                 role: userRole,
                 rol: userRole, 
