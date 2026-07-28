@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>DANTE OS // CALIBRACIÓN INICIAL</title>
+    <title>DANTE OS // CALIBRACIÓN Y DIAGNÓSTICO PSICOMÉTRICO</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&family=JetBrains+Mono:wght@400;500;700;900&family=Oswald:wght@700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=JetBrains+Mono:wght@400;500;700;900&family=Oswald:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
         :root {
@@ -23,7 +24,54 @@
 
         body, html { 
             background: var(--bg); color: #f0f1f5; margin: 0; font-family: 'Outfit', sans-serif; 
-            height: 100vh; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            min-height: 100vh; overflow-x: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 1rem 0;
+        }
+
+        /* TEMA DE ALTO CONTRASTE / MODO CLARO SINCRO */
+        body.light-mode {
+            --bg: #f1f5f9;
+            --card-bg: #ffffff;
+            --border-graphite: #cbd5e1;
+            color: #0f172a !important;
+            background-color: #f1f5f9 !important;
+            background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px) !important;
+            background-size: 24px 24px !important;
+        }
+        body.light-mode .onboard-card {
+            background: #ffffff !important;
+            border-color: #cbd5e1 !important;
+            box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.12), 0 0 20px rgba(2, 132, 199, 0.08) !important;
+        }
+        body.light-mode #dilema-text {
+            background: #f8fafc !important;
+            border-color: #cbd5e1 !important;
+            color: #1e293b !important;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.03) !important;
+        }
+        body.light-mode .option-btn {
+            background: #ffffff !important;
+            border-color: #cbd5e1 !important;
+            color: #0f172a !important;
+        }
+        body.light-mode .option-btn:hover {
+            background: #f0f9ff !important;
+            border-color: #0284c7 !important;
+            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.15) !important;
+        }
+        body.light-mode .text-zinc-200, 
+        body.light-mode .text-zinc-300, 
+        body.light-mode .text-zinc-400 {
+            color: #334155 !important;
+        }
+        body.light-mode .text-white {
+            color: #0f172a !important;
+        }
+        body.light-mode .border-white\/10 {
+            border-color: #e2e8f0 !important;
+        }
+        body.light-mode .progress-track {
+            background: #e2e8f0 !important;
         }
 
         .font-mono { font-family: 'JetBrains Mono', monospace !important; }
@@ -34,8 +82,8 @@
         .onboard-card {
             background: var(--card-bg); border: 1px solid var(--border-graphite);
             box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95); border-radius: 16px; 
-            padding: 3rem 2.5rem; width: 92%; max-width: 720px; text-align: center; position: relative; z-index: 10;
-            backdrop-filter: blur(24px);
+            padding: 2.25rem 2rem; width: 94%; max-width: 780px; text-align: center; position: relative; z-index: 10;
+            backdrop-filter: blur(24px); margin: auto 0;
         }
         .onboard-card::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
@@ -44,13 +92,51 @@
         }
 
         .option-btn {
-            background: rgba(20, 24, 35, 0.85); border: 1px solid var(--border-graphite); border-radius: 10px;
-            padding: 1.3rem 1.5rem; width: 100%; text-align: left; font-size: 1.05rem; font-weight: 600; color: #fff;
-            transition: all 0.2s ease; cursor: pointer; font-family: 'JetBrains Mono'; margin-top: 1rem;
-            line-height: 1.5;
+            background: rgba(20, 24, 35, 0.85); border: 1px solid var(--border-graphite); border-radius: 12px;
+            padding: 1.1rem 1.3rem; width: 100%; text-align: left; font-size: 0.98rem; font-weight: 600; color: #fff;
+            transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer; font-family: 'JetBrains Mono'; margin-top: 0.75rem;
+            line-height: 1.5; min-height: 52px; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
         }
-        .option-btn:hover { border-color: var(--gold); background: rgba(212, 175, 55, 0.12); transform: translateY(-2px); box-shadow: 0 0 15px rgba(212, 175, 55, 0.2); }
+        .option-btn:hover { border-color: var(--gold); background: rgba(212, 175, 55, 0.12); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(212, 175, 55, 0.18); }
         .option-btn:active { transform: scale(0.98); }
+        .option-btn.tachado {
+            opacity: 0.35;
+            text-decoration: line-through;
+            background: rgba(239, 68, 68, 0.1) !important;
+            border-color: rgba(239, 68, 68, 0.4) !important;
+            filter: grayscale(0.8);
+        }
+
+        .strike-tool-btn {
+            padding: 4px 8px;
+            font-size: 10px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #cbd5e1;
+            transition: all 0.2s;
+        }
+        .strike-tool-btn:hover {
+            background: rgba(239, 68, 68, 0.25);
+            color: #f87171;
+            border-color: rgba(239, 68, 68, 0.5);
+        }
+
+        /* BANNER DE BÚNKER DE PRIVACIDAD */
+        .bunker-privacy-banner {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(81, 226, 245, 0.3);
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            font-size: 11px;
+            font-family: 'JetBrains Mono', monospace;
+            color: #94a3b8;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            max-width: 780px;
+            width: 94%;
+            z-index: 10;
+            margin-bottom: 0.85rem;
+        }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -58,58 +144,143 @@
     <div class="scanline"></div>
     <canvas id="dante-fractal-bg"></canvas>
 
+    <!-- BANNER DE PRIVACIDAD Y BÚNKER PSICOLÓGICO -->
+    <div class="bunker-privacy-banner flex items-center justify-between gap-3">
+        <div class="flex items-center gap-2 text-cyan-400 font-bold shrink-0">
+            <i class="fa-solid fa-user-shield text-base"></i>
+            <span class="tracking-widest uppercase text-[10px]">BÚNKER DE PRIVACIDAD ABSOLUTA</span>
+        </div>
+        <p class="text-[10.5px] leading-tight text-slate-300 hidden sm:block">
+            Tus respuestas psicométricas y estado emocional son <strong>100% confidenciales</strong>. Ningún profesor, rector ni tercero tiene acceso a tus vulnerabilidades. Solo el Núcleo Dante OS utiliza esta información para calibrar tu entrenamiento.
+        </p>
+    </div>
+
     <div class="onboard-card" id="card-main">
-        <div class="font-mono text-xs md:text-sm text-[#D4AF37] tracking-[0.4em] uppercase mb-3 font-bold">NÚCLEO DANTE // CALIBRACIÓN DE ENTRADA</div>
-        <h1 class="oswald font-black text-2xl md:text-3xl tracking-wider text-white mb-6 uppercase" id="step-title">DILEMA 01 / 03</h1>
+        <div class="font-mono text-xs md:text-sm text-[#D4AF37] tracking-[0.4em] uppercase mb-1 font-bold flex items-center justify-center gap-2">
+            <span>⚡ NÚCLEO DANTE OS</span> // <span>CALIBRACIÓN ENTRENAMIENTO & DIAGNÓSTICO</span>
+        </div>
+        <h1 class="oswald font-black text-xl md:text-2xl tracking-wider text-white mb-3 uppercase flex items-center justify-center gap-2" id="step-title">
+            PASO 01 / 05 // NIVELES DE COMPLEJIDAD
+        </h1>
         
-        <p id="dilema-text" class="text-base md:text-lg font-light text-zinc-200 mb-6 font-mono leading-relaxed text-left bg-black/50 p-5 rounded-lg border border-white/10 shadow-inner">
+        <!-- BARRA DE PROGRESO -->
+        <div class="w-full progress-track bg-white/10 h-1.5 rounded-full overflow-hidden mb-5">
+            <div id="progress-bar" class="bg-gradient-to-r from-cyan-400 via-amber-400 to-cyan-400 h-full transition-all duration-300" style="width: 20%;"></div>
+        </div>
+
+        <!-- CONTENEDOR ENUNCIADO Y TUTORIAL TUTOR -->
+        <div id="tutorial-tip-box" class="mb-3 p-2.5 rounded-lg bg-cyan-950/40 border border-cyan-500/30 text-cyan-300 text-xs font-mono text-left flex items-start gap-2">
+            <i class="fa-solid fa-compass-drafting text-cyan-400 text-sm mt-0.5"></i>
+            <div>
+                <strong class="text-cyan-200 uppercase font-bold">Instrucción Tutorial:</strong>
+                <span id="tutorial-tip-text">Responde según tu instinto natural. Dante calculará tu latencia de respuesta en milisegundos.</span>
+            </div>
+        </div>
+
+        <p id="dilema-text" class="text-sm md:text-base font-light text-zinc-200 mb-5 font-mono leading-relaxed text-left bg-black/50 p-4 rounded-lg border border-white/10 shadow-inner">
             Sincronizando estímulo conductual...
         </p>
 
-        <div id="options-container" class="space-y-3">
+        <div id="options-container" class="space-y-2">
             <!-- Inyección dinámica de opciones -->
         </div>
 
-        <div class="mt-8 flex justify-between items-center text-xs md:text-sm font-mono text-zinc-400 uppercase tracking-widest pt-2 border-t border-white/10">
+        <div class="mt-6 flex justify-between items-center text-xs font-mono text-zinc-400 uppercase tracking-widest pt-2 border-t border-white/10">
             <span>Latencia: <span id="timer-val" class="text-cyan-400 font-bold">0.0s</span></span>
-            <span>Seguridad: Activa</span>
+            <span class="flex items-center gap-1.5"><i class="fa-solid fa-lock text-cyan-400"></i> Cifrado de Estado: Activo</span>
         </div>
     </div>
 
     <script>
+        // Sincronización automática de tema (Claro / Oscuro)
+        try {
+            if (localStorage.getItem('dante_theme') === 'light') {
+                document.body.classList.add('light-mode');
+            }
+        } catch(e) {}
+
         const SUPABASE_URL = 'https://erjmvkmhpbvrqiqlddij.supabase.co'; 
         const SUPABASE_KEY = 'sb_publishable_RZHft13G4xVwBIdhgZp1gQ_K9raK05f';
         let supabaseClient = null;
         try { if (window.supabase) supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e){}
 
+        // LOS 5 DILEMAS GRADUALES CON TUTORIAL DE HERRAMIENTAS Y MATRIZ PSICOMÉTRICA
         const DILEMAS = [
             {
-                text: "Bajo presión de tiempo en una decisión incierta y compleja, tu tendencia natural es:",
+                stepNum: 1,
+                totalSteps: 5,
+                numOpts: 2,
+                title: "DILEMA 01 / 05 // NIVELES DE LATENCIA (2 OPCIONES)",
+                tutorialTip: "Evolución mecánica (Paso 1 de 5). Dante está midiendo tu velocidad de decisión pura (Latencia en milisegundos) ante preguntas directas.",
+                text: "Ante una pregunta de opción múltiple en el ICFES que parece requerir mucho análisis, tu primer impulso natural es:",
                 opts: [
-                    { text: "A) Decidir de inmediato confiando en la primera intuición (Sistema 1).", type: "IMPULSIVO" },
-                    { text: "B) Revisar cada detalle analítico aunque se agote el tiempo disponible (Sistema 2).", type: "ANALITICO" }
+                    { text: "A) Decidir de inmediato confiando en la primera opción que parezca lógica (Impulso Sistema 1).", type: "IMPULSIVO", id: "opt_a" },
+                    { text: "B) Detenerte a releer minuciosamente el enunciado antes de revisar las alternativas (Análisis Sistema 2).", type: "ANALITICO", id: "opt_b" }
                 ]
             },
             {
-                text: "Ante un error crítico cometido en la primera fase de un proceso, tu respuesta inmediata es:",
+                stepNum: 2,
+                totalSteps: 5,
+                numOpts: 3,
+                title: "DILEMA 02 / 05 // GESTIÓN DEL ESTRÉS Y BLOQUEO (3 OPCIONES)",
+                tutorialTip: "Evolución mecánica (Paso 2 de 5). Evaluamos tu reacción emocional y nivel de ansiedad frente a situaciones de atascamiento cognitivo.",
+                text: "Encuentras un texto denso en Lectura Crítica que te desconcierta y no entiendes a la primera lectura. ¿Cuál es tu reacción habitual?",
                 opts: [
-                    { text: "A) Asumir el riesgo de inmediato y doblar la apuesta para recuperar lo perdido.", type: "RIESGO" },
-                    { text: "B) Detener la marcha, asegurar el capital restante y buscar control.", type: "CONSERVADOR" }
+                    { text: "A) Siento taquicardia o pánico por el tiempo corrido y me quedo atascado intentando reinterpretarlo.", type: "ANSIEDAD_ALTA", id: "opt_a" },
+                    { text: "B) Elijo una respuesta al azar rápidamente para salir de la pregunta sin gastar energía.", type: "EVASIVO", id: "opt_b" },
+                    { text: "C) Guardo la calma, busco la idea central del párrafo y elimino los distractores irrelevantes.", type: "ESTRATEGICO", id: "opt_c" }
                 ]
             },
             {
-                text: "Al recibir un resultado inesperado o desfavorable en una evaluación, consideras que:",
+                stepNum: 3,
+                totalSteps: 5,
+                numOpts: 4,
+                title: "DILEMA 03 / 05 // SIMULADOR CABINA REAL & HERRAMIENTA DESCARTE (4 OPCIONES)",
+                isRealIcfesSim: true,
+                tutorialTip: "⚡ TUTORIAL HERRAMIENTA DE DESCARTE: Haz clic en el botón [✂️ Tachar] de cualquier opción que consideres un distractor para descartarla antes de elegir la correcta.",
+                text: "PREGUNTA DE SIMULACIÓN REAL DANTE OS / LECTURA Y SOCIALES:\n\nUn municipio enfrenta un dilema de inversión pública. Un análisis riguroso para responder en el ICFES exige descartar primero los distractores más débiles. ¿Cómo procederías en la interfaz?",
                 opts: [
-                    { text: "A) El sistema es injusto o el método de medición presenta fallas externas.", type: "DEFENSIVO" },
-                    { text: "B) Es una señal directa para ajustar mis parámetros internos de análisis.", type: "ESTRATEGICO" }
+                    { text: "A) Descarto primero las opciones con términos absolutistas como 'siempre', 'nunca' o 'jamás'.", type: "DESCARTE_METODICO", id: "opt_a" },
+                    { text: "B) Busco la opción más larga o técnicamente estructurada asumiendo que es la verdadera.", type: "SESGO_ESTRUCTURAL", id: "opt_b" },
+                    { text: "C) Me guío por impresiones personales sin contrastar directamente contra la evidencia del texto.", type: "SUBJETIVO", id: "opt_c" },
+                    { text: "D) Comparo cada alternativa minuciosamente comprobando su veracidad lógica con la premisa.", type: "ANALITICO_RIGUROSO", id: "opt_d" }
+                ]
+            },
+            {
+                stepNum: 4,
+                totalSteps: 5,
+                numOpts: 4,
+                title: "DILEMA 04 / 05 // AUTOEVALUACIÓN METACOGNITIVA (4 OPCIONES)",
+                tutorialTip: "Evolución psicométrica (Paso 4 de 5). Diagnóstico directo de autoconfianza y áreas de mayor vulnerabilidad académica.",
+                text: "¿Cómo evalúas honestamente tu nivel actual de preparación y confianza frente al examen Saber 11?",
+                opts: [
+                    { text: "A) Siento alta incertidumbre y temor a no alcanzar el puntaje requerido para mi meta universitaria.", type: "INSEGURIDAD_CRITICA", id: "opt_a" },
+                    { text: "B) Dominio comprensivo alto, pero me preocupa no administrar bien las 4.5 horas por sesión.", type: "GESTION_TIEMPO_VULNERABLE", id: "opt_b" },
+                    { text: "C) Presento vacíos conceptuales específicos en áreas cuantitativas o ciencias naturales.", type: "VACIO_ACADEMICO", id: "opt_c" },
+                    { text: "D) Me siento preparado estratégicamente para dominar la estructura del examen.", type: "ALTA_AUTOEFICACIA", id: "opt_d" }
+                ]
+            },
+            {
+                stepNum: 5,
+                totalSteps: 5,
+                numOpts: 4,
+                title: "DILEMA 05 / 05 // RESILIENCIA ADAPTATIVA Y TOLERANCIA AL ERROR (4 OPCIONES)",
+                tutorialTip: "Última calibración (Paso 5 de 5). Determina cómo procesa tu cerebro las equivocaciones para programar tu Misión Psico-Táctica #1.",
+                text: "Cuando la IA Dante te notifique que fallaste 3 preguntas seguidas en un simulacro, tu acción inmediata será:",
+                opts: [
+                    { text: "A) Sentir frustración e interrumpir la práctica por falta de confianza.", type: "BAJA_TOLERANCIA_ERROR", id: "opt_a" },
+                    { text: "B) Abrir inmediatamente el análisis del distractor para comprender la trampa cognitiva.", type: "RESILIENTE_PROACTIVO", id: "opt_b" },
+                    { text: "C) Repetir la prueba inmediatamente a toda velocidad sin revisar las explicaciones.", type: "IMPULSIVO_REPETITIVO", id: "opt_c" },
+                    { text: "D) Solicitar a Dante OS una micro-misión de entrenamiento específica en ese tema.", type: "AUTONOMO_ESTRATEGICO", id: "opt_d" }
                 ]
             }
         ];
 
         let currentStep = 0;
-        let scores = { IMPULSIVO: 0, ANALITICO: 0, RIESGO: 0, CONSERVADOR: 0, DEFENSIVO: 0, ESTRATEGICO: 0 };
+        let scores = {};
         let startTime = Date.now();
         let timerInterval = null;
+        let optionStrikeMap = {}; // Para el simulador de tachado/descarte
 
         function updateLatencyDisplay() {
             if (timerInterval) clearInterval(timerInterval);
@@ -120,6 +291,19 @@
             }, 100);
         }
 
+        function toggleStrikeOption(optId, e) {
+            if (e) e.stopPropagation();
+            optionStrikeMap[optId] = !optionStrikeMap[optId];
+            const btnEl = document.getElementById(`btn_${optId}`);
+            if (btnEl) {
+                if (optionStrikeMap[optId]) {
+                    btnEl.classList.add('tachado');
+                } else {
+                    btnEl.classList.remove('tachado');
+                }
+            }
+        }
+
         function loadStep() {
             if (currentStep >= DILEMAS.length) {
                 finalizeOnboarding();
@@ -127,17 +311,53 @@
             }
 
             const d = DILEMAS[currentStep];
-            document.getElementById('step-title').innerText = `DILEMA 0${currentStep + 1} / 03`;
+            optionStrikeMap = {}; // Reset para nuevo paso
+
+            document.getElementById('step-title').innerText = d.title;
             document.getElementById('dilema-text').innerText = d.text;
+            document.getElementById('tutorial-tip-text').innerText = d.tutorialTip;
             
+            // Actualizar barra de progreso
+            const pBar = document.getElementById('progress-bar');
+            if (pBar) {
+                pBar.style.width = `${((currentStep + 1) / DILEMAS.length) * 100}%`;
+            }
+
             const optCont = document.getElementById('options-container');
             optCont.innerHTML = "";
 
-            d.opts.forEach((o) => {
-                const btn = document.createElement('button');
+            d.opts.forEach((o, idx) => {
+                const btn = document.createElement('div');
+                btn.id = `btn_${o.id}`;
                 btn.className = "option-btn";
-                btn.innerText = o.text;
-                btn.onclick = () => registerChoice(o.type);
+                
+                // Si es el dilema de prueba de descarte o simulación, permitimos tachar
+                let strikeBtnHTML = '';
+                if (d.isRealIcfesSim || d.stepNum >= 3) {
+                    strikeBtnHTML = `
+                        <button type="button" class="strike-tool-btn" onclick="toggleStrikeOption('${o.id}', event)" title="Descartar / Tachar esta opción">
+                            <i class="fa-solid fa-strikethrough"></i> <span>Tachar</span>
+                        </button>
+                    `;
+                }
+
+                btn.innerHTML = `
+                    <div class="flex items-center gap-3 pr-2 flex-grow cursor-pointer">
+                        <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-cyan-500/20 text-cyan-400 text-xs font-mono font-bold shrink-0 border border-cyan-500/30">
+                            ${String.fromCharCode(65 + idx)}
+                        </span>
+                        <span class="text-xs md:text-sm text-left font-sans font-medium text-slate-100 leading-snug">${o.text}</span>
+                    </div>
+                    ${strikeBtnHTML}
+                `;
+
+                btn.onclick = (e) => {
+                    // Si hizo clic en la opción y no en el botón tachar, registramos respuesta
+                    if (!e.target.closest('.strike-tool-btn')) {
+                        registerChoice(o.type, o.id);
+                    }
+                };
+
                 optCont.appendChild(btn);
             });
 
@@ -145,12 +365,14 @@
             updateLatencyDisplay();
         }
 
-        function registerChoice(type) {
+        function registerChoice(type, id) {
             let latency = Date.now() - startTime;
             scores[type] = (scores[type] || 0) + 1;
             
-            if (latency < 1500) {
-                scores['IMPULSIVO'] = (scores['IMPULSIVO'] || 0) + 1;
+            if (latency < 2000) {
+                scores['LATENCIA_IMPULSIVA'] = (scores['LATENCIA_IMPULSIVA'] || 0) + 1;
+            } else if (latency > 12000) {
+                scores['LATENCIA_REFLEXIVA'] = (scores['LATENCIA_REFLEXIVA'] || 0) + 1;
             }
 
             currentStep++;
@@ -160,58 +382,134 @@
         async function finalizeOnboarding() {
             if (timerInterval) clearInterval(timerInterval);
 
-            let primaryArquetipo = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
-            let arquetipoFinal = `ARQUETIPO_${primaryArquetipo}`;
+            // 1. Diagnóstico del Arquetipo Dominante
+            let primaryType = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b, 'ESTRATEGICO');
+            
+            let arquetipoNombre = "Estratega Reflexivo";
+            let misionInmediata = {
+                titulo: "Misión Psico-Táctica #1: Calibración de Lectura y Control de Tiempo",
+                instruccion: "En tu primera sesión de entrenamiento, realiza 3 respiraciones profundas antes de iniciar. Utiliza el botón de Tachar Opciones en las primeras 5 preguntas.",
+                protocolo: "MANTENER_LATENCIA_ESTABLE",
+                foco_cognitivo: "Comprensión Lectora y Descarte Metódico"
+            };
+
+            if (scores['ANSIEDAD_ALTA'] || scores['INSEGURIDAD_CRITICA'] || scores['BAJA_TOLERANCIA_ERROR']) {
+                arquetipoNombre = "Guerrero Sensible bajo Presión";
+                misionInmediata = {
+                    titulo: "Misión Psico-Táctica #1: Descompresión Cognitiva & Pausa de Seguridad",
+                    instruccion: "Tu cerebro tiende a acelerarse bajo presión. Antes de responder la primera pregunta hoy, realiza el Protocolo 4-7-8 (Inhala 4s, sostén 7s, exhala 8s). Recuerda: No hay apuro en las primeras 3 preguntas.",
+                    protocolo: "DESCOMPRESION_ANSIEDAD",
+                    foco_cognitivo: "Control del Ritmo Cardiaco y Enfrentamiento Directo"
+                };
+            } else if (scores['IMPULSIVO'] || scores['LATENCIA_IMPULSIVA']) {
+                arquetipoNombre = "Velocista de Respuesta Rápida";
+                misionInmediata = {
+                    titulo: "Misión Psico-Táctica #1: Freno de Mano y Verificación de Trampas",
+                    instruccion: "Tienes una velocidad sobresaliente pero riesgo de caer en distractores trampa. Tu misión hoy: Tacha OBLIGATORIAMENTE al menos 1 distractor antes de confirmar tu respuesta.",
+                    protocolo: "FRENO_DESCARTE_OBLIGATORIO",
+                    foco_cognitivo: "Verificación de Premisa y Eliminación de Distractores"
+                };
+            } else if (scores['VACIO_ACADEMICO'] || scores['GESTION_TIEMPO_VULNERABLE']) {
+                arquetipoNombre = "Analista Táctico en Construcción";
+                misionInmediata = {
+                    titulo: "Misión Psico-Táctica #1: Ataque a Puntos Críticos y Dominio del Reloj",
+                    instruccion: "Enfócate en mantener un ritmo sostenido de 1.5 minutos por pregunta. Si una pregunta toma más de 2 minutos, aplica descarte e introduce un marcador táctico.",
+                    protocolo: "RITMO_SOSTENIDO_150S",
+                    foco_cognitivo: "Cronometría Adaptativa y Descarte Eficiente"
+                };
+            }
 
             let userSession = {};
             try {
                 userSession = JSON.parse(localStorage.getItem('dante_user')) || {};
             } catch(e) {}
             
-            userSession.arquetipo = arquetipoFinal;
+            userSession.arquetipo = arquetipoNombre;
             userSession.onboarding_completed = true;
-            localStorage.setItem('dante_user', JSON.stringify(userSession));
-
-            const userIdentifier = userSession.email || userSession.document_id || userSession.estudiante;
-            const sessionToken = localStorage.getItem('dante_token') || `token_anon_${Date.now()}`;
+            userSession.mision_activa = misionInmediata;
+            userSession.scores_psicometricos = scores;
             
+            localStorage.setItem('dante_user', JSON.stringify(userSession));
+            localStorage.setItem('dante_onboarding_profile', JSON.stringify({
+                arquetipo: arquetipoNombre,
+                mision: misionInmediata,
+                scores: scores,
+                fecha: new Date().toISOString()
+            }));
+
+            const userIdentifier = userSession.email || userSession.document_id || userSession.estudiante || `user_anon_${Date.now()}`;
+            
+            // Persistencia en base de datos protegida
             if (supabaseClient) {
                 try {
-                    // 1. Guardar en tabla dante_arquetipos_iniciales
                     await supabaseClient.from('dante_arquetipos_iniciales').upsert({
-                        id_sesion: userIdentifier || sessionToken,
-                        arquetipo: arquetipoFinal,
-                        puntajes_crudos: scores
+                        id_sesion: userIdentifier,
+                        arquetipo: arquetipoNombre,
+                        puntajes_crudos: scores,
+                        mision_prescrita: misionInmediata,
+                        privacidad_status: 'BUNKER_CONFIDENCIAL'
                     }, { onConflict: 'id_sesion' });
 
-                    // 2. Actualizar estado en tabla usuarios para persistencia permanente
                     if (userSession.email || userSession.document_id) {
                         const cond = userSession.email ? `email.eq.${userSession.email}` : `document_id.eq.${userSession.document_id}`;
                         await supabaseClient.from('usuarios')
                             .update({ 
-                                arquetipo: arquetipoFinal, 
+                                arquetipo: arquetipoNombre, 
                                 onboarding_completed: true 
                             })
                             .or(cond);
                     }
                 } catch(err) {
-                    console.error("⚠️ Sincronización onboarding:", err);
+                    console.error("⚠️ Sincronización onboarding confidencial:", err);
                 }
             }
 
+            // Renderizado del Resultado Final y la Prescripción Personalizada
             const card = document.getElementById('card-main');
             card.innerHTML = `
-                <div class="font-mono text-xs text-[#51e2f5] tracking-[0.4em] uppercase mb-3 font-bold">SISTEMA RECALIBRADO</div>
-                <h2 class="oswald font-black text-3xl text-white mb-3 uppercase">PERFIL AUTÉNTICO ACTIVADO</h2>
-                <div class="my-5 p-4 bg-cyan-950/50 border border-cyan-500/40 rounded-lg font-mono text-cyan-400 text-sm md:text-base tracking-widest uppercase font-bold shadow-[0_0_20px_rgba(81,226,245,0.2)]">
-                    ${arquetipoFinal}
+                <div class="font-mono text-xs text-[#51e2f5] tracking-[0.4em] uppercase mb-2 font-bold flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-square-check text-cyan-400"></i>
+                    <span>SISTEMA DANTE OS // DIAGNÓSTICO COMPLETO</span>
                 </div>
-                <p class="text-sm font-mono text-zinc-300 leading-relaxed">Conectando con la Cabina de Examen...</p>
+                <h2 class="oswald font-black text-2xl md:text-3xl text-white mb-2 uppercase">ARQUETIPO Y MISIÓN ACTIVADOS</h2>
+                
+                <div class="my-3 p-3.5 bg-cyan-950/40 border border-cyan-500/40 rounded-xl text-left shadow-[0_0_25px_rgba(81,226,245,0.15)]">
+                    <div class="flex items-center justify-between border-b border-cyan-500/20 pb-2 mb-2">
+                        <span class="text-xs font-mono text-amber-400 font-bold uppercase tracking-wider">Perfil Cognitivo Diagnósticado:</span>
+                        <span class="text-xs font-mono text-cyan-300 font-bold px-2 py-0.5 rounded bg-cyan-900/50 border border-cyan-500/30">PRIVADO 🔒</span>
+                    </div>
+                    <div class="text-base md:text-lg font-mono font-bold text-white uppercase flex items-center gap-2 mb-1">
+                        <span class="text-amber-400">✨</span> ${arquetipoNombre}
+                    </div>
+                </div>
+
+                <!-- PRESCRIPCIÓN DE MISIÓN INMEDIATA -->
+                <div class="p-4 bg-amber-950/30 border border-amber-500/40 rounded-xl text-left mb-4 shadow-lg">
+                    <div class="flex items-center gap-2 text-amber-400 font-mono text-xs font-bold uppercase mb-1">
+                        <i class="fa-solid fa-crosshairs"></i>
+                        <span>${misionInmediata.titulo}</span>
+                    </div>
+                    <p class="text-xs md:text-sm font-mono text-zinc-200 leading-relaxed bg-black/40 p-2.5 rounded border border-white/10">
+                        "${misionInmediata.instruccion}"
+                    </p>
+                    <div class="mt-2 text-[11px] font-mono text-amber-300/80 flex items-center justify-between">
+                        <span>Foco: <strong>${misionInmediata.foco_cognitivo}</strong></span>
+                        <span>Protocolo: <strong>${misionInmediata.protocolo}</strong></span>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-center gap-2 text-sm font-mono text-cyan-300 leading-relaxed mt-2">
+                    <svg class="animate-spin h-4 w-4 text-cyan-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Cargando Cabina de Entrenamiento Adaptativo...</span>
+                </div>
             `;
 
             setTimeout(() => {
                 window.location.href = "index.html";
-            }, 1200);
+            }, 2500);
         }
 
         // Canvas Fractal
