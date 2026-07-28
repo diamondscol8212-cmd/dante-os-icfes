@@ -3,808 +3,553 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Dante OS // Portal de Acceso Unificado</title>
+    <title>DANTE OS // CALIBRACIÓN Y DIAGNÓSTICO PSICOMÉTRICO</title>
 
-    <!-- CDN Tailwind CSS & FontAwesome & Fuentes de Google -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&family=JetBrains+Mono:wght@400;500;700;900&family=Oswald:wght@700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=JetBrains+Mono:wght@400;500;700;900&family=Oswald:wght@700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
         :root {
             --primary: #51e2f5; 
             --gold: #D4AF37;
-            --alert: #e74c3c;
+            --alert: #ff0044;
             --bg: #010103; 
-            --card-bg: rgba(12, 14, 22, 0.88);
-            --border-graphite: rgba(255, 255, 255, 0.08);
-            --emerald: #2ecc71;
-            --purple-core: #a855f7;
-            --text-main: #f0f1f5;
+            --card-bg: rgba(12, 14, 22, 0.94);
+            --border-graphite: rgba(255, 255, 255, 0.12);
         }
 
-        /* TEMA DE ALTO CONTRASTE / MODO AULA PROYECTOR PLATINUM */
+        body, html { 
+            background: var(--bg); color: #f0f1f5; margin: 0; font-family: 'Outfit', sans-serif; 
+            min-height: 100vh; overflow-x: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 1rem 0;
+        }
+
+        /* TEMA DE ALTO CONTRASTE / MODO CLARO SINCRO */
         body.light-mode {
             --bg: #f1f5f9;
             --card-bg: #ffffff;
             --border-graphite: #cbd5e1;
-            --text-main: #0f172a;
-            --primary: #0284c7;
-            --gold: #d97706;
-            --alert: #dc2626;
+            color: #0f172a !important;
             background-color: #f1f5f9 !important;
             background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px) !important;
             background-size: 24px 24px !important;
         }
-        body.light-mode .master-hud { 
-            background: rgba(241, 245, 249, 0.92) !important; 
-            border-bottom: 1px solid #cbd5e1 !important; 
-            box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06) !important;
-        }
-        body.light-mode .alias-title { color: #0f172a !important; text-shadow: none !important; }
-        body.light-mode .input-label { color: #1e293b !important; font-weight: 700 !important; }
-        body.light-mode .input-cyber { 
-            background: #ffffff !important; 
-            color: #0f172a !important; 
-            border: 1px solid #cbd5e1 !important; 
-            box-shadow: inset 0 1px 2px rgba(0,0,0,0.02) !important;
-        }
-        body.light-mode .input-cyber:focus {
-            border-color: #0284c7 !important;
-            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15) !important;
-        }
-        body.light-mode .input-cyber::placeholder { color: #64748b !important; }
-        body.light-mode .gateway-card { 
-            background: #ffffff !important; 
-            border: 1px solid #cbd5e1 !important; 
-            box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.1), 0 0 15px rgba(2, 132, 199, 0.06) !important; 
-        }
-        body.light-mode #uiSubtitulo { color: #475569 !important; }
-        body.light-mode .help-text { color: #475569 !important; }
-        body.light-mode .chk-label { color: #334155 !important; }
-        body.light-mode .role-selection-card { 
-            background: #ffffff !important; 
-            border: 1px solid #cbd5e1 !important; 
-            color: #1e293b !important; 
-        }
-        body.light-mode .role-selection-card:hover {
-            border-color: #0284c7 !important;
-            background: #f0f9ff !important;
-        }
-        body.light-mode .role-selection-card .role-title { color: #1e293b !important; font-weight: 700 !important; }
-        body.light-mode .role-selection-card .role-icon { color: #0284c7 !important; }
-        body.light-mode .role-selection-card.active { 
-            background: #fffbeb !important; 
-            border-color: #d97706 !important; 
-            box-shadow: 0 0 12px rgba(217, 119, 6, 0.15) !important;
-        }
-        body.light-mode .role-selection-card.active .role-title { color: #92400e !important; }
-        body.light-mode .role-selection-card.active .role-icon { color: #d97706 !important; }
-        body.light-mode .verification-banner { background: #f0f9ff !important; border-color: #0284c7 !important; color: #0369a1 !important; font-weight: 700 !important; }
-        body.light-mode .system-version-tag { color: #0284c7 !important; font-weight: 700 !important; }
-        body.light-mode .domain-pill { background: #e0f2fe !important; border-color: #0284c7 !important; color: #0369a1 !important; font-weight: 700 !important; }
-        body.light-mode .btn-google { background: #ffffff !important; color: #0f172a !important; border: 1px solid #cbd5e1 !important; box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important; }
-        body.light-mode .btn-google:hover { background: #f8fafc !important; border-color: #0284c7 !important; }
-        body.light-mode .modal-overlay { background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(4px); }
-        body.light-mode footer { color: #475569 !important; font-weight: 600 !important; }
-
-        /* MODALES Y ELEMENTOS EN MODO CLARO */
-        body.light-mode .modal-overlay .gateway-card {
+        body.light-mode .onboard-card {
             background: #ffffff !important;
             border-color: #cbd5e1 !important;
+            box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.12), 0 0 20px rgba(2, 132, 199, 0.08) !important;
         }
-        body.light-mode .modal-overlay h3 {
-            border-bottom-color: #e2e8f0 !important;
-        }
-        body.light-mode .modal-overlay ul,
-        body.light-mode .modal-overlay li,
-        body.light-mode .modal-overlay p {
-            color: #1e293b !important;
-        }
-        body.light-mode .sso-status-badge {
-            background: #f1f5f9 !important;
+        body.light-mode #dilema-text {
+            background: #f8fafc !important;
             border-color: #cbd5e1 !important;
-            color: #92400e !important;
+            color: #1e293b !important;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.03) !important;
         }
-        body.light-mode .modal-btn-close {
-            background: #e2e8f0 !important;
+        body.light-mode .option-btn {
+            background: #ffffff !important;
+            border-color: #cbd5e1 !important;
+            color: #0f172a !important;
+        }
+        body.light-mode .option-btn:hover {
+            background: #f0f9ff !important;
+            border-color: #0284c7 !important;
+            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.15) !important;
+        }
+        body.light-mode .text-zinc-200, 
+        body.light-mode .text-zinc-300, 
+        body.light-mode .text-zinc-400 {
             color: #334155 !important;
         }
-        body.light-mode .modal-btn-close:hover {
-            background: #cbd5e1 !important;
+        body.light-mode .text-white {
+            color: #0f172a !important;
         }
-        body.light-mode .modal-overlay .border-zinc-800 {
+        body.light-mode .border-white\/10 {
             border-color: #e2e8f0 !important;
         }
-        body.light-mode .text-slate-300,
-        body.light-mode .text-slate-400 {
-            color: #475569 !important;
-        }
-        body.light-mode .text-cyan-brand {
-            color: #0284c7 !important;
-        }
-
-        body, html { 
-            background: var(--bg); color: var(--text-main); margin: 0; font-family: 'Outfit', sans-serif; 
-            min-height: 100vh; overflow-x: hidden;
-            -webkit-tap-highlight-color: transparent;
-            display: flex; flex-direction: column; justify-content: space-between;
-            transition: background 0.3s, color 0.3s;
+        body.light-mode .progress-track {
+            background: #e2e8f0 !important;
         }
 
         .font-mono { font-family: 'JetBrains Mono', monospace !important; }
 
-        /* CANVASES Y EFECTOS COGNITIVOS */
         #dante-fractal-bg { position: fixed; inset: 0; z-index: 0; opacity: 0.18; pointer-events: none; mix-blend-mode: screen; }
         .scanline { position: fixed; inset: 0; background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.5) 51%); background-size: 100% 4px; z-index: 1; pointer-events: none; opacity: 0.2; }
-        #fx-flash { position: fixed; inset: 0; z-index: 999999; background: var(--alert); opacity: 0; pointer-events: none; transition: opacity 0.3s; mix-blend-mode: screen; }
 
-        /* HEADER HUD PERIMETRAL */
-        .master-hud {
-            position: fixed; top: 0; width: 100%; z-index: 1000; padding: 10px 16px;
-            background: rgba(1, 1, 3, 0.95); backdrop-filter: blur(12px);
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid var(--border-graphite);
-        }
-        body.light-mode .master-hud { background: rgba(255, 255, 255, 0.95); }
-
-        .alias-title { font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; }
-        .geo-tag { font-family: 'JetBrains Mono'; font-size: 8px; color: var(--primary); letter-spacing: 1px; text-transform: uppercase; }
-
-        .gateway-container { display: flex; justify-content: center; align-items: center; flex-grow: 1; padding: 85px 15px 40px; position: relative; z-index: 10; }
-        
-        .gateway-card {
+        .onboard-card {
             background: var(--card-bg); border: 1px solid var(--border-graphite);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8); border-radius: 14px; 
-            padding: 2rem 1.5rem; width: 100%; max-width: 520px; text-align: center; position: relative;
-            backdrop-filter: blur(24px);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95); border-radius: 16px; 
+            padding: 2.25rem 2rem; width: 94%; max-width: 780px; text-align: center; position: relative; z-index: 10;
+            backdrop-filter: blur(24px); margin: auto 0;
         }
-        @media (min-width: 640px) { .gateway-card { padding: 2.8rem 2.5rem; } }
-
-        .gateway-card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px;
+        .onboard-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
             background: linear-gradient(90deg, var(--primary), var(--gold), var(--primary)); 
-            box-shadow: 0 0 20px var(--gold); border-radius: 14px 14px 0 0;
+            box-shadow: 0 0 20px var(--gold); border-radius: 16px 16px 0 0;
         }
 
-        .gateway-title { font-size: 1.5rem; font-family: 'Oswald', sans-serif; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 0.2rem; }
-        
-        .verification-banner {
-            background: rgba(168, 85, 247, 0.12); border: 1px solid rgba(168, 85, 247, 0.3);
-            padding: 0.5rem; border-radius: 6px; color: var(--primary); font-size: 0.72rem;
-            font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 1.2rem;
-            box-shadow: 0 0 15px rgba(81, 226, 245, 0.12); font-family: 'JetBrains Mono';
-            transition: all 0.3s ease;
+        .option-btn {
+            background: rgba(20, 24, 35, 0.85); border: 1px solid var(--border-graphite); border-radius: 12px;
+            padding: 1.1rem 1.3rem; width: 100%; text-align: left; font-size: 0.98rem; font-weight: 600; color: #fff;
+            transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer; font-family: 'JetBrains Mono'; margin-top: 0.75rem;
+            line-height: 1.5; min-height: 52px; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+        }
+        .option-btn:hover { border-color: var(--gold); background: rgba(212, 175, 55, 0.12); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(212, 175, 55, 0.18); }
+        .option-btn:active { transform: scale(0.98); }
+        .option-btn.tachado {
+            opacity: 0.35;
+            text-decoration: line-through;
+            background: rgba(239, 68, 68, 0.1) !important;
+            border-color: rgba(239, 68, 68, 0.4) !important;
+            filter: grayscale(0.8);
         }
 
-        .system-version-tag {
-            position: absolute; top: 1.2rem; right: 1.2rem; font-size: 0.65rem; font-weight: 900;
-            color: var(--primary); letter-spacing: 1px; text-transform: uppercase; font-family: 'JetBrains Mono';
-            cursor: pointer; text-decoration: underline;
+        .strike-tool-btn {
+            padding: 4px 8px;
+            font-size: 10px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #cbd5e1;
+            transition: all 0.2s;
+        }
+        .strike-tool-btn:hover {
+            background: rgba(239, 68, 68, 0.25);
+            color: #f87171;
+            border-color: rgba(239, 68, 68, 0.5);
         }
 
-        /* REJILLA DE SELECCIÓN DE ROLES */
-        .role-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; margin-top: 1rem; text-align: center; }
-        .role-selection-card {
-            background: rgba(20, 24, 35, 0.7); border: 1px solid var(--border-graphite); border-radius: 8px; padding: 0.8rem 0.4rem; cursor: pointer; transition: all 0.2s ease;
+        /* BANNER DE BÚNKER DE PRIVACIDAD */
+        .bunker-privacy-banner {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(81, 226, 245, 0.3);
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            font-size: 11px;
+            font-family: 'JetBrains Mono', monospace;
+            color: #94a3b8;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            max-width: 780px;
+            width: 94%;
+            z-index: 10;
+            margin-bottom: 0.85rem;
         }
-        body.light-mode .role-selection-card { background: rgba(241, 245, 249, 0.9); }
-        .role-selection-card:hover { border-color: var(--gold); background: rgba(212, 175, 55, 0.08); }
-        .role-selection-card.active { border-color: var(--gold); background: rgba(212, 175, 55, 0.15); box-shadow: 0 0 15px rgba(212, 175, 55, 0.25); }
-        .role-icon { font-size: 1.2rem; margin-bottom: 0.3rem; display: block; color: var(--primary); }
-        .role-selection-card.active .role-icon { color: var(--gold); }
-        .role-title { font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; font-family: 'JetBrains Mono'; }
-
-        .input-group { text-align: left; margin-top: 1rem; }
-        .input-label { display: block; color: #8a8f9d; margin-bottom: 0.3rem; font-weight: 800; text-transform: uppercase; font-size: 0.68rem; letter-spacing: 1px; font-family: 'JetBrains Mono'; }
-        
-        .input-cyber {
-            width: 100%; padding: 0.85rem; background: rgba(10, 10, 15, 0.9); border: 1px solid var(--border-graphite);
-            color: #fff; border-radius: 6px; outline: none; font-size: 0.82rem; transition: all 0.2s; font-family: 'JetBrains Mono';
-        }
-        body.light-mode .input-cyber { background: #ffffff; color: #000; }
-        .input-cyber:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(81, 226, 245, 0.2); }
-
-        .domain-pill {
-            display: inline-block; padding: 2px 8px; font-size: 9px; font-family: 'JetBrains Mono';
-            background: rgba(81, 226, 245, 0.1); border: 1px solid rgba(81, 226, 245, 0.25);
-            color: var(--primary); border-radius: 4px; cursor: pointer; transition: all 0.2s;
-        }
-        .domain-pill:hover { background: var(--primary); color: #000; }
-
-        .pwd-strength-bar { height: 3px; border-radius: 2px; background: rgba(255,255,255,0.1); margin-top: 5px; transition: all 0.3s; width: 0%; }
-
-        .btn-premium {
-            width: 100%; padding: 0.95rem; background: rgba(212, 175, 55, 0.1); border: 1px solid var(--gold);
-            color: var(--gold); font-weight: 900; text-transform: uppercase; letter-spacing: 2px;
-            border-radius: 8px; cursor: pointer; transition: all 0.25s ease; margin-top: 1.2rem;
-            font-size: 0.78rem; font-family: 'JetBrains Mono'; display: flex; align-items: center; justify-content: center; gap: 0.5rem;
-        }
-        .btn-premium:hover:not(:disabled) { background: var(--gold); color: #000; box-shadow: 0 0 25px rgba(212, 175, 55, 0.4); }
-        .btn-premium:disabled { border-color: var(--border-graphite); color: #8a8f9d; cursor: not-allowed; opacity: 0.7; }
-
-        /* MODAL RELEASE NOTES */
-        .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px);
-            z-index: 99999; display: none; align-items: center; justify-content: center; padding: 1rem;
-        }
-
-        footer { text-align: center; padding: 15px; font-size: 9px; color: #8a8f9d; letter-spacing: 1px; text-transform: uppercase; font-family: 'JetBrains Mono'; position: relative; z-index: 10; }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
-    <div id="fx-flash"></div>
     <div class="scanline"></div>
     <canvas id="dante-fractal-bg"></canvas>
 
-    <!-- HEADER HUD PERIMETRAL -->
-    <header class="master-hud">
-        <div>
-            <div class="alias-title" id="lblHudTitle" data-final="DANTE OS // AUTENTICACIÓN">DANTE OS // AUTENTICACIÓN</div>
-            <div class="geo-tag" id="ui-geo">BOGOTÁ, COLOMBIA</div>
+    <!-- BANNER DE PRIVACIDAD Y BÚNKER PSICOLÓGICO -->
+    <div class="bunker-privacy-banner flex items-center justify-between gap-3">
+        <div class="flex items-center gap-2 text-cyan-400 font-bold shrink-0">
+            <i class="fa-solid fa-user-shield text-base"></i>
+            <span class="tracking-widest uppercase text-[10px]">BÚNKER DE PRIVACIDAD ABSOLUTA</span>
         </div>
+        <p class="text-[10.5px] leading-tight text-slate-300 hidden sm:block">
+            Tus respuestas psicométricas y estado emocional son <strong>100% confidenciales</strong>. Ningún profesor, rector ni tercero tiene acceso a tus vulnerabilidades. Solo el Núcleo Dante OS utiliza esta información para calibrar tu entrenamiento.
+        </p>
+    </div>
+
+    <div class="onboard-card" id="card-main">
+        <div class="font-mono text-xs md:text-sm text-[#D4AF37] tracking-[0.4em] uppercase mb-1 font-bold flex items-center justify-center gap-2">
+            <span>⚡ NÚCLEO DANTE OS</span> // <span>CALIBRACIÓN ENTRENAMIENTO & DIAGNÓSTICO</span>
+        </div>
+        <h1 class="oswald font-black text-xl md:text-2xl tracking-wider text-white mb-3 uppercase flex items-center justify-center gap-2" id="step-title">
+            PASO 01 / 05 // NIVELES DE COMPLEJIDAD
+        </h1>
         
-        <div class="flex items-center gap-3">
-            <!-- BOTÓN MODO CONTRASTE (AULA / PROYECTOR) -->
-            <button type="button" onclick="PortalAuth.toggleContraste()" class="text-xs text-amber-400 hover:text-white p-1" title="Cambiar modo de contraste" aria-label="Cambiar modo de contraste">
-                <i class="fas fa-sun" id="iconContrast"></i>
-            </button>
+        <!-- BARRA DE PROGRESO -->
+        <div class="w-full progress-track bg-white/10 h-1.5 rounded-full overflow-hidden mb-5">
+            <div id="progress-bar" class="bg-gradient-to-r from-cyan-400 via-amber-400 to-cyan-400 h-full transition-all duration-300" style="width: 20%;"></div>
+        </div>
 
-            <div class="text-right hidden sm:block">
-                <div class="text-xs font-black italic font-mono">MODO <span class="text-[#D4AF37]">ENTERPRISE</span></div>
+        <!-- CONTENEDOR ENUNCIADO Y TUTORIAL TUTOR -->
+        <div id="tutorial-tip-box" class="mb-3 p-2.5 rounded-lg bg-cyan-950/40 border border-cyan-500/30 text-cyan-300 text-xs font-mono text-left flex items-start gap-2">
+            <i class="fa-solid fa-compass-drafting text-cyan-400 text-sm mt-0.5"></i>
+            <div>
+                <strong class="text-cyan-200 uppercase font-bold">Instrucción Tutorial:</strong>
+                <span id="tutorial-tip-text">Responde según tu instinto natural. Dante calculará tu latencia de respuesta en milisegundos.</span>
             </div>
         </div>
-    </header>
 
-    <div class="gateway-container">
-        <div class="gateway-card">
-            <!-- ETIQUETA DE VERSIÓN E HISTORIAL DE NOVEDADES -->
-            <button type="button" class="system-version-tag" onclick="PortalAuth.abrirReleaseNotes()" title="Ver novedades v21.1.0">v21.1.0 ℹ️</button>
-            
-            <div class="verification-banner" id="uiBannerEstado">> AUTENTICACIÓN ALUMNO // MODO ADAPTATIVO</div>
-            
-            <h1 class="gateway-title" id="lblGatewayTitle" data-final="PORTAL DE ACCESO UNIFICADO">PORTAL DE ACCESO UNIFICADO</h1>
-            <p style="font-size: 0.72rem; color: #8a8f9d; text-transform: uppercase; letter-spacing: 1px;" class="font-mono" id="uiSubtitulo">Sincronización de Trayectoria Cognitiva</p>
+        <p id="dilema-text" class="text-sm md:text-base font-light text-zinc-200 mb-5 font-mono leading-relaxed text-left bg-black/50 p-4 rounded-lg border border-white/10 shadow-inner">
+            Sincronizando estímulo conductual...
+        </p>
 
-            <!-- FORMULARIO DE ACCESO FORMAL -->
-            <form id="frmLogin" onsubmit="PortalAuth.ejecutarLoginPerimetral(event); return false;">
-                
-                <div class="role-grid" role="radiogroup" aria-label="Selección de Rol">
-                    <button type="button" id="cardRoleEstudiante" class="role-selection-card active" onclick="PortalAuth.seleccionarRol('estudiante')" role="radio" aria-checked="true">
-                        <i class="fas fa-brain role-icon" aria-hidden="true"></i>
-                        <span class="role-title">Alumno</span>
-                    </button>
-                    <button type="button" id="cardRoleProfesor" class="role-selection-card" onclick="PortalAuth.seleccionarRol('profesor')" role="radio" aria-checked="false">
-                        <i class="fas fa-chalkboard-user role-icon" aria-hidden="true"></i>
-                        <span class="role-title">Docente</span>
-                    </button>
-                    <button type="button" id="cardRoleRector" class="role-selection-card" onclick="PortalAuth.seleccionarRol('rector')" role="radio" aria-checked="false">
-                        <i class="fas fa-shield-halved role-icon" aria-hidden="true"></i>
-                        <span class="role-title">Rector</span>
-                    </button>
-                </div>
+        <div id="options-container" class="space-y-2">
+            <!-- Inyección dinámica de opciones -->
+        </div>
 
-                <div class="input-group" style="margin-top: 1.4rem;">
-                    <label for="txtInstitutionId" class="input-label">ID de Institución (Tenant)</label>
-                    <input type="text" id="txtInstitutionId" class="input-cyber" value="colegio_sandbox_default" placeholder="colegio_id" required>
-                </div>
-
-                <div class="input-group">
-                    <div class="flex justify-between items-center mb-1">
-                        <label for="txtEmail" class="input-label mb-0">Credencial (Correo o N° Documento TI / CC)</label>
-                        <div class="space-x-1">
-                            <button type="button" class="domain-pill" onclick="PortalAuth.autocompletarDominio('@danteos.edu.co')">+@danteos.edu.co</button>
-                        </div>
-                    </div>
-                    <input type="text" id="txtEmail" class="input-cyber" placeholder="Correo o N° Documento (TI / CC)" autocomplete="username" required oninput="PortalAuth.detectarTipoIdentificador(this.value)">
-                    <span class="text-[9px] font-mono help-text text-slate-400 mt-1 block">Ingresa tu correo institucional o número de documento (TI / CC) registrado</span>
-                </div>
-
-                <div class="input-group">
-                    <div class="flex justify-between items-center mb-1">
-                        <label for="txtPassword" class="input-label mb-0">Firma Secreta Acceso</label>
-                        <button type="button" onclick="PortalAuth.solicitarRecuperacion()" class="text-[9px] font-mono text-[#51e2f5] hover:underline bg-transparent border-0 p-0 cursor-pointer">¿Olvidaste tu Firma?</button>
-                    </div>
-                    <div class="relative flex items-center">
-                        <input type="password" id="txtPassword" class="input-cyber pr-10" placeholder="••••••••" autocomplete="current-password" required oninput="PortalAuth.evaluarFortalezaPwd(this.value)">
-                        <button type="button" id="btnTogglePassword" onclick="PortalAuth.toggleMostrarPassword()" class="absolute right-2 text-slate-400 hover:text-[#51e2f5] p-2 bg-transparent border-0 cursor-pointer text-xs" title="Mostrar u ocultar contraseña" aria-label="Mostrar u ocultar contraseña">
-                            <i class="fas fa-eye" id="iconEye"></i>
-                        </button>
-                    </div>
-                    <div id="pwdBar" class="pwd-strength-bar"></div>
-                </div>
-
-                <!-- CHECKBOXES RECORDAR Y HABEAS DATA -->
-                <div class="mt-3 text-left space-y-2">
-                    <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" id="chkRecordarCredenciales" checked class="rounded border-slate-700 bg-slate-900 text-[#51e2f5] focus:ring-0">
-                        <span class="text-[9.5px] font-mono chk-label text-slate-300 leading-tight">
-                            🔐 Recordar Firma y Credenciales en este navegador.
-                        </span>
-                    </label>
-                    <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" id="chkHabeasData" checked class="rounded border-slate-700 bg-slate-900 text-[#51e2f5] focus:ring-0">
-                        <span class="text-[9.5px] font-mono chk-label text-slate-300 leading-tight">
-                            Acepto la Política de Protección de Datos Escolar (Habeas Data Ley 1581).
-                        </span>
-                    </label>
-                </div>
-
-                <button type="submit" class="btn-premium" id="btnValidar">
-                    <span id="btnValidarIcon"><i class="fas fa-key"></i></span>
-                    <span id="btnValidarText">Validar Firmas Criptográficas</span>
-                </button>
-
-                <!-- DIVIDER & BOTÓN DE GOOGLE SSO INSTITUCIONAL -->
-                <div class="relative flex py-3 items-center">
-                    <div class="flex-grow border-t border-zinc-800"></div>
-                    <span class="flex-shrink mx-2 text-[9px] font-mono text-slate-400 uppercase">o autenticación SSO</span>
-                    <div class="flex-grow border-t border-zinc-800"></div>
-                </div>
-
-                <button type="button" onclick="PortalAuth.iniciarGoogleSSO()" class="w-full py-2.5 px-3 rounded-lg border border-zinc-700 bg-zinc-900/80 hover:bg-zinc-800 transition text-xs font-mono font-bold flex items-center justify-center gap-2 text-slate-200 cursor-pointer btn-google">
-                    <svg class="w-4 h-4" viewBox="0 0 24 24">
-                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-                    </svg>
-                    <span>Iniciar con Google Institucional</span>
-                </button>
-            </form>
-
-            <!-- ACCESO DEMO SANDBOX RÁPIDO PARA EVALUADORES Y PRUEBAS -->
-            <div class="mt-3">
-                <button type="button" onclick="PortalAuth.cargarAccesoDemo()" class="text-[10px] font-mono text-cyan-brand hover:underline transition bg-transparent border-0 cursor-pointer">
-                    ⚡ ¿Eres evaluador? Cargar credenciales de prueba
-                </button>
-            </div>
+        <div class="mt-6 flex justify-between items-center text-xs font-mono text-zinc-400 uppercase tracking-widest pt-2 border-t border-white/10">
+            <span>Latencia: <span id="timer-val" class="text-cyan-400 font-bold">0.0s</span></span>
+            <span class="flex items-center gap-1.5"><i class="fa-solid fa-lock text-cyan-400"></i> Cifrado de Estado: Activo</span>
         </div>
     </div>
-
-    <!-- MODAL RELEASE NOTES (NOVEDADES) -->
-    <div id="modalReleaseNotes" class="modal-overlay">
-        <div class="gateway-card max-w-md text-left">
-            <h3 class="font-mono text-sm font-bold text-[#D4AF37] uppercase border-b border-zinc-800 pb-2 mb-3">
-                🚀 NOVEDADES DANTE OS v21.1.0
-            </h3>
-            <ul class="text-xs text-slate-300 space-y-2 font-mono list-disc pl-4 mb-4">
-                <li>Motor Bayesiano IRT 3PL calibrado en tiempo real.</li>
-                <li>Telemetría de descarte de opciones e índice de hesitación.</li>
-                <li>Ruta adaptativa secuencial de 5 módulos ICFES.</li>
-                <li>Modo de alto contraste para proyección en aula.</li>
-            </ul>
-            <button type="button" class="btn-premium py-2 mt-0" onclick="document.getElementById('modalReleaseNotes').style.display = 'none'">Cerrar Novedades</button>
-        </div>
-    </div>
-
-    <!-- MODAL GOOGLE WORKSPACE SSO -->
-    <div id="modalGoogleSSO" class="modal-overlay">
-        <div class="gateway-card max-w-md text-left">
-            <h3 class="font-mono text-sm font-bold text-[#4285F4] uppercase border-b border-zinc-800 pb-2 mb-3 flex items-center gap-2">
-                <i class="fab fa-google"></i> SSO GOOGLE WORKSPACE
-            </h3>
-            <p class="text-xs text-slate-300 font-mono mb-3 leading-relaxed">
-                El inicio de sesión único (Single Sign-On) permite a estudiantes y docentes autenticarse en Dante OS con su cuenta institucional de Google Workspace sin recordar contraseñas adicionales.
-            </p>
-            <div class="p-3 bg-zinc-900/90 sso-status-badge border border-zinc-800 rounded-lg text-[11px] font-mono text-amber-400 mb-4">
-                🔒 <strong>Estado Tenant:</strong> Sincronización Google Workspace activa para colegios aliados.
-            </div>
-            <div class="flex gap-2">
-                <button type="button" class="btn-premium py-2 mt-0 w-full" onclick="document.getElementById('modalGoogleSSO').style.display = 'none'; PortalAuth.cargarAccesoDemo();">
-                    Probar Acceso SSO Institucional
-                </button>
-                <button type="button" class="py-2 px-3 bg-zinc-800 modal-btn-close text-slate-300 font-mono text-xs rounded-lg hover:bg-zinc-700 cursor-pointer" onclick="document.getElementById('modalGoogleSSO').style.display = 'none'">
-                    Cerrar
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <footer>
-        DANTE OS ENTERPRISE EDITION // INFRAESTRUCTURA BIOMÉTRICA Y PSICOMÉTRICA ADAPTATIVA
-    </footer>
 
     <script>
-        const HOST_URL = window.location.origin;
-        let SelectedRoleTarget = "estudiante";
-
-        // DICCIONARIOS DE SUBTÍTULOS POR ROL
-        const SUBTITULOS_ROL = {
-            estudiante: "Sincronización de Trayectoria Cognitiva",
-            profesor: "Consola de Gestión Pedagógica & Cohortes",
-            rector: "Tablero de Control Directivo & Métricas B2B"
-        };
-
-        const RUTAS_POR_ROL = {
-            estudiante: "index.html",
-            profesor: "profesor.html",
-            rector: "rector.html"
-        };
-
-        // SOPORTE DINÁMICO DE TENANT POR PARÁMETRO URL Y RESTAURACIÓN DE RECORDAR FIRMA Y TEMA
-        window.addEventListener('DOMContentLoaded', () => {
-            // Restaurar tema
-            const savedTheme = localStorage.getItem("dante_theme");
-            if (savedTheme === "light") {
-                document.body.classList.add("light-mode");
-                const icon = document.getElementById("iconContrast");
-                if (icon) icon.className = "fas fa-moon";
+        // Sincronización automática de tema (Claro / Oscuro)
+        try {
+            if (localStorage.getItem('dante_theme') === 'light') {
+                document.body.classList.add('light-mode');
             }
+        } catch(e) {}
 
-            // Tenant URL param
-            const urlParams = new URLSearchParams(window.location.search);
-            const tenantParam = urlParams.get('tenant') || urlParams.get('institution_id');
-            if (tenantParam) {
-                const tenantInput = document.getElementById("txtInstitutionId");
-                if (tenantInput) {
-                    tenantInput.value = tenantParam.toLowerCase().trim();
-                    tenantInput.readOnly = true;
-                    tenantInput.style.opacity = "0.75";
-                }
+        const SUPABASE_URL = 'https://erjmvkmhpbvrqiqlddij.supabase.co'; 
+        const SUPABASE_KEY = 'sb_publishable_RZHft13G4xVwBIdhgZp1gQ_K9raK05f';
+        let supabaseClient = null;
+        try { if (window.supabase) supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e){}
+
+        // LOS 5 DILEMAS GRADUALES CON TUTORIAL DE HERRAMIENTAS Y MATRIZ PSICOMÉTRICA
+        const DILEMAS = [
+            {
+                stepNum: 1,
+                totalSteps: 5,
+                numOpts: 2,
+                title: "DILEMA 01 / 05 // RITMO DE DECISIÓN (2 OPCIONES)",
+                tutorialTip: "Evolución mecánica (Paso 1 de 5). Dante mide tu ritmo natural de procesamiento (Latencia en milisegundos) ante estímulos directos.",
+                text: "Ante una pregunta de opción múltiple en el ICFES que requiere análisis, tu primer impulso natural es:",
+                opts: [
+                    { text: "A) Seleccionar la alternativa que tu intuición señala de inmediato (Ritmo Dinámico / Sistema 1).", type: "DECISION_INMEDIATA", id: "opt_a" },
+                    { text: "B) Detenerte a verificar la premisa minuciosamente antes de evaluar las respuestas (Ritmo Analítico / Sistema 2).", type: "ANALISIS_MINUCIOSO", id: "opt_b" }
+                ]
+            },
+            {
+                stepNum: 2,
+                totalSteps: 5,
+                numOpts: 3,
+                title: "DILEMA 02 / 05 // GESTIÓN DEL ENFOQUE Y AUTORREGULACIÓN (3 OPCIONES)",
+                tutorialTip: "Evolución mecánica (Paso 2 de 5). Evaluamos tus estrategias de autorregulación ante pasajes complejos o extensos.",
+                text: "Encuentras un texto denso en Lectura Crítica que te requiere mayor esfuerzo de interpretación. ¿Cómo reacciona tu mente?",
+                opts: [
+                    { text: "A) Noto que mi ritmo de respiración se acelera ante el conteo del reloj de la prueba.", type: "SENSIBILIDAD_TIEMPO", id: "opt_a" },
+                    { text: "B) Prefiero marcar la opción más lógica disponible y avanzar sin estancarme.", type: "DESCARTE_INICIAL", id: "opt_b" },
+                    { text: "C) Guardo la calma, busco la idea central del párrafo y elimino las opciones irrelevantes.", type: "CONTROL_REGULADO", id: "opt_c" }
+                ]
+            },
+            {
+                stepNum: 3,
+                totalSteps: 5,
+                numOpts: 4,
+                title: "DILEMA 03 / 05 // SIMULADOR CABINA REAL & HERRAMIENTA DESCARTE (4 OPCIONES)",
+                isRealIcfesSim: true,
+                tutorialTip: "⚡ TUTORIAL HERRAMIENTA DE DESCARTE: Haz clic en el botón [✂️ Tachar] de cualquier opción que consideres un distractor para descartarla visualmente.",
+                text: "PREGUNTA DE SIMULACIÓN REAL DANTE OS / LECTURA Y SOCIALES:\n\nUn municipio enfrenta un dilema de inversión pública. Un análisis riguroso para responder en el ICFES exige descartar primero los distractores más débiles. ¿Cómo procederías en la interfaz?",
+                opts: [
+                    { text: "A) Descarto primero las opciones con términos absolutistas como 'siempre', 'nunca' o 'jamás'.", type: "DESCARTE_METODICO", id: "opt_a" },
+                    { text: "B) Evalúo la opción más estructurada técnicamente para contrastar la premisa.", type: "HIPOTESIS_INICIAL", id: "opt_b" },
+                    { text: "C) Contrasto las opciones con el contexto general presentado en el enunciado.", type: "PERSPECTIVA_CREATIVA", id: "opt_c" },
+                    { text: "D) Comparo cada alternativa minuciosamente comprobando su veracidad lógica con la fuente.", type: "ANALITICO_RIGUROSO", id: "opt_d" }
+                ]
+            },
+            {
+                stepNum: 4,
+                totalSteps: 5,
+                numOpts: 4,
+                title: "DILEMA 04 / 05 // AUTOEVALUACIÓN METACOGNITIVA (4 OPCIONES)",
+                tutorialTip: "Evolución psicométrica (Paso 4 de 5). Diagnóstico directo de autoconfianza y metas de desarrollo académico.",
+                text: "¿Cómo evalúas tu oportunidad de crecimiento actual frente al examen Saber 11?",
+                opts: [
+                    { text: "A) Quiero consolidar mi seguridad y aprender técnicas para dominar la presión del día D.", type: "ENFOQUE_DESARROLLO", id: "opt_a" },
+                    { text: "B) Tengo buena comprensión, pero quiero optimizar la gestión del tiempo por sesión (4.5 horas).", type: "OPTIMIZACION_CRONOMETRICA", id: "opt_b" },
+                    { text: "C) Deseo fortalecer temas puntuales en componentes cuantitativos o ciencias naturales.", type: "CONSOLIDACION_CONCEPTUAL", id: "opt_c" },
+                    { text: "D) Me siento preparado estratégicamente y busco maximizar mi puntaje global (400+).", type: "ALTO_RENDIMIENTO", id: "opt_d" }
+                ]
+            },
+            {
+                stepNum: 5,
+                totalSteps: 5,
+                numOpts: 4,
+                title: "DILEMA 05 / 05 // RESILIENCIA ADAPTATIVA Y MENTALIDAD DE CRECIMIENTO (4 OPCIONES)",
+                tutorialTip: "Última calibración (Paso 5 de 5). Determina tu curva de aprendizaje para programar tu Misión Psico-Táctica #1.",
+                text: "Cuando la IA Dante te notifique que tuviste desaciertos continuos en un simulacro, tu acción inmediata será:",
+                opts: [
+                    { text: "A) Hacer una pausa reflexiva para restablecer la concentración antes de continuar.", type: "SENSIBILIDAD_EVALUATIVA", id: "opt_a" },
+                    { text: "B) Abrir inmediatamente el análisis del distractor para comprender la trampa cognitiva.", type: "RESILIENTE_PROACTIVO", id: "opt_b" },
+                    { text: "C) Retomar la práctica de inmediato aplicando un ritmo más acelerado.", type: "RITMO_DINAMICO", id: "opt_c" },
+                    { text: "D) Solicitar a Dante OS una micro-misión de entrenamiento específica en ese tema.", type: "AUTONOMO_ESTRATEGICO", id: "opt_d" }
+                ]
             }
+        ];
 
-            // Cargar credenciales recordadas si existen
-            try {
-                const savedCreds = localStorage.getItem("dante_remembered_credentials");
-                if (savedCreds) {
-                    const parsed = JSON.parse(savedCreds);
-                    if (parsed.email) {
-                        const emailInput = document.getElementById("txtEmail");
-                        if (emailInput) emailInput.value = parsed.email;
-                    }
-                    if (parsed.institution_id) {
-                        const tenantInput = document.getElementById("txtInstitutionId");
-                        if (tenantInput) tenantInput.value = parsed.institution_id;
-                    }
-                    if (parsed.password) {
-                        const pwdInput = document.getElementById("txtPassword");
-                        if (pwdInput) {
-                            pwdInput.value = parsed.password;
-                            PortalAuth.evaluarFortalezaPwd(parsed.password);
-                        }
-                    }
-                    if (parsed.role) {
-                        PortalAuth.seleccionarRol(parsed.role);
-                    }
-                    const chkRecordar = document.getElementById("chkRecordarCredenciales");
-                    if (chkRecordar) chkRecordar.checked = true;
-                }
-            } catch (e) {
-                console.warn("No se pudieron cargar las credenciales recordadas", e);
-            }
-        });
+        let currentStep = 0;
+        let scores = {};
+        let startTime = Date.now();
+        let timerInterval = null;
+        let optionStrikeMap = {}; // Para el simulador de tachado/descarte
 
-        class PortalAuth {
-            static toggleMostrarPassword() {
-                const input = document.getElementById("txtPassword");
-                const icon = document.getElementById("iconEye");
-                if (!input) return;
-                if (input.type === "password") {
-                    input.type = "text";
-                    if (icon) icon.className = "fas fa-eye-slash text-[#51e2f5]";
+        function updateLatencyDisplay() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                let elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+                const timerEl = document.getElementById('timer-val');
+                if (timerEl) timerEl.innerText = `${elapsed}s`;
+            }, 100);
+        }
+
+        function toggleStrikeOption(optId, e) {
+            if (e) e.stopPropagation();
+            optionStrikeMap[optId] = !optionStrikeMap[optId];
+            const btnEl = document.getElementById(`btn_${optId}`);
+            if (btnEl) {
+                if (optionStrikeMap[optId]) {
+                    btnEl.classList.add('tachado');
                 } else {
-                    input.type = "password";
-                    if (icon) icon.className = "fas fa-eye text-slate-400";
-                }
-            }
-
-            static toggleContraste() {
-                document.body.classList.toggle('light-mode');
-                const isLight = document.body.classList.contains('light-mode');
-                localStorage.setItem("dante_theme", isLight ? "light" : "dark");
-                const icon = document.getElementById("iconContrast");
-                if (icon) {
-                    if (isLight) {
-                        icon.className = "fas fa-moon";
-                    } else {
-                        icon.className = "fas fa-sun";
-                    }
-                }
-            }
-
-            static seleccionarRol(rol) {
-                SelectedRoleTarget = rol;
-                const cardEst = document.getElementById("cardRoleEstudiante");
-                const cardProf = document.getElementById("cardRoleProfesor");
-                const cardRec = document.getElementById("cardRoleRector");
-
-                if (cardEst) { cardEst.classList.remove("active"); cardEst.setAttribute("aria-checked", "false"); }
-                if (cardProf) { cardProf.classList.remove("active"); cardProf.setAttribute("aria-checked", "false"); }
-                if (cardRec) { cardRec.classList.remove("active"); cardRec.setAttribute("aria-checked", "false"); }
-
-                const banner = document.getElementById("uiBannerEstado");
-                const sub = document.getElementById("uiSubtitulo");
-
-                if (rol === "estudiante") {
-                    if (cardEst) { cardEst.classList.add("active"); cardEst.setAttribute("aria-checked", "true"); }
-                    if (banner) banner.innerText = "> AUTENTICACIÓN ALUMNO // MODO ADAPTATIVO";
-                } else if (rol === "profesor") {
-                    if (cardProf) { cardProf.classList.add("active"); cardProf.setAttribute("aria-checked", "true"); }
-                    if (banner) banner.innerText = "> AUTENTICACIÓN DOCENTE // CONSOLA COHORTE";
-                } else {
-                    if (cardRec) { cardRec.classList.add("active"); cardRec.setAttribute("aria-checked", "true"); }
-                    if (banner) banner.innerText = "> AUTENTICACIÓN RECTOR // ACCESO AUDITORÍA";
-                }
-
-                if (sub) sub.innerText = SUBTITULOS_ROL[rol] || SUBTITULOS_ROL.estudiante;
-            }
-
-            static cargarAccesoDemo() {
-                const txtInst = document.getElementById("txtInstitutionId");
-                const txtEmail = document.getElementById("txtEmail");
-                const txtPwd = document.getElementById("txtPassword");
-
-                if (txtInst) txtInst.value = "colegio_sandbox_default";
-                if (txtEmail) txtEmail.value = "adriana@danteos.edu.co";
-                if (txtPwd) txtPwd.value = "12345678";
-
-                this.evaluarFortalezaPwd("12345678");
-                this.seleccionarRol("estudiante");
-
-                const banner = document.getElementById("uiBannerEstado");
-                if (banner) {
-                    banner.innerText = "⚡ CREDENCIALE DEMO CARGADAS (ADRIANA)";
-                    banner.style.color = "var(--gold)";
-                }
-            }
-
-            static abrirReleaseNotes() {
-                const modal = document.getElementById("modalReleaseNotes");
-                if (modal) modal.style.display = "flex";
-            }
-
-            static autocompletarDominio(dominio) {
-                const inputEmail = document.getElementById("txtEmail");
-                if (!inputEmail) return;
-                let val = inputEmail.value.trim();
-                if (val.includes("@")) {
-                    val = val.split("@")[0];
-                }
-                inputEmail.value = (val.length > 0 ? val : "usuario") + dominio;
-            }
-
-            static evaluarFortalezaPwd(val) {
-                const bar = document.getElementById("pwdBar");
-                if (!bar) return;
-                if (!val) { bar.style.width = "0%"; return; }
-                if (val.length < 6) {
-                    bar.style.width = "30%"; bar.style.backgroundColor = "var(--alert)";
-                } else if (val.length < 10) {
-                    bar.style.width = "65%"; bar.style.backgroundColor = "var(--gold)";
-                } else {
-                    bar.style.width = "100%"; bar.style.backgroundColor = "var(--emerald)";
-                }
-            }
-
-            static solicitarRecuperacion() {
-                const emailInput = document.getElementById("txtEmail");
-                const email = emailInput ? emailInput.value.trim() : "";
-                if (!email) {
-                    alert("💡 Escribe tu correo institucional primero para solicitar el restablecimiento.");
-                    return;
-                }
-                alert(`📧 SOLICITUD REGISTRADA:\n\nSe ha notificado al soporte técnico para restablecer la clave de [${email}].`);
-            }
-
-            static detectarTipoIdentificador(val) {
-                const cleaned = val.trim();
-                const banner = document.getElementById("uiBannerEstado");
-                if (!cleaned) {
-                    this.seleccionarRol(SelectedRoleTarget);
-                    return;
-                }
-                if (cleaned.includes("@")) {
-                    if (banner) banner.innerText = "> IDENTIFICADOR DETECTADO: CORREO INSTITUCIONAL";
-                } else if (/^\d+$/.test(cleaned) || /^(ti|cc|ce|pas)-\d+$/i.test(cleaned)) {
-                    if (banner) banner.innerText = "> IDENTIFICADOR DETECTADO: DOCUMENTO DE IDENTIDAD (TI / CC)";
-                }
-            }
-
-            static iniciarGoogleSSO() {
-                const tenant = document.getElementById("txtInstitutionId").value.trim() || "colegio_sandbox_default";
-                const modal = document.getElementById("modalGoogleSSO");
-                if (modal) {
-                    modal.style.display = "flex";
-                } else {
-                    alert(`🌐 AUTENTICACIÓN GOOGLE WORKSPACE INSTITUCIONAL:\n\nTenant [${tenant}]: Para iniciar sesión con tu cuenta de Google Institucional (@colegio.edu.co), autoriza los permisos de acceso de tu colegio.`);
-                }
-            }
-
-            static async ejecutarLoginPerimetral(event) {
-                if (event && event.preventDefault) event.preventDefault();
-
-                const chkHabeas = document.getElementById("chkHabeasData");
-                if (chkHabeas && !chkHabeas.checked) {
-                    alert("🚨 REQUISITO LEGAL: Debes aceptar la política de protección de datos (Habeas Data) para continuar.");
-                    return;
-                }
-
-                const btn = document.getElementById("btnValidar");
-                const btnText = document.getElementById("btnValidarText");
-                const btnIcon = document.getElementById("btnValidarIcon");
-                const banner = document.getElementById("uiBannerEstado");
-
-                const institutionId = document.getElementById("txtInstitutionId").value.trim();
-                const rawIdentifier = document.getElementById("txtEmail").value.trim();
-                const password = document.getElementById("txtPassword").value;
-
-                if (!rawIdentifier || !password || !institutionId) {
-                    alert("🚨 CONTROL DE SEGURIDAD: Todos los campos son requeridos.");
-                    return;
-                }
-
-                // Guardar o limpiar credenciales recordadas
-                const chkRecordar = document.getElementById("chkRecordarCredenciales");
-                if (chkRecordar && chkRecordar.checked) {
-                    localStorage.setItem("dante_remembered_credentials", JSON.stringify({
-                        email: rawIdentifier,
-                        institution_id: institutionId,
-                        password: password,
-                        role: SelectedRoleTarget
-                    }));
-                } else {
-                    localStorage.removeItem("dante_remembered_credentials");
-                }
-
-                if (btnText) btnText.innerText = "Sincronizando trayectoria cognitiva...";
-                if (btnIcon) btnIcon.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
-                if (banner) {
-                    banner.innerText = "> RECONOCIENDO HISTORIAL Y PERFIL";
-                    banner.style.color = "var(--gold)";
-                }
-                if (btn) btn.disabled = true;
-
-                try {
-                    const response = await fetch(`${HOST_URL}/api/auth/login-perimetral`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            identity: rawIdentifier,
-                            email: rawIdentifier,
-                            password: password,
-                            institution_id: institutionId,
-                            role_target: SelectedRoleTarget
-                        })
-                    });
-
-                    if (!response.ok && response.status !== 401 && response.status !== 403) {
-                        throw new Error(`HTTP Error ${response.status}`);
-                    }
-
-                    const json = await response.json();
-
-                    if (json && json.success) {
-                        localStorage.setItem("dante_token", json.token_session || `token_live_${Date.now()}`);
-                        localStorage.setItem("dante_user", JSON.stringify(json.user || {
-                            email: rawIdentifier.includes('@') ? rawIdentifier : `${rawIdentifier}@danteos.edu.co`,
-                            document_id: rawIdentifier.includes('@') ? null : rawIdentifier,
-                            institution_id: institutionId,
-                            role: SelectedRoleTarget,
-                            estudiante: rawIdentifier.split('@')[0]
-                        }));
-
-                        if (btnText) btnText.innerText = "¡Bienvenido! Cargando entorno...";
-                        if (btnIcon) btnIcon.innerHTML = `<i class="fas fa-check-circle"></i>`;
-                        if (banner) {
-                            banner.innerText = "✓ ACCESO AUTORIZADO Y RESTAURADO";
-                            banner.style.color = "var(--emerald)";
-                        }
-
-                        const userObj = json.user || {};
-                        const esEstudiante = (SelectedRoleTarget === "estudiante" || userObj.role === "estudiante");
-                        const tieneArquetipo = userObj.arquetipo || (userObj.perfil && userObj.perfil.arquetipo);
-
-                        setTimeout(() => {
-                            if (esEstudiante && !tieneArquetipo) {
-                                window.location.href = "onboarding.html";
-                            } else {
-                                window.location.href = json.redireccion || RUTAS_POR_ROL[SelectedRoleTarget] || "index.html";
-                            }
-                        }, 800);
-
-                    } else {
-                        alert(`❌ ACCESO DENEGADO:\n\n${json.error || "Credenciales inválidas."}`);
-                        if (banner) {
-                            banner.innerText = "> AUTENTICACIÓN PERIMETRAL CORE";
-                            banner.style.color = "var(--primary)";
-                        }
-                        if (btnText) btnText.innerText = "Validar Firmas Criptográficas";
-                        if (btnIcon) btnIcon.innerHTML = `<i class="fas fa-key"></i>`;
-                        if (btn) btn.disabled = false;
-                    }
-                } catch (err) {
-                    console.warn("⚠️ [BACKEND UNCONNECTED OR OFFLINE MODE]:", err.message);
-                    
-                    // MODO FALLBACK SANDBOX GRACIOSO SI EL SERVIDOR NO RESPONDE AÚN
-                    const userLocal = {
-                        email: rawIdentifier.includes('@') ? rawIdentifier : `${rawIdentifier}@danteos.edu.co`,
-                        document_id: rawIdentifier.includes('@') ? null : rawIdentifier,
-                        institution_id: institutionId,
-                        role: SelectedRoleTarget,
-                        estudiante: rawIdentifier.split('@')[0],
-                        arquetipo: "ARQUETIPO_ESTRATEGIAS"
-                    };
-
-                    localStorage.setItem("dante_token", `token_sandbox_${Date.now()}`);
-                    localStorage.setItem("dante_user", JSON.stringify(userLocal));
-
-                    if (btnText) btnText.innerText = "¡Bienvenido (Modo Sandbox)!";
-                    if (btnIcon) btnIcon.innerHTML = `<i class="fas fa-check-circle"></i>`;
-                    if (banner) {
-                        banner.innerText = "✓ MODO SANDBOX VIVO ACTIVADO";
-                        banner.style.color = "var(--emerald)";
-                    }
-
-                    setTimeout(() => {
-                        window.location.href = RUTAS_POR_ROL[SelectedRoleTarget] || "index.html";
-                    }, 800);
+                    btnEl.classList.remove('tachado');
                 }
             }
         }
 
-        /* ANIMACIÓN DESENCRIPTADO */
-        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*";
-        function decryptText() {
-            const elements = document.querySelectorAll('[data-final]');
-            elements.forEach((el, index) => {
-                const finalStr = el.getAttribute('data-final');
-                if (!finalStr) return;
-                let iterations = 0; const maxIterations = 10 + (index * 2); 
+        function loadStep() {
+            if (currentStep >= DILEMAS.length) {
+                finalizeOnboarding();
+                return;
+            }
 
-                const interval = setInterval(() => {
-                    let randomStr = finalStr.split('').map((char, i) => {
-                        if(char === ' ') return ' ';
-                        if(i < (iterations / maxIterations) * finalStr.length) return finalStr[i];
-                        return chars[Math.floor(Math.random() * chars.length)];
-                    }).join('');
-                    el.innerText = randomStr; iterations++;
-                    if (iterations >= maxIterations) { clearInterval(interval); el.innerText = finalStr; }
-                }, 30);
+            const d = DILEMAS[currentStep];
+            optionStrikeMap = {}; // Reset para nuevo paso
+
+            document.getElementById('step-title').innerText = d.title;
+            document.getElementById('dilema-text').innerText = d.text;
+            document.getElementById('tutorial-tip-text').innerText = d.tutorialTip;
+            
+            // Actualizar barra de progreso
+            const pBar = document.getElementById('progress-bar');
+            if (pBar) {
+                pBar.style.width = `${((currentStep + 1) / DILEMAS.length) * 100}%`;
+            }
+
+            const optCont = document.getElementById('options-container');
+            optCont.innerHTML = "";
+
+            d.opts.forEach((o, idx) => {
+                const btn = document.createElement('div');
+                btn.id = `btn_${o.id}`;
+                btn.className = "option-btn";
+                
+                // Si es el dilema de prueba de descarte o simulación, permitimos tachar
+                let strikeBtnHTML = '';
+                if (d.isRealIcfesSim || d.stepNum >= 3) {
+                    strikeBtnHTML = `
+                        <button type="button" class="strike-tool-btn" onclick="toggleStrikeOption('${o.id}', event)" title="Descartar / Tachar esta opción">
+                            <i class="fa-solid fa-strikethrough"></i> <span>Tachar</span>
+                        </button>
+                    `;
+                }
+
+                btn.innerHTML = `
+                    <div class="flex items-center gap-3 pr-2 flex-grow cursor-pointer">
+                        <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-cyan-500/20 text-cyan-400 text-xs font-mono font-bold shrink-0 border border-cyan-500/30">
+                            ${String.fromCharCode(65 + idx)}
+                        </span>
+                        <span class="text-xs md:text-sm text-left font-sans font-medium text-slate-100 leading-snug">${o.text}</span>
+                    </div>
+                    ${strikeBtnHTML}
+                `;
+
+                btn.onclick = (e) => {
+                    // Si hizo clic en la opción y no en el botón tachar, registramos respuesta
+                    if (!e.target.closest('.strike-tool-btn')) {
+                        registerChoice(o.type, o.id);
+                    }
+                };
+
+                optCont.appendChild(btn);
             });
+
+            startTime = Date.now();
+            updateLatencyDisplay();
         }
 
-        const bgCanvas = document.getElementById('dante-fractal-bg'); 
-        const bgCtx = bgCanvas ? bgCanvas.getContext('2d') : null;
-        let qParticles = [];
+        function registerChoice(type, id) {
+            let latency = Date.now() - startTime;
+            scores[type] = (scores[type] || 0) + 1;
+            
+            if (latency < 2000) {
+                scores['LATENCIA_IMPULSIVA'] = (scores['LATENCIA_IMPULSIVA'] || 0) + 1;
+            } else if (latency > 12000) {
+                scores['LATENCIA_REFLEXIVA'] = (scores['LATENCIA_REFLEXIVA'] || 0) + 1;
+            }
+
+            currentStep++;
+            loadStep();
+        }
+
+        async function finalizeOnboarding() {
+            if (timerInterval) clearInterval(timerInterval);
+
+            // 1. Diagnóstico del Arquetipo Dominante en Enfoque Constructivo
+            let primaryType = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b, 'ANALISIS_MINUCIOSO');
+            
+            let arquetipoNombre = "Estratega Reflexivo de Alto Rendimiento";
+            let misionInmediata = {
+                titulo: "Misión Psico-Táctica #1: Calibración de Lectura y Control de Ritmo",
+                instruccion: "En tu primera sesión de entrenamiento, realiza 3 respiraciones pausadas antes de responder. Utiliza el botón de [✂️ Tachar Opciones] en las primeras 5 preguntas.",
+                protocolo: "MANTENER_LATENCIA_ESTABLE",
+                foco_cognitivo: "Comprensión Lectora y Descarte Metódico"
+            };
+
+            if (scores['SENSIBILIDAD_TIEMPO'] || scores['ENFOQUE_DESARROLLO'] || scores['SENSIBILIDAD_EVALUATIVA']) {
+                arquetipoNombre = "Estratega Enfocado bajo Presión";
+                misionInmediata = {
+                    titulo: "Misión Psico-Táctica #1: Descompresión Cognitiva & Pausa de Seguridad",
+                    instruccion: "Para maximizar tu lucidez bajo presión: Antes de responder tu primera pregunta hoy, realiza el Protocolo 4-7-8 (Inhala 4s, sostén 7s, exhala 8s). Tómate el tiempo necesario sin afán.",
+                    protocolo: "DESCOMPRESION_ANSIEDAD",
+                    foco_cognitivo: "Regulación de Oxigenación y Enfoque Directo"
+                };
+            } else if (scores['DECISION_INMEDIATA'] || scores['LATENCIA_IMPULSIVA']) {
+                arquetipoNombre = "Velocista de Precisión Táctica";
+                misionInmediata = {
+                    titulo: "Misión Psico-Táctica #1: Freno de Mano y Verificación de Premisas",
+                    instruccion: "Tienes una velocidad de respuesta envidiable. Tu misión hoy: Tacha OBLIGATORIAMENTE al menos 1 distractor con la herramienta [✂️ Tachar] antes de confirmar tu respuesta.",
+                    protocolo: "FRENO_DESCARTE_OBLIGATORIO",
+                    foco_cognitivo: "Verificación de Premisa y Eliminación de Distractores"
+                };
+            } else if (scores['CONSOLIDACION_CONCEPTUAL'] || scores['OPTIMIZACION_CRONOMETRICA']) {
+                arquetipoNombre = "Analista Metódico en Ascenso";
+                misionInmediata = {
+                    titulo: "Misión Psico-Táctica #1: Ritmo Armónico y Dominio del Cronómetro",
+                    instruccion: "Enfócate en mantener un ritmo sostenido de 1.5 a 2 minutos por pregunta. Si un ítem se extiende más de 2 minutos, aplica la técnica de descarte y marca tu opción táctica.",
+                    protocolo: "RITMO_SOSTENIDO_120S",
+                    foco_cognitivo: "Cronometría Adaptativa y Descarte Eficiente"
+                };
+            }
+
+            let userSession = {};
+            try {
+                userSession = JSON.parse(localStorage.getItem('dante_user')) || {};
+            } catch(e) {}
+            
+            userSession.arquetipo = arquetipoNombre;
+            userSession.onboarding_completed = true;
+            userSession.mision_activa = misionInmediata;
+            userSession.scores_psicometricos = scores;
+            
+            localStorage.setItem('dante_user', JSON.stringify(userSession));
+            localStorage.setItem('dante_onboarding_profile', JSON.stringify({
+                arquetipo: arquetipoNombre,
+                mision: misionInmediata,
+                scores: scores,
+                fecha: new Date().toISOString()
+            }));
+
+            const userIdentifier = userSession.email || userSession.document_id || userSession.estudiante || `user_anon_${Date.now()}`;
+            
+            // Persistencia en base de datos protegida
+            if (supabaseClient) {
+                try {
+                    await supabaseClient.from('dante_arquetipos_iniciales').upsert({
+                        id_sesion: userIdentifier,
+                        arquetipo: arquetipoNombre,
+                        puntajes_crudos: scores,
+                        mision_prescrita: misionInmediata,
+                        privacidad_status: 'BUNKER_CONFIDENCIAL'
+                    }, { onConflict: 'id_sesion' });
+
+                    if (userSession.email || userSession.document_id) {
+                        const cond = userSession.email ? `email.eq.${userSession.email}` : `document_id.eq.${userSession.document_id}`;
+                        await supabaseClient.from('usuarios')
+                            .update({ 
+                                arquetipo: arquetipoNombre, 
+                                onboarding_completed: true 
+                            })
+                            .or(cond);
+                    }
+                } catch(err) {
+                    console.error("⚠️ Sincronización onboarding confidencial:", err);
+                }
+            }
+
+            // Renderizado del Resultado Final y la Prescripción Personalizada
+            const card = document.getElementById('card-main');
+            card.innerHTML = `
+                <div class="font-mono text-xs text-[#51e2f5] tracking-[0.4em] uppercase mb-2 font-bold flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-square-check text-cyan-400"></i>
+                    <span>SISTEMA DANTE OS // DIAGNÓSTICO COMPLETO</span>
+                </div>
+                <h2 class="oswald font-black text-2xl md:text-3xl text-white mb-2 uppercase">ARQUETIPO Y MISIÓN ACTIVADOS</h2>
+                
+                <div class="my-3 p-3.5 bg-cyan-950/40 border border-cyan-500/40 rounded-xl text-left shadow-[0_0_25px_rgba(81,226,245,0.15)]">
+                    <div class="flex items-center justify-between border-b border-cyan-500/20 pb-2 mb-2">
+                        <span class="text-xs font-mono text-amber-400 font-bold uppercase tracking-wider">Perfil Cognitivo Diagnósticado:</span>
+                        <span class="text-xs font-mono text-cyan-300 font-bold px-2 py-0.5 rounded bg-cyan-900/50 border border-cyan-500/30">PRIVADO 🔒</span>
+                    </div>
+                    <div class="text-base md:text-lg font-mono font-bold text-white uppercase flex items-center gap-2 mb-1">
+                        <span class="text-amber-400">✨</span> ${arquetipoNombre}
+                    </div>
+                </div>
+
+                <!-- PRESCRIPCIÓN DE MISIÓN INMEDIATA -->
+                <div class="p-4 bg-amber-950/30 border border-amber-500/40 rounded-xl text-left mb-4 shadow-lg">
+                    <div class="flex items-center gap-2 text-amber-400 font-mono text-xs font-bold uppercase mb-1">
+                        <i class="fa-solid fa-crosshairs"></i>
+                        <span>${misionInmediata.titulo}</span>
+                    </div>
+                    <p class="text-xs md:text-sm font-mono text-zinc-200 leading-relaxed bg-black/40 p-2.5 rounded border border-white/10">
+                        "${misionInmediata.instruccion}"
+                    </p>
+                    <div class="mt-2 text-[11px] font-mono text-amber-300/80 flex items-center justify-between">
+                        <span>Foco: <strong>${misionInmediata.foco_cognitivo}</strong></span>
+                        <span>Protocolo: <strong>${misionInmediata.protocolo}</strong></span>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-center gap-2 text-sm font-mono text-cyan-300 leading-relaxed mt-2">
+                    <svg class="animate-spin h-4 w-4 text-cyan-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Cargando Cabina de Entrenamiento Adaptativo...</span>
+                </div>
+            `;
+
+            setTimeout(() => {
+                window.location.href = "index.html";
+            }, 2500);
+        }
+
+        // Canvas Fractal
+        const canvas = document.getElementById('dante-fractal-bg'); 
+        const ctx = canvas ? canvas.getContext('2d') : null;
+        let parts = [];
 
         function initCanvas() {
-            if (!bgCanvas || !bgCtx) return;
-            bgCanvas.width = window.innerWidth; bgCanvas.height = window.innerHeight;
-
+            if (!canvas || !ctx) return;
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
             for(let i=0; i<60; i++) {
-                qParticles.push({ 
-                    x: bgCanvas.width/2, 
-                    y: bgCanvas.height/2, 
-                    s: Math.random() * 1.5, 
+                parts.push({ 
+                    x: canvas.width/2, 
+                    y: canvas.height/2, 
+                    s: Math.random()*1.5, 
                     v: Math.random()*0.35 + 0.1, 
-                    angle: i * 137.5 * (Math.PI / 180), 
+                    angle: i*137.5*(Math.PI/180), 
                     dist: 0 
                 });
             }
-            animateCanvas();
+            animate();
         }
 
-        function animateCanvas() {
-            if (!bgCtx) return;
-            bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
-            qParticles.forEach(p => {
+        function animate() {
+            if (!ctx) return;
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            parts.forEach(p => {
                 p.dist += p.v; 
-                let x = bgCanvas.width/2 + Math.cos(p.angle) * p.dist; 
-                let y = bgCanvas.height/2 + Math.sin(p.angle) * p.dist;
-                if(x < 0 || x > bgCanvas.width || y < 0 || y > bgCanvas.height) p.dist = 0;
-                bgCtx.beginPath(); bgCtx.arc(x, y, p.s, 0, Math.PI*2); bgCtx.fillStyle = '#51e2f5'; bgCtx.globalAlpha = 0.22; bgCtx.fill();
+                let x = canvas.width/2 + Math.cos(p.angle)*p.dist; 
+                let y = canvas.height/2 + Math.sin(p.angle)*p.dist;
+                if(x < 0 || x > canvas.width || y < 0 || y > canvas.height) p.dist = 0;
+                ctx.beginPath(); ctx.arc(x,y,p.s,0,Math.PI*2); ctx.fillStyle='#51e2f5'; ctx.globalAlpha=0.22; ctx.fill();
             });
-            requestAnimationFrame(animateCanvas);
+            requestAnimationFrame(animate);
         }
 
-        window.onload = () => {
+        window.addEventListener('DOMContentLoaded', () => {
             initCanvas();
-            setTimeout(decryptText, 300);
-        };
+            loadStep();
+        });
     </script>
 </body>
 </html>
