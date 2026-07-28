@@ -542,12 +542,21 @@
 
                 const prescripcionFinal = adn.prescripcion_clinica || adn.estrategia_autorregulacion || 'Aplicar la técnica de escaneo global leyendo la oración completa de atrás hacia adelante.';
 
+                const arquetipoProf = itemsResp.arquetipo || (itemsResp.onboarding && itemsResp.onboarding.arquetipo) || "Estratega Reflexivo";
+                const misionProf = itemsResp.mision_activa ? itemsResp.mision_activa.instruccion : (itemsResp.onboarding && itemsResp.onboarding.mision ? itemsResp.onboarding.mision.instruccion : 'Ejecutar lecturas pausadas y usar descarte de opciones antes de responder.');
+
                 cont.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: center;" class="font-mono">
                         <div><strong>Alumno:</strong> <span style="color:var(--gold); font-size: 0.95rem; text-transform:uppercase;">${al.estudiante}</span></div>
                         <div style="background: rgba(212,175,55,0.1); padding: 3px 6px; border-radius: 4px; border: 1px solid var(--gold); color: var(--gold); font-size: 0.7rem;">
                             Resiliencia: ${iriPct}%
                         </div>
+                    </div>
+
+                    <div class="ficha-section" style="border-left-color: #a855f7;">
+                        <strong style="color: #a855f7; text-transform: uppercase; font-size: 0.7rem; display: block; margin-bottom: 3px;" class="font-mono">🎯 Arquetipo Cognitivo & Misión Activa:</strong>
+                        <p style="color: #f3e8ff; font-size: 0.78rem; font-weight: bold;">${arquetipoProf}</p>
+                        <p style="color: #cbd5e1; font-size: 0.72rem; margin-top: 2px;">Misión: ${misionProf}</p>
                     </div>
 
                     <div class="ficha-section">
