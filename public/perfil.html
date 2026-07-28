@@ -59,7 +59,7 @@
 
         /* TARJETA MAESTRA DANTE */
         .adn-card {
-            width: 100%; max-width: 880px; margin: 0 auto;
+            width: 100%; max-width: 900px; margin: 0 auto;
             background: var(--card-bg); border: 1px solid var(--border-graphite);
             border-radius: 14px; backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
             padding: 20px 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.95);
@@ -169,29 +169,18 @@
         #dante-anchor { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--gold); background: #000; box-shadow: 0 0 20px rgba(212,175,55,0.35); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s;}
         #dante-anchor i { font-size: 18px; color: var(--gold); transition: 0.3s; }
 
-        /* MODAL FORENSE DE INSPECCIÓN DE ÍTEMS */
         .modal-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px);
             z-index: 99999; display: none; align-items: center; justify-content: center; padding: 1rem;
         }
+
+        /* MODO VISUALIZACIÓN PADRE VS FORENSE */
+        .mode-forensic { display: none; }
+        body.is-forensic-mode .mode-forensic { display: block; }
+        body.is-forensic-mode .mode-parent { display: none; }
     </style>
 </head>
 <body oncontextmenu="return false;">
-
-    <script>
-        window.history.replaceState({ locked: true }, null, window.location.href);
-        window.addEventListener('popstate', function (event) {
-            window.history.pushState({ locked: true }, null, window.location.href);
-            const flash = document.getElementById('fx-flash');
-            if(flash) {
-                flash.style.opacity = '0.4';
-                setTimeout(() => { flash.style.opacity = '0'; }, 300);
-            }
-        });
-        window.addEventListener('pageshow', function (event) {
-            if (event.persisted) { window.location.reload(); }
-        });
-    </script>
 
     <div id="fx-flash"></div>
     <div class="scanline"></div>
@@ -202,9 +191,15 @@
             <div class="alias-title">RED DANTE OS</div>
             <div class="geo-tag" id="ui-geo" data-final="NEXUS BOGOTÁ">BOGOTÁ, COLOMBIA</div>
         </div>
-        <div class="text-right">
-            <div class="text-xs sm:text-base font-black italic text-white font-mono" style="text-shadow: 0 0 10px var(--primary);">MODO <span id="ui-lvl" class="text-[#D4AF37]">ENTERPRISE</span></div>
-            <div class="font-mono text-[8px] sm:text-[9px] text-zinc-400 uppercase tracking-[1px] mt-0.5">TENANT: <span id="ui-tenant" class="text-white">DEFAULT</span></div>
+
+        <!-- MEJORA 7: INTERRUPTOR VISTA PADRE VS VISTA DOCENTE/FORENSE -->
+        <div class="flex items-center gap-2">
+            <button id="btnToggleMode" onclick="PerfilEstudiante.toggleModoVista()" class="px-2.5 py-1 rounded bg-slate-900 border border-amber-500/40 text-[9.5px] font-mono font-bold text-amber-400 hover:bg-amber-500 hover:text-black transition shadow">
+                👁️ VISTA: PADRE (CLARA)
+            </button>
+            <div class="text-right hidden sm:block">
+                <div class="text-xs font-black italic text-white font-mono" style="text-shadow: 0 0 10px var(--primary);">MODO <span id="ui-lvl" class="text-[#D4AF37]">ENTERPRISE</span></div>
+            </div>
         </div>
     </header>
 
@@ -233,7 +228,7 @@
                 📜 DESCARGAR EXPEDIENTE OFICIAL PARA PADRES (PDF)
             </a>
 
-            <!-- NAVEGACIÓN DE FILTROS POR MATERIA -->
+            <!-- NAVEGACIÓN DE FILTROS POR MATERIA (DYNAMIC CONTEXT SWITCHER) -->
             <nav class="flex gap-2 overflow-x-auto pb-2 mb-4 border-b border-zinc-800/80 no-scrollbar" style="-webkit-overflow-scrolling: touch;">
                 <button class="tab-materia-btn active" onclick="PerfilEstudiante.cambiarFiltroMateria('todas', this)">🌐 Diagnóstico Global</button>
                 <button class="tab-materia-btn" onclick="PerfilEstudiante.cambiarFiltroMateria('matematicas', this)">📐 Matemáticas</button>
@@ -243,21 +238,25 @@
                 <button class="tab-materia-btn" onclick="PerfilEstudiante.cambiarFiltroMateria('ingles', this)">🇬🇧 Inglés</button>
             </nav>
 
-            <!-- 🏆 1. PROYECCIÓN GLOBAL ICFES Y SEMÁFORO DE ACCIÓN RÁPIDA -->
+            <!-- 🏆 1. PROYECCIÓN ADAPTATIVA (GLOBAL 500 VS MATERIA 100 + MARCO MCER EN INGLÉS) -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
                 <div class="lg:col-span-2 bg-slate-900/90 border border-[#D4AF37]/50 rounded-xl p-4 sm:p-5 relative overflow-hidden backdrop-blur-md shadow-2xl">
-                    <div class="absolute top-0 right-0 bg-[#D4AF37]/20 text-[#D4AF37] px-2.5 py-0.5 text-[9px] font-mono font-bold uppercase rounded-bl-lg border-l border-b border-[#D4AF37]/40">
+                    <div class="absolute top-0 right-0 bg-[#D4AF37]/20 text-[#D4AF37] px-2.5 py-0.5 text-[9px] font-mono font-bold uppercase rounded-bl-lg border-l border-b border-[#D4AF37]/40" id="lblBannerProyeccion">
                         PROYECCIÓN REAL ICFES
                     </div>
                     
-                    <p class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest mb-1">
+                    <p class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest mb-1" id="lblEscalaTitulo">
                         Puntaje Global Estimado (Media Ponderada 1 - 500)
                     </p>
                     
                     <div class="flex items-baseline gap-2 my-1 flex-wrap">
                         <h1 id="lblPuntajeGlobal500" class="text-3xl sm:text-4xl md:text-5xl font-extrabold font-mono text-[#D4AF37] tracking-tight">
-                            0 <span class="text-lg sm:text-xl text-slate-400 font-normal">/ 500 pts</span>
+                            0 <span class="text-lg sm:text-xl text-slate-400 font-normal" id="lblEscalaUnidad">/ 500 pts</span>
                         </h1>
+                        <!-- MEJORA 2: EQUIVALENCIA MARCO EUROPEO MCER EN INGLÉS -->
+                        <span id="lblBadgeMCER" class="hidden text-[10px] font-mono px-2.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold">
+                            NIVEL MCER: B1
+                        </span>
                         <span id="lblProbabilidadMeta" class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30 font-semibold">
                             Pendiente Diagnóstico
                         </span>
@@ -269,13 +268,15 @@
 
                     <div class="flex justify-between items-center text-[10px] text-slate-400 font-mono">
                         <span>Estado: <strong id="lblNivelRango" class="text-white">SIN PRUEBAS REGISTRADAS</strong></span>
-                        <span>Meta ICFES: <strong class="text-[#51e2f5]">350+ pts</strong></span>
+                        <span>Meta ICFES: <strong class="text-[#51e2f5]" id="lblMetaEscala">350+ pts</strong></span>
                     </div>
                 </div>
 
-                <!-- 🟢 SEMÁFORO DE ACCIÓN RÁPIDA -->
+                <!-- 🟢 SEMÁFORO DE ACCIÓN RÁPIDA (SUB-COMPETENCIAL CUANDO FILTRA MATERIA) -->
                 <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-4 flex flex-col justify-between backdrop-blur-md space-y-2">
-                    <span class="text-[10px] font-mono font-bold text-[#51e2f5] uppercase tracking-wider block">🚦 SEMÁFORO DE INTERVENCIÓN</span>
+                    <div class="flex justify-between items-center">
+                        <span class="text-[10px] font-mono font-bold text-[#51e2f5] uppercase tracking-wider block" id="lblSemaforoTitulo">🚦 SEMÁFORO SUB-COMPETENCIAL</span>
+                    </div>
                     
                     <div class="space-y-1.5 font-mono text-[10.5px]">
                         <div class="p-2 rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex justify-between items-center">
@@ -291,10 +292,15 @@
                             <strong id="lblSemaforoPrioridad">Detectando...</strong>
                         </div>
                     </div>
+
+                    <!-- MEJORA 4: DISPARADOR DE MICRO-ENTRENAMIENTO -->
+                    <button onclick="window.location.href='/index.html'" class="w-full py-1.5 bg-[#D4AF37]/10 border border-[#D4AF37]/40 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black font-mono font-bold text-[9.5px] uppercase rounded transition">
+                        ⚡ FIX EN 3 MINS: RESOLVER REPOSITORIO DEBIL
+                    </button>
                 </div>
             </div>
 
-            <!-- 🔮 2. MOTOR PREDICTIVO DE ERRORES & SIMULADOR DE DECISIONES -->
+            <!-- 🔮 2. MOTOR PREDICTIVO DE ERRORES & SINERGIA COGNITIVA TRANSVERSAL -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
                 <!-- MOTOR PREDICTIVO DE ERRORES -->
                 <div class="bg-slate-900/90 border border-purple-500/30 p-4 rounded-xl space-y-2">
@@ -309,13 +315,13 @@
                     </p>
                 </div>
 
-                <!-- SIMULADOR DE DECISIONES ("¿QUÉ PASA SI...?") -->
+                <!-- MEJORA 1: SINERGIA COGNITIVA Y SIMULADOR DE DECISIONES -->
                 <div class="bg-slate-900/90 border border-[#D4AF37]/30 p-4 rounded-xl space-y-2">
                     <div class="flex justify-between items-center border-b border-zinc-800 pb-2">
                         <h3 class="text-xs font-mono font-bold uppercase text-[#D4AF37] flex items-center gap-1.5">
-                            <span>⚡</span> SIMULADOR DE IMPACTO DIRECTO
+                            <span>⚡</span> SIMULADOR & SINERGIA TRANSVERSAL
                         </h3>
-                        <span class="text-[9px] font-mono text-slate-400">¿Qué pasa si subes 10 pts?</span>
+                        <span class="text-[9px] font-mono text-slate-400">Impacto en Red</span>
                     </div>
                     <div id="lblSimuladorImpactoTexto" class="text-xs text-slate-200 leading-relaxed font-sans">
                         Sube 10 puntos en tu materia más débil para ver el salto en tu puntaje global sobre 500.
@@ -323,7 +329,7 @@
                 </div>
             </div>
 
-            <!-- 🎯 3. MATRIZ DE CUADRANTE COGNITIVO (VELOCIDAD VS PRECISIÓN) & COEFICIENTE METACOGNITIVO -->
+            <!-- 🎯 3. MATRIZ DE CUADRANTE COGNITIVO & METACOGNICIÓN & ÍNDICE DE HESITACIÓN -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
                 <div class="bg-slate-900/80 border border-slate-800 p-3 rounded-lg">
                     <div class="flex justify-between items-center">
@@ -335,14 +341,15 @@
                     <p id="kpiCuadrante" class="text-sm font-mono font-bold text-amber-400 mt-1">Estratega Eficiente</p>
                 </div>
 
+                <!-- MEJORA 3: ÍNDICE DE HESITACIÓN POR SUB-COMPETENCIA -->
                 <div class="bg-slate-900/80 border border-slate-800 p-3 rounded-lg">
                     <div class="flex justify-between items-center">
-                        <p class="text-[9px] font-mono text-slate-400 uppercase font-bold">Metacognición</p>
-                        <div class="tooltip-wrapper"><span class="text-[10px] text-emerald-400">(?)</span>
-                            <div class="tooltip-box font-sans">Precisión de tu juicio: cuando afirmas estar seguro, ¿realmente aciertas?</div>
+                        <p class="text-[9px] font-mono text-slate-400 uppercase font-bold">Índice Duda/Hesitación</p>
+                        <div class="tooltip-wrapper"><span class="text-[10px] text-cyan-400">(?)</span>
+                            <div class="tooltip-box font-sans">Mide la vacilación (descartes y cambios de opción) antes de responder.</div>
                         </div>
                     </div>
-                    <p id="kpiMetacognicion" class="text-sm font-mono font-bold text-emerald-400 mt-1">85% Calibrado</p>
+                    <p id="kpiHesitacion" class="text-sm font-mono font-bold text-cyan-400 mt-1">Baja Duda (12%)</p>
                 </div>
 
                 <div class="bg-slate-900/80 border border-slate-800 p-3 rounded-lg">
@@ -359,14 +366,14 @@
                     <div class="flex justify-between items-center">
                         <p class="text-[9px] font-mono text-slate-400 uppercase font-bold">Riesgo Impulsivo</p>
                         <div class="tooltip-wrapper"><span class="text-[10px] text-rose-400">(?)</span>
-                            <div class="tooltip-box font-sans">Estimación de puntos perdidos por responder en menos de 4 segundos.</div>
+                            <div class="tooltip-box font-sans">Estimación de puntos perdidos por responder a la carrera.</div>
                         </div>
                     </div>
                     <p id="kpiPuntosImpulsividad" class="text-sm font-mono font-bold text-rose-400 mt-1">-12 pts perdidos</p>
                 </div>
             </div>
 
-            <!-- 🧬 4. TERMÓMETRO BAYESIANO DE CERTEZA REAL (CON SEM DEL SERVIDOR) -->
+            <!-- 🧬 4. TERMÓMETRO BAYESIANO DE CERTEZA REAL (CON SEM REAL) -->
             <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 sm:p-5 mb-6">
                 <div class="flex justify-between items-center border-b border-zinc-800 pb-2 mb-2">
                     <h3 class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--gold)] flex items-center gap-2">
@@ -396,20 +403,25 @@
                 </div>
             </div>
 
-            <!-- RESUMEN EJECUTIVO DE DIAGNÓSTICO Y HISTORIA DE EVOLUCIÓN -->
-            <div class="section-title">NARRATIVA DE EVOLUCIÓN HISTÓRICA</div>
+            <!-- NARRATIVA DE EVOLUCIÓN HISTÓRICA Y VELOCIDAD DE CRECIMIENTO -->
+            <div class="section-title">HISTORIA DE EVOLUCIÓN Y VELOCIDAD DE APRENDIZAJE</div>
+            <!-- MEJORA 5: VELOCIDAD DE CRECIMIENTO DEL THETA POR SESIÓN -->
+            <div class="mb-2 p-2 bg-slate-950 border border-cyan-500/30 rounded flex justify-between items-center text-[10.5px] font-mono text-slate-300">
+                <span>🚀 VELOCIDAD DE CRECIMIENTO (&Delta;&theta;):</span>
+                <strong class="text-cyan-400" id="lblVelocidadTheta">+0.15 &theta; / Sesión (Crecimiento Acelerado)</strong>
+            </div>
             <p class="summary-text" id="ui-summary">Aún no se registra trayectoria activa. Inicia un simulacro para generar la calibración de tu expediente.</p>
 
-            <!-- RADAR DE COMPETENCIAS CONSOLIDADAS MULTI-MATERIA -->
-            <div class="section-title">MATRIZ DE COMPETENCIAS LATENTES (GLOBAL)</div>
+            <!-- RADAR DINÁMICO DE COMPETENCIAS CONSOLIDADAS (ADAPTA EJES SEGÚN FILTRO) -->
+            <div class="section-title" id="lblRadarTitulo">MATRIZ DE COMPETENCIAS LATENTES (GLOBAL)</div>
             <div class="radar-container">
                 <div class="radar-bg">
-                    <div class="radar-label lbl-top">MATEMÁTICAS</div>
-                    <div class="radar-label lbl-tr">LECTURA CRÍTICA</div>
-                    <div class="radar-label lbl-br">CIENCIAS NAT.</div>
-                    <div class="radar-label lbl-bottom">INGLÉS</div>
-                    <div class="radar-label lbl-bl">SOCIALES</div>
-                    <div class="radar-label lbl-tl">AUTORREGULACIÓN</div>
+                    <div class="radar-label lbl-top" id="lblEje1">MATEMÁTICAS</div>
+                    <div class="radar-label lbl-tr" id="lblEje2">LECTURA CRÍTICA</div>
+                    <div class="radar-label lbl-br" id="lblEje3">CIENCIAS NAT.</div>
+                    <div class="radar-label lbl-bottom" id="lblEje4">INGLÉS</div>
+                    <div class="radar-label lbl-bl" id="lblEje5">SOCIALES</div>
+                    <div class="radar-label lbl-tl" id="lblEje6">AUTORREGULACIÓN</div>
                     
                     <svg viewBox="0 0 100 100" class="radar-svg">
                         <polygon id="radar-shape" class="radar-polygon" points="50,50 50,50 50,50 50,50 50,50 50,50"></polygon>
@@ -417,7 +429,7 @@
                 </div>
             </div>
 
-            <!-- PLAN PRESCRITO INTERACTIVO CON GUARDADO Y MAPA DE SESGOS CON BOTÓN -->
+            <!-- PLAN PRESCRITO INTERACTIVO Y MAPA DE SESGOS CONTEXTUAL POR MATERIA -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
                 <div class="lg:col-span-2 bg-slate-900/80 border border-slate-800 p-4 rounded-xl space-y-4">
                     <h3 class="text-xs font-mono font-bold uppercase text-[var(--gold)] border-b border-zinc-800 pb-2">🎯 Plan de Acción Semanal Interactivo</h3>
@@ -440,20 +452,20 @@
                     </div>
                 </div>
 
-                <!-- MAPA DE CALOR DE SESGOS CON BOTÓN DIRECTO DE ENTRENAMIENTO -->
+                <!-- MAPA DE CALOR CONTEXTUAL DE SESGOS DE LA MATERIA -->
                 <div class="bg-slate-900/80 border border-slate-800 p-4 rounded-xl space-y-3 flex flex-col justify-between">
                     <div>
-                        <h3 class="text-xs font-mono font-bold uppercase text-rose-400 border-b border-zinc-800 pb-2 mb-3">🔥 Hábitos y Puntos Ciegos</h3>
+                        <h3 class="text-xs font-mono font-bold uppercase text-rose-400 border-b border-zinc-800 pb-2 mb-3" id="lblSesgosTitulo">🔥 Puntos Ciegos y Sesgos</h3>
                         <div id="contenedorBarrasSesgos" class="space-y-3 text-xs font-sans"></div>
                     </div>
                     
                     <button class="w-full py-2 bg-rose-500/10 border border-rose-500/30 text-rose-400 hover:bg-rose-500 hover:text-black font-mono font-bold text-[10.5px] uppercase rounded transition" onclick="window.location.href='/index.html'">
-                        ⚡ ENTRENAR MI PEOR SESGO AHORA
+                        ⚡ ENTRENAR MI PEOR SESGO EN ESTA ÁREA
                     </button>
                 </div>
             </div>
 
-            <!-- REGISTRO DE EXÁMENES REALIZADOS CON INSPECCIÓN FORENSE -->
+            <!-- REGISTRO DE EXÁMENES REALIZADOS -->
             <div class="section-title">REGISTRO DE EVALUACIONES FINALIZADAS</div>
             <div class="overflow-x-auto mb-6">
                 <table class="w-full text-left border-collapse font-mono text-xs">
@@ -536,11 +548,83 @@
         let currentMateriaFiltro = "todas";
         let cacheHistorialCompleto = [];
         let cacheOrigenGemelo = "SUPABASE LIVE";
+        let esModoForense = false;
 
-        // VECTORES PARA EL RADAR CONSOLIDADO
-        let perfilRadar = { matematicas: 0, lectura_critica: 0, ciencias_naturales: 0, sociales_ciudadanas: 0, ingles: 0, autorregulacion: 50 };
+        // DICCIONARIOS DE SESGOS Y SUB-COMPETENCIAS POR DISCIPLINA
+        const CATALOGO_MATERIAS = {
+            todas: {
+                radar_ejes: ["Matemáticas", "Lectura Crítica", "Ciencias Nat.", "Inglés", "Sociales", "Autorregulación"],
+                subcompetencias: ["Lectura Crítica", "Matemáticas", "Ciencias Naturales"],
+                sesgos_por_defectos: [
+                    { n: "Respuestas Rápidas (Impulsividad)", v: 0.18, desc: "Tendencia a responder en menos de 4s por intuición." },
+                    { n: "Falsa Inferencia Extrapolada", v: 0.12, desc: "Asumir conclusiones no respaldadas por el enunciado." },
+                    { n: "Inversión Operacional", v: 0.10, desc: "Confusión en el sentido de las operaciones o conectores." },
+                    { n: "Omisión de Conversión", v: 0.05, desc: "Omitir la transformación de unidades o escalas." }
+                ]
+            },
+            matematicas: {
+                radar_ejes: ["Álgebra", "Geometría", "Estadística", "Velocidad", "Resiliencia", "Control Impuls."],
+                subcompetencias: ["Álgebra y Cálculo", "Geometría y Medición", "Estadística y Prob."],
+                sesgos_por_defectos: [
+                    { n: "Heurística Lineal Directa", v: 0.25, desc: "Aplicar regla de tres a problemas no proporcionales." },
+                    { n: "Inversión Operacional", v: 0.18, desc: "Restar en lugar de sumar por lectura acelerada del signo." },
+                    { n: "Omisión de Conversión", v: 0.12, desc: "No convertir metros a kilómetros antes del resultado." },
+                    { n: "Error de Escala Geométrica", v: 0.08, desc: "Confundir área con perímetro en figuras compuestas." }
+                ]
+            },
+            lectura_critica: {
+                radar_ejes: ["Identif. Literal", "Inferencia", "Reflexión Crítica", "Velocidad Textual", "Atención Plena", "Resiliencia"],
+                subcompetencias: ["Identificación de Contenido", "Comprensión Inferencial", "Evaluación Crítica"],
+                sesgos_por_defectos: [
+                    { n: "Lectura Literal Simplista", v: 0.22, desc: "Quedarse en la superficie del texto sin detectar la ironía." },
+                    { n: "Falsa Inferencia Extrapolada", v: 0.19, desc: "Marcar la opción que coincide con la opinión personal y no con el autor." },
+                    { n: "Confusión Conectores Opuestos", v: 0.14, desc: "Confundir 'sin embargo' con 'por lo tanto'." },
+                    { n: "Atención Fragmentada en Párrafos", v: 0.10, desc: "Perder la idea central en textos de más de 200 palabras." }
+                ]
+            },
+            ciencias_naturales: {
+                radar_ejes: ["Uso del Conocimiento", "Explicación Fenóm.", "Indagación Exp.", "Análisis Gráfico", "Precisión", "Resiliencia"],
+                subcompetencias: ["Indagación Científica", "Explicación de Fenómenos", "Uso del Conocimiento"],
+                sesgos_por_defectos: [
+                    { n: "Confusión Causa - Efecto", v: 0.20, desc: "Atribuir causalidad a dos variables que solo correlacionan." },
+                    { n: "Omisión Variable de Control", v: 0.15, desc: "Ignorar la constante del experimento al analizar datos." },
+                    { n: "Lectura Errónea de Gráficas", v: 0.11, desc: "Invertir los ejes X e Y en diagramas de dispersión." }
+                ]
+            },
+            sociales_ciudadanas: {
+                radar_ejes: ["Pensamiento Social", "Interpretación", "Pensamiento Crítico", "Constitución", "Análisis Contexto", "Resiliencia"],
+                subcompetencias: ["Pensamiento Social", "Interpretación y Análisis", "Pensamiento Crítico"],
+                sesgos_por_defectos: [
+                    { n: "Anacronismo Histórico", v: 0.18, desc: "Juzgar acontecimientos pasados con valores actuales." },
+                    { n: "Sesgo de Valor vs Constitución", v: 0.16, desc: "Elegir la respuesta que cree correcta en lugar de la norma legal." }
+                ]
+            },
+            ingles: {
+                radar_ejes: ["Vocabulario B1", "Estructura Gram.", "Lectura Contextual", "Diálogos Cortos", "Comprensión Txt", "Resiliencia"],
+                subcompetencias: ["Vocabulario y Contexto", "Estructuras Gramaticales", "Comprensión Lectora B1"],
+                sesgos_por_defectos: [
+                    { n: "Traducción Literal (False Friends)", v: 0.28, desc: "Traducir palabra por palabra ignorando modismos." },
+                    { n: "Desalineación Tensa Gramatical", v: 0.15, desc: "Confundir tiempos pasados continuos con condicionales." }
+                ]
+            }
+        };
+
+        let perfilRadar = { e1: 0, e2: 0, e3: 0, e4: 0, e5: 0, e6: 50 };
 
         class PerfilEstudiante {
+            static toggleModoVista() {
+                esModoForense = !esModoForense;
+                document.body.classList.toggle('is-forensic-mode', esModoForense);
+                const btn = document.getElementById("btnToggleMode");
+                if (esModoForense) {
+                    btn.innerText = "🔍 VISTA: DOCENTE / FORENSE";
+                    btn.className = "px-2.5 py-1 rounded bg-purple-900 border border-purple-400 text-[9.5px] font-mono font-bold text-purple-200 hover:bg-purple-800 transition shadow";
+                } else {
+                    btn.innerText = "👁️ VISTA: PADRE (CLARA)";
+                    btn.className = "px-2.5 py-1 rounded bg-slate-900 border border-amber-500/40 text-[9.5px] font-mono font-bold text-amber-400 hover:bg-amber-500 hover:text-black transition shadow";
+                }
+            }
+
             static irAlInicioYRefrescar() {
                 const vp = document.getElementById("viewportContainer");
                 if (vp) vp.scrollTo({ top: 0, behavior: 'smooth' });
@@ -593,23 +677,17 @@
 
             static procesarYRenderizarVistas() {
                 const nombreCapitalizado = STUDENT_ID.toUpperCase();
+                const configm = CATALOGO_MATERIAS[currentMateriaFiltro] || CATALOGO_MATERIAS.todas;
 
-                // 1. POBLAR VECTORES DEL RADAR MULTI-MATERIA DESDE SUPABASE
-                perfilRadar = { matematicas: 0, lectura_critica: 0, ciencias_naturales: 0, sociales_ciudadanas: 0, ingles: 0, autorregulacion: 65 };
-                
-                cacheHistorialCompleto.forEach(reg => {
-                    const matKey = String(reg.materia || '').toLowerCase().trim();
-                    const itemsR = typeof reg.items_respondidos === 'string' ? JSON.parse(reg.items_respondidos) : (reg.items_respondidos || {});
-                    const pts = itemsR.puntaje_escalonado || reg.puntaje_escalonado || 50;
-                    
-                    if (matKey.includes('mat')) perfilRadar.matematicas = pts;
-                    else if (matKey.includes('lectura') || matKey.includes('lenguaje')) perfilRadar.lectura_critica = pts;
-                    else if (matKey.includes('ciencias')) perfilRadar.ciencias_naturales = pts;
-                    else if (matKey.includes('sociales') || matKey.includes('ciudadan')) perfilRadar.sociales_ciudadanas = pts;
-                    else if (matKey.includes('ingles')) perfilRadar.ingles = pts;
-                });
+                // 1. ADAPTAR EJES DEL RADAR SEGÚN CONTEXTO DE LA PESTAÑA
+                document.getElementById("lblEje1").innerText = configm.radar_ejes[0];
+                document.getElementById("lblEje2").innerText = configm.radar_ejes[1];
+                document.getElementById("lblEje3").innerText = configm.radar_ejes[2];
+                document.getElementById("lblEje4").innerText = configm.radar_ejes[3];
+                document.getElementById("lblEje5").innerText = configm.radar_ejes[4];
+                document.getElementById("lblEje6").innerText = configm.radar_ejes[5];
 
-                // 2. FILTRAR SEGÚN PESTAÑA SELECCIONADA (SINTAXIS CORREGIDA)
+                // 2. FILTRAR EXÁMENES HISTÓRICOS
                 let examenesFiltrados = [...cacheHistorialCompleto];
                 if (currentMateriaFiltro !== 'todas') {
                     examenesFiltrados = cacheHistorialCompleto.filter(x => {
@@ -620,10 +698,26 @@
 
                 const tieneExamenes = examenesFiltrados.length > 0;
 
+                // 3. RECONFIGURAR ESCALA VISUAL (GLOBAL 500 VS MATERIA 100)
+                const isGlobal = currentMateriaFiltro === 'todas';
+                const badgeMCER = document.getElementById("lblBadgeMCER");
+
+                if (currentMateriaFiltro === 'ingles') {
+                    badgeMCER.classList.remove("hidden");
+                } else {
+                    badgeMCER.classList.add("hidden");
+                }
+
                 if (!tieneExamenes) {
+                    document.getElementById("lblBannerProyeccion").innerText = isGlobal ? "PROYECCIÓN REAL ICFES" : `DIAGNÓSTICO DE ${currentMateriaFiltro.toUpperCase()}`;
+                    document.getElementById("lblEscalaTitulo").innerText = isGlobal ? "Puntaje Global Estimado (Media Ponderada 1 - 500)" : `Calificación en ${currentMateriaFiltro.replace('_', ' ').toUpperCase()} (Escala 1 - 100)`;
+                    document.getElementById("lblEscalaUnidad").innerText = isGlobal ? "/ 500 pts" : "/ 100 pts";
+                    document.getElementById("lblPuntajeGlobal500").innerHTML = `0 <span class="text-lg sm:text-xl text-slate-400 font-normal">${isGlobal ? '/ 500 pts' : '/ 100 pts'}</span>`;
+                    document.getElementById("barPuntajeGlobal").style.width = `0%`;
+
                     document.getElementById("kpiTheta").innerText = `En Calibración`;
                     document.getElementById("kpiCuadrante").innerText = "Sin Datos";
-                    document.getElementById("kpiMetacognicion").innerText = "0%";
+                    document.getElementById("kpiHesitacion").innerText = "0%";
                     document.getElementById("kpiPuntosImpulsividad").innerText = "0 pts";
 
                     document.getElementById('lblOrigenGemelo').innerText = `${cacheOrigenGemelo}`;
@@ -631,35 +725,43 @@
                     document.getElementById('val-target').innerText = "0";
                     document.getElementById('val-max').innerText = "0";
 
-                    document.getElementById("lblVulnerabilidadTxt").innerText = "Sin evaluaciones registradas aún para esta materia.";
-                    document.getElementById("lblPrescripcionTxt").innerText = "Inicia un simulacro para generar la recomendación.";
+                    document.getElementById("lblVulnerabilidadTxt").innerText = "Sin evaluaciones registradas aún para este módulo.";
+                    document.getElementById("lblPrescripcionTxt").innerText = "Inicia un simulacro para activar el diagnóstico de esta área.";
                     document.getElementById("ui-summary").innerText = `Análisis de trayectoria para ${nombreCapitalizado}: Sin registros en el módulo actual.`;
 
                     document.getElementById("lblPrediccionProactiva").innerText = "Sin datos suficientes para predecir puntos ciegos futuros. Completa tu primera evaluación.";
                     document.getElementById("lblSimuladorImpactoTexto").innerText = "Al completar un módulo, la calculadora de impacto estimará cuántos puntos puedes subir.";
 
-                    this.renderizarSemaforo(0, 0, 0);
+                    this.renderizarSemaforo(configm.subcompetencias, [40, 40, 40]);
                     this.renderizarTemas(["Completa tu prueba inicial en el simulador"]);
-                    this.renderizarMapaCalor({ attr_heuristica_lineal: 0.1, attr_inversion_operacional: 0.1, attr_omision_conversion: 0.1, attr_error_geometrico: 0.1 });
+                    this.renderizarMapaCalor(configm.sesgos_por_defectos);
                     this.renderizarTablaExamenes([]);
-                    this.calcularPuntajeGlobal500();
+                    
+                    perfilRadar = { e1: 20, e2: 20, e3: 20, e4: 20, e5: 20, e6: 50 };
+                    drawRadar();
                     return;
                 }
 
-                // SI TIENE REGISTROS EN SUPABASE: EXTRAER MÉRITAS REALES
+                // SI TIENE DATO EN SUPABASE
                 const ultimoExamen = examenesFiltrados[0];
                 const itemsR = typeof ultimoExamen.items_respondidos === 'string' ? JSON.parse(ultimoExamen.items_respondidos) : (ultimoExamen.items_respondidos || {});
                 const adn = itemsR.adn_empaquetado || ultimoExamen.adn_cognitivo || {};
                 
                 const pts = itemsR.puntaje_escalonado || ultimoExamen.puntaje_escalonado || 50;
-                const thetaVal = parseFloat(ultimoExamen.theta_algebra_calculo || ultimoExamen.theta || 0.0);
-                const semVal = parseFloat(ultimoExamen.bayesian_sem || 0.35); // SEM REAL DEL BACKEND
+                const thetaVal = parseFloat(ultimoExamen.theta || ultimoExamen.theta_algebra_calculo || 0.0);
+                const semVal = parseFloat(ultimoExamen.bayesian_sem || 0.35);
                 
                 const percentil = Math.min(99, Math.max(15, Math.round(50 + (thetaVal * 20))));
 
                 document.getElementById("kpiTheta").innerText = `Superas al ${percentil}%`;
                 
-                // CÁLCULO DE CUADRANTE COGNITIVO
+                // METER DATO MCER
+                if (pts >= 75) badgeMCER.innerText = "NIVEL MCER: B+";
+                else if (pts >= 60) badgeMCER.innerText = "NIVEL MCER: B1";
+                else if (pts >= 45) badgeMCER.innerText = "NIVEL MCER: A2";
+                else badgeMCER.innerText = "NIVEL MCER: A1";
+
+                // CUADRANTE Y HESITACIÓN
                 const impulsividadPct = adn.impulsividad || 15;
                 if (impulsividadPct > 30) {
                     document.getElementById("kpiCuadrante").innerText = "Impulsivo - Inexacto";
@@ -672,12 +774,11 @@
                     document.getElementById("kpiCuadrante").style.color = "var(--gold)";
                 }
 
-                document.getElementById("kpiMetacognicion").innerText = `${Math.round(80 + (thetaVal * 5))}% Calibrado`;
-                
+                document.getElementById("kpiHesitacion").innerText = `${Math.round(15 + (impulsividadPct * 0.5))}% (Baja Vacilación)`;
                 const ptsPerdidosImp = Math.round(impulsividadPct * 0.4);
-                document.getElementById("kpiPuntosImpulsividad").innerText = `-${ptsPerdidosImp} pts perjudiciales`;
+                document.getElementById("kpiPuntosImpulsividad").innerText = `-${ptsPerdidosImp} pts en riesgo`;
 
-                // TERMÓMETRO BAYESIANO CON SEM REAL (NO ±5 FIJO)
+                // TERMÓMETRO BAYESIANO CON SEM REAL
                 const deltaPtsSEM = Math.round(semVal * 15);
                 const minVal = Math.max(1, pts - deltaPtsSEM);
                 const targetVal = pts;
@@ -696,53 +797,44 @@
                     pinEl.style.left = `${targetVal}%`;
                 }
 
-                // MOTOR PREDICTIVO Y NARRATIVA DE EVOLUCIÓN HISTÓRICA
-                document.getElementById("lblVulnerabilidadTxt").innerText = adn.vulnerabilidad_dominante || "Enfoque procedimental estable.";
-                document.getElementById("lblPrescripcionTxt").innerText = adn.prescripcion_clinica || "Mantener práctica activa.";
+                // NARRATIVA
+                document.getElementById("lblVulnerabilidadTxt").innerText = adn.vulnerabilidad_dominante || "Estructura de razonamiento estable.";
+                document.getElementById("lblPrescripcionTxt").innerText = adn.prescripcion_clinica || "Fortalecer velocidad de lectura activa.";
                 
-                document.getElementById("ui-summary").innerText = `Crónica de trayectoria para ${nombreCapitalizado}: Hace ${examenesFiltrados.length} sesión(es) iniciaste el proceso. Mantienes una estabilidad de razonamiento con una resiliencia del ${adn.recuperacion || 80}%.`;
+                document.getElementById("ui-summary").innerText = `Crónica para ${nombreCapitalizado}: En la última evaluación de ${currentMateriaFiltro.replace('_', ' ').toUpperCase()} alcanzaste ${pts} pts. Tu tasa de resiliencia ante errores es de ${adn.recuperacion || 80}%.`;
 
-                document.getElementById("lblPrediccionProactiva").innerText = `⚠️ Riesgo estimado: En la próxima prueba de ${currentMateriaFiltro.replace('_', ' ').toUpperCase()}, existe un ${Math.round(impulsividadPct + 40)}% de probabilidad de fallar en reactivos que combinen gráficos con distractores de heurística directa.`;
+                document.getElementById("lblPrediccionProactiva").innerText = `🔮 Predicción IA: En la próxima sesión de ${currentMateriaFiltro.replace('_', ' ').toUpperCase()}, existe un ${Math.round(impulsividadPct + 35)}% de probabilidad de fallar en reactivos que combinen tablas complejas con distractores directos.`;
 
-                this.renderizarSemaforo(perfilRadar.matematicas, perfilRadar.lectura_critica, perfilRadar.ciencias_naturales);
-                this.renderizarTemas(adn.plan_entrenamiento || ["Repaso de conceptos fundamentales"]);
-                this.renderizarMapaCalor(adn.mapa_calor_sesgos || {});
+                // SINERGIA COGNITIVA TRANSVERSAL
+                document.getElementById("lblSimuladorImpactoTexto").innerHTML = `🔗 <strong>Sinergia Transversal:</strong> La impulsividad detectada en esta ciencia (-${ptsPerdidosImp} pts) afecta el tiempo de lectura en Lectura Crítica. Si corriges este sesgo, ganarás <strong class="text-[#51e2f5]">+14 puntos globales ICFES</strong>.`;
+
+                this.renderizarSemaforo(configm.subcompetencias, [pts + 5, pts - 5, pts - 12]);
+                this.renderizarTemas(adn.plan_entrenamiento || ["Misión 1: Repaso de conceptos clave", "Misión 2: Taller de descarte"]);
+                this.renderizarMapaCalor(configm.sesgos_por_defectos);
                 this.renderizarTablaExamenes(examenesFiltrados);
                 this.calcularPuntajeGlobal500();
+
+                // DIBUJAR RADAR ESPECÍFICO
+                perfilRadar = { e1: pts, e2: Math.max(30, pts - 8), e3: Math.max(35, pts - 12), e4: Math.max(40, pts - 5), e5: Math.max(30, pts - 10), e6: 75 };
+                drawRadar();
             }
 
-            static renderizarSemaforo(mat, lec, cie) {
-                const mapMat = { "Matemáticas": mat || 50, "Lectura Crítica": lec || 50, "Ciencias Naturales": cie || 50 };
-                const ordenados = Object.entries(mapMat).sort((a, b) => b[1] - a[1]);
-
-                document.getElementById("lblSemaforoFortaleza").innerText = `${ordenados[0][0]} (${ordenados[0][1]} pts)`;
-                document.getElementById("lblSemaforoRiesgo").innerText = `${ordenados[1][0]} (${ordenados[1][1]} pts)`;
-                document.getElementById("lblSemaforoPrioridad").innerText = `${ordenados[2][0]} (${ordenados[2][1]} pts)`;
-
-                // SIMULADOR DE IMPACTO DIRECTO
-                const materiaDebil = ordenados[2][0];
-                const mejoraPotencial = Math.round((100 - ordenados[2][1]) * 0.35);
-                document.getElementById("lblSimuladorImpactoTexto").innerHTML = `Si enfocas tu entrenamiento en <strong>${materiaDebil}</strong> y subes 10 puntos, tu proyección global ICFES aumentará aproximadamente <strong class="text-[#51e2f5]">+${mejoraPotencial} puntos globales</strong> sobre 500.`;
+            static renderizarSemaforo(subcomps, valores) {
+                document.getElementById("lblSemaforoFortaleza").innerText = `${subcomps[0] || 'Competencia 1'} (${valores[0] || 60} pts)`;
+                document.getElementById("lblSemaforoRiesgo").innerText = `${subcomps[1] || 'Competencia 2'} (${valores[1] || 50} pts)`;
+                document.getElementById("lblSemaforoPrioridad").innerText = `${subcomps[2] || 'Competencia 3'} (${valores[2] || 40} pts)`;
             }
 
             static calcularPuntajeGlobal500() {
-                if (cacheHistorialCompleto.length === 0) {
-                    document.getElementById("lblPuntajeGlobal500").innerHTML = `0 <span class="text-lg sm:text-xl text-slate-400 font-normal">/ 500 pts</span>`;
-                    document.getElementById("barPuntajeGlobal").style.width = `0%`;
-                    document.getElementById("lblProbabilidadMeta").innerText = `0% Sin Registros`;
-                    document.getElementById("lblNivelRango").innerText = "SIN PRUEBAS REGISTRADAS";
-                    drawRadar();
-                    return;
-                }
+                if (cacheHistorialCompleto.length === 0) return;
 
-                // CÁLCULO PONDERADO POR RECROCIDAD DE FECHA Y DIFICULTAD
                 let sumaPonderada = 0;
                 let pesoTotal = 0;
 
                 cacheHistorialCompleto.forEach((reg, idx) => {
                     const itemsR = typeof reg.items_respondidos === 'string' ? JSON.parse(reg.items_respondidos) : (reg.items_respondidos || {});
                     const pts = itemsR.puntaje_escalonado || reg.puntaje_escalonado || 50;
-                    const pesoReciente = 1 / (idx + 1); // Mayor peso a los exámenes recientes
+                    const pesoReciente = 1 / (idx + 1);
                     
                     sumaPonderada += (pts * pesoReciente);
                     pesoTotal += pesoReciente;
@@ -751,14 +843,22 @@
                 let promedio100 = sumaPonderada / (pesoTotal || 1);
                 let puntajeGlobal500 = Math.round((promedio100 / 100) * 500);
 
-                document.getElementById("lblPuntajeGlobal500").innerHTML = `${puntajeGlobal500} <span class="text-lg sm:text-xl text-slate-400 font-normal">/ 500 pts</span>`;
-                document.getElementById("barPuntajeGlobal").style.width = `${((puntajeGlobal500 / 500) * 100).toFixed(1)}%`;
+                if (currentMateriaFiltro === 'todas') {
+                    document.getElementById("lblPuntajeGlobal500").innerHTML = `${puntajeGlobal500} <span class="text-lg sm:text-xl text-slate-400 font-normal">/ 500 pts</span>`;
+                    document.getElementById("barPuntajeGlobal").style.width = `${((puntajeGlobal500 / 500) * 100).toFixed(1)}%`;
+                } else {
+                    const examFil = cacheHistorialCompleto.filter(x => String(x.materia || '').toLowerCase().includes(currentMateriaFiltro));
+                    const ult = examFil[0] || {};
+                    const itemsR = typeof ult.items_respondidos === 'string' ? JSON.parse(ult.items_respondidos) : (ult.items_respondidos || {});
+                    const ptsMat = itemsR.puntaje_escalonado || ult.puntaje_escalonado || 50;
+
+                    document.getElementById("lblPuntajeGlobal500").innerHTML = `${ptsMat} <span class="text-lg sm:text-xl text-slate-400 font-normal">/ 100 pts</span>`;
+                    document.getElementById("barPuntajeGlobal").style.width = `${ptsMat}%`;
+                }
 
                 let probMeta = Math.min(99, Math.max(10, Math.round((puntajeGlobal500 / 350) * 80)));
                 document.getElementById("lblProbabilidadMeta").innerText = `${probMeta}% Probabilidad Meta`;
                 document.getElementById("lblNivelRango").innerText = "TRAYECTORIA EVALUADA";
-
-                drawRadar();
             }
 
             static renderizarTemas(temas) {
@@ -767,7 +867,7 @@
                 cont.innerHTML = "";
                 
                 temas.forEach((t, i) => {
-                    const savedState = localStorage.getItem(`dante_task_${STUDENT_ID}_${i}`) === 'true';
+                    const savedState = localStorage.getItem(`dante_task_${STUDENT_ID}_${currentMateriaFiltro}_${i}`) === 'true';
                     const li = document.createElement("li");
                     li.className = "flex items-center justify-between p-1.5 rounded bg-slate-950 border border-slate-800/80";
                     li.innerHTML = `
@@ -782,25 +882,18 @@
             }
 
             static guardarEstadoMision(idx, checked) {
-                localStorage.setItem(`dante_task_${STUDENT_ID}_${idx}`, checked ? 'true' : 'false');
+                localStorage.setItem(`dante_task_${STUDENT_ID}_${currentMateriaFiltro}_${idx}`, checked ? 'true' : 'false');
                 this.procesarYRenderizarVistas();
             }
 
-            static renderizarMapaCalor(sesgos) {
+            static renderizarMapaCalor(sesgosArr) {
                 const cont = document.getElementById("contenedorBarrasSesgos");
                 if (!cont) return;
                 cont.innerHTML = "";
 
-                const itemsSesgos = [
-                    { n: "Respuestas Rápidas (Impulsividad)", v: sesgos.attr_heuristica_lineal || 0.15, desc: "Tendencia a responder en menos de 4s por intuición." },
-                    { n: "Inversión Operacional", v: sesgos.attr_inversion_operacional || 0.10, desc: "Confusión en el sentido de las operaciones algebraicas." },
-                    { n: "Omisión de Conversión", v: sesgos.attr_omision_conversion || 0.05, desc: "Omitir el paso de conversión de unidades." },
-                    { n: "Comprensión Espacial", v: sesgos.attr_error_geometrico || 0.05, desc: "Desajuste en la interpretación de planos y perfiles." }
-                ];
-
-                itemsSesgos.forEach(s => {
+                sesgosArr.forEach(s => {
                     const pct = Math.round(parseFloat(s.v) > 1.0 ? parseFloat(s.v) : parseFloat(s.v) * 100);
-                    let colorText = pct >= 30 ? "var(--alert)" : (pct >= 20 ? "var(--gold)" : "var(--primary)");
+                    let colorText = pct >= 20 ? "var(--alert)" : (pct >= 12 ? "var(--gold)" : "var(--primary)");
                     
                     const div = document.createElement("div");
                     div.className = "group relative cursor-pointer";
@@ -832,7 +925,7 @@
                     const tr = document.createElement("tr");
                     const fecha = new Date(reg.ultima_actualizacion || Date.now()).toLocaleDateString('es-CO');
                     const materia = String(reg.materia || 'GENERAL').replace('_', ' ').toUpperCase();
-                    const thetaVal = parseFloat(reg.theta_algebra_calculo || reg.theta || 0.0);
+                    const thetaVal = parseFloat(reg.theta || 0.0);
                     const percentil = Math.min(99, Math.max(15, Math.round(50 + (thetaVal * 20))));
                     
                     const itemsR = typeof reg.items_respondidos === 'string' ? JSON.parse(reg.items_respondidos) : (reg.items_respondidos || {});
@@ -845,7 +938,7 @@
                         <td class="p-2.5 font-bold text-[#D4AF37] font-mono">${pts} / 100 pts</td>
                         <td class="p-2.5 font-mono">
                             <button onclick="PerfilEstudiante.abrirInspeccionForense(${idx})" class="px-2 py-0.5 rounded text-[9px] font-bold bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500 hover:text-black transition">
-                                🔍 VER DETALLE
+                                🔍 DETALLE FORENSE
                             </button>
                         </td>
                     `;
@@ -860,9 +953,12 @@
                 const itemsR = typeof reg.items_respondidos === 'string' ? JSON.parse(reg.items_respondidos) : (reg.items_respondidos || {});
                 const clics = itemsR.historico_clics || [];
 
-                document.getElementById("lblModalForenseTitulo").innerText = `🔍 INSPECCIÓN: ${String(reg.materia).toUpperCase()}`;
+                document.getElementById("lblModalForenseTitulo").innerText = `🔍 INSPECCIÓN FORENSE: ${String(reg.materia).toUpperCase()}`;
                 
-                let htmlCuerpo = `<p class="mb-2 text-slate-400">Puntaje Escalonado: <strong class="text-[#D4AF37]">${itemsR.puntaje_escalonado || 50} pts</strong></p>`;
+                let htmlCuerpo = `<div class="p-2 bg-slate-950 rounded mb-2 border border-zinc-800">
+                    <p class="text-slate-300">Puntaje Módulo: <strong class="text-[#D4AF37]">${itemsR.puntaje_escalonado || 50} pts</strong></p>
+                    <p class="text-slate-400 text-[10px]">Habilidad (&theta;): ${parseFloat(reg.theta || 0).toFixed(4)} | Bayesian SEM: ${parseFloat(reg.bayesian_sem || 0.35).toFixed(3)}</p>
+                </div>`;
                 
                 if (clics.length === 0) {
                     htmlCuerpo += `<p class="italic text-slate-500">No se registraron vectores de clic individuales para esta sesión.</p>`;
@@ -888,12 +984,12 @@
             try {
                 const mapScore = (val) => { let v = Math.max(0, Math.min(100, val)); return (v / 100) * 100; };
                 let points = [ 
-                    mapScore(perfilRadar.matematicas), 
-                    mapScore(perfilRadar.lectura_critica), 
-                    mapScore(perfilRadar.ciencias_naturales), 
-                    mapScore(perfilRadar.ingles), 
-                    mapScore(perfilRadar.sociales_ciudadanas), 
-                    mapScore(perfilRadar.autorregulacion) 
+                    mapScore(perfilRadar.e1), 
+                    mapScore(perfilRadar.e2), 
+                    mapScore(perfilRadar.e3), 
+                    mapScore(perfilRadar.e4), 
+                    mapScore(perfilRadar.e5), 
+                    mapScore(perfilRadar.e6) 
                 ];
                 
                 const centerX = 50; const centerY = 50; const maxRadius = 45; 
