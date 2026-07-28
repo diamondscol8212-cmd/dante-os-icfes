@@ -169,18 +169,33 @@
             } catch(e) {}
             
             userSession.arquetipo = arquetipoFinal;
+            userSession.onboarding_completed = true;
             localStorage.setItem('dante_user', JSON.stringify(userSession));
 
+            const userIdentifier = userSession.email || userSession.document_id || userSession.estudiante;
             const sessionToken = localStorage.getItem('dante_token') || `token_anon_${Date.now()}`;
+            
             if (supabaseClient) {
                 try {
+                    // 1. Guardar en tabla dante_arquetipos_iniciales
                     await supabaseClient.from('dante_arquetipos_iniciales').upsert({
-                        id_sesion: sessionToken,
+                        id_sesion: userIdentifier || sessionToken,
                         arquetipo: arquetipoFinal,
                         puntajes_crudos: scores
                     }, { onConflict: 'id_sesion' });
+
+                    // 2. Actualizar estado en tabla usuarios para persistencia permanente
+                    if (userSession.email || userSession.document_id) {
+                        const cond = userSession.email ? `email.eq.${userSession.email}` : `document_id.eq.${userSession.document_id}`;
+                        await supabaseClient.from('usuarios')
+                            .update({ 
+                                arquetipo: arquetipoFinal, 
+                                onboarding_completed: true 
+                            })
+                            .or(cond);
+                    }
                 } catch(err) {
-                    console.error("Sincronización completada:", err);
+                    console.error("⚠️ Sincronización onboarding:", err);
                 }
             }
 
@@ -240,3 +255,4 @@
     </script>
 </body>
 </html>
+
