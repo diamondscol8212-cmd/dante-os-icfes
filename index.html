@@ -10,7 +10,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Oswald:wght@700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Oswald:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
@@ -86,7 +86,7 @@
             position: fixed; top: 0; width: 100%; z-index: 1000; padding: 10px 16px;
             background: rgba(5, 6, 10, 0.95); backdrop-filter: blur(16px);
             border-bottom: 1px solid var(--graphite);
-            display: flex; justify-content: space-between; align-items: center;
+            pointer-events: none; display: flex; justify-content: space-between; align-items: center;
         }
         .alias-title { font-size: 13px; font-weight: 800; letter-spacing: 1.5px; color: white; white-space: nowrap; }
         @media (min-width: 640px) { .alias-title { font-size: 15px; letter-spacing: 2px; } }
@@ -176,6 +176,7 @@
         
         .opciones-grid { display: flex; flex-direction: column; gap: 0.75rem; }
         
+        /* TARJETAS DE OPCIONES Y TACHADO INTEGRADO */
         .opcion-card {
             background: var(--bg-surface); border: 1px solid var(--graphite); border-radius: 10px;
             padding: 0.95rem 1.2rem; cursor: pointer; display: flex; align-items: center; gap: 1rem; 
@@ -184,6 +185,8 @@
 
         .opcion-card:hover { border-color: var(--cyan-core); background: rgba(24, 27, 36, 0.95); transform: translateX(4px); }
         .opcion-card.selected-intent { border-color: var(--cyan-core); background: rgba(81, 226, 245, 0.12); box-shadow: 0 0 20px rgba(81, 226, 245, 0.25); }
+        
+        /* TACHADO VISUAL DE OPCIONES DESCARTADAS */
         .opcion-card.discarded { opacity: 0.35; text-decoration: line-through; filter: grayscale(1); }
 
         .opcion-id {
@@ -201,6 +204,7 @@
         .opcion-card.correct { border-color: var(--emerald) !important; background: rgba(46, 204, 113, 0.12) !important; text-decoration: none !important; opacity: 1 !important; }
         .opcion-card.wrong { border-color: var(--crimson) !important; background: rgba(231, 76, 60, 0.12) !important; }
 
+        /* CAJA DE CERTEZA METACOGNITIVA */
         #uiMetacognicion {
             background: rgba(12, 14, 24, 0.96); border: 2px solid var(--cyan-core); border-radius: 14px; 
             padding: 1.4rem 1rem; margin-top: 1rem; display: none; text-align: center;
@@ -228,26 +232,48 @@
         }
 
         .telemetry-badge-grid { 
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.9rem; margin-top: 1.2rem; text-align: left; 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 0.9rem; 
+            margin-top: 1.2rem; 
+            text-align: left; 
         }
         @media(min-width: 640px) { 
             .telemetry-badge-grid { grid-template-columns: repeat(3, 1fr); gap: 1rem; } 
         }
         
         .telemetry-card { 
-            background: rgba(14, 16, 24, 0.9); border: 1px solid var(--graphite); padding: 1rem; border-radius: 12px; position: relative;
+            background: rgba(14, 16, 24, 0.9); 
+            border: 1px solid var(--graphite); 
+            padding: 1rem; 
+            border-radius: 12px; 
+            position: relative;
         }
         .telemetry-num { font-size: 1.1rem; font-weight: 800; font-family: var(--font-mono); color: var(--gold-satin); margin-top: 0.35rem; }
 
         .tooltip-wrapper { position: relative; display: inline-flex; align-items: center; cursor: pointer; }
         .tooltip-box {
-            display: none; position: absolute; bottom: 125%; right: 0; width: 210px; 
-            background-color: #080910; color: #f1f5f9; text-align: left; padding: 0.65rem 0.85rem; 
-            border-radius: 8px; border: 1px solid var(--gold-satin); box-shadow: 0 10px 25px rgba(0,0,0,0.9);
-            z-index: 9999; font-size: 0.75rem; line-height: 1.35; pointer-events: none; font-family: var(--font-main);
+            display: none; 
+            position: absolute; 
+            bottom: 125%; 
+            right: 0; 
+            width: 210px; 
+            background-color: #080910; 
+            color: #f1f5f9;
+            text-align: left; 
+            padding: 0.65rem 0.85rem; 
+            border-radius: 8px; 
+            border: 1px solid var(--gold-satin);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.9);
+            z-index: 9999; 
+            font-size: 0.75rem; 
+            line-height: 1.35; 
+            pointer-events: none;
+            font-family: var(--font-main);
         }
         .tooltip-wrapper:hover .tooltip-box { display: block !important; }
 
+        /* DOCK FLOTANTE CON ÍCONOS SANITIZADOS */
         .bottom-nav { 
             position: fixed; bottom: 14px; width: 92%; max-width: 480px; left: 50%; transform: translateX(-50%); z-index: 1000;
             display: flex; justify-content: space-evenly; align-items: center;
@@ -262,6 +288,7 @@
         #dante-anchor { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--gold-satin); background: #000; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(212,175,55,0.3); }
         #dante-anchor i { font-size: 18px; color: var(--gold-satin); }
 
+        /* TUTORIAL */
         .tutorial-overlay {
             position: fixed; inset: 0; background: rgba(1, 2, 6, 0.92); backdrop-filter: blur(16px);
             z-index: 99999; display: flex; justify-content: center; align-items: center; padding: 1.5rem;
@@ -323,7 +350,7 @@
         </div>
 
         <div class="flex items-center gap-2 sm:gap-3" style="pointer-events: auto;">
-            <button type="button" onclick="AppController.toggleContraste()" class="text-xs text-amber-400 hover:text-amber-300 p-1.5 bg-transparent border-0 cursor-pointer" title="Cambiar modo de contraste">
+            <button type="button" onclick="AppController.toggleContraste()" class="text-xs text-amber-400 hover:text-amber-300 p-1.5 bg-transparent border-0 cursor-pointer" title="Cambiar modo de contraste (Claro/Oscuro)" aria-label="Cambiar modo de contraste">
                 <i class="fas fa-sun" id="iconContrast"></i>
             </button>
             <div class="hidden sm:flex flex-col text-right">
@@ -372,6 +399,7 @@
                 <button type="button" class="btn-premium btn-pulse-glow" style="margin-top: 1rem; border-color: var(--cyan-core); color: var(--cyan-core);" onclick="AppController.liberarEntornoHaciaWorkspace()">🚀 DESPLEGAR DESAFÍO</button>
             </div>
 
+            <!-- BOTÓN ÚNICO -->
             <button type="button" class="btn-premium btn-pulse-glow" id="btnIngresar" onclick="AppController.inicializarSesion()">🚀 INICIAR SIMULACRO ADAPTATIVO</button>
             
             <a href="perfil.html" class="btn-premium" style="border-color: var(--cyan-core); color: var(--cyan-core);">
@@ -394,6 +422,19 @@
                 <div class="meta-tag" id="lblCompetence">Competencia: General</div>
             </div>
         </header>
+
+        <!-- BANNER MISIÓN PSICO-TÁCTICA DERIVADA DEL ONBOARDING -->
+        <div id="uiBannerOnboardingMision" style="display: none; background: rgba(15, 23, 42, 0.95); border: 1.5px solid var(--gold-satin); border-radius: 12px; padding: 0.85rem 1.1rem; margin-bottom: 1.2rem; box-shadow: 0 8px 25px rgba(0,0,0,0.6);" class="text-left font-mono max-w-[1200px] mx-auto">
+            <div class="flex items-center justify-between gap-2 flex-wrap mb-1">
+                <span class="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-2" id="lblBannerArquetipo">
+                    <i class="fa-solid fa-crosshairs text-amber-400"></i> ARQUETIPO: ESTRATEGA REFLEXIVO
+                </span>
+                <span class="text-[10px] text-cyan-300 bg-cyan-950/80 px-2.5 py-0.5 rounded-full border border-cyan-400/40 font-bold uppercase tracking-wider">🎯 MISIÓN PSICO-TÁCTICA ACTIVA</span>
+            </div>
+            <p class="text-xs text-slate-200 font-sans leading-relaxed" id="lblBannerMisionInstruccion">
+                Misión #1: Ejecuta lecturas pausadas y utiliza el descarte metódico de opciones antes de confirmar.
+            </p>
+        </div>
 
         <div class="content-layout" id="containerLayout">
             <section class="panel-enunciado" id="uiEnunciados"></section>
@@ -592,10 +633,26 @@
         class InteractiveTutorial {
             static currentStep = 1;
             static steps = [
-                { badge: "Paso 1 de 4: Selección de Respuesta", title: "1. Elige tu Respuesta", text: "Lee detenidamente la pregunta y haz clic en la opción que consideres correcta (A, B, C o D)." },
-                { badge: "Paso 2 de 4: Confirmación", title: "2. Confirma tu Elección", text: "Haz clic en el botón 'CONFIRMAR ELECCIÓN' para guardar tu intento." },
-                { badge: "Paso 3 de 4: Declaración de Certeza", title: "3. Indica tu Confianza", text: "Indica si estabas seguro, dudoso o si adivinaste para calibrar tu precisión metacognitiva." },
-                { badge: "Paso 4 de 4: Progreso Adaptativo", title: "4. Revisa tu Diagnóstico", text: "Visualiza tus métricas en tiempo real y presiona 'SIGUIENTE REACTIVO' para avanzar." }
+                {
+                    badge: "Paso 1 de 4: Selección de Respuesta",
+                    title: "1. Elige tu Respuesta",
+                    text: "Lee detenidamente la pregunta y haz clic en la opción que consideres correcta (A, B, C o D)."
+                },
+                {
+                    badge: "Paso 2 de 4: Confirmación",
+                    title: "2. Confirma tu Elección",
+                    text: "Haz clic en el botón 'CONFIRMAR ELECCIÓN' para guardar tu intento."
+                },
+                {
+                    badge: "Paso 3 de 4: Declaración de Certeza",
+                    title: "3. Indica tu Confianza",
+                    text: "Indica si estabas seguro, dudoso o si adivinaste para calibrar tu precisión metacognitiva."
+                },
+                {
+                    badge: "Paso 4 de 4: Progreso Adaptativo",
+                    title: "4. Revisa tu Diagnóstico",
+                    text: "Visualiza tus métricas en tiempo real y presiona 'SIGUIENTE REACTIVO' para avanzar."
+                }
             ];
 
             static verificarMostrar() {
@@ -619,7 +676,11 @@
                 if (textEl) textEl.innerText = step.text;
 
                 if (nextBtn) {
-                    nextBtn.innerText = this.currentStep === this.steps.length ? "🚀 ¡Entendido, Empezar!" : "Siguiente Paso ➡️";
+                    if (this.currentStep === this.steps.length) {
+                        nextBtn.innerText = "🚀 ¡Entendido, Empezar!";
+                    } else {
+                        nextBtn.innerText = "Siguiente Paso ➡️";
+                    }
                 }
             }
 
@@ -654,7 +715,13 @@
                 const isLight = document.body.classList.contains('light-mode');
                 localStorage.setItem("dante_theme", isLight ? "light" : "dark");
                 const icon = document.getElementById("iconContrast");
-                if (icon) icon.className = isLight ? "fas fa-moon" : "fas fa-sun";
+                if (icon) {
+                    if (isLight) {
+                        icon.className = "fas fa-moon";
+                    } else {
+                        icon.className = "fas fa-sun";
+                    }
+                }
             }
 
             static resolverContextoAutenticado() {
@@ -687,6 +754,26 @@
                     if (welcomeEl) {
                         welcomeEl.innerText = `SALA DE ${AppState.estudiante.toUpperCase()}`;
                         welcomeEl.setAttribute("data-final", `SALA DE ${AppState.estudiante.toUpperCase()}`);
+                    }
+
+                    // Cargar Misión Psico-Táctica e información del Onboarding
+                    const onboardingProfileRaw = localStorage.getItem("dante_onboarding_profile");
+                    const onboardingProfile = onboardingProfileRaw ? JSON.parse(onboardingProfileRaw) : null;
+                    const arquetipo = sessionData.arquetipo || (onboardingProfile && onboardingProfile.arquetipo) || "Estratega Reflexivo de Alto Rendimiento";
+                    const misionObj = sessionData.mision_activa || (onboardingProfile && onboardingProfile.mision) || null;
+
+                    const bannerEl = document.getElementById("uiBannerOnboardingMision");
+                    const arquetipoEl = document.getElementById("lblBannerArquetipo");
+                    const misionEl = document.getElementById("lblBannerMisionInstruccion");
+
+                    if (bannerEl && arquetipoEl && misionEl) {
+                        arquetipoEl.innerHTML = `<i class="fa-solid fa-crosshairs text-amber-400"></i> ARQUETIPO: ${arquetipo.toUpperCase()}`;
+                        if (misionObj && misionObj.instruccion) {
+                            misionEl.innerText = `🎯 ${misionObj.titulo || 'Misión Psico-Táctica #1'}: ${misionObj.instruccion}`;
+                        } else {
+                            misionEl.innerText = `🎯 Misión #1: Ejecuta lecturas pausadas y utiliza la herramienta de descarte de opciones [✂️ Tachar] antes de responder.`;
+                        }
+                        bannerEl.style.display = "block";
                     }
 
                     this.autoselectSiguienteMateria();
@@ -771,7 +858,9 @@
                         })
                     });
                     
-                    if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
+                    if (!res.ok) {
+                        throw new Error(`HTTP Error ${res.status}`);
+                    }
 
                     const data = await res.json();
                     if (data.success) {
@@ -797,6 +886,7 @@
                 } catch (err) {
                     console.warn("⚠️ [CONEXIÓN BACKEND/OFFLINE]:", err.message);
                     
+                    // FALLBACK MOCK REACTIVO EN CASO DE ESTAR OFFLINE O SIN BACKEND
                     const mockInitialData = {
                         success: true,
                         detenerExamen: false,
@@ -805,7 +895,12 @@
                         item: {
                             id: "item_demo_01",
                             pregunta_texto: "En una maratón escolar, Carlos corre a una velocidad constante de 5 m/s durante 2 minutos. ¿Qué distancia total recorre en ese intervalo?",
-                            opciones_respuesta: ["600 metros", "100 metros", "300 metros", "1200 metros"],
+                            opciones_respuesta: [
+                                "600 metros",
+                                "100 metros",
+                                "300 metros",
+                                "1200 metros"
+                            ],
                             sub_competencia: "Álgebra y Razonamiento"
                         }
                     };
@@ -891,6 +986,7 @@
                 }, 1000);
             }
 
+            /* PANTALLA DE CLAUSURA CON MAPA DE RUTA HACIA EL SIGUIENTE MÓDULO */
             static desplegarClausuraExamen(reporte) {
                 localStorage.setItem(`dante_completado_${AppState.materia}_${AppState.estudiante}`, 'true');
 
@@ -987,6 +1083,10 @@
                 
                 const btnConfirmar = document.getElementById("btnConfirmarSeleccion");
                 if (btnConfirmar) btnConfirmar.style.display = "block";
+                
+                setTimeout(() => {
+                    if (btnConfirmar) btnConfirmar.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 100);
 
                 const segsParaPerfil = ((performance.now() - AppState.timestamps.inicioReactivo) / 1000).toFixed(1);
                 const timeEl = document.getElementById("telemetryTime");
@@ -1046,7 +1146,6 @@
                         sessionId: String(AppState.sessionId), 
                         itemId: String(AppState.itemActual ? AppState.itemActual.id : "item_01"), 
                         areaGeneral: String(AppState.materia),
-                        respuestaSeleccionada: AppState.seleccionActual ? AppState.seleccionActual.id : null, // FIX MAPPING
                         responseTime: parseFloat(segundosTotales.toFixed(2)), 
                         declaredConfidence: String(nivelCerteza), 
                         selectionVector: AppState.historialSeleccion,
@@ -1066,7 +1165,9 @@
                         body: JSON.stringify(payloadSaneado)
                     });
                     
-                    if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
+                    if (!res.ok) {
+                        throw new Error(`HTTP Error ${res.status}`);
+                    }
 
                     const data = await res.json();
                     if (!data.success) throw new Error(data.error || "Fallo transaccional.");
@@ -1107,6 +1208,7 @@
                 } catch (err) {
                     console.warn("⚠️ Fallo en red/backend. Modo de contingencia local:", err.message);
                     
+                    // MOCK DE RESPUESTA EN CASO OFFLINE
                     const isMockCorrect = (AppState.seleccionActual && AppState.seleccionActual.id === "A");
                     const mockData = {
                         success: true,
