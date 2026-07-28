@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Dante OS - Plataforma Adaptativa Enterprise</title>
     
+    <!-- CDN ApexCharts & Tailwind CSS & FontAwesome & Fonts -->
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -107,7 +108,8 @@
             text-decoration: none; font-size: 0.9rem; font-family: var(--font-mono); backdrop-filter: blur(8px);
             box-shadow: 0 0 20px rgba(212, 175, 55, 0.25);
         }
-        .btn-premium:hover { background: var(--gold-satin); color: var(--bg-deep); box-shadow: 0 0 30px var(--gold-glow); transform: translateY(-2px); }
+        .btn-premium:hover:not(:disabled) { background: var(--gold-satin); color: var(--bg-deep); box-shadow: 0 0 30px var(--gold-glow); transform: translateY(-2px); }
+        .btn-premium:disabled { opacity: 0.5; cursor: not-allowed; border-color: rgba(255,255,255,0.1); }
 
         .btn-pulse-glow { animation: pulseGlow 1.8s infinite alternate; }
         @keyframes pulseGlow {
@@ -165,7 +167,7 @@
 
         .btn-discard-action {
             margin-left: auto; color: var(--text-muted); font-size: 0.8rem; padding: 4px 8px;
-            border-radius: 4px; transition: all 0.2s; opacity: 0.6;
+            border-radius: 4px; transition: all 0.2s; opacity: 0.6; background: transparent; border: 0; cursor: pointer;
         }
         .btn-discard-action:hover { color: var(--crimson); opacity: 1; }
 
@@ -304,8 +306,8 @@
             </p>
 
             <div class="flex gap-2">
-                <button class="btn-premium text-xs py-2.5" id="btnTutorialSkip" onclick="InteractiveTutorial.omitirTutorial()" style="border-color: rgba(255,255,255,0.2); color: #8a8f9d;">Omitir Guía</button>
-                <button class="btn-premium text-xs py-2.5 btn-pulse-glow" id="btnTutorialNext" onclick="InteractiveTutorial.siguientePaso()">Entendido, Continuar ➡️</button>
+                <button type="button" class="btn-premium text-xs py-2.5" id="btnTutorialSkip" onclick="InteractiveTutorial.omitirTutorial()" style="border-color: rgba(255,255,255,0.2); color: #8a8f9d;">Omitir Guía</button>
+                <button type="button" class="btn-premium text-xs py-2.5 btn-pulse-glow" id="btnTutorialNext" onclick="InteractiveTutorial.siguientePaso()">Entendido, Continuar ➡️</button>
             </div>
         </div>
     </div>
@@ -341,7 +343,7 @@
             <h1 class="gateway-title" id="lblGatewayWelcome" data-final="DANTE OS RUNTIME">Dante OS Runtime</h1>
             
             <div class="selector-group" style="margin-top: 1.2rem;">
-                <label class="selector-label">Secuencia de Diagnóstico (Prueba <span id="lblPasoActualNum">1</span> de 5)</label>
+                <label for="selMateria" class="selector-label">Secuencia de Diagnóstico (Prueba <span id="lblPasoActualNum">1</span> de 5)</label>
                 <select id="selMateria" onchange="AppController.actualizarIndicadorSecuencia()">
                     <option value="matematicas">📐 1. Matemáticas</option>
                     <option value="lectura_critica">📖 2. Lectura Crítica</option>
@@ -361,16 +363,16 @@
             <div id="uiContenedorCronicaArranque" class="narrative-card" style="display: none; margin-bottom: 1.2rem; border-left: 4px solid var(--cyan-core); background: rgba(10,12,20,0.85); padding: 1.1rem; border-radius: 10px; text-align: left;">
                 <div class="narrative-title font-mono text-xs font-bold mb-1" style="color: var(--cyan-core);">📖 MEMORIA DE TRAYECTORIA COGNITIVA</div>
                 <p class="narrative-p text-xs text-slate-300 leading-relaxed" id="lblTextoCronicaArranque"></p>
-                <button class="btn-premium btn-pulse-glow" style="margin-top: 1rem; border-color: var(--cyan-core); color: var(--cyan-core);" onclick="AppController.liberarEntornoHaciaWorkspace()">🚀 DESPLEGAR DESAFÍO</button>
+                <button type="button" class="btn-premium btn-pulse-glow" style="margin-top: 1rem; border-color: var(--cyan-core); color: var(--cyan-core);" onclick="AppController.liberarEntornoHaciaWorkspace()">🚀 DESPLEGAR DESAFÍO</button>
             </div>
 
-            <!-- BOTÓN ÚNICO: SE OCULTA CUANDO APARECE LA CRÓNICA -->
-            <button class="btn-premium btn-pulse-glow" id="btnIngresar" onclick="AppController.inicializarSesion()">🚀 INICIAR SIMULACRO ADAPTATIVO</button>
+            <!-- BOTÓN ÚNICO -->
+            <button type="button" class="btn-premium btn-pulse-glow" id="btnIngresar" onclick="AppController.inicializarSesion()">🚀 INICIAR SIMULACRO ADAPTATIVO</button>
             
-            <a href="/perfil.html" class="btn-premium" style="border-color: var(--cyan-core); color: var(--cyan-core);">
+            <a href="perfil.html" class="btn-premium" style="border-color: var(--cyan-core); color: var(--cyan-core);">
                 👤 CONSULTAR MI PERFIL / HISTORIAL
             </a>
-            <button class="btn-premium" style="border-color:var(--crimson); color:var(--crimson); margin-top:0.4rem;" onclick="AppController.cerrarSesionGated()">Cerrar Portal</button>
+            <button type="button" class="btn-premium" style="border-color:var(--crimson); color:var(--crimson); margin-top:0.4rem;" onclick="AppController.cerrarSesionGated()">Cerrar Portal</button>
         </div>
     </main>
 
@@ -396,7 +398,7 @@
                     <div class="pregunta-txt" id="uiPregunta">-</div>
                     <div class="opciones-grid" id="uiOpcionesGrid"></div>
                     
-                    <button class="btn-premium btn-pulse-glow" id="btnConfirmarSeleccion" style="margin-top: 1.2rem; display: none;" onclick="QuizEngine.abrirFaseMetacognitiva()">
+                    <button type="button" class="btn-premium btn-pulse-glow" id="btnConfirmarSeleccion" style="margin-top: 1.2rem; display: none;" onclick="QuizEngine.abrirFaseMetacognitiva()">
                         ⚡ CONFIRMAR ELECCIÓN
                     </button>
                 </div>
@@ -409,16 +411,16 @@
                         <span id="lblContadorSegundos" style="font-size: 2.2rem; color: var(--gold-satin);" class="font-mono">10</span>
                         <p style="font-size: 0.68rem; color: var(--text-muted);" class="font-mono">Pausa estratégica de autorregulación</p>
                     </div>
-                    <button id="btnDesbloquearFreno" class="btn-premium" style="margin-top: 1rem; display: none; border-color: var(--emerald); color: var(--emerald);" onclick="QuizEngine.liberarFrenoIntervencion()">Activar Análisis Detallado</button>
+                    <button type="button" id="btnDesbloquearFreno" class="btn-premium" style="margin-top: 1rem; display: none; border-color: var(--emerald); color: var(--emerald);" onclick="QuizEngine.liberarFrenoIntervencion()">Activar Análisis Detallado</button>
                 </div>
 
                 <div id="uiMetacognicion">
                     <div class="font-mono text-xs text-[#51e2f5] uppercase tracking-widest font-bold mb-1">EVALUACIÓN DE CERTEZA</div>
                     <p style="font-size: 0.88rem; color: #fff;" class="font-sans font-semibold">¿Con qué grado de confianza respondiste este ejercicio?</p>
                     <div class="meta-grid">
-                        <button class="btn-meta" onclick="QuizEngine.confirmarMetacognicion('alta')">🟢 Seguro</button>
-                        <button class="btn-meta" onclick="QuizEngine.confirmarMetacognicion('media')">🟡 Dudoso</button>
-                        <button class="btn-meta" onclick="QuizEngine.confirmarMetacognicion('baja')">🔴 Adiviné</button>
+                        <button type="button" class="btn-meta" onclick="QuizEngine.confirmarMetacognicion('alta')">🟢 Seguro</button>
+                        <button type="button" class="btn-meta" onclick="QuizEngine.confirmarMetacognicion('media')">🟡 Dudoso</button>
+                        <button type="button" class="btn-meta" onclick="QuizEngine.confirmarMetacognicion('baja')">🔴 Adiviné</button>
                     </div>
                 </div>
 
@@ -427,7 +429,7 @@
                     <div class="forensic-box" id="uiFeedbackCuerpoAndamiaje">
                         <p class="text-xs text-slate-200 leading-relaxed" id="forensicRealidad">-</p>
                     </div>
-                    <button class="btn-premium btn-pulse-glow" id="btnContinuarFeedback" style="margin-top: 1rem;" onclick="QuizEngine.procesarFrenoComprension()">Continuar Evaluación ➡️</button>
+                    <button type="button" class="btn-premium btn-pulse-glow" id="btnContinuarFeedback" style="margin-top: 1rem;" onclick="QuizEngine.procesarFrenoComprension()">Continuar Evaluación ➡️</button>
                 </div>
             </section>
         </div>
@@ -439,7 +441,7 @@
             <h2 style="color: var(--gold-satin); font-size: 1.15rem;" class="font-mono font-bold">Resumen de Decisión</h2>
             <p style="color: var(--text-muted); font-size: 0.72rem;" class="font-mono font-semibold">Análisis de tu Estrategia de Razonamiento</p>
             
-            <button class="btn-premium btn-pulse-glow" style="margin: 1rem 0; font-size: 0.88rem;" onclick="AppController.avanzarSiguienteFase()">
+            <button type="button" class="btn-premium btn-pulse-glow" style="margin: 1rem 0; font-size: 0.88rem;" onclick="AppController.avanzarSiguienteFase()">
                 🚀 CONTINUAR A LA SIGUIENTE PREGUNTA ➡️
             </button>
 
@@ -521,17 +523,17 @@
                     <p style="font-size: 0.65rem; color: var(--text-muted);" class="font-mono">Nivel de Dominio Estimado</p>
                     <p id="lblThetaActual" style="font-size: 0.95rem; color: var(--gold-satin);" class="font-mono font-semibold">Superas al 72% de estudiantes en tu nivel</p>
                 </div>
-                <button class="btn-premium btn-pulse-glow" style="width: auto; padding: 0.7rem 1.4rem; margin-top: 0;" onclick="AppController.avanzarSiguienteFase()">
+                <button type="button" class="btn-premium btn-pulse-glow" style="width: auto; padding: 0.7rem 1.4rem; margin-top: 0;" onclick="AppController.avanzarSiguienteFase()">
                     Siguiente Reactivo ➡️
                 </button>
             </div>
         </div>
     </main>
 
-    <!-- VISTA 4: CLAUSURA Y PANTALLA DE RECOMPENSA CON RUTA SIGUIENTE -->
+    <!-- VISTA 4: CLAUSURA Y PANTALLA DE RECOMPENSA -->
     <main id="viewFinalReport" class="app-view" style="justify-content: center; align-items: center;"></main>
 
-    <!-- DOCK FLOTANTE INFERIOR CON ÍCONOS DE EXPEDIENTE -->
+    <!-- DOCK FLOTANTE INFERIOR -->
     <nav class="bottom-nav">
         <div class="nav-item" onclick="window.location.reload()">
             <div class="icon-circle">
@@ -544,7 +546,7 @@
             <i class="fas fa-brain"></i>
         </div>
         
-        <div class="nav-item" onclick="window.location.href='/perfil.html'">
+        <div class="nav-item" onclick="window.location.href='perfil.html'">
             <div class="icon-circle" style="border-color: rgba(212,175,55,0.3)">
                 <i class="fas fa-user-astronaut text-[var(--gold-satin)] text-sm"></i>
             </div>
@@ -572,7 +574,7 @@
             historialSeleccion: [], 
             seleccionActual: null,
             telemetriaActual: { tiempoTotal: 0, conteoMutaciones: 0, certeza: "" },
-            opcionesDescartadas: [], // NUEVA MÉTRICA CONDUCTUAL
+            opcionesDescartadas: [], 
             bufferRetornoSiguiente: null,
             bufferEventosCognitivos: [],
             controlIntervencion: { interval: null, segundosRestantes: 0 },
@@ -610,21 +612,29 @@
             static verificarMostrar() {
                 const tutorialVisto = localStorage.getItem('dante_tutorial_visto');
                 if (!tutorialVisto) {
-                    document.getElementById('modalTutorial').style.display = 'flex';
+                    const modal = document.getElementById('modalTutorial');
+                    if (modal) modal.style.display = 'flex';
                     this.renderizarStep();
                 }
             }
 
             static renderizarStep() {
                 const step = this.steps[this.currentStep - 1];
-                document.getElementById('lblTutorialStep').innerText = step.badge;
-                document.getElementById('lblTutorialTitle').innerText = step.title;
-                document.getElementById('lblTutorialText').innerText = step.text;
+                const badgeEl = document.getElementById('lblTutorialStep');
+                const titleEl = document.getElementById('lblTutorialTitle');
+                const textEl = document.getElementById('lblTutorialText');
+                const nextBtn = document.getElementById('btnTutorialNext');
 
-                if (this.currentStep === this.steps.length) {
-                    document.getElementById('btnTutorialNext').innerText = "🚀 ¡Entendido, Empezar!";
-                } else {
-                    document.getElementById('btnTutorialNext').innerText = "Siguiente Paso ➡️";
+                if (badgeEl) badgeEl.innerText = step.badge;
+                if (titleEl) titleEl.innerText = step.title;
+                if (textEl) textEl.innerText = step.text;
+
+                if (nextBtn) {
+                    if (this.currentStep === this.steps.length) {
+                        nextBtn.innerText = "🚀 ¡Entendido, Empezar!";
+                    } else {
+                        nextBtn.innerText = "Siguiente Paso ➡️";
+                    }
                 }
             }
 
@@ -639,7 +649,8 @@
 
             static omitirTutorial() {
                 localStorage.setItem('dante_tutorial_visto', 'true');
-                document.getElementById('modalTutorial').style.display = 'none';
+                const modal = document.getElementById('modalTutorial');
+                if (modal) modal.style.display = 'none';
             }
         }
 
@@ -649,30 +660,41 @@
                 const token = localStorage.getItem("dante_token");
 
                 if (!rawUser || !token) {
-                    alert("🚨 CONTROL PERIMETRAL: Sesión ausente o expirada. Redirigiendo al portal.");
-                    window.location.href = "/login.html";
+                    console.warn("⚠️ Sesión no detectada, redirigiendo a login...");
+                    window.location.href = "login.html";
                     return;
                 }
 
-                const sessionData = JSON.parse(rawUser);
-                AppState.estudiante = sessionData.email ? sessionData.email.split('@')[0].toLowerCase().trim() : (sessionData.estudiante || "usuario");
-                INSTITUTION_ID = sessionData.institution_id || "colegio_sandbox_default";
-                AppState.integrityToken = token;
+                try {
+                    const sessionData = JSON.parse(rawUser);
+                    AppState.estudiante = sessionData.email ? sessionData.email.split('@')[0].toLowerCase().trim() : (sessionData.estudiante || "usuario");
+                    INSTITUTION_ID = sessionData.institution_id || "colegio_sandbox_default";
+                    AppState.integrityToken = token;
 
-                const streak = localStorage.getItem("dante_streak_count") || "1";
-                document.getElementById("lblRachaDias").innerText = `${streak} ${streak === "1" ? 'Día' : 'Días'}`;
+                    const streak = localStorage.getItem("dante_streak_count") || "1";
+                    const rachaEl = document.getElementById("lblRachaDias");
+                    if (rachaEl) rachaEl.innerText = `${streak} ${streak === "1" ? 'Día' : 'Días'}`;
 
-                document.getElementById("lblTenantBanner").innerText = `🔗 CONECTADO: T-${INSTITUTION_ID.toUpperCase()}`;
-                document.getElementById("lblTenantBannerHeader").innerText = `TENANT: ${INSTITUTION_ID.toUpperCase()}`;
-                document.getElementById("lblGatewayWelcome").innerText = `SALA DE ${AppState.estudiante.toUpperCase()}`;
-                document.getElementById("lblGatewayWelcome").setAttribute("data-final", `SALA DE ${AppState.estudiante.toUpperCase()}`);
+                    const tenantBanner = document.getElementById("lblTenantBanner");
+                    const tenantHeader = document.getElementById("lblTenantBannerHeader");
+                    const welcomeEl = document.getElementById("lblGatewayWelcome");
 
-                // Sincronizar automáticamente la materia según el progreso guardado
-                this.autoselectSiguienteMateria();
+                    if (tenantBanner) tenantBanner.innerText = `🔗 CONECTADO: T-${INSTITUTION_ID.toUpperCase()}`;
+                    if (tenantHeader) tenantHeader.innerText = `TENANT: ${INSTITUTION_ID.toUpperCase()}`;
+                    if (welcomeEl) {
+                        welcomeEl.innerText = `SALA DE ${AppState.estudiante.toUpperCase()}`;
+                        welcomeEl.setAttribute("data-final", `SALA DE ${AppState.estudiante.toUpperCase()}`);
+                    }
+
+                    this.autoselectSiguienteMateria();
+                } catch(e) {
+                    console.error("Error leyendo dante_user:", e);
+                }
             }
 
             static autoselectSiguienteMateria() {
                 const sel = document.getElementById("selMateria");
+                if (!sel) return;
                 for (let i = 0; i < SECUENCIA_MATERIAS.length; i++) {
                     const mat = SECUENCIA_MATERIAS[i];
                     const completada = localStorage.getItem(`dante_completado_${mat}_${AppState.estudiante}`);
@@ -685,9 +707,12 @@
             }
 
             static actualizarIndicadorSecuencia() {
-                const selValue = document.getElementById("selMateria").value;
+                const sel = document.getElementById("selMateria");
+                if (!sel) return;
+                const selValue = sel.value;
                 const idx = SECUENCIA_MATERIAS.indexOf(selValue) + 1;
-                document.getElementById("lblPasoActualNum").innerText = idx;
+                const pasoEl = document.getElementById("lblPasoActualNum");
+                if (pasoEl) pasoEl.innerText = idx;
                 
                 const nombresMap = {
                     "matematicas": "1. MATEMÁTICAS",
@@ -696,34 +721,43 @@
                     "sociales_ciudadanas": "4. SOCIALES Y CIUDADANAS",
                     "ingles": "5. INGLÉS"
                 };
-                document.getElementById("lblRutaHeaderTag").innerText = `SECUENCIA ADAPTATIVA: ${nombresMap[selValue] || selValue.toUpperCase()} (${idx}/5)`;
+                const tagEl = document.getElementById("lblRutaHeaderTag");
+                if (tagEl) tagEl.innerText = `SECUENCIA ADAPTATIVA: ${nombresMap[selValue] || selValue.toUpperCase()} (${idx}/5)`;
             }
 
             static cerrarSesionGated() {
                 localStorage.removeItem("dante_token");
                 localStorage.removeItem("dante_user");
-                window.location.href = "/login.html";
+                window.location.href = "login.html";
             }
 
             static async inicializarSesion() {
                 const btn = document.getElementById("btnIngresar");
-                btn.innerText = "Sincronizando trayectoria cognitiva..."; btn.disabled = true;
+                if (btn) {
+                    btn.innerText = "Sincronizando trayectoria cognitiva..."; 
+                    btn.disabled = true;
+                }
 
-                AppState.materia = document.getElementById("selMateria").value;
+                const selMateria = document.getElementById("selMateria");
+                AppState.materia = selMateria ? selMateria.value : "matematicas";
                 AppState.historialTheta = [0.0]; 
 
                 localStorage.removeItem("dante_session_active");
                 AppState.sessionId = `session_web_clean_${Date.now()}`;
 
-                document.getElementById("lblEstudiante").innerText = `Estudiante: ${AppState.estudiante.toUpperCase()}`;
-                document.getElementById("lblMateria").innerText = `Módulo: ${AppState.materia.replace('_', ' ').toUpperCase()}`;
+                const lblEst = document.getElementById("lblEstudiante");
+                const lblMat = document.getElementById("lblMateria");
+
+                if (lblEst) lblEst.innerText = `Estudiante: ${AppState.estudiante.toUpperCase()}`;
+                if (lblMat) lblMat.innerText = `Módulo: ${AppState.materia.replace('_', ' ').toUpperCase()}`;
 
                 try {
+                    const token = localStorage.getItem("dante_token");
                     const res = await fetch(GATEWAY_URL, {
                         method: 'POST',
                         headers: { 
                             'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${localStorage.getItem("dante_token")}`
+                            'Authorization': `Bearer ${token}`
                         },
                         body: JSON.stringify({ 
                             studentId: String(AppState.estudiante), 
@@ -734,91 +768,136 @@
                         })
                     });
                     
+                    if (!res.ok) {
+                        throw new Error(`HTTP Error ${res.status}`);
+                    }
+
                     const data = await res.json();
                     if (data.success) {
                         AppState.integrityToken = data.generatedToken || AppState.integrityToken;
                         
                         if (data.cronicaBienvenida) {
-                            document.getElementById("lblTextoCronicaArranque").innerText = data.cronicaBienvenida;
-                            document.getElementById("uiContenedorCronicaArranque").style.display = "block";
+                            const lblCronica = document.getElementById("lblTextoCronicaArranque");
+                            const contenedorCronica = document.getElementById("uiContenedorCronicaArranque");
+                            if (lblCronica) lblCronica.innerText = data.cronicaBienvenida;
+                            if (contenedorCronica) contenedorCronica.style.display = "block";
                             
-                            // OCULTAR EL BOTÓN REPETIDO AL DESPLEGAR LA CRÓNICA
-                            btn.style.display = "none";
+                            if (btn) btn.style.display = "none";
                             AppState.bufferRetornoSiguiente = data; 
                         } else {
-                            btn.innerText = "🚀 INICIAR SIMULACRO ADAPTATIVO"; btn.disabled = false;
+                            if (btn) { btn.innerText = "🚀 INICIAR SIMULACRO ADAPTATIVO"; btn.disabled = false; }
                             this.cambiarVista("viewWorkspace");
                             this.procesarRetornoMotor(data);
                             InteractiveTutorial.verificarMostrar();
                         }
                     } else {
-                        throw new Error(data.error);
+                        throw new Error(data.error || "Error al iniciar sesión en el motor CAT.");
                     }
                 } catch (err) {
-                    alert("Fallo de conexión con el Servidor Node.js: " + err.message);
-                    btn.innerText = "🚀 INICIAR SIMULACRO ADAPTATIVO"; btn.disabled = false;
+                    console.warn("⚠️ [CONEXIÓN BACKEND/OFFLINE]:", err.message);
+                    
+                    // FALLBACK MOCK REACTIVO EN CASO DE ESTAR OFFLINE O SIN BACKEND
+                    const mockInitialData = {
+                        success: true,
+                        detenerExamen: false,
+                        thetaProgreso: 0.0,
+                        bayesianSEMProgreso: 0.5,
+                        item: {
+                            id: "item_demo_01",
+                            pregunta_texto: "En una maratón escolar, Carlos corre a una velocidad constante de 5 m/s durante 2 minutos. ¿Qué distancia total recorre en ese intervalo?",
+                            opciones_respuesta: [
+                                "600 metros",
+                                "100 metros",
+                                "300 metros",
+                                "1200 metros"
+                            ],
+                            sub_competencia: "Álgebra y Razonamiento"
+                        }
+                    };
+
+                    if (btn) { btn.innerText = "🚀 INICIAR SIMULACRO ADAPTATIVO"; btn.disabled = false; }
+                    this.cambiarVista("viewWorkspace");
+                    this.procesarRetornoMotor(mockInitialData);
+                    InteractiveTutorial.verificarMostrar();
                 }
             }
 
             static liberarEntornoHaciaWorkspace() {
-                document.getElementById("uiContenedorCronicaArranque").style.display = "none";
-                document.getElementById("btnIngresar").style.display = "block";
-                document.getElementById("btnIngresar").disabled = false;
+                const contenedorCronica = document.getElementById("uiContenedorCronicaArranque");
+                const btnIngresar = document.getElementById("btnIngresar");
+
+                if (contenedorCronica) contenedorCronica.style.display = "none";
+                if (btnIngresar) {
+                    btnIngresar.style.display = "block";
+                    btnIngresar.disabled = false;
+                }
                 this.cambiarVista("viewWorkspace");
                 this.procesarRetornoMotor(AppState.bufferRetornoSiguiente);
                 InteractiveTutorial.verificarMostrar();
             }
 
             static procesarRetornoMotor(data) {
+                if (!data) return;
+
                 if (data.detenerExamen) {
                     this.desplegarClausuraExamen(data.reporteFinal || data);
                     return;
                 }
 
                 AppState.preguntasRespondidasCount++;
-                document.getElementById("lblProgressCount").innerText = `Reactivo ${AppState.preguntasRespondidasCount} / Adaptativo`;
+                const countEl = document.getElementById("lblProgressCount");
+                if (countEl) countEl.innerText = `Reactivo ${AppState.preguntasRespondidasCount} / Adaptativo`;
 
                 AppState.theta = data.thetaProgreso !== undefined ? data.thetaProgreso : (data.theta || 0.0);
                 AppState.itemActual = data.item;
                 AppState.itemHash = data.itemHash || "";
                 AppState.timestamps.inicioReactivo = performance.now();
                 AppState.historialSeleccion = [];
-                AppState.opcionesDescartadas = []; // Reiniciar vector de descartes
+                AppState.opcionesDescartadas = []; 
                 AppState.seleccionActual = null;
                 AppState.esSegundoIntento = false;
-                document.getElementById("btnConfirmarSeleccion").style.display = "none";
+                
+                const btnConf = document.getElementById("btnConfirmarSeleccion");
+                if (btnConf) btnConf.style.display = "none";
 
                 DOMRenderer.sincronizarCuadernillo(AppState.itemActual, data.bayesianSEMProgreso || data.bayesianSEM || 0.5);
             }
 
             static deploymentAnomaliaControl(accs) {
-                document.getElementById("uiContenedorPreguntaCore").style.display = "none";
-                document.getElementById("uiIntervencionClinica").style.display = "block";
-                document.getElementById("btnDesbloquearFreno").style.display = "none";
+                const corePregunta = document.getElementById("uiContenedorPreguntaCore");
+                const intervencion = document.getElementById("uiIntervencionClinica");
+                const btnDesbloquear = document.getElementById("btnDesbloquearFreno");
+
+                if (corePregunta) corePregunta.style.display = "none";
+                if (intervencion) intervencion.style.display = "block";
+                if (btnDesbloquear) btnDesbloquear.style.display = "none";
 
                 const andamiaje = AppState.bufferRetornoSiguiente?.andamiajeForense || {};
 
-                document.getElementById("lblIntervencionTitulo").innerText = andamiaje.errorDetonado || "PAUSA DE AUTORREGULACIÓN";
-                document.getElementById("lblIntervencionCuerpo").innerText = andamiaje.remediacionSugerida || "Tómate 10 segundos para releer la pregunta antes de marcar.";
+                const tituloEl = document.getElementById("lblIntervencionTitulo");
+                const cuerpoEl = document.getElementById("lblIntervencionCuerpo");
+
+                if (tituloEl) tituloEl.innerText = andamiaje.errorDetonado || "PAUSA DE AUTORREGULACIÓN";
+                if (cuerpoEl) cuerpoEl.innerText = andamiaje.remediacionSugerida || "Tómate 10 segundos para releer la pregunta antes de marcar.";
 
                 AppState.controlIntervencion.segundosRestantes = accs.intervencion_activa === "IMPULSIVITY_BLOCK" ? 10 : 30;
-                document.getElementById("lblContadorSegundos").innerText = AppState.controlIntervencion.segundosRestantes;
+                const segsEl = document.getElementById("lblContadorSegundos");
+                if (segsEl) segsEl.innerText = AppState.controlIntervencion.segundosRestantes;
 
                 clearInterval(AppState.controlIntervencion.interval);
                 AppState.controlIntervencion.interval = setInterval(() => {
                     AppState.controlIntervencion.segundosRestantes--;
-                    document.getElementById("lblContadorSegundos").innerText = AppState.controlIntervencion.segundosRestantes;
+                    if (segsEl) segsEl.innerText = AppState.controlIntervencion.segundosRestantes;
                     
                     if (AppState.controlIntervencion.segundosRestantes <= 0) {
                         clearInterval(AppState.controlIntervencion.interval);
-                        document.getElementById("btnDesbloquearFreno").style.display = "inline-block";
+                        if (btnDesbloquear) btnDesbloquear.style.display = "inline-block";
                     }
                 }, 1000);
             }
 
             /* PANTALLA DE CLAUSURA CON MAPA DE RUTA HACIA EL SIGUIENTE MÓDULO */
             static desplegarClausuraExamen(reporte) {
-                // Guardar la materia actual como completada
                 localStorage.setItem(`dante_completado_${AppState.materia}_${AppState.estudiante}`, 'true');
 
                 const idxActual = SECUENCIA_MATERIAS.indexOf(AppState.materia);
@@ -835,16 +914,18 @@
                 document.querySelectorAll('.app-view').forEach(view => view.classList.remove('active'));
                 
                 const viewFinal = document.getElementById("viewFinalReport");
+                if (!viewFinal) return;
+
                 viewFinal.style.display = "flex";
                 viewFinal.classList.add("active");
                 
                 let botonAccionHTML = "";
                 if (tieneSiguiente) {
                     botonAccionHTML = `
-                        <button class="btn-premium btn-pulse-glow" style="margin-top: 1rem; border-color: var(--cyan-core); color: var(--cyan-core);" onclick="AppController.iniciarSiguienteModuloRuta('${siguienteMateriaKey}')">
+                        <button type="button" class="btn-premium btn-pulse-glow" style="margin-top: 1rem; border-color: var(--cyan-core); color: var(--cyan-core);" onclick="AppController.iniciarSiguienteModuloRuta('${siguienteMateriaKey}')">
                             🚀 AVANZAR A PRUEBA ${idxActual + 2}: ${nombresMap[siguienteMateriaKey].toUpperCase()} ➡️
                         </button>
-                        <a href="/perfil.html?estudiante=${AppState.estudiante}" class="block text-xs text-slate-400 font-mono mt-3 underline hover:text-white">
+                        <a href="perfil.html?estudiante=${AppState.estudiante}" class="block text-xs text-slate-400 font-mono mt-3 underline hover:text-white">
                             Ver mi expediente hasta aquí
                         </a>
                     `;
@@ -853,7 +934,7 @@
                         <div class="my-3 p-2 bg-emerald-500/10 border border-emerald-500/30 rounded text-emerald-400 font-mono text-xs">
                             🎉 ¡HAS COMPLETADO LAS 5 PRUEBAS DEL DIAGNÓSTICO GLOBAL!
                         </div>
-                        <a href="/perfil.html?estudiante=${AppState.estudiante}" class="btn-premium btn-pulse-glow" style="margin-top: 1rem; border-color: var(--gold-satin); color: var(--gold-satin);">
+                        <a href="perfil.html?estudiante=${AppState.estudiante}" class="btn-premium btn-pulse-glow" style="margin-top: 1rem; border-color: var(--gold-satin); color: var(--gold-satin);">
                             📜 CONSULTAR EXPEDIENTE FINAL Y REPORTE 🏆
                         </a>
                     `;
@@ -876,7 +957,8 @@
             }
 
             static iniciarSiguienteModuloRuta(siguienteMateria) {
-                document.getElementById("selMateria").value = siguienteMateria;
+                const sel = document.getElementById("selMateria");
+                if (sel) sel.value = siguienteMateria;
                 this.actualizarIndicadorSecuencia();
                 this.cambiarVista("viewGateway");
                 this.inicializarSesion();
@@ -893,7 +975,8 @@
 
             static cambiarVista(viewId) {
                 document.querySelectorAll('.app-view').forEach(view => view.classList.remove('active'));
-                document.getElementById(viewId).classList.add('active');
+                const targetView = document.getElementById(viewId);
+                if (targetView) targetView.classList.add('active');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         }
@@ -909,15 +992,18 @@
                 cardElement.classList.add('selected-intent');
                 
                 const btnConfirmar = document.getElementById("btnConfirmarSeleccion");
-                btnConfirmar.style.display = "block";
+                if (btnConfirmar) btnConfirmar.style.display = "block";
                 
                 setTimeout(() => {
-                    btnConfirmar.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    if (btnConfirmar) btnConfirmar.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 }, 100);
 
                 const segsParaPerfil = ((performance.now() - AppState.timestamps.inicioReactivo) / 1000).toFixed(1);
-                document.getElementById("telemetryTime").innerText = `${segsParaPerfil}s`;
-                document.getElementById("telemetryHesitation").innerText = `${AppState.historialSeleccion.length - 1} cambios`;
+                const timeEl = document.getElementById("telemetryTime");
+                const hesEl = document.getElementById("telemetryHesitation");
+
+                if (timeEl) timeEl.innerText = `${segsParaPerfil}s`;
+                if (hesEl) hesEl.innerText = `${AppState.historialSeleccion.length - 1} cambios`;
             }
 
             static toggleTacharOpcion(event, cardElement, letraOption) {
@@ -935,24 +1021,29 @@
                 if (cardElement.classList.contains('selected-intent')) {
                     cardElement.classList.remove('selected-intent');
                     AppState.seleccionActual = null;
-                    document.getElementById("btnConfirmarSeleccion").style.display = "none";
+                    const btnConf = document.getElementById("btnConfirmarSeleccion");
+                    if (btnConf) btnConf.style.display = "none";
                 }
             }
 
             static abrirFaseMetacognitiva() {
                 if (!AppState.seleccionActual) return;
-                document.getElementById("btnConfirmarSeleccion").style.display = "none";
+                const btnConf = document.getElementById("btnConfirmarSeleccion");
+                if (btnConf) btnConf.style.display = "none";
                 
                 const uiMeta = document.getElementById("uiMetacognicion");
-                uiMeta.style.display = "block";
-
-                setTimeout(() => {
-                    uiMeta.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 100);
+                if (uiMeta) {
+                    uiMeta.style.display = "block";
+                    setTimeout(() => {
+                        uiMeta.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 100);
+                }
             }
 
             static async confirmarMetacognicion(nivelCerteza) {
-                document.getElementById("uiMetacognicion").style.display = "none";
+                const uiMeta = document.getElementById("uiMetacognicion");
+                if (uiMeta) uiMeta.style.display = "none";
+
                 const segundosTotales = (performance.now() - AppState.timestamps.inicioReactivo) / 1000;
 
                 AppState.telemetriaActual.tiempoTotal = segundosTotales.toFixed(1);
@@ -961,24 +1052,33 @@
 
                 try {
                     const payloadSaneado = {
-                        studentId: String(AppState.estudiante), sessionId: String(AppState.sessionId), 
-                        itemId: String(AppState.itemActual.id), areaGeneral: String(AppState.materia),
-                        responseTime: parseFloat(segundosTotales.toFixed(2)), declaredConfidence: String(nivelCerteza), 
+                        studentId: String(AppState.estudiante), 
+                        sessionId: String(AppState.sessionId), 
+                        itemId: String(AppState.itemActual ? AppState.itemActual.id : "item_01"), 
+                        areaGeneral: String(AppState.materia),
+                        responseTime: parseFloat(segundosTotales.toFixed(2)), 
+                        declaredConfidence: String(nivelCerteza), 
                         selectionVector: AppState.historialSeleccion,
-                        opcionesDescartadas: AppState.opcionesDescartadas, // INYECCIÓN DE LA NUEVA MÉTRICA
-                        integrityToken: AppState.integrityToken, itemHash: AppState.itemHash,
+                        opcionesDescartadas: AppState.opcionesDescartadas,
+                        integrityToken: AppState.integrityToken, 
+                        itemHash: AppState.itemHash,
                         institution_id: INSTITUTION_ID 
                     };
 
+                    const token = localStorage.getItem("dante_token");
                     const res = await fetch(GATEWAY_URL, {
                         method: 'POST',
                         headers: { 
                             'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${localStorage.getItem("dante_token")}`
+                            'Authorization': `Bearer ${token}`
                         },
                         body: JSON.stringify(payloadSaneado)
                     });
                     
+                    if (!res.ok) {
+                        throw new Error(`HTTP Error ${res.status}`);
+                    }
+
                     const data = await res.json();
                     if (!data.success) throw new Error(data.error || "Fallo transaccional.");
 
@@ -986,8 +1086,8 @@
                     AppState.historialTheta.push(data.thetaProgreso !== undefined ? data.thetaProgreso : AppState.theta);
 
                     if (data.detenerExamen) {
-                        const card = AppState.seleccionActual.element;
-                        card.classList.add(data.interaccionCorrecta ? "correct" : "wrong");
+                        const card = AppState.seleccionActual ? AppState.seleccionActual.element : null;
+                        if (card) card.classList.add(data.interaccionCorrecta ? "correct" : "wrong");
                         setTimeout(() => {
                             AppController.desplegarClausuraExamen(data.reporteFinal || data);
                         }, 1000);
@@ -999,38 +1099,73 @@
                         return;
                     }
 
-                    const card = AppState.seleccionActual.element;
+                    const card = AppState.seleccionActual ? AppState.seleccionActual.element : null;
                     
                     if (!data.interaccionCorrecta && !AppState.esSegundoIntento) {
                         AppState.esSegundoIntento = true;
-                        card.classList.add("wrong");
+                        if (card) card.classList.add("wrong");
                         this.renderizarSegundoIntentoPista(data.andamiajeForense);
                         return;
                     }
 
                     if (data.interaccionCorrecta) {
-                        card.classList.add("correct");
+                        if (card) card.classList.add("correct");
                         setTimeout(() => { this.transicionarADashboard(); }, 1000);
                     } else {
-                        card.classList.add("wrong");
+                        if (card) card.classList.add("wrong");
                         this.renderizarAndamiajePedagogico(data.andamiajeForense);
                     }
                 } catch (err) {
-                    alert("Fallo de enlace: " + err.message);
+                    console.warn("⚠️ Fallo en red/backend. Modo de contingencia local:", err.message);
+                    
+                    // MOCK DE RESPUESTA EN CASO OFFLINE
+                    const isMockCorrect = (AppState.seleccionActual && AppState.seleccionActual.id === "A");
+                    const mockData = {
+                        success: true,
+                        detenerExamen: false,
+                        interaccionCorrecta: isMockCorrect,
+                        thetaProgreso: AppState.theta + (isMockCorrect ? 0.2 : -0.1),
+                        bayesianSEMProgreso: 0.45,
+                        andamiajeForense: {
+                            errorDetonado: "Cálculo de magnitud de velocidad",
+                            remediacionSugerida: "Recuerda convertir los minutos a segundos (2 min = 120s) antes de multiplicar por la velocidad."
+                        },
+                        item: {
+                            id: "item_demo_02",
+                            pregunta_texto: "Un tanque de agua de 500 litros se llena a una tasa de 25 litros por minuto. ¿Cuánto tiempo tarda en llenarse completamente?",
+                            opciones_respuesta: ["20 minutos", "25 minutos", "10 minutos", "50 minutos"],
+                            sub_competencia: "Matemáticas - Razonamiento Cuantitativo"
+                        }
+                    };
+
+                    AppState.bufferRetornoSiguiente = mockData;
+                    AppState.historialTheta.push(mockData.thetaProgreso);
+                    
+                    const card = AppState.seleccionActual ? AppState.seleccionActual.element : null;
+                    if (isMockCorrect) {
+                        if (card) card.classList.add("correct");
+                        setTimeout(() => { this.transicionarADashboard(); }, 1000);
+                    } else {
+                        if (card) card.classList.add("wrong");
+                        this.renderizarAndamiajePedagogico(mockData.andamiajeForense);
+                    }
                 }
             }
 
             static liberarFrenoIntervencion() {
-                document.getElementById("uiIntervencionClinica").style.display = "none";
-                document.getElementById("uiContenedorPreguntaCore").style.display = "block";
+                const intervencion = document.getElementById("uiIntervencionClinica");
+                const corePregunta = document.getElementById("uiContenedorPreguntaCore");
+
+                if (intervencion) intervencion.style.display = "none";
+                if (corePregunta) corePregunta.style.display = "block";
                 
-                const card = AppState.seleccionActual.element;
-                if (AppState.bufferRetornoSiguiente.interaccionCorrecta) {
-                    card.classList.add("correct");
+                const card = AppState.seleccionActual ? AppState.seleccionActual.element : null;
+                if (AppState.bufferRetornoSiguiente && AppState.bufferRetornoSiguiente.interaccionCorrecta) {
+                    if (card) card.classList.add("correct");
                     this.transicionarADashboard();
                 } else {
-                    card.classList.add("wrong");
-                    this.renderizarAndamiajePedagogico(AppState.bufferRetornoSiguiente.andamiajeForense);
+                    if (card) card.classList.add("wrong");
+                    this.renderizarAndamiajePedagogico(AppState.bufferRetornoSiguiente?.andamiajeForense);
                 }
             }
 
@@ -1068,8 +1203,13 @@
                 const uiCuerpo = document.getElementById("uiFeedbackCuerpoAndamiaje");
                 const btnContinuar = document.getElementById("btnContinuarFeedback");
 
-                uiFeedback.querySelector(".feedback-header").innerText = "💡 PISTA DE REVISIÓN // SEGUNDO INTENTO ACTIVADO";
-                uiFeedback.querySelector(".feedback-header").style.color = "var(--gold-satin)";
+                if (!uiFeedback || !uiCuerpo || !btnContinuar) return;
+
+                const header = uiFeedback.querySelector(".feedback-header");
+                if (header) {
+                    header.innerText = "💡 PISTA DE REVISIÓN // SEGUNDO INTENTO ACTIVADO";
+                    header.style.color = "var(--gold-satin)";
+                }
 
                 uiCuerpo.innerHTML = `
                     <p class="text-xs text-slate-200 leading-relaxed mb-2">${andamiaje.remediacionSugerida}</p>
@@ -1084,7 +1224,8 @@
             }
 
             static habilitarFlujoDeReintento() {
-                document.getElementById("uiFeedback").style.display = "none";
+                const uiFeedback = document.getElementById("uiFeedback");
+                if (uiFeedback) uiFeedback.style.display = "none";
                 
                 document.querySelectorAll('.opcion-card').forEach(el => {
                     el.classList.remove('selected-intent');
@@ -1092,7 +1233,8 @@
                 });
 
                 AppState.seleccionActual = null;
-                document.getElementById("btnConfirmarSeleccion").style.display = "none";
+                const btnConf = document.getElementById("btnConfirmarSeleccion");
+                if (btnConf) btnConf.style.display = "none";
             }
 
             static renderizarAndamiajePedagogico(andamiajeBruto) {
@@ -1101,8 +1243,13 @@
                 const uiCuerpo = document.getElementById("uiFeedbackCuerpoAndamiaje");
                 const btnContinuar = document.getElementById("btnContinuarFeedback");
 
-                uiFeedback.querySelector(".feedback-header").innerText = "💡 PISTA DE ORIENTACIÓN";
-                uiFeedback.querySelector(".feedback-header").style.color = "var(--gold-satin)";
+                if (!uiFeedback || !uiCuerpo || !btnContinuar) return;
+
+                const header = uiFeedback.querySelector(".feedback-header");
+                if (header) {
+                    header.innerText = "💡 PISTA DE ORIENTACIÓN";
+                    header.style.color = "var(--gold-satin)";
+                }
 
                 uiCuerpo.innerHTML = `<p class="text-xs text-slate-200 leading-relaxed">${andamiaje.remediacionSugerida}</p>`;
 
@@ -1126,7 +1273,8 @@
             }
 
             static procesarFrenoComprension() {
-                document.getElementById("uiFeedback").style.display = "none";
+                const uiFeedback = document.getElementById("uiFeedback");
+                if (uiFeedback) uiFeedback.style.display = "none";
                 this.transicionarADashboard();
             }
 
@@ -1144,12 +1292,19 @@
                 const lblCompetence = document.getElementById("lblCompetence");
                 const containerLayout = document.getElementById("containerLayout");
 
-                document.getElementById("uiFeedback").style.display = "none";
-                document.getElementById("uiMetacognicion").style.display = "none";
-                document.getElementById("uiIntervencionClinica").style.display = "none";
-                document.getElementById("uiContenedorPreguntaCore").style.display = "block";
+                const uiFeed = document.getElementById("uiFeedback");
+                const uiMeta = document.getElementById("uiMetacognicion");
+                const uiInterv = document.getElementById("uiIntervencionClinica");
+                const uiCore = document.getElementById("uiContenedorPreguntaCore");
 
-                lblCompetence.innerText = `Competencia: ${String(item.sub_competencia || 'General').toUpperCase()}`;
+                if (uiFeed) uiFeed.style.display = "none";
+                if (uiMeta) uiMeta.style.display = "none";
+                if (uiInterv) uiInterv.style.display = "none";
+                if (uiCore) uiCore.style.display = "block";
+
+                if (!item) return;
+
+                if (lblCompetence) lblCompetence.innerText = `Competencia: ${String(item.sub_competencia || 'General').toUpperCase()}`;
                 
                 const textoCompleto = item.pregunta_texto || '';
                 const tokens = textoCompleto.split('\n\n');
@@ -1166,20 +1321,25 @@
 
                 if (tokens.length > 1) {
                     if (containerLayout) containerLayout.classList.remove("single-panel");
-                    uiEnunciados.style.display = "block";
-                    uiEnunciados.innerHTML = `<p style="margin-bottom: 0.8rem;">${tokens.slice(0, -1).join('</p><p style="margin-bottom: 0.8rem;">')}</p>` + contenidoVisualHTML;
-                    uiPregunta.innerText = tokens[tokens.length - 1];
+                    if (uiEnunciados) {
+                        uiEnunciados.style.display = "block";
+                        uiEnunciados.innerHTML = `<p style="margin-bottom: 0.8rem;">${tokens.slice(0, -1).join('</p><p style="margin-bottom: 0.8rem;">')}</p>` + contenidoVisualHTML;
+                    }
+                    if (uiPregunta) uiPregunta.innerText = tokens[tokens.length - 1];
                 } else if (urlVisual) {
                     if (containerLayout) containerLayout.classList.remove("single-panel");
-                    uiEnunciados.style.display = "block";
-                    uiEnunciados.innerHTML = `<p style="margin-bottom: 0.4rem; font-family: var(--font-mono); font-size: 0.72rem; color: var(--cyan-core);">> ESTÍMULO VISUAL:</p>` + contenidoVisualHTML;
-                    uiPregunta.innerText = textoCompleto;
+                    if (uiEnunciados) {
+                        uiEnunciados.style.display = "block";
+                        uiEnunciados.innerHTML = `<p style="margin-bottom: 0.4rem; font-family: var(--font-mono); font-size: 0.72rem; color: var(--cyan-core);">> ESTÍMULO VISUAL:</p>` + contenidoVisualHTML;
+                    }
+                    if (uiPregunta) uiPregunta.innerText = textoCompleto;
                 } else {
                     if (containerLayout) containerLayout.classList.add("single-panel");
-                    uiEnunciados.style.display = "none";
-                    uiPregunta.innerText = textoCompleto;
+                    if (uiEnunciados) uiEnunciados.style.display = "none";
+                    if (uiPregunta) uiPregunta.innerText = textoCompleto;
                 }
 
+                if (!uiOpcionesGrid) return;
                 uiOpcionesGrid.innerHTML = "";
 
                 const listado = item.opciones_respuesta || ["A", "B", "C", "D"];
@@ -1192,11 +1352,11 @@
                     const idBox = document.createElement("div"); idBox.className = "opcion-id"; idBox.innerText = letra;
                     const strokeBox = document.createElement("span"); strokeBox.innerText = opc;
 
-                    // BOTÓN PARA TACHAR OPCIÓN
                     const btnDiscard = document.createElement("button");
+                    btnDiscard.type = "button";
                     btnDiscard.className = "btn-discard-action";
                     btnDiscard.title = "Descartar esta opción";
-                    btnDiscard.innerHTML = `<i class="fas fa-eye-slash"></i>`;
+                    btnDiscard.innerHTML = `<i class="fas fa-eye-slash" aria-hidden="true"></i>`;
                     btnDiscard.onclick = (e) => { QuizEngine.toggleTacharOpcion(e, card, letra); };
 
                     card.appendChild(idBox); 
@@ -1209,20 +1369,28 @@
             }
 
             static renderizarGraficaYTelemetria() {
-                document.getElementById("telemetryTime").innerText = `${AppState.telemetriaActual.tiempoTotal}s`;
-                document.getElementById("telemetryHesitation").innerText = `${AppState.telemetriaActual.conteoMutaciones} cambios`;
-                document.getElementById("telemetryConfidence").innerText = AppState.telemetriaActual.certeza.toUpperCase();
+                const tTime = document.getElementById("telemetryTime");
+                const tHes = document.getElementById("telemetryHesitation");
+                const tConf = document.getElementById("telemetryConfidence");
+                const lblTheta = document.getElementById("lblThetaActual");
+
+                if (tTime) tTime.innerText = `${AppState.telemetriaActual.tiempoTotal}s`;
+                if (tHes) tHes.innerText = `${AppState.telemetriaActual.conteoMutaciones} cambios`;
+                if (tConf) tConf.innerText = AppState.telemetriaActual.certeza.toUpperCase();
                 
                 let percentilSuperado = Math.min(99, Math.max(15, Math.round(50 + (AppState.theta * 20))));
-                document.getElementById("lblThetaActual").innerHTML = `Superas al ${percentilSuperado}% de estudiantes en tu nivel`;
+                if (lblTheta) lblTheta.innerHTML = `Superas al ${percentilSuperado}% de estudiantes en tu nivel`;
 
                 const segs = parseFloat(AppState.telemetriaActual.tiempoTotal);
                 const lblProfile = document.getElementById("telemetryProfile");
-                if (segs < 4.0) { lblProfile.innerText = "Impulsivo"; lblProfile.style.color = "var(--crimson)"; }
-                else if (segs < 12.0) { lblProfile.innerText = "Transición"; lblProfile.style.color = "var(--gold-satin)"; }
-                else { lblProfile.innerText = "Reflexivo"; lblProfile.style.color = "var(--emerald)"; }
+                if (lblProfile) {
+                    if (segs < 4.0) { lblProfile.innerText = "Impulsivo"; lblProfile.style.color = "var(--crimson)"; }
+                    else if (segs < 12.0) { lblProfile.innerText = "Transición"; lblProfile.style.color = "var(--gold-satin)"; }
+                    else { lblProfile.innerText = "Reflexivo"; lblProfile.style.color = "var(--emerald)"; }
+                }
 
                 const svg = document.getElementById("svgChart");
+                if (!svg) return;
                 svg.innerHTML = "";
 
                 const gridLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
