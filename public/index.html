@@ -35,32 +35,50 @@
         /* TEMA DE ALTO CONTRASTE / MODO AULA PROYECTOR */
         body.light-mode {
             --bg-deep: #f1f5f9;
-            --bg-surface: rgba(255, 255, 255, 0.96);
-            --bg-card: rgba(248, 250, 252, 0.96);
+            --bg-surface: #ffffff;
+            --bg-card: #f8fafc;
             --gold-satin: #b45309;
             --gold-glow: rgba(180, 83, 9, 0.25);
-            --platinum: #1e293b;
-            --graphite: rgba(0, 0, 0, 0.12);
+            --platinum: #0f172a;
+            --graphite: #cbd5e1;
             --text-main: #0f172a;
             --text-muted: #475569;
             --cyan-core: #0284c7;
             background-image: none !important;
             background-color: #f1f5f9 !important;
+            color: #0f172a !important;
         }
-        body.light-mode .master-hud { background: rgba(255, 255, 255, 0.96) !important; border-bottom-color: rgba(0,0,0,0.12) !important; }
+        body.light-mode .master-hud { background: rgba(255, 255, 255, 0.98) !important; border-bottom-color: #cbd5e1 !important; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         body.light-mode .alias-title { color: #0f172a !important; }
-        body.light-mode .panel-enunciado { background: #ffffff !important; color: #1e293b !important; border-color: #cbd5e1 !important; box-shadow: 0 4px 20px rgba(0,0,0,0.06) !important; }
-        body.light-mode .pregunta-txt { background: #ffffff !important; color: #0f172a !important; border-color: #cbd5e1 !important; }
-        body.light-mode .opcion-card { background: #f8fafc !important; border-color: #cbd5e1 !important; color: #0f172a !important; }
+        body.light-mode .geo-tag { color: #0284c7 !important; }
+        body.light-mode .panel-enunciado { background: #ffffff !important; color: #0f172a !important; border-color: #cbd5e1 !important; box-shadow: 0 4px 20px rgba(0,0,0,0.06) !important; }
+        body.light-mode .pregunta-txt { background: #ffffff !important; color: #0f172a !important; border-color: #cbd5e1 !important; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        body.light-mode .opcion-card { background: #ffffff !important; border-color: #cbd5e1 !important; color: #0f172a !important; }
         body.light-mode .opcion-card:hover { border-color: #0284c7 !important; background: #f0f9ff !important; }
-        body.light-mode .opcion-card.seleccionada { border-color: #b45309 !important; background: #fffbebf5 !important; }
-        body.light-mode .bottom-nav { background: rgba(255, 255, 255, 0.95) !important; border-color: rgba(0,0,0,0.15) !important; box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important; }
+        body.light-mode .opcion-card.selected-intent { border-color: #0284c7 !important; background: #e0f2fe !important; }
+        body.light-mode .opcion-id { background: #f1f5f9 !important; color: #0284c7 !important; border-color: #cbd5e1 !important; }
+        body.light-mode .bottom-nav { background: rgba(255, 255, 255, 0.98) !important; border-color: #cbd5e1 !important; box-shadow: 0 -4px 20px rgba(0,0,0,0.08) !important; }
         body.light-mode .bottom-nav .nav-text { color: #334155 !important; }
         body.light-mode .gateway-card { background: #ffffff !important; border-color: #cbd5e1 !important; box-shadow: 0 10px 30px rgba(0,0,0,0.08) !important; }
         body.light-mode select { background: #ffffff !important; color: #0f172a !important; border-color: #b45309 !important; }
         body.light-mode .dashboard-container { background: #ffffff !important; border-color: #cbd5e1 !important; color: #0f172a !important; }
         body.light-mode .telemetry-card { background: #f8fafc !important; border-color: #e2e8f0 !important; }
-        body.light-mode .tutorial-card { background: #ffffff !important; color: #0f172a !important; }
+        body.light-mode .tutorial-card { background: #ffffff !important; color: #0f172a !important; border: 1px solid #cbd5e1 !important; }
+        body.light-mode #uiBannerOnboardingMision { background: #ffffff !important; border-color: #b45309 !important; color: #0f172a !important; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        body.light-mode #lblBannerMisionInstruccion { color: #1e293b !important; }
+        body.light-mode .text-white, 
+        body.light-mode .text-slate-100, 
+        body.light-mode .text-slate-200, 
+        body.light-mode .text-slate-300, 
+        body.light-mode .text-zinc-200, 
+        body.light-mode .text-zinc-300 { color: #0f172a !important; }
+        body.light-mode .text-slate-400, 
+        body.light-mode .text-zinc-400, 
+        body.light-mode .text-zinc-500 { color: #475569 !important; }
+        body.light-mode .bg-black\/40, 
+        body.light-mode .bg-cyan-950\/80, 
+        body.light-mode .bg-amber-950\/30,
+        body.light-mode .bg-slate-900\/80 { background-color: #f1f5f9 !important; border-color: #cbd5e1 !important; }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -344,25 +362,25 @@
 
     <!-- HEADER HUD SUPERIOR CON MAPA DE RUTA Y SECUENCIA -->
     <header class="master-hud">
-        <div>
-            <div class="alias-title" id="ui-main-title" data-final="RED DANTE OS">RED DANTE OS</div>
-            <div class="geo-tag" id="lblRutaHeaderTag">SECUENCIA ADAPTATIVA: MATEMÁTICAS (1/5)</div>
+        <div class="min-w-0 max-w-[45%] sm:max-w-none flex-shrink">
+            <div class="alias-title truncate" id="ui-main-title" data-final="RED DANTE OS">RED DANTE OS</div>
+            <div class="geo-tag truncate" id="lblRutaHeaderTag">SECUENCIA ADAPTATIVA: MATEMÁTICAS (1/5)</div>
         </div>
 
-        <div class="flex items-center gap-2 sm:gap-3" style="pointer-events: auto;">
-            <button type="button" onclick="AppController.toggleContraste()" class="text-xs text-amber-400 hover:text-amber-300 p-1.5 bg-transparent border-0 cursor-pointer" title="Cambiar modo de contraste (Claro/Oscuro)" aria-label="Cambiar modo de contraste">
+        <div class="flex items-center gap-1.5 sm:gap-3 flex-shrink-0" style="pointer-events: auto;">
+            <button type="button" onclick="AppController.toggleContraste()" class="text-xs text-amber-500 hover:text-amber-400 p-1.5 bg-transparent border-0 cursor-pointer flex-shrink-0" title="Cambiar modo de contraste (Claro/Oscuro)" aria-label="Cambiar modo de contraste">
                 <i class="fas fa-sun" id="iconContrast"></i>
             </button>
-            <div class="hidden sm:flex flex-col text-right">
+            <div class="hidden md:flex flex-col text-right">
                 <span class="text-[9px] font-mono text-slate-400 uppercase">Proyección Global</span>
                 <span class="text-xs font-mono font-bold text-[var(--gold-satin)]" id="lblHudPuntaje500">328 / 500 pts</span>
             </div>
-            <div class="flex items-center gap-1 bg-orange-500/10 border border-orange-500/30 px-2 py-0.5 rounded-full">
+            <div class="flex items-center gap-1 bg-orange-500/10 border border-orange-500/30 px-2 py-0.5 rounded-full flex-shrink-0 whitespace-nowrap">
                 <span class="text-xs">🔥</span>
                 <span id="lblRachaDias" class="text-[10px] font-mono font-bold text-orange-400">1 Día</span>
             </div>
-            <div class="text-right">
-                <div class="text-[10px] sm:text-xs font-bold text-white font-mono">MODO <span class="text-[#D4AF37]">ENTERPRISE</span></div>
+            <div class="text-right hidden sm:block flex-shrink-0">
+                <div class="text-[10px] sm:text-xs font-bold font-mono">MODO <span class="text-[#D4AF37]">ENTERPRISE</span></div>
                 <div class="font-mono text-[8px] sm:text-[9px] text-zinc-400 uppercase tracking-[1px]" id="lblTenantBannerHeader">TENANT: DEFAULT</div>
             </div>
         </div>
