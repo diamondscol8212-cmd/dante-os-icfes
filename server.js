@@ -26,11 +26,14 @@ const ALLOWED_ORIGINS = [
 
 app.use(cors({
     origin(origin, callback) {
-        if (!origin || ALLOWED_ORIGINS.includes(origin) || origin.includes('localhost') || origin.includes('127.0.0.1')) {
+        // Permitir solicitudes sin origen (curl, mobile, mismo dominio) o cualquier origen
+        if (!origin || ALLOWED_ORIGINS.includes(origin) || origin.includes('localhost') || origin.includes('127.0.0.1') || origin.endsWith('.run.app') || origin.endsWith('.ai.studio') || origin.endsWith('.google.com') || origin.endsWith('.googleusercontent.com')) {
             return callback(null, true);
         }
-        return callback(new Error(`Origin [${origin}] Experiencing Perimeter Blocking.`));
-    }
+        // Permitir orígenes dinámicos de vista previa
+        return callback(null, true);
+    },
+    credentials: true
 }));
 
 app.use(express.json({ limit: '1mb' }));
@@ -191,4 +194,4 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(PORT, () => console.log(`\n🚀 [DANTE OS ENTERPRISE GATEWAY ${SERVER_VERSION}]: Activo en http://localhost:${PORT}`));
+app.listen(PORT, '0.0.0.0', () => console.log(`\n🚀 [DANTE OS ENTERPRISE GATEWAY ${SERVER_VERSION}]: Activo en http://0.0.0.0:${PORT}`));
