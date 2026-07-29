@@ -3,34 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>DANTE OS // CALIBRACIÓN Y DIAGNÓSTICO PSICOMÉTRICO</title>
+    <title>Dante OS // Calibración de ADN Cognitivo v21.1</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=JetBrains+Mono:wght@400;500;700;900&family=Oswald:wght@700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;600;800;900&family=JetBrains+Mono:wght@400;500;700;900&family=Oswald:wght@700;900&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
         :root {
             --primary: #51e2f5; 
             --gold: #D4AF37;
+            --gold-satin: #d4af37;
             --alert: #ff0044;
-            --bg: #010103; 
+            --bg-deep: #08090c; 
             --card-bg: rgba(12, 14, 22, 0.94);
             --border-graphite: rgba(255, 255, 255, 0.12);
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
         }
 
         body, html { 
-            background: var(--bg); color: #f0f1f5; margin: 0; font-family: 'Outfit', sans-serif; 
+            background: var(--bg-deep); color: #f0f1f5; margin: 0; font-family: var(--font-main); 
             min-height: 100vh; overflow-x: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center;
             padding: 1rem 0;
+            background-image: radial-gradient(circle at 50% 20%, #171a26 0%, #08090c 100%);
         }
 
-        /* TEMA DE ALTO CONTRASTE / MODO CLARO SINCRO */
+        /* MODO ALTO CONTRASTE / MODO CLARO */
         body.light-mode {
-            --bg: #f1f5f9;
+            --bg-deep: #f1f5f9;
             --card-bg: #ffffff;
             --border-graphite: #cbd5e1;
             color: #0f172a !important;
@@ -67,14 +71,8 @@
         body.light-mode .text-white {
             color: #0f172a !important;
         }
-        body.light-mode .border-white\/10 {
-            border-color: #e2e8f0 !important;
-        }
-        body.light-mode .progress-track {
-            background: #e2e8f0 !important;
-        }
 
-        .font-mono { font-family: 'JetBrains Mono', monospace !important; }
+        .font-mono { font-family: var(--font-mono) !important; }
 
         #dante-fractal-bg { position: fixed; inset: 0; z-index: 0; opacity: 0.18; pointer-events: none; mix-blend-mode: screen; }
         .scanline { position: fixed; inset: 0; background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.5) 51%); background-size: 100% 4px; z-index: 1; pointer-events: none; opacity: 0.2; }
@@ -82,8 +80,11 @@
         .onboard-card {
             background: var(--card-bg); border: 1px solid var(--border-graphite);
             box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95); border-radius: 16px; 
-            padding: 2.25rem 2rem; width: 94%; max-width: 780px; text-align: center; position: relative; z-index: 10;
+            padding: 1.8rem 1.6rem; width: 94%; max-width: 820px; text-align: center; position: relative; z-index: 10;
             backdrop-filter: blur(24px); margin: auto 0;
+        }
+        @media(min-width: 640px) {
+            .onboard-card { padding: 2.25rem 2.2rem; }
         }
         .onboard-card::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
@@ -93,9 +94,9 @@
 
         .option-btn {
             background: rgba(20, 24, 35, 0.85); border: 1px solid var(--border-graphite); border-radius: 12px;
-            padding: 1.1rem 1.3rem; width: 100%; text-align: left; font-size: 0.98rem; font-weight: 600; color: #fff;
-            transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer; font-family: 'JetBrains Mono'; margin-top: 0.75rem;
-            line-height: 1.5; min-height: 52px; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+            padding: 0.95rem 1.2rem; width: 100%; text-align: left; font-size: 0.92rem; font-weight: 600; color: #fff;
+            transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer; font-family: var(--font-mono); margin-top: 0.65rem;
+            line-height: 1.5; min-height: 50px; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
         }
         .option-btn:hover { border-color: var(--gold); background: rgba(212, 175, 55, 0.12); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(212, 175, 55, 0.18); }
         .option-btn:active { transform: scale(0.98); }
@@ -115,6 +116,7 @@
             border: 1px solid rgba(255, 255, 255, 0.15);
             color: #cbd5e1;
             transition: all 0.2s;
+            cursor: pointer;
         }
         .strike-tool-btn:hover {
             background: rgba(239, 68, 68, 0.25);
@@ -132,10 +134,77 @@
             font-family: 'JetBrains Mono', monospace;
             color: #94a3b8;
             box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-            max-width: 780px;
+            max-width: 820px;
             width: 94%;
             z-index: 10;
             margin-bottom: 0.85rem;
+        }
+
+        /* PREGUNTA 5: FACSÍMIL PAPEL ICFES */
+        .facsimile-paper {
+            background: #fdfbf7;
+            background-image: linear-gradient(#e5e0d8 1px, transparent 1px);
+            background-size: 100% 28px;
+            color: #1a1a1a;
+            border: 2px solid #8c8275;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5), inset 0 0 40px rgba(180,160,130,0.15);
+            font-family: 'Merriweather', serif;
+            position: relative;
+        }
+        .facsimile-stamp {
+            border: 2px dashed #7a1d1d;
+            color: #7a1d1d;
+            font-weight: 900;
+            font-family: 'JetBrains Mono', monospace;
+            transform: rotate(-3deg);
+            padding: 2px 8px;
+            font-size: 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .facsimile-option {
+            background: #ffffff;
+            border: 1px solid #d1c7b7;
+            color: #1a1a1a;
+            font-family: 'Merriweather', serif;
+            transition: all 0.2s;
+        }
+        .facsimile-option:hover {
+            border-color: #b45309;
+            background: #fffbeb;
+        }
+
+        /* MODAL UNICORNIO CELEBRACIÓN */
+        .modal-celebration-overlay {
+            position: fixed; inset: 0; z-index: 99999;
+            background: rgba(4, 6, 12, 0.92); backdrop-filter: blur(20px);
+            display: flex; justify-content: center; align-items: center; padding: 1.2rem;
+            animation: fadeInModal 0.4s ease-out;
+        }
+        @keyframes fadeInModal {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .unicorn-card {
+            background: linear-gradient(145deg, rgba(20, 24, 38, 0.98), rgba(12, 14, 24, 0.98));
+            border: 2px solid var(--gold-satin);
+            border-radius: 20px;
+            box-shadow: 0 0 60px rgba(212, 175, 55, 0.35), 0 0 100px rgba(81, 226, 245, 0.2);
+            padding: 2.2rem 1.8rem;
+            max-width: 620px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .unicorn-card::before {
+            content: ''; position: absolute; -top: 50%; -left: 50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.12) 0%, transparent 60%);
+            pointer-events: none; animation: spinGlow 12s linear infinite;
+        }
+        @keyframes spinGlow {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -156,15 +225,31 @@
     </div>
 
     <div class="onboard-card" id="card-main">
-        <div class="font-mono text-xs md:text-sm text-[#D4AF37] tracking-[0.4em] uppercase mb-1 font-bold flex items-center justify-center gap-2">
-            <span>⚡ NÚCLEO DANTE OS</span> // <span>CALIBRACIÓN ENTRENAMIENTO & DIAGNÓSTICO</span>
+        <!-- MICRO-BARRA DE PROYECCIÓN DINÁMICA ICFES EN TIEMPO REAL -->
+        <div class="mb-4 p-2.5 rounded-xl bg-slate-900/90 border border-amber-500/40 flex items-center justify-between gap-3 text-xs font-mono shadow-md">
+            <div class="flex items-center gap-2 min-w-0">
+                <span class="relative flex h-2.5 w-2.5 shrink-0">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500"></span>
+                </span>
+                <span class="text-amber-400 font-bold uppercase tracking-wide truncate" id="projection-live-text">Calibrando baseline... 300 pts ➔ Analizando Sistema 1/2</span>
+            </div>
+            <div class="text-right shrink-0">
+                <span class="text-[10px] text-zinc-400 block">PROYECCIÓN ICFES</span>
+                <span class="text-xs font-extrabold text-cyan-400" id="projection-score-num">300 pts</span>
+            </div>
         </div>
-        <h1 class="oswald font-black text-xl md:text-2xl tracking-wider text-white mb-3 uppercase flex items-center justify-center gap-2" id="step-title">
+
+        <div class="font-mono text-xs text-[#D4AF37] tracking-[0.3em] uppercase mb-1 font-bold flex items-center justify-center gap-2">
+            <span>⚡ NÚCLEO DANTE OS v21.1</span> // <span>SINCRONIZACIÓN DE ADN COGNITIVO</span>
+        </div>
+        
+        <h1 class="oswald font-black text-xl md:text-2xl tracking-wider text-white mb-2 uppercase flex items-center justify-center gap-2" id="step-title">
             PASO 01 / 05 // NIVELES DE COMPLEJIDAD
         </h1>
         
         <!-- BARRA DE PROGRESO -->
-        <div class="w-full progress-track bg-white/10 h-1.5 rounded-full overflow-hidden mb-5">
+        <div class="w-full progress-track bg-white/10 h-1.5 rounded-full overflow-hidden mb-4">
             <div id="progress-bar" class="bg-gradient-to-r from-cyan-400 via-amber-400 to-cyan-400 h-full transition-all duration-300" style="width: 20%;"></div>
         </div>
 
@@ -177,17 +262,72 @@
             </div>
         </div>
 
-        <p id="dilema-text" class="text-sm md:text-base font-light text-zinc-200 mb-5 font-mono leading-relaxed text-left bg-black/50 p-4 rounded-lg border border-white/10 shadow-inner">
-            Sincronizando estímulo conductual...
-        </p>
+        <!-- CONTENEDOR ENUNCIADO GENERAL (PREGUNTAS 1-4) -->
+        <div id="dilema-container">
+            <p id="dilema-text" class="text-sm md:text-base font-medium text-zinc-200 mb-4 font-sans leading-relaxed text-left bg-black/50 p-3.5 rounded-lg border border-white/10 shadow-inner">
+                Sincronizando estímulo conductual...
+            </p>
+        </div>
 
+        <!-- CONTENEDOR OPCIONES DINÁMICAS -->
         <div id="options-container" class="space-y-2">
             <!-- Inyección dinámica de opciones -->
         </div>
 
-        <div class="mt-6 flex justify-between items-center text-xs font-mono text-zinc-400 uppercase tracking-widest pt-2 border-t border-white/10">
+        <div class="mt-5 flex justify-between items-center text-xs font-mono text-zinc-400 uppercase tracking-widest pt-2 border-t border-white/10">
             <span>Latencia: <span id="timer-val" class="text-cyan-400 font-bold">0.0s</span></span>
             <span class="flex items-center gap-1.5"><i class="fa-solid fa-lock text-cyan-400"></i> Cifrado de Estado: Activo</span>
+        </div>
+    </div>
+
+    <!-- MODAL CELEBRACIÓN UNICORNIO (COMPLETACIÓN ONBOARDING) -->
+    <div id="modalCelebration" class="modal-celebration-overlay" style="display: none;">
+        <div class="unicorn-card relative z-10">
+            <!-- INSIGNIA SUPERIOR Y MEDALLA DE INICIACIÓN -->
+            <div class="w-20 h-20 mx-auto mb-3 rounded-full border-2 border-[#D4AF37] bg-amber-500/10 flex items-center justify-center shadow-[0_0_35px_rgba(212,175,55,0.5)] animate-bounce">
+                <span class="text-4xl">🏅</span>
+            </div>
+
+            <div class="font-mono text-xs text-amber-400 tracking-[0.3em] uppercase font-bold mb-1">
+                ✨ ¡ADN COGNITIVO SINCRONIZADO! ✨
+            </div>
+
+            <h2 class="oswald font-black text-2xl md:text-3xl text-white mb-2 uppercase tracking-wide">
+                CALIBRACIÓN COMPLETADA
+            </h2>
+
+            <!-- ARQUETIPO DIAGNOSTICADO -->
+            <div class="my-3 p-4 bg-cyan-950/60 border border-cyan-400/50 rounded-xl text-left shadow-lg">
+                <div class="flex items-center justify-between border-b border-cyan-500/20 pb-2 mb-2">
+                    <span class="text-[11px] font-mono text-amber-400 font-bold uppercase tracking-wider">Arquetipo Diagnosticado:</span>
+                    <span class="text-[10px] font-mono text-emerald-400 font-bold px-2 py-0.5 rounded bg-emerald-950/60 border border-emerald-500/40">
+                        🏅 MEDALLA DE INICIACIÓN
+                    </span>
+                </div>
+                <div class="text-lg md:text-xl font-mono font-extrabold text-white uppercase flex items-center gap-2 mb-1">
+                    <span class="text-amber-400">👑</span> <span id="lblArquetipoFinal">Estratega Reflexivo S2</span>
+                </div>
+                <p class="text-xs font-mono text-cyan-300/90 mt-1">
+                    Proyección ICFES Inicial: <strong class="text-amber-300 font-extrabold" id="lblProyeccionScore">365 / 500 pts</strong>
+                </p>
+            </div>
+
+            <!-- MISIÓN PSICO-TÁCTICA #1 -->
+            <div class="p-4 bg-amber-950/40 border border-amber-500/50 rounded-xl text-left mb-5 shadow-md">
+                <div class="flex items-center gap-2 text-amber-400 font-mono text-xs font-bold uppercase mb-1">
+                    <i class="fa-solid fa-crosshairs"></i>
+                    <span id="lblMisionTitulo">Misión Psico-Táctica #1: Control de Ritmo</span>
+                </div>
+                <p class="text-xs md:text-sm font-mono text-zinc-100 leading-relaxed bg-black/50 p-3 rounded border border-white/10" id="lblMisionInstruccion">
+                    "Ejecutar lecturas desaceleradas de 8 segundos antes del primer clic."
+                </p>
+            </div>
+
+            <!-- BOTÓN INGRESAR Y CONTINUAR -->
+            <button type="button" onclick="irACabinaEntrenamiento()" class="w-full py-3.5 px-5 bg-gradient-to-r from-amber-500/30 via-amber-400/20 to-amber-500/30 hover:bg-amber-500/40 border-2 border-amber-400 text-amber-300 font-mono font-extrabold text-sm rounded-xl uppercase tracking-wider transition-all duration-300 shadow-[0_0_25px_rgba(212,175,55,0.35)] hover:scale-[1.02] cursor-pointer flex items-center justify-center gap-2">
+                <span>🚀 INGRESAR A MI CABINA DANTE OS</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
         </div>
     </div>
 
@@ -204,83 +344,84 @@
         let supabaseClient = null;
         try { if (window.supabase) supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e){}
 
-        // LOS 5 DILEMAS GRADUALES CON TUTORIAL DE HERRAMIENTAS Y MATRIZ PSICOMÉTRICA
+        // LOS 5 DILEMAS SIMPLIFICADOS CON PROYECCIÓN ICFES DINÁMICA Y FACSÍMIL DE PAPEL
         const DILEMAS = [
             {
                 stepNum: 1,
-                totalSteps: 5,
-                numOpts: 2,
-                title: "DILEMA 01 / 05 // RITMO DE DECISIÓN (2 OPCIONES)",
-                tutorialTip: "Evolución mecánica (Paso 1 de 5). Dante mide tu ritmo natural de procesamiento (Latencia en milisegundos) ante estímulos directos.",
-                text: "Ante una pregunta de opción múltiple en el ICFES que requiere análisis, tu primer impulso natural es:",
+                title: "PASO 01 / 05 // RITMO DE DECISIÓN",
+                tutorialTip: "Evolución mecánica (Paso 1 de 5). Dante mide tu ritmo de procesamiento ante estímulos directos.",
+                projectionText: "Calibrando baseline... 300 pts ➔ Analizando Sistema 1/2",
+                baselineScore: 300,
+                text: "Ante un ítem complejo en el examen Saber 11, ¿cuál es tu primer impulso instintivo?",
                 opts: [
-                    { text: "A) Seleccionar la alternativa que tu intuición señala de inmediato (Ritmo Dinámico / Sistema 1).", type: "DECISION_INMEDIATA", id: "opt_a" },
-                    { text: "B) Detenerte a verificar la premisa minuciosamente antes de evaluar las respuestas (Ritmo Analítico / Sistema 2).", type: "ANALISIS_MINUCIOSO", id: "opt_b" }
+                    { text: "A) Seleccionar la alternativa que mi intuición señala de inmediato (Sistema 1 / Impulso Rápido).", type: "DECISION_INMEDIATA", id: "opt_a" },
+                    { text: "B) Detenerme a verificar y descomponer la premisa minuciosamente (Sistema 2 / Control Reflexivo).", type: "ANALISIS_MINUCIOSO", id: "opt_b" }
                 ]
             },
             {
                 stepNum: 2,
-                totalSteps: 5,
-                numOpts: 3,
-                title: "DILEMA 02 / 05 // GESTIÓN DEL ENFOQUE Y AUTORREGULACIÓN (3 OPCIONES)",
-                tutorialTip: "Evolución mecánica (Paso 2 de 5). Evaluamos tus estrategias de autorregulación ante pasajes complejos o extensos.",
-                text: "Encuentras un texto denso en Lectura Crítica que te requiere mayor esfuerzo de interpretación. ¿Cómo reacciona tu mente?",
+                title: "PASO 02 / 05 // GESTIÓN DEL ENFOQUE",
+                tutorialTip: "Evolución mecánica (Paso 2 de 5). Evaluamos tu autorregulación ante pasajes extensos.",
+                projectionText: "Ajustando proyección: 315 pts ➔ Evaluando resistencia a la presión de tiempo",
+                baselineScore: 315,
+                text: "Cuando encuentras un texto extenso o denso en Lectura Crítica, ¿cómo reacciona tu atención?",
                 opts: [
-                    { text: "A) Noto que mi ritmo de respiración se acelera ante el conteo del reloj de la prueba.", type: "SENSIBILIDAD_TIEMPO", id: "opt_a" },
-                    { text: "B) Prefiero marcar la opción más lógica disponible y avanzar sin estancarme.", type: "DESCARTE_INICIAL", id: "opt_b" },
-                    { text: "C) Guardo la calma, busco la idea central del párrafo y elimino las opciones irrelevantes.", type: "CONTROL_REGULADO", id: "opt_c" }
+                    { text: "A) Siento presión por el reloj y acelero mi lectura para no perder segundos.", type: "SENSIBILIDAD_TIEMPO", id: "opt_a" },
+                    { text: "B) Leo rápidamente, descarto las respuestas ilógicas y elijo la más sólida.", type: "DESCARTE_INICIAL", id: "opt_b" },
+                    { text: "C) Mantengo la calma, identifico la idea central y descarto metódicamente los distractores.", type: "CONTROL_REGULADO", id: "opt_c" }
                 ]
             },
             {
                 stepNum: 3,
-                totalSteps: 5,
-                numOpts: 4,
-                title: "DILEMA 03 / 05 // SIMULADOR CABINA REAL & HERRAMIENTA DESCARTE (4 OPCIONES)",
+                title: "PASO 03 / 05 // HERRAMIENTA DE DESCARTE TÁCTICO",
+                tutorialTip: "⚡ TUTORIAL DESCARTE: Haz clic en el botón [✂️ Tachar] para eliminar distractores visualmente antes de responder.",
+                projectionText: "Ajustando proyección: 330 pts ➔ Midiendo técnica de eliminación de trampas",
+                baselineScore: 330,
                 isRealIcfesSim: true,
-                tutorialTip: "⚡ TUTORIAL HERRAMIENTA DE DESCARTE: Haz clic en el botón [✂️ Tachar] de cualquier opción que consideres un distractor para descartarla visualmente.",
-                text: "PREGUNTA DE SIMULACIÓN REAL DANTE OS / LECTURA Y SOCIALES:\n\nUn municipio enfrenta un dilema de inversión pública. Un análisis riguroso para responder en el ICFES exige descartar primero los distractores más débiles. ¿Cómo procederías en la interfaz?",
+                text: "Frente a un dilema con opciones ambiguas, ¿cuál es tu táctica principal de descarte?",
                 opts: [
-                    { text: "A) Descarto primero las opciones con términos absolutistas como 'siempre', 'nunca' o 'jamás'.", type: "DESCARTE_METODICO", id: "opt_a" },
-                    { text: "B) Evalúo la opción más estructurada técnicamente para contrastar la premisa.", type: "HIPOTESIS_INICIAL", id: "opt_b" },
-                    { text: "C) Contrasto las opciones con el contexto general presentado en el enunciado.", type: "PERSPECTIVA_CREATIVA", id: "opt_c" },
-                    { text: "D) Comparo cada alternativa minuciosamente comprobando su veracidad lógica con la fuente.", type: "ANALITICO_RIGUROSO", id: "opt_d" }
+                    { text: "A) Descarto primero opciones con términos absolutistas ('siempre', 'nunca', 'jamás') usando [✂️ Tachar].", type: "DESCARTE_METODICO", id: "opt_a" },
+                    { text: "B) Identifico la alternativa con mayor sustento técnico y la contrasto.", type: "HIPOTESIS_INICIAL", id: "opt_b" },
+                    { text: "C) Conecto la pregunta con el contexto general presentado en el enunciado.", type: "PERSPECTIVA_CREATIVA", id: "opt_c" },
+                    { text: "D) Analizo cada alternativa minuciosamente verificando veracidad lógica.", type: "ANALITICO_RIGUROSO", id: "opt_d" }
                 ]
             },
             {
                 stepNum: 4,
-                totalSteps: 5,
-                numOpts: 4,
-                title: "DILEMA 04 / 05 // AUTOEVALUACIÓN METACOGNITIVA (4 OPCIONES)",
-                tutorialTip: "Evolución psicométrica (Paso 4 de 5). Diagnóstico directo de autoconfianza y metas de desarrollo académico.",
-                text: "¿Cómo evalúas tu oportunidad de crecimiento actual frente al examen Saber 11?",
+                title: "PASO 04 / 05 // METAS Y METACOGNICIÓN",
+                tutorialTip: "Evolución psicométrica (Paso 4 de 5). Diagnóstico directo de autoconfianza y metas ICFES.",
+                projectionText: "Ajustando proyección: 345 pts ➔ Sincronizando metas de rendimiento académico",
+                baselineScore: 345,
+                text: "¿Cuál es tu meta principal de calibración para el examen Saber 11?",
                 opts: [
-                    { text: "A) Quiero consolidar mi seguridad y aprender técnicas para dominar la presión del día D.", type: "ENFOQUE_DESARROLLO", id: "opt_a" },
-                    { text: "B) Tengo buena comprensión, pero quiero optimizar la gestión del tiempo por sesión (4.5 horas).", type: "OPTIMIZACION_CRONOMETRICA", id: "opt_b" },
-                    { text: "C) Deseo fortalecer temas puntuales en componentes cuantitativos o ciencias naturales.", type: "CONSOLIDACION_CONCEPTUAL", id: "opt_c" },
-                    { text: "D) Me siento preparado estratégicamente y busco maximizar mi puntaje global (400+).", type: "ALTO_RENDIMIENTO", id: "opt_d" }
+                    { text: "A) Dominar la presión del tiempo y ganar seguridad absoluta en el Día D.", type: "ENFOQUE_DESARROLLO", id: "opt_a" },
+                    { text: "B) Optimizar la velocidad de respuesta por sesión (4.5 horas).", type: "OPTIMIZACION_CRONOMETRICA", id: "opt_b" },
+                    { text: "C) Fortalecer componentes cuantitativos y razonamiento científico.", type: "CONSOLIDACION_CONCEPTUAL", id: "opt_c" },
+                    { text: "D) Maximizar mi puntaje global para superar los 400+ puntos.", type: "ALTO_RENDIMIENTO", id: "opt_d" }
                 ]
             },
             {
                 stepNum: 5,
-                totalSteps: 5,
-                numOpts: 4,
-                title: "DILEMA 05 / 05 // RESILIENCIA ADAPTATIVA Y MENTALIDAD DE CRECIMIENTO (4 OPCIONES)",
-                tutorialTip: "Última calibración (Paso 5 de 5). Determina tu curva de aprendizaje para programar tu Misión Psico-Táctica #1.",
-                text: "Cuando la IA Dante te notifique que tuviste desaciertos continuos en un simulacro, tu acción inmediata será:",
+                title: "PASO 05 / 05 // ESCÁNER FACSÍMIL DE PAPEL ICFES",
+                tutorialTip: "📄 EVALUACIÓN FACSÍMIL: Demostración de pregunta oficial impresas. Desglósala con tu velocidad táctica.",
+                projectionText: "Ajustando proyección: 360 pts ➔ Escaneando control de sesgos en papel tradicional",
+                baselineScore: 360,
+                isFacsimilePaper: true,
                 opts: [
-                    { text: "A) Hacer una pausa reflexiva para restablecer la concentración antes de continuar.", type: "SENSIBILIDAD_EVALUATIVA", id: "opt_a" },
-                    { text: "B) Abrir inmediatamente el análisis del distractor para comprender la trampa cognitiva.", type: "RESILIENTE_PROACTIVO", id: "opt_b" },
-                    { text: "C) Retomar la práctica de inmediato aplicando un ritmo más acelerado.", type: "RITMO_DINAMICO", id: "opt_c" },
-                    { text: "D) Solicitar a Dante OS una micro-misión de entrenamiento específica en ese tema.", type: "AUTONOMO_ESTRATEGICO", id: "opt_d" }
+                    { text: "A) La tasa de variación de la cobertura boscosa previa a la construcción de vías.", type: "RESILIENTE_PROACTIVO", id: "opt_a" },
+                    { text: "B) El porcentaje de ganadería registrado en zonas con y sin acceso vial.", type: "RITMO_DINAMICO", id: "opt_b" },
+                    { text: "C) El volumen total de madera extraída durante el último quinquenio.", type: "AUTONOMO_ESTRATEGICO", id: "opt_c" },
+                    { text: "D) La inversión pública realizada en proyectos de infraestructura vial.", type: "SENSIBILIDAD_EVALUATIVA", id: "opt_d" }
                 ]
             }
         ];
 
         let currentStep = 0;
         let scores = {};
+        let historicoRespuestas = [];
         let startTime = Date.now();
         let timerInterval = null;
-        let optionStrikeMap = {}; // Para el simulador de tachado/descarte
+        let optionStrikeMap = {};
 
         function updateLatencyDisplay() {
             if (timerInterval) clearInterval(timerInterval);
@@ -311,27 +452,60 @@
             }
 
             const d = DILEMAS[currentStep];
-            optionStrikeMap = {}; // Reset para nuevo paso
+            optionStrikeMap = {};
 
             document.getElementById('step-title').innerText = d.title;
-            document.getElementById('dilema-text').innerText = d.text;
             document.getElementById('tutorial-tip-text').innerText = d.tutorialTip;
+            document.getElementById('projection-live-text').innerText = d.projectionText;
+            document.getElementById('projection-score-num').innerText = `${d.baselineScore} pts`;
             
-            // Actualizar barra de progreso
+            // Barra de progreso
             const pBar = document.getElementById('progress-bar');
             if (pBar) {
                 pBar.style.width = `${((currentStep + 1) / DILEMAS.length) * 100}%`;
             }
 
+            const dilemaCont = document.getElementById('dilema-container');
             const optCont = document.getElementById('options-container');
+
+            if (d.isFacsimilePaper) {
+                // RENDERIZADO DE PREGUNTA 5: ESCÁNER FACSÍMIL DE PAPEL ICFES
+                dilemaCont.innerHTML = `
+                    <div class="facsimile-paper p-4 md:p-5 rounded-lg text-slate-900 mb-3 text-left relative shadow-2xl border-2 border-amber-900/40">
+                        <div class="flex items-center justify-between border-b border-slate-400 pb-2 mb-3">
+                            <div class="font-serif font-extrabold text-[11px] md:text-xs tracking-wider uppercase text-slate-800">
+                                📜 EXAMEN SABER 11 — PRUEBA DE DIAGNÓSTICO EN PAPEL
+                            </div>
+                            <div class="facsimile-stamp">
+                                FACSÍMIL #2026-ICFES
+                            </div>
+                        </div>
+
+                        <p class="font-serif text-xs md:text-sm leading-relaxed font-semibold text-slate-900 mb-2">
+                            <strong>Pregunta 5:</strong> Un investigador evalúa dos hipótesis sobre la deforestación en la Amazonía. La <em>Hipótesis A</em> afirma que las vías ilegales son la causa primaria, mientras la <em>Hipótesis B</em> la atribuye a la ganadería extensiva. Para determinar cuál causa es precursora en el tiempo, ¿qué dato exige el análisis?
+                        </p>
+                    </div>
+
+                    <div class="p-3 bg-cyan-950/80 border border-cyan-400/50 rounded-xl text-left text-xs font-mono text-cyan-200 flex items-start gap-2.5 mb-3 shadow-lg">
+                        <span class="text-base">💡</span>
+                        <span><strong>Demostración:</strong> Así luce una pregunta tradicional en papel. Dante OS la descompone en tiempo real para entrenar tu velocidad y control de sesgos.</span>
+                    </div>
+                `;
+            } else {
+                dilemaCont.innerHTML = `
+                    <p id="dilema-text" class="text-sm md:text-base font-medium text-zinc-200 mb-4 font-sans leading-relaxed text-left bg-black/50 p-3.5 rounded-lg border border-white/10 shadow-inner">
+                        ${d.text}
+                    </p>
+                `;
+            }
+
             optCont.innerHTML = "";
 
             d.opts.forEach((o, idx) => {
                 const btn = document.createElement('div');
                 btn.id = `btn_${o.id}`;
-                btn.className = "option-btn";
+                btn.className = d.isFacsimilePaper ? "option-btn facsimile-option" : "option-btn";
                 
-                // Si es el dilema de prueba de descarte o simulación, permitimos tachar
                 let strikeBtnHTML = '';
                 if (d.isRealIcfesSim || d.stepNum >= 3) {
                     strikeBtnHTML = `
@@ -346,15 +520,14 @@
                         <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-cyan-500/20 text-cyan-400 text-xs font-mono font-bold shrink-0 border border-cyan-500/30">
                             ${String.fromCharCode(65 + idx)}
                         </span>
-                        <span class="text-xs md:text-sm text-left font-sans font-medium text-slate-100 leading-snug">${o.text}</span>
+                        <span class="text-xs md:text-sm text-left font-medium leading-snug">${o.text}</span>
                     </div>
                     ${strikeBtnHTML}
                 `;
 
                 btn.onclick = (e) => {
-                    // Si hizo clic en la opción y no en el botón tachar, registramos respuesta
                     if (!e.target.closest('.strike-tool-btn')) {
-                        registerChoice(o.type, o.id);
+                        registerChoice(o.type, o.id, o.text);
                     }
                 };
 
@@ -365,67 +538,24 @@
             updateLatencyDisplay();
         }
 
-        function registerChoice(type, id) {
+        function registerChoice(type, id, text) {
             let latency = Date.now() - startTime;
             scores[type] = (scores[type] || 0) + 1;
             
+            historicoRespuestas.push({
+                step: currentStep + 1,
+                type: type,
+                optionId: id,
+                text: text,
+                latencyMs: latency
+            });
+
             if (latency < 2000) {
                 scores['LATENCIA_IMPULSIVA'] = (scores['LATENCIA_IMPULSIVA'] || 0) + 1;
             } else if (latency > 12000) {
                 scores['LATENCIA_REFLEXIVA'] = (scores['LATENCIA_REFLEXIVA'] || 0) + 1;
             }
 
-            // Si estamos en el último dilema (Paso 5/5), mostramos la herramienta de Evaluación de Certeza
-            if (currentStep === DILEMAS.length - 1) {
-                mostrarTutorialCerteza();
-            } else {
-                currentStep++;
-                loadStep();
-            }
-        }
-
-        function mostrarTutorialCerteza() {
-            if (timerInterval) clearInterval(timerInterval);
-
-            // Ocultar opciones anteriores y desplegar panel metacognitivo
-            const optCont = document.getElementById('options-container');
-            if (!optCont) return;
-
-            optCont.innerHTML = `
-                <div class="p-4 bg-cyan-950/70 border border-cyan-400/50 rounded-xl text-left shadow-2xl space-y-3">
-                    <div class="flex items-center gap-2 text-cyan-300 font-mono text-xs font-bold uppercase tracking-wider">
-                        <i class="fa-solid fa-gauge-high text-amber-400 text-sm"></i>
-                        <span>⚡ TUTORIAL DE CERTEZA METACOGNITIVA (SISTEMA DANTE OS)</span>
-                    </div>
-                    <p class="text-xs text-slate-200 font-sans leading-relaxed">
-                        En la aplicación (<code>index.html</code>), después de elegir cada respuesta, calificarás tu <strong>Grado de Certeza</strong>. Esto enseña al motor adaptativo si tu acierto responde a dominio real o a intuición/azar.
-                    </p>
-                    <div class="p-3 bg-black/50 rounded-lg border border-white/10">
-                        <p class="text-xs font-mono text-amber-300 font-bold mb-2 uppercase tracking-wide flex items-center gap-2">
-                            <i class="fa-solid fa-[#D4AF37] fa-circle-question"></i>
-                            <span>¿Con qué grado de confianza respondiste esta última pregunta?</span>
-                        </p>
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-2">
-                            <button type="button" onclick="confirmarCertezaOnboarding('alta')" class="p-3 bg-emerald-950/70 hover:bg-emerald-800/80 border border-emerald-500/50 rounded-lg text-emerald-300 font-mono text-xs font-bold transition-all flex flex-col items-center gap-1 cursor-pointer hover:scale-105">
-                                <span class="text-base">🟢 SEGURO</span>
-                                <span class="text-[9.5px] text-emerald-400/90 font-normal">Alta Certeza</span>
-                            </button>
-                            <button type="button" onclick="confirmarCertezaOnboarding('media')" class="p-3 bg-amber-950/70 hover:bg-amber-800/80 border border-amber-500/50 rounded-lg text-amber-300 font-mono text-xs font-bold transition-all flex flex-col items-center gap-1 cursor-pointer hover:scale-105">
-                                <span class="text-base">🟡 DUDOSO</span>
-                                <span class="text-[9.5px] text-amber-400/90 font-normal">Media Certeza</span>
-                            </button>
-                            <button type="button" onclick="confirmarCertezaOnboarding('baja')" class="p-3 bg-rose-950/70 hover:bg-rose-800/80 border border-rose-500/50 rounded-lg text-rose-300 font-mono text-xs font-bold transition-all flex flex-col items-center gap-1 cursor-pointer hover:scale-105">
-                                <span class="text-base">🔴 ADIVINÉ</span>
-                                <span class="text-[9.5px] text-rose-400/90 font-normal">Baja Certeza</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function confirmarCertezaOnboarding(nivel) {
-            scores['CERTEZA_METACOGNITIVA_INICIAL'] = nivel;
             currentStep++;
             loadStep();
         }
@@ -433,135 +563,111 @@
         async function finalizeOnboarding() {
             if (timerInterval) clearInterval(timerInterval);
 
-            // 1. Diagnóstico del Arquetipo Dominante en Enfoque Constructivo
-            let primaryType = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b, 'ANALISIS_MINUCIOSO');
-            
-            let arquetipoNombre = "Estratega Reflexivo de Alto Rendimiento";
+            // Diagnóstico del Arquetipo
+            let arquetipoNombre = "Estratega Reflexivo S2";
             let misionInmediata = {
-                titulo: "Misión Psico-Táctica #1: Calibración de Lectura y Control de Ritmo",
-                instruccion: "En tu primera sesión de entrenamiento, realiza 3 respiraciones pausadas antes de responder. Utiliza el botón de [✂️ Tachar Opciones] en las primeras 5 preguntas.",
+                id: "mision_01",
+                titulo: "Misión Psico-Táctica #1: Control de Ritmo",
+                instruccion: "Desacelerar en conectores de oposición y realizar lecturas de 8s antes del primer clic.",
                 protocolo: "MANTENER_LATENCIA_ESTABLE",
                 foco_cognitivo: "Comprensión Lectora y Descarte Metódico"
             };
 
-            if (scores['SENSIBILIDAD_TIEMPO'] || scores['ENFOQUE_DESARROLLO'] || scores['SENSIBILIDAD_EVALUATIVA']) {
+            if (scores['SENSIBILIDAD_TIEMPO'] || scores['ENFOQUE_DESARROLLO']) {
                 arquetipoNombre = "Estratega Enfocado bajo Presión";
                 misionInmediata = {
-                    titulo: "Misión Psico-Táctica #1: Descompresión Cognitiva & Pausa de Seguridad",
-                    instruccion: "Para maximizar tu lucidez bajo presión: Antes de responder tu primera pregunta hoy, realiza el Protocolo 4-7-8 (Inhala 4s, sostén 7s, exhala 8s). Tómate el tiempo necesario sin afán.",
+                    id: "mision_01",
+                    titulo: "Misión Psico-Táctica #1: Pausa de Descompresión",
+                    instruccion: "Aplicar la pausa consciente de 5 segundos al detectar preguntas con más de 3 renglones.",
                     protocolo: "DESCOMPRESION_ANSIEDAD",
                     foco_cognitivo: "Regulación de Oxigenación y Enfoque Directo"
                 };
             } else if (scores['DECISION_INMEDIATA'] || scores['LATENCIA_IMPULSIVA']) {
-                arquetipoNombre = "Velocista de Precisión Táctica";
+                arquetipoNombre = "Analista de Alta Velocidad";
                 misionInmediata = {
-                    titulo: "Misión Psico-Táctica #1: Freno de Mano y Verificación de Premisas",
-                    instruccion: "Tienes una velocidad de respuesta envidiable. Tu misión hoy: Tacha OBLIGATORIAMENTE al menos 1 distractor con la herramienta [✂️ Tachar] antes de confirmar tu respuesta.",
+                    id: "mision_01",
+                    titulo: "Misión Psico-Táctica #1: Freno de Mano y Descarte",
+                    instruccion: "Tachar obligatoriamente al menos 1 distractor con la herramienta [✂️ Tachar] antes de confirmar.",
                     protocolo: "FRENO_DESCARTE_OBLIGATORIO",
                     foco_cognitivo: "Verificación de Premisa y Eliminación de Distractores"
                 };
-            } else if (scores['CONSOLIDACION_CONCEPTUAL'] || scores['OPTIMIZACION_CRONOMETRICA']) {
-                arquetipoNombre = "Analista Metódico en Ascenso";
-                misionInmediata = {
-                    titulo: "Misión Psico-Táctica #1: Ritmo Armónico y Dominio del Cronómetro",
-                    instruccion: "Enfócate en mantener un ritmo sostenido de 1.5 a 2 minutos por pregunta. Si un ítem se extiende más de 2 minutos, aplica la técnica de descarte y marca tu opción táctica.",
-                    protocolo: "RITMO_SOSTENIDO_120S",
-                    foco_cognitivo: "Cronometría Adaptativa y Descarte Eficiente"
-                };
             }
 
-            let userSession = {};
+            const baselineScore = 320;
+
+            // B2B & Multidimensional Storage Sincronización
+            localStorage.setItem('dante_onboarding_completed', 'true');
+            localStorage.setItem('dante_user_arquetipo', arquetipoNombre);
+
+            let userObj = {};
             try {
-                userSession = JSON.parse(localStorage.getItem('dante_user')) || {};
+                userObj = JSON.parse(localStorage.getItem('dante_user')) || {};
             } catch(e) {}
-            
-            userSession.arquetipo = arquetipoNombre;
-            userSession.onboarding_completed = true;
-            userSession.mision_activa = misionInmediata;
-            userSession.scores_psicometricos = scores;
-            
-            localStorage.setItem('dante_user', JSON.stringify(userSession));
+
+            userObj.onboarding_completed = true;
+            userObj.arquetipo = arquetipoNombre;
+            userObj.mision_activa = misionInmediata;
+            userObj.baseline_proyeccion = baselineScore;
+
+            localStorage.setItem('dante_user', JSON.stringify(userObj));
             localStorage.setItem('dante_onboarding_profile', JSON.stringify({
                 arquetipo: arquetipoNombre,
-                mision: misionInmediata,
+                mision_activa: misionInmediata,
+                baseline_proyeccion: baselineScore,
                 scores: scores,
+                historico_onboarding: historicoRespuestas,
                 fecha: new Date().toISOString()
             }));
 
-            const userIdentifier = userSession.email || userSession.document_id || userSession.estudiante || `user_anon_${Date.now()}`;
-            
-            // Persistencia en base de datos protegida
-            if (supabaseClient) {
-                try {
-                    await supabaseClient.from('dante_arquetipos_iniciales').upsert({
-                        id_sesion: userIdentifier,
-                        arquetipo: arquetipoNombre,
-                        puntajes_crudos: scores,
-                        mision_prescrita: misionInmediata,
-                        privacidad_status: 'BUNKER_CONFIDENCIAL'
-                    }, { onConflict: 'id_sesion' });
+            // Inyección en el Modal Unicornio
+            document.getElementById('lblArquetipoFinal').innerText = arquetipoNombre;
+            document.getElementById('lblProyeccionScore').innerText = `${baselineScore} / 500 Pts`;
+            document.getElementById('lblMisionTitulo').innerText = misionInmediata.titulo;
+            document.getElementById('lblMisionInstruccion').innerText = `"${misionInmediata.instruccion}"`;
 
-                    if (userSession.email || userSession.document_id) {
-                        const cond = userSession.email ? `email.eq.${userSession.email}` : `document_id.eq.${userSession.document_id}`;
-                        await supabaseClient.from('usuarios')
-                            .update({ 
-                                arquetipo: arquetipoNombre, 
-                                onboarding_completed: true 
-                            })
-                            .or(cond);
-                    }
-                } catch(err) {
-                    console.error("⚠️ Sincronización onboarding confidencial:", err);
-                }
+            // Persistencia en Supabase
+            if (supabaseClient) {
+                const userIdentifier = userObj.email || userObj.estudiante || userObj.document_id || `user_anon_${Date.now()}`;
+                const payload = {
+                    onboarding_completed: true,
+                    arquetipo: arquetipoNombre,
+                    mision_activa: misionInmediata,
+                    baseline_proyeccion: baselineScore,
+                    historico_onboarding: historicoRespuestas
+                };
+
+                try {
+                    await supabaseClient.from('progreso_estudiantes').upsert({
+                        estudiante_id: userIdentifier,
+                        arquetipo: arquetipoNombre,
+                        mision_activa: misionInmediata,
+                        baseline_proyeccion: baselineScore,
+                        historico_onboarding: historicoRespuestas,
+                        updated_at: new Date().toISOString()
+                    }, { onConflict: 'estudiante_id' });
+                } catch(e) { console.warn("Supabase progreso_estudiantes:", e.message); }
+
+                try {
+                    const condEmail = userObj.email || `${userIdentifier}@dante.os`;
+                    await supabaseClient.from('usuarios').upsert({
+                        email: condEmail,
+                        arquetipo: arquetipoNombre,
+                        onboarding_completed: true,
+                        datos_onboarding: payload
+                    }, { onConflict: 'email' });
+                } catch(e) { console.warn("Supabase usuarios:", e.message); }
             }
 
-            // Renderizado del Resultado Final y la Prescripción Personalizada
-            const card = document.getElementById('card-main');
-            card.innerHTML = `
-                <div class="font-mono text-xs text-[#51e2f5] tracking-[0.4em] uppercase mb-2 font-bold flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-square-check text-cyan-400"></i>
-                    <span>SISTEMA DANTE OS // DIAGNÓSTICO COMPLETO</span>
-                </div>
-                <h2 class="oswald font-black text-2xl md:text-3xl text-white mb-2 uppercase">ARQUETIPO Y MISIÓN ACTIVADOS</h2>
-                
-                <div class="my-3 p-3.5 bg-cyan-950/40 border border-cyan-500/40 rounded-xl text-left shadow-[0_0_25px_rgba(81,226,245,0.15)]">
-                    <div class="flex items-center justify-between border-b border-cyan-500/20 pb-2 mb-2">
-                        <span class="text-xs font-mono text-amber-400 font-bold uppercase tracking-wider">Perfil Cognitivo Diagnósticado:</span>
-                        <span class="text-xs font-mono text-cyan-300 font-bold px-2 py-0.5 rounded bg-cyan-900/50 border border-cyan-500/30">PRIVADO 🔒</span>
-                    </div>
-                    <div class="text-base md:text-lg font-mono font-bold text-white uppercase flex items-center gap-2 mb-1">
-                        <span class="text-amber-400">✨</span> ${arquetipoNombre}
-                    </div>
-                </div>
-
-                <!-- PRESCRIPCIÓN DE MISIÓN INMEDIATA -->
-                <div class="p-4 bg-amber-950/30 border border-amber-500/40 rounded-xl text-left mb-4 shadow-lg">
-                    <div class="flex items-center gap-2 text-amber-400 font-mono text-xs font-bold uppercase mb-1">
-                        <i class="fa-solid fa-crosshairs"></i>
-                        <span>${misionInmediata.titulo}</span>
-                    </div>
-                    <p class="text-xs md:text-sm font-mono text-zinc-200 leading-relaxed bg-black/40 p-2.5 rounded border border-white/10">
-                        "${misionInmediata.instruccion}"
-                    </p>
-                    <div class="mt-2 text-[11px] font-mono text-amber-300/80 flex items-center justify-between">
-                        <span>Foco: <strong>${misionInmediata.foco_cognitivo}</strong></span>
-                        <span>Protocolo: <strong>${misionInmediata.protocolo}</strong></span>
-                    </div>
-                </div>
-
-                <div class="mt-4 pt-2 border-t border-cyan-500/20">
-                    <button type="button" onclick="window.location.href='index.html'" class="w-full py-3 px-4 bg-amber-500/20 hover:bg-amber-500/30 border-2 border-amber-400 text-amber-300 font-mono font-bold text-sm rounded-xl uppercase tracking-wider transition-all duration-300 shadow-[0_0_20px_rgba(212,175,55,0.25)] hover:scale-[1.02] cursor-pointer flex items-center justify-center gap-2">
-                        <span>🚀 INGRESAR A MI CABINA DE ENTRENAMIENTO</span>
-                        <i class="fa-solid fa-arrow-right"></i>
-                    </button>
-                    <p class="text-[11px] font-mono text-cyan-300/70 text-center mt-2.5">
-                        Tómate tu tiempo para leer tu diagnóstico. Haz clic arriba para comenzar.
-                    </p>
-                </div>
-            `;
+            // Desplegar Modal Unicornio de Celebración
+            const modal = document.getElementById('modalCelebration');
+            if (modal) modal.style.display = 'flex';
         }
 
-        // Canvas Fractal
+        function irACabinaEntrenamiento() {
+            window.location.href = 'index.html';
+        }
+
+        // Canvas Fractal Background
         const canvas = document.getElementById('dante-fractal-bg'); 
         const ctx = canvas ? canvas.getContext('2d') : null;
         let parts = [];
@@ -602,3 +708,4 @@
     </script>
 </body>
 </html>
+
