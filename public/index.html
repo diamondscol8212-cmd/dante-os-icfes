@@ -450,6 +450,12 @@
         </div>
 
         <div class="flex items-center gap-1.5 sm:gap-3 flex-shrink-0" style="pointer-events: auto;">
+            <!-- BADGE DE ARQUETIPO Y MEDALLA 🏅 -->
+            <div id="lblHudArquetipoMedalla" class="flex items-center gap-1.5 bg-amber-500/10 border border-amber-500/30 px-2.5 py-1 rounded-full flex-shrink-0 text-xs font-mono font-bold text-amber-300 shadow-sm">
+                <span>🏅</span>
+                <span id="lblHeaderArquetipo">Estratega Reflexivo S2</span>
+            </div>
+
             <button type="button" onclick="AppController.toggleContraste()" class="text-xs text-amber-500 hover:text-amber-400 p-1.5 bg-transparent border-0 cursor-pointer flex-shrink-0" title="Cambiar modo de contraste (Claro/Oscuro)" aria-label="Cambiar modo de contraste">
                 <i class="fas fa-sun" id="iconContrast"></i>
             </button>
@@ -859,8 +865,23 @@
                     // Cargar Misión Psico-Táctica e información del Onboarding
                     const onboardingProfileRaw = localStorage.getItem("dante_onboarding_profile");
                     const onboardingProfile = onboardingProfileRaw ? JSON.parse(onboardingProfileRaw) : null;
-                    const arquetipo = sessionData.arquetipo || (onboardingProfile && onboardingProfile.arquetipo) || "Estratega Reflexivo de Alto Rendimiento";
-                    const misionObj = sessionData.mision_activa || (onboardingProfile && onboardingProfile.mision) || null;
+                    
+                    // Verificación de Onboarding Completado
+                    const onboardingCompleted = localStorage.getItem("dante_onboarding_completed") === "true" || sessionData.onboarding_completed === true;
+                    if (!onboardingCompleted) {
+                        console.warn("⚠️ Onboarding no detectado. Redirigiendo a onboarding.html...");
+                        window.location.href = "onboarding.html";
+                        return;
+                    }
+
+                    const arquetipo = localStorage.getItem("dante_user_arquetipo") || sessionData.arquetipo || (onboardingProfile && onboardingProfile.arquetipo) || "Estratega Reflexivo S2";
+                    const misionObj = sessionData.mision_activa || (onboardingProfile && onboardingProfile.mision_activa) || null;
+
+                    // Actualizar Medalla/Arquetipo en el Header HUD
+                    const lblHeaderArq = document.getElementById("lblHeaderArquetipo");
+                    if (lblHeaderArq) {
+                        lblHeaderArq.innerText = arquetipo;
+                    }
 
                     const bannerEl = document.getElementById("uiBannerOnboardingMision");
                     const arquetipoEl = document.getElementById("lblBannerArquetipo");
