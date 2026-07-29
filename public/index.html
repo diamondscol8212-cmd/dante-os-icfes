@@ -474,7 +474,7 @@
 <body oncontextmenu="return false;">
 
     <script>
-        window.history.replaceState({ locked: true }, null, window.location.href);
+        window.history.pushState({ locked: true }, null, window.location.href);
         window.addEventListener('popstate', function (event) {
             window.history.pushState({ locked: true }, null, window.location.href);
             const flash = document.getElementById('fx-flash');
@@ -1469,7 +1469,21 @@
 
             /* PANTALLA DE CLAUSURA CON MAPA DE RUTA HACIA EL SIGUIENTE MÓDULO */
             static desplegarClausuraExamen(reporte) {
-                localStorage.setItem(`dante_completado_${AppState.materia}_${AppState.estudiante}`, 'true');
+                // Desmontaje Inmediato del DOM al finalizar examen (Fix Bucle Pregunta 15)
+                const uiCore = document.getElementById("uiContenedorPreguntaCore");
+                const uiMeta = document.getElementById("uiMetacognicion");
+                const uiFeed = document.getElementById("uiFeedback");
+                const uiOptica = document.getElementById("uiHojaOptica") || document.querySelector(".optica-workspace-container");
+                if (uiCore) uiCore.style.display = "none";
+                if (uiMeta) uiMeta.style.display = "none";
+                if (uiFeed) uiFeed.style.display = "none";
+                if (uiOptica) {
+                    uiOptica.style.pointerEvents = "none";
+                    uiOptica.style.opacity = "0.5";
+                    document.querySelectorAll('.optica-oval-ws').forEach(el => el.style.pointerEvents = 'none');
+                }
+
+                localStorage.setItem('dante_completado_' + AppState.materia + '_' + AppState.estudiante, 'true');
 
                 const idxActual = SECUENCIA_MATERIAS.indexOf(AppState.materia);
                 const tieneSiguiente = idxActual >= 0 && idxActual < SECUENCIA_MATERIAS.length - 1;
@@ -1676,11 +1690,26 @@
                     AppState.historialTheta.push(data.thetaProgreso !== undefined ? data.thetaProgreso : AppState.theta);
 
                     if (data.detenerExamen) {
+                        // Desmontaje Inmediato del DOM al finalizar examen (Fix Bucle Pregunta 15)
+                        const uiCore = document.getElementById("uiContenedorPreguntaCore");
+                        const uiMeta = document.getElementById("uiMetacognicion");
+                        const uiFeed = document.getElementById("uiFeedback");
+                        const uiOptica = document.getElementById("uiHojaOptica") || document.querySelector(".optica-workspace-container");
+                        if (uiCore) uiCore.style.display = "none";
+                        if (uiMeta) uiMeta.style.display = "none";
+                        if (uiFeed) uiFeed.style.display = "none";
+                        if (uiOptica) {
+                            uiOptica.style.pointerEvents = "none";
+                            uiOptica.style.opacity = "0.5";
+                            document.querySelectorAll('.optica-oval-ws').forEach(el => el.style.pointerEvents = 'none');
+                        }
+
+                        localStorage.setItem('dante_completado_' + AppState.materia + '_' + AppState.estudiante, 'true');
+
                         const card = AppState.seleccionActual ? AppState.seleccionActual.element : null;
                         if (card) card.classList.add(data.interaccionCorrecta ? "correct" : "wrong");
-                        setTimeout(() => {
-                            AppController.desplegarClausuraExamen(data.reporteFinal || data);
-                        }, 1000);
+
+                        AppController.desplegarClausuraExamen(data.reporteFinal || data);
                         return;
                     }
 
