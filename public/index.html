@@ -1166,6 +1166,14 @@
             }
 
             static resolverContextoAutenticado() {
+                // Doble Candado Móvil contra el Botón "Atrás"
+                try {
+                    window.history.pushState({ locked: true }, null, window.location.href);
+                    window.addEventListener('popstate', function (event) {
+                        window.history.pushState({ locked: true }, null, window.location.href);
+                    });
+                } catch(e) {}
+
                 this.cargarTemaGuardado();
                 const rawUser = localStorage.getItem("dante_user");
                 const token = localStorage.getItem("dante_token");
@@ -1243,30 +1251,33 @@
                 const sel = document.getElementById("selMateria");
                 if (!sel) return;
 
+                const nombresMap = {
+                    "matematicas": "📐 Matemáticas",
+                    "lectura_critica": "📖 Lectura Crítica",
+                    "ciencias_naturales": "🧪 Ciencias Naturales",
+                    "sociales_ciudadanas": "🏛️ Sociales y Ciudadanas",
+                    "ingles": "🇬🇧 Inglés"
+                };
+
                 let primerIncompleta = null;
-                let desbloqueada = true;
 
                 Array.from(sel.options).forEach((opt) => {
                     const matKey = opt.value;
                     const completada = localStorage.getItem(`dante_completado_${matKey}_${AppState.estudiante}`) === "true";
                     
-                    if (desbloqueada) {
-                        opt.disabled = false;
-                        if (!primerIncompleta && !completada) {
-                            primerIncompleta = matKey;
-                        }
-                        if (!completada) {
-                            desbloqueada = false;
-                        }
+                    opt.disabled = false; // Autonomía total: Cero secuencias forzadas
+                    const nombreBase = nombresMap[matKey] || matKey.toUpperCase();
+                    
+                    if (completada) {
+                        opt.text = `[COMPLETADA 🏅] ${nombreBase}`;
                     } else {
-                        opt.disabled = true;
+                        opt.text = `[PENDIENTE ⚡] ${nombreBase}`;
+                        if (!primerIncompleta) primerIncompleta = matKey;
                     }
                 });
 
                 if (primerIncompleta) {
                     sel.value = primerIncompleta;
-                } else {
-                    sel.value = SECUENCIA_MATERIAS[0];
                 }
                 this.actualizarIndicadorSecuencia();
             }
@@ -1485,17 +1496,6 @@
 
                 localStorage.setItem('dante_completado_' + AppState.materia + '_' + AppState.estudiante, 'true');
 
-                const idxActual = SECUENCIA_MATERIAS.indexOf(AppState.materia);
-                const tieneSiguiente = idxActual >= 0 && idxActual < SECUENCIA_MATERIAS.length - 1;
-                const siguienteMateriaKey = tieneSiguiente ? SECUENCIA_MATERIAS[idxActual + 1] : null;
-
-                const nombresMap = {
-                    "lectura_critica": "📖 Lectura Crítica",
-                    "ciencias_naturales": "🧪 Ciencias Naturales",
-                    "sociales_ciudadanas": "🏛️ Sociales y Ciudadanas",
-                    "ingles": "🇬🇧 Inglés"
-                };
-
                 document.querySelectorAll('.app-view').forEach(view => view.classList.remove('active'));
                 
                 const viewFinal = document.getElementById("viewFinalReport");
@@ -1503,42 +1503,35 @@
 
                 viewFinal.style.display = "flex";
                 viewFinal.classList.add("active");
-                
-                let botonAccionHTML = "";
-                if (tieneSiguiente) {
-                    botonAccionHTML = `
-                        <button type="button" class="btn-premium btn-pulse-glow" style="margin-top: 1rem; border-color: var(--cyan-core); color: var(--cyan-core);" onclick="AppController.iniciarSiguienteModuloRuta('${siguienteMateriaKey}')">
-                            🚀 AVANZAR A PRUEBA ${idxActual + 2}: ${nombresMap[siguienteMateriaKey].toUpperCase()} ➡️
-                        </button>
-                        <a href="perfil.html?estudiante=${AppState.estudiante}" class="block text-xs text-slate-400 font-mono mt-3 underline hover:text-white">
-                            Ver mi expediente hasta aquí
-                        </a>
-                    `;
-                } else {
-                    botonAccionHTML = `
-                        <div class="my-3 p-2 bg-emerald-500/10 border border-emerald-500/30 rounded text-emerald-400 font-mono text-xs">
-                            🎉 ¡HAS COMPLETADO LAS 5 PRUEBAS DEL DIAGNÓSTICO GLOBAL!
-                        </div>
-                        <a href="perfil.html?estudiante=${AppState.estudiante}" class="btn-premium btn-pulse-glow" style="margin-top: 1rem; border-color: var(--gold-satin); color: var(--gold-satin);">
-                            📜 CONSULTAR EXPEDIENTE FINAL Y REPORTE 🏆
-                        </a>
-                    `;
-                }
+
+                AppController.autoselectSiguienteMateria();
 
                 viewFinal.innerHTML = `
-                    <div class="gateway-card animate-fade-in" style="max-width: 520px; text-align: center; padding: 2.5rem 1.8rem; border: 2px solid var(--gold-satin); box-shadow: 0 0 50px rgba(212,175,55,0.25);">
-                        <div class="system-version-tag">DANTE OS // DIAGNÓSTICO</div>
+                    <div class="gateway-card animate-fade-in" style="max-width: 540px; text-align: center; padding: 2.5rem 1.8rem; border: 2px solid var(--gold-satin); box-shadow: 0 0 50px rgba(212,175,55,0.25);">
+                        <div class="system-version-tag">DANTE OS // CLAUSURA DE MÓDULO</div>
                         
                         <div class="w-16 h-16 mx-auto mb-4 rounded-full border-2 border-[#D4AF37] bg-amber-500/10 flex items-center justify-center shadow-[0_0_25px_rgba(212,175,55,0.4)]">
                             <i class="fas fa-check text-2xl text-[#D4AF37]"></i>
                         </div>
                         
                         <h2 class="gateway-title" style="color: white; font-size: 1.3rem; margin-bottom: 0.2rem;">¡MÓDULO DE ${AppState.materia.replace('_', ' ').toUpperCase()} FINALIZADO!</h2>
-                        <p class="font-mono text-xs text-[#51e2f5] my-2">Prueba ${idxActual + 1} de 5 Completada con Éxito</p>
+                        <p class="font-mono text-xs text-[#51e2f5] my-2">Evaluación Calibrada y Sincronizada con Expediente</p>
 
-                        ${botonAccionHTML}
+                        <div class="flex flex-col gap-3 mt-5">
+                            <button type="button" class="btn-premium btn-pulse-glow" style="border-color: var(--cyan-core); color: var(--cyan-core); font-size: 0.85rem;" onclick="AppController.mostrarGatewaySelectorLibre()">
+                                🎯 ELEGIR SIGUIENTE MATERIA (SELECTOR LIBRE) ➡️
+                            </button>
+                            <a href="perfil.html?estudiante=${AppState.estudiante}" class="btn-premium" style="border-color: var(--gold-satin); color: var(--gold-satin); text-decoration: none; font-size: 0.85rem;">
+                                📊 CONSULTAR MI EXPEDIENTE (PERFIL) 🏆
+                            </a>
+                        </div>
                     </div>
                 `;
+            }
+
+            static mostrarGatewaySelectorLibre() {
+                this.autoselectSiguienteMateria();
+                this.cambiarVista("viewGateway");
             }
 
             static iniciarSiguienteModuloRuta(siguienteMateria) {
