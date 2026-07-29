@@ -2,10 +2,13 @@
 // Dante OS Enterprise Edition // Bogotá, Colombia
 import crypto from 'crypto';
 import { supabase } from '../../supabaseClient.js';
+import { BANCO_COMPLETO } from './services/bank/index.js';
 
 const INSTITUTION_ID = 'colegio_sandbox_default';
 
-const REACTIVOS_REALES = [
+const REACTIVOS_REALES = BANCO_COMPLETO;
+/*
+const REACTIVOS_LEGACY = [
     // ----------------------------------------------------------------
     // 📐 MATEMÁTICAS (10 Reactivos)
     // ----------------------------------------------------------------
@@ -542,6 +545,7 @@ const REACTIVOS_REALES = [
         ]
     }
 ];
+*/
 
 async function sembrarBancoSoberano() {
     console.log("🚀 [SIEMBRA DANTE OS]: Limpiando tablas e inyectando banco con matriz Q, metadatos y recurso_visual integrados...");
