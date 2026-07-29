@@ -32,17 +32,52 @@
             --gold: #b45309;
             color: #0f172a !important;
         }
-        body.light-mode .master-hud { background: rgba(255, 255, 255, 0.95) !important; border-bottom-color: rgba(0,0,0,0.12) !important; }
+        body.light-mode .master-hud { background: rgba(255, 255, 255, 0.98) !important; border-bottom-color: #cbd5e1 !important; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         body.light-mode .alias-title { color: #0f172a !important; }
+        body.light-mode .geo-tag { color: #0284c7 !important; }
         body.light-mode .adn-card { background: #ffffff !important; border-color: #cbd5e1 !important; box-shadow: 0 10px 40px rgba(0,0,0,0.08) !important; }
         body.light-mode .alias-main-name { color: #0f172a !important; text-shadow: none !important; }
+        body.light-mode .archetype-sub { background: #0284c7 !important; color: #ffffff !important; box-shadow: none !important; }
         body.light-mode .identity-box { background: #f8fafc !important; border-color: #cbd5e1 !important; }
+        body.light-mode .historical-label { color: #64748b !important; }
         body.light-mode .historical-name { color: #0f172a !important; }
-        body.light-mode .summary-text { background: #f8fafc !important; color: #1e293b !important; border-left-color: #0284c7 !important; }
-        body.light-mode .tab-materia-btn { background: #f8fafc !important; color: #475569 !important; border-color: #cbd5e1 !important; }
-        body.light-mode .tab-materia-btn.active { background: #fef3c7 !important; color: #b45309 !important; border-color: #b45309 !important; }
-        body.light-mode .bottom-nav { background: rgba(255, 255, 255, 0.95) !important; border-color: rgba(0,0,0,0.15) !important; box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important; }
+        body.light-mode .summary-text { background: #f8fafc !important; color: #0f172a !important; border-left-color: #0284c7 !important; border: 1px solid #cbd5e1; border-left-width: 4px; }
+        body.light-mode .tab-materia-btn { background: #ffffff !important; color: #475569 !important; border-color: #cbd5e1 !important; }
+        body.light-mode .tab-materia-btn.active { background: #fffbeb !important; color: #b45309 !important; border-color: #b45309 !important; box-shadow: 0 2px 8px rgba(180, 83, 9, 0.15) !important; }
+        body.light-mode .bottom-nav { background: rgba(255, 255, 255, 0.98) !important; border-color: #cbd5e1 !important; box-shadow: 0 -4px 20px rgba(0,0,0,0.08) !important; }
         body.light-mode .bottom-nav .nav-text { color: #334155 !important; }
+
+        body.light-mode .section-title { color: #0f172a !important; }
+        body.light-mode .section-title::after { background: #cbd5e1 !important; }
+        body.light-mode .radar-label { color: #0f172a !important; text-shadow: none !important; font-weight: 800 !important; }
+        body.light-mode .radar-bg {
+            background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><polygon points="50 0, 100 25, 100 75, 50 100, 0 75, 0 25" fill="none" stroke="%23cbd5e1" stroke-width="1.5"/><polygon points="50 20, 80 35, 80 65, 50 80, 20 65, 20 35" fill="none" stroke="%23cbd5e1" stroke-width="1.5"/><polygon points="50 40, 65 47, 65 53, 50 60, 35 53, 35 47" fill="none" stroke="%23cbd5e1" stroke-width="1.5"/><line x1="50" y1="50" x2="50" y2="0" stroke="%23cbd5e1" stroke-width="1.5"/><line x1="50" y1="50" x2="100" y2="25" stroke="%23cbd5e1" stroke-width="1.5"/><line x1="50" y1="50" x2="100" y2="75" stroke="%23cbd5e1" stroke-width="1.5"/><line x1="50" y1="50" x2="50" y2="100" stroke="%23cbd5e1" stroke-width="1.5"/><line x1="50" y1="50" x2="0" y2="75" stroke="%23cbd5e1" stroke-width="1.5"/><line x1="50" y1="50" x2="0" y2="25" stroke="%23cbd5e1" stroke-width="1.5"/></svg>') !important;
+        }
+        body.light-mode .radar-polygon { fill: #0284c7 !important; fill-opacity: 0.25 !important; stroke: #0284c7 !important; filter: drop-shadow(0 0 4px rgba(2, 132, 199, 0.4)) !important; }
+        body.light-mode .thermometer-container { background: #e2e8f0 !important; border-color: #cbd5e1 !important; }
+        body.light-mode .mini-bar-bg { background: #e2e8f0 !important; border-color: #cbd5e1 !important; }
+        body.light-mode .bg-slate-900\/90,
+        body.light-mode .bg-slate-900\/80,
+        body.light-mode .bg-slate-900,
+        body.light-mode .bg-slate-950,
+        body.light-mode .bg-\[\#08090c\]\/80,
+        body.light-mode .bg-\[\#0d121f\]\/90 {
+            background-color: #ffffff !important;
+            border-color: #cbd5e1 !important;
+            color: #0f172a !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05) !important;
+        }
+        body.light-mode .text-slate-200,
+        body.light-mode .text-slate-300,
+        body.light-mode .text-slate-400,
+        body.light-mode .text-zinc-200,
+        body.light-mode .text-zinc-300,
+        body.light-mode .text-white { color: #0f172a !important; }
+        body.light-mode .text-amber-400,
+        body.light-mode .text-\[\#D4AF37\] { color: #b45309 !important; }
+        body.light-mode .text-\[var\(--primary\)\],
+        body.light-mode .text-\[\#51e2f5\] { color: #0284c7 !important; }
+        body.light-mode .mision-item { background: #f8fafc !important; border-color: #cbd5e1 !important; color: #0f172a !important; }
 
         body, html { 
             background: var(--bg); color: #f0f1f5; margin: 0; font-family: 'Outfit', sans-serif; 
@@ -103,14 +138,19 @@
         .historical-label { font-family: 'JetBrains Mono'; font-size: 8px; color: #8a8f9d; text-transform: uppercase; letter-spacing: 1px; font-weight: 800;}
         .historical-name { font-size: 12px; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 1px; font-family: 'JetBrains Mono'; }
 
-        /* PESTAÑAS MATERIAS CON WRAP RESPONSIVO PERFECTO */
+        /* PESTAÑAS MATERIAS CON SCROLL HORIZONTAL SUAVE Y RESPONSIVO */
         .tabs-container {
-            display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin-bottom: 1rem;
-            padding-bottom: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.08);
+            display: flex; flex-wrap: nowrap; gap: 0.5rem; justify-content: flex-start; align-items: center;
+            overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+            margin-bottom: 1rem; padding: 0.4rem 0.2rem 0.6rem;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            scroll-behavior: smooth;
         }
+        .tabs-container::-webkit-scrollbar { display: none; }
         .tab-materia-btn {
+            flex-shrink: 0;
             background: rgba(20, 24, 35, 0.8); border: 1px solid var(--border-graphite); color: #8a8f9d;
-            padding: 0.55rem 0.9rem; border-radius: 8px; font-size: 0.68rem; font-weight: 800;
+            padding: 0.55rem 0.95rem; border-radius: 8px; font-size: 0.68rem; font-weight: 800;
             text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: all 0.25s ease;
             font-family: 'JetBrains Mono', monospace; white-space: nowrap;
         }
@@ -459,7 +499,10 @@
                     </div>
 
                     <div class="p-3 bg-[#0d121f]/90 border border-cyan-500/30 rounded-lg space-y-2">
-                        <h4 class="text-[11px] font-bold uppercase text-[var(--primary)] font-mono">Misiones de Estudio Verificables:</h4>
+                        <div class="flex justify-between items-center">
+                            <h4 class="text-[11px] font-bold uppercase text-[var(--primary)] font-mono">Misiones de Estudio Verificables:</h4>
+                            <span id="lblMisionesProgresoHeader" class="text-[9.5px] font-mono font-bold px-2 py-0.5 rounded border bg-amber-500/10 text-amber-400 border-amber-500/30">0/0 MISIONES EJECUTADAS</span>
+                        </div>
                         <ul id="listaTemasEstudioHtml" class="text-xs text-slate-200 space-y-2 font-sans">
                             <li>Realiza tu prueba inicial de diagnóstico en el Simulador.</li>
                         </ul>
@@ -972,19 +1015,31 @@
                 if (!cont) return;
                 cont.innerHTML = "";
                 
+                let completadasCount = 0;
                 temas.forEach((t, i) => {
                     const savedState = localStorage.getItem(`dante_task_${STUDENT_ID}_${currentMateriaFiltro}_${i}`) === 'true';
+                    if (savedState) completadasCount++;
+
                     const li = document.createElement("li");
-                    li.className = "flex items-center justify-between p-1.5 rounded bg-slate-950 border border-slate-800/80";
+                    li.className = `mision-item flex items-center justify-between p-2 rounded-lg border transition-all duration-300 ${savedState ? 'bg-emerald-950/20 border-emerald-500/40' : 'bg-slate-950 border-slate-800/80'}`;
                     li.innerHTML = `
-                        <label class="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" ${savedState ? 'checked' : ''} onchange="PerfilEstudiante.guardarEstadoMision(${i}, this.checked)" class="rounded border-slate-700 text-[#51e2f5] focus:ring-0">
-                            <span class="${savedState ? 'line-through text-slate-500' : 'text-slate-200'}">${t}</span>
+                        <label class="flex items-center gap-2.5 cursor-pointer flex-1 min-w-0 pr-2">
+                            <input type="checkbox" ${savedState ? 'checked' : ''} onchange="PerfilEstudiante.guardarEstadoMision(${i}, this.checked)" class="w-4 h-4 rounded border-slate-700 text-emerald-400 focus:ring-0 cursor-pointer flex-shrink-0">
+                            <span class="text-xs transition-all ${savedState ? 'line-through text-emerald-400/70 font-semibold' : 'text-slate-200'}">${t}</span>
                         </label>
-                        <span class="text-[9px] font-mono text-cyan-400">PASO ${i+1}</span>
+                        <span class="text-[9px] font-mono px-2 py-0.5 rounded font-bold flex-shrink-0 ${savedState ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-cyan-500/10 text-cyan-400 border border-cyan-500/30'}">
+                            ${savedState ? '✅ COMPLETADO' : `PASO ${i+1}`}
+                        </span>
                     `;
                     cont.appendChild(li);
                 });
+
+                // BADGE DE PROGRESO DE MISIONES
+                const existingBadge = document.getElementById("lblMisionesProgresoHeader");
+                if (existingBadge) {
+                    existingBadge.innerText = `${completadasCount}/${temas.length} MISIONES EJECUTADAS`;
+                    existingBadge.className = `text-[9.5px] font-mono font-bold px-2 py-0.5 rounded border ${completadasCount === temas.length ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' : 'bg-amber-500/10 text-amber-400 border-amber-500/30'}`;
+                }
             }
 
             static guardarEstadoMision(idx, checked) {
