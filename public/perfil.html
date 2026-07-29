@@ -614,63 +614,112 @@
 
         const CATALOGO_MATERIAS = {
             todas: {
+                accent: "#51e2f5",
+                gold: "#D4AF37",
+                bgGradient: "linear-gradient(90deg, #51e2f5, #D4AF37, #51e2f5)",
                 radar_ejes: ["Matemáticas", "Lectura Crítica", "Ciencias Nat.", "Inglés", "Sociales", "Autorregulación"],
                 subcompetencias: ["Lectura Crítica", "Matemáticas", "Ciencias Naturales"],
                 sesgos_por_defectos: [
-                    { n: "Respuestas Rápidas (Impulsividad)", v: 0.18, desc: "Tendencia a responder en menos de 4s por intuición." },
-                    { n: "Falsa Inferencia Extrapolada", v: 0.12, desc: "Asumir conclusiones no respaldadas por el enunciado." },
-                    { n: "Inversión Operacional", v: 0.10, desc: "Confusión en el sentido de las operaciones o conectores." },
-                    { n: "Omisión de Conversión", v: 0.05, desc: "Omitir la transformación de unidades o escalas." }
+                    { n: "Respuestas Rápidas (Impulsividad)", v: 0.18, desc: "Punto Ciego: Tendencia a responder en menos de 4s por intuición. Micro-ejercicio: 3 mins." },
+                    { n: "Falsa Inferencia Extrapolada", v: 0.12, desc: "Punto Ciego: Asumir conclusiones no respaldadas por el enunciado. Micro-ejercicio: 3 mins." },
+                    { n: "Inversión Operacional", v: 0.10, desc: "Punto Ciego: Confusión en el sentido de las operaciones o conectores. Micro-ejercicio: 3 mins." },
+                    { n: "Omisión de Conversión", v: 0.05, desc: "Punto Ciego: Omitir la transformación de unidades o escalas. Micro-ejercicio: 3 mins." }
+                ],
+                misiones_pedagogicas: [
+                    "🎯 Micro-ejercicio (3 mins): Taller de descarte activo de opciones absurdas.",
+                    "⚡ Micro-ejercicio (3 mins): Lectura pausada de enunciados con doble negación."
                 ]
             },
             matematicas: {
+                accent: "#D4AF37",
+                gold: "#f59e0b",
+                bgGradient: "linear-gradient(90deg, #D4AF37, #f59e0b, #D4AF37)",
                 radar_ejes: ["Álgebra", "Geometría", "Estadística", "Velocidad", "Resiliencia", "Control Impuls."],
                 subcompetencias: ["Álgebra y Cálculo", "Geometría y Medición", "Estadística y Prob."],
                 sesgos_por_defectos: [
-                    { n: "Heurística Lineal Directa", v: 0.25, desc: "Aplicar regla de tres a problemas no proporcionales." },
-                    { n: "Inversión Operacional", v: 0.18, desc: "Restar en lugar de sumar por lectura acelerada del signo." },
-                    { n: "Omisión de Conversión", v: 0.12, desc: "No convertir metros a kilómetros antes del resultado." },
-                    { n: "Error de Escala Geométrica", v: 0.08, desc: "Confundir área con perímetro en figuras compuestas." }
+                    { n: "Despeje de Ecuaciones Cuadráticas", v: 0.25, desc: "Punto Ciego: Error en el manejo de signos en la fórmula cuadrática. Micro-ejercicio: 3 mins." },
+                    { n: "Inversión Operacional (Signos)", v: 0.18, desc: "Punto Ciego: Restar en lugar de sumar por lectura acelerada. Micro-ejercicio: 3 mins." },
+                    { n: "Conversión de Unidades de Masa/Escala", v: 0.12, desc: "Punto Ciego: No convertir metros a kilómetros antes de calcular. Micro-ejercicio: 3 mins." },
+                    { n: "Error de Escala Geométrica", v: 0.08, desc: "Punto Ciego: Confundir área con perímetro en figuras compuestas. Micro-ejercicio: 3 mins." }
+                ],
+                misiones_pedagogicas: [
+                    "📐 Micro-ejercicio (3 mins): Resolver 2 despejes cuadráticos aplicando el cambio de signo explícito.",
+                    "📏 Micro-ejercicio (3 mins): Conversión rápida de unidades de área (cm² a m²) sin calculadora.",
+                    "📊 Micro-ejercicio (3 mins): Taller de interpretación de diagramas de caja y bigotes en 180 segundos."
                 ]
             },
             lectura_critica: {
+                accent: "#a855f7",
+                gold: "#c084fc",
+                bgGradient: "linear-gradient(90deg, #a855f7, #e879f9, #a855f7)",
                 radar_ejes: ["Identif. Literal", "Inferencia", "Reflexión Crítica", "Velocidad Textual", "Atención Plena", "Resiliencia"],
                 subcompetencias: ["Identificación de Contenido", "Comprensión Inferencial", "Evaluación Crítica"],
                 sesgos_por_defectos: [
-                    { n: "Lectura Literal Simplista", v: 0.22, desc: "Quedarse en la superficie del texto sin detectar la ironía." },
-                    { n: "Falsa Inferencia Extrapolada", v: 0.19, desc: "Marcar la opción que coincide con la opinión personal y no con el autor." },
-                    { n: "Confusión Conectores Opuestos", v: 0.14, desc: "Confundir 'sin embargo' con 'por lo tanto'." },
-                    { n: "Atención Fragmentada en Párrafos", v: 0.10, desc: "Perder la idea central en textos de más de 200 palabras." }
+                    { n: "Uso de Conectores de Oposición", v: 0.22, desc: "Punto Ciego: Confundir 'Sin embargo' con 'Por lo tanto'. Micro-ejercicio: 3 mins." },
+                    { n: "Detección de Premisas Falsas", v: 0.19, desc: "Punto Ciego: Marcar la opción que coincide con la opinión personal. Micro-ejercicio: 3 mins." },
+                    { n: "Identificación Intención del Autor", v: 0.14, desc: "Punto Ciego: Quedarse en la superficie sin captar ironía. Micro-ejercicio: 3 mins." },
+                    { n: "Atención Fragmentada en Párrafos", v: 0.10, desc: "Punto Ciego: Perder el hilo conductor en textos de +200 palabras. Micro-ejercicio: 3 mins." }
+                ],
+                misiones_pedagogicas: [
+                    "📖 Micro-ejercicio (3 mins): Identificar la tesis principal y 2 conectores de oposición en un fragmento de ensayo.",
+                    "✍️ Micro-ejercicio (3 mins): Diferenciar un hecho de una opinión implícita en un artículo de opinión.",
+                    "🔎 Micro-ejercicio (3 mins): Rastreo de ironías y sarcasmos en textos filosóficos breves."
                 ]
             },
             ciencias_naturales: {
+                accent: "#2ecc71",
+                gold: "#10b981",
+                bgGradient: "linear-gradient(90deg, #2ecc71, #34d399, #2ecc71)",
                 radar_ejes: ["Uso del Conocimiento", "Explicación Fenóm.", "Indagación Exp.", "Análisis Gráfico", "Precisión", "Resiliencia"],
                 subcompetencias: ["Indagación Científica", "Explicación de Fenómenos", "Uso del Conocimiento"],
                 sesgos_por_defectos: [
-                    { n: "Confusión Causa - Efecto", v: 0.20, desc: "Atribuir causalidad a dos variables que solo correlacionan." },
-                    { n: "Omisión Variable de Control", v: 0.15, desc: "Ignorar la constante del experimento al analizar datos." },
-                    { n: "Lectura Errónea de Gráficas", v: 0.11, desc: "Invertir los ejes X e Y en diagramas de dispersión." }
+                    { n: "Conversión Unidades de Masa/Volumen", v: 0.20, desc: "Punto Ciego: Omitir la densidad al pasar de g a mL. Micro-ejercicio: 3 mins." },
+                    { n: "Leyes de Newton y Fuerza Neta", v: 0.15, desc: "Punto Ciego: Olvidar la fuerza de fricción opuesta al movimiento. Micro-ejercicio: 3 mins." },
+                    { n: "Análisis de Gráficas de Solubilidad", v: 0.11, desc: "Punto Ciego: Invertir variables dependiente e independiente. Micro-ejercicio: 3 mins." }
+                ],
+                misiones_pedagogicas: [
+                    "🧪 Micro-ejercicio (3 mins): Calcular la fuerza neta en un diagrama de cuerpo libre con fricción.",
+                    "🧬 Micro-ejercicio (3 mins): Balanceo rápido de ecuaciones químicas por tanteo en 180 segundos.",
+                    "📈 Micro-ejercicio (3 mins): Lectura de gráficas de solubilidad en función de la temperatura."
                 ]
             },
             sociales_ciudadanas: {
+                accent: "#d97706",
+                gold: "#f59e0b",
+                bgGradient: "linear-gradient(90deg, #d97706, #c2410c, #d97706)",
                 radar_ejes: ["Pensamiento Social", "Interpretación", "Pensamiento Crítico", "Constitución", "Análisis Contexto", "Resiliencia"],
                 subcompetencias: ["Pensamiento Social", "Interpretación y Análisis", "Pensamiento Crítico"],
                 sesgos_por_defectos: [
-                    { n: "Anacronismo Histórico", v: 0.18, desc: "Juzgar acontecimientos pasados con valores actuales." },
-                    { n: "Sesgo de Valor vs Constitución", v: 0.16, desc: "Elegir la respuesta que cree correcta en lugar de la norma legal." }
+                    { n: "Mecanismos de Participación Ciudadana", v: 0.18, desc: "Punto Ciego: Confundir Acción de Tutela con Acción Popular. Micro-ejercicio: 3 mins." },
+                    { n: "Análisis Fuentes Históricas Primarias", v: 0.16, desc: "Punto Ciego: Anacronismo histórico al juzgar fuentes del siglo XIX. Micro-ejercicio: 3 mins." },
+                    { n: "Organización del Estado Colombiano", v: 0.12, desc: "Punto Ciego: Atribuir funciones del Congreso a la Rama Ejecutiva. Micro-ejercicio: 3 mins." }
+                ],
+                misiones_pedagogicas: [
+                    "🏛️ Micro-ejercicio (3 mins): Identificar el mecanismo constitucional idóneo (Tutela vs Hábeas Corpus).",
+                    "📜 Micro-ejercicio (3 mins): Analizar el contexto socioeconómico de una caricatura política colombiana.",
+                    "⚖️ Micro-ejercicio (3 mins): Evaluar un conflicto de derechos fundamentales en la Constitución de 1991."
                 ]
             },
             ingles: {
+                accent: "#51e2f5",
+                gold: "#38bdf8",
+                bgGradient: "linear-gradient(90deg, #51e2f5, #0284c7, #51e2f5)",
                 radar_ejes: ["Vocabulario B1", "Estructura Gram.", "Lectura Contextual", "Diálogos Cortos", "Comprensión Txt", "Resiliencia"],
                 subcompetencias: ["Vocabulario y Contexto", "Estructuras Gramaticales", "Comprensión Lectora B1"],
                 sesgos_por_defectos: [
-                    { n: "Traducción Literal (False Friends)", v: 0.28, desc: "Traducir palabra por palabra ignorando modismos." },
-                    { n: "Desalineación Tensa Gramatical", v: 0.15, desc: "Confundir tiempos pasados continuos con condicionales." }
+                    { n: "Tiempos Verbales Presente Perfecto", v: 0.28, desc: "Punto Ciego: Confundir 'Since' y 'For' en oraciones compuestas. Micro-ejercicio: 3 mins." },
+                    { n: "Uso de Modales (Should / Must)", v: 0.15, desc: "Punto Ciego: Confusión entre recomendación y obligación estricta. Micro-ejercicio: 3 mins." },
+                    { n: "Comprensión Textos Narrativos B1", v: 0.12, desc: "Punto Ciego: Caer en falsos amigos (False Friends) como 'Actually' / 'Currently'. Micro-ejercicio: 3 mins." }
+                ],
+                misiones_pedagogicas: [
+                    "🇬🇧 Micro-ejercicio (3 mins): Completar 3 oraciones usando 'Have/Has + Past Participle'.",
+                    "💬 Micro-ejercicio (3 mins): Identificar el propósito comunicativo en un aviso público en inglés.",
+                    "📝 Micro-ejercicio (3 mins): Detectar y corregir 3 'False Friends' comunes en un texto B1."
                 ]
             }
         };
 
-        let perfilRadar = { e1: 0, e2: 0, e3: 0, e4: 0, e5: 0, e6: 50 };
+        let perfilRadar = { e1: 0, e2: 0, e3: 0, e4: 0, e5: 0, e6: 0 };
 
         class PerfilEstudiante {
             static cargarTemaGuardado() {
@@ -766,8 +815,17 @@
             }
 
             static cambiarFiltroMateria(materiaKey, btnEl) {
-                document.querySelectorAll('.tab-materia-btn').forEach(b => b.classList.remove('active'));
-                if (btnEl) btnEl.classList.add('active');
+                document.querySelectorAll('.tab-materia-btn').forEach(b => {
+                    b.classList.remove('active');
+                    b.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                    b.style.color = '#a1a1aa';
+                });
+                if (btnEl) {
+                    btnEl.classList.add('active');
+                    const configm = CATALOGO_MATERIAS[materiaKey] || CATALOGO_MATERIAS.todas;
+                    btnEl.style.borderColor = configm.accent;
+                    btnEl.style.color = configm.accent;
+                }
                 currentMateriaFiltro = materiaKey;
                 this.procesarYRenderizarVistas();
             }
@@ -775,6 +833,12 @@
             static procesarYRenderizarVistas() {
                 const nombreCapitalizado = STUDENT_ID.toUpperCase();
                 const configm = CATALOGO_MATERIAS[currentMateriaFiltro] || CATALOGO_MATERIAS.todas;
+
+                // Dinamismo Atmosférico: actualizar bordes y acentos de color
+                const mainCard = document.getElementById('main-card');
+                if (mainCard) {
+                    mainCard.style.borderTop = `3px solid ${configm.accent}`;
+                }
 
                 // 1. ADAPTAR EJES DEL RADAR SEGÚN MATERIA
                 const e1 = document.getElementById("lblEje1");
@@ -807,6 +871,9 @@
                 if (badgeMCER) {
                     if (currentMateriaFiltro === 'ingles') {
                         badgeMCER.classList.remove("hidden");
+                        badgeMCER.innerText = "NIVEL MCER: B1";
+                        badgeMCER.style.borderColor = configm.accent;
+                        badgeMCER.style.color = configm.accent;
                     } else {
                         badgeMCER.classList.add("hidden");
                     }
@@ -853,17 +920,19 @@
 
                     if (vul) vul.innerText = "Sin evaluaciones registradas aún para este módulo.";
                     if (pres) pres.innerText = "Inicia un simulacro para activar el diagnóstico de esta área.";
-                    if (sum) sum.innerText = `Análisis de trayectoria para ${nombreCapitalizado}: Sin registros en el módulo actual.`;
+                    
+                    // CERO DATOS FANTASMA: Tarjeta transparente directa
+                    if (sum) sum.innerText = `🔒 Módulo Sin Calibrar. Aún no registras evaluaciones en esta área. Completa tu prueba en el Simulador para desbloquear tu Gemelo Digital.`;
 
-                    if (pred) pred.innerText = "Sin datos suficientes para predecir puntos ciegos futuros. Completa tu primera evaluación.";
+                    if (pred) pred.innerText = `Puntos ciegos probables en ${currentMateriaFiltro.replace('_', ' ').toUpperCase()}: Pendiente calibración de primera prueba.`;
                     if (sim) sim.innerText = "Al completar un módulo, la calculadora de impacto estimará cuántos puntos puedes subir.";
 
-                    this.renderizarSemaforo(configm.subcompetencias, [40, 40, 40]);
-                    this.renderizarTemas(["Completa tu prueba inicial en el simulador"]);
+                    this.renderizarSemaforo(configm.subcompetencias, [0, 0, 0]);
+                    this.renderizarTemas(configm.misiones_pedagogicas || ["Completa tu prueba inicial en el simulador"]);
                     this.renderizarMapaCalor(configm.sesgos_por_defectos);
                     this.renderizarTablaExamenes([]);
                     
-                    perfilRadar = { e1: 20, e2: 20, e3: 20, e4: 20, e5: 20, e6: 50 };
+                    perfilRadar = { e1: 0, e2: 0, e3: 0, e4: 0, e5: 0, e6: 0 };
                     drawRadar();
                     return;
                 }
@@ -1167,7 +1236,11 @@
                     path += `${x},${y} `;
                 }
                 const shape = document.getElementById('radar-shape');
-                if (shape) shape.setAttribute("points", path.trim());
+                if (shape) {
+                    shape.setAttribute("points", path.trim());
+                    const configm = CATALOGO_MATERIAS[currentMateriaFiltro] || CATALOGO_MATERIAS.todas;
+                    shape.setAttribute("stroke", configm.accent || "#D4AF37");
+                }
             } catch(e) { console.error("Radar Error", e); }
         }
 
