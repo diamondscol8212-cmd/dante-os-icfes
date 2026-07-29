@@ -1378,23 +1378,69 @@
                 } catch (err) {
                     console.warn("⚠️ [CONEXIÓN BACKEND/OFFLINE]:", err.message);
                     
-                    // FALLBACK MOCK REACTIVO EN CASO DE ESTAR OFFLINE O SIN BACKEND
+                    // MOCKS REACTIVOS SEPARADOS POR MATERIA PARA EVITAR CRUCE DE CONTENIDOS
+                    const MOCKS_INICIALES_POR_MATERIA = {
+                        matematicas: {
+                            id: "item_math_01",
+                            pregunta_texto: "En una maratón escolar, Carlos corre a una velocidad constante de 5 m/s durante 2 minutos. ¿Qué distancia total recorre en ese intervalo?",
+                            opciones_respuesta: ["600 metros", "100 metros", "300 metros", "1200 metros"],
+                            sub_competencia: "Razonamiento Cuantitativo / Álgebra"
+                        },
+                        lectura_critica: {
+                            id: "item_lect_01",
+                            pregunta_texto: "Lea el siguiente fragmento:\n\n«La ciencia no busca verdades absolutas, sino explicaciones provisionales revisables ante nueva evidencia experimental.»\n\n¿Cuál es la función del término 'provisionales' en el contexto del argumento del autor?",
+                            opciones_respuesta: [
+                                "Destacar que el conocimiento científico está abierto a revisiones y perfeccionamiento constante.",
+                                "Argumentar que las hipótesis científicas carecen de rigor o utilidad práctica.",
+                                "Demostrar que la evidencia experimental es irrelevante para la formulación de teorías.",
+                                "Sugerir que la ciencia debe ser reemplazada por verdades dogmáticas e inmutables."
+                            ],
+                            sub_competencia: "Comprensión Lectora / Evaluativa"
+                        },
+                        ciencias_naturales: {
+                            id: "item_cn_01",
+                            pregunta_texto: "En un experimento sobre fotosíntesis, se mide la tasa de liberación de O2 en plantas sumergidas expuestas a diferentes intensidades de luz. Se observa que la producción de oxígeno se incrementa proporcionalmente hasta alcanzar un valor constante.\n\n¿A qué se debe la estabilización en la tasa de liberación de O2?",
+                            opciones_respuesta: [
+                                "Otro factor del medio, como la concentración de CO2 o la temperatura, se volvió el factor limitante.",
+                                "La luz destruyó por completo la clorofila de la planta acuática.",
+                                "La planta agotó todas sus reservas de agua y sales minerales.",
+                                "La fase oscura de la fotosíntesis solo se activa en ausencia total de radiación lumínica."
+                            ],
+                            sub_competencia: "Indagación y Explicación de Fenómenos"
+                        },
+                        sociales_ciudadanas: {
+                            id: "item_soc_01",
+                            pregunta_texto: "Un grupo de habitantes interpone una Acción de Tutela al considerar que un proyecto industrial vulnera su derecho fundamental a la salud y a la consulta previa comunitaria.\n\n¿Por qué la Constitución consagra la Tutela como un mecanismo preferente para este tipo de situaciones?",
+                            opciones_respuesta: [
+                                "Para garantizar la protección inmediata de los derechos fundamentales ante una amenaza o vulneración.",
+                                "Para sustituir los juicios ordinarios en todos los litigios de índole comercial y mercantil.",
+                                "Para otorgar facultades legislativas extraordinarias a la empresa encargada de la obra.",
+                                "Para obligar a los ciudadanos a renunciar a la vía judicial y acudir al arbitraje privado."
+                            ],
+                            sub_competencia: "Pensamiento Social y Ciudadano"
+                        },
+                        ingles: {
+                            id: "item_ing_01",
+                            pregunta_texto: "Read the conversation and select the best answer:\n\nTom: 'Have you seen my keys? I've been searching for them all morning!'\nSarah: 'Check the kitchen counter. I think I saw them ____ next to your laptop.'\n\nWhich option correctly completes Sarah's response?",
+                            opciones_respuesta: [
+                                "lying",
+                                "layed",
+                                "lies",
+                                "lain"
+                            ],
+                            sub_competencia: "Alineación MCER / Vocabulario Contextual"
+                        }
+                    };
+
+                    const materiaKey = (AppState.materia || 'matematicas').toLowerCase();
+                    const mockItemEspecifico = MOCKS_INICIALES_POR_MATERIA[materiaKey] || MOCKS_INICIALES_POR_MATERIA.matematicas;
+
                     const mockInitialData = {
                         success: true,
                         detenerExamen: false,
                         thetaProgreso: 0.0,
                         bayesianSEMProgreso: 0.5,
-                        item: {
-                            id: "item_demo_01",
-                            pregunta_texto: "En una maratón escolar, Carlos corre a una velocidad constante de 5 m/s durante 2 minutos. ¿Qué distancia total recorre en ese intervalo?",
-                            opciones_respuesta: [
-                                "600 metros",
-                                "100 metros",
-                                "300 metros",
-                                "1200 metros"
-                            ],
-                            sub_competencia: "Álgebra y Razonamiento"
-                        }
+                        item: mockItemEspecifico
                     };
 
                     if (btn) { btn.innerText = "🚀 INICIAR SIMULACRO ADAPTATIVO"; btn.disabled = false; }
@@ -1921,7 +1967,17 @@
 
                 if (!item) return;
 
-                if (lblCompetence) lblCompetence.innerText = `Competencia: ${String(item.sub_competencia || 'General').toUpperCase()}`;
+                const MAPA_COMPETENCIAS_OFICIALES = {
+                    matematicas: "Razonamiento Cuantitativo / Álgebra",
+                    lectura_critica: "Comprensión Lectora / Evaluativa",
+                    ciencias_naturales: "Indagación y Explicación de Fenómenos",
+                    sociales_ciudadanas: "Pensamiento Social y Ciudadano",
+                    ingles: "Alineación MCER / Vocabulario Contextual"
+                };
+                const materiaActual = (AppState.materia || 'matematicas').toLowerCase();
+                const competenciaOficial = MAPA_COMPETENCIAS_OFICIALES[materiaActual] || String(item.sub_competencia || 'Razonamiento Cuantitativo / Álgebra');
+
+                if (lblCompetence) lblCompetence.innerText = `Competencia: ${competenciaOficial.toUpperCase()}`;
                 
                 const textoCompleto = item.pregunta_texto || '';
                 const tokens = textoCompleto.split('\n\n');
