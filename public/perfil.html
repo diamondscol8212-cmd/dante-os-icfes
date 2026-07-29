@@ -589,23 +589,32 @@
     <script>
         const HOST_URL = window.location.origin;
         
-        const urlParams = new URLSearchParams(window.location.search);
-        const queryStudent = urlParams.get('estudiante') || urlParams.get('studentId');
-        
-        const rawUser = localStorage.getItem("dante_user");
-        const userObj = rawUser ? JSON.parse(rawUser) : {};
-        
-        // RECUPERACIÓN ROBUSTA DE USUARIO
-        let STUDENT_ID = "adriana";
-        if (queryStudent) {
-            STUDENT_ID = queryStudent.toLowerCase().trim();
-        } else if (userObj.estudiante) {
-            STUDENT_ID = userObj.estudiante.toLowerCase().trim();
-        } else if (userObj.email) {
-            STUDENT_ID = userObj.email.split('@')[0].toLowerCase().trim();
+        function obtenerUsuarioAutenticado() {
+            // 1. Prioridad: Parámetro URL explícito (?estudiante=sebastian o ?studentId=sebastian)
+            const urlParams = new URLSearchParams(window.location.search);
+            const queryStudent = urlParams.get('estudiante') || urlParams.get('studentId');
+            if (queryStudent) return queryStudent.toLowerCase().trim();
+
+            // 2. Segunda Fuente: LocalStorage del usuario autenticado en la sesión
+            const rawUser = localStorage.getItem("dante_user");
+            if (rawUser) {
+                try {
+                    const userObj = JSON.parse(rawUser);
+                    if (userObj.email) return userObj.email.split('@')[0].toLowerCase().trim();
+                    if (userObj.estudiante) return userObj.estudiante.toLowerCase().trim();
+                    if (userObj.nombre) return userObj.nombre.toLowerCase().trim();
+                } catch(e) { console.error("Error leyendo dante_user", e); }
+            }
+
+            // 3. Fallback en caso de credencial ausente
+            return "invitado";
         }
 
-        const INSTITUTION_ID = userObj.institution_id || "colegio_sandbox_default";
+        let STUDENT_ID = obtenerUsuarioAutenticado();
+
+        const rawUserInit = localStorage.getItem("dante_user");
+        const userObjInit = rawUserInit ? (JSON.parse(rawUserInit) || {}) : {};
+        const INSTITUTION_ID = userObjInit.institution_id || "colegio_sandbox_default";
 
         let currentMateriaFiltro = "todas";
         let cacheHistorialCompleto = [];
