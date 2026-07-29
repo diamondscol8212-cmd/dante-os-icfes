@@ -51,7 +51,11 @@
         body.light-mode .master-hud { background: rgba(255, 255, 255, 0.98) !important; border-bottom-color: #cbd5e1 !important; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         body.light-mode .alias-title { color: #0f172a !important; }
         body.light-mode .geo-tag { color: #0284c7 !important; }
+        body.light-mode .gateway-title { color: #0f172a !important; }
+        body.light-mode #lblEstudiante { color: #b45309 !important; font-weight: 700 !important; }
+        body.light-mode #lblMateria { color: #475569 !important; }
         body.light-mode .panel-enunciado { background: #ffffff !important; color: #0f172a !important; border-color: #cbd5e1 !important; box-shadow: 0 4px 20px rgba(0,0,0,0.06) !important; }
+        body.light-mode .panel-enunciado * { color: inherit; }
         body.light-mode .pregunta-txt { background: #ffffff !important; color: #0f172a !important; border-color: #cbd5e1 !important; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
         body.light-mode .opcion-card { background: #ffffff !important; border-color: #cbd5e1 !important; color: #0f172a !important; }
         body.light-mode .opcion-card:hover { border-color: #0284c7 !important; background: #f0f9ff !important; }
@@ -62,23 +66,101 @@
         body.light-mode .gateway-card { background: #ffffff !important; border-color: #cbd5e1 !important; box-shadow: 0 10px 30px rgba(0,0,0,0.08) !important; }
         body.light-mode select { background: #ffffff !important; color: #0f172a !important; border-color: #b45309 !important; }
         body.light-mode .dashboard-container { background: #ffffff !important; border-color: #cbd5e1 !important; color: #0f172a !important; }
-        body.light-mode .telemetry-card { background: #f8fafc !important; border-color: #e2e8f0 !important; }
-        body.light-mode .tutorial-card { background: #ffffff !important; color: #0f172a !important; border: 1px solid #cbd5e1 !important; }
+        body.light-mode .telemetry-card { background: #ffffff !important; border-color: #e2e8f0 !important; color: #0f172a !important; }
+        body.light-mode .telemetry-num { color: #0f172a !important; }
+        body.light-mode .tutorial-card { background: #ffffff !important; color: #0f172a !important; border: 1px solid #cbd5e1 !important; box-shadow: 0 20px 40px rgba(0,0,0,0.12) !important; }
+        body.light-mode #lblTutorialTitle { color: #0f172a !important; }
+        body.light-mode #lblTutorialText { color: #334155 !important; }
+        body.light-mode #lblTutorialStep { color: #0284c7 !important; background: #e0f2fe !important; border-color: #7dd3fc !important; }
         body.light-mode #uiBannerOnboardingMision { background: #ffffff !important; border-color: #b45309 !important; color: #0f172a !important; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         body.light-mode #lblBannerMisionInstruccion { color: #1e293b !important; }
+        body.light-mode #lblBannerArquetipo { color: #b45309 !important; }
+
+        /* REGLAS DE TEXTO Y CONTRASTE DE COLORES PARA MODO CLARO */
         body.light-mode .text-white, 
+        body.light-mode .text-slate-50,
         body.light-mode .text-slate-100, 
         body.light-mode .text-slate-200, 
         body.light-mode .text-slate-300, 
+        body.light-mode .text-zinc-100,
         body.light-mode .text-zinc-200, 
         body.light-mode .text-zinc-300 { color: #0f172a !important; }
+        
         body.light-mode .text-slate-400, 
         body.light-mode .text-zinc-400, 
         body.light-mode .text-zinc-500 { color: #475569 !important; }
+
+        body.light-mode .text-cyan-100,
+        body.light-mode .text-cyan-200,
+        body.light-mode .text-cyan-300,
+        body.light-mode .text-cyan-400,
+        body.light-mode .text-\[\#51e2f5\] { color: #0284c7 !important; }
+        body.light-mode .text-cyan-500,
+        body.light-mode .text-cyan-600 { color: #0369a1 !important; }
+
+        body.light-mode .text-amber-200,
+        body.light-mode .text-amber-300,
+        body.light-mode .text-amber-400,
+        body.light-mode .text-\[\#D4AF37\],
+        body.light-mode .text-\[var\(--gold-satin\)\] { color: #b45309 !important; }
+
+        body.light-mode .text-emerald-300,
+        body.light-mode .text-emerald-400 { color: #047857 !important; }
+
+        /* CONTENEDORES Y CAJAS EN MODO CLARO */
         body.light-mode .bg-black\/40, 
         body.light-mode .bg-cyan-950\/80, 
+        body.light-mode .bg-cyan-950\/30,
         body.light-mode .bg-amber-950\/30,
-        body.light-mode .bg-slate-900\/80 { background-color: #f1f5f9 !important; border-color: #cbd5e1 !important; }
+        body.light-mode .bg-slate-900\/80,
+        body.light-mode .bg-slate-950,
+        body.light-mode .bg-slate-900,
+        body.light-mode .forensic-box { 
+            background-color: #f8fafc !important; 
+            border-color: #cbd5e1 !important; 
+            color: #0f172a !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04) !important;
+        }
+        body.light-mode .bg-cyan-950\/80 {
+            background-color: #f0f9ff !important;
+            border-color: #bae6fd !important;
+        }
+        body.light-mode .bg-amber-500\/10 {
+            background-color: #fffbeb !important;
+            border-color: #fde68a !important;
+        }
+
+        body.light-mode #uiMetacognicion {
+            background: #ffffff !important;
+            border-color: #0284c7 !important;
+            color: #0f172a !important;
+            box-shadow: 0 4px 20px rgba(2, 132, 199, 0.12) !important;
+        }
+        body.light-mode #uiMetacognicion p { color: #0f172a !important; }
+        body.light-mode .btn-meta {
+            background: #f1f5f9 !important;
+            color: #0f172a !important;
+            border-color: #cbd5e1 !important;
+        }
+        body.light-mode .btn-meta:hover {
+            background: #e0f2fe !important;
+            border-color: #0284c7 !important;
+            color: #0284c7 !important;
+        }
+
+        body.light-mode #uiFeedback {
+            background: #ffffff !important;
+            border-color: #b45309 !important;
+            color: #0f172a !important;
+            box-shadow: 0 4px 20px rgba(180, 83, 9, 0.1) !important;
+        }
+        body.light-mode #uiFeedback .feedback-header { color: #b45309 !important; }
+        body.light-mode #uiFeedback p { color: #0f172a !important; }
+
+        body.light-mode .chart-box svg {
+            background: #ffffff !important;
+            border-color: #cbd5e1 !important;
+        }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
