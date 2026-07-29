@@ -93,21 +93,21 @@
         #dante-fractal-bg { position: fixed; inset: 0; z-index: 0; opacity: 0.18; pointer-events: none; mix-blend-mode: screen; }
         .scanline { position: fixed; inset: 0; background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.5) 51%); background-size: 100% 4px; z-index: 1; pointer-events: none; opacity: 0.2; }
 
-        .onboard-card {
+        .onboard-card, .unicorn-card {
             background: var(--card-bg); 
             border: 1px solid var(--border-graphite);
             box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95); 
             border-radius: 16px; 
             padding: 0.85rem 0.8rem; 
-            width: 100%; 
-            max-width: 820px; 
+            width: 94% !important; 
+            max-width: 760px !important; 
             text-align: center; 
             position: relative; 
             z-index: 10;
             backdrop-filter: blur(24px); 
-            margin: 0.2rem auto;
+            margin: auto !important;
             min-height: auto !important;
-            max-height: 92dvh !important;
+            max-height: 90dvh !important;
             overflow-y: auto !important;
             -webkit-overflow-scrolling: touch;
             display: flex;
@@ -115,15 +115,13 @@
             justify-content: space-between;
         }
         @media(min-width: 640px) and (min-height: 520px) {
-            .onboard-card { 
+            .onboard-card, .unicorn-card { 
                 padding: 1.8rem 2.2rem; 
-                margin: auto 0;
-                min-height: calc(100dvh - 4rem);
             }
         }
-        @media (max-height: 600px) {
-            body, html { align-items: flex-start !important; padding: 0.5rem 0 !important; }
-            .onboard-card { margin: 0.5rem auto !important; height: auto !important; }
+        @media (max-height: 650px) {
+            body { padding: 0.5rem 0 !important; align-items: flex-start !important; }
+            .onboard-card, .unicorn-card { margin: 0.5rem auto !important; max-height: 95dvh !important; }
         }
         .onboard-card::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
@@ -866,4 +864,3 @@
     </script>
 </body>
 </html>
-
