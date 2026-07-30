@@ -1540,14 +1540,14 @@
             static procesarRetornoMotor(data) {
                 if (!data) return;
 
-                if (data.detenerExamen) {
+                if (data.detenerExamen || AppState.preguntasRespondidasCount >= 15) {
                     this.desplegarClausuraExamen(data.reporteFinal || data);
                     return;
                 }
 
                 AppState.preguntasRespondidasCount++;
                 const countEl = document.getElementById("lblProgressCount");
-                if (countEl) countEl.innerText = `Reactivo ${AppState.preguntasRespondidasCount} / Adaptativo`;
+                if (countEl) countEl.innerText = `Reactivo ${AppState.preguntasRespondidasCount} / 15 (Adaptativo)`;
 
                 AppState.theta = data.thetaProgreso !== undefined ? data.thetaProgreso : (data.theta || 0.0);
                 AppState.itemActual = data.item;
@@ -1662,8 +1662,8 @@
             }
 
             static avanzarSiguienteFase() {
-                if (AppState.bufferRetornoSiguiente && AppState.bufferRetornoSiguiente.detenerExamen) {
-                    this.desplegarClausuraExamen(AppState.bufferRetornoSiguiente.reporteFinal || AppState.bufferRetornoSiguiente);
+                if ((AppState.bufferRetornoSiguiente && AppState.bufferRetornoSiguiente.detenerExamen) || AppState.preguntasRespondidasCount >= 15) {
+                    this.desplegarClausuraExamen(AppState.bufferRetornoSiguiente ? (AppState.bufferRetornoSiguiente.reporteFinal || AppState.bufferRetornoSiguiente) : {});
                 } else {
                     this.cambiarVista("viewWorkspace");
                     this.procesarRetornoMotor(AppState.bufferRetornoSiguiente);
@@ -1801,7 +1801,7 @@
                     AppState.bufferRetornoSiguiente = data;
                     AppState.historialTheta.push(data.thetaProgreso !== undefined ? data.thetaProgreso : AppState.theta);
 
-                    if (data.detenerExamen) {
+                    if (data.detenerExamen || AppState.preguntasRespondidasCount >= 15) {
                         // Desmontaje Inmediato del DOM al finalizar examen (Fix Bucle Pregunta 15)
                         const uiCore = document.getElementById("uiContenedorPreguntaCore");
                         const uiMeta = document.getElementById("uiMetacognicion");
