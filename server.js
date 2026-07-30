@@ -20,17 +20,15 @@ const ALLOWED_ORIGINS = [
     'http://localhost:5173', 'http://127.0.0.1:5173',
     'http://localhost:3000', 'http://127.0.0.1:5500', 
     'http://localhost:5500', 'https://danteos.com',
-    'https://app.danteos.com', 'null', 'file://',
+    'https://app.danteos.com',
     'https://dante-os-platform.onrender.com'
 ];
 
 app.use(cors({
     origin(origin, callback) {
-        // Permitir solicitudes sin origen (curl, mobile, mismo dominio) o cualquier origen
         if (!origin || ALLOWED_ORIGINS.includes(origin) || origin.includes('localhost') || origin.includes('127.0.0.1') || origin.endsWith('.run.app') || origin.endsWith('.ai.studio') || origin.endsWith('.google.com') || origin.endsWith('.googleusercontent.com')) {
             return callback(null, true);
         }
-        // Permitir orígenes dinámicos de vista previa
         return callback(null, true);
     },
     credentials: true
@@ -125,7 +123,8 @@ app.post('/api/admin/reset-epoca', async (req, res) => {
         const desgloseAlumnos = {};
 
         filteredAlumnos.forEach(p => {
-            const thetaVal = parseFloat(p.theta || 0);
+            const rawTheta = parseFloat(p.theta);
+            const thetaVal = Number.isFinite(rawTheta) ? rawTheta : 0;
             const puntaje = Math.max(0, Math.min(100, Math.round(50 + (thetaVal * 13.5))));
             sumaPuntajes += puntaje;
             
@@ -171,7 +170,16 @@ app.post('/api/admin/reset-epoca', async (req, res) => {
             .eq('institution_id', tenantClean);
 
         const patronSesiones = `dante:*:session:${materiaFiltro}:*`;
-        const llaves = await redis.keys(patronSesiones);
+        let cursor = '0';
+        const llaves = [];
+        do {
+            const resScan = await redis.scan(cursor, 'MATCH', patronSesiones, 'COUNT', 100);
+            cursor = resScan[0];
+            if (resScan[1] && resScan[1].length > 0) {
+                llaves.push(...resScan[1]);
+            }
+        } while (cursor !== '0');
+
         if (llaves.length > 0) { await redis.del(...llaves); }
         
         return res.status(200).json({ 
