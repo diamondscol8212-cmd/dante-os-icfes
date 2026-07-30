@@ -1165,7 +1165,7 @@
                 }
             }
 
-            static resolverContextoAutenticado() {
+            static async resolverContextoAutenticado() {
                 // Doble Candado Móvil contra el Botón "Atrás"
                 try {
                     window.history.pushState({ locked: true }, null, window.location.href);
@@ -1212,7 +1212,64 @@
                     const onboardingProfile = onboardingProfileRaw ? JSON.parse(onboardingProfileRaw) : null;
                     
                     // Verificación de Onboarding Completado
-                    const onboardingCompleted = localStorage.getItem("dante_onboarding_completed") === "true" || sessionData.onboarding_completed === true;
+                    let onboardingCompleted = localStorage.getItem("dante_onboarding_completed") === "true" || sessionData.onboarding_completed === true || Boolean(sessionData.arquetipo);
+
+                    // Si no está en LocalStorage, consultar a la base de datos Supabase antes de forzar redirección
+                    if (!onboardingCompleted && window.supabaseClient) {
+                        try {
+                            const condEmail = sessionData.email || `${AppState.estudiante}@danteos.edu.co`;
+                            
+                            // Check dante_arquetipos_iniciales
+                            const { data: arqDb } = await window.supabaseClient
+                                .from('dante_arquetipos_iniciales')
+                                .select('arquetipo')
+                                .or(`id_sesion.eq.${AppState.estudiante},id_sesion.eq.${condEmail}`)
+                                .maybeSingle();
+
+                            if (arqDb && arqDb.arquetipo) {
+                                onboardingCompleted = true;
+                                sessionData.arquetipo = arqDb.arquetipo;
+                                localStorage.setItem("dante_onboarding_completed", "true");
+                                localStorage.setItem("dante_user_arquetipo", arqDb.arquetipo);
+                            } else {
+                                // Check usuarios
+                                const { data: usrDb } = await window.supabaseClient
+                                    .from('usuarios')
+                                    .select('onboarding_completed, arquetipo')
+                                    .or(`email.eq.${condEmail},email.eq.${AppState.estudiante}`)
+                                    .maybeSingle();
+
+                                if (usrDb && (usrDb.onboarding_completed || usrDb.arquetipo)) {
+                                    onboardingCompleted = true;
+                                    if (usrDb.arquetipo) sessionData.arquetipo = usrDb.arquetipo;
+                                    localStorage.setItem("dante_onboarding_completed", "true");
+                                    if (usrDb.arquetipo) localStorage.setItem("dante_user_arquetipo", usrDb.arquetipo);
+                                } else {
+                                    // Check progreso_estudiantes
+                                    const { data: progDb } = await window.supabaseClient
+                                        .from('progreso_estudiantes')
+                                        .select('arquetipo, mision_activa')
+                                        .eq('estudiante_id', AppState.estudiante)
+                                        .maybeSingle();
+
+                                    if (progDb && progDb.arquetipo) {
+                                        onboardingCompleted = true;
+                                        sessionData.arquetipo = progDb.arquetipo;
+                                        if (progDb.mision_activa) sessionData.mision_activa = progDb.mision_activa;
+                                        localStorage.setItem("dante_onboarding_completed", "true");
+                                        localStorage.setItem("dante_user_arquetipo", progDb.arquetipo);
+                                    }
+                                }
+                            }
+                            if (onboardingCompleted) {
+                                sessionData.onboarding_completed = true;
+                                localStorage.setItem("dante_user", JSON.stringify(sessionData));
+                            }
+                        } catch(dbErr) {
+                            console.warn("⚠️ Consulta defensiva a DB Supabase en index.html:", dbErr.message);
+                        }
+                    }
+
                     if (!onboardingCompleted) {
                         console.warn("⚠️ Onboarding no detectado. Redirigiendo a onboarding.html...");
                         window.location.href = "onboarding.html";
@@ -2174,7 +2231,7 @@
             requestAnimationFrame(animateCanvas);
         }
 
-        window.onload = () => { 
+        window.onload = async () => { 
             // Candado Móvil Botón Atrás: Captura continua del evento popstate
             try {
                 history.pushState(null, null, location.href);
@@ -2183,7 +2240,7 @@
                 };
             } catch(e) { console.warn("popstate lock:", e); }
 
-            AppController.resolverContextoAutenticado(); 
+            await AppController.resolverContextoAutenticado(); 
             initCanvas();
             setTimeout(decryptText, 300);
         };
