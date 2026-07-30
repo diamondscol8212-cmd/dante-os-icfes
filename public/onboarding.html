@@ -90,18 +90,6 @@
 
         .font-mono { font-family: var(--font-mono) !important; }
 
-        @media screen and (max-width: 768px) and (orientation: portrait) {
-            body::before {
-                content: "🔄 Para una mejor lectura, puedes girar tu celular horizontalmente.";
-                position: fixed; top: 8px; left: 5%; width: 90%; z-index: 9999;
-                background: rgba(212, 175, 55, 0.95); color: #000;
-                font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 800;
-                text-align: center; padding: 6px 10px; border-radius: 8px;
-                box-shadow: 0 10px 25px rgba(0,0,0,0.8);
-                pointer-events: none;
-            }
-        }
-
         #dante-fractal-bg { position: fixed; inset: 0; z-index: 0; opacity: 0.18; pointer-events: none; mix-blend-mode: screen; }
         .scanline { position: fixed; inset: 0; background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.5) 51%); background-size: 100% 4px; z-index: 1; pointer-events: none; opacity: 0.2; }
 
@@ -110,32 +98,26 @@
             border: 1px solid var(--border-graphite);
             box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95); 
             border-radius: 16px; 
-            padding: 0.85rem !important; 
-            width: 96% !important; 
-            max-width: 680px !important; 
+            padding: 1rem 0.85rem !important; 
+            width: 98% !important; 
+            max-width: 720px !important; 
             text-align: center; 
             position: relative; 
             z-index: 10;
             backdrop-filter: blur(24px); 
-            margin: auto !important;
+            margin: 0.4rem auto !important;
             height: auto !important;
-            max-height: 92dvh !important;
-            overflow-y: auto !important;
-            -webkit-overflow-scrolling: touch;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             box-sizing: border-box !important;
         }
-        @media(min-width: 640px) and (min-height: 520px) {
+        @media(min-width: 640px) {
             .onboard-card, .unicorn-card { 
                 padding: 1.8rem 2.2rem !important; 
                 width: 92% !important;
+                margin: 1rem auto !important;
             }
-        }
-        @media (max-height: 700px) {
-            body { padding: 0.5rem 0 !important; align-items: flex-start !important; }
-            .onboard-card, .unicorn-card { margin: 0.5rem auto !important; max-height: 92dvh !important; }
         }
         .onboard-card::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
@@ -145,14 +127,15 @@
 
         .option-btn {
             background: rgba(20, 24, 35, 0.85); border: 1px solid var(--border-graphite); border-radius: 12px;
-            padding: 0.55rem 0.75rem; width: 100%; text-align: left; font-size: 0.82rem; font-weight: 600; color: #fff;
+            padding: 0.55rem 0.75rem; width: 100%; text-align: left; font-size: 0.8rem; font-weight: 600; color: #fff;
             transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer; font-family: var(--font-mono); margin-top: 0.35rem;
             line-height: 1.35; min-height: 40px; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+            word-break: break-word; box-sizing: border-box;
         }
-        @media(min-width: 640px) and (min-height: 520px) {
+        @media(min-width: 640px) {
             .option-btn {
                 padding: 0.85rem 1.1rem;
-                font-size: 0.92rem;
+                font-size: 0.9rem;
                 margin-top: 0.6rem;
                 min-height: 48px;
                 gap: 0.75rem;
@@ -347,18 +330,12 @@
     <!-- BANNER DE PRIVACIDAD Y BÚNKER PSICOLÓGICO -->
     <div class="bunker-privacy-banner flex items-center justify-between gap-3">
         <div class="flex items-center gap-2 text-cyan-400 font-bold shrink-0">
-            <i class="fa-solid fa-user-shield text-base"></i>
-            <span class="tracking-widest uppercase text-[10px]">BÚNKER DE PRIVACIDAD ABSOLUTA</span>
+            <i class="fa-solid fa-user-shield text-xs sm:text-sm"></i>
+            <span class="tracking-widest uppercase text-[9px] sm:text-[10px]">BÚNKER DE PRIVACIDAD ABSOLUTA</span>
         </div>
-        <p class="text-[10.5px] leading-tight text-slate-300 hidden sm:block">
-            Tus respuestas psicométricas y estado emocional son <strong>100% confidenciales</strong>. Ningún profesor, rector ni tercero tiene acceso a tus vulnerabilidades. Solo el Núcleo Dante OS utiliza esta información para calibrar tu entrenamiento.
+        <p class="text-[9.5px] sm:text-[10.5px] leading-tight text-slate-300">
+            Tus respuestas psicométricas son <strong>100% confidenciales</strong>. Solo el Núcleo Dante OS utiliza esta información.
         </p>
-    </div>
-
-    <!-- BARRA RECOMENDACIÓN DE ORIENTACIÓN MÓVIL (TIPO PROFESOR.HTML) -->
-    <div class="sm:hidden w-[96%] max-w-[680px] mx-auto mb-2 p-2 bg-amber-500/20 border border-amber-500/50 rounded-lg text-center text-amber-300 font-mono text-[10px] font-bold flex items-center justify-center gap-2 relative z-20">
-        <i class="fa-solid fa-rotate text-amber-400 animate-pulse text-xs"></i>
-        <span>🔄 Gira tu celular horizontalmente para mejor lectura</span>
     </div>
 
     <div class="onboard-card" id="card-main">
