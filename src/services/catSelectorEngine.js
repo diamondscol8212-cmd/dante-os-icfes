@@ -48,7 +48,8 @@ export function obtenerSiguienteItem(sessionState, cacheInstancia) {
 
     const exclusionSet = new Set(seen_item_ids || []);
     const targetIndex = calcularIndiceBucket(currentThetaFloat);
-    const ventanaIndices = [targetIndex, Math.max(0, targetIndex - 1), Math.min(16, targetIndex + 1)];
+    const maxBucketIdx = Math.max(0, (matrizBucketsDificultad?.length || 17) - 1);
+    const ventanaIndices = [targetIndex, Math.max(0, targetIndex - 1), Math.min(maxBucketIdx, targetIndex + 1)];
     
     let poolCandidatosAcotado = [];
 
@@ -83,9 +84,9 @@ export function obtenerSiguienteItem(sessionState, cacheInstancia) {
     const reactivosEvaluados = poolCandidatosAcotado.map(item => {
         validarContratoItem(item); 
         
-        const bNum = parseFloat(item.b);
-        const aNum = parseFloat(item.a || 1.0);
-        const cNum = parseFloat(item.c || 0.0);
+        const bNum = Number.isFinite(parseFloat(item.b)) ? parseFloat(item.b) : 0.0;
+        const aNum = Number.isFinite(parseFloat(item.a)) ? parseFloat(item.a) : 1.0;
+        const cNum = Number.isFinite(parseFloat(item.c)) ? parseFloat(item.c) : 0.25;
 
         const distanciaAbsoluta = Math.abs(bNum - currentThetaFloat);
         const fisherRaw = calcularInformacionFisher(currentThetaFloat, aNum, bNum, cNum);
@@ -128,3 +129,4 @@ export function obtenerSiguienteItem(sessionState, cacheInstancia) {
         }
     };
 }
+
