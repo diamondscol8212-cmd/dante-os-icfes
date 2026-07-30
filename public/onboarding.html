@@ -90,6 +90,18 @@
 
         .font-mono { font-family: var(--font-mono) !important; }
 
+        @media screen and (max-width: 768px) and (orientation: portrait) {
+            body::before {
+                content: "🔄 Para una mejor lectura, puedes girar tu celular horizontalmente.";
+                position: fixed; top: 8px; left: 5%; width: 90%; z-index: 9999;
+                background: rgba(212, 175, 55, 0.95); color: #000;
+                font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 800;
+                text-align: center; padding: 6px 10px; border-radius: 8px;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+                pointer-events: none;
+            }
+        }
+
         #dante-fractal-bg { position: fixed; inset: 0; z-index: 0; opacity: 0.18; pointer-events: none; mix-blend-mode: screen; }
         .scanline { position: fixed; inset: 0; background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.5) 51%); background-size: 100% 4px; z-index: 1; pointer-events: none; opacity: 0.2; }
 
@@ -341,6 +353,12 @@
         <p class="text-[10.5px] leading-tight text-slate-300 hidden sm:block">
             Tus respuestas psicométricas y estado emocional son <strong>100% confidenciales</strong>. Ningún profesor, rector ni tercero tiene acceso a tus vulnerabilidades. Solo el Núcleo Dante OS utiliza esta información para calibrar tu entrenamiento.
         </p>
+    </div>
+
+    <!-- BARRA RECOMENDACIÓN DE ORIENTACIÓN MÓVIL (TIPO PROFESOR.HTML) -->
+    <div class="sm:hidden w-[96%] max-w-[680px] mx-auto mb-2 p-2 bg-amber-500/20 border border-amber-500/50 rounded-lg text-center text-amber-300 font-mono text-[10px] font-bold flex items-center justify-center gap-2 relative z-20">
+        <i class="fa-solid fa-rotate text-amber-400 animate-pulse text-xs"></i>
+        <span>🔄 Gira tu celular horizontalmente para mejor lectura</span>
     </div>
 
     <div class="onboard-card" id="card-main">
