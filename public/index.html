@@ -1286,6 +1286,20 @@
                 const sel = document.getElementById("selMateria");
                 if (!sel) return;
                 const selValue = sel.value;
+                
+                // Aislamiento de Sesión: Al cambiar de materia en #selMateria, genera de inmediato un nuevo sessionId y purga variables transitorias
+                if (AppState.materia !== selValue) {
+                    AppState.materia = selValue;
+                    AppState.sessionId = "session_" + AppState.materia + "_" + Date.now();
+                    AppState.historialTheta = [0.0];
+                    AppState.historialSeleccion = [];
+                    AppState.opcionesDescartadas = [];
+                    AppState.seleccionActual = null;
+                    AppState.preguntasRespondidasCount = 0;
+                    AppState.itemActual = null;
+                    AppState.bufferRetornoSiguiente = null;
+                }
+
                 const idx = SECUENCIA_MATERIAS.indexOf(selValue) + 1;
                 const pasoEl = document.getElementById("lblPasoActualNum");
                 if (pasoEl) pasoEl.innerText = idx;
@@ -2159,6 +2173,14 @@
         }
 
         window.onload = () => { 
+            // Candado Móvil Botón Atrás: Captura continua del evento popstate
+            try {
+                history.pushState(null, null, location.href);
+                window.onpopstate = function () {
+                    history.pushState(null, null, location.href);
+                };
+            } catch(e) { console.warn("popstate lock:", e); }
+
             AppController.resolverContextoAutenticado(); 
             initCanvas();
             setTimeout(decryptText, 300);
