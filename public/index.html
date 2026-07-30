@@ -1186,7 +1186,9 @@
 
                 try {
                     const sessionData = JSON.parse(rawUser);
-                    AppState.estudiante = sessionData.email ? sessionData.email.split('@')[0].toLowerCase().trim() : (sessionData.estudiante || "usuario");
+                    const candidate = sessionData.email || sessionData.estudiante || sessionData.nombre || sessionData.user || sessionData.username || "usuario";
+                    AppState.estudiante = String(candidate).split('@')[0].toLowerCase().trim();
+                    localStorage.setItem('dante_active_student', AppState.estudiante);
                     INSTITUTION_ID = sessionData.institution_id || "colegio_sandbox_default";
                     AppState.integrityToken = token;
 
