@@ -687,15 +687,27 @@
                         localStorage.removeItem("dante_onboarding_profile");
                         localStorage.removeItem("dante_user_arquetipo");
 
+                        const onboardingCompletado = userObj.onboarding_completed === true || Boolean(userObj.arquetipo) || Boolean(userObj.perfil && userObj.perfil.arquetipo);
+
                         localStorage.setItem("dante_active_student", studentIdClean);
                         localStorage.setItem("dante_token", json.token_session || `token_live_${Date.now()}`);
+                        
+                        if (onboardingCompletado) {
+                            localStorage.setItem("dante_onboarding_completed", "true");
+                            if (userObj.arquetipo) {
+                                localStorage.setItem("dante_user_arquetipo", userObj.arquetipo);
+                            }
+                        }
+
                         localStorage.setItem("dante_user", JSON.stringify({
                             ...userObj,
                             email: userObj.email || (rawIdentifier.includes('@') ? rawIdentifier : `${rawIdentifier}@danteos.edu.co`),
                             document_id: userObj.document_id || (rawIdentifier.includes('@') ? null : rawIdentifier),
                             institution_id: institutionId,
                             role: SelectedRoleTarget,
-                            estudiante: studentIdClean
+                            estudiante: studentIdClean,
+                            onboarding_completed: onboardingCompletado,
+                            arquetipo: userObj.arquetipo || null
                         }));
 
                         if (btnText) btnText.innerText = "¡Bienvenido! Cargando entorno...";
@@ -706,10 +718,9 @@
                         }
 
                         const esEstudiante = (SelectedRoleTarget === "estudiante" || userObj.role === "estudiante");
-                        const tieneArquetipo = userObj.arquetipo || (userObj.perfil && userObj.perfil.arquetipo);
 
                         setTimeout(() => {
-                            if (esEstudiante && !tieneArquetipo) {
+                            if (esEstudiante && !onboardingCompletado) {
                                 window.location.href = "onboarding.html";
                             } else {
                                 window.location.href = json.redireccion || RUTAS_POR_ROL[SelectedRoleTarget] || "index.html";
@@ -732,10 +743,20 @@
                     // MODO FALLBACK SANDBOX GRACIOSO SI EL SERVIDOR NO RESPONDE AÚN
                     const studentIdClean = String(rawIdentifier).split('@')[0].toLowerCase().trim();
 
+                    const previousProfile = localStorage.getItem("dante_onboarding_profile");
+                    const previousCompleted = localStorage.getItem("dante_onboarding_completed") === "true";
+                    const previousArquetipo = localStorage.getItem("dante_user_arquetipo") || "Estratega Reflexivo S2";
+
                     localStorage.removeItem("dante_active_student");
                     localStorage.removeItem("dante_onboarding_completed");
                     localStorage.removeItem("dante_onboarding_profile");
                     localStorage.removeItem("dante_user_arquetipo");
+
+                    if (previousCompleted) {
+                        localStorage.setItem("dante_onboarding_completed", "true");
+                        localStorage.setItem("dante_user_arquetipo", previousArquetipo);
+                        if (previousProfile) localStorage.setItem("dante_onboarding_profile", previousProfile);
+                    }
 
                     const userLocal = {
                         email: rawIdentifier.includes('@') ? rawIdentifier : `${rawIdentifier}@danteos.edu.co`,
@@ -743,7 +764,8 @@
                         institution_id: institutionId,
                         role: SelectedRoleTarget,
                         estudiante: studentIdClean,
-                        arquetipo: "ARQUETIPO_ESTRATEGIAS"
+                        onboarding_completed: previousCompleted,
+                        arquetipo: previousCompleted ? previousArquetipo : "ARQUETIPO_ESTRATEGIAS"
                     };
 
                     localStorage.setItem("dante_active_student", studentIdClean);
@@ -758,7 +780,11 @@
                     }
 
                     setTimeout(() => {
-                        window.location.href = RUTAS_POR_ROL[SelectedRoleTarget] || "index.html";
+                        if (SelectedRoleTarget === "estudiante" && !previousCompleted) {
+                            window.location.href = "onboarding.html";
+                        } else {
+                            window.location.href = RUTAS_POR_ROL[SelectedRoleTarget] || "index.html";
+                        }
                     }, 800);
                 }
             }
