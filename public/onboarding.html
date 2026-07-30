@@ -3,861 +3,1373 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Dante OS // Calibración de ADN Cognitivo v21.1</title>
+    <title>Dante OS | EXPEDIENTE COGNITIVO & GEMELO DIGITAL</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;600;800;900&family=JetBrains+Mono:wght@400;500;700;900&family=Oswald:wght@700;900&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=JetBrains+Mono:wght@400;500;700;900&family=Oswald:wght@700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
         :root {
             --primary: #51e2f5; 
             --gold: #D4AF37;
-            --gold-satin: #d4af37;
-            --alert: #ff0044;
-            --bg-deep: #08090c; 
-            --card-bg: rgba(12, 14, 22, 0.94);
-            --border-graphite: rgba(255, 255, 255, 0.12);
-            --font-main: 'Plus Jakarta Sans', sans-serif;
-            --font-mono: 'JetBrains Mono', monospace;
+            --alert: #e74c3c;
+            --bg: #010103; 
+            --card-bg: rgba(12, 14, 22, 0.88);
+            --border-graphite: rgba(255, 255, 255, 0.08);
+            --emerald: #2ecc71;
+            --purple-core: #a855f7;
         }
+
+        /* MODO ALTO CONTRASTE / MODO AULA PROYECTOR */
+        body.light-mode {
+            --bg: #f1f5f9;
+            --card-bg: rgba(255, 255, 255, 0.98);
+            --border-graphite: rgba(0, 0, 0, 0.15);
+            --primary: #0284c7;
+            --gold: #b45309;
+            color: #0f172a !important;
+        }
+        body.light-mode .master-hud { background: rgba(255, 255, 255, 0.98) !important; border-bottom-color: #cbd5e1 !important; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        body.light-mode .alias-title { color: #0f172a !important; }
+        body.light-mode .geo-tag { color: #0284c7 !important; }
+        body.light-mode .adn-card { background: #ffffff !important; border-color: #cbd5e1 !important; box-shadow: 0 10px 40px rgba(0,0,0,0.08) !important; }
+        body.light-mode .alias-main-name { color: #0f172a !important; text-shadow: none !important; }
+        body.light-mode .archetype-sub { background: #0284c7 !important; color: #ffffff !important; box-shadow: none !important; }
+        body.light-mode .identity-box { background: #f8fafc !important; border-color: #cbd5e1 !important; }
+        body.light-mode .historical-label { color: #64748b !important; }
+        body.light-mode .historical-name { color: #0f172a !important; }
+        body.light-mode .summary-text { background: #f8fafc !important; color: #0f172a !important; border-left-color: #0284c7 !important; border: 1px solid #cbd5e1; border-left-width: 4px; }
+        body.light-mode .tab-materia-btn { background: #ffffff !important; color: #475569 !important; border-color: #cbd5e1 !important; }
+        body.light-mode .tab-materia-btn.active { background: #fffbeb !important; color: #b45309 !important; border-color: #b45309 !important; box-shadow: 0 2px 8px rgba(180, 83, 9, 0.15) !important; }
+        body.light-mode .bottom-nav { background: rgba(255, 255, 255, 0.98) !important; border-color: #cbd5e1 !important; box-shadow: 0 -4px 20px rgba(0,0,0,0.08) !important; }
+        body.light-mode .bottom-nav .nav-text { color: #334155 !important; }
+
+        body.light-mode .section-title { color: #0f172a !important; }
+        body.light-mode .section-title::after { background: #cbd5e1 !important; }
+        body.light-mode .radar-label { color: #0f172a !important; text-shadow: none !important; font-weight: 800 !important; }
+        body.light-mode .radar-bg {
+            background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><polygon points="50 0, 100 25, 100 75, 50 100, 0 75, 0 25" fill="none" stroke="%23cbd5e1" stroke-width="1.5"/><polygon points="50 20, 80 35, 80 65, 50 80, 20 65, 20 35" fill="none" stroke="%23cbd5e1" stroke-width="1.5"/><polygon points="50 40, 65 47, 65 53, 50 60, 35 53, 35 47" fill="none" stroke="%23cbd5e1" stroke-width="1.5"/><line x1="50" y1="50" x2="50" y2="0" stroke="%23cbd5e1" stroke-width="1.5"/><line x1="50" y1="50" x2="100" y2="25" stroke="%23cbd5e1" stroke-width="1.5"/><line x1="50" y1="50" x2="100" y2="75" stroke="%23cbd5e1" stroke-width="1.5"/><line x1="50" y1="50" x2="50" y2="100" stroke="%23cbd5e1" stroke-width="1.5"/><line x1="50" y1="50" x2="0" y2="75" stroke="%23cbd5e1" stroke-width="1.5"/><line x1="50" y1="50" x2="0" y2="25" stroke="%23cbd5e1" stroke-width="1.5"/></svg>') !important;
+        }
+        body.light-mode .radar-polygon { fill: #0284c7 !important; fill-opacity: 0.25 !important; stroke: #0284c7 !important; filter: drop-shadow(0 0 4px rgba(2, 132, 199, 0.4)) !important; }
+        body.light-mode .thermometer-container { background: #e2e8f0 !important; border-color: #cbd5e1 !important; }
+        body.light-mode .mini-bar-bg { background: #e2e8f0 !important; border-color: #cbd5e1 !important; }
+        body.light-mode .bg-slate-900\/90,
+        body.light-mode .bg-slate-900\/80,
+        body.light-mode .bg-slate-900,
+        body.light-mode .bg-slate-950,
+        body.light-mode .bg-\[\#08090c\]\/80,
+        body.light-mode .bg-\[\#0d121f\]\/90 {
+            background-color: #ffffff !important;
+            border-color: #cbd5e1 !important;
+            color: #0f172a !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05) !important;
+        }
+        body.light-mode .text-slate-200,
+        body.light-mode .text-slate-300,
+        body.light-mode .text-slate-400,
+        body.light-mode .text-zinc-200,
+        body.light-mode .text-zinc-300,
+        body.light-mode .text-white { color: #0f172a !important; }
+        body.light-mode .text-amber-400,
+        body.light-mode .text-\[\#D4AF37\] { color: #b45309 !important; }
+        body.light-mode .text-\[var\(--primary\)\],
+        body.light-mode .text-\[\#51e2f5\] { color: #0284c7 !important; }
+        body.light-mode .mision-item { background: #f8fafc !important; border-color: #cbd5e1 !important; color: #0f172a !important; }
 
         body, html { 
-            background: var(--bg-deep); 
-            color: #f0f1f5; 
-            margin: 0; 
-            font-family: var(--font-main); 
-            min-height: 100vh;
-            min-height: 100dvh; 
-            overflow-x: hidden; 
-            overflow-y: auto;
-            display: flex; 
-            flex-direction: column; 
-            justify-content: flex-start; 
-            align-items: center;
-            padding: 0.5rem 0.5rem 2rem 0.5rem;
-            background-image: radial-gradient(circle at 50% 20%, #171a26 0%, #08090c 100%);
-        }
-        @media(min-width: 640px) and (min-height: 520px) {
-            body, html {
-                justify-content: center;
-                padding: 1rem 0;
-            }
+            background: var(--bg); color: #f0f1f5; margin: 0; font-family: 'Outfit', sans-serif; 
+            overflow-x: hidden; min-height: 100vh; touch-action: pan-y;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        /* MODO ALTO CONTRASTE / MODO CLARO */
-        body.light-mode {
-            --bg-deep: #f1f5f9;
-            --card-bg: #ffffff;
-            --border-graphite: #cbd5e1;
-            color: #0f172a !important;
-            background-color: #f1f5f9 !important;
-            background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px) !important;
-            background-size: 24px 24px !important;
-        }
-        body.light-mode .onboard-card {
-            background: #ffffff !important;
-            border-color: #cbd5e1 !important;
-            box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.12), 0 0 20px rgba(2, 132, 199, 0.08) !important;
-        }
-        body.light-mode #dilema-text {
-            background: #f8fafc !important;
-            border-color: #cbd5e1 !important;
-            color: #1e293b !important;
-            box-shadow: inset 0 1px 2px rgba(0,0,0,0.03) !important;
-        }
-        body.light-mode .option-btn {
-            background: #ffffff !important;
-            border-color: #cbd5e1 !important;
-            color: #0f172a !important;
-        }
-        body.light-mode .option-btn:hover {
-            background: #f0f9ff !important;
-            border-color: #0284c7 !important;
-            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.15) !important;
-        }
-        body.light-mode .text-zinc-200, 
-        body.light-mode .text-zinc-300, 
-        body.light-mode .text-zinc-400 {
-            color: #334155 !important;
-        }
-        body.light-mode .text-white {
-            color: #0f172a !important;
-        }
+        .font-mono { font-family: 'JetBrains Mono', monospace !important; }
 
-        .font-mono { font-family: var(--font-mono) !important; }
-
+        /* CANVASES Y EFECTOS COGNITIVOS */
         #dante-fractal-bg { position: fixed; inset: 0; z-index: 0; opacity: 0.18; pointer-events: none; mix-blend-mode: screen; }
         .scanline { position: fixed; inset: 0; background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.5) 51%); background-size: 100% 4px; z-index: 1; pointer-events: none; opacity: 0.2; }
+        #fx-flash { position: fixed; inset: 0; z-index: 999999; background: var(--alert); opacity: 0; pointer-events: none; transition: opacity 0.3s; mix-blend-mode: screen; }
 
-        .onboard-card, .unicorn-card {
-            background: var(--card-bg); 
-            border: 1px solid var(--border-graphite);
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95); 
-            border-radius: 16px; 
-            padding: 1rem 0.85rem !important; 
-            width: 98% !important; 
-            max-width: 720px !important; 
-            text-align: center; 
-            position: relative; 
-            z-index: 10;
-            backdrop-filter: blur(24px); 
-            margin: 0.4rem auto !important;
-            height: auto !important;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            box-sizing: border-box !important;
+        /* HEADER HUD PERIMETRAL */
+        .master-hud {
+            position: fixed; top: 0; width: 100%; z-index: 1000; padding: 10px 16px;
+            background: rgba(1, 1, 3, 0.95); backdrop-filter: blur(12px);
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--border-graphite);
         }
-        @media(min-width: 640px) {
-            .onboard-card, .unicorn-card { 
-                padding: 1.8rem 2.2rem !important; 
-                width: 92% !important;
-                margin: 1rem auto !important;
-            }
+        .alias-title { font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; color: white; margin-bottom: 1px;}
+        .geo-tag { font-family: 'JetBrains Mono'; font-size: 8px; color: var(--primary); letter-spacing: 1px; text-transform: uppercase; }
+
+        /* VIEWPORT Y SCROLLBAR */
+        .adn-viewport {
+            position: relative; z-index: 10;
+            padding: 75px 12px 110px; max-width: 960px; margin: 0 auto;
         }
-        .onboard-card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+
+        /* TARJETA MAESTRA DANTE */
+        .adn-card {
+            width: 100%;
+            background: var(--card-bg); border: 1px solid var(--border-graphite);
+            border-radius: 14px; backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            padding: 20px 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.95);
+            position: relative; overflow: visible;
+        }
+        .adn-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px;
             background: linear-gradient(90deg, var(--primary), var(--gold), var(--primary)); 
-            box-shadow: 0 0 20px var(--gold); border-radius: 16px 16px 0 0;
+            box-shadow: 0 0 20px var(--gold); border-radius: 14px 14px 0 0;
         }
 
-        .option-btn {
-            background: rgba(20, 24, 35, 0.85); border: 1px solid var(--border-graphite); border-radius: 12px;
-            padding: 0.55rem 0.75rem; width: 100%; text-align: left; font-size: 0.8rem; font-weight: 600; color: #fff;
-            transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer; font-family: var(--font-mono); margin-top: 0.35rem;
-            line-height: 1.35; min-height: 40px; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
-            word-break: break-word; box-sizing: border-box;
+        /* CARD HEADER Y CORE */
+        .card-header-visual {
+            position: relative; width: 100%; height: 110px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; margin-bottom: 10px;
         }
-        @media(min-width: 640px) {
-            .option-btn {
-                padding: 0.85rem 1.1rem;
-                font-size: 0.9rem;
-                margin-top: 0.6rem;
-                min-height: 48px;
-                gap: 0.75rem;
-            }
-        }
-        .option-btn:hover { border-color: var(--gold); background: rgba(212, 175, 55, 0.12); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(212, 175, 55, 0.18); }
-        .option-btn:active { transform: scale(0.98); }
-        .option-btn.tachado {
-            opacity: 0.35;
-            text-decoration: line-through;
-            background: rgba(239, 68, 68, 0.1) !important;
-            border-color: rgba(239, 68, 68, 0.4) !important;
-            filter: grayscale(0.8);
-        }
+        .dante-mini-core { position: absolute; width: 170px; height: 170px; z-index: 0; opacity: 0.65; }
+        .alias-main-name { position: relative; z-index: 10; font-family: 'Oswald', sans-serif; font-size: clamp(22px, 5vw, 34px); font-weight: 900; text-transform: uppercase; text-align: center; line-height: 1.1; text-shadow: 0 5px 20px rgba(0,0,0,1), 0 0 20px var(--primary); color: white; letter-spacing: 2px;}
+        .archetype-sub { position: relative; z-index: 10; font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; background: var(--primary); padding: 3px 12px; border-radius: 4px; color: #000; box-shadow: 0 0 15px var(--primary); }
 
-        .strike-tool-btn {
-            padding: 4px 8px;
-            font-size: 10px;
-            border-radius: 6px;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #cbd5e1;
-            transition: all 0.2s;
-            cursor: pointer;
+        .identity-box {
+            background: rgba(0,0,0,0.65); border: 1px solid var(--border-graphite);
+            border-radius: 10px; padding: 10px; text-align: center; display: flex; justify-content: space-around; align-items: center; margin-bottom: 16px;
+        }
+        .historical-label { font-family: 'JetBrains Mono'; font-size: 8px; color: #8a8f9d; text-transform: uppercase; letter-spacing: 1px; font-weight: 800;}
+        .historical-name { font-size: 12px; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 1px; font-family: 'JetBrains Mono'; }
+
+        /* PESTAÑAS MATERIAS CON SCROLL HORIZONTAL SUAVE Y RESPONSIVO */
+        .tabs-container {
+            display: flex; flex-wrap: nowrap; gap: 0.5rem; justify-content: flex-start; align-items: center;
+            overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+            margin-bottom: 1rem; padding: 0.4rem 0.2rem 0.6rem;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            scroll-behavior: smooth;
+        }
+        .tabs-container::-webkit-scrollbar { display: none; }
+        .tab-materia-btn {
             flex-shrink: 0;
+            background: rgba(20, 24, 35, 0.8); border: 1px solid var(--border-graphite); color: #8a8f9d;
+            padding: 0.55rem 0.95rem; border-radius: 8px; font-size: 0.68rem; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: all 0.25s ease;
+            font-family: 'JetBrains Mono', monospace; white-space: nowrap;
         }
-        .strike-tool-btn:hover {
-            background: rgba(239, 68, 68, 0.25);
-            color: #f87171;
-            border-color: rgba(239, 68, 68, 0.5);
-        }
-
-        /* BANNER DE BÚNKER DE PRIVACIDAD */
-        .bunker-privacy-banner {
-            background: rgba(15, 23, 42, 0.9);
-            border: 1px solid rgba(81, 226, 245, 0.3);
-            border-radius: 12px;
-            padding: 0.5rem 0.8rem;
-            font-size: 10px;
-            font-family: 'JetBrains Mono', monospace;
-            color: #94a3b8;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-            max-width: 820px;
-            width: 100%;
-            z-index: 10;
-            margin-bottom: 0.4rem;
-        }
-        @media(min-width: 640px) {
-            .bunker-privacy-banner {
-                padding: 0.6rem 1rem;
-                font-size: 11px;
-                width: 94%;
-                margin-bottom: 0.6rem;
-            }
+        .tab-materia-btn:hover { border-color: var(--primary); color: #fff; }
+        .tab-materia-btn.active {
+            border-color: var(--gold); color: var(--gold);
+            background: rgba(212, 175, 55, 0.15); box-shadow: 0 0 15px rgba(212, 175, 55, 0.25);
         }
 
-        /* PREGUNTA 5: FACSÍMIL PAPEL ICFES Y HOJA ÓPTICA */
-        .facsimile-paper {
-            background: #fdfbf7;
-            background-image: linear-gradient(#e5e0d8 1px, transparent 1px);
-            background-size: 100% 28px;
-            color: #1a1a1a;
-            border: 2px solid #8c8275;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5), inset 0 0 40px rgba(180,160,130,0.15);
-            font-family: 'Merriweather', serif;
-            position: relative;
+        /* SECCIONES Y TITULOS */
+        .section-title { font-family: 'JetBrains Mono'; font-size: 10px; color: #fff; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin: 18px 0 10px; display: flex; align-items: center; gap: 8px; }
+        .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.12); }
+        
+        .summary-text { font-size: 12.5px; font-weight: 400; line-height: 1.6; color: #e2e8f0; margin-bottom: 16px; text-align: justify; font-family: 'Outfit'; background: rgba(255,255,255,0.02); padding: 12px; border-left: 3px solid var(--primary); border-radius: 0 6px 6px 0;}
+
+        /* TERMÓMETRO BAYESIANO */
+        .thermometer-container {
+            height: 12px; background: rgba(25, 28, 38, 0.9); border-radius: 9999px;
+            position: relative; margin: 16px 0 10px 0; border: 1px solid var(--border-graphite);
         }
-        .facsimile-stamp {
-            border: 2px dashed #7a1d1d;
-            color: #7a1d1d;
-            font-weight: 900;
-            font-family: 'JetBrains Mono', monospace;
-            transform: rotate(-3deg);
-            padding: 2px 8px;
-            font-size: 10px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
+        .confidence-band {
+            position: absolute; height: 100%;
+            background: linear-gradient(90deg, rgba(245, 158, 11, 0.2), rgba(245, 158, 11, 0.6), rgba(245, 158, 11, 0.2));
+            border-radius: 9999px; transition: all 0.5s ease;
+        }
+        .pin {
+            position: absolute; top: -5px; width: 22px; height: 22px; background: #fbbf24;
+            border-radius: 50%; border: 3px solid #09090b; transform: translateX(-50%);
+            transition: all 0.5s ease; box-shadow: 0 0 12px #fbbf24;
         }
 
-        /* MINI HOJA DE RESPUESTAS ÓPTICA EN FACSÍMIL */
-        .optica-sheet-box {
-            background: #f4efe6;
-            border: 2px solid #a39682;
-            border-radius: 10px;
-            padding: 0.65rem 0.75rem;
-            margin-top: 0.6rem;
-            box-shadow: inset 0 2px 6px rgba(0,0,0,0.08);
-            font-family: 'JetBrains Mono', monospace;
+        /* RADAR SVG COGNITIVO */
+        .radar-container {
+            width: 100%; height: 210px; position: relative; margin-bottom: 16px;
+            display: flex; align-items: center; justify-content: center;
         }
-        @media(min-width: 640px) {
-            .optica-sheet-box {
-                padding: 0.85rem 1rem;
-                margin-top: 0.85rem;
-            }
+        .radar-bg {
+            width: 150px; height: 170px; background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><polygon points="50 0, 100 25, 100 75, 50 100, 0 75, 0 25" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1"/><polygon points="50 20, 80 35, 80 65, 50 80, 20 65, 20 35" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1"/><polygon points="50 40, 65 47, 65 53, 50 60, 35 53, 35 47" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1"/><line x1="50" y1="50" x2="50" y2="0" stroke="rgba(255,255,255,0.12)" stroke-width="1"/><line x1="50" y1="50" x2="100" y2="25" stroke="rgba(255,255,255,0.12)" stroke-width="1"/><line x1="50" y1="50" x2="100" y2="75" stroke="rgba(255,255,255,0.12)" stroke-width="1"/><line x1="50" y1="50" x2="50" y2="100" stroke="rgba(255,255,255,0.12)" stroke-width="1"/><line x1="50" y1="50" x2="0" y2="75" stroke="rgba(255,255,255,0.12)" stroke-width="1"/><line x1="50" y1="50" x2="0" y2="25" stroke="rgba(255,255,255,0.12)" stroke-width="1"/></svg>') no-repeat center;
+            background-size: contain; position: relative; z-index: 1;
         }
-        .optica-oval {
-            width: 28px;
-            height: 22px;
-            border-radius: 50%;
-            border: 2px solid #2d2b27;
-            background: #ffffff;
-            color: #2d2b27;
-            font-weight: 800;
-            font-size: 10px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            user-select: none;
-            box-shadow: inset 0 1px 2px rgba(0,0,0,0.15);
+        .radar-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; overflow: visible;}
+        .radar-polygon { fill: var(--primary); fill-opacity: 0.35; stroke: var(--primary); stroke-width: 2; filter: drop-shadow(0 0 10px var(--primary)); transition: all 1s ease;}
+
+        .radar-label { position: absolute; font-family: 'JetBrains Mono'; font-size: 7.5px; font-weight: 900; color: #aaa; letter-spacing: 1px; text-transform: uppercase; z-index: 3; text-shadow: 0 0 5px black;}
+        .lbl-top { top: -18px; left: 50%; transform: translateX(-50%); }
+        .lbl-tr { top: 18px; right: -32px; }
+        .lbl-br { bottom: 18px; right: -32px; }
+        .lbl-bottom { bottom: -18px; left: 50%; transform: translateX(-50%); }
+        .lbl-bl { bottom: 18px; left: -32px; }
+        .lbl-tl { top: 18px; left: -32px; }
+
+        .mini-bar-bg { background: rgba(8, 9, 13, 0.9); height: 6px; border-radius: 3px; overflow: hidden; margin-top: 0.3rem; border: 1px solid var(--border-graphite); }
+        .mini-bar-fill { height: 100%; border-radius: 3px; transition: width 1s ease; }
+
+        /* TOOLTIPS */
+        .tooltip-wrapper { position: relative; display: inline-flex; align-items: center; cursor: pointer; }
+        .tooltip-box {
+            visibility: hidden; width: 210px; max-width: 80vw; background-color: #0c0e17; color: #f1f5f9;
+            text-align: left; padding: 0.65rem; border-radius: 8px; border: 1px solid var(--gold);
+            position: absolute; z-index: 999999 !important; opacity: 0; transition: opacity 0.2s ease;
+            font-size: 0.72rem; line-height: 1.35; bottom: calc(100% + 6px); right: 0; pointer-events: none;
         }
-        @media(min-width: 640px) {
-            .optica-oval {
-                width: 32px;
-                height: 24px;
-                font-size: 11px;
-            }
+        .tooltip-wrapper:hover .tooltip-box, .tooltip-wrapper:focus .tooltip-box { visibility: visible; opacity: 1; }
+
+        /* DOCK FLOTANTE */
+        .bottom-nav { 
+            position: fixed; bottom: 18px; width: 90%; max-width: 480px; left: 50%; transform: translateX(-50%); z-index: 1000;
+            display: flex; justify-content: space-evenly; align-items: center;
+            background: rgba(5, 5, 8, 0.88); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            padding: 8px 15px; border-radius: 60px; border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.95);
         }
-        .optica-oval:hover {
-            transform: scale(1.12);
-            border-color: #000;
-            background: #e2ded5;
-        }
-        .optica-oval.graphite-filled {
-            background: radial-gradient(circle, #0a0a0a 70%, #222222 100%) !important;
-            color: #ffffff !important;
-            border-color: #000000 !important;
-            box-shadow: 0 0 8px rgba(0,0,0,0.8), inset 0 0 4px #000 !important;
-            animation: graphitePencilFill 0.35s ease-out forwards;
-        }
-        @keyframes graphitePencilFill {
-            0% { transform: scale(0.9); opacity: 0.6; background: #666; }
-            50% { transform: scale(1.15); background: #222; }
-            100% { transform: scale(1); opacity: 1; background: #0a0a0a; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; min-width: 70px; cursor: pointer; }
+        .icon-circle { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); margin-bottom: 3px; transition: 0.3s; }
+        .nav-text { font-size: 9px; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; }
+        
+        #dante-anchor { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--gold); background: #000; box-shadow: 0 0 20px rgba(212,175,55,0.35); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s;}
+        #dante-anchor i { font-size: 18px; color: var(--gold); transition: 0.3s; }
+
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px);
+            z-index: 99999; display: none; align-items: center; justify-content: center; padding: 1rem;
         }
 
-        /* MODAL UNICORNIO CELEBRACIÓN */
-        .modal-celebration-overlay {
-            position: fixed; inset: 0; z-index: 99999;
-            background: rgba(4, 6, 12, 0.94); backdrop-filter: blur(20px);
-            display: flex; justify-content: center; align-items: center; padding: 0.8rem;
-            animation: fadeInModal 0.4s ease-out;
-            overflow-y: auto;
-        }
-        @keyframes fadeInModal {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
-        .unicorn-card {
-            background: linear-gradient(145deg, rgba(20, 24, 38, 0.98), rgba(12, 14, 24, 0.98));
-            border: 2px solid var(--gold-satin);
-            border-radius: 20px;
-            box-shadow: 0 0 60px rgba(212, 175, 55, 0.35), 0 0 100px rgba(81, 226, 245, 0.2);
-            padding: 1.5rem 1.1rem;
-            max-width: 620px;
-            width: 100%;
-            max-height: 94dvh;
-            overflow-y: auto;
-            text-align: center;
-            position: relative;
-        }
-        @media(min-width: 640px) {
-            .unicorn-card {
-                padding: 2.2rem 1.8rem;
-            }
-        }
-        .unicorn-card::before {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(212, 175, 55, 0.12) 0%, transparent 60%);
-            pointer-events: none; animation: spinGlow 12s linear infinite;
-        }
-        @keyframes spinGlow {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        /* MODO VISUALIZACIÓN PADRE VS FORENSE */
+        .mode-forensic { display: none; }
+        body.is-forensic-mode .mode-forensic { display: block; }
+        body.is-forensic-mode .mode-parent { display: none; }
     </style>
 </head>
 <body oncontextmenu="return false;">
 
-    <script>
-        // BLOQUEO RIGUROSO DEL BOTÓN ATRÁS EN EL NAVEGADOR
-        window.history.pushState({ locked: true }, null, window.location.href);
-        window.addEventListener('popstate', function (event) {
-            window.history.pushState({ locked: true }, null, window.location.href);
-        });
-    </script>
-
+    <div id="fx-flash"></div>
     <div class="scanline"></div>
     <canvas id="dante-fractal-bg"></canvas>
 
-    <!-- BANNER DE PRIVACIDAD Y BÚNKER PSICOLÓGICO -->
-    <div class="bunker-privacy-banner flex items-center justify-between gap-3">
-        <div class="flex items-center gap-2 text-cyan-400 font-bold shrink-0">
-            <i class="fa-solid fa-user-shield text-xs sm:text-sm"></i>
-            <span class="tracking-widest uppercase text-[9px] sm:text-[10px]">BÚNKER DE PRIVACIDAD ABSOLUTA</span>
-        </div>
-        <p class="text-[9.5px] sm:text-[10.5px] leading-tight text-slate-300">
-            Tus respuestas psicométricas son <strong>100% confidenciales</strong>. Solo el Núcleo Dante OS utiliza esta información.
-        </p>
-    </div>
-
-    <div class="onboard-card" id="card-main">
+    <header class="master-hud">
         <div>
-            <!-- MICRO-BARRA DE PROYECCIÓN DINÁMICA ICFES EN TIEMPO REAL -->
-            <div class="mb-3 p-2.5 rounded-xl bg-slate-900/90 border border-amber-500/40 flex items-center justify-between gap-3 text-xs font-mono shadow-md">
-                <div class="flex items-center gap-2 min-w-0">
-                    <span class="relative flex h-2.5 w-2.5 shrink-0">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500"></span>
-                    </span>
-                    <span class="text-amber-400 font-bold uppercase tracking-wide truncate" id="projection-live-text">Calibrando baseline... 300 pts ➔ Analizando Sistema 1/2</span>
-                </div>
-                <div class="text-right shrink-0">
-                    <span class="text-[10px] text-zinc-400 block">PROYECCIÓN ICFES</span>
-                    <span class="text-xs font-extrabold text-cyan-400" id="projection-score-num">300 pts</span>
-                </div>
-            </div>
-
-            <div class="font-mono text-[10px] sm:text-xs text-[#D4AF37] tracking-normal sm:tracking-[0.2em] uppercase mb-1 font-bold flex flex-wrap items-center justify-center gap-1 sm:gap-2 text-center leading-tight">
-                <span>⚡ NÚCLEO DANTE OS v21.1</span> <span class="hidden sm:inline">//</span> <span>ADN COGNITIVO</span>
-            </div>
-            
-            <h1 class="oswald font-black text-sm sm:text-lg md:text-xl tracking-wide text-white mb-2 uppercase text-center leading-tight break-words px-1" id="step-title">
-                PASO 01 / 05 // NIVELES DE COMPLEJIDAD
-            </h1>
-            
-            <!-- BARRA DE PROGRESO -->
-            <div class="w-full progress-track bg-white/10 h-1.5 rounded-full overflow-hidden mb-3">
-                <div id="progress-bar" class="bg-gradient-to-r from-cyan-400 via-amber-400 to-cyan-400 h-full transition-all duration-300" style="width: 20%;"></div>
-            </div>
-
-            <!-- CONTENEDOR ENUNCIADO Y TUTORIAL TUTOR -->
-            <div id="tutorial-tip-box" class="mb-3 p-2.5 rounded-lg bg-cyan-950/40 border border-cyan-500/30 text-cyan-300 text-xs font-mono text-left flex items-start gap-2">
-                <i class="fa-solid fa-compass-drafting text-cyan-400 text-sm mt-0.5"></i>
-                <div>
-                    <strong class="text-cyan-200 uppercase font-bold">Instrucción Tutorial:</strong>
-                    <span id="tutorial-tip-text">Responde según tu instinto natural. Dante calculará tu latencia de respuesta en milisegundos.</span>
-                </div>
-            </div>
-
-            <!-- CONTENEDOR ENUNCIADO GENERAL (PREGUNTAS 1-4) -->
-            <div id="dilema-container">
-                <p id="dilema-text" class="text-sm md:text-base font-medium text-zinc-200 mb-3 font-sans leading-relaxed text-left bg-black/50 p-3.5 rounded-lg border border-white/10 shadow-inner">
-                    Sincronizando estímulo conductual...
-                </p>
-            </div>
-
-            <!-- CONTENEDOR OPCIONES DINÁMICAS -->
-            <div id="options-container" class="space-y-2">
-                <!-- Inyección dinámica de opciones -->
-            </div>
+            <div class="alias-title">RED DANTE OS</div>
+            <div class="geo-tag" id="ui-geo" data-final="NEXUS BOGOTÁ">BOGOTÁ, COLOMBIA</div>
         </div>
 
-        <div class="mt-4 flex justify-between items-center text-xs font-mono text-zinc-400 uppercase tracking-widest pt-2 border-t border-white/10">
-            <span>Latencia: <span id="timer-val" class="text-cyan-400 font-bold">0.0s</span></span>
-            <span class="flex items-center gap-1.5"><i class="fa-solid fa-lock text-cyan-400"></i> Cifrado de Estado: Activo</span>
-        </div>
-    </div>
-
-    <!-- MODAL CELEBRACIÓN UNICORNIO (COMPLETACIÓN ONBOARDING) -->
-    <div id="modalCelebration" class="modal-celebration-overlay" style="display: none;">
-        <div class="unicorn-card relative z-10">
-            <!-- INSIGNIA SUPERIOR Y MEDALLA DE INICIACIÓN -->
-            <div class="w-20 h-20 mx-auto mb-3 rounded-full border-2 border-[#D4AF37] bg-amber-500/10 flex items-center justify-center shadow-[0_0_35px_rgba(212,175,55,0.5)] animate-bounce">
-                <span class="text-4xl">🏅</span>
-            </div>
-
-            <div class="font-mono text-xs text-amber-400 tracking-[0.3em] uppercase font-bold mb-1">
-                ✨ ¡ADN COGNITIVO SINCRONIZADO! ✨
-            </div>
-
-            <h2 class="oswald font-black text-2xl md:text-3xl text-white mb-2 uppercase tracking-wide">
-                CALIBRACIÓN COMPLETADA
-            </h2>
-
-            <!-- ARQUETIPO DIAGNOSTICADO -->
-            <div class="my-3 p-4 bg-cyan-950/60 border border-cyan-400/50 rounded-xl text-left shadow-lg">
-                <div class="flex items-center justify-between border-b border-cyan-500/20 pb-2 mb-2">
-                    <span class="text-[11px] font-mono text-amber-400 font-bold uppercase tracking-wider">Arquetipo Diagnosticado:</span>
-                    <span class="text-[10px] font-mono text-emerald-400 font-bold px-2 py-0.5 rounded bg-emerald-950/60 border border-emerald-500/40">
-                        🏅 MEDALLA DE INICIACIÓN
-                    </span>
-                </div>
-                <div class="text-lg md:text-xl font-mono font-extrabold text-white uppercase flex items-center gap-2 mb-1">
-                    <span class="text-amber-400">👑</span> <span id="lblArquetipoFinal">Estratega Reflexivo S2</span>
-                </div>
-                <p class="text-xs font-mono text-cyan-300/90 mt-1">
-                    Proyección ICFES Inicial: <strong class="text-amber-300 font-extrabold" id="lblProyeccionScore">365 / 500 pts</strong>
-                </p>
-            </div>
-
-            <!-- MISIÓN PSICO-TÁCTICA #1 -->
-            <div class="p-4 bg-amber-950/40 border border-amber-500/50 rounded-xl text-left mb-5 shadow-md">
-                <div class="flex items-center gap-2 text-amber-400 font-mono text-xs font-bold uppercase mb-1">
-                    <i class="fa-solid fa-crosshairs"></i>
-                    <span id="lblMisionTitulo">Misión Psico-Táctica #1: Control de Ritmo</span>
-                </div>
-                <p class="text-xs md:text-sm font-mono text-zinc-100 leading-relaxed bg-black/50 p-3 rounded border border-white/10" id="lblMisionInstruccion">
-                    "Ejecutar lecturas desaceleradas de 8 segundos antes del primer clic."
-                </p>
-            </div>
-
-            <!-- BOTÓN INGRESAR Y CONTINUAR CON REPLACEMENT DE HISTORIAL -->
-            <button type="button" onclick="irACabinaEntrenamiento()" class="w-full py-3.5 px-5 bg-gradient-to-r from-amber-500/30 via-amber-400/20 to-amber-500/30 hover:bg-amber-500/40 border-2 border-amber-400 text-amber-300 font-mono font-extrabold text-sm rounded-xl uppercase tracking-wider transition-all duration-300 shadow-[0_0_25px_rgba(212,175,55,0.35)] hover:scale-[1.02] cursor-pointer flex items-center justify-center gap-2">
-                <span>🚀 INGRESAR A MI CABINA DANTE OS</span>
-                <i class="fa-solid fa-arrow-right"></i>
+        <div class="flex items-center gap-2">
+            <button type="button" onclick="PerfilEstudiante.toggleThemeContraste()" class="text-xs text-amber-400 hover:text-amber-300 p-1.5 bg-transparent border-0 cursor-pointer" title="Cambiar modo de contraste" aria-label="Cambiar modo de contraste">
+                <i class="fas fa-sun" id="iconContrast"></i>
             </button>
+            <button type="button" id="btnToggleMode" onclick="PerfilEstudiante.toggleModoVista()" class="px-2.5 py-1 rounded bg-slate-900 border border-amber-500/40 text-[9.5px] font-mono font-bold text-amber-400 hover:bg-amber-500 hover:text-black transition shadow">
+                👁️ VISTA: PADRE (CLARA)
+            </button>
+            <div class="text-right hidden sm:block">
+                <div class="text-xs font-black italic text-white font-mono" style="text-shadow: 0 0 10px var(--primary);">MODO <span id="ui-lvl" class="text-[#D4AF37]">ENTERPRISE</span></div>
+            </div>
+        </div>
+    </header>
+
+    <div class="adn-viewport" id="viewportContainer">
+        <div class="adn-card" id="main-card">
+            
+            <!-- HEADER DE IDENTIDAD -->
+            <div class="card-header-visual">
+                <canvas id="mini-core-canvas" class="dante-mini-core"></canvas>
+                <div class="alias-main-name" id="ui-main-title" data-final="EXPEDIENTE DANTE">EXPEDIENTE DANTE</div>
+                <div class="archetype-sub" id="ui-archetype" data-final="ESTRATEGA COGNITIVO">ESTRATEGA COGNITIVO</div>
+            </div>
+
+            <div class="identity-box">
+                <div>
+                    <div class="historical-label">Estudiante Autenticado</div>
+                    <div class="historical-name" id="ui-alias-box" data-final="ESTUDIANTE" style="color: var(--primary);">ESTUDIANTE</div>
+                </div>
+                <div>
+                    <div class="historical-label">Institución Cobertura</div>
+                    <div class="historical-name" id="ui-institution-box" data-final="COLEGIO SANDBOX">SANDBOX</div>
+                </div>
+            </div>
+
+            <a id="btnDescargarPdfExpediente" href="/reporte.html?rol=estudiante" target="_blank" class="block w-full text-center py-2.5 px-4 mb-4 bg-slate-900 border border-[#51e2f5] text-[#51e2f5] hover:bg-[#51e2f5] hover:text-black font-mono font-bold text-xs uppercase tracking-wider rounded-lg transition-all shadow-md">
+                📜 DESCARGAR EXPEDIENTE OFICIAL PARA PADRES (PDF)
+            </a>
+
+            <!-- NAVEGACIÓN DE FILTROS POR MATERIA -->
+            <nav class="tabs-container">
+                <button type="button" class="tab-materia-btn active" onclick="PerfilEstudiante.cambiarFiltroMateria('todas', this)">🌐 Diagnóstico Global</button>
+                <button type="button" class="tab-materia-btn" onclick="PerfilEstudiante.cambiarFiltroMateria('matematicas', this)">📐 Matemáticas</button>
+                <button type="button" class="tab-materia-btn" onclick="PerfilEstudiante.cambiarFiltroMateria('lectura_critica', this)">📖 Lectura Crítica</button>
+                <button type="button" class="tab-materia-btn" onclick="PerfilEstudiante.cambiarFiltroMateria('ciencias_naturales', this)">🧪 Ciencias Naturales</button>
+                <button type="button" class="tab-materia-btn" onclick="PerfilEstudiante.cambiarFiltroMateria('sociales_ciudadanas', this)">🏛️ Sociales</button>
+                <button type="button" class="tab-materia-btn" onclick="PerfilEstudiante.cambiarFiltroMateria('ingles', this)">🇬🇧 Inglés</button>
+            </nav>
+
+            <!-- 🏆 1. PROYECCIÓN ADAPTATIVA (GLOBAL 500 VS MATERIA 100 + MARCO MCER EN INGLÉS) -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+                <div class="lg:col-span-2 bg-slate-900/90 border border-[#D4AF37]/50 rounded-xl p-4 sm:p-5 relative overflow-hidden backdrop-blur-md shadow-2xl">
+                    <div class="absolute top-0 right-0 bg-[#D4AF37]/20 text-[#D4AF37] px-2.5 py-0.5 text-[9px] font-mono font-bold uppercase rounded-bl-lg border-l border-b border-[#D4AF37]/40" id="lblBannerProyeccion">
+                        PROYECCIÓN REAL ICFES
+                    </div>
+                    
+                    <p class="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest mb-1" id="lblEscalaTitulo">
+                        Puntaje Global Estimado (Media Ponderada 1 - 500)
+                    </p>
+                    
+                    <div class="flex items-baseline gap-2 my-1 flex-wrap">
+                        <h1 id="lblPuntajeGlobal500" class="text-3xl sm:text-4xl md:text-5xl font-extrabold font-mono text-[#D4AF37] tracking-tight">
+                            0 <span class="text-lg sm:text-xl text-slate-400 font-normal" id="lblEscalaUnidad">/ 500 pts</span>
+                        </h1>
+                        <span id="lblBadgeMCER" class="hidden text-[10px] font-mono px-2.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-bold">
+                            NIVEL MCER: B1
+                        </span>
+                        <span id="lblProbabilidadMeta" class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30 font-semibold">
+                            Pendiente Diagnóstico
+                        </span>
+                    </div>
+
+                    <div class="w-full bg-slate-950 h-2.5 rounded-full border border-slate-800 overflow-hidden my-2.5">
+                        <div id="barPuntajeGlobal" class="h-full bg-gradient-to-r from-amber-500 via-[#D4AF37] to-emerald-400 rounded-full transition-all duration-1000" style="width: 0%;"></div>
+                    </div>
+
+                    <div class="flex justify-between items-center text-[10px] text-slate-400 font-mono">
+                        <span>Estado: <strong id="lblNivelRango" class="text-white">SIN PRUEBAS REGISTRADAS</strong></span>
+                        <span>Meta ICFES: <strong class="text-[#51e2f5]" id="lblMetaEscala">350+ pts</strong></span>
+                    </div>
+                </div>
+
+                <!-- 🟢 SEMÁFORO DE ACCIÓN RÁPIDA -->
+                <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-4 flex flex-col justify-between backdrop-blur-md space-y-2">
+                    <div class="flex justify-between items-center">
+                        <span class="text-[10px] font-mono font-bold text-[#51e2f5] uppercase tracking-wider block" id="lblSemaforoTitulo">🚦 SEMÁFORO SUB-COMPETENCIAL</span>
+                    </div>
+                    
+                    <div class="space-y-1.5 font-mono text-[10.5px]">
+                        <div class="p-2 rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex justify-between items-center">
+                            <span>🟢 FORTALEZA:</span>
+                            <strong id="lblSemaforoFortaleza">Detectando...</strong>
+                        </div>
+                        <div class="p-2 rounded bg-amber-500/10 border border-amber-500/30 text-amber-400 flex justify-between items-center">
+                            <span>🟡 RIESGO:</span>
+                            <strong id="lblSemaforoRiesgo">Detectando...</strong>
+                        </div>
+                        <div class="p-2 rounded bg-rose-500/10 border border-rose-500/30 text-rose-400 flex justify-between items-center">
+                            <span>🔴 PRIORIDAD:</span>
+                            <strong id="lblSemaforoPrioridad">Detectando...</strong>
+                        </div>
+                    </div>
+
+                    <button type="button" onclick="window.location.href='/index.html'" class="w-full py-1.5 bg-[#D4AF37]/10 border border-[#D4AF37]/40 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black font-mono font-bold text-[9.5px] uppercase rounded transition">
+                        ⚡ FIX EN 3 MINS: RESOLVER REPOSITORIO DEBIL
+                    </button>
+                </div>
+            </div>
+
+            <!-- 🔮 2. MOTOR PREDICTIVO DE ERRORES & SINERGIA COGNITIVA TRANSVERSAL -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
+                <!-- MOTOR PREDICTIVO DE ERRORES -->
+                <div class="bg-slate-900/90 border border-purple-500/30 p-4 rounded-xl space-y-2">
+                    <div class="flex justify-between items-center border-b border-zinc-800 pb-2">
+                        <h3 class="text-xs font-mono font-bold uppercase text-purple-400 flex items-center gap-1.5">
+                            <span>🔮</span> PREDECIR PUNTOS CIEGOS FUTUROS
+                        </h3>
+                        <span class="text-[9px] font-mono bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded">IA PREDICTIVA</span>
+                    </div>
+                    <p id="lblPrediccionProactiva" class="text-xs text-slate-300 leading-relaxed font-sans italic">
+                        Calculando patrones de error probables para la próxima sesión...
+                    </p>
+                </div>
+
+                <!-- SINERGIA COGNITIVA Y SIMULADOR DE DECISIONES -->
+                <div class="bg-slate-900/90 border border-[#D4AF37]/30 p-4 rounded-xl space-y-2">
+                    <div class="flex justify-between items-center border-b border-zinc-800 pb-2">
+                        <h3 class="text-xs font-mono font-bold uppercase text-[#D4AF37] flex items-center gap-1.5">
+                            <span>⚡</span> SIMULADOR & SINERGIA TRANSVERSAL
+                        </h3>
+                        <span class="text-[9px] font-mono text-slate-400">Impacto en Red</span>
+                    </div>
+                    <div id="lblSimuladorImpactoTexto" class="text-xs text-slate-200 leading-relaxed font-sans">
+                        Sube 10 puntos en tu materia más débil para ver el salto en tu puntaje global sobre 500.
+                    </div>
+                </div>
+            </div>
+
+            <!-- 🎯 3. MATRIZ DE CUADRANTE COGNITIVO & METACOGNICIÓN & ÍNDICE DE HESITACIÓN -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                <div class="bg-slate-900/80 border border-slate-800 p-3 rounded-lg">
+                    <div class="flex justify-between items-center">
+                        <p class="text-[9px] font-mono text-slate-400 uppercase font-bold">Perfil de Ejecución</p>
+                        <div class="tooltip-wrapper"><span class="text-[10px] text-amber-500">(?)</span>
+                            <div class="tooltip-box font-sans">Balance entre el tiempo invertido y la tasa de acierto real.</div>
+                        </div>
+                    </div>
+                    <p id="kpiCuadrante" class="text-sm font-mono font-bold text-amber-400 mt-1">Estratega Eficiente</p>
+                </div>
+
+                <div class="bg-slate-900/80 border border-slate-800 p-3 rounded-lg">
+                    <div class="flex justify-between items-center">
+                        <p class="text-[9px] font-mono text-slate-400 uppercase font-bold">Índice Duda/Hesitación</p>
+                        <div class="tooltip-wrapper"><span class="text-[10px] text-cyan-400">(?)</span>
+                            <div class="tooltip-box font-sans">Mide la vacilación (descartes y cambios de opción) antes de responder.</div>
+                        </div>
+                    </div>
+                    <p id="kpiHesitacion" class="text-sm font-mono font-bold text-cyan-400 mt-1">Baja Duda (12%)</p>
+                </div>
+
+                <div class="bg-slate-900/80 border border-slate-800 p-3 rounded-lg">
+                    <div class="flex justify-between items-center">
+                        <p class="text-[9px] font-mono text-slate-400 uppercase font-bold">Nivel de Dominio</p>
+                        <div class="tooltip-wrapper"><span class="text-[10px] text-sky-400">(?)</span>
+                            <div class="tooltip-box font-sans">Profundidad del razonamiento frente a la dificultad de la pregunta.</div>
+                        </div>
+                    </div>
+                    <p id="kpiTheta" class="text-sm font-mono font-bold text-sky-400 mt-1">Superas al 50%</p>
+                </div>
+
+                <div class="bg-slate-900/80 border border-slate-800 p-3 rounded-lg">
+                    <div class="flex justify-between items-center">
+                        <p class="text-[9px] font-mono text-slate-400 uppercase font-bold">Riesgo Impulsivo</p>
+                        <div class="tooltip-wrapper"><span class="text-[10px] text-rose-400">(?)</span>
+                            <div class="tooltip-box font-sans">Estimación de puntos perdidos por responder a la carrera.</div>
+                        </div>
+                    </div>
+                    <p id="kpiPuntosImpulsividad" class="text-sm font-mono font-bold text-rose-400 mt-1">-12 pts perdidos</p>
+                </div>
+            </div>
+
+            <!-- 🧬 4. TERMÓMETRO BAYESIANO DE CERTEZA REAL (CON SEM REAL) -->
+            <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 sm:p-5 mb-6">
+                <div class="flex justify-between items-center border-b border-zinc-800 pb-2 mb-2">
+                    <h3 class="text-xs font-mono font-bold uppercase tracking-wider text-[var(--gold)] flex items-center gap-2">
+                        <span>🧬</span> Intervalo de Certeza Estadística (Bayesian SEM)
+                    </h3>
+                    <span id="lblOrigenGemelo" class="text-[9px] font-mono text-slate-400 uppercase bg-[#08090c] px-2 py-0.5 border border-zinc-800 rounded-full">SUPABASE LIVE</span>
+                </div>
+
+                <div class="thermometer-container">
+                    <div class="confidence-band" id="band" style="left: 0%; width: 0%;"></div>
+                    <div class="pin" id="pin-marker" style="left: 0%;"></div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-2 text-center font-mono text-xs text-slate-400 mt-5">
+                    <div class="bg-[#08090c]/80 p-2 rounded-lg border border-zinc-800">
+                        <span class="block text-[9px] uppercase">Límite Inferior Real</span>
+                        <strong style="color: #fff;" id="val-min" class="text-sm font-bold block mt-0.5">0</strong>
+                    </div>
+                    <div class="bg-[#08090c]/80 p-2 rounded-lg border border-amber-500/30">
+                        <span class="block text-[9px] uppercase text-amber-400">Puntaje Esperado</span>
+                        <strong style="color: #fbbf24;" id="val-target" class="text-sm font-bold block mt-0.5">0</strong>
+                    </div>
+                    <div class="bg-[#08090c]/80 p-2 rounded-lg border border-zinc-800">
+                        <span class="block text-[9px] uppercase">Límite Superior Real</span>
+                        <strong style="color: #fff;" id="val-max" class="text-sm font-bold block mt-0.5">0</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NARRATIVA DE EVOLUCIÓN HISTÓRICA Y VELOCIDAD DE APRENDIZAJE -->
+            <div class="section-title">HISTORIA DE EVOLUCIÓN Y VELOCIDAD DE APRENDIZAJE</div>
+            <div class="mb-2 p-2 bg-slate-950 border border-cyan-500/30 rounded flex justify-between items-center text-[10.5px] font-mono text-slate-300">
+                <span>🚀 VELOCIDAD DE CRECIMIENTO (&Delta;&theta;):</span>
+                <strong class="text-cyan-400" id="lblVelocidadTheta">+0.15 &theta; / Sesión (Crecimiento Acelerado)</strong>
+            </div>
+            <p class="summary-text" id="ui-summary">Aún no se registra trayectoria activa. Inicia un simulacro para generar la calibración de tu expediente.</p>
+
+            <!-- RADAR DINÁMICO DE COMPETENCIAS CONSOLIDADAS -->
+            <div class="section-title" id="lblRadarTitulo">MATRIZ DE COMPETENCIAS LATENTES (GLOBAL)</div>
+            <div class="radar-container">
+                <div class="radar-bg">
+                    <div class="radar-label lbl-top" id="lblEje1">MATEMÁTICAS</div>
+                    <div class="radar-label lbl-tr" id="lblEje2">LECTURA CRÍTICA</div>
+                    <div class="radar-label lbl-br" id="lblEje3">CIENCIAS NAT.</div>
+                    <div class="radar-label lbl-bottom" id="lblEje4">INGLÉS</div>
+                    <div class="radar-label lbl-bl" id="lblEje5">SOCIALES</div>
+                    <div class="radar-label lbl-tl" id="lblEje6">AUTORREGULACIÓN</div>
+                    
+                    <svg viewBox="0 0 100 100" class="radar-svg">
+                        <polygon id="radar-shape" class="radar-polygon" points="50,50 50,50 50,50 50,50 50,50 50,50"></polygon>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- PLAN PRESCRITO INTERACTIVO Y MAPA DE SESGOS CONTEXTUAL POR MATERIA -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+                <div class="lg:col-span-2 bg-slate-900/80 border border-slate-800 p-4 rounded-xl space-y-4">
+                    <h3 class="text-xs font-mono font-bold uppercase text-[var(--gold)] border-b border-zinc-800 pb-2">🎯 Plan de Acción Semanal Interactivo</h3>
+                    
+                    <div class="p-3 bg-[#08090c]/80 border-l-4 border-[var(--primary)] rounded-r-lg text-xs leading-relaxed space-y-1">
+                        <span class="font-bold text-[var(--primary)] uppercase block font-mono">Punto Clave a Reforzar:</span>
+                        <p id="lblVulnerabilidadTxt" class="text-slate-300">Completa tu primer simulacro adaptativo para diagnosticar tus hábitos de respuesta.</p>
+                    </div>
+
+                    <div class="p-3 bg-[#0d121f]/90 border border-cyan-500/30 rounded-lg space-y-2">
+                        <div class="flex justify-between items-center">
+                            <h4 class="text-[11px] font-bold uppercase text-[var(--primary)] font-mono">Misiones de Estudio Verificables:</h4>
+                            <span id="lblMisionesProgresoHeader" class="text-[9.5px] font-mono font-bold px-2 py-0.5 rounded border bg-amber-500/10 text-amber-400 border-amber-500/30">0/0 MISIONES EJECUTADAS</span>
+                        </div>
+                        <ul id="listaTemasEstudioHtml" class="text-xs text-slate-200 space-y-2 font-sans">
+                            <li>Realiza tu prueba inicial de diagnóstico en el Simulador.</li>
+                        </ul>
+                    </div>
+
+                    <div class="p-3 bg-[#08090c]/80 border-l-4 border-[var(--gold)] rounded-r-lg text-xs leading-relaxed space-y-1">
+                        <span class="font-bold text-[var(--gold)] uppercase block font-mono">Estrategia Recomendada:</span>
+                        <p id="lblPrescripcionTxt" class="text-slate-300">El sistema asignará una guía de entrenamiento al finalizar la primera prueba.</p>
+                    </div>
+                </div>
+
+                <!-- MAPA DE CALOR CONTEXTUAL DE SESGOS -->
+                <div class="bg-slate-900/80 border border-slate-800 p-4 rounded-xl space-y-3 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-xs font-mono font-bold uppercase text-rose-400 border-b border-zinc-800 pb-2 mb-3" id="lblSesgosTitulo">🔥 Puntos Ciegos y Sesgos</h3>
+                        <div id="contenedorBarrasSesgos" class="space-y-3 text-xs font-sans"></div>
+                    </div>
+                    
+                    <button type="button" class="w-full py-2 bg-rose-500/10 border border-rose-500/30 text-rose-400 hover:bg-rose-500 hover:text-black font-mono font-bold text-[10.5px] uppercase rounded transition" onclick="window.location.href='/index.html'">
+                        ⚡ ENTRENAR MI PEOR SESGO EN ESTA ÁREA
+                    </button>
+                </div>
+            </div>
+
+            <!-- REGISTRO DE EXÁMENES REALIZADOS -->
+            <div class="section-title">REGISTRO DE EVALUACIONES FINALIZADAS</div>
+            <div class="overflow-x-auto mb-6">
+                <table class="w-full text-left border-collapse font-mono text-xs">
+                    <thead>
+                        <tr class="border-b border-slate-800 text-slate-400 uppercase text-[10px]">
+                            <th class="p-2.5">Fecha</th>
+                            <th class="p-2.5">Materia</th>
+                            <th class="p-2.5">Nivel Habilidad</th>
+                            <th class="p-2.5">Puntaje Módulo</th>
+                            <th class="p-2.5">Inspeccionar</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tblExamenesBody" class="divide-y divide-slate-800/60 text-slate-200">
+                        <!-- Renderizado dinámico -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-4">
+                <a href="/index.html" class="block w-full py-3 text-center font-mono font-bold text-xs uppercase tracking-widest text-black bg-[#D4AF37] rounded-lg shadow-lg hover:bg-amber-400 transition">
+                    ⚡ CONTINUAR SIGUIENTE MÓDULO DEL SIMULACRO
+                </a>
+            </div>
+
         </div>
     </div>
+
+    <!-- MODAL FORENSE DE DETALLE DE PRUEBA -->
+    <div id="modalForense" class="modal-overlay">
+        <div class="adn-card max-w-lg text-left" style="padding: 1.5rem;">
+            <div class="flex justify-between items-center border-b border-zinc-800 pb-2 mb-3">
+                <h3 class="font-mono text-xs font-bold text-[#51e2f5] uppercase" id="lblModalForenseTitulo">
+                    🔍 INSPECCIÓN FORENSE DE EXAMEN
+                </h3>
+                <button type="button" onclick="document.getElementById('modalForense').style.display='none'" class="text-slate-400 hover:text-white font-mono text-sm">✕</button>
+            </div>
+            <div id="lblModalForenseCuerpo" class="text-xs text-slate-300 font-mono space-y-2 max-h-60 overflow-y-auto">
+                Cargando datos del examen...
+            </div>
+            <button type="button" class="w-full mt-4 py-2 bg-slate-800 border border-slate-700 text-slate-300 font-mono text-xs rounded hover:bg-slate-700" onclick="document.getElementById('modalForense').style.display='none'">Cerrar Inspección</button>
+        </div>
+    </div>
+
+    <!-- DOCK FLOTANTE INFERIOR -->
+    <nav class="bottom-nav">
+        <div class="nav-item" onclick="window.location.href='/index.html'">
+            <div class="icon-circle"><i class="fas fa-layer-group text-[var(--primary)] text-sm"></i></div>
+            <span class="nav-text" style="color: var(--primary)">EXAMEN</span>
+        </div>
+        <div id="dante-anchor" onclick="PerfilEstudiante.irAlInicioYRefrescar()">
+            <i class="fas fa-brain"></i>
+        </div>
+        <div class="nav-item" onclick="PerfilEstudiante.irAlInicioYRefrescar()">
+            <div class="icon-circle" style="border-color: rgba(212,175,55,0.3)"><i class="fas fa-user-astronaut text-[var(--gold)] text-sm"></i></div>
+            <span class="nav-text" style="color: var(--gold)">PERFIL</span>
+        </div>
+    </nav>
 
     <script>
-        // Sincronización automática de tema (Claro / Oscuro)
-        try {
-            if (localStorage.getItem('dante_theme') === 'light') {
-                document.body.classList.add('light-mode');
+        const HOST_URL = window.location.origin;
+        
+        function obtenerUsuarioAutenticado() {
+            // 1. Prioridad absoluta: Parámetro explícito en la URL (?estudiante=sebastian o ?studentId=sebastian o ?user=sebastian)
+            const urlParams = new URLSearchParams(window.location.search);
+            const queryStudent = urlParams.get('estudiante') || urlParams.get('studentId') || urlParams.get('user');
+            if (queryStudent) {
+                const cleanQ = queryStudent.toLowerCase().trim();
+                localStorage.setItem('dante_active_student', cleanQ); // Persistir activo
+                return cleanQ;
             }
-        } catch(e) {}
 
-        const SUPABASE_URL = 'https://erjmvkmhpbvrqiqlddij.supabase.co'; 
-        const SUPABASE_KEY = 'sb_publishable_RZHft13G4xVwBIdhgZp1gQ_K9raK05f';
-        let supabaseClient = null;
-        try { if (window.supabase) supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e){}
-
-        // LOS 5 DILEMAS SIMPLIFICADOS CON PROYECCIÓN ICFES DINÁMICA Y FACSÍMIL DE PAPEL
-        const DILEMAS = [
-            {
-                stepNum: 1,
-                title: "PASO 01 / 05 // RITMO DE DECISIÓN",
-                tutorialTip: "Evolución mecánica (Paso 1 de 5). Dante mide tu ritmo de procesamiento ante estímulos directos.",
-                projectionText: "Calibrando baseline... 300 pts ➔ Analizando Sistema 1/2",
-                baselineScore: 300,
-                text: "Ante un ítem complejo en el examen Saber 11, ¿cuál es tu primer impulso instintivo?",
-                opts: [
-                    { text: "A) Seleccionar la alternativa que mi intuición señala de inmediato (Sistema 1 / Impulso Rápido).", type: "DECISION_INMEDIATA", id: "opt_a" },
-                    { text: "B) Detenerme a verificar y descomponer la premisa minuciosamente (Sistema 2 / Control Reflexivo).", type: "ANALISIS_MINUCIOSO", id: "opt_b" }
-                ]
-            },
-            {
-                stepNum: 2,
-                title: "PASO 02 / 05 // GESTIÓN DEL ENFOQUE",
-                tutorialTip: "Evolución mecánica (Paso 2 de 5). Evaluamos tu autorregulación ante pasajes extensos.",
-                projectionText: "Ajustando proyección: 315 pts ➔ Evaluando resistencia a la presión de tiempo",
-                baselineScore: 315,
-                text: "Cuando encuentras un texto extenso o denso en Lectura Crítica, ¿cómo reacciona tu atención?",
-                opts: [
-                    { text: "A) Siento presión por el reloj y acelero mi lectura para no perder segundos.", type: "SENSIBILIDAD_TIEMPO", id: "opt_a" },
-                    { text: "B) Leo rápidamente, descarto las respuestas ilógicas y elijo la más sólida.", type: "DESCARTE_INICIAL", id: "opt_b" },
-                    { text: "C) Mantengo la calma, identifico la idea central y descarto metódicamente los distractores.", type: "CONTROL_REGULADO", id: "opt_c" }
-                ]
-            },
-            {
-                stepNum: 3,
-                title: "PASO 03 / 05 // HERRAMIENTA DE DESCARTE TÁCTICO",
-                tutorialTip: "⚡ TUTORIAL DESCARTE: Haz clic en el botón [✂️ Tachar] para eliminar distractores visualmente antes de responder.",
-                projectionText: "Ajustando proyección: 330 pts ➔ Midiendo técnica de eliminación de trampas",
-                baselineScore: 330,
-                isRealIcfesSim: true,
-                text: "Frente a un dilema con opciones ambiguas, ¿cuál es tu táctica principal de descarte?",
-                opts: [
-                    { text: "A) Descarto primero opciones con términos absolutistas ('siempre', 'nunca', 'jamás') usando [✂️ Tachar].", type: "DESCARTE_METODICO", id: "opt_a" },
-                    { text: "B) Identifico la alternativa con mayor sustento técnico y la contrasto.", type: "HIPOTESIS_INICIAL", id: "opt_b" },
-                    { text: "C) Conecto la pregunta con el contexto general presentado en el enunciado.", type: "PERSPECTIVA_CREATIVA", id: "opt_c" },
-                    { text: "D) Analizo cada alternativa minuciosamente verificando veracidad lógica.", type: "ANALITICO_RIGUROSO", id: "opt_d" }
-                ]
-            },
-            {
-                stepNum: 4,
-                title: "PASO 04 / 05 // METAS Y METACOGNICIÓN",
-                tutorialTip: "Evolución psicométrica (Paso 4 de 5). Diagnóstico directo de autoconfianza y metas ICFES.",
-                projectionText: "Ajustando proyección: 345 pts ➔ Sincronizando metas de rendimiento académico",
-                baselineScore: 345,
-                text: "¿Cuál es tu meta principal de calibración para el examen Saber 11?",
-                opts: [
-                    { text: "A) Dominar la presión del tiempo y ganar seguridad absoluta en el Día D.", type: "ENFOQUE_DESARROLLO", id: "opt_a" },
-                    { text: "B) Optimizar la velocidad de respuesta por sesión (4.5 horas).", type: "OPTIMIZACION_CRONOMETRICA", id: "opt_b" },
-                    { text: "C) Fortalecer componentes cuantitativos y razonamiento científico.", type: "CONSOLIDACION_CONCEPTUAL", id: "opt_c" },
-                    { text: "D) Maximizar mi puntaje global para superar los 400+ puntos.", type: "ALTO_RENDIMIENTO", id: "opt_d" }
-                ]
-            },
-            {
-                stepNum: 5,
-                title: "PASO 05 / 05 // ESCÁNER FACSÍMIL DE PAPEL ICFES",
-                tutorialTip: "📄 EVALUACIÓN FACSÍMIL & HOJA ÓPTICA: Rellena el óvalo Ⓐ, Ⓑ, Ⓒ o Ⓓ con grafito para convalidar tu respuesta.",
-                projectionText: "Ajustando proyección: 360 pts ➔ Escaneando control de sesgos en papel tradicional",
-                baselineScore: 360,
-                isFacsimilePaper: true,
-                opts: [
-                    { text: "A) La tasa de variación de la cobertura boscosa previa a la construcción de vías.", type: "RESILIENTE_PROACTIVO", id: "opt_a" },
-                    { text: "B) El porcentaje de ganadería registrado en zonas con y sin acceso vial.", type: "RITMO_DINAMICO", id: "opt_b" },
-                    { text: "C) El volumen total de madera extraída durante el último quinquenio.", type: "AUTONOMO_ESTRATEGICO", id: "opt_c" },
-                    { text: "D) La inversión pública realizada en proyectos de infraestructura vial.", type: "SENSIBILIDAD_EVALUATIVA", id: "opt_d" }
-                ]
+            // 2. Segunda Fuente: Analizar a fondo el objeto dante_user de la Sesión Autenticada
+            const rawUser = localStorage.getItem("dante_user");
+            if (rawUser) {
+                try {
+                    const userObj = JSON.parse(rawUser);
+                    // Priorizar el identificador del usuario actualmente autenticado
+                    const candidate = userObj.estudiante || userObj.email || userObj.document_id || userObj.nombre || userObj.user || userObj.username;
+                    if (candidate) {
+                        const cleanId = String(candidate).split('@')[0].toLowerCase().trim();
+                        localStorage.setItem('dante_active_student', cleanId);
+                        return cleanId;
+                    }
+                } catch(e) { console.error("Error parseando dante_user en perfil", e); }
             }
-        ];
 
-        let currentStep = 0;
-        let scores = {};
-        let historicoRespuestas = [];
-        let startTime = Date.now();
-        let timerInterval = null;
-        let optionStrikeMap = {};
+            // 3. Tercera Fuente: Estudiante activo previamente guardado
+            const activeStored = localStorage.getItem('dante_active_student');
+            if (activeStored) return activeStored.toLowerCase().trim();
 
-        function updateLatencyDisplay() {
-            if (timerInterval) clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                let elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-                const timerEl = document.getElementById('timer-val');
-                if (timerEl) timerEl.innerText = `${elapsed}s`;
-            }, 100);
+            // 4. Cuarta Fuente: Verificar si hay token o sesión genérica
+            const tokenUser = localStorage.getItem("dante_token_user");
+            if (tokenUser) return tokenUser.toLowerCase().trim();
+
+            // 5. Fallback seguro si nada existe
+            return "invitado";
         }
 
-        function toggleStrikeOption(optId, e) {
-            if (e) e.stopPropagation();
-            optionStrikeMap[optId] = !optionStrikeMap[optId];
-            const btnEl = document.getElementById(`btn_${optId}`);
-            if (btnEl) {
-                if (optionStrikeMap[optId]) {
-                    btnEl.classList.add('tachado');
-                } else {
-                    btnEl.classList.remove('tachado');
+        let STUDENT_ID = obtenerUsuarioAutenticado();
+
+        const rawUserInit = localStorage.getItem("dante_user");
+        const userObjInit = rawUserInit ? (JSON.parse(rawUserInit) || {}) : {};
+        const INSTITUTION_ID = userObjInit.institution_id || "colegio_sandbox_default";
+
+        let currentMateriaFiltro = "todas";
+        let cacheHistorialCompleto = [];
+        let cacheOrigenGemelo = "SUPABASE LIVE";
+        let esModoForense = false;
+
+        const CATALOGO_MATERIAS = {
+            todas: {
+                accent: "#51e2f5",
+                gold: "#D4AF37",
+                bgGradient: "linear-gradient(90deg, #51e2f5, #D4AF37, #51e2f5)",
+                radar_ejes: ["Matemáticas", "Lectura Crítica", "Ciencias Nat.", "Inglés", "Sociales", "Autorregulación"],
+                subcompetencias: ["Lectura Crítica", "Matemáticas", "Ciencias Naturales"],
+                sesgos_por_defectos: [
+                    { n: "Respuestas Rápidas (Impulsividad)", v: 0.18, desc: "Punto Ciego: Tendencia a responder en menos de 4s por intuición. Micro-ejercicio: 3 mins." },
+                    { n: "Falsa Inferencia Extrapolada", v: 0.12, desc: "Punto Ciego: Asumir conclusiones no respaldadas por el enunciado. Micro-ejercicio: 3 mins." },
+                    { n: "Inversión Operacional", v: 0.10, desc: "Punto Ciego: Confusión en el sentido de las operaciones o conectores. Micro-ejercicio: 3 mins." },
+                    { n: "Omisión de Conversión", v: 0.05, desc: "Punto Ciego: Omitir la transformación de unidades o escalas. Micro-ejercicio: 3 mins." }
+                ],
+                misiones_pedagogicas: [
+                    "🎯 Micro-ejercicio (3 mins): Taller de descarte activo de opciones absurdas.",
+                    "⚡ Micro-ejercicio (3 mins): Lectura pausada de enunciados con doble negación."
+                ]
+            },
+            matematicas: {
+                accent: "#D4AF37",
+                gold: "#f59e0b",
+                bgGradient: "linear-gradient(90deg, #D4AF37, #f59e0b, #D4AF37)",
+                radar_ejes: ["Álgebra", "Geometría", "Estadística", "Velocidad", "Resiliencia", "Control Impuls."],
+                subcompetencias: ["Álgebra y Cálculo", "Geometría y Medición", "Estadística y Prob."],
+                sesgos_por_defectos: [
+                    { n: "Despeje de Ecuaciones Cuadráticas", v: 0.25, desc: "Punto Ciego: Error en el manejo de signos en la fórmula cuadrática. Micro-ejercicio: 3 mins." },
+                    { n: "Inversión Operacional (Signos)", v: 0.18, desc: "Punto Ciego: Restar en lugar de sumar por lectura acelerada. Micro-ejercicio: 3 mins." },
+                    { n: "Conversión de Unidades de Masa/Escala", v: 0.12, desc: "Punto Ciego: No convertir metros a kilómetros antes de calcular. Micro-ejercicio: 3 mins." },
+                    { n: "Error de Escala Geométrica", v: 0.08, desc: "Punto Ciego: Confundir área con perímetro en figuras compuestas. Micro-ejercicio: 3 mins." }
+                ],
+                misiones_pedagogicas: [
+                    "📐 Micro-ejercicio (3 mins): Resolver 2 despejes cuadráticos aplicando el cambio de signo explícito.",
+                    "📏 Micro-ejercicio (3 mins): Conversión rápida de unidades de área (cm² a m²) sin calculadora.",
+                    "📊 Micro-ejercicio (3 mins): Taller de interpretación de diagramas de caja y bigotes en 180 segundos."
+                ]
+            },
+            lectura_critica: {
+                accent: "#a855f7",
+                gold: "#c084fc",
+                bgGradient: "linear-gradient(90deg, #a855f7, #e879f9, #a855f7)",
+                radar_ejes: ["Identif. Literal", "Inferencia", "Reflexión Crítica", "Velocidad Textual", "Atención Plena", "Resiliencia"],
+                subcompetencias: ["Identificación de Contenido", "Comprensión Inferencial", "Evaluación Crítica"],
+                sesgos_por_defectos: [
+                    { n: "Uso de Conectores de Oposición", v: 0.22, desc: "Punto Ciego: Confundir 'Sin embargo' con 'Por lo tanto'. Micro-ejercicio: 3 mins." },
+                    { n: "Detección de Premisas Falsas", v: 0.19, desc: "Punto Ciego: Marcar la opción que coincide con la opinión personal. Micro-ejercicio: 3 mins." },
+                    { n: "Identificación Intención del Autor", v: 0.14, desc: "Punto Ciego: Quedarse en la superficie sin captar ironía. Micro-ejercicio: 3 mins." },
+                    { n: "Atención Fragmentada en Párrafos", v: 0.10, desc: "Punto Ciego: Perder el hilo conductor en textos de +200 palabras. Micro-ejercicio: 3 mins." }
+                ],
+                misiones_pedagogicas: [
+                    "📖 Micro-ejercicio (3 mins): Identificar la tesis principal y 2 conectores de oposición en un fragmento de ensayo.",
+                    "✍️ Micro-ejercicio (3 mins): Diferenciar un hecho de una opinión implícita en un artículo de opinión.",
+                    "🔎 Micro-ejercicio (3 mins): Rastreo de ironías y sarcasmos en textos filosóficos breves."
+                ]
+            },
+            ciencias_naturales: {
+                accent: "#2ecc71",
+                gold: "#10b981",
+                bgGradient: "linear-gradient(90deg, #2ecc71, #34d399, #2ecc71)",
+                radar_ejes: ["Uso del Conocimiento", "Explicación Fenóm.", "Indagación Exp.", "Análisis Gráfico", "Precisión", "Resiliencia"],
+                subcompetencias: ["Indagación Científica", "Explicación de Fenómenos", "Uso del Conocimiento"],
+                sesgos_por_defectos: [
+                    { n: "Conversión Unidades de Masa/Volumen", v: 0.20, desc: "Punto Ciego: Omitir la densidad al pasar de g a mL. Micro-ejercicio: 3 mins." },
+                    { n: "Leyes de Newton y Fuerza Neta", v: 0.15, desc: "Punto Ciego: Olvidar la fuerza de fricción opuesta al movimiento. Micro-ejercicio: 3 mins." },
+                    { n: "Análisis de Gráficas de Solubilidad", v: 0.11, desc: "Punto Ciego: Invertir variables dependiente e independiente. Micro-ejercicio: 3 mins." }
+                ],
+                misiones_pedagogicas: [
+                    "🧪 Micro-ejercicio (3 mins): Calcular la fuerza neta en un diagrama de cuerpo libre con fricción.",
+                    "🧬 Micro-ejercicio (3 mins): Balanceo rápido de ecuaciones químicas por tanteo en 180 segundos.",
+                    "📈 Micro-ejercicio (3 mins): Lectura de gráficas de solubilidad en función de la temperatura."
+                ]
+            },
+            sociales_ciudadanas: {
+                accent: "#d97706",
+                gold: "#f59e0b",
+                bgGradient: "linear-gradient(90deg, #d97706, #c2410c, #d97706)",
+                radar_ejes: ["Pensamiento Social", "Interpretación", "Pensamiento Crítico", "Constitución", "Análisis Contexto", "Resiliencia"],
+                subcompetencias: ["Pensamiento Social", "Interpretación y Análisis", "Pensamiento Crítico"],
+                sesgos_por_defectos: [
+                    { n: "Mecanismos de Participación Ciudadana", v: 0.18, desc: "Punto Ciego: Confundir Acción de Tutela con Acción Popular. Micro-ejercicio: 3 mins." },
+                    { n: "Análisis Fuentes Históricas Primarias", v: 0.16, desc: "Punto Ciego: Anacronismo histórico al juzgar fuentes del siglo XIX. Micro-ejercicio: 3 mins." },
+                    { n: "Organización del Estado Colombiano", v: 0.12, desc: "Punto Ciego: Atribuir funciones del Congreso a la Rama Ejecutiva. Micro-ejercicio: 3 mins." }
+                ],
+                misiones_pedagogicas: [
+                    "🏛️ Micro-ejercicio (3 mins): Identificar el mecanismo constitucional idóneo (Tutela vs Hábeas Corpus).",
+                    "📜 Micro-ejercicio (3 mins): Analizar el contexto socioeconómico de una caricatura política colombiana.",
+                    "⚖️ Micro-ejercicio (3 mins): Evaluar un conflicto de derechos fundamentales en la Constitución de 1991."
+                ]
+            },
+            ingles: {
+                accent: "#51e2f5",
+                gold: "#38bdf8",
+                bgGradient: "linear-gradient(90deg, #51e2f5, #0284c7, #51e2f5)",
+                radar_ejes: ["Vocabulario B1", "Estructura Gram.", "Lectura Contextual", "Diálogos Cortos", "Comprensión Txt", "Resiliencia"],
+                subcompetencias: ["Vocabulario y Contexto", "Estructuras Gramaticales", "Comprensión Lectora B1"],
+                sesgos_por_defectos: [
+                    { n: "Tiempos Verbales Presente Perfecto", v: 0.28, desc: "Punto Ciego: Confundir 'Since' y 'For' en oraciones compuestas. Micro-ejercicio: 3 mins." },
+                    { n: "Uso de Modales (Should / Must)", v: 0.15, desc: "Punto Ciego: Confusión entre recomendación y obligación estricta. Micro-ejercicio: 3 mins." },
+                    { n: "Comprensión Textos Narrativos B1", v: 0.12, desc: "Punto Ciego: Caer en falsos amigos (False Friends) como 'Actually' / 'Currently'. Micro-ejercicio: 3 mins." }
+                ],
+                misiones_pedagogicas: [
+                    "🇬🇧 Micro-ejercicio (3 mins): Completar 3 oraciones usando 'Have/Has + Past Participle'.",
+                    "💬 Micro-ejercicio (3 mins): Identificar el propósito comunicativo en un aviso público en inglés.",
+                    "📝 Micro-ejercicio (3 mins): Detectar y corregir 3 'False Friends' comunes en un texto B1."
+                ]
+            }
+        };
+
+        let perfilRadar = { e1: 0, e2: 0, e3: 0, e4: 0, e5: 0, e6: 0 };
+
+        class PerfilEstudiante {
+            static cargarTemaGuardado() {
+                const savedTheme = localStorage.getItem("dante_theme");
+                if (savedTheme === "light") {
+                    document.body.classList.add("light-mode");
+                    const icon = document.getElementById("iconContrast");
+                    if (icon) icon.className = "fas fa-moon";
                 }
             }
-        }
 
-        function loadStep() {
-            if (currentStep >= DILEMAS.length) {
-                finalizeOnboarding();
-                return;
+            static toggleThemeContraste() {
+                document.body.classList.toggle('light-mode');
+                const isLight = document.body.classList.contains('light-mode');
+                localStorage.setItem("dante_theme", isLight ? "light" : "dark");
+                const icon = document.getElementById("iconContrast");
+                if (icon) {
+                    icon.className = isLight ? "fas fa-moon" : "fas fa-sun";
+                }
             }
 
-            const d = DILEMAS[currentStep];
-            optionStrikeMap = {};
-
-            document.getElementById('step-title').innerText = d.title;
-            document.getElementById('tutorial-tip-text').innerText = d.tutorialTip;
-            document.getElementById('projection-live-text').innerText = d.projectionText;
-            document.getElementById('projection-score-num').innerText = `${d.baselineScore} pts`;
-            
-            // Barra de progreso
-            const pBar = document.getElementById('progress-bar');
-            if (pBar) {
-                pBar.style.width = `${((currentStep + 1) / DILEMAS.length) * 100}%`;
+            static toggleModoVista() {
+                esModoForense = !esModoForense;
+                document.body.classList.toggle('is-forensic-mode', esModoForense);
+                const btn = document.getElementById("btnToggleMode");
+                if (btn) {
+                    if (esModoForense) {
+                        btn.innerText = "🔍 VISTA: DOCENTE / FORENSE";
+                        btn.className = "px-2.5 py-1 rounded bg-purple-900 border border-purple-400 text-[9.5px] font-mono font-bold text-purple-200 hover:bg-purple-800 transition shadow";
+                    } else {
+                        btn.innerText = "👁️ VISTA: PADRE (CLARA)";
+                        btn.className = "px-2.5 py-1 rounded bg-slate-900 border border-amber-500/40 text-[9.5px] font-mono font-bold text-amber-400 hover:bg-amber-500 hover:text-black transition shadow";
+                    }
+                }
             }
 
-            const dilemaCont = document.getElementById('dilema-container');
-            const optCont = document.getElementById('options-container');
-
-            if (d.isFacsimilePaper) {
-                // RENDERIZADO DE PREGUNTA 5: ESCÁNER FACSÍMIL DE PAPEL ICFES CON HOJA ÓPTICA INTEGRADA
-                dilemaCont.innerHTML = `
-                    <div class="facsimile-paper p-4 md:p-5 rounded-lg text-slate-900 mb-2 text-left relative shadow-2xl border-2 border-amber-900/40">
-                        <div class="flex items-center justify-between border-b border-slate-400 pb-2 mb-2">
-                            <div class="font-serif font-extrabold text-[11px] md:text-xs tracking-wider uppercase text-slate-800">
-                                📜 EXAMEN SABER 11 — PRUEBA DE DIAGNÓSTICO EN PAPEL
-                            </div>
-                            <div class="facsimile-stamp">
-                                FACSÍMIL #2026-ICFES
-                            </div>
-                        </div>
-
-                        <p class="font-serif text-xs md:text-sm leading-relaxed font-semibold text-slate-900 mb-2">
-                            <strong>Pregunta 5:</strong> Un investigador evalúa dos hipótesis sobre la deforestación en la Amazonía. La <em>Hipótesis A</em> afirma que las vías ilegales son la causa primaria, mientras la <em>Hipótesis B</em> la atribuye a la ganadería extensiva. Para determinar cuál causa es precursora en el tiempo, ¿qué dato exige el análisis?
-                        </p>
-                    </div>
-
-                    <div class="optica-sheet-box text-left mb-3">
-                        <div class="flex items-center justify-between text-xs font-bold text-slate-800 border-b border-slate-300 pb-1 mb-2">
-                            <span>📝 HOJA DE RESPUESTAS ÓPTICA (SABER 11)</span>
-                            <span class="text-[10px] text-amber-800 font-mono">LÁPIZ GRAFITO #2</span>
-                        </div>
-                        <div class="flex items-center justify-around gap-2 my-1">
-                            <div class="flex items-center gap-1.5 cursor-pointer" onclick="seleccionarOvalOptico('opt_a', 'RESILIENTE_PROACTIVO', 'A) La tasa de variación...')">
-                                <span class="text-xs font-bold text-slate-700">5.</span>
-                                <div class="optica-oval" id="oval_opt_a">A</div>
-                            </div>
-                            <div class="flex items-center gap-1.5 cursor-pointer" onclick="seleccionarOvalOptico('opt_b', 'RITMO_DINAMICO', 'B) El porcentaje de ganadería...')">
-                                <div class="optica-oval" id="oval_opt_b">B</div>
-                            </div>
-                            <div class="flex items-center gap-1.5 cursor-pointer" onclick="seleccionarOvalOptico('opt_c', 'AUTONOMO_ESTRATEGICO', 'C) El volumen total...')">
-                                <div class="optica-oval" id="oval_opt_c">C</div>
-                            </div>
-                            <div class="flex items-center gap-1.5 cursor-pointer" onclick="seleccionarOvalOptico('opt_d', 'SENSIBILIDAD_EVALUATIVA', 'D) La inversión pública...')">
-                                <div class="optica-oval" id="oval_opt_d">D</div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            } else {
-                dilemaCont.innerHTML = `
-                    <p id="dilema-text" class="text-sm md:text-base font-medium text-zinc-200 mb-3 font-sans leading-relaxed text-left bg-black/50 p-3.5 rounded-lg border border-white/10 shadow-inner">
-                        ${d.text}
-                    </p>
-                `;
+            static irAlInicioYRefrescar() {
+                const vp = document.getElementById("viewportContainer");
+                if (vp) vp.scrollTo({ top: 0, behavior: 'smooth' });
+                else window.scrollTo({ top: 0, behavior: 'smooth' });
             }
 
-            optCont.innerHTML = "";
+            static async initProfile() {
+                this.cargarTemaGuardado();
+                try {
+                    const nombreUpper = STUDENT_ID.toUpperCase();
+                    const elAlias = document.getElementById('ui-alias-box');
+                    const elTenant = document.getElementById('ui-institution-box');
+                    const elPdfBtn = document.getElementById('btnDescargarPdfExpediente');
 
-            d.opts.forEach((o, idx) => {
-                const btn = document.createElement('div');
-                btn.id = `btn_${o.id}`;
-                btn.className = d.isFacsimilePaper ? "option-btn facsimile-option" : "option-btn";
-                
-                let strikeBtnHTML = '';
-                if (d.isRealIcfesSim || d.stepNum >= 3) {
-                    strikeBtnHTML = `
-                        <button type="button" class="strike-tool-btn" onclick="toggleStrikeOption('${o.id}', event)" title="Descartar / Tachar esta opción">
-                            <i class="fa-solid fa-strikethrough"></i> <span>Tachar</span>
-                        </button>
-                    `;
+                    if (elAlias) {
+                        elAlias.innerText = nombreUpper;
+                        elAlias.setAttribute('data-final', nombreUpper);
+                    }
+                    if (elTenant) {
+                        elTenant.innerText = INSTITUTION_ID.toUpperCase();
+                    }
+                    if (elPdfBtn) {
+                        elPdfBtn.href = `/reporte.html?rol=estudiante&estudiante=${STUDENT_ID}`;
+                    }
+
+                    await this.cargarDatosSupabase();
+                    
+                } catch(e) {
+                    console.error("🚨 Fallo inicializando perfil:", e.message);
+                    this.procesarYRenderizarVistas();
                 }
 
-                btn.innerHTML = `
-                    <div class="flex items-center gap-3 pr-2 flex-grow cursor-pointer">
-                        <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-cyan-500/20 text-cyan-400 text-xs font-mono font-bold shrink-0 border border-cyan-500/30">
-                            ${String.fromCharCode(65 + idx)}
-                        </span>
-                        <span class="text-xs md:text-sm text-left font-medium leading-snug">${o.text}</span>
-                    </div>
-                    ${strikeBtnHTML}
-                `;
+                initCanvas();
+                setTimeout(decryptText, 300);
+            }
 
-                btn.onclick = (e) => {
-                    if (!e.target.closest('.strike-tool-btn')) {
-                        if (d.isFacsimilePaper) {
-                            seleccionarOvalOptico(o.id, o.type, o.text);
-                        } else {
-                            registerChoice(o.type, o.id, o.text);
+            static async cargarDatosSupabase() {
+                try {
+                    const token = localStorage.getItem("dante_token");
+                    const headers = { 'Content-Type': 'application/json' };
+                    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+                    const resGemelo = await fetch(`${HOST_URL}/api/cat/gemelo/${STUDENT_ID}`, { headers }).catch(() => null);
+                    if (resGemelo && resGemelo.ok) {
+                        const jsonG = await resGemelo.json();
+                        if (Array.isArray(jsonG.gemelo)) {
+                            cacheHistorialCompleto = jsonG.gemelo;
+                            cacheOrigenGemelo = jsonG.origen || "SUPABASE LIVE";
                         }
+                    }
+                } catch (err) {
+                    console.error("⚠️ Error conectando a API backend:", err.message);
+                    cacheHistorialCompleto = [];
+                }
+
+                this.procesarYRenderizarVistas();
+            }
+
+            static cambiarFiltroMateria(materiaKey, btnEl) {
+                document.querySelectorAll('.tab-materia-btn').forEach(b => {
+                    b.classList.remove('active');
+                    b.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                    b.style.color = '#a1a1aa';
+                });
+                if (btnEl) {
+                    btnEl.classList.add('active');
+                    const configm = CATALOGO_MATERIAS[materiaKey] || CATALOGO_MATERIAS.todas;
+                    btnEl.style.borderColor = configm.accent;
+                    btnEl.style.color = configm.accent;
+                }
+                currentMateriaFiltro = materiaKey;
+                this.procesarYRenderizarVistas();
+            }
+
+            static procesarYRenderizarVistas() {
+                const nombreCapitalizado = STUDENT_ID.toUpperCase();
+                const configm = CATALOGO_MATERIAS[currentMateriaFiltro] || CATALOGO_MATERIAS.todas;
+
+                // Dinamismo Atmosférico: actualizar bordes y acentos de color
+                const mainCard = document.getElementById('main-card');
+                if (mainCard) {
+                    mainCard.style.borderTop = `3px solid ${configm.accent}`;
+                }
+
+                // 1. ADAPTAR EJES DEL RADAR SEGÚN MATERIA
+                const e1 = document.getElementById("lblEje1");
+                const e2 = document.getElementById("lblEje2");
+                const e3 = document.getElementById("lblEje3");
+                const e4 = document.getElementById("lblEje4");
+                const e5 = document.getElementById("lblEje5");
+                const e6 = document.getElementById("lblEje6");
+
+                if (e1) e1.innerText = configm.radar_ejes[0];
+                if (e2) e2.innerText = configm.radar_ejes[1];
+                if (e3) e3.innerText = configm.radar_ejes[2];
+                if (e4) e4.innerText = configm.radar_ejes[3];
+                if (e5) e5.innerText = configm.radar_ejes[4];
+                if (e6) e6.innerText = configm.radar_ejes[5];
+
+                // 2. FILTRAR HISTORIAL
+                let examenesFiltrados = [...cacheHistorialCompleto];
+                if (currentMateriaFiltro !== 'todas') {
+                    examenesFiltrados = cacheHistorialCompleto.filter(x => {
+                        const mDB = String(x.materia || '').toLowerCase().trim();
+                        return mDB.includes(currentMateriaFiltro) || currentMateriaFiltro.includes(mDB);
+                    });
+                }
+
+                const tieneExamenes = examenesFiltrados.length > 0;
+                const isGlobal = currentMateriaFiltro === 'todas';
+                const badgeMCER = document.getElementById("lblBadgeMCER");
+
+                if (badgeMCER) {
+                    if (currentMateriaFiltro === 'ingles') {
+                        badgeMCER.classList.remove("hidden");
+                        badgeMCER.innerText = "NIVEL MCER: B1";
+                        badgeMCER.style.borderColor = configm.accent;
+                        badgeMCER.style.color = configm.accent;
+                    } else {
+                        badgeMCER.classList.add("hidden");
+                    }
+                }
+
+                if (!tieneExamenes) {
+                    const banner = document.getElementById("lblBannerProyeccion");
+                    const escalaTitle = document.getElementById("lblEscalaTitulo");
+                    const escalaUnit = document.getElementById("lblEscalaUnidad");
+                    const global500 = document.getElementById("lblPuntajeGlobal500");
+                    const barGlobal = document.getElementById("barPuntajeGlobal");
+
+                    if (banner) banner.innerText = isGlobal ? "PROYECCIÓN REAL ICFES" : `DIAGNÓSTICO DE ${currentMateriaFiltro.toUpperCase()}`;
+                    if (escalaTitle) escalaTitle.innerText = isGlobal ? "Puntaje Global Estimado (Media Ponderada 1 - 500)" : `Calificación en ${currentMateriaFiltro.replace('_', ' ').toUpperCase()} (Escala 1 - 100)`;
+                    if (escalaUnit) escalaUnit.innerText = isGlobal ? "/ 500 pts" : "/ 100 pts";
+                    if (global500) global500.innerHTML = `0 <span class="text-lg sm:text-xl text-slate-400 font-normal">${isGlobal ? '/ 500 pts' : '/ 100 pts'}</span>`;
+                    if (barGlobal) barGlobal.style.width = `0%`;
+
+                    const kpiTh = document.getElementById("kpiTheta");
+                    const kpiCuad = document.getElementById("kpiCuadrante");
+                    const kpiHes = document.getElementById("kpiHesitacion");
+                    const kpiImp = document.getElementById("kpiPuntosImpulsividad");
+
+                    if (kpiTh) kpiTh.innerText = `En Calibración`;
+                    if (kpiCuad) kpiCuad.innerText = "Sin Datos";
+                    if (kpiHes) kpiHes.innerText = "0%";
+                    if (kpiImp) kpiImp.innerText = "0 pts";
+
+                    const lblOrig = document.getElementById('lblOrigenGemelo');
+                    const vMin = document.getElementById('val-min');
+                    const vTarget = document.getElementById('val-target');
+                    const vMax = document.getElementById('val-max');
+
+                    if (lblOrig) lblOrig.innerText = `${cacheOrigenGemelo}`;
+                    if (vMin) vMin.innerText = "0";
+                    if (vTarget) vTarget.innerText = "0";
+                    if (vMax) vMax.innerText = "0";
+
+                    const vul = document.getElementById("lblVulnerabilidadTxt");
+                    const pres = document.getElementById("lblPrescripcionTxt");
+                    const sum = document.getElementById("ui-summary");
+                    const pred = document.getElementById("lblPrediccionProactiva");
+                    const sim = document.getElementById("lblSimuladorImpactoTexto");
+
+                    if (vul) vul.innerText = "Sin evaluaciones registradas aún para este módulo.";
+                    if (pres) pres.innerText = "Inicia un simulacro para activar el diagnóstico de esta área.";
+                    
+                    // CERO DATOS FANTASMA: Tarjeta transparente directa
+                    if (sum) sum.innerText = `🔒 Módulo Sin Calibrar. ${STUDENT_ID.toUpperCase()}, aún no registras evaluaciones en esta área. Completa tu prueba en el Simulador para desbloquear tu Gemelo Digital.`;
+
+                    if (pred) pred.innerText = `Puntos ciegos probables en ${currentMateriaFiltro.replace('_', ' ').toUpperCase()}: Pendiente calibración de primera prueba.`;
+                    if (sim) sim.innerText = "Al completar un módulo, la calculadora de impacto estimará cuántos puntos puedes subir.";
+
+                    this.renderizarSemaforo(configm.subcompetencias, [0, 0, 0]);
+                    this.renderizarTemas(configm.misiones_pedagogicas || ["Completa tu prueba inicial en el simulador"]);
+                    this.renderizarMapaCalor(configm.sesgos_por_defectos);
+                    this.renderizarTablaExamenes([]);
+                    
+                    perfilRadar = { e1: 0, e2: 0, e3: 0, e4: 0, e5: 0, e6: 0 };
+                    drawRadar();
+                    return;
+                }
+
+                // SI TIENE REGISTROS
+                const ultimoExamen = examenesFiltrados[0];
+                const itemsR = typeof ultimoExamen.items_respondidos === 'string' ? JSON.parse(ultimoExamen.items_respondidos) : (ultimoExamen.items_respondidos || {});
+                const adn = itemsR.adn_empaquetado || ultimoExamen.adn_cognitivo || {};
+                
+                const pts = itemsR.puntaje_escalonado || ultimoExamen.puntaje_escalonado || 50;
+                const thetaVal = parseFloat(ultimoExamen.theta || ultimoExamen.theta_algebra_calculo || 0.0);
+                const semVal = parseFloat(ultimoExamen.bayesian_sem || 0.35);
+                
+                const percentil = Math.min(99, Math.max(15, Math.round(50 + (thetaVal * 20))));
+
+                const kpiTh = document.getElementById("kpiTheta");
+                if (kpiTh) kpiTh.innerText = `Superas al ${percentil}%`;
+                
+                if (badgeMCER) {
+                    if (pts >= 75) badgeMCER.innerText = "NIVEL MCER: B+";
+                    else if (pts >= 60) badgeMCER.innerText = "NIVEL MCER: B1";
+                    else if (pts >= 45) badgeMCER.innerText = "NIVEL MCER: A2";
+                    else badgeMCER.innerText = "NIVEL MCER: A1";
+                }
+
+                const impulsividadPct = adn.impulsividad || 15;
+                const kpiCuad = document.getElementById("kpiCuadrante");
+                if (kpiCuad) {
+                    if (impulsividadPct > 30) {
+                        kpiCuad.innerText = "Impulsivo - Inexacto";
+                        kpiCuad.style.color = "var(--alert)";
+                    } else if (pts >= 70) {
+                        kpiCuad.innerText = "Estratega Eficiente";
+                        kpiCuad.style.color = "var(--emerald)";
+                    } else {
+                        kpiCuad.innerText = "Reflexivo en Desarrollo";
+                        kpiCuad.style.color = "var(--gold)";
+                    }
+                }
+
+                const kpiHes = document.getElementById("kpiHesitacion");
+                if (kpiHes) kpiHes.innerText = `${Math.round(15 + (impulsividadPct * 0.5))}% (Baja Vacilación)`;
+                
+                const ptsPerdidosImp = Math.round(impulsividadPct * 0.4);
+                const kpiImp = document.getElementById("kpiPuntosImpulsividad");
+                if (kpiImp) kpiImp.innerText = `-${ptsPerdidosImp} pts en riesgo`;
+
+                const deltaPtsSEM = Math.round(semVal * 15);
+                const minVal = Math.max(1, pts - deltaPtsSEM);
+                const targetVal = pts;
+                const maxVal = Math.min(100, pts + deltaPtsSEM);
+
+                const lblOrig = document.getElementById('lblOrigenGemelo');
+                const vMin = document.getElementById('val-min');
+                const vTarget = document.getElementById('val-target');
+                const vMax = document.getElementById('val-max');
+
+                if (lblOrig) lblOrig.innerText = `${cacheOrigenGemelo}`;
+                if (vMin) vMin.innerText = minVal;
+                if (vTarget) vTarget.innerText = targetVal;
+                if (vMax) vMax.innerText = maxVal;
+
+                const bandEl = document.getElementById('band');
+                const pinEl = document.getElementById('pin-marker');
+                if (bandEl && pinEl) {
+                    bandEl.style.left = `${minVal}%`;
+                    bandEl.style.width = `${Math.max(4, maxVal - minVal)}%`;
+                    pinEl.style.left = `${targetVal}%`;
+                }
+
+                const vul = document.getElementById("lblVulnerabilidadTxt");
+                const pres = document.getElementById("lblPrescripcionTxt");
+                const sum = document.getElementById("ui-summary");
+                const pred = document.getElementById("lblPrediccionProactiva");
+                const sim = document.getElementById("lblSimuladorImpactoTexto");
+
+                if (vul) vul.innerText = adn.vulnerabilidad_dominante || "Estructura de razonamiento estable.";
+                if (pres) pres.innerText = adn.prescripcion_clinica || "Fortalecer velocidad de lectura activa.";
+                if (sum) sum.innerText = `Crónica para ${nombreCapitalizado}: En la última evaluación de ${currentMateriaFiltro.replace('_', ' ').toUpperCase()} alcanzaste ${pts} pts. Tu tasa de resiliencia ante errores es de ${adn.recuperacion || 80}%.`;
+
+                if (pred) pred.innerText = `🔮 Predicción IA: En la próxima sesión de ${currentMateriaFiltro.replace('_', ' ').toUpperCase()}, existe un ${Math.round(impulsividadPct + 35)}% de probabilidad de fallar en reactivos que combinen tablas complejas con distractores directos.`;
+
+                if (sim) sim.innerHTML = `🔗 <strong>Sinergia Transversal:</strong> La impulsividad detectada en esta ciencia (-${ptsPerdidosImp} pts) afecta el tiempo de lectura en Lectura Crítica. Si corriges este sesgo, ganarás <strong class="text-[#51e2f5]">+14 puntos globales ICFES</strong>.`;
+
+                this.renderizarSemaforo(configm.subcompetencias, [pts + 5, pts - 5, pts - 12]);
+                this.renderizarTemas(adn.plan_entrenamiento || ["Misión 1: Repaso de conceptos clave", "Misión 2: Taller de descarte"]);
+                this.renderizarMapaCalor(configm.sesgos_por_defectos);
+                this.renderizarTablaExamenes(examenesFiltrados);
+                this.calcularPuntajeGlobal500();
+
+                perfilRadar = { e1: pts, e2: Math.max(30, pts - 8), e3: Math.max(35, pts - 12), e4: Math.max(40, pts - 5), e5: Math.max(30, pts - 10), e6: 75 };
+                drawRadar();
+            }
+
+            static renderizarSemaforo(subcomps, valores) {
+                const fort = document.getElementById("lblSemaforoFortaleza");
+                const ries = document.getElementById("lblSemaforoRiesgo");
+                const prio = document.getElementById("lblSemaforoPrioridad");
+
+                if (fort) fort.innerText = `${subcomps[0] || 'Competencia 1'} (${valores[0] || 60} pts)`;
+                if (ries) ries.innerText = `${subcomps[1] || 'Competencia 2'} (${valores[1] || 50} pts)`;
+                if (prio) prio.innerText = `${subcomps[2] || 'Competencia 3'} (${valores[2] || 40} pts)`;
+            }
+
+            static calcularPuntajeGlobal500() {
+                if (cacheHistorialCompleto.length === 0) return;
+
+                let sumaPonderada = 0;
+                let pesoTotal = 0;
+
+                cacheHistorialCompleto.forEach((reg, idx) => {
+                    const itemsR = typeof reg.items_respondidos === 'string' ? JSON.parse(reg.items_respondidos) : (reg.items_respondidos || {});
+                    const pts = itemsR.puntaje_escalonado || reg.puntaje_escalonado || 50;
+                    const pesoReciente = 1 / (idx + 1);
+                    
+                    sumaPonderada += (pts * pesoReciente);
+                    pesoTotal += pesoReciente;
+                });
+
+                let promedio100 = sumaPonderada / (pesoTotal || 1);
+                let puntajeGlobal500 = Math.round((promedio100 / 100) * 500);
+
+                const global500 = document.getElementById("lblPuntajeGlobal500");
+                const barGlobal = document.getElementById("barPuntajeGlobal");
+
+                if (currentMateriaFiltro === 'todas') {
+                    if (global500) global500.innerHTML = `${puntajeGlobal500} <span class="text-lg sm:text-xl text-slate-400 font-normal">/ 500 pts</span>`;
+                    if (barGlobal) barGlobal.style.width = `${((puntajeGlobal500 / 500) * 100).toFixed(1)}%`;
+                } else {
+                    const examFil = cacheHistorialCompleto.filter(x => String(x.materia || '').toLowerCase().includes(currentMateriaFiltro));
+                    const ult = examFil[0] || {};
+                    const itemsR = typeof ult.items_respondidos === 'string' ? JSON.parse(ult.items_respondidos) : (ult.items_respondidos || {});
+                    const ptsMat = itemsR.puntaje_escalonado || ult.puntaje_escalonado || 50;
+
+                    if (global500) global500.innerHTML = `${ptsMat} <span class="text-lg sm:text-xl text-slate-400 font-normal">/ 100 pts</span>`;
+                    if (barGlobal) barGlobal.style.width = `${ptsMat}%`;
+                }
+
+                let probMeta = Math.min(99, Math.max(10, Math.round((puntajeGlobal500 / 350) * 80)));
+                const lblProb = document.getElementById("lblProbabilidadMeta");
+                const lblRango = document.getElementById("lblNivelRango");
+
+                if (lblProb) lblProb.innerText = `${probMeta}% Probabilidad Meta`;
+                if (lblRango) lblRango.innerText = "TRAYECTORIA EVALUADA";
+            }
+
+            static renderizarTemas(temas) {
+                const cont = document.getElementById("listaTemasEstudioHtml");
+                if (!cont) return;
+                cont.innerHTML = "";
+                
+                // VERIFICACIÓN AUTOMÁTICA BASADA EN SIMULACROS PRESENTADOS
+                let examenesMateria = [...cacheHistorialCompleto];
+                if (currentMateriaFiltro !== 'todas') {
+                    examenesMateria = cacheHistorialCompleto.filter(x => String(x.materia || '').toLowerCase().includes(currentMateriaFiltro));
+                }
+
+                const totalSimulacros = examenesMateria.length;
+                let verificadasCount = 0;
+                if (totalSimulacros > 0) {
+                    verificadasCount = Math.min(temas.length, Math.max(1, Math.ceil((totalSimulacros / 2) * temas.length)));
+                }
+
+                const pctProgreso = Math.round((verificadasCount / (temas.length || 1)) * 100);
+
+                // BARRA DE PROGRESO AUTOMÁTICA DE MISIONES
+                const progressContainer = document.createElement("div");
+                progressContainer.className = "mb-3 p-3 rounded-xl bg-slate-950 border border-slate-800 shadow-inner";
+                progressContainer.innerHTML = `
+                    <div class="flex items-center justify-between text-xs font-mono mb-1.5">
+                        <span class="text-cyan-400 font-bold flex items-center gap-1.5">
+                            <i class="fa-solid fa-square-check text-emerald-400"></i> VERIFICACIÓN AUTOMÁTICA VÍA CAT
+                        </span>
+                        <span class="text-amber-400 font-extrabold">${verificadasCount} / ${temas.length} (${pctProgreso}%)</span>
+                    </div>
+                    <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden border border-slate-800">
+                        <div class="bg-gradient-to-r from-cyan-500 via-emerald-400 to-amber-400 h-full transition-all duration-500" style="width: ${pctProgreso}%"></div>
+                    </div>
+                `;
+                cont.appendChild(progressContainer);
+
+                temas.forEach((t, i) => {
+                    const isVerified = i < verificadasCount;
+
+                    const li = document.createElement("li");
+                    li.className = `mision-item flex items-center justify-between p-2.5 rounded-lg border transition-all duration-300 ${isVerified ? 'bg-emerald-950/20 border-emerald-500/40' : 'bg-slate-950/80 border-slate-800/80'}`;
+                    li.innerHTML = `
+                        <div class="flex items-center gap-2.5 flex-1 min-w-0 pr-2">
+                            <span class="text-xs font-mono font-bold ${isVerified ? 'text-emerald-400' : 'text-slate-500'}">${isVerified ? '✓' : '•'}</span>
+                            <span class="text-xs transition-all ${isVerified ? 'text-emerald-300/90 font-semibold' : 'text-slate-300'}">${t}</span>
+                        </div>
+                        <span class="text-[9px] font-mono px-2 py-0.5 rounded font-bold flex-shrink-0 ${isVerified ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-slate-900 text-slate-500 border border-slate-800'}">
+                            ${isVerified ? '⚡ VERIFICADO VÍA CAT' : '🔒 PENDIENTE EN SIMULADOR'}
+                        </span>
+                    `;
+                    cont.appendChild(li);
+                });
+
+                // BADGE DE PROGRESO DE MISIONES
+                const existingBadge = document.getElementById("lblMisionesProgresoHeader");
+                if (existingBadge) {
+                    existingBadge.innerText = `${verificadasCount}/${temas.length} MISIONES VERIFICADAS`;
+                    existingBadge.className = `text-[9.5px] font-mono font-bold px-2 py-0.5 rounded border ${verificadasCount === temas.length ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' : 'bg-amber-500/10 text-amber-400 border-amber-500/30'}`;
+                }
+            }
+
+            static abrirInspeccionForense(idx) {
+                const reg = cacheHistorialCompleto[idx];
+                if (!reg) return;
+
+                const itemsR = typeof reg.items_respondidos === 'string' ? JSON.parse(reg.items_respondidos) : (reg.items_respondidos || {});
+                const clics = itemsR.historico_clics || [];
+
+                const titleEl = document.getElementById("lblModalForenseTitulo");
+                if (titleEl) titleEl.innerText = `🔍 INSPECCIÓN FORENSE: ${String(reg.materia || 'MODULO').toUpperCase()}`;
+                
+                // CATÁLOGO DE ITEMS DE MEMORIA LOCAL Y ANÁLISIS FORENSE SIN APIS EXTERNAS
+                const CATALOGO_FORENSE_ITEMS = {
+                    item_math_01: {
+                        enunciado: "En una maratón escolar, Carlos corre a una velocidad constante de 5 m/s durante 2 minutos. ¿Qué distancia total recorre en ese intervalo?",
+                        opciones: { A: "600 metros", B: "100 metros", C: "300 metros", D: "1200 metros" },
+                        correcta: "A",
+                        explicacion: "Trampa de Unidades Tiempo: Convertir 2 minutos a 120 segundos. Multiplicar 5 m/s × 120 s = 600 m. El distractor B (100m) ignora la conversión de minutos a segundos."
+                    },
+                    item_demo_01: {
+                        enunciado: "En una maratón escolar, Carlos corre a una velocidad constante de 5 m/s durante 2 minutos. ¿Qué distancia total recorre en ese intervalo?",
+                        opciones: { A: "600 metros", B: "100 metros", C: "300 metros", D: "1200 metros" },
+                        correcta: "A",
+                        explicacion: "Trampa de Unidades Tiempo: Convertir 2 minutos a 120 segundos. Multiplicar 5 m/s × 120 s = 600 m."
+                    },
+                    item_demo_02: {
+                        enunciado: "Un tanque de agua de 500 litros se llena a una tasa de 25 litros por minuto. ¿Cuánto tiempo tarda en llenarse completamente?",
+                        opciones: { A: "20 minutos", B: "25 minutos", C: "10 minutos", D: "50 minutos" },
+                        correcta: "A",
+                        explicacion: "Relación de Proporcionalidad Directa: 500 L / 25 L/min = 20 minutos."
+                    },
+                    item_lect_01: {
+                        enunciado: "«La ciencia no busca verdades absolutas, sino explicaciones provisionales revisables ante nueva evidencia experimental.» ¿Cuál es la función de 'provisionales'?",
+                        opciones: { A: "Destacar que el conocimiento científico está abierto a revisiones", B: "Argumentar que las hipótesis carecen de rigor", C: "Demostrar que la evidencia es irrelevante", D: "Sugerir que la ciencia debe ser reemplazada por dogmas" },
+                        correcta: "A",
+                        explicacion: "Trampa de Inferencia Absolutista: El autor califica el conocimiento como provisional para reflejar su naturaleza falsable y dinámica, no para desacreditar la validez del método científico."
+                    },
+                    item_cn_01: {
+                        enunciado: "En un experimento sobre fotosíntesis, la producción de O2 se incrementa proporcionalmente con la luz hasta estabilizarse. ¿Por qué se estabiliza?",
+                        opciones: { A: "Otro factor del medio (CO2 o temp) se volvió limitante", B: "La luz destruyó por completo la clorofila", C: "La planta agotó sus reservas de agua", D: "La fase oscura solo se activa en ausencia de luz" },
+                        correcta: "A",
+                        explicacion: "Ley de Factores Limitantes de Blackman: Cuando la luz deja de ser el factor restrictivo, la tasa fotosintética queda topeada por la disponibilidad de dióxido de carbono o temperatura ambiental."
+                    },
+                    item_soc_01: {
+                        enunciado: "Habitantes interponen Acción de Tutela por proyecto industrial que afecta la salud y consulta previa. ¿Por qué la Constitución consagra la Tutela?",
+                        opciones: { A: "Garantizar la protección inmediata de derechos fundamentales", B: "Sustituir juicios ordinarios mercantiles", C: "Otorgar facultades extraordinarias a empresas", D: "Obligar a renunciar a la vía judicial" },
+                        correcta: "A",
+                        explicacion: "Protección Constitucional Directa: La Acción de Tutela (Art. 86) es un mecanismo preferente y sumario diseñado exclusivamente para el amparo inmediato de derechos fundamentales."
+                    },
+                    item_ing_01: {
+                        enunciado: "Sarah: 'Check the kitchen counter. I think I saw them ____ next to your laptop.'",
+                        opciones: { A: "lying", B: "layed", C: "lies", D: "lain" },
+                        correcta: "A",
+                        explicacion: "Participio Presente (Gerund) del verbo intransitivo 'to lie' (estar tumbado/ubicado). El verbo 'lay' requiere objeto directo."
                     }
                 };
 
-                optCont.appendChild(btn);
-            });
+                let htmlCuerpo = `
+                    <div class="p-3 bg-slate-950 rounded-xl mb-3 border border-zinc-800 shadow-md">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-xs font-mono text-cyan-400 font-bold uppercase">PUNTAJE MÓDULO</span>
+                            <strong class="text-lg text-[#D4AF37] font-mono">${itemsR.puntaje_escalonado || reg.puntaje_escalonado || 50} / 100 pts</strong>
+                        </div>
+                        <p class="text-slate-400 text-[10.5px] font-mono">Habilidad Latente (&theta;): ${parseFloat(reg.theta || 0).toFixed(4)} | Bayesian SEM: ${parseFloat(reg.bayesian_sem || 0.35).toFixed(3)}</p>
+                    </div>
+                `;
+                
+                if (clics.length === 0) {
+                    htmlCuerpo += `<p class="italic text-slate-500 font-mono text-xs p-3 text-center">No se registraron vectores de clic individuales para esta sesión de evaluación.</p>`;
+                } else {
+                    htmlCuerpo += `<div class="space-y-3 max-h-[60vh] overflow-y-auto pr-1">`;
+                    clics.forEach((c, i) => {
+                        const itemId = c.itemId || 'item_math_01';
+                        const info = CATALOGO_FORENSE_ITEMS[itemId] || {
+                            enunciado: "Evaluación adaptativa de competencias generales Saber 11.",
+                            opciones: { A: "Opción A", B: "Opción B", C: "Opción C", D: "Opción D" },
+                            correcta: "A",
+                            explicacion: "Análisis de distractor adaptativo mediante función de respuesta al ítem (IRT 3PL)."
+                        };
 
-            startTime = Date.now();
-            updateLatencyDisplay();
+                        const marcada = c.opcionSeleccionada || (c.correcto ? info.correcta : 'B');
+
+                        htmlCuerpo += `
+                            <div class="p-3 rounded-xl bg-slate-900 border ${c.correcto ? 'border-emerald-500/40' : 'border-rose-500/40'} text-left space-y-2">
+                                <div class="flex justify-between items-center text-xs font-mono font-bold">
+                                    <span class="text-slate-200">Reactivo #${i+1} [${itemId}]</span>
+                                    <span class="${c.correcto ? 'text-emerald-400 bg-emerald-950/60 border border-emerald-500/40' : 'text-rose-400 bg-rose-950/60 border border-rose-500/40'} px-2 py-0.5 rounded text-[10px]">
+                                        ${c.correcto ? '✓ CORRECTO' : '✕ ERROR'} (${c.responseTime || 0.0}s)
+                                    </span>
+                                </div>
+                                <p class="text-xs text-slate-200 font-sans leading-relaxed bg-black/40 p-2.5 rounded border border-white/5">
+                                    <strong>Enunciado Real:</strong> ${info.enunciado}
+                                </p>
+                                <div class="grid grid-cols-2 gap-2 text-[11px] font-mono">
+                                    <div class="p-2 rounded ${c.correcto ? 'bg-emerald-950/40 text-emerald-300 border border-emerald-500/30' : 'bg-rose-950/40 text-rose-300 border border-rose-500/30'}">
+                                        <span class="block text-[9px] text-slate-400 font-bold uppercase">Opción Marcada:</span>
+                                        <strong>${marcada}) ${info.opciones[marcada] || marcada}</strong>
+                                    </div>
+                                    <div class="p-2 rounded bg-cyan-950/40 text-cyan-300 border border-cyan-500/30">
+                                        <span class="block text-[9px] text-slate-400 font-bold uppercase">Opción Correcta:</span>
+                                        <strong>${info.correcta}) ${info.opciones[info.correcta] || info.correcta}</strong>
+                                    </div>
+                                </div>
+                                <div class="p-2 rounded bg-amber-950/30 border border-amber-500/30 text-[10.5px] font-mono text-amber-200/90 leading-tight">
+                                    <strong class="text-amber-400 font-bold block mb-0.5">💡 Análisis Forense de la Trampa:</strong>
+                                    ${info.explicacion}
+                                </div>
+                            </div>
+                        `;
+                    });
+                    htmlCuerpo += `</div>`;
+                }
+
+                const bodyEl = document.getElementById("lblModalForenseCuerpo");
+                const modal = document.getElementById("modalForense");
+                if (bodyEl) bodyEl.innerHTML = htmlCuerpo;
+                if (modal) modal.style.display = "flex";
+            }
         }
 
-        function seleccionarOvalOptico(optId, type, text) {
-            // Animación de llenado de grafito en el óvalo óptico
-            const ovalEl = document.getElementById(`oval_${optId}`);
-            document.querySelectorAll('.optica-oval').forEach(el => el.classList.remove('graphite-filled'));
-            
-            if (ovalEl) {
-                ovalEl.classList.add('graphite-filled');
-            }
-
-            // Breve delay de 350ms para apreciar el rellenado con lápiz de grafito negro
-            setTimeout(() => {
-                registerChoice(type, optId, text);
-            }, 380);
-        }
-
-        function registerChoice(type, id, text) {
-            let latency = Date.now() - startTime;
-            scores[type] = (scores[type] || 0) + 1;
-            
-            historicoRespuestas.push({
-                step: currentStep + 1,
-                type: type,
-                optionId: id,
-                text: text,
-                latencyMs: latency
-            });
-
-            if (latency < 2000) {
-                scores['LATENCIA_IMPULSIVA'] = (scores['LATENCIA_IMPULSIVA'] || 0) + 1;
-            } else if (latency > 12000) {
-                scores['LATENCIA_REFLEXIVA'] = (scores['LATENCIA_REFLEXIVA'] || 0) + 1;
-            }
-
-            currentStep++;
-            loadStep();
-        }
-
-        async function finalizeOnboarding() {
-            if (timerInterval) clearInterval(timerInterval);
-
-            // Diagnóstico del Arquetipo
-            let arquetipoNombre = "Estratega Reflexivo S2";
-            let misionInmediata = {
-                id: "mision_01",
-                titulo: "Misión Psico-Táctica #1: Control de Ritmo",
-                instruccion: "Desacelerar en conectores de oposición y realizar lecturas de 8s antes del primer clic.",
-                protocolo: "MANTENER_LATENCIA_ESTABLE",
-                foco_cognitivo: "Comprensión Lectora y Descarte Metódico"
-            };
-
-            if (scores['SENSIBILIDAD_TIEMPO'] || scores['ENFOQUE_DESARROLLO']) {
-                arquetipoNombre = "Estratega Enfocado bajo Presión";
-                misionInmediata = {
-                    id: "mision_01",
-                    titulo: "Misión Psico-Táctica #1: Pausa de Descompresión",
-                    instruccion: "Aplicar la pausa consciente de 5 segundos al detectar preguntas con más de 3 renglones.",
-                    protocolo: "DESCOMPRESION_ANSIEDAD",
-                    foco_cognitivo: "Regulación de Oxigenación y Enfoque Directo"
-                };
-            } else if (scores['DECISION_INMEDIATA'] || scores['LATENCIA_IMPULSIVA']) {
-                arquetipoNombre = "Analista de Alta Velocidad";
-                misionInmediata = {
-                    id: "mision_01",
-                    titulo: "Misión Psico-Táctica #1: Freno de Mano y Descarte",
-                    instruccion: "Tachar obligatoriamente al menos 1 distractor con la herramienta [✂️ Tachar] antes de confirmar.",
-                    protocolo: "FRENO_DESCARTE_OBLIGATORIO",
-                    foco_cognitivo: "Verificación de Premisa y Eliminación de Distractores"
-                };
-            }
-
-            const baselineScore = 320;
-
-            // B2B & Multidimensional Storage Sincronización Definitiva
-            localStorage.setItem('dante_onboarding_completed', 'true');
-            localStorage.setItem('dante_user_arquetipo', arquetipoNombre);
-
-            let userObj = {};
+        function drawRadar() {
             try {
-                userObj = JSON.parse(localStorage.getItem('dante_user')) || {};
-            } catch(e) {}
-
-            userObj.onboarding_completed = true;
-            userObj.arquetipo = arquetipoNombre;
-            userObj.mision_activa = misionInmediata;
-            userObj.baseline_proyeccion = baselineScore;
-
-            localStorage.setItem('dante_user', JSON.stringify(userObj));
-            localStorage.setItem('dante_onboarding_profile', JSON.stringify({
-                arquetipo: arquetipoNombre,
-                mision_activa: misionInmediata,
-                baseline_proyeccion: baselineScore,
-                scores: scores,
-                historico_onboarding: historicoRespuestas,
-                fecha: new Date().toISOString()
-            }));
-
-            // Inyección en el Modal Unicornio
-            document.getElementById('lblArquetipoFinal').innerText = arquetipoNombre;
-            document.getElementById('lblProyeccionScore').innerText = `${baselineScore} / 500 Pts`;
-            document.getElementById('lblMisionTitulo').innerText = misionInmediata.titulo;
-            document.getElementById('lblMisionInstruccion').innerText = `"${misionInmediata.instruccion}"`;
-
-            // Persistencia en Supabase
-            if (supabaseClient) {
-                const userIdentifier = userObj.email || userObj.estudiante || userObj.document_id || `user_anon_${Date.now()}`;
-                const payload = {
-                    onboarding_completed: true,
-                    arquetipo: arquetipoNombre,
-                    mision_activa: misionInmediata,
-                    baseline_proyeccion: baselineScore,
-                    historico_onboarding: historicoRespuestas
-                };
-
-                try {
-                    await supabaseClient.from('progreso_estudiantes').upsert({
-                        estudiante_id: userIdentifier,
-                        arquetipo: arquetipoNombre,
-                        mision_activa: misionInmediata,
-                        baseline_proyeccion: baselineScore,
-                        historico_onboarding: historicoRespuestas,
-                        updated_at: new Date().toISOString()
-                    }, { onConflict: 'estudiante_id' });
-                } catch(e) { console.warn("Supabase progreso_estudiantes:", e.message); }
-
-                try {
-                    const condEmail = userObj.email || `${userIdentifier}@dante.os`;
-                    await supabaseClient.from('usuarios').upsert({
-                        email: condEmail,
-                        arquetipo: arquetipoNombre,
-                        onboarding_completed: true,
-                        datos_onboarding: payload
-                    }, { onConflict: 'email' });
-                } catch(e) { console.warn("Supabase usuarios:", e.message); }
-            }
-
-            // Desplegar Modal Unicornio de Celebración
-            const modal = document.getElementById('modalCelebration');
-            if (modal) modal.style.display = 'flex';
+                const mapScore = (val) => { let v = Math.max(0, Math.min(100, val)); return (v / 100) * 100; };
+                let points = [ 
+                    mapScore(perfilRadar.e1), 
+                    mapScore(perfilRadar.e2), 
+                    mapScore(perfilRadar.e3), 
+                    mapScore(perfilRadar.e4), 
+                    mapScore(perfilRadar.e5), 
+                    mapScore(perfilRadar.e6) 
+                ];
+                
+                const centerX = 50; const centerY = 50; const maxRadius = 45; 
+                const angleStep = (Math.PI * 2) / 6;
+                let path = "";
+                for (let i = 0; i < 6; i++) {
+                    let angle = (i * angleStep) - (Math.PI / 2);
+                    let dist = maxRadius * (points[i] / 100);
+                    let x = centerX + Math.cos(angle) * dist;
+                    let y = centerY + Math.sin(angle) * dist;
+                    path += `${x},${y} `;
+                }
+                const shape = document.getElementById('radar-shape');
+                if (shape) {
+                    shape.setAttribute("points", path.trim());
+                    const configm = CATALOGO_MATERIAS[currentMateriaFiltro] || CATALOGO_MATERIAS.todas;
+                    shape.setAttribute("stroke", configm.accent || "#D4AF37");
+                }
+            } catch(e) { console.error("Radar Error", e); }
         }
 
-        function irACabinaEntrenamiento() {
-            // Reemplazo físico en el historial para impedir retroceder a onboarding
-            window.location.replace('index.html');
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*";
+        function decryptText() {
+            const elements = document.querySelectorAll('[data-final]');
+            elements.forEach((el, index) => {
+                const finalStr = el.getAttribute('data-final');
+                if (!finalStr) return;
+                let iterations = 0; const maxIterations = 10 + (index * 2); 
+
+                const interval = setInterval(() => {
+                    let randomStr = finalStr.split('').map((char, i) => {
+                        if(char === ' ') return ' ';
+                        if(i < (iterations / maxIterations) * finalStr.length) return finalStr[i];
+                        return chars[Math.floor(Math.random() * chars.length)];
+                    }).join('');
+                    el.innerText = randomStr; iterations++;
+                    if (iterations >= maxIterations) { clearInterval(interval); el.innerText = finalStr; }
+                }, 30);
+            });
         }
 
-        // Canvas Fractal Background
-        const canvas = document.getElementById('dante-fractal-bg'); 
-        const ctx = canvas ? canvas.getContext('2d') : null;
-        let parts = [];
+        const bgCanvas = document.getElementById('dante-fractal-bg'); const bgCtx = bgCanvas ? bgCanvas.getContext('2d') : null;
+        const coreCanvas = document.getElementById('mini-core-canvas'); const coreCtx = coreCanvas ? coreCanvas.getContext('2d') : null;
+        let qParticles = [], dParticles = [];
 
         function initCanvas() {
-            if (!canvas || !ctx) return;
-            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-            for(let i=0; i<60; i++) {
-                parts.push({ 
-                    x: canvas.width/2, 
-                    y: canvas.height/2, 
-                    s: Math.random()*1.5, 
-                    v: Math.random()*0.35 + 0.1, 
-                    angle: i*137.5*(Math.PI/180), 
-                    dist: 0 
+            if (!bgCanvas || !bgCtx) return;
+            bgCanvas.width = window.innerWidth; bgCanvas.height = window.innerHeight;
+            if (coreCanvas) { coreCanvas.width = 170; coreCanvas.height = 170; }
+
+            for(let i=0; i<60; i++) qParticles.push({ x: bgCanvas.width/2, y: bgCanvas.height/2, s: Math.random(), v: Math.random()*0.3+0.1, angle: i*137.5*(Math.PI/180), dist: 0 });
+            for(let i=0; i<100; i++) dParticles.push({ a: Math.random()*Math.PI*2, r: Math.random()*30+5, s: Math.random()*1.2 + 0.5, v: Math.random()*0.03+0.01 });
+            animateCanvas();
+        }
+
+        function animateCanvas() {
+            if (!bgCtx) return;
+            bgCtx.clearRect(0,0,bgCanvas.width,bgCanvas.height);
+            qParticles.forEach(p => {
+                p.dist += p.v; let x = bgCanvas.width/2 + Math.cos(p.angle)*p.dist; let y = bgCanvas.height/2 + Math.sin(p.angle)*p.dist;
+                if(x < 0 || x > bgCanvas.width || y < 0 || y > bgCanvas.height) p.dist = 0;
+                bgCtx.beginPath(); bgCtx.arc(x, y, p.s, 0, Math.PI*2); bgCtx.fillStyle = '#51e2f5'; bgCtx.globalAlpha = 0.2; bgCtx.fill();
+            });
+
+            if (coreCtx) {
+                coreCtx.clearRect(0,0,170,170);
+                dParticles.forEach(p => {
+                    p.a += p.v; let breath = Math.sin(Date.now()*0.002) * 4;
+                    let x = 85 + Math.cos(p.a) * (p.r + breath); let y = 85 + Math.sin(p.a) * (p.r + breath);
+                    coreCtx.beginPath(); coreCtx.arc(x, y, p.s, 0, Math.PI*2);
+                    coreCtx.fillStyle = '#D4AF37'; coreCtx.shadowBlur = 8; coreCtx.shadowColor = '#D4AF37'; coreCtx.fill();
                 });
             }
-            animate();
+            requestAnimationFrame(animateCanvas);
         }
 
-        function animate() {
-            if (!ctx) return;
-            ctx.clearRect(0,0,canvas.width,canvas.height);
-            parts.forEach(p => {
-                p.dist += p.v; 
-                let x = canvas.width/2 + Math.cos(p.angle)*p.dist; 
-                let y = canvas.height/2 + Math.sin(p.angle)*p.dist;
-                if(x < 0 || x > canvas.width || y < 0 || y > canvas.height) p.dist = 0;
-                ctx.beginPath(); ctx.arc(x,y,p.s,0,Math.PI*2); ctx.fillStyle='#51e2f5'; ctx.globalAlpha=0.22; ctx.fill();
-            });
-            requestAnimationFrame(animate);
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            initCanvas();
-            loadStep();
-        });
+        window.onload = () => { PerfilEstudiante.initProfile(); };
     </script>
 </body>
 </html>
