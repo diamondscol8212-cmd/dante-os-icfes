@@ -590,23 +590,39 @@
         const HOST_URL = window.location.origin;
         
         function obtenerUsuarioAutenticado() {
-            // 1. Prioridad: Parámetro URL explícito (?estudiante=sebastian o ?studentId=sebastian)
+            // 1. Prioridad absoluta: Parámetro explícito en la URL (?estudiante=sebastian o ?studentId=sebastian o ?user=sebastian)
             const urlParams = new URLSearchParams(window.location.search);
-            const queryStudent = urlParams.get('estudiante') || urlParams.get('studentId');
-            if (queryStudent) return queryStudent.toLowerCase().trim();
+            const queryStudent = urlParams.get('estudiante') || urlParams.get('studentId') || urlParams.get('user');
+            if (queryStudent) {
+                const cleanQ = queryStudent.toLowerCase().trim();
+                localStorage.setItem('dante_active_student', cleanQ); // Persistir activo
+                return cleanQ;
+            }
 
-            // 2. Segunda Fuente: LocalStorage del usuario autenticado en la sesión
+            // 2. Segunda Fuente: Analizar a fondo el objeto dante_user de la Sesión Autenticada
             const rawUser = localStorage.getItem("dante_user");
             if (rawUser) {
                 try {
                     const userObj = JSON.parse(rawUser);
-                    if (userObj.email) return userObj.email.split('@')[0].toLowerCase().trim();
-                    if (userObj.estudiante) return userObj.estudiante.toLowerCase().trim();
-                    if (userObj.nombre) return userObj.nombre.toLowerCase().trim();
-                } catch(e) { console.error("Error leyendo dante_user", e); }
+                    // Priorizar el identificador del usuario actualmente autenticado
+                    const candidate = userObj.estudiante || userObj.email || userObj.document_id || userObj.nombre || userObj.user || userObj.username;
+                    if (candidate) {
+                        const cleanId = String(candidate).split('@')[0].toLowerCase().trim();
+                        localStorage.setItem('dante_active_student', cleanId);
+                        return cleanId;
+                    }
+                } catch(e) { console.error("Error parseando dante_user en perfil", e); }
             }
 
-            // 3. Fallback en caso de credencial ausente
+            // 3. Tercera Fuente: Estudiante activo previamente guardado
+            const activeStored = localStorage.getItem('dante_active_student');
+            if (activeStored) return activeStored.toLowerCase().trim();
+
+            // 4. Cuarta Fuente: Verificar si hay token o sesión genérica
+            const tokenUser = localStorage.getItem("dante_token_user");
+            if (tokenUser) return tokenUser.toLowerCase().trim();
+
+            // 5. Fallback seguro si nada existe
             return "invitado";
         }
 
@@ -931,7 +947,7 @@
                     if (pres) pres.innerText = "Inicia un simulacro para activar el diagnóstico de esta área.";
                     
                     // CERO DATOS FANTASMA: Tarjeta transparente directa
-                    if (sum) sum.innerText = `🔒 Módulo Sin Calibrar. Aún no registras evaluaciones en esta área. Completa tu prueba en el Simulador para desbloquear tu Gemelo Digital.`;
+                    if (sum) sum.innerText = `🔒 Módulo Sin Calibrar. ${STUDENT_ID.toUpperCase()}, aún no registras evaluaciones en esta área. Completa tu prueba en el Simulador para desbloquear tu Gemelo Digital.`;
 
                     if (pred) pred.innerText = `Puntos ciegos probables en ${currentMateriaFiltro.replace('_', ' ').toUpperCase()}: Pendiente calibración de primera prueba.`;
                     if (sim) sim.innerText = "Al completar un módulo, la calculadora de impacto estimará cuántos puntos puedes subir.";
