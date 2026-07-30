@@ -158,7 +158,7 @@ async function ejecutarCompilacionFriaDB(area) {
         console.log(`📡 [B2B COGNITIVE COMPILE v21.0.0]: Descargando e indexando el códice para: [${area}]...`);
         
         const resItems = await supabase.from('banco_items_irt').select(`
-            id, pregunta_texto, opciones_respuesta, parametro_a_discriminacion, parametro_b_dificultad, parametro_c_adivinacion, sub_competencia, correcta
+            id, pregunta_texto, opciones_respuesta, parametro_a_discriminacion, parametro_b_dificultad, parametro_c_adivinacion, sub_competencia, correcta, matriz_q_items(*)
         `).eq('area_general', area);
 
         if (resItems.error) throw resItems.error;
@@ -281,7 +281,8 @@ export async function procesarInteraccionEstudiante(req, res) {
             return res.status(202).json({ success: false, error: "Códice en proceso de estructuración RAM. Sockets retenidos." });
         }
 
-        const cronometriaSegundos = parseFloat(responseTime || tiempo || 15.0);
+        const rawTime = parseFloat(responseTime || tiempo || 15.0);
+        const cronometriaSegundos = (Number.isFinite(rawTime) && rawTime > 0) ? rawTime : 15.0;
         const certezaSaneada = String(declaredConfidence || certeza || 'alta').toLowerCase().trim(); 
         const listadoDescartadas = Array.isArray(opcionesDescartadas) ? opcionesDescartadas : [];
 
@@ -723,7 +724,10 @@ export async function procesarInteraccionEstudiante(req, res) {
                 cronica_narrativa: interpretacionIA.cronica_narrativa || "Análisis completado.", 
                 vulnerabilidad_dominante: interpretacionIA.desviacion_enfoque || "Enfoque estándar.", 
                 prescripcion_clinica: interpretacionIA.estrategia_autorregulacion || "Continuar plan.", 
-                plan_entrenamiento: interpretacionIA.plan_entrenamiento,
+                plan_entrenamiento: Array.isArray(interpretacionIA?.plan_entrenamiento) ? interpretacionIA.plan_entrenamiento : [
+                    "Días 1-3: Repaso conceptual.",
+                    "Días 4-5: Práctica guiada."
+                ],
                 mapa_calor_sesgos: nuevosPriorsAtributos
             };
 
