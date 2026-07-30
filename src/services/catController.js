@@ -12,7 +12,7 @@ const CALIBRATION_VERSION = process.env.IRT_CALIBRATION_VERSION || 'v21.0_multit
 const REDIS_TTL_SECONDS = 86400; 
 
 const OPERATIONAL_CONTROLS = {
-    MAX_ITEMS_EXAMEN: 25,       // Límite máximo para diagnóstico profundo
+    MAX_ITEMS_EXAMEN: 15,       // Límite máximo para diagnóstico profundo (15 ítems mandatorios)
     MIN_ITEMS_EXAMEN: 5,       // Mínimo de reactivos antes de permitir parada temprana
     UMBRAL_SEM_OBJETIVO: 0.22,  
     EPS_CMD: 0.02              
@@ -33,6 +33,62 @@ const ESTADO_CARGA_AREAS = new Map();
 const CACHE_ESQUEMA_ATRIBUTOS = new Map();
 
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+
+const LETRAS_MAP = ["A", "B", "C", "D"];
+
+function barajarOpcionesItem(itemOriginal) {
+    if (!itemOriginal || !Array.isArray(itemOriginal.opciones_respuesta) || itemOriginal.opciones_respuesta.length === 0) {
+        return { 
+            itemBarajado: itemOriginal, 
+            nuevaLetraCorrecta: itemOriginal?.correcta || "B",
+            mapaLetrasOrig: { A: "A", B: "B", C: "C", D: "D" }
+        };
+    }
+
+    const opcionesRaw = itemOriginal.opciones_respuesta;
+    const correctaOriginal = String(itemOriginal.correcta || itemOriginal.correcta_db || "B").toUpperCase().trim();
+    
+    let indexCorrectaOrig = LETRAS_MAP.indexOf(correctaOriginal);
+    if (indexCorrectaOrig === -1) indexCorrectaOrig = 1;
+
+    const opcionesEstructuradas = opcionesRaw.map((opt, idx) => {
+        const textStr = typeof opt === 'string' ? opt : JSON.stringify(opt);
+        const textLimpio = textStr.replace(/^[A-Da-d][\)\.\:\-]\s*/, '');
+        const letraOrig = LETRAS_MAP[idx] || "A";
+        return {
+            texto: textLimpio,
+            letraOrig: letraOrig,
+            esCorrecta: idx === indexCorrectaOrig
+        };
+    });
+
+    // Fisher-Yates Shuffle
+    for (let i = opcionesEstructuradas.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [opcionesEstructuradas[i], opcionesEstructuradas[j]] = [opcionesEstructuradas[j], opcionesEstructuradas[i]];
+    }
+
+    let nuevaLetraCorrecta = "B";
+    const mapaLetrasOrig = {};
+
+    const nuevasOpciones = opcionesEstructuradas.map((obj, newIdx) => {
+        const nuevaLetra = LETRAS_MAP[newIdx] || "A";
+        if (obj.esCorrecta) {
+            nuevaLetraCorrecta = nuevaLetra;
+        }
+        mapaLetrasOrig[nuevaLetra] = obj.letraOrig;
+        return obj.texto;
+    });
+
+    const itemBarajado = {
+        ...itemOriginal,
+        opciones_respuesta: nuevasOpciones,
+        correcta: nuevaLetraCorrecta,
+        correcta_db: nuevaLetraCorrecta
+    };
+
+    return { itemBarajado, nuevaLetraCorrecta, mapaLetrasOrig };
+}
 
 function obtenerIndexBucket(dificultad) {
     const bFloat = parseFloat(dificultad || 0);
@@ -343,24 +399,31 @@ export async function procesarInteraccionEstudiante(req, res) {
         let interaccionCorrecta = false;
         let metadatosItem = null;
         
+        let forzarCierrePorRepeticion = false;
+
         if (itemId && !itemsExcluidosExamen.has(itemId)) {
             metadatosItem = cacheInstancia.mapaParametros.get(itemId);
             
-            if (!metadatosItem && (itemId === 'item_mat_master_0' || itemId === 'item_mat_master_null' || String(itemId).includes('master'))) {
+            if (!metadatosItem) {
+                // Fallback inteligente universal: Si el ID enviado no se encuentra directamente (por ser mock, legacy o relanzado),
+                // mapear al ítem correspondiente del pool del área para no perder el registro ni bloquear el conteo
                 const poolElementosDante = Array.from(cacheInstancia.mapaParametros.values());
-                const posicionOptima = nuevoConteoItems % poolElementosDante.length;
-                metadatosItem = poolElementosDante[posicionOptima];
-            }
-            
-            if (!metadatosItem && (!isNaN(itemId) || typeof itemId === 'number')) {
-                const poolElementosDante = Array.from(cacheInstancia.mapaParametros.values());
-                const indexSecuencial = Math.abs(parseInt(itemId) - 1) % poolElementosDante.length;
-                metadatosItem = poolElementosDante[indexSecuencial];
+                if (poolElementosDante.length > 0) {
+                    const idx = Math.abs(nuevoConteoItems) % poolElementosDante.length;
+                    metadatosItem = poolElementosDante[idx];
+                    console.log(`⚠️ [MAPEO DE SEGURIDAD]: Ítem ID '${itemId}' no encontrado en mapaParametros de [${areaSaneada}]. Mapeado automáticamente a ítem de pool: [${metadatosItem.id}]`);
+                }
             }
 
             if (metadatosItem) {
                 const idRealMapeado = metadatosItem.id;
-                const respuestaCorrectaDB = String(metadatosItem.correcta || metadatosItem.correcta_db || 'A').toUpperCase().trim();
+                const respuestaCorrectaDB = String(
+                    sessionState.shuffled_correct?.[idRealMapeado] ||
+                    sessionState.shuffled_correct?.[itemId] ||
+                    metadatosItem.correcta || 
+                    metadatosItem.correcta_db || 
+                    'A'
+                ).toUpperCase().trim();
                 
                 interaccionCorrecta = (opcionMarcada === respuestaCorrectaDB);
                 itemsExcluidosExamen.add(idRealMapeado);
@@ -407,6 +470,10 @@ export async function procesarInteraccionEstudiante(req, res) {
                     console.error("🚨 [CRITICAL CANAL INSERTION FAILED]:", dbErr.message);
                 }
             }
+        } else if (itemId && itemsExcluidosExamen.has(itemId)) {
+            console.warn(`⚠️ [ITEM REPETIDO DETECTADO]: ${itemId} ya fue respondido en sesión ${activeSessionId}. Forzando cierre para evitar bucle.`);
+            forzarCierrePorRepeticion = true;
+            metadatosItem = cacheInstancia.mapaParametros.get(itemId);
         } else if (itemId) {
             metadatosItem = cacheInstancia.mapaParametros.get(itemId);
         }
@@ -418,8 +485,11 @@ export async function procesarInteraccionEstudiante(req, res) {
         let vectorVulnerabilidadActual = {};
         llavesAtributos.forEach(attr => { vectorVulnerabilidadActual[attr] = 0; });
 
+        const mapaLetras = sessionState.shuffled_orig_map?.[metadatosItem?.id] || sessionState.shuffled_orig_map?.[itemId];
+        const opcionMarcadaOriginal = (mapaLetras && mapaLetras[opcionMarcada]) ? mapaLetras[opcionMarcada] : opcionMarcada;
+
         if (itemId && opcionMarcada !== "" && !interaccionCorrecta && metadatosItem) {
-            const llaveBusqueda = `${metadatosItem.id}_${opcionMarcada}`;
+            const llaveBusqueda = `${metadatosItem.id}_${opcionMarcadaOriginal}`;
             if (cacheInstancia.mapaTrampasGlobal.has(llaveBusqueda)) {
                 vectorVulnerabilidadActual = cacheInstancia.mapaTrampasGlobal.get(llaveBusqueda);
             }
@@ -436,7 +506,7 @@ export async function procesarInteraccionEstudiante(req, res) {
         let remediacionSugeridaMsg = "Se prescribe continuar el flujo adaptativo estándar.";
 
         if (itemId && !interaccionCorrecta && metadatosItem) {
-            const llaveBusqueda = `${metadatosItem.id}_${opcionMarcada}`;
+            const llaveBusqueda = `${metadatosItem.id}_${opcionMarcadaOriginal}`;
             const tieneTrampaMapeada = cacheInstancia.mapaTrampasGlobal.has(llaveBusqueda);
 
             if (tieneTrampaMapeada) {
@@ -557,20 +627,42 @@ export async function procesarInteraccionEstudiante(req, res) {
 
         const estadoOperacional = esBloqueoCognitivo ? 'FATIGUED_LOCK' : (esDisparoAlAzar ? 'IMPULSIVE_SURGE' : 'STABLE');
         
+        let itemParaEnviar = resultadoSelector.item;
+        let nuevaLetraCorrecta = "B";
+        let mapaLetrasOrig = { A: "A", B: "B", C: "C", D: "D" };
+
+        if (resultadoSelector.item) {
+            const itemFull = cacheInstancia.mapaParametros.get(resultadoSelector.item.id) || resultadoSelector.item;
+            const resShuffle = barajarOpcionesItem(itemFull);
+            itemParaEnviar = resShuffle.itemBarajado;
+            nuevaLetraCorrecta = resShuffle.nuevaLetraCorrecta;
+            mapaLetrasOrig = resShuffle.mapaLetrasOrig;
+        }
+
+        const dictShuffledCorrect = { ...(sessionState.shuffled_correct || {}) };
+        const dictShuffledOrig = { ...(sessionState.shuffled_orig_map || {}) };
+
+        if (itemParaEnviar && itemParaEnviar.id) {
+            dictShuffledCorrect[itemParaEnviar.id] = nuevaLetraCorrecta;
+            dictShuffledOrig[itemParaEnviar.id] = mapaLetrasOrig;
+        }
+
         const localRuntimeState = {
             session_id: activeSessionId, student_id: studentIdSaneado, area_general: areaSaneada, 
             thetas: { algebra: algebraTheta, geometria: geometryTheta, estadistica: estadisticaTheta }, 
             sem_bayesian: semActual, items_respondidos_count: conteoActualizadoItems,
             priors_dinamicos: nuevosPriorsAtributos, estado_operacional: estadoOperacional,
             seen_item_ids: Array.from(itemsExcluidosExamen), irt_responses: arrayHistoricoRespuestas,
-            indice_recuperacion_intelectual: iriActual, indice_curiosidad_conductual: iccActual
+            indice_recuperacion_intelectual: iriActual, indice_curiosidad_conductual: iccActual,
+            shuffled_correct: dictShuffledCorrect,
+            shuffled_orig_map: dictShuffledOrig
         };
 
         setImmediate(async () => {
             await redis.setex(cacheKey, REDIS_TTL_SECONDS, JSON.stringify(localRuntimeState));
         });
 
-        const forzarDetencionExamen = conteoActualizadoItems > 0 && (resultadoSelector.detenerExamen || conteoActualizadoItems >= OPERATIONAL_CONTROLS.MAX_ITEMS_EXAMEN);
+        const forzarDetencionExamen = (conteoActualizadoItems >= OPERATIONAL_CONTROLS.MAX_ITEMS_EXAMEN || resultadoSelector.detenerExamen || forzarCierrePorRepeticion);
 
         if (forzarDetencionExamen) {
             const thetaPromedioGlobal = (algebraTheta + geometryTheta + estadisticaTheta) / 3.0;
@@ -699,7 +791,7 @@ export async function procesarInteraccionEstudiante(req, res) {
             });
         }
 
-        const rawItemId = resultadoSelector.item?.id;
+        const rawItemId = itemParaEnviar?.id;
 
         return res.status(200).json({
             success: true, detenerExamen: false, thetaProgreso: currentThetaMateriaTarget, bayesianSEMProgreso: semActual,
@@ -716,9 +808,9 @@ export async function procesarInteraccionEstudiante(req, res) {
             andamiajeForense: { errorDetonado: errorDetonadoMsg, remediacionSugerida: remediacionSugeridaMsg },
             item: {
                 id: rawItemId, 
-                pregunta_texto: resultadoSelector.item.pregunta_texto,
-                opciones_respuesta: resultadoSelector.item.opciones_respuesta || ["A", "B", "C", "D"],
-                sub_competencia: resultadoSelector.item.sub_competencia
+                pregunta_texto: itemParaEnviar.pregunta_texto,
+                opciones_respuesta: itemParaEnviar.opciones_respuesta || ["A", "B", "C", "D"],
+                sub_competencia: itemParaEnviar.sub_competencia
             }
         });
 
