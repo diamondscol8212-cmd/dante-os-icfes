@@ -98,30 +98,32 @@
             border: 1px solid var(--border-graphite);
             box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95); 
             border-radius: 16px; 
-            padding: 0.85rem 0.8rem; 
-            width: 94% !important; 
-            max-width: 760px !important; 
+            padding: 0.85rem !important; 
+            width: 96% !important; 
+            max-width: 680px !important; 
             text-align: center; 
             position: relative; 
             z-index: 10;
             backdrop-filter: blur(24px); 
             margin: auto !important;
-            min-height: auto !important;
-            max-height: 90dvh !important;
+            height: auto !important;
+            max-height: 92dvh !important;
             overflow-y: auto !important;
             -webkit-overflow-scrolling: touch;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            box-sizing: border-box !important;
         }
         @media(min-width: 640px) and (min-height: 520px) {
             .onboard-card, .unicorn-card { 
-                padding: 1.8rem 2.2rem; 
+                padding: 1.8rem 2.2rem !important; 
+                width: 92% !important;
             }
         }
-        @media (max-height: 650px) {
+        @media (max-height: 700px) {
             body { padding: 0.5rem 0 !important; align-items: flex-start !important; }
-            .onboard-card, .unicorn-card { margin: 0.5rem auto !important; max-height: 95dvh !important; }
+            .onboard-card, .unicorn-card { margin: 0.5rem auto !important; max-height: 92dvh !important; }
         }
         .onboard-card::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
@@ -358,11 +360,11 @@
                 </div>
             </div>
 
-            <div class="font-mono text-xs text-[#D4AF37] tracking-[0.3em] uppercase mb-1 font-bold flex items-center justify-center gap-2">
-                <span>⚡ NÚCLEO DANTE OS v21.1</span> // <span>SINCRONIZACIÓN DE ADN COGNITIVO</span>
+            <div class="font-mono text-[10px] sm:text-xs text-[#D4AF37] tracking-normal sm:tracking-[0.2em] uppercase mb-1 font-bold flex flex-wrap items-center justify-center gap-1 sm:gap-2 text-center leading-tight">
+                <span>⚡ NÚCLEO DANTE OS v21.1</span> <span class="hidden sm:inline">//</span> <span>ADN COGNITIVO</span>
             </div>
             
-            <h1 class="oswald font-black text-xl md:text-2xl tracking-wider text-white mb-2 uppercase flex items-center justify-center gap-2" id="step-title">
+            <h1 class="oswald font-black text-sm sm:text-lg md:text-xl tracking-wide text-white mb-2 uppercase text-center leading-tight break-words px-1" id="step-title">
                 PASO 01 / 05 // NIVELES DE COMPLEJIDAD
             </h1>
             
