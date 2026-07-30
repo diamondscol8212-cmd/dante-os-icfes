@@ -799,47 +799,49 @@
             document.getElementById('lblMisionTitulo').innerText = misionInmediata.titulo;
             document.getElementById('lblMisionInstruccion').innerText = `"${misionInmediata.instruccion}"`;
 
-            // Persistencia en Supabase
-            if (supabaseClient) {
-                const userIdentifier = userObj.email || userObj.estudiante || userObj.document_id || `user_anon_${Date.now()}`;
-                const payload = {
-                    onboarding_completed: true,
-                    arquetipo: arquetipoNombre,
-                    mision_activa: misionInmediata,
-                    baseline_proyeccion: baselineScore,
-                    historico_onboarding: historicoRespuestas
-                };
+            // Persistencia en Backend Servidor Real
+            const userIdentifier = userObj.email || userObj.estudiante || userObj.document_id || `user_anon_${Date.now()}`;
+            const payload = {
+                onboarding_completed: true,
+                arquetipo: arquetipoNombre,
+                mision_activa: misionInmediata,
+                baseline_proyeccion: baselineScore,
+                historico_onboarding: historicoRespuestas
+            };
 
-                try {
-                    await supabaseClient.from('progreso_estudiantes').upsert({
-                        estudiante_id: userIdentifier,
+            try {
+                fetch('/api/auth/complete-onboarding', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        studentId: userObj.estudiante || userObj.document_id || userIdentifier,
+                        email: userObj.email,
                         arquetipo: arquetipoNombre,
-                        mision_activa: misionInmediata,
-                        baseline_proyeccion: baselineScore,
-                        historico_onboarding: historicoRespuestas,
-                        updated_at: new Date().toISOString()
-                    }, { onConflict: 'estudiante_id' });
-                } catch(e) { console.warn("Supabase progreso_estudiantes:", e.message); }
+                        datos_onboarding: payload,
+                        institution_id: userObj.institution_id
+                    })
+                }).catch(err => console.warn("⚠️ Fetch complete-onboarding async:", err));
+            } catch(fetchErr) {
+                console.warn("⚠️ Error en llamada a complete-onboarding:", fetchErr);
+            }
 
+            // Persistencia directa defensiva en Supabase
+            if (supabaseClient) {
                 try {
-                    const condEmail = userObj.email || `${userIdentifier}@dante.os`;
-                    await supabaseClient.from('usuarios').upsert({
-                        email: condEmail,
+                    const condEmail = userObj.email || `${userIdentifier}@danteos.edu.co`;
+                    supabaseClient.from('usuarios').update({
                         arquetipo: arquetipoNombre,
                         onboarding_completed: true,
                         datos_onboarding: payload
-                    }, { onConflict: 'email' });
-                } catch(e) { console.warn("Supabase usuarios:", e.message); }
+                    }).eq('email', condEmail).then(() => {}).catch(() => {});
 
-                try {
-                    const idSesionVal = userObj.email || userObj.document_id || userIdentifier;
-                    await supabaseClient.from('dante_arquetipos_iniciales').upsert({
-                        id_sesion: idSesionVal,
+                    supabaseClient.from('dante_arquetipos_iniciales').upsert({
+                        id_sesion: condEmail,
                         arquetipo: arquetipoNombre,
                         datos_psicometricos: payload,
                         creado_en: new Date().toISOString()
-                    }, { onConflict: 'id_sesion' });
-                } catch(e) { console.warn("Supabase dante_arquetipos_iniciales:", e.message); }
+                    }, { onConflict: 'id_sesion' }).then(() => {}).catch(() => {});
+                } catch(e) { console.warn("Supabase async backup:", e.message); }
             }
 
             // Desplegar Modal Unicornio de Celebración
@@ -853,7 +855,7 @@
         }
 
         async function verificarEstadoOnboardingPrevio() {
-            // 1. Verificar LocalStorage
+            // 1. Verificar LocalStorage (Ultra Rápido - 0ms)
             const localCompleted = localStorage.getItem('dante_onboarding_completed') === 'true';
             let userObj = {};
             try { userObj = JSON.parse(localStorage.getItem('dante_user')) || {}; } catch(e) {}
@@ -866,7 +868,7 @@
                 return true;
             }
 
-            // 2. Verificar en Supabase DB si el estudiante ya tiene registro en el backend
+            // 2. Comprobación defensiva con tiempo límite de 1.5s para evitar bloqueos
             if (supabaseClient) {
                 const activeStudent = localStorage.getItem('dante_active_student');
                 const userIdentifier = userObj.email || userObj.estudiante || userObj.document_id || activeStudent;
@@ -874,62 +876,37 @@
                     try {
                         const condEmail = userObj.email || (userIdentifier.includes('@') ? userIdentifier : `${userIdentifier}@danteos.edu.co`);
                         
-                        // Consultar dante_arquetipos_iniciales
-                        const { data: arqData } = await supabaseClient
-                            .from('dante_arquetipos_iniciales')
-                            .select('arquetipo')
-                            .or(`id_sesion.eq.${userIdentifier},id_sesion.eq.${condEmail}`)
-                            .maybeSingle();
+                        // Promesa con Timeout de 1.5 segundos
+                        const dbCheckPromise = new Promise(async (resolve) => {
+                            try {
+                                const { data: usrData } = await supabaseClient
+                                    .from('usuarios')
+                                    .select('onboarding_completed, arquetipo')
+                                    .eq('email', condEmail)
+                                    .maybeSingle();
 
-                        if (arqData && arqData.arquetipo) {
-                            console.log("✅ Arquetipo encontrado en DB dante_arquetipos_iniciales. Redirigiendo...");
+                                if (usrData && (usrData.onboarding_completed || usrData.arquetipo)) {
+                                    return resolve(usrData);
+                                }
+                            } catch(e) {}
+                            resolve(null);
+                        });
+
+                        const timeoutPromise = new Promise((resolve) => setTimeout(() => resolve(null), 1500));
+                        const result = await Promise.race([dbCheckPromise, timeoutPromise]);
+
+                        if (result) {
+                            console.log("✅ Onboarding confirmado en BD Supabase. Redirigiendo...");
                             localStorage.setItem('dante_onboarding_completed', 'true');
-                            localStorage.setItem('dante_user_arquetipo', arqData.arquetipo);
+                            if (result.arquetipo) localStorage.setItem('dante_user_arquetipo', result.arquetipo);
                             userObj.onboarding_completed = true;
-                            userObj.arquetipo = arqData.arquetipo;
-                            localStorage.setItem('dante_user', JSON.stringify(userObj));
-                            window.location.replace('index.html');
-                            return true;
-                        }
-
-                        // Consultar usuarios table
-                        const { data: usrData } = await supabaseClient
-                            .from('usuarios')
-                            .select('onboarding_completed, arquetipo')
-                            .or(`email.eq.${condEmail},email.eq.${userIdentifier}`)
-                            .maybeSingle();
-
-                        if (usrData && (usrData.onboarding_completed || usrData.arquetipo)) {
-                            console.log("✅ Onboarding registrado en DB usuarios. Redirigiendo...");
-                            localStorage.setItem('dante_onboarding_completed', 'true');
-                            if (usrData.arquetipo) localStorage.setItem('dante_user_arquetipo', usrData.arquetipo);
-                            userObj.onboarding_completed = true;
-                            if (usrData.arquetipo) userObj.arquetipo = usrData.arquetipo;
-                            localStorage.setItem('dante_user', JSON.stringify(userObj));
-                            window.location.replace('index.html');
-                            return true;
-                        }
-
-                        // Consultar progreso_estudiantes table
-                        const { data: progData } = await supabaseClient
-                            .from('progreso_estudiantes')
-                            .select('arquetipo, mision_activa')
-                            .or(`estudiante_id.eq.${userIdentifier},estudiante_id.eq.${activeStudent}`)
-                            .maybeSingle();
-
-                        if (progData && progData.arquetipo) {
-                            console.log("✅ Onboarding registrado en DB progreso_estudiantes. Redirigiendo...");
-                            localStorage.setItem('dante_onboarding_completed', 'true');
-                            localStorage.setItem('dante_user_arquetipo', progData.arquetipo);
-                            userObj.onboarding_completed = true;
-                            userObj.arquetipo = progData.arquetipo;
-                            if (progData.mision_activa) userObj.mision_activa = progData.mision_activa;
+                            if (result.arquetipo) userObj.arquetipo = result.arquetipo;
                             localStorage.setItem('dante_user', JSON.stringify(userObj));
                             window.location.replace('index.html');
                             return true;
                         }
                     } catch(e) {
-                        console.warn("⚠️ Error comprobando onboarding en Supabase DB:", e.message);
+                        console.warn("⚠️ Error en comprobación de DB:", e.message);
                     }
                 }
             }
