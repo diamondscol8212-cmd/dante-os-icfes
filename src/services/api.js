@@ -1,5 +1,5 @@
 // src/services/api.js - Cliente de Consumo Dante OS Gateway en JavaScript Puro
-const API_BASE_URL = 'http://localhost:3000/api/cat';
+const API_BASE_URL = typeof window !== 'undefined' ? `${window.location.origin}/api/cat` : '/api/cat';
 
 export const danteApi = {
   /**
