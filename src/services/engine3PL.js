@@ -155,23 +155,25 @@ export function estimarHabilidadEAP(historialItems) {
 
 export function calcularICI(declaredConfidence, isCorrect, responseTime, itemDifficulty) {
     const confianza = String(declaredConfidence || 'alta').toLowerCase().trim();
+    const bVal = Number.isFinite(parseFloat(itemDifficulty)) ? parseFloat(itemDifficulty) : 0.0;
+    const timeVal = Number.isFinite(parseFloat(responseTime)) ? parseFloat(responseTime) : 15.0;
     
     // Latencia adaptativa: Se calcula el tiempo esperado según la complejidad intrínseca del ítem (b)
     // Ítems muy fáciles (b = -2.0) asumen umbral base de 10s; ítems muy complejos (b = 2.0) escalan a 26s.
-    const umbralLatenciaDinamico = 18.0 + (itemDifficulty * 4.0);
+    const umbralLatenciaDinamico = 18.0 + (bVal * 4.0);
 
     let scoreBase = 0.50;
 
-    if (isCorrect) {
+    if (Boolean(isCorrect)) {
         if (confianza === 'alta') {
             // Si responde rápido con alta confianza y acierta, verificamos que no sea suerte impulsiva
-            scoreBase = (responseTime < (umbralLatenciaDinamico * 0.4)) ? 0.75 : 0.95;
+            scoreBase = (timeVal < (umbralLatenciaDinamico * 0.4)) ? 0.75 : 0.95;
         } 
         if (confianza === 'baja') scoreBase = 0.30; 
     } else {
         if (confianza === 'alta') {
             // Penalización inteligente indexada por el umbral dinámico de complejidad
-            scoreBase = (responseTime < umbralLatenciaDinamico) ? 0.05 : 0.15; 
+            scoreBase = (timeVal < umbralLatenciaDinamico) ? 0.05 : 0.15; 
         }
         if (confianza === 'baja') scoreBase = 0.60; 
     }
@@ -179,15 +181,18 @@ export function calcularICI(declaredConfidence, isCorrect, responseTime, itemDif
 }
 
 export function calcularCRI(arrayHistoricoRespuestas) {
-    if (arrayHistoricoRespuestas.length < 3) return 0.50; 
+    if (!Array.isArray(arrayHistoricoRespuestas) || arrayHistoricoRespuestas.length < 3) return 0.50; 
     
     const ultimasTres = arrayHistoricoRespuestas.slice(-3);
-    const primeraFallo = !ultimasTres[0].isCorrect;
-    const segundaRecupera = ultimasTres[1].isCorrect;
-    const terceraConsolida = ultimasTres[2].isCorrect;
+    const getCorrect = r => Boolean(r.isCorrect ?? r.correcto);
+    const getTheta = r => parseFloat(r.thetaSnapshot ?? r.theta ?? 0.0);
+
+    const primeraFallo = !getCorrect(ultimasTres[0]);
+    const segundaRecupera = getCorrect(ultimasTres[1]);
+    const terceraConsolida = getCorrect(ultimasTres[2]);
 
     if (primeraFallo && segundaRecupera && terceraConsolida) {
-        const deltaTheta = ultimasTres[2].thetaSnapshot - ultimasTres[0].thetaSnapshot;
+        const deltaTheta = getTheta(ultimasTres[2]) - getTheta(ultimasTres[0]);
         return Math.min(1.0, Math.max(0.1, 0.70 + deltaTheta)); 
     }
     
