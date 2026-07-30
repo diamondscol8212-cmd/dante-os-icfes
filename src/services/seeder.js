@@ -2,7 +2,7 @@
 // Dante OS Enterprise Edition // Bogotá, Colombia
 import crypto from 'crypto';
 import { supabase } from '../../supabaseClient.js';
-import { BANCO_COMPLETO } from './services/bank/index.js';
+import { BANCO_COMPLETO } from './bank/index.js';
 
 const INSTITUTION_ID = 'colegio_sandbox_default';
 
