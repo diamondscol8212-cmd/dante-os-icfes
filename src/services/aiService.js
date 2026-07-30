@@ -6,11 +6,29 @@
  * Conecta directamente usando HTTP REST en la rama estable 'v1' con el modelo gemini-3.5-flash.
  */
 export async function generarInterpretacionCognitiva(estudiante, area, metricas) {
+    const estudianteClean = String(estudiante || 'Alumno').toUpperCase();
+    const areaClean = String(area || 'Matemáticas').toUpperCase();
+    const fallbackResponse = {
+        cronica_narrativa: `El análisis de trayectoria para ${estudianteClean} registra una consistencia estable en el bloque evaluativo de ${areaClean}. Se evidencia un proceso de resolución con ritmo controlado.`,
+        desviacion_enfoque: "Desajuste transitorio por velocidad adaptativa.",
+        estrategia_autorregulacion: "Se sugiere mantener una lectura pausada de los enunciados y validar opciones alternativas antes del envío.",
+        plan_entrenamiento: [
+            "Días 1-3: Repasa los fundamentos de operaciones distributivas en álgebra.",
+            "Días 4-5: Practica 5 ejercicios sin límite de tiempo para concentrarte en el procedimiento.",
+            "Días 6-8: Realiza lecturas de 10 segundos antes de marcar cualquier respuesta en ejercicios complejos.",
+            "Días 9-10: Ejecuta simulacros cortos de 3 preguntas controlando las pulsaciones del clic."
+        ]
+    };
+
     try {
         const apiKey = process.env.GEMINI_API_KEY;
-        
-        // 🔍 OPTIMIZACIÓN 2026: Apuntamos al modelo activo y verificado en tus logs de AI Studio
-        const url = `https://generativelanguage.googleapis.com/v1/models/gemini-3.5-flash:generateContent?key=${apiKey}`;
+        if (!apiKey) {
+            console.log("ℹ️ [GEMINI AI]: No GEMINI_API_KEY present in environment. Using standard deterministic fallback.");
+            return fallbackResponse;
+        }
+
+        const modelName = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+        const url = `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${apiKey}`;
 
         const prompt = `
         Actúas como un traductor psicométrico experto y amigable para Dante OS. Tu objetivo es interpretar métricas cuantitativas complejas para un estudiante de colegio de 16 años de forma motivadora y comprensible.
