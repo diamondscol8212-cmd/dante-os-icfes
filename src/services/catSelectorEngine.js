@@ -1,7 +1,7 @@
 // catSelectorEngine.js - Motor de Selección Adaptativa Óptima (Dante OS v21.0.0 Enterprise)
 import { calcularInformacionFisher } from './engine3PL.js';
 
-const SPECTRUM_CONTROLS = {
+export const SPECTRUM_CONTROLS = {
     MIN_THETA: -4.0000,
     MAX_THETA: 4.0000,
     RESOLUTION_STEP: 0.50,
@@ -10,14 +10,14 @@ const SPECTRUM_CONTROLS = {
     MAX_ITEMS_MANDATORIOS: 15     // Límite superior garantizado de cierre
 };
 
-function validarContratoItem(item) {
-    if (!item.id || typeof item.id !== 'string') throw new Error("Contrato Roto: item.id mandatorio string.");
+export function validarContratoItem(item) {
+    if (!item || !item.id || typeof item.id !== 'string') throw new Error("Contrato Roto: item.id mandatorio string.");
     if (!item.pregunta_texto) throw new Error("Contrato Roto: pregunta_texto mandatoria.");
     if (!Array.isArray(item.opciones_respuesta)) throw new Error("Contrato Roto: opciones_respuesta debe ser Array.");
     if (typeof item.b !== 'number' && isNaN(parseFloat(item.b))) throw new Error("Contrato Roto: Parámetro b psicométrico debe ser numérico.");
 }
 
-function calcularIndiceBucket(theta) {
+export function calcularIndiceBucket(theta) {
     const thetaAcotado = Math.max(SPECTRUM_CONTROLS.MIN_THETA, Math.min(SPECTRUM_CONTROLS.MAX_THETA, parseFloat(theta || 0)));
     return Math.round((thetaAcotado + Math.abs(SPECTRUM_CONTROLS.MIN_THETA)) / SPECTRUM_CONTROLS.RESOLUTION_STEP);
 }
@@ -51,23 +51,27 @@ export function obtenerSiguienteItem(sessionState, cacheInstancia) {
     const maxBucketIdx = Math.max(0, (matrizBucketsDificultad?.length || 17) - 1);
     const ventanaIndices = [targetIndex, Math.max(0, targetIndex - 1), Math.min(maxBucketIdx, targetIndex + 1)];
     
-    let poolCandidatosAcotado = [];
+    const poolCandidatosAcotado = [];
 
     if (matrizBucketsDificultad && matrizBucketsDificultad.length > 0) {
-        ventanaIndices.forEach(idx => {
-            const bucket = matrizBucketsDificultad[idx] || [];
-            bucket.forEach(item => {
+        for (let i = 0; i < ventanaIndices.length; i++) {
+            const bucket = matrizBucketsDificultad[ventanaIndices[i]];
+            if (!bucket) continue;
+            for (let j = 0; j < bucket.length; j++) {
+                const item = bucket[j];
                 if (!exclusionSet.has(item.id)) {
                     poolCandidatosAcotado.push(item);
                 }
-            });
-        });
+            }
+        }
     }
 
     if (poolCandidatosAcotado.length === 0 && mapaParametros && mapaParametros.size > 0) {
-        mapaParametros.forEach(item => {
-            if (!exclusionSet.has(item.id)) poolCandidatosAcotado.push(item);
-        });
+        for (const item of mapaParametros.values()) {
+            if (!exclusionSet.has(item.id)) {
+                poolCandidatosAcotado.push(item);
+            }
+        }
     }
 
     // Si el banco se agota completamente, detiene el examen y guarda lo acumulado
@@ -81,32 +85,36 @@ export function obtenerSiguienteItem(sessionState, cacheInstancia) {
     // ====================================================================
     const estudiantePriors = priors_dinamicos || {};
 
-    const reactivosEvaluados = poolCandidatosAcotado.map(item => {
+    const reactivosEvaluados = [];
+    for (let i = 0; i < poolCandidatosAcotado.length; i++) {
+        const item = poolCandidatosAcotado[i];
         validarContratoItem(item); 
         
-        const bNum = Number.isFinite(parseFloat(item.b)) ? parseFloat(item.b) : 0.0;
-        const aNum = Number.isFinite(parseFloat(item.a)) ? parseFloat(item.a) : 1.0;
-        const cNum = Number.isFinite(parseFloat(item.c)) ? parseFloat(item.c) : 0.25;
+        const bNum = Number.isFinite(item.b) ? item.b : (parseFloat(item.b) || 0.0);
+        const aNum = Number.isFinite(item.a) ? item.a : (parseFloat(item.a) || 1.0);
+        const cNum = Number.isFinite(item.c) ? item.c : (parseFloat(item.c) || 0.25);
 
         const distanciaAbsoluta = Math.abs(bNum - currentThetaFloat);
         const fisherRaw = calcularInformacionFisher(currentThetaFloat, aNum, bNum, cNum);
         
         let penalizacionO_InyeccionSesgo = 0.0;
         if (item.matriz_q) {
-            Object.keys(item.matriz_q).forEach(attr => {
+            const keys = Object.keys(item.matriz_q);
+            for (let k = 0; k < keys.length; k++) {
+                const attr = keys[k];
                 if (item.matriz_q[attr] === 1) {
                     const probabilidadFallaAtributo = parseFloat(estudiantePriors[attr] || 0.5);
                     if (probabilidadFallaAtributo > 0.60) {
                         penalizacionO_InyeccionSesgo += probabilidadFallaAtributo * 1.5;
                     }
                 }
-            });
+            }
         }
 
         const scoreSelector = (fisherRaw * 0.70) + ((1 / (1 + distanciaAbsoluta)) * 0.15) + (penalizacionO_InyeccionSesgo * 0.15);
         
-        return { ...item, a: aNum, b: bNum, c: cNum, scoreSelector };
-    });
+        reactivosEvaluados.push({ ...item, a: aNum, b: bNum, c: cNum, scoreSelector });
+    }
 
     reactivosEvaluados.sort((x, y) => y.scoreSelector - x.scoreSelector);
 
@@ -129,3 +137,4 @@ export function obtenerSiguienteItem(sessionState, cacheInstancia) {
         }
     };
 }
+
