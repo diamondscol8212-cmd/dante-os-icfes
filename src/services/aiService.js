@@ -28,7 +28,7 @@ export async function generarInterpretacionCognitiva(estudiante, area, metricas)
         }
 
         const modelName = process.env.GEMINI_MODEL || "gemini-2.5-flash";
-        const url = `https://generativelanguage.googleapis.com/v1/models/${modelName}:generateContent?key=${apiKey}`;
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
 
         const prompt = `
         Actúas como un traductor psicométrico experto y amigable para Dante OS. Tu objetivo es interpretar métricas cuantitativas complejas para un estudiante de colegio de 16 años de forma motivadora y comprensible.
