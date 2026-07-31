@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import { supabase } from '../../supabaseClient.js';
 import { redis } from '../../redisClient.js';
 import { procesarInteraccionEstudiante } from '../services/catController.js';
-import { verifyToken, optionalToken, requireRole, validateInstitution } from '../middleware';
+import { verifyToken, optionalToken, requireRole, validateInstitution } from '../middleware.js';
 
 const router = Router();
 const SERVER_VERSION = "v20.6.3-FIX_MASTER";
