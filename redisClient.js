@@ -10,6 +10,8 @@ class InMemoryRedisMock {
     constructor() {
         this.store = new Map();
         this.sets = new Map();
+        this.lists = new Map();
+        this.hashes = new Map();
         console.log('⚡ [REDIS IN-MEMORY FALLBACK]: Activo almacenamiento volátil local.');
     }
 
@@ -31,7 +33,7 @@ class InMemoryRedisMock {
         const flat = keys.flat();
         let count = 0;
         for (const k of flat) {
-            if (this.store.delete(k) || this.sets.delete(k)) {
+            if (this.store.delete(k) || this.sets.delete(k) || this.lists.delete(k) || this.hashes.delete(k)) {
                 count++;
             }
         }
@@ -62,7 +64,7 @@ class InMemoryRedisMock {
         const matchIdx = args.indexOf('MATCH');
         const pattern = matchIdx !== -1 ? args[matchIdx + 1] : null;
 
-        const allKeys = [...this.store.keys(), ...this.sets.keys()];
+        const allKeys = [...this.store.keys(), ...this.sets.keys(), ...this.lists.keys(), ...this.hashes.keys()];
         let matched = allKeys;
 
         if (pattern) {
@@ -72,6 +74,110 @@ class InMemoryRedisMock {
         }
 
         return ['0', matched];
+    }
+
+    async lindex(key, index) {
+        const list = this.lists.get(key);
+        if (!list || list.length === 0) return null;
+        const idx = index >= 0 ? index : list.length + index;
+        return list[idx] ?? null;
+    }
+
+    async lpop(key) {
+        const list = this.lists.get(key);
+        if (!list || list.length === 0) return null;
+        return list.shift() ?? null;
+    }
+
+    async rpop(key) {
+        const list = this.lists.get(key);
+        if (!list || list.length === 0) return null;
+        return list.pop() ?? null;
+    }
+
+    async lpush(key, ...values) {
+        if (!this.lists.has(key)) {
+            this.lists.set(key, []);
+        }
+        const list = this.lists.get(key);
+        for (const val of values) {
+            list.unshift(String(val));
+        }
+        return list.length;
+    }
+
+    async rpush(key, ...values) {
+        if (!this.lists.has(key)) {
+            this.lists.set(key, []);
+        }
+        const list = this.lists.get(key);
+        for (const val of values) {
+            list.push(String(val));
+        }
+        return list.length;
+    }
+
+    async llen(key) {
+        const list = this.lists.get(key);
+        return list ? list.length : 0;
+    }
+
+    async lrange(key, start, stop) {
+        const list = this.lists.get(key);
+        if (!list) return [];
+        const len = list.length;
+        let s = start < 0 ? Math.max(0, len + start) : start;
+        let e = stop < 0 ? Math.max(0, len + stop) : stop;
+        if (s >= len) return [];
+        return list.slice(s, e + 1);
+    }
+
+    async hget(key, field) {
+        const h = this.hashes.get(key);
+        if (!h) return null;
+        return h.get(field) ?? null;
+    }
+
+    async hset(key, field, val) {
+        if (!this.hashes.has(key)) {
+            this.hashes.set(key, new Map());
+        }
+        const h = this.hashes.get(key);
+        const isNew = !h.has(field);
+        h.set(field, String(val));
+        return isNew ? 1 : 0;
+    }
+
+    async hgetall(key) {
+        const h = this.hashes.get(key);
+        if (!h) return {};
+        const obj = {};
+        for (const [k, v] of h.entries()) {
+            obj[k] = v;
+        }
+        return obj;
+    }
+
+    async hdel(key, ...fields) {
+        const h = this.hashes.get(key);
+        if (!h) return 0;
+        let count = 0;
+        for (const f of fields) {
+            if (h.delete(f)) count++;
+        }
+        return count;
+    }
+
+    async exists(key) {
+        return (this.store.has(key) || this.sets.has(key) || this.lists.has(key) || this.hashes.has(key)) ? 1 : 0;
+    }
+
+    async expire(key, seconds) {
+        return 1;
+    }
+
+    async ttl(key) {
+        return -1;
     }
 
     on(event, cb) {
@@ -107,83 +213,35 @@ class ResilientRedisWrapper {
                 this.isRealAvailable = false;
             });
         }
-    }
 
-    async get(key) {
-        if (this.isRealAvailable && this.realRedis) {
-            try {
-                return await this.realRedis.get(key);
-            } catch (err) {
-                this.isRealAvailable = false;
-            }
-        }
-        return await this.mockRedis.get(key);
-    }
+        return new Proxy(this, {
+            get(target, prop, receiver) {
+                if (prop in target) {
+                    const value = Reflect.get(target, prop, receiver);
+                    if (typeof value === 'function') {
+                        return value.bind(target);
+                    }
+                    return value;
+                }
 
-    async set(key, val, ...args) {
-        if (this.isRealAvailable && this.realRedis) {
-            try {
-                return await this.realRedis.set(key, val, ...args);
-            } catch (err) {
-                this.isRealAvailable = false;
-            }
-        }
-        return await this.mockRedis.set(key, val, ...args);
-    }
+                return async (...args) => {
+                    if (target.isRealAvailable && target.realRedis && typeof target.realRedis[prop] === 'function') {
+                        try {
+                            return await target.realRedis[prop](...args);
+                        } catch (err) {
+                            target.isRealAvailable = false;
+                            console.warn(`🚨 [REDIS METHOD WARN]: Falló redis.${String(prop)}, utilizando fallback en memoria:`, err.message);
+                        }
+                    }
 
-    async setex(key, seconds, val) {
-        if (this.isRealAvailable && this.realRedis) {
-            try {
-                return await this.realRedis.setex(key, seconds, val);
-            } catch (err) {
-                this.isRealAvailable = false;
-            }
-        }
-        return await this.mockRedis.setex(key, seconds, val);
-    }
+                    if (target.mockRedis && typeof target.mockRedis[prop] === 'function') {
+                        return await target.mockRedis[prop](...args);
+                    }
 
-    async del(...keys) {
-        if (this.isRealAvailable && this.realRedis) {
-            try {
-                return await this.realRedis.del(...keys);
-            } catch (err) {
-                this.isRealAvailable = false;
+                    return null;
+                };
             }
-        }
-        return await this.mockRedis.del(...keys);
-    }
-
-    async sadd(key, ...members) {
-        if (this.isRealAvailable && this.realRedis) {
-            try {
-                return await this.realRedis.sadd(key, ...members);
-            } catch (err) {
-                this.isRealAvailable = false;
-            }
-        }
-        return await this.mockRedis.sadd(key, ...members);
-    }
-
-    async smembers(key) {
-        if (this.isRealAvailable && this.realRedis) {
-            try {
-                return await this.realRedis.smembers(key);
-            } catch (err) {
-                this.isRealAvailable = false;
-            }
-        }
-        return await this.mockRedis.smembers(key);
-    }
-
-    async scan(cursor, ...args) {
-        if (this.isRealAvailable && this.realRedis) {
-            try {
-                return await this.realRedis.scan(cursor, ...args);
-            } catch (err) {
-                this.isRealAvailable = false;
-            }
-        }
-        return await this.mockRedis.scan(cursor, ...args);
+        });
     }
 
     on(event, cb) {
