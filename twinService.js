@@ -33,18 +33,23 @@ export async function actualizarGemeloDigital(payloadInput) {
             return null;
         }
 
-        // 🌟 SANEAMIENTO ANTIDEPÓSITO v20.5: Forzar el casteo correcto a segundos planos para el cálculo del EMA
+        // 🌟 SANEAMIENTO ANTIDEPÓSITO Y NORMALIZACIÓN XAI DE LATENCIA COGNITIVA PURA
+        // Se descuentan la latencia de red (networkLatencyMs / rtt) y el lag de renderizado del DOM (renderLagMs / domPaintTimeMs)
         const rawTime = parseFloat(responseTime || tiempo || 0);
-        
-        // Si el valor ya viene formateado en milisegundos desde el cliente (>100), no lo re-multiplicamos
         const tiempoFinalMs = rawTime > 100 ? Math.round(rawTime) : Math.round(rawTime * 1000);
+        
+        const networkLatencyMs = Math.max(0, parseFloat(payloadInput.networkLatencyMs || payloadInput.rtt || 0));
+        const renderLagMs = Math.max(0, parseFloat(payloadInput.renderLagMs || payloadInput.domPaintTimeMs || 0));
+        
+        // Latencia cognitiva pura (mínimo fisiológico de lectura de 500ms)
+        const pureCognitiveLatencyMs = Math.max(500, tiempoFinalMs - networkLatencyMs - renderLagMs);
 
         // Mapeo limpio hacia los parámetros del Stored Procedure de PostgreSQL
         const payloadTransaccional = {
             p_student_id: studentIdSanitizado,
             p_area_general: areaGeneralSanitizada,
             p_is_correct: Boolean(respuestaCorrecta),
-            p_response_time_ms: tiempoFinalMs, 
+            p_response_time_ms: pureCognitiveLatencyMs, 
             p_declared_confidence: normalizarConfianzaMetacognitiva(declaredConfidence || certeza)
         };
 
