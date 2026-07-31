@@ -23,7 +23,9 @@ function auditarEntornoFisico() {
     
     const VARIABLES_MANDATORIAS = [
         'PORT',
+        'JWT_SECRET',
         'INTEGRITY_SECRET',
+        'PII_SALT_SECRET',
         'SUPABASE_URL',
         'SUPABASE_KEY',
         'REDIS_URL'
