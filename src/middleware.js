@@ -11,8 +11,13 @@ if (!process.env.INTEGRITY_SECRET) {
     throw new Error("🚨 [FAIL-FAST CRITICAL ERROR]: process.env.INTEGRITY_SECRET no está definida. Se detiene el servidor por razones de integridad de sesión.");
 }
 
+if (!process.env.PII_SALT_SECRET) {
+    throw new Error("🚨 [FAIL-FAST CRITICAL ERROR]: process.env.PII_SALT_SECRET no está definida. Se detiene el servidor para garantizar el cifrado y seudonomización de PII.");
+}
+
 const JWT_SECRET = process.env.JWT_SECRET;
 const INTEGRITY_SECRET = process.env.INTEGRITY_SECRET;
+const PII_SALT_SECRET = process.env.PII_SALT_SECRET;
 
 /*
  * =========================================================================================
