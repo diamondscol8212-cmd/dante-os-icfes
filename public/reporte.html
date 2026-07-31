@@ -355,49 +355,128 @@
                 document.getElementById('valMetaFecha').innerText = new Date().toLocaleDateString('es-CO');
 
                 if (CURRENT_ROL === 'estudiante') {
-                    subTitle.innerText = "EXPEDIENTE DE ADN COGNITIVO // MODELO DE TRAYECTORIA Y APRENDIZAJE";
-                    campo1Lbl.innerText = "Estudiante Autenticado";
+                    subTitle.innerText = "EXPEDIENTE OFICIAL DE DIAGNÓSTICO COGNITIVO // INFORME COMPLETO PARA PADRES Y ALUMNOS";
+                    campo1Lbl.innerText = "Estudiante Evaluado";
                     campo1Val.innerText = STUDENT_ID.toUpperCase();
                     campo2Lbl.innerText = "Institución Cobertura";
                     campo2Val.innerText = INSTITUTION_ID.toUpperCase();
 
                     area.innerHTML = `
+                        <!-- 1. RESUMEN EJECUTIVO Y PROYECCIÓN DE RESULTADOS -->
                         <div class="report-section">
-                            <div class="section-header"><i class="fas fa-brain"></i> 1. Proyección Global Saber 11 (Escala País)</div>
+                            <div class="section-header"><i class="fas fa-trophy"></i> 1. Proyección Global Saber 11 (Escala Oficial 1 - 500)</div>
                             
                             <div class="kpi-row">
                                 <div class="kpi-doc-card" style="border-left: 4px solid #b45309;">
-                                    <span class="meta-label">Puntaje Estimado</span>
-                                    <div class="kpi-doc-val" style="color: #b45309;">328 / 500</div>
+                                    <span class="meta-label">Puntaje Proyectado</span>
+                                    <div class="kpi-doc-val" style="color: #b45309;">342 / 500 pts</div>
+                                    <span class="text-[10px] text-slate-500 font-mono block mt-1">Percentil estimado: Nivel Alto (Top 18%)</span>
                                 </div>
                                 <div class="kpi-doc-card" style="border-left: 4px solid #16a34a;">
                                     <span class="meta-label">Probabilidad de Meta</span>
-                                    <div class="kpi-doc-val" style="color: #16a34a;">75%</div>
+                                    <div class="kpi-doc-val" style="color: #16a34a;">82%</div>
+                                    <span class="text-[10px] text-slate-500 font-mono block mt-1">Cumplimiento de meta universitaria</span>
                                 </div>
                                 <div class="kpi-doc-card" style="border-left: 4px solid #0284c7;">
-                                    <span class="meta-label">Resiliencia Error (IRI)</span>
-                                    <div class="kpi-doc-val" style="color: #0284c7;">1 Reactivo</div>
+                                    <span class="meta-label">Resiliencia ante Errores</span>
+                                    <div class="kpi-doc-val" style="color: #0284c7;">Alta (78%)</div>
+                                    <span class="text-[10px] text-slate-500 font-mono block mt-1">Capacidad de autorregulación</span>
                                 </div>
                             </div>
 
                             <div class="narrative-card-doc">
-                                <strong>📖 Crónica Narrativa de Trayectoria:</strong><br>
-                                "Dante detectó que posees una alta persistencia ante los obstáculos. Has superado al 72% de estudiantes con un patrón de respuesta similar al tuyo, avanzando de forma constante sin caer en errores impulsivos."
+                                <strong style="color: #0369a1; font-size: 0.95rem;">📖 Diagnóstico Narrativo para el Estudiante:</strong><br>
+                                "Se observa un avance sostenido en las pruebas adaptativas. El estudiante demuestra una excelente comprensión conceptual en Matemáticas y Ciencias Naturales. Muestra capacidad de análisis crítico y buena velocidad de respuesta cuando trabaja enfocado."
                             </div>
                         </div>
 
+                        <!-- 2. DESGLOSE DIAGNÓSTICO POR LAS 5 ÁREAS ICFES -->
                         <div class="report-section">
-                            <div class="section-header"><i class="fas fa-stethoscope"></i> 2. Diagnóstico Forense & Prescripción Personalizada</div>
+                            <div class="section-header"><i class="fas fa-layer-group"></i> 2. Desglose Diagnóstico por Áreas Evaluadas (Escala 1 - 100)</div>
                             
-                            <div style="background: #fff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
-                                <span class="meta-label" style="color: #dc2626;">Sensibilidad Detectada</span>
-                                <p style="font-size: 0.85rem; color: #1e293b; font-weight: 600; margin-top: 0.2rem;">Sensibilidad al ritmo en lectura de conectores de oposición en enunciados extensos.</p>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 0.8rem; margin-bottom: 1.2rem;">
+                                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
+                                        <strong style="font-size: 0.85rem; color: #0f172a;">📐 Matemáticas</strong>
+                                        <span style="font-family: 'JetBrains Mono'; font-weight: 800; color: #16a34a; font-size: 0.85rem;">72 / 100</span>
+                                    </div>
+                                    <div style="background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden; margin-bottom: 0.4rem;">
+                                        <div style="background: #16a34a; width: 72%; height: 100%;"></div>
+                                    </div>
+                                    <span style="font-size: 0.72rem; color: #16a34a; font-weight: 700; text-transform: uppercase;">✓ Fortalecido (Dominio razonamiento cuantitativo)</span>
+                                </div>
 
-                                <span class="meta-label" style="color: #16a34a; margin-top: 0.8rem; display: block;">Prescripción Directa para el Estudio</span>
-                                <p style="font-size: 0.85rem; color: #1e293b; font-weight: 600; margin-top: 0.2rem;">Aplicar la técnica de escaneo estructural de conectores antes de seleccionar la opción definitiva.</p>
+                                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
+                                        <strong style="font-size: 0.85rem; color: #0f172a;">📖 Lectura Crítica</strong>
+                                        <span style="font-family: 'JetBrains Mono'; font-weight: 800; color: #b45309; font-size: 0.85rem;">68 / 100</span>
+                                    </div>
+                                    <div style="background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden; margin-bottom: 0.4rem;">
+                                        <div style="background: #b45309; width: 68%; height: 100%;"></div>
+                                    </div>
+                                    <span style="font-size: 0.72rem; color: #b45309; font-weight: 700; text-transform: uppercase;">⚡ En Desarrollo (Atención a premisas implícitas)</span>
+                                </div>
+
+                                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
+                                        <strong style="font-size: 0.85rem; color: #0f172a;">🧪 Ciencias Naturales</strong>
+                                        <span style="font-family: 'JetBrains Mono'; font-weight: 800; color: #16a34a; font-size: 0.85rem;">70 / 100</span>
+                                    </div>
+                                    <div style="background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden; margin-bottom: 0.4rem;">
+                                        <div style="background: #16a34a; width: 70%; height: 100%;"></div>
+                                    </div>
+                                    <span style="font-size: 0.72rem; color: #16a34a; font-weight: 700; text-transform: uppercase;">✓ Fortalecido (Interpretación de gráficas)</span>
+                                </div>
+
+                                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
+                                        <strong style="font-size: 0.85rem; color: #0f172a;">🏛️ Sociales y Ciudadanas</strong>
+                                        <span style="font-family: 'JetBrains Mono'; font-weight: 800; color: #0284c7; font-size: 0.85rem;">65 / 100</span>
+                                    </div>
+                                    <div style="background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden; margin-bottom: 0.4rem;">
+                                        <div style="background: #0284c7; width: 65%; height: 100%;"></div>
+                                    </div>
+                                    <span style="font-size: 0.72rem; color: #0284c7; font-weight: 700; text-transform: uppercase;">⚡ En Desarrollo (Multiperspectivismo constitucional)</span>
+                                </div>
+
+                                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
+                                        <strong style="font-size: 0.85rem; color: #0f172a;">🇬🇧 Inglés (MCER B1)</strong>
+                                        <span style="font-family: 'JetBrains Mono'; font-weight: 800; color: #16a34a; font-size: 0.85rem;">75 / 100</span>
+                                    </div>
+                                    <div style="background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden; margin-bottom: 0.4rem;">
+                                        <div style="background: #16a34a; width: 75%; height: 100%;"></div>
+                                    </div>
+                                    <span style="font-size: 0.72rem; color: #16a34a; font-weight: 700; text-transform: uppercase;">✓ Nivel B1 Acreditado (Comprensión de textos)</span>
+                                </div>
                             </div>
                         </div>
-                    `;
+
+                        <!-- 3. GUÍA DE ACOMPAÑAMIENTO FAMILIAR PARA PADRES -->
+                        <div class="report-section">
+                            <div class="section-header" style="color: #b45309; border-bottom-color: #fde68a;"><i class="fas fa-heart"></i> 3. Guía Orientadora para Padres de Familia ("¿Cómo apoyar en casa?")</div>
+                            
+                            <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; padding: 1.2rem; margin-bottom: 1rem;">
+                                <p style="font-size: 0.85rem; color: #78350f; font-weight: 600; margin-bottom: 0.8rem; line-height: 1.5;">
+                                    Estimados padres o acudientes: El éxito en la prueba Saber 11 no depende únicamente del estudio memorístico, sino del entrenamiento constante de la concentración y el hábito de estudio reflexivo. A continuación recomendamos 3 acciones prácticas para fortalecer el progreso desde el hogar:
+                                </p>
+
+                                <ul style="margin: 0; padding-left: 1.2rem; font-size: 0.83rem; color: #1e293b; line-height: 1.7; display: grid; gap: 0.6rem;">
+                                    <li>
+                                        <strong>🏡 1. Espacio y Tiempo de Estudio Sostenido:</strong>
+                                        Acompañe a su hijo(a) a establecer bloques diarios de 40 a 50 minutos sin distracciones de celular o televisión.
+                                    </li>
+                                    <li>
+                                        <strong>🧠 2. Fomentar la Lectura Completa sin Apuro:</strong>
+                                        En la inspección forense observamos que los errores suelen ser impulsivos. Motívelo a leer el texto o enunciado completo antes de marcar la opción.
+                                    </li>
+                                    <li>
+                                        <strong>💬 3. Enfocarse en Aprender de los Errores:</strong>
+                                        Cuando su hijo falle una pregunta en la plataforma, revísenla juntos en la "Inspección Forense". El error es una oportunidad de aprendizaje, no un motivo de castigo.
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
 
                 } else if (CURRENT_ROL === 'profesor') {
                     subTitle.innerText = "INFORME DE INTERVENCIÓN DOCENTE // DIAGNÓSTICO DE AULA Y COHORTE";
