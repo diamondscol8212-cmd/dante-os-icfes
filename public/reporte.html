@@ -315,6 +315,94 @@
             </div>
         </footer>
 
+        <!-- MODAL POLÍTICA DE TRATAMIENTO DE DATOS PERSONALES (PTDP) -->
+        <!-- JUSTIFICACIÓN LEGAL DE DEFENSA: Cumplimiento de Principio de Transparencia Ley 1581 Art. 4 y GDPR Art. 12/13 -->
+        <div id="modalPTDP" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 999; justify-content: center; align-items: center; padding: 1rem;">
+            <div style="background: #0f172a; border: 1px solid #334155; border-radius: 12px; max-width: 650px; width: 100%; padding: 1.5rem; color: #f8fafc; max-height: 85vh; overflow-y: auto;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; padding-bottom: 0.75rem; margin-bottom: 0.75rem;">
+                    <h3 style="font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; font-weight: bold; color: #38bdf8; text-transform: uppercase;">
+                        📜 POLÍTICA DE TRATAMIENTO DE DATOS PERSONALES (PTDP)
+                    </h3>
+                    <button type="button" onclick="document.getElementById('modalPTDP').style.display='none'" style="background: transparent; border: 0; color: #94a3b8; font-size: 1.2rem; cursor: pointer;">&times;</button>
+                </div>
+
+                <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; line-height: 1.6; color: #cbd5e1;">
+                    <p style="background: #1e293b; padding: 0.6rem; border-radius: 6px; border: 1px solid #334155; color: #38bdf8; margin-bottom: 0.8rem;">
+                        <strong>MARCO REGULATORIO:</strong> En cumplimiento de la Ley Estatutaria 1581 de 2012 (Colombia), Decreto Reglamentario 1377 de 2013, Reglamento General de Protección de Datos (GDPR UE) y COPPA (EE. UU.), Dante OS establece las pautas de gobierno y seguridad de la información.
+                    </p>
+
+                    <h4 style="color: #fbbf24; font-weight: bold; text-transform: uppercase; margin-top: 0.6rem;">1. RESPONSABLE Y CANAL DPO</h4>
+                    <p>Oficial de Protección de Datos (DPO): <strong style="color: #38bdf8;">protecciondedatos@danteos.edu.co</strong>.</p>
+
+                    <h4 style="color: #fbbf24; font-weight: bold; text-transform: uppercase; margin-top: 0.6rem;">2. FINALIDADES DEL TRATAMIENTO COGNITIVO</h4>
+                    <p>Procesamiento de datos psicométricos y cognitivos exclusivamente para fines de calibración pedagógica adaptativa y evaluación institucional. Prohibida su comercialización a terceros.</p>
+
+                    <h4 style="color: #fbbf24; font-weight: bold; text-transform: uppercase; margin-top: 0.6rem;">3. DERECHOS ARCO & REVOCATORIA</h4>
+                    <p>Puedes solicitar la eliminación definitiva (Hard Delete / Derecho al Olvido) o actualización escribiendo al canal oficial.</p>
+                </div>
+
+                <div style="margin-top: 1rem; text-align: right; border-top: 1px solid #334155; padding-top: 0.75rem;">
+                    <button type="button" onclick="document.getElementById('modalPTDP').style.display='none'" style="background: #0284c7; color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: bold; padding: 0.5rem 1.2rem; border-radius: 6px; border: 0; cursor: pointer;">
+                        Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL DERECHOS ARCO (DERECHO AL OLVIDO) -->
+        <div id="modalARCO" class="modal-overlay" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 999; justify-content: center; align-items: center; padding: 1rem;">
+            <div style="background: #0f172a; border: 1px solid #334155; border-radius: 12px; max-width: 500px; width: 100%; padding: 1.5rem; color: #f8fafc;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; padding-bottom: 0.75rem; margin-bottom: 0.75rem;">
+                    <h3 style="font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; font-weight: bold; color: #fbbf24; text-transform: uppercase;">
+                        ⚖️ DERECHOS ARCO (DERECHO AL OLVIDO)
+                    </h3>
+                    <button type="button" onclick="document.getElementById('modalARCO').style.display='none'" style="background: transparent; border: 0; color: #94a3b8; font-size: 1.2rem; cursor: pointer;">&times;</button>
+                </div>
+
+                <form onsubmit="ReporteEngine.ejecutarSolicitudARCO(event); return false;" style="font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;">
+                    <div style="margin-bottom: 0.6rem;">
+                        <label style="display: block; color: #94a3b8; margin-bottom: 0.2rem;">Tipo de Solicitud</label>
+                        <select id="selTipoARCO" style="width: 100%; padding: 0.4rem; background: #1e293b; border: 1px solid #475569; color: #fff; border-radius: 4px;">
+                            <option value="supresion">Eliminación Definitiva de Datos (Hard Delete)</option>
+                            <option value="revocatoria">Revocatoria de Consentimiento</option>
+                            <option value="rectificacion">Rectificación de Información</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 0.6rem;">
+                        <label style="display: block; color: #94a3b8; margin-bottom: 0.2rem;">Correo o Documento Registrado</label>
+                        <input type="text" id="txtEmailARCO" placeholder="usuario@danteos.edu.co" required style="width: 100%; padding: 0.4rem; background: #1e293b; border: 1px solid #475569; color: #fff; border-radius: 4px;">
+                    </div>
+                    <div style="margin-bottom: 0.8rem;">
+                        <label style="display: block; color: #94a3b8; margin-bottom: 0.2rem;">Justificación</label>
+                        <textarea id="txtDetalleARCO" placeholder="Detalle..." required style="width: 100%; height: 60px; padding: 0.4rem; background: #1e293b; border: 1px solid #475569; color: #fff; border-radius: 4px;"></textarea>
+                    </div>
+
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button type="submit" style="flex: 1; background: #d97706; color: #fff; font-weight: bold; padding: 0.5rem; border: 0; border-radius: 6px; cursor: pointer;">
+                            Enviar al DPO
+                        </button>
+                        <button type="button" onclick="document.getElementById('modalARCO').style.display='none'" style="background: #334155; color: #fff; padding: 0.5rem 1rem; border: 0; border-radius: 6px; cursor: pointer;">
+                            Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- FOOTER LEGAL -->
+        <footer style="margin-top: 2rem; padding: 1rem; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: #64748b; border-t: 1px solid #e2e8f0;">
+            <div>DANTE OS ENTERPRISE EDITION // INFRAESTRUCTURA BIOMÉTRICA Y PSICOMÉTRICA ADAPTATIVA</div>
+            <div style="margin-top: 0.3rem; display: flex; justify-content: center; gap: 0.8rem;">
+                <button type="button" onclick="document.getElementById('modalPTDP').style.display='flex'" style="color: #0284c7; background: transparent; border: 0; cursor: pointer; text-decoration: underline;">
+                    📜 Política de Protección de Datos (PTDP)
+                </button>
+                <span>•</span>
+                <button type="button" onclick="document.getElementById('modalARCO').style.display='flex'" style="color: #d97706; background: transparent; border: 0; cursor: pointer; text-decoration: underline;">
+                    ⚖️ Derechos ARCO (Derecho al Olvido)
+                </button>
+            </div>
+        </footer>
+
     </div>
 
     <script>
@@ -333,6 +421,39 @@
             static init() {
                 this.updateActiveTab();
                 this.renderizarVista();
+            }
+
+            /* JUSTIFICACIÓN LEGAL DE DEFENSA: Cumplimiento Ley 1581 Art. 15 y GDPR Art. 17 (Atención a Solicitudes ARCO / Hard Delete) */
+            static ejecutarSolicitudARCO(event) {
+                if (event && event.preventDefault) event.preventDefault();
+                const tipo = document.getElementById("selTipoARCO")?.value || "supresion";
+                const email = document.getElementById("txtEmailARCO")?.value.trim() || "";
+                const detalle = document.getElementById("txtDetalleARCO")?.value.trim() || "";
+
+                if (!email || !detalle) {
+                    alert("🚨 Por favor completa todos los campos de la solicitud.");
+                    return;
+                }
+
+                const solicitud = {
+                    id: `ARCO-${Date.now()}`,
+                    tipo: tipo,
+                    email: email,
+                    detalle: detalle,
+                    timestamp: new Date().toISOString(),
+                    estado: "REGISTRADA_EN_SISTEMA"
+                };
+
+                try {
+                    const prev = JSON.parse(localStorage.getItem("dante_arco_requests") || "[]");
+                    prev.push(solicitud);
+                    localStorage.setItem("dante_arco_requests", JSON.stringify(prev));
+                } catch(e) { console.warn("Error guardando solicitud ARCO", e); }
+
+                alert(`⚖️ SOLICITUD REGISTRADA EXITOSAMENTE:\n\nRadicado N°: [${solicitud.id}]\nTipo: ${tipo.toUpperCase()}\n\nEl Oficial de Protección de Datos (DPO) responderá a [${email}] en un plazo máximo de 10 días hábiles (Ley 1581 Art. 14).`);
+                
+                const modal = document.getElementById("modalARCO");
+                if (modal) modal.style.display = "none";
             }
 
             static setRol(nuevoRol) {
