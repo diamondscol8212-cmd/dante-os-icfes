@@ -1,0 +1,154 @@
+// middleware.js - Middleware Centralizado de Autenticación JWT, Control de Acceso (RBAC) y Soberanía de Datos
+// Dante OS Enterprise Edition
+import jwt from 'jsonwebtoken';
+
+const JWT_SECRET = process.env.JWT_SECRET || 'dante_os_enterprise_jwt_secret_2026_key_secure_#8921';
+
+/**
+ * Genera un token JWT firmado con los claims corporativos del usuario (user_id, role, institution_id, email, estudiante)
+ */
+export function generarTokenJWT(usuarioPayload) {
+    const roleNormalized = (usuarioPayload.role || usuarioPayload.rol || 'estudiante').toLowerCase().trim();
+    const instNormalized = String(usuarioPayload.institution_id || 'colegio_sandbox_default').toLowerCase().trim();
+    const userIdentifier = usuarioPayload.user_id || usuarioPayload.id || usuarioPayload.email || 'user_unknown';
+
+    const payload = {
+        user_id: userIdentifier,
+        email: usuarioPayload.email || `${userIdentifier}@danteos.edu.co`,
+        role: roleNormalized,
+        rol: roleNormalized,
+        institution_id: instNormalized,
+        estudiante: usuarioPayload.estudiante || usuarioPayload.email?.split('@')[0] || String(userIdentifier).split('@')[0]
+    };
+
+    return jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' });
+}
+
+/**
+ * Middleware para verificar la firma y vigencia del token JWT (Header Authorization: Bearer <token>)
+ */
+export function verifyToken(req, res, next) {
+    try {
+        const authHeader = req.headers['authorization'] || req.headers['Authorization'];
+        let token = null;
+
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+            token = authHeader.substring(7).trim();
+        } else if (authHeader && authHeader.split(' ').length === 2) {
+            token = authHeader.split(' ')[1].trim();
+        } else if (req.headers['x-access-token']) {
+            token = String(req.headers['x-access-token']).trim();
+        } else if (req.query && req.query.token) {
+            token = String(req.query.token).trim();
+        }
+
+        if (!token) {
+            return res.status(401).json({
+                success: false,
+                error: "Acceso denegado: Token de autenticación no proporcionado en encabezado Authorization: Bearer <token>."
+            });
+        }
+
+        const decoded = jwt.verify(token, JWT_SECRET);
+        req.user = decoded;
+        next();
+    } catch (err) {
+        return res.status(401).json({
+            success: false,
+            error: "Acceso denegado: Token JWT inválido, alterado o expirado."
+        });
+    }
+}
+
+// Alias de compatibilidad
+export const autenticarToken = verifyToken;
+
+/**
+ * Middleware para token opcional (asigna req.user si existe, de lo contrario continúa)
+ */
+export function optionalToken(req, res, next) {
+    try {
+        const authHeader = req.headers['authorization'] || req.headers['Authorization'];
+        let token = null;
+
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+            token = authHeader.substring(7).trim();
+        } else if (req.headers['x-access-token']) {
+            token = String(req.headers['x-access-token']).trim();
+        } else if (req.query && req.query.token) {
+            token = String(req.query.token).trim();
+        }
+
+        if (token) {
+            const decoded = jwt.verify(token, JWT_SECRET);
+            req.user = decoded;
+        }
+    } catch (err) {
+        // Ignorar fallo de token opcional
+    }
+    next();
+}
+
+/**
+ * Middleware de verificación de roles (RBAC)
+ */
+export function requireRole(...rolesPermitidos) {
+    const rolesFlat = rolesPermitidos.flat().map(r => String(r).toLowerCase().trim());
+
+    return (req, res, next) => {
+        if (!req.user) {
+            return res.status(401).json({
+                success: false,
+                error: "Acceso denegado: Requiere sesión autenticada con token JWT."
+            });
+        }
+
+        const userRole = String(req.user.role || req.user.rol || '').toLowerCase().trim();
+
+        if (!rolesFlat.includes(userRole) && userRole !== 'admin') {
+            return res.status(403).json({
+                success: false,
+                error: `Acceso prohibido: Su rol [${userRole}] no posee permisos suficientes para esta operación.`
+            });
+        }
+
+        next();
+    };
+}
+
+// Alias de compatibilidad
+export const verificarRol = requireRole;
+
+/**
+ * Middleware para validar que la institución del token coincida exactamente con el tenant de la solicitud
+ */
+export function validateInstitution(req, res, next) {
+    if (!req.user) {
+        return res.status(401).json({
+            success: false,
+            error: "Acceso denegado: Requiere sesión autenticada."
+        });
+    }
+
+    const tenantSolicitud = req.tenantId ||
+        req.headers['x-institution-id'] ||
+        (req.query && req.query.institution_id) ||
+        (req.body && req.body.institution_id) ||
+        "colegio_sandbox_default";
+
+    const tenantSolicitudClean = String(tenantSolicitud).toLowerCase().trim();
+    const tenantUserClean = String(req.user.institution_id || '').toLowerCase().trim();
+
+    if (tenantUserClean === 'global' || req.user.role === 'admin') {
+        return next();
+    }
+
+    if (tenantUserClean !== tenantSolicitudClean) {
+        return res.status(403).json({
+            success: false,
+            error: `Acceso denegado: Confidencialidad y Soberanía de Datos. Su token pertenece a [${tenantUserClean}] y la solicitud intenta acceder a [${tenantSolicitudClean}].`
+        });
+    }
+
+    next();
+}
