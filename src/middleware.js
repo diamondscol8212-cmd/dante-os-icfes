@@ -2,16 +2,17 @@
 // Dante OS Enterprise Edition
 import jwt from 'jsonwebtoken';
 
-// 🛡️ Carga resiliente de llaves de entorno con fallback seguro para despliegues
+// 🛡️ PATRÓN FAIL-FAST: Validación estricta de llaves criptográficas al iniciar el servidor
 if (!process.env.JWT_SECRET) {
-    console.warn("⚠️ [ADVERTENCIA DE SEGURIDAD]: JWT_SECRET no está definida en process.env. Usando secreto por defecto.");
+    throw new Error("🚨 [FAIL-FAST CRITICAL ERROR]: process.env.JWT_SECRET no está definida. Se detiene el servidor por razones de seguridad de sesión.");
 }
 
 if (!process.env.INTEGRITY_SECRET) {
-    console.warn("⚠️ [ADVERTENCIA DE SEGURIDAD]: INTEGRITY_SECRET no está definida en process.env. Usando secreto por defecto.");
+    throw new Error("🚨 [FAIL-FAST CRITICAL ERROR]: process.env.INTEGRITY_SECRET no está definida. Se detiene el servidor por razones de integridad de sesión.");
 }
 
-const JWT_SECRET = process.env.JWT_SECRET || 'dante_os_enterprise_jwt_secret_2026_key_secure_#8921';
+const JWT_SECRET = process.env.JWT_SECRET;
+const INTEGRITY_SECRET = process.env.INTEGRITY_SECRET;
 
 /*
  * =========================================================================================
