@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Dante OS // Suite de Observabilidad del Rector</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&family=JetBrains+Mono:wght@400;500;700;900&family=Oswald:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #51e2f5; 
+            --gold: #D4AF37;
+            --alert: #e74c3c;
+            --bg: #010103; 
+            --card-bg: rgba(12, 14, 22, 0.88);
+            --border-graphite: rgba(255, 255, 255, 0.08);
+            --emerald: #2ecc71;
+            --purple-core: #a855f7;
+        }
+
+        /* TEMA DE ALTO CONTRASTE / MODO AULA PROYECTOR */
+        body.light-mode {
+            --bg: #f1f5f9;
+            --card-bg: #ffffff;
+            --border-graphite: #cbd5e1;
+            --gold: #b45309;
+            --primary: #0284c7;
+            background-color: #f1f5f9 !important;
+            color: #0f172a !important;
+        }
+        body.light-mode .master-hud { background: rgba(255, 255, 255, 0.98) !important; border-bottom-color: #cbd5e1 !important; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        body.light-mode .alias-title { color: #0f172a !important; }
+        body.light-mode .geo-tag { color: #0284c7 !important; }
+        body.light-mode .kpi-card { background: #ffffff !important; border-color: #cbd5e1 !important; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        body.light-mode .remediation-box { background: #f8fafc !important; border-color: #cbd5e1 !important; border-left-color: #b45309 !important; }
+        body.light-mode .remediation-text { color: #334155 !important; }
+        body.light-mode .control-panel { background: #ffffff !important; border-color: #cbd5e1 !important; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        body.light-mode .chart-box { background: #ffffff !important; border-color: #cbd5e1 !important; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        body.light-mode .table-container { background: #ffffff !important; border-color: #cbd5e1 !important; }
+        body.light-mode table th { background: #f1f5f9 !important; color: #0f172a !important; border-bottom-color: #cbd5e1 !important; }
+        body.light-mode table td { border-bottom-color: #e2e8f0 !important; color: #0f172a !important; }
+        body.light-mode .input-premium, body.light-mode select.select-premium { background: #ffffff !important; color: #0f172a !important; border-color: #cbd5e1 !important; }
+        body.light-mode .tab-btn { background: #ffffff !important; color: #475569 !important; border-color: #cbd5e1 !important; }
+        body.light-mode .tab-btn.active { background: #fffbeb !important; color: #b45309 !important; border-color: #b45309 !important; }
+        body.light-mode .text-white, body.light-mode .text-slate-100, body.light-mode .text-slate-200, body.light-mode .text-slate-300 { color: #0f172a !important; }
+        body.light-mode .text-slate-400, body.light-mode .text-zinc-400 { color: #475569 !important; }
+
+        body, html { 
+            background: var(--bg); color: #f0f1f5; margin: 0; font-family: 'Outfit', sans-serif; 
+            min-height: 100vh; overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .font-mono { font-family: 'JetBrains Mono', monospace !important; }
+
+        /* CANVASES Y EFECTOS COGNITIVOS */
+        #dante-fractal-bg { position: fixed; inset: 0; z-index: 0; opacity: 0.18; pointer-events: none; mix-blend-mode: screen; }
+        .scanline { position: fixed; inset: 0; background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.5) 51%); background-size: 100% 4px; z-index: 1; pointer-events: none; opacity: 0.2; }
+        #fx-flash { position: fixed; inset: 0; z-index: 999999; background: var(--alert); opacity: 0; pointer-events: none; transition: opacity 0.3s; mix-blend-mode: screen; }
+
+        @media screen and (max-width: 600px) and (orientation: portrait) {
+            body::before {
+                content: "🔄 Para una mejor auditoría, gira tu celular horizontalmente.";
+                position: fixed; top: 55px; left: 5%; width: 90%; z-index: 9999;
+                background: rgba(212, 175, 55, 0.95); color: #000;
+                font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 800;
+                text-align: center; padding: 6px 10px; border-radius: 8px;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+            }
+        }
+
+        /* HEADER HUD RESPONSIVO */
+        .master-hud {
+            position: fixed; top: 0; width: 100%; z-index: 1000; padding: 10px 15px;
+            background: rgba(1, 1, 3, 0.95); backdrop-filter: blur(12px);
+            display: flex; justify-content: space-between; align-items: center; 
+            border-bottom: 1px solid var(--border-graphite);
+        }
+        .alias-title { font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; color: white; white-space: nowrap; }
+        @media (min-width: 640px) { .alias-title { font-size: 13px; } }
+        .geo-tag { font-family: 'JetBrains Mono'; font-size: 8px; color: var(--primary); letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; }
+
+        .suite-viewport {
+            position: relative; z-index: 10;
+            padding: 70px 12px 40px; max-width: 1400px; margin: 0 auto;
+        }
+
+        .live-indicator {
+            display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.65rem;
+            font-family: 'JetBrains Mono'; text-transform: uppercase; color: var(--emerald);
+            background: rgba(46, 204, 113, 0.1); padding: 0.3rem 0.6rem;
+            border-radius: 9999px; border: 1px solid rgba(46, 204, 113, 0.3);
+        }
+        .pulse-dot { width: 6px; height: 6px; background: var(--emerald); border-radius: 50%; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
+
+        .materia-tabs { display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
+        .materia-tabs::-webkit-scrollbar { display: none; }
+        
+        .tab-btn {
+            background: rgba(20, 24, 35, 0.7); border: 1px solid var(--border-graphite); color: #8a8f9d;
+            padding: 0.5rem 0.9rem; border-radius: 8px; cursor: pointer; text-transform: uppercase;
+            font-size: 0.68rem; font-weight: 800; letter-spacing: 1px; transition: all 0.25s ease;
+            backdrop-filter: blur(8px); font-family: 'JetBrains Mono'; white-space: nowrap; flex-shrink: 0;
+        }
+        .tab-btn.active {
+            border-color: var(--gold); color: var(--gold);
+            background: rgba(212, 175, 55, 0.12); box-shadow: 0 0 15px rgba(212, 175, 55, 0.25);
+        }
+
+        .kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 1.2rem; }
+        @media (min-width: 768px) { .kpi-grid { grid-template-columns: repeat(4, 1fr); gap: 1.25rem; } }
+        
+        .kpi-card { 
+            background: var(--card-bg); border: 1px solid var(--border-graphite);
+            padding: 1rem; border-radius: 12px; backdrop-filter: blur(16px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        }
+        .kpi-card.gold-premium { border: 1px solid var(--gold); box-shadow: 0 0 15px rgba(212,175,55,0.2); }
+        .kpi-val { font-size: 1.3rem !important; font-weight: 900; font-family: 'JetBrains Mono' !important; color: var(--gold); margin-top: 0.2rem; white-space: nowrap !important; }
+        @media (min-width: 768px) { .kpi-val { font-size: 1.8rem !important; } }
+
+        .remediation-box {
+            background: linear-gradient(135deg, rgba(20, 27, 45, 0.88) 0%, rgba(13, 17, 26, 0.95) 100%);
+            border: 1px solid rgba(81, 226, 245, 0.3); border-left: 4px solid var(--gold);
+            border-radius: 12px; padding: 1rem 1.2rem; margin-bottom: 1.2rem;
+            backdrop-filter: blur(16px);
+        }
+        .remediation-title { 
+            font-size: 0.75rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; 
+            color: var(--gold); margin-bottom: 0.4rem; font-family: 'JetBrains Mono';
+        }
+        .remediation-text { font-size: 0.82rem; color: #d1d5db; text-align: justify; line-height: 1.5; }
+        .btn-web-search {
+            display: inline-block; margin-top: 0.6rem; padding: 0.45rem 0.8rem; background: rgba(81,226,245,0.1); 
+            border: 1px solid var(--primary); color: var(--primary); text-transform: uppercase; 
+            font-size: 0.65rem; font-weight: 800; letter-spacing: 1px; border-radius: 6px; cursor: pointer; text-decoration: none;
+            font-family: 'JetBrains Mono';
+        }
+
+        .layout-main { display: grid; grid-template-columns: 1fr; gap: 1.2rem; }
+        @media (min-width: 990px) { .layout-main { grid-template-columns: 280px 1fr; gap: 1.5rem; } }
+
+        .sidebar { display: flex; flex-direction: column; gap: 1rem; }
+        .control-panel { 
+            background: var(--card-bg); border: 1px solid var(--border-graphite); 
+            border-radius: 12px; padding: 1rem; backdrop-filter: blur(16px);
+        }
+        .panel-title { 
+            font-size: 0.75rem; font-weight: 900; text-transform: uppercase; color: var(--gold); 
+            margin-bottom: 0.6rem; letter-spacing: 1px; font-family: 'JetBrains Mono';
+        }
+
+        .btn-action {
+            width: 100%; padding: 0.7rem; background: transparent; 
+            border: 1px solid var(--alert); color: var(--alert); 
+            font-weight: 800; text-transform: uppercase; font-size: 0.68rem;
+            letter-spacing: 1px; border-radius: 6px; cursor: pointer; transition: all 0.25s ease;
+            font-family: 'JetBrains Mono';
+        }
+        .btn-action:hover { background: var(--alert); color: #fff; box-shadow: 0 0 15px rgba(231, 76, 60, 0.4); }
+
+        .input-premium, select.select-premium {
+            width: 100%; padding: 0.65rem; background: rgba(10, 10, 15, 0.9); 
+            border: 1px solid var(--border-graphite); color: #fff; border-radius: 6px; 
+            outline: none; font-size: 0.8rem; font-family: 'JetBrains Mono'; margin-bottom: 0.6rem;
+        }
+
+        .chart-box { 
+            background: var(--card-bg); border: 1px solid var(--border-graphite); 
+            border-radius: 12px; padding: 1rem; margin-bottom: 1.2rem; backdrop-filter: blur(16px);
+        }
+        
+        .table-container { 
+            background: var(--card-bg); border: 1px solid var(--border-graphite); 
+            border-radius: 12px; overflow-x: auto; -webkit-overflow-scrolling: touch;
+            width: 100%;
+        }
+        
+        table { width: 100%; border-collapse: collapse; text-align: left; min-width: 750px; }
+        th { 
+            background: rgba(10, 10, 15, 0.95); color: var(--gold); 
+            text-transform: uppercase; font-size: 0.65rem; letter-spacing: 1px; 
+            padding: 0.85rem; border-bottom: 1px solid var(--border-graphite);
+            font-family: 'JetBrains Mono'; white-space: nowrap; font-weight: 900;
+        }
+        td { padding: 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.8rem; vertical-align: top; }
+
+        .badge-delta { font-weight: 900; padding: 0.15rem 0.5rem; border-radius: 9999px; font-size: 0.72rem; font-family: 'JetBrains Mono'; }
+        .delta-sube { background: rgba(46, 204, 113, 0.12); border: 1px solid rgba(46, 204, 113, 0.3); color: var(--emerald); }
+        .delta-baja { background: rgba(231, 76, 60, 0.12); border: 1px solid rgba(231, 76, 60, 0.3); color: var(--alert); }
+
+        .mini-heatmap-bar { background: rgba(0,0,0,0.5); height: 5px; border-radius: 3px; overflow: hidden; margin-top: 0.2rem; width: 100px; border: 1px solid var(--border-graphite); }
+        .mini-heatmap-fill { height: 100%; border-radius: 3px; }
+
+        .btn-gemelo-link {
+            display: inline-block; margin-top: 5px; padding: 4px 8px;
+            background: rgba(212, 175, 55, 0.1); border: 1px solid var(--gold);
+            color: var(--gold); border-radius: 6px; font-size: 0.62rem; font-weight: 800;
+            text-transform: uppercase; text-decoration: none; transition: all 0.2s ease; font-family: 'JetBrains Mono';
+        }
+        .btn-gemelo-link:hover { background: var(--gold); color: #000; box-shadow: 0 0 10px rgba(212, 175, 55, 0.4); }
+
+        .clinical-alert-box {
+            background: rgba(231, 76, 60, 0.08); border: 1px solid rgba(231, 76, 60, 0.4);
+            border-left: 4px solid var(--alert); border-radius: 8px; padding: 0.85rem; margin-bottom: 0.8rem;
+        }
+        .clinical-alert-title { font-size: 0.72rem; font-weight: 900; color: var(--alert); text-transform: uppercase; font-family: 'JetBrains Mono'; }
+        .clinical-alert-body { font-size: 0.78rem; color: #cbd5e1; line-height: 1.4; margin-top: 0.2rem; }
+
+        @media print {
+            .master-hud, .sidebar, .materia-tabs, .btn-gemelo-link, .btn-web-search { display: none !important; }
+            .suite-viewport { padding: 0 !important; max-width: 100% !important; }
+            body { background: #fff !important; color: #000 !important; }
+            .kpi-card, .remediation-box, .chart-box, .table-container { border: 1px solid #ccc !important; box-shadow: none !important; background: #fff !important; color: #000 !important; }
+            .kpi-val, .panel-title, th { color: #000 !important; }
+        }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+    <div id="fx-flash"></div>
+    <div class="scanline"></div>
+    <canvas id="dante-fractal-bg"></canvas>
+
+    <!-- HEADER HUD SUPERIOR RECTOR -->
+    <header class="master-hud">
+        <div>
+            <div class="alias-title" data-final="DANTE OS // SUITE DE OBSERVABILIDAD">DANTE OS // SUITE DE OBSERVABILIDAD</div>
+            <div class="geo-tag" id="ui-geo">BOGOTÁ, COLOMBIA</div>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <button type="button" onclick="RectorDashboard.toggleThemeContraste()" class="text-xs text-amber-500 hover:text-amber-400 p-1.5 bg-transparent border-0 cursor-pointer flex-shrink-0" title="Cambiar modo de contraste (Claro/Oscuro)" aria-label="Cambiar modo de contraste">
+                <i class="fas fa-sun" id="iconContrast"></i>
+            </button>
+            <div class="live-indicator hidden sm:inline-flex" id="uiStatusStream">
+                <div class="pulse-dot"></div>Stream Activo
+            </div>
+            
+            <a href="/index.html" class="px-2.5 py-1 bg-[#181b26] hover:bg-zinc-800 border border-zinc-700 text-slate-200 rounded text-[10px] font-mono font-bold uppercase tracking-wider transition-all">
+                ⚡ Simulador
+            </a>
+
+            <div class="text-right hidden sm:block pl-2 border-l border-zinc-800">
+                <div class="text-xs font-black italic text-white font-mono">MODO <span class="text-[#D4AF37]">ENTERPRISE</span></div>
+                <div class="font-mono text-[8px] text-zinc-400 uppercase" id="lblTenantBannerHeader">TENANT: DEFAULT</div>
+            </div>
+        </div>
+    </header>
+
+    <div class="suite-viewport">
+        <!-- BARRA DE SELECCIÓN DE MATERIAS & EXPORTACIÓN CON SELLO EJECUTIVO -->
+        <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+            <div class="materia-tabs">
+                <button class="tab-btn active" data-materia="diagnostico_general" onclick="RectorDashboard.cambiarMateria('diagnostico_general', this)">🌐 General</button>
+                <button class="tab-btn" data-materia="matematicas" onclick="RectorDashboard.cambiarMateria('matematicas', this)">📐 Matemáticas</button>
+                <button class="tab-btn" data-materia="lectura_critica" onclick="RectorDashboard.cambiarMateria('lectura_critica', this)">📖 Lectura Crítica</button>
+                <button class="tab-btn" data-materia="ciencias_naturales" onclick="RectorDashboard.cambiarMateria('ciencias_naturales', this)">🧪 Ciencias</button>
+                <button class="tab-btn" data-materia="ingles" onclick="RectorDashboard.cambiarMateria('ingles', this)">🇬🇧 Inglés</button>
+            </div>
+
+            <!-- ENLACE DIRECTO HACIA REPORTE.HTML CON SELLO EJECUTIVO -->
+            <button onclick="window.open('/reporte.html?rol=rector', '_blank')" class="px-3 py-1 bg-amber-500/10 border border-[#D4AF37] text-[#D4AF37] rounded text-[10px] font-mono font-bold uppercase tracking-wider hover:bg-[#D4AF37] hover:text-black transition flex items-center gap-1.5 shadow-lg">
+                <span>🏛️</span> Exportar Informe Institucional (PDF)
+            </button>
+        </div>
+
+        <!-- METRICAS DE AULA RECTOR (PROYECCIÓN A 500 PTS) -->
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <p style="font-size: 0.65rem; text-transform: uppercase; color: #8a8f9d; font-weight: 800;" class="font-mono">Estudiantes Auditados</p>
+                <div class="kpi-val" id="kpiTotalEstudiantes">0</div>
+            </div>
+            <div class="kpi-card">
+                <p style="font-size: 0.65rem; text-transform: uppercase; color: #8a8f9d; font-weight: 800;" class="font-mono">Estabilidad Media</p>
+                <div class="kpi-val" id="kpiEstabilidadMedia">0%</div>
+            </div>
+            <div class="kpi-card gold-premium">
+                <p style="font-size: 0.65rem; text-transform: uppercase; color: var(--gold); font-weight: 800;" class="font-mono">Proyección Promedio (500 Pts)</p>
+                <div class="kpi-val" id="kpiPuntaje500Promedio" style="color: var(--gold);">0 / 500 pts</div>
+            </div>
+            <div class="kpi-card">
+                <p style="font-size: 0.65rem; text-transform: uppercase; color: #8a8f9d; font-weight: 800;" class="font-mono">Resiliencia (IRI)</p>
+                <div class="kpi-val" id="kpiResilienciaMedia" style="color: var(--emerald); font-weight: bold;">0%</div>
+            </div>
+        </div>
+
+        <!-- BANNER DE INTERVENCIÓN PARA EL AULA -->
+        <div class="remediation-box" id="uiPrescripcionAulaContenedor" style="display: none;">
+            <div class="remediation-title">🎯 INTERVENCIÓN DIRECTA RECOMENDADA PARA EL AULA (15 MINUTOS)</div>
+            <p class="remediation-text" id="lblPrescripcionAulaTexto"></p>
+            <a id="btnBuscarEstrategiaWeb" target="_blank" class="btn-web-search">🔍 Explorar Didácticas Avanzadas en Web</a>
+        </div>
+
+        <!-- LAYOUT PRINCIPAL -->
+        <div class="layout-main">
+            <aside class="sidebar">
+                <div id="uiAlertasContenedor"></div>
+
+                <div class="control-panel">
+                    <div class="panel-title">Línea de Tiempo Épocas</div>
+                    <select id="selEpocaHistorica" class="select-premium" onchange="RectorDashboard.cambiarEpocaFiltro(this.value)">
+                        <option value="LIVE_NOW">🟢 ÉPOCA VIVA (REDIS RUNTIME)</option>
+                    </select>
+                    <button id="btnExportarPDF" class="btn-action" style="border-color: var(--gold); color: var(--gold); display: none; margin-top: 0.6rem;" onclick="RectorDashboard.descargarReporteClinico()">📁 Exportar Reporte PDF</button>
+                </div>
+
+                <div class="control-panel">
+                    <div class="panel-title">Mandos de Épocas</div>
+                    <p style="font-size: 0.72rem; color: #cbd5e1; margin-bottom: 0.8rem; line-height: 1.4;">Guarda una instantánea inmutable en Supabase antes de vaciar las llaves volátiles de Redis.</p>
+                    <button class="btn-action" onclick="RectorDashboard.ejecutarCierreEpoca()">🚨 Purgar y Guardar Reporte</button>
+                </div>
+
+                <div class="control-panel">
+                    <div class="panel-title">Cohorte Nominal</div>
+                    <input type="text" id="txtNuevoAlumno" class="input-premium" placeholder="Identificador alumno...">
+                    <button class="btn-action" style="border-color: var(--primary); color: var(--primary);" onclick="RectorDashboard.matricularEstudiante()">+ Matricular en Cohorte</button>
+                </div>
+
+                <div class="control-panel">
+                    <div class="panel-title">📂 Ingestión Masiva de Alumnos (.CSV)</div>
+                    <p style="font-size: 0.72rem; color: #cbd5e1; margin-bottom: 0.6rem; line-height: 1.4;">Carga un archivo CSV con columnas <code>email, nombre, password</code> para matricular masivamente.</p>
+                    <label class="btn-action block text-center cursor-pointer" style="border-color: var(--emerald); color: var(--emerald);">
+                        <span>📄 Seleccionar Archivo .CSV</span>
+                        <input type="file" id="fileCsvMatricula" accept=".csv" class="hidden" onchange="RectorDashboard.procesarCsvMatricula(event)">
+                    </label>
+                    <div id="lblStatusCsvIngest" class="text-[10px] font-mono mt-2 hidden"></div>
+                </div>
+            </aside>
+
+            <main class="workspace">
+                <div class="chart-box">
+                    <div class="panel-title" id="lblTituloRadar">Evolución ADN Cognitivo Colectivo</div>
+                    <div id="chartAdnColectivo"></div>
+                </div>
+
+                <div class="panel-title" style="margin-bottom: 0.6rem;">Auditoría Colectiva Nominal & Fichas de Tutoría</div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Estudiante</th>
+                                <th>Plasticidad</th>
+                                <th>Base (θ)</th>
+                                <th>Concurrente (θ)</th>
+                                <th>Δ Delta</th>
+                                <th>Puntaje Actual</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyAlumnos">
+                            <tr><td colspan="6" style="text-align:center; color:#8a8f9d; padding: 1.5rem;" class="font-mono">Sincronizando clúster de datos...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const HOST_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+            ? "http://localhost:3000"
+            : window.location.origin;
+
+        const sessionToken = localStorage.getItem("dante_token");
+        const rawUser = localStorage.getItem("dante_user");
+        const userObj = rawUser ? JSON.parse(rawUser) : {};
+        const INSTITUTION_ID = userObj.institution_id || "colegio_sandbox_default";
+
+        let CurrentMateria = localStorage.getItem("dante_rector_materia_activa") || "diagnostico_general";
+        let CurrentEpoca = "LIVE_NOW";
+        let AdnChartInstance = null;
+
+        class RectorDashboard {
+            static toggleThemeContraste() {
+                const isLight = document.body.classList.toggle("light-mode");
+                localStorage.setItem("dante_theme", isLight ? "light" : "dark");
+                const icon = document.getElementById("iconContrast");
+                if (icon) {
+                    icon.className = isLight ? "fas fa-moon" : "fas fa-sun";
+                }
+            }
+
+            static cargarTemaGuardado() {
+                const theme = localStorage.getItem("dante_theme");
+                if (theme === "light") {
+                    document.body.classList.add("light-mode");
+                    const icon = document.getElementById("iconContrast");
+                    if (icon) icon.className = "fas fa-moon";
+                }
+            }
+
+            static async procesarCsvMatricula(e) {
+                const file = e.target.files && e.target.files[0];
+                if (!file) return;
+
+                const lbl = document.getElementById("lblStatusCsvIngest");
+                if (lbl) {
+                    lbl.classList.remove("hidden");
+                    lbl.className = "text-[10px] font-mono mt-2 text-amber-400 font-bold";
+                    lbl.innerText = "⏳ Leyendo y procesando archivo CSV...";
+                }
+
+                try {
+                    const text = await file.text();
+                    const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+                    if (lines.length < 2) {
+                        alert("El archivo CSV debe tener una fila de encabezados y al menos un estudiante.");
+                        if (lbl) lbl.innerText = "❌ CSV vacío o inválido.";
+                        return;
+                    }
+
+                    const header = lines[0].toLowerCase();
+                    const sep = header.includes(";") ? ";" : ",";
+                    const cols = header.split(sep).map(c => c.trim().replace(/^["']|["']$/g, ''));
+
+                    const emailIdx = cols.findIndex(c => c.includes("email") || c.includes("correo"));
+                    const nameIdx = cols.findIndex(c => c.includes("nombre") || c.includes("estudiante") || c.includes("name"));
+                    const passIdx = cols.findIndex(c => c.includes("pass") || c.includes("clave"));
+
+                    const estudiantes = [];
+                    for (let i = 1; i < lines.length; i++) {
+                        const row = lines[i].split(sep).map(c => c.trim().replace(/^["']|["']$/g, ''));
+                        const email = emailIdx !== -1 ? row[emailIdx] : row[0];
+                        const nombre = nameIdx !== -1 ? row[nameIdx] : (row[1] || row[0]);
+                        const password = passIdx !== -1 ? row[passIdx] : "Dante2026!";
+                        if (email && nombre) {
+                            estudiantes.push({ email, nombre, password });
+                        }
+                    }
+
+                    if (estudiantes.length === 0) {
+                        alert("No se encontraron registros válidos en el CSV.");
+                        if (lbl) lbl.innerText = "❌ Sin estudiantes válidos.";
+                        return;
+                    }
+
+                    const res = await fetch(`${HOST_URL}/api/admin/bulk-register-students`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-institution-id': INSTITUTION_ID,
+                            'Authorization': `Bearer ${sessionToken}`
+                        },
+                        body: JSON.stringify({
+                            institution_id: INSTITUTION_ID,
+                            estudiantes: estudiantes
+                        })
+                    });
+
+                    const json = await res.json();
+                    if (json && json.success) {
+                        if (lbl) {
+                            lbl.className = "text-[10px] font-mono mt-2 text-emerald-400 font-bold";
+                            lbl.innerText = `✅ Ingestión masiva exitosa: ${estudiantes.length} estudiantes matriculados.`;
+                        }
+                        alert(`✅ Se matricularon exitosamente ${estudiantes.length} estudiantes en la cohorte.`);
+                        this.consultarDatos();
+                    } else {
+                        const msg = json ? json.message : "Error al procesar la matrícula masiva.";
+                        if (lbl) {
+                            lbl.className = "text-[10px] font-mono mt-2 text-rose-400 font-bold";
+                            lbl.innerText = `❌ Error: ${msg}`;
+                        }
+                        alert(`Error: ${msg}`);
+                    }
+                } catch (err) {
+                    console.error("🚨 Error procesando CSV:", err);
+                    if (lbl) {
+                        lbl.className = "text-[10px] font-mono mt-2 text-rose-400 font-bold";
+                        lbl.innerText = `❌ Error: ${err.message}`;
+                    }
+                    alert(`Error al procesar el archivo CSV: ${err.message}`);
+                }
+            }
+
+            static async cargarEpocasHistoricas() {
+                const selector = document.getElementById("selEpocaHistorica");
+                try {
+                    const res = await fetch(`${HOST_URL}/api/admin/listar-epocas?institution_id=${INSTITUTION_ID}`, {
+                        method: 'GET',
+                        headers: { 
+                            'x-institution-id': INSTITUTION_ID,
+                            'Authorization': `Bearer ${sessionToken}`
+                        }
+                    });
+                    const json = await res.json();
+
+                    selector.innerHTML = `<option value="LIVE_NOW">🟢 ÉPOCA VIVA (REDIS RUNTIME)</option>`;
+
+                    if (json && json.success && json.data && json.data.length > 0) {
+                        json.data.forEach(ep => {
+                            const opt = document.createElement("option");
+                            opt.value = ep.id;
+                            const fecha = new Date(ep.creado_at).toLocaleString();
+                            opt.innerText = `📁 SNAPSHOT: ${(ep.materia || 'general').toUpperCase()} (${fecha})`;
+                            selector.appendChild(opt);
+                        });
+                    }
+                } catch (err) {
+                    console.error("🚨 [LOAD EPOCAS EXCEPTION]:", err.message);
+                }
+            }
+
+            static async consultarDatos() {
+                try {
+                    const headerTenant = document.getElementById("lblTenantBannerHeader");
+                    if(headerTenant) headerTenant.innerText = `TENANT: ${INSTITUTION_ID.toUpperCase()}`;
+
+                    let url = `${HOST_URL}/api/cat/auditoria?institution_id=${INSTITUTION_ID}&epoca=${CurrentEpoca}`;
+                    if (CurrentMateria && CurrentMateria !== 'diagnostico_general' && CurrentMateria !== 'todas') {
+                        url += `&materia=${CurrentMateria}`;
+                    }
+
+                    const res = await fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-institution-id': INSTITUTION_ID,
+                            'Authorization': `Bearer ${sessionToken}`
+                        }
+                    });
+                    const json = await res.json();
+
+                    if (json && json.success) {
+                        this.renderizarPanel(json.data || []);
+                        this.renderizarAlertasFatiga(json.alertas_fatiga || []);
+                    }
+                } catch (err) {
+                    console.error("🚨 [SUITE RECTOR SYNC ERROR]:", err.message);
+                }
+            }
+
+            static renderizarAlertasFatiga(alertas) {
+                const contenedor = document.getElementById("uiAlertasContenedor");
+                if (!alertas || alertas.length === 0 || CurrentEpoca !== "LIVE_NOW") {
+                    contenedor.innerHTML = "";
+                    return;
+                }
+                let html = `<div class="panel-title" style="color:var(--alert);">Alertas de Fatiga de Época</div>`;
+                alertas.forEach(a => {
+                    html += `
+                        <div class="clinical-alert-box">
+                            <div class="clinical-alert-title">⚠️ ${a.titulo}</div>
+                            <div class="clinical-alert-body">${a.cuerpo}</div>
+                        </div>
+                    `;
+                });
+                contenedor.innerHTML = html;
+            }
+
+            static renderizarPanel(alumnos) {
+                const tbody = document.getElementById("tbodyAlumnos");
+                
+                if (!alumnos || alumnos.length === 0) {
+                    const materiaNombre = CurrentMateria.replace('_', ' ').toUpperCase();
+                    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#8a8f9d; padding:1.5rem;" class="font-mono">Ninguna sesión viva o progreso activo registrado para esta época en ${materiaNombre}.</td></tr>`;
+                    this.actualizarKPIs(0, 0, 0, 0);
+                    this.dibujarGraficaColectiva([], [], []);
+                    document.getElementById("uiPrescripcionAulaContenedor").style.display = "none";
+                    return;
+                }
+
+                tbody.innerHTML = "";
+                let sumaEstabilidad = 0;
+                let sumaPuntajes = 0;
+                let sumaIRI = 0;
+
+                let serieImpulsividad = [];
+                let serieFatiga = [];
+                let serieRecuperacion = [];
+
+                let totalPriorsAcumulados = { lineal: 0, geometrico: 0, conversion: 0, operacional: 0, count: 0 };
+
+                alumnos.forEach(al => {
+                    const itemsResp = typeof al.items_respondidos === 'string' ? JSON.parse(al.items_respondidos) : (al.items_respondidos || {});
+                    const adn = itemsResp.adn_cognitivo || al.adn_cognitivo || {};
+                    const sesgos = itemsResp.mapa_calor_sesgos || al.mapa_calor_sesges || al.mapa_calor_sesgos || adn.mapa_calor_sesgos || {};
+
+                    let thetaExtraido = null;
+
+                    if (Array.isArray(al.historial_theta) && al.historial_theta.length > 0) {
+                        thetaExtraido = parseFloat(al.historial_theta[al.historial_theta.length - 1]);
+                    } else if (al.theta_final !== undefined && al.theta_final !== null) {
+                        thetaExtraido = parseFloat(al.theta_final);
+                    } else if (al.theta !== undefined && al.theta !== null) {
+                        thetaExtraido = parseFloat(al.theta);
+                    } else if (adn.theta !== undefined && adn.theta !== null) {
+                        thetaExtraido = parseFloat(adn.theta);
+                    }
+
+                    const thFinal = thetaExtraido !== null ? thetaExtraido : 0.0000;
+                    const thInicial = parseFloat(al.theta_inicial !== undefined ? al.theta_inicial : 0.0000);
+                    const delta = thFinal - thInicial;
+                    const deltaClass = delta >= 0 ? "delta-sube" : "delta-baja";
+                    const deltaSigno = delta >= 0 ? "+" : "";
+
+                    const puntajeCalculadoReal = Math.max(1, Math.min(100, Math.round(50 + (thFinal * 13.8))));
+                    const puntajeMostrar = itemsResp.puntaje_escalonado || (al.puntaje_escalonado && parseInt(al.puntaje_escalonado) > 0 ? parseInt(al.puntaje_escalonado) : puntajeCalculadoReal);
+
+                    sumaEstabilidad += parseFloat(adn.estabilidad || 75);
+                    sumaPuntajes += parseInt(puntajeMostrar);
+
+                    serieImpulsividad.push(parseFloat(adn.impulsividad || 20));
+                    serieFatiga.push(parseFloat(adn.fatiga || 0));
+                    serieRecuperacion.push(parseFloat(adn.recuperacion || 59));
+
+                    const iriVal = itemsResp.indice_recuperacion_intelectual !== undefined 
+                        ? parseFloat(itemsResp.indice_recuperacion_intelectual) 
+                        : (al.indice_recuperacion_intelectual !== undefined ? parseFloat(al.indice_recuperacion_intelectual) : 0.59);
+                    
+                    const iccVal = al.indice_curiosidad_conductual !== undefined ? parseFloat(al.indice_curiosidad_conductual) : 0.50;
+                    sumaIRI += iriVal;
+
+                    const sesgosSaneados = sesgosMapSaneado(sesgos);
+                    totalPriorsAcumulados.lineal += parseFloat(sesgosSaneados.attr_heuristica_lineal || 0);
+                    totalPriorsAcumulados.geometrico += parseFloat(sesgosSaneados.attr_error_geometrico || 0);
+                    totalPriorsAcumulados.conversion += parseFloat(sesgosSaneados.attr_omision_conversion || 0);
+                    totalPriorsAcumulados.operacional += parseFloat(sesgosSaneados.attr_inversion_operational || 0);
+                    totalPriorsAcumulados.count++;
+
+                    let tramoTxt = "S2 ANALÍTICO";
+                    let tramoColor = "var(--emerald)";
+                    if (adn.impulsividad > 50) {
+                        tramoTxt = "S1 IMPULSIVO";
+                        tramoColor = "var(--alert)";
+                    }
+
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+                        <td>
+                            <strong style="color:var(--gold); text-transform:uppercase;">${al.estudiante}</strong>
+                            <br>
+                            <a href="/perfil.html?estudiante=${al.estudiante}" class="btn-gemelo-link">👁️ Ver Gemelo Digital</a>
+                        </td>
+                        <td>
+                            <div style="font-size:0.68rem; font-weight:bold; color:var(--emerald);" class="font-mono">IRI: <span style="float:right;">${(iriVal * 100).toFixed(0)}%</span></div>
+                            <div class="mini-heatmap-bar"><div class="mini-heatmap-fill" style="width:${iriVal * 100}%; background:var(--emerald);"></div></div>
+                            
+                            <div style="font-size:0.68rem; font-weight:bold; color:var(--primary); margin-top:0.3rem;" class="font-mono">ICC: <span style="float:right;">${(iccVal * 100).toFixed(0)}%</span></div>
+                            <div class="mini-heatmap-bar"><div class="mini-heatmap-fill" style="width:${iccVal * 100}%; background:var(--primary);"></div></div>
+                            
+                            <div style="font-size:0.65rem; font-weight:bold; color:${tramoColor}; margin-top:0.3rem;" class="font-mono">Estado: ${tramoTxt}</div>
+                        </td>
+                        <td class="font-mono text-slate-400">${thInicial.toFixed(4)}</td>
+                        <td class="font-mono font-bold text-sky-400">${thFinal.toFixed(4)}</td>
+                        <td><span class="badge-delta ${deltaClass}">${deltaSigno}${delta.toFixed(4)}</span></td>
+                        <td>
+                            <div style="font-size:1rem; font-weight:bold; color:var(--emerald);" class="font-mono">${puntajeMostrar} / 100</div>
+                            <div style="font-size:0.6rem; color:#8a8f9d; text-transform:uppercase; margin-top:0.3rem; font-weight:bold;" class="font-mono">Sesgos:</div>
+                            ${this.construirMiniBarrasSesgos(sesgosSaneados)}
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                const count = alumnos.length || 1;
+                this.actualizarKPIs(alumnos.length, Math.round(sumaEstabilidad / count), Math.round(sumaPuntajes / count), Math.round((sumaIRI / count) * 100));
+                this.dibujarGraficaColectiva(serieImpulsividad, serieFatiga, serieRecuperacion);
+                this.calcularPrescripciónAulaMasiva(totalPriorsAcumulados);
+            }
+
+            static construirMiniBarrasSesgos(sesgos) {
+                let html = "";
+                for (const [key, val] of Object.entries(sesgos)) {
+                    const porc = (parseFloat(val) > 1.0 ? parseFloat(val) : parseFloat(val) * 100).toFixed(0);
+                    let color = "var(--emerald)";
+                    if (porc >= 25) color = "var(--gold)";
+                    if (porc >= 55) color = "var(--alert)";
+                    
+                    html += `
+                        <div style="margin-top:0.2rem; display:flex; align-items:center; justify-content:space-between; font-size:0.62rem;" class="font-mono">
+                            <span style="color:#8a8f9d; font-size:0.6rem;">${key.replace('attr_','').replace(/_/g,' ').toUpperCase()}</span>
+                            <span style="color:${color}; font-weight:bold; margin-left:6px;">${porc}%</span>
+                        </div>
+                        <div class="mini-heatmap-bar"><div class="mini-heatmap-fill" style="width:${porc}%; background:${color};"></div></div>
+                    `;
+                }
+                return html;
+            }
+
+            static actualizarKPIs(total, estabilidad, puntaje100, resiliencia) {
+                document.getElementById("kpiTotalEstudiantes").innerText = total;
+                document.getElementById("kpiEstabilidadMedia").innerText = `${isNaN(estabilidad) ? 0 : estabilidad}%`;
+                
+                const p500 = Math.round((puntaje100 / 100) * 500);
+                document.getElementById("kpiPuntaje500Promedio").innerText = `${isNaN(p500) ? 0 : p500} / 500 pts`;
+                document.getElementById("kpiResilienciaMedia").innerText = `${isNaN(resiliencia) ? 0 : resiliencia}%`;
+            }
+
+            static calcularPrescripciónAulaMasiva(priors) {
+                const box = document.getElementById("uiPrescripcionAulaContenedor");
+                const txt = document.getElementById("lblPrescripcionAulaTexto");
+                const btn = document.getElementById("btnBuscarEstrategiaWeb");
+                
+                if (priors.count === 0 || CurrentEpoca !== "LIVE_NOW") {
+                    box.style.display = "none";
+                    return;
+                }
+
+                const avgLineal = priors.lineal / priors.count;
+                const avgGeometrico = priors.geometrico / priors.count;
+                const avgConversion = priors.conversion / priors.count;
+                const avgOperacional = priors.operacional / priors.count;
+
+                const maxPriorCoherte = Math.max(avgLineal, avgGeometrico, avgConversion, avgOperacional);
+                box.style.display = "block";
+
+                let materiaCapitalizada = CurrentMateria.replace('_', ' ').toUpperCase();
+
+                if (maxPriorCoherte <= 0.15) {
+                    txt.innerText = `Felicidades Rector. La cohorte institucional demuestra un control óptimo de sesgos en ${materiaCapitalizada}. Se aconseja elevar la exigencia de las pruebas globales a ítems de alta complejidad.`;
+                    btn.href = `https://www.google.com/search?q=ejercicios+avanzados+icfes+${CurrentMateria}`;
+                    return;
+                }
+
+                if (maxPriorCoherte === avgOperacional || maxPriorCoherte === avgLineal) {
+                    txt.innerText = `Atención Rector: Se registra un desborde crítico en el nodo de 'Inversión Operacional Estructural' (Sistema 1). Los docentes deben dedicar los próximos 15 minutos en el tablero a desarmar oraciones/ecuaciones aislando conectores sintácticos.`;
+                    btn.href = `https://www.google.com/search?q=estrategias+didacticas+para+despeje+de+ecuaciones+algebraicas+secundaria`;
+                } else if (maxPriorCoherte === avgConversion) {
+                    txt.innerText = `Atención Rector: La cohorte presenta una vulnerabilidad por 'Omisión de Conversión de Magnitudes'. Prescriba un paso intermedio obligatorio en guías académicas donde se rotulen unidades antes de computar.`;
+                    btn.href = `https://www.google.com/search?q=actividades+de+conversion+de+unidades+de+medida+secundaria`;
+                } else {
+                    txt.innerText = `Atención Rector: El motor de Dante OS detecta un predominio de 'Errores Geométricos / Perimetrales' en la promoción. Se prescribe realizar micro-ejercicios visuales en el área de ciencias/matemáticas.`;
+                    btn.href = `https://www.google.com/search?q=como+ensenar+perimetro+y+area+de+figuras+compuestas`;
+                }
+            }
+
+            static dibujarGraficaColectiva(impulsividad, fatiga, recuperacion) {
+                let datosImp = [...impulsividad];
+                let datosFat = [...fatiga];
+                let datosRec = [...recuperacion];
+                let categorias = Array.from({length: datosImp.length}, (_, i) => `Al. #${i+1}`);
+
+                if (datosImp.length === 0) {
+                    datosImp = [0, 0, 0]; datosFat = [0, 0, 0]; datosRec = [0, 0, 0];
+                    categorias = ['Sin Datos', 'Caché Vacía', 'Línea Base'];
+                } else if (datosImp.length === 1) {
+                    datosImp.push(40, 20); datosFat.push(20, 10); datosRec.push(60, 85);
+                    categorias = ['Muestra Viva (Sandbox)', 'Cohorte Promedio País', 'Límite de Asimilación'];
+                } else if (datosImp.length === 2) {
+                    datosImp.push(30); datosFat.push(15); datosRec.push(75);
+                    categorias.push('Límite de Asimilación');
+                }
+
+                const options = {
+                    series: [
+                        { name: 'Impulsividad %', data: datosImp },
+                        { name: 'Fatiga %', data: datosFat },
+                        { name: 'Recuperación Error %', data: datosRec }
+                    ],
+                    chart: { type: 'radar', height: 260, toolbar: { show: false }, background: 'transparent', animations: { enabled: false } },
+                    colors: ['#e74c3c', '#e67e22', '#2ecc71'],
+                    stroke: { width: 2 },
+                    fill: { opacity: 0.12 },
+                    markers: { size: 3 },
+                    theme: { mode: 'dark' },
+                    xaxis: { 
+                        categories: categorias,
+                        labels: { style: { colors: ['#9499a7', '#9499a7', '#9499a7'], fontSize: '10px', fontFamily: 'JetBrains Mono' } }
+                    },
+                    yaxis: { show: false, max: 100 }
+                };
+
+                const el = document.getElementById("chartAdnColectivo");
+                el.innerHTML = "";
+                
+                if (AdnChartInstance && typeof AdnChartInstance.destroy === 'function') {
+                    try { AdnChartInstance.destroy(); } catch(e){}
+                }
+
+                AdnChartInstance = new ApexCharts(el, options);
+                AdnChartInstance.render();
+            }
+
+            static async ejecutarCierreEpoca() {
+                if (!confirm("🚨 ADVERTENCIA DANTE OS:\n¿Está seguro de cerrar la Época actual? Se consolidará un reporte inmutable en Supabase y se purgará la memoria volátil de Redis.")) return;
+                try {
+                    const res = await fetch(`${HOST_URL}/api/admin/reset-epoca`, {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json', 
+                            'x-institution-id': INSTITUTION_ID,
+                            'Authorization': `Bearer ${sessionToken}`
+                        },
+                        body: JSON.stringify({ materia: CurrentMateria, institution_id: INSTITUTION_ID })
+                    });
+                    const json = await res.json();
+                    
+                    alert(`✅ CONSOLIDACIÓN EXITOSA:\n\n${json.message || "Instantánea guardada con éxito en Supabase."}`);
+                    location.reload();
+                } catch(e) {
+                    console.error(e);
+                    alert("Cortocircuito en el pipeline de cierre de época.");
+                }
+            }
+
+            static descargarReporteClinico() {
+                if (CurrentEpoca === "LIVE_NOW") {
+                    window.open('/reporte.html?rol=rector', '_blank');
+                    return;
+                }
+                window.open(`${HOST_URL}/api/cat/reporte-pdf/${CurrentEpoca}`, '_blank');
+            }
+
+            static async matricularEstudiante() {
+                const input = document.getElementById("txtNuevoAlumno");
+                const nombre = input.value.trim();
+                if (!nombre) return;
+
+                try {
+                    const res = await fetch(`${HOST_URL}/api/admin/registrar-estudiante`, {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json', 
+                            'x-institution-id': INSTITUTION_ID,
+                            'Authorization': `Bearer ${sessionToken}`
+                        },
+                        body: JSON.stringify({ nombreEstudiante: nombre, institution_id: INSTITUTION_ID })
+                    });
+                    const json = await res.json();
+                    alert(json.message || "Estudiante matriculado con éxito.");
+                    input.value = "";
+                    location.reload();
+                } catch (err) {
+                    console.error(err);
+                }
+            }
+
+            static cambiarMateria(materia, element) {
+                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                if (element) {
+                    element.classList.add('active');
+                } else {
+                    const targetBtn = document.querySelector(`[data-materia="${materia}"]`);
+                    if (targetBtn) targetBtn.classList.add('active');
+                }
+                CurrentMateria = materia;
+                localStorage.setItem("dante_rector_materia_activa", materia);
+                this.consultarDatos();
+            }
+
+            static cambiarEpocaFiltro(valor) {
+                CurrentEpoca = valor;
+                const streamTag = document.getElementById("uiStatusStream");
+                const radarTitle = document.getElementById("lblTituloRadar");
+                const btnPDF = document.getElementById("btnExportarPDF");
+
+                if (valor === "LIVE_NOW") {
+                    streamTag.innerHTML = `<div class="pulse-dot"></div>Stream Activo`;
+                    streamTag.style.color = "var(--emerald)";
+                    radarTitle.innerText = "Evolución ADN Cognitivo Colectivo";
+                    btnPDF.style.display = "none";
+                } else {
+                    streamTag.innerHTML = `📁 Reporte Archivo`;
+                    streamTag.style.color = "var(--gold)";
+                    radarTitle.innerText = `Instantánea de Épocas Históricas Consolidadas`;
+                    btnPDF.style.display = "block";
+                }
+                this.consultarDatos();
+            }
+        }
+
+        function sesgosMapSaneado(mapaSesgos) {
+            const safe = mapaSesgos || {};
+            return {
+                attr_heuristica_lineal: safe.attr_heuristica_lineal || safe.HEURISTICA_LINEAL || safe.lineal || 0.98,
+                attr_error_geometrico: safe.attr_error_geometrico || safe.ERROR_GEOMETRICO || safe.geometrico || 0.50,
+                attr_omision_conversion: safe.attr_omision_conversion || safe.OMISION_CONVERSION || safe.conversion || 0.50,
+                attr_inversion_operational: safe.attr_inversion_operational || safe.attr_inversion_operacional || safe.INVERSION_OPERATIONAL || safe.INVERSION_OPERACIONAL || safe.operacional || 0.98
+            };
+        }
+
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*";
+        function decryptText() {
+            const elements = document.querySelectorAll('[data-final]');
+            elements.forEach((el, index) => {
+                const finalStr = el.getAttribute('data-final');
+                if (!finalStr) return;
+                let iterations = 0; const maxIterations = 10 + (index * 2); 
+
+                const interval = setInterval(() => {
+                    let randomStr = finalStr.split('').map((char, i) => {
+                        if(char === ' ') return ' ';
+                        if(i < (iterations / maxIterations) * finalStr.length) return finalStr[i];
+                        return chars[Math.floor(Math.random() * chars.length)];
+                    }).join('');
+                    el.innerText = randomStr; iterations++;
+                    if (iterations >= maxIterations) { clearInterval(interval); el.innerText = finalStr; }
+                }, 30);
+            });
+        }
+
+        const bgCanvas = document.getElementById('dante-fractal-bg'); 
+        const bgCtx = bgCanvas ? bgCanvas.getContext('2d') : null;
+        let qParticles = [];
+
+        function initCanvas() {
+            if (!bgCanvas || !bgCtx) return;
+            bgCanvas.width = window.innerWidth; bgCanvas.height = window.innerHeight;
+
+            for(let i=0; i<60; i++) {
+                qParticles.push({ 
+                    x: bgCanvas.width/2, 
+                    y: bgCanvas.height/2, 
+                    s: Math.random() * 1.5, 
+                    v: Math.random()*0.35 + 0.1, 
+                    angle: i * 137.5 * (Math.PI / 180), 
+                    dist: 0 
+                });
+            }
+            animateCanvas();
+        }
+
+        function animateCanvas() {
+            if (!bgCtx) return;
+            bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+            qParticles.forEach(p => {
+                p.dist += p.v; 
+                let x = bgCanvas.width/2 + Math.cos(p.angle) * p.dist; 
+                let y = bgCanvas.height/2 + Math.sin(p.angle) * p.dist;
+                if(x < 0 || x > bgCanvas.width || y < 0 || y > bgCanvas.height) p.dist = 0;
+                bgCtx.beginPath(); bgCtx.arc(x, y, p.s, 0, Math.PI*2); bgCtx.fillStyle = '#51e2f5'; bgCtx.globalAlpha = 0.22; bgCtx.fill();
+            });
+            requestAnimationFrame(animateCanvas);
+        }
+
+        window.onload = () => {
+            RectorDashboard.cargarTemaGuardado();
+            if (!sessionToken) {
+                alert("🚨 CONTROL PORTAL: Credenciales ausentes. Redirigiendo a pasarela.");
+                window.location.href = "/login.html";
+                return;
+            }
+
+            const activeMat = localStorage.getItem("dante_rector_materia_activa") || "diagnostico_general";
+            const initialBtn = document.querySelector(`[data-materia="${activeMat}"]`);
+            RectorDashboard.cambiarMateria(activeMat, initialBtn);
+
+            RectorDashboard.cargarEpocasHistoricas(); 
+            initCanvas();
+            setTimeout(decryptText, 300);
+            
+            setInterval(() => { 
+                if (CurrentEpoca === "LIVE_NOW" && !document.hidden) {
+                    RectorDashboard.consultarDatos(); 
+                }
+            }, 15000);
+        };
+    </script>
+</body>
+</html>

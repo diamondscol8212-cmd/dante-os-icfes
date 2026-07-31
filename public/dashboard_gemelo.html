@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dante OS // Gemelo Digital</title>
+    <style>
+        body {
+            background-color: #09090b;
+            color: #f4f4f5;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            padding: 40px 20px;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+        }
+        .dashboard-card {
+            background: #09090b;
+            color: #f4f4f5;
+            padding: 30px;
+            border-radius: 16px;
+            border: 1px solid #27272a;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        h2 {
+            margin: 0 0 5px 0;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.05em;
+            background: linear-gradient(to right, #fbbf24, #fef08a);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .student-id {
+            font-size: 12px;
+            color: #71717a;
+            font-family: monospace;
+            margin: 0 0 15px 0;
+        }
+        .selector-box {
+            margin-bottom: 20px;
+        }
+        select.select-student {
+            width: 100%;
+            padding: 10px;
+            background: #18181b;
+            border: 1px solid #27272a;
+            color: #fbbf24;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+        }
+        .panel {
+            background: #18181b;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #27272a;
+        }
+        h4 {
+            margin: 0 0 15px 0;
+            color: #a1a1aa;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .thermometer-container {
+            height: 16px;
+            background: #27272a;
+            border-radius: 9999px;
+            position: relative;
+            margin: 35px 0 20px 0;
+        }
+        .confidence-band {
+            position: absolute;
+            height: 100%;
+            background: rgba(245, 158, 11, 0.25);
+            border-radius: 9999px;
+            transition: all 0.5s ease;
+        }
+        .pin {
+            position: absolute;
+            top: -6px;
+            width: 28px;
+            height: 28px;
+            background: #fbbf24;
+            border-radius: 50%;
+            border: 3px solid #09090b;
+            transform: translateX(-50%);
+            transition: all 0.5s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+        }
+        .metrics-grid {
+            display: flex;
+            justify-content: space-between;
+            text-align: center;
+            font-family: monospace;
+            font-size: 12px;
+            color: #a1a1aa;
+            margin-top: 25px;
+            gap: 10px;
+        }
+        .metric-box {
+            flex: 1;
+            background: #09090b;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #27272a;
+            margin: 0 4px;
+        }
+        .metric-box strong {
+            display: block;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+        .footer-error {
+            text-align: center;
+            font-size: 11px;
+            color: #71717a;
+            font-family: monospace;
+            margin-top: 15px;
+        }
+        .loading-text {
+            color: #71717a;
+            font-family: monospace;
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="dashboard-card">
+    <h2>DANTE OS // DIGITAL TWIN</h2>
+    <div class="student-id" id="student-label">ID: Cargando...</div>
+
+    <!-- SELECTOR SUPERVISOR RECTOR -->
+    <div class="selector-box">
+        <select id="selStudent" class="select-student" onchange="cambiarEstudianteActivo(this.value)">
+            <option value="elizabeth">🔍 Ver Gemelo: ELIZABETH</option>
+            <option value="samantha">🔍 Ver Gemelo: SAMANTHA</option>
+            <option value="rector">🔍 Ver Gemelo: RECTOR</option>
+            <option value="diogenes">🔍 Ver Gemelo: DIOGENES</option>
+        </select>
+    </div>
+    
+    <div class="panel" id="main-panel">
+        <div class="loading-text" id="loader">📡 Sincronizando modelo psicométrico concurrente...</div>
+        
+        <div id="content" style="display: none;">
+            <h4>Termómetro de Certeza Bayesiana</h4>
+            
+            <div class="thermometer-container">
+                <div class="confidence-band" id="band"></div>
+                <div class="pin" id="pin-marker"></div>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metric-box">Mínimo<strong style="color: #fff;" id="val-min">0</strong></div>
+                <div class="metric-box">Puntaje<strong style="color: #fbbf24;" id="val-target">50</strong></div>
+                <div class="metric-box">Máximo<strong style="color: #fff;" id="val-max">100</strong></div>
+            </div>
+            <div class="footer-error" id="val-error">Margen de Error: Calibrando...</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const HOST_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+        ? "http://localhost:3000"
+        : window.location.origin;
+
+    const sessionToken = localStorage.getItem("dante_token");
+    const rawUser = localStorage.getItem("dante_user");
+    const userObj = rawUser ? JSON.parse(rawUser) : {};
+    
+    let currentStudent = userObj.email ? userObj.email.split('@')[0].toLowerCase().trim() : "elizabeth";
+    const INSTITUTION_ID = userObj.institution_id || "colegio_sandbox_default";
+
+    async function consultarGemeloDigital(studentId) {
+        document.getElementById('loader').style.display = 'block';
+        document.getElementById('content').style.display = 'none';
+
+        try {
+            const response = await fetch(`${HOST_URL}/api/cat/gemelo/${studentId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-institution-id': INSTITUTION_ID,
+                    'Authorization': `Bearer ${sessionToken}`
+                }
+            });
+            if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+            
+            const resData = await response.json();
+            if (resData.success && resData.gemelo) {
+                const gemelo = resData.gemelo;
+                const esc = gemelo.escalonamiento_icfes;
+
+                document.getElementById('student-label').innerText = `ID: ${studentId.toUpperCase()} (${resData.origen || 'SUPABASE LIVE'})`;
+                document.getElementById('val-min').innerText = esc.intervalo_95[0];
+                document.getElementById('val-target').innerText = esc.puntaje_estimado;
+                document.getElementById('val-max').innerText = esc.intervalo_95[1];
+                document.getElementById('val-error').innerText = `Margen de Error Bayesiano: ±${esc.margen_error}`;
+
+                document.getElementById('band').style.left = `${esc.intervalo_95[0]}%`;
+                document.getElementById('band').style.width = `${Math.max(2, esc.intervalo_95[1] - esc.intervalo_95[0])}%`;
+                document.getElementById('pin-marker').style.left = `${esc.puntaje_estimado}%`;
+
+                document.getElementById('loader').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+            }
+        } catch (error) {
+            document.getElementById('loader').innerHTML = `<span style="color: #ff6b6b;">🚨 Error perimetral al conectar al backend: ${error.message}</span>`;
+        }
+    }
+
+    function cambiarEstudianteActivo(studentId) {
+        currentStudent = studentId;
+        consultarGemeloDigital(currentStudent);
+    }
+
+    window.onload = () => {
+        const sel = document.getElementById("selStudent");
+        if (sel) sel.value = currentStudent;
+        consultarGemeloDigital(currentStudent);
+    };
+</script>
+
+</body>
+</html>
