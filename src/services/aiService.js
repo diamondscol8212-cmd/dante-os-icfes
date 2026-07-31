@@ -12,6 +12,7 @@ export async function generarInterpretacionCognitiva(estudiante, area, metricas)
         cronica_narrativa: `El análisis de trayectoria para ${estudianteClean} registra una consistencia estable en el bloque evaluativo de ${areaClean}. Se evidencia un proceso de resolución con ritmo controlado.`,
         desviacion_enfoque: "Desajuste transitorio por velocidad adaptativa.",
         estrategia_autorregulacion: "Se sugiere mantener una lectura pausada de los enunciados y validar opciones alternativas antes del envío.",
+        justificacion_matematica_xai: "Cálculo fundamentado en el Modelo IRT 3PL mediante Máxima Verosimilitud (MLE). La estimación convergida garantiza neutralidad frente a dispositivos.",
         plan_entrenamiento: [
             "Días 1-3: Repasa los fundamentos de operaciones distributivas en álgebra.",
             "Días 4-5: Practica 5 ejercicios sin límite de tiempo para concentrarte en el procedimiento.",
@@ -31,7 +32,7 @@ export async function generarInterpretacionCognitiva(estudiante, area, metricas)
         const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
 
         const prompt = `
-        Actúas como un traductor psicométrico experto y amigable para Dante OS. Tu objetivo es interpretar métricas cuantitativas complejas para un estudiante de colegio de 16 años de forma motivadora y comprensible.
+        Actúas como un traductor psicométrico de IA Explicable (XAI) para Dante OS. Tu objetivo es interpretar métricas cuantitativas complejas para un estudiante de colegio de 16 años de forma motivadora, justa y totalmente transparente (XAI - Explainable AI).
         
         DATOS DE RENDIMIENTO DEL ESTUDIANTE:
         - Estudiante: ${estudiante.toUpperCase()}
@@ -43,23 +44,25 @@ export async function generarInterpretacionCognitiva(estudiante, area, metricas)
         - Índice de Curiosidad / Esfuerzo en Reactivos Complejos (ICC): ${metricas.estabilidad}%
         - Peor sesgo del mapa de calor: ${metricas.sesgoDominante}
         
-        TAREA:
-        Genera un diagnóstico psicométrico y diseña un Plan de Entrenamiento de 10 días con 4 fases estructuradas para corregir el sesgo conductual dominante detected.
+        TAREA DE EXPLICABILIDAD (XAI):
+        Genera un diagnóstico psicométrico con justificación matemática transparente, identificando los puntos de inflexión cognitiva y diseñando un Plan de Entrenamiento de 10 días con 4 fases estructuradas.
         
         REGLAS DE SEGURIDAD Y ESTILO:
         1. NUNCA utilices terminología médica, psiquiátrica ni clínica (prohibidas palabras como: clínico, prescripción, ADN, forense, TDAH, autismo, depresión, ansiedad, coeficiente intelectual).
         2. Mantén un tono educativo, analítico, empático y de orientación pedagógica.
         3. En la cronica_narrativa, explica de forma amable cómo piensa el alumno basándote en la combinación de su velocidad, impulsividad y recuperación.
-        4. El plan_entrenamiento debe contener 4 fases secuenciales y accionables de estudio, distribuidas para ejecutarse durante los próximos 10 días (ej: 'Días 1-3: ...', 'Días 4-6: ...').
-        5. No generes textos largos. Sé conciso y directo al grano.
+        4. En justificacion_matematica_xai, explica el origen exacto del resultado theta a partir de sus respuestas y la información de Fisher de los reactivos evaluados.
+        5. El plan_entrenamiento debe contener 4 fases secuenciales y accionables de estudio para los próximos 10 días.
+        6. No generes textos largos. Sé conciso y directo al grano.
 
-        IMPORTANTE: Devuelve ÚNICAMENTE un objeto JSON válido con la estructura descrita abajo. No incluyas explicaciones adicionales, ni introducciones, ni bloques de código markdown (prohibido usar \`\`\`json y \`\`\`). El resultado debe ser parseable directamente por JSON.parse().
+        IMPORTANTE: Devuelve ÚNICAMENTE un objeto JSON válido. No incluyas markdown (\`\`\`json).
 
         ESTRUCTURA DEL JSON REQUERIDA:
         {
           "cronica_narrativa": "Escribe aquí la crónica adaptada de máximo 3 líneas.",
           "desviacion_enfoque": "Escribe aquí el reto o desajuste de enfoque principal en máximo 1 línea.",
-          "estrategia_autorregulacion": "Escribe aquí la recomendación o técnica de estudio en máximo 2 lines.",
+          "estrategia_autorregulacion": "Escribe aquí la recomendación o técnica de estudio en máximo 2 líneas.",
+          "justificacion_matematica_xai": "Explicación transparente en 2 líneas sobre la convergencia bayesiana del valor Theta y el margen de error SEM.",
           "plan_entrenamiento": [
             "Días 1-3: Acción detallada para corregir el sesgo detectado.",
             "Días 4-5: Acción detallada.",
