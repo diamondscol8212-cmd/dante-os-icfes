@@ -3,7 +3,46 @@ import crypto from 'crypto';
 import { supabase } from '../../supabaseClient.js';
 import { redis } from '../../redisClient.js';
 import { generarTokenJWT, setHttpOnlyCookie, verifyToken, optionalToken } from '../middleware.js';
-import { cifrarDatosSensibles, descifrarDatosSensibles } from '../services/encryptionService.js';
+// 🛡️ Motor de Cifrado en Reposo AES-256-GCM para PII y datos sensibles (Autónomo)
+const ALGORITHM = 'aes-256-gcm';
+const IV_LENGTH = 12;
+const MASTER_SECRET = process.env.ENCRYPTION_KEY || process.env.JWT_SECRET || 'dante_os_enterprise_master_encryption_key_2026_aes256_secure_#9921';
+const ENCRYPTION_KEY = crypto.createHash('sha256').update(MASTER_SECRET).digest();
+
+export function cifrarDatosSensibles(data) {
+    if (data === null || data === undefined) return null;
+    try {
+        const textToEncrypt = typeof data === 'object' ? JSON.stringify(data) : String(data);
+        const iv = crypto.randomBytes(IV_LENGTH);
+        const cipher = crypto.createCipheriv(ALGORITHM, ENCRYPTION_KEY, iv);
+        let encrypted = cipher.update(textToEncrypt, 'utf8', 'hex');
+        encrypted += cipher.final('hex');
+        const authTag = cipher.getAuthTag().toString('hex');
+        return `${iv.toString('hex')}:${authTag}:${encrypted}`;
+    } catch (error) {
+        console.error("🚨 [CRYPTO ERROR] Fallo al cifrar datos sensibles:", error.message);
+        return null;
+    }
+}
+
+export function descifrarDatosSensibles(encryptedString) {
+    if (!encryptedString || typeof encryptedString !== 'string') return encryptedString;
+    if (!encryptedString.includes(':')) return encryptedString;
+    try {
+        const parts = encryptedString.split(':');
+        if (parts.length !== 3) return encryptedString;
+        const iv = Buffer.from(parts[0], 'hex');
+        const authTag = Buffer.from(parts[1], 'hex');
+        const encryptedText = parts[2];
+        const decipher = crypto.createDecipheriv(ALGORITHM, ENCRYPTION_KEY, iv);
+        decipher.setAuthTag(authTag);
+        let decrypted = decipher.update(encryptedText, 'hex', 'utf8');
+        decrypted += decipher.final('utf8');
+        try { return JSON.parse(decrypted); } catch { return decrypted; }
+    } catch (error) {
+        return encryptedString;
+    }
+}
 
 const router = Router();
 const SERVER_VERSION = "v21.1.0-ENTERPRISE_PRODUCTION";
