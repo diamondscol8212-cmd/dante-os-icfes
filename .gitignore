@@ -1,4 +1,13 @@
-git init
-git add .
-git commit -m "feat: blindaje de seguridad, ruteo e integración viva con gemini-3.5-flash"
-git branch -M main
+# Environment variables (SECRETS - NEVER COMMIT)
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+
+# Build and temp
+dist/
+build/
+*.log
+.DS_Store
