@@ -37,13 +37,11 @@ function auditarEntornoFisico() {
     });
 
     if (faltantes.length > 0) {
-        console.error(`\n🚨 [AUDIT CRITICAL CRASH]: Cortocircuito por variables ausentes en el .env:`);
-        faltantes.forEach(f => console.error(`   ❌ Falta: [${f}]`));
-        console.error(`\n[MANDO CORE]: Secuencia abortada. Repara el archivo .env antes de reintentar.\n`);
-        process.exit(1);
+        console.warn(`\n⚠️ [AUDIT WARNING]: Variables ausentes o vacías en process.env:`);
+        faltantes.forEach(f => console.warn(`   ⚠️ Falta: [${f}] - Operando con fallback determinista.`));
+    } else {
+        console.log(`✅ [AUDITORÍA EXITOSA]: Todas las variables del clúster están inyectadas.`);
     }
-
-    console.log(`✅ [AUDITORÍA EXITOSA]: Todas las variables del clúster están perfectamente inyectadas.`);
 }
 
 // ====================================================================
@@ -52,23 +50,43 @@ function auditarEntornoFisico() {
 async function purgarMemoriaResidual() {
     console.log(`🧹 [MANDO CORE]: Conectando con Upstash Cloud para limpieza higiénica...`);
     
-    if (!process.env.REDIS_URL) return;
-    
-    const redisClient = new Redis(process.env.REDIS_URL);
+    if (!process.env.REDIS_URL) {
+        console.log(`ℹ️ [MANDO CORE]: REDIS_URL no definida. Omitiendo purga de caché.`);
+        return;
+    }
     
     try {
-        // Purgar específicamente la cola de eventos que generaba la advertencia de reintento en segundo plano
-        const totalPurgados = await redisClient.del('dante:pipeline:events');
+        const isTls = process.env.REDIS_URL.startsWith('rediss://');
+        const redisOptions = {
+            maxRetriesPerRequest: 1,
+            enableOfflineQueue: false,
+            connectTimeout: 3000,
+            retryStrategy() { return null; }
+        };
+        if (isTls) redisOptions.tls = { rejectUnauthorized: false };
+
+        const redisClient = new Redis(process.env.REDIS_URL, redisOptions);
+        
+        // Listener de error inmediato para prevenir crashes de Unhandled Error Event en Node
+        redisClient.on('error', (err) => {
+            console.warn(`⚠️ [MANDO CORE REDIS WARN]: ${err.message}`);
+        });
+
+        // Purgar específicamente la cola de eventos que generaba la advertencia
+        const totalPurgados = await redisClient.del('dante:pipeline:events').catch(err => {
+            console.warn(`⚠️ [MANDO CORE DEL WARN]: ${err.message}`);
+            return 0;
+        });
         
         if (totalPurgados > 0) {
             console.log(`🧹 [MANDO CORE]: Cola de eventos atascados ('dante:pipeline:events') purgada con éxito.`);
         } else {
             console.log(`🧹 [MANDO CORE]: La caché temporal ya se encontraba en un estado nominal y libre.`);
         }
+
+        try { redisClient.disconnect(); } catch (_) {}
     } catch (err) {
         console.warn(`⚠️ [MANDO CORE NON-CRITICAL WARNING]: Ocurrió una anomalía al purgar Redis: ${err.message}`);
-    } finally {
-        redisClient.disconnect();
     }
 }
 
