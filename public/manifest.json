@@ -1,21 +1,27 @@
 {
   "short_name": "DanteOS",
   "name": "Dante OS - Entrenamiento Adaptativo ICFES",
+  "description": "Plataforma EdTech de evaluación adaptativa por computador (CAT) y perfilamiento cognitivo con soporte PWA Offline.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#08090c",
+  "theme_color": "#51e2f5",
+  "categories": ["education", "productivity"],
   "icons": [
     {
       "src": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=192&h=192&q=80",
       "type": "image/jpeg",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "any maskable"
     },
     {
       "src": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=512&h=512&q=80",
       "type": "image/jpeg",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any maskable"
     }
-  ],
-  "start_url": "./index.html",
-  "background_color": "#0a0a12",
-  "theme_color": "#00f0ff",
-  "display": "standalone",
-  "orientation": "portrait-primary"
+  ]
 }
+
