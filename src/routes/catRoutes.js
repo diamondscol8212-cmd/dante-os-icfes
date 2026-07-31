@@ -60,31 +60,37 @@ router.post('/interactuar', async (req, res) => {
 router.get('/gemelo/:id', verifyToken, validateInstitution, async (req, res) => {
     try {
         const studentIdRaw = req.params.id;
-        if (!studentIdRaw || typeof studentIdRaw !== 'string') {
-            return res.status(400).json({ success: false, error: "Identificador de estudiante requerido." });
-        }
 
-        // 🛡️ SANITIZACIÓN ESTRICTA DE ENTRADA: Permite solo alfanuméricos, guiones, puntos y @
-        const safeIdPattern = /^[a-zA-Z0-9._\-@]+$/;
-        if (!safeIdPattern.test(studentIdRaw.trim()) || studentIdRaw.length > 128) {
-            return res.status(400).json({
-                success: false,
-                error: "Sintaxis anómala en el ID de estudiante. Formato no válido o entrada insegura."
+        // 🛡️ VALIDACIÓN Y SANITIZACIÓN ESTRICTA DE ENTRADA (Previene inyección y entradas anómalas):
+        if (!studentIdRaw || typeof studentIdRaw !== 'string') {
+            return res.status(400).json({ 
+                success: false, 
+                error: "400 Bad Request: Identificador de estudiante requerido y debe ser una cadena válida." 
             });
         }
 
+        // Regex estricta previa a procesamiento: solo alfanuméricos, guiones, puntos y @
+        const safeIdRegex = /^[a-zA-Z0-9._\-@]+$/;
+        if (!safeIdRegex.test(studentIdRaw.trim()) || studentIdRaw.length > 128) {
+            return res.status(400).json({
+                success: false,
+                error: "400 Bad Request: Sintaxis anómala o insegura en el parámetro :id del estudiante. Entrada rechazada."
+            });
+        }
+
+        // Procesar y sanitizar el ID del estudiante antes de consultar la base de datos
         const studentIdSaneado = String(studentIdRaw).toLowerCase().trim().split('@')[0];
 
         // 🛡️ AISLAMIENTO DE ROLES Y PRIVACIDAD (BAC Protection - Broken Access Control):
         const reqUserId = String(req.user.user_id || req.user.id || req.user.email || req.user.estudiante || '').toLowerCase().trim().split('@')[0];
         const reqRole = String(req.user.role || req.user.rol || 'estudiante').toLowerCase().trim();
-        const privilegedRoles = ['admin', 'rector', 'profesor', 'auditor'];
+        const privilegedRoles = ['admin', 'rector', 'profesor', 'coordinador', 'auditor'];
 
-        // Si el usuario es rol estudiante, solo puede consultar su propio gemelo digital
+        // Verificar que el :id solicitado coincida obligatoriamente con req.user.user_id O que el rol tenga privilegios superiores
         if (!privilegedRoles.includes(reqRole) && reqUserId !== studentIdSaneado) {
             return res.status(403).json({
                 success: false,
-                error: "Acceso prohibido: Control de Acceso (BAC). No posee privilegios para consultar el gemelo digital de otro usuario."
+                error: "403 Forbidden: Acceso denegado. No posee permisos para consultar el gemelo digital de otro usuario."
             });
         }
 
