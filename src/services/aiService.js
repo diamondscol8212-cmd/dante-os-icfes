@@ -69,11 +69,15 @@ export async function generarInterpretacionCognitiva(estudiante, area, metricas)
         }
         `;
 
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000); // 8s timeout for AI response
+
         const response = await globalThis.fetch(url, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
+            signal: controller.signal,
             body: JSON.stringify({
                 contents: [{
                     parts: [{ text: prompt }]
@@ -81,20 +85,30 @@ export async function generarInterpretacionCognitiva(estudiante, area, metricas)
             })
         });
 
+        clearTimeout(timeoutId);
+
         if (!response.ok) {
             const errText = await response.text();
             throw new Error(`HTTP API Error: ${response.status} - ${errText}`);
         }
 
         const data = await response.json();
-        const responseText = data.candidates[0].content.parts[0].text;
+        const responseText = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
         const jsonLimpio = responseText
             .replace(/```json/g, "")
             .replace(/```/g, "")
             .trim();
 
-        return JSON.parse(jsonLimpio);
+        try {
+            return JSON.parse(jsonLimpio);
+        } catch (parseErr) {
+            const jsonMatch = jsonLimpio.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                return JSON.parse(jsonMatch[0]);
+            }
+            throw parseErr;
+        }
 
     } catch (error) {
         console.error("⚠️ [GEMINI DIRECT REST EXCEPTION]: Fallo en la generación:", error.message);
