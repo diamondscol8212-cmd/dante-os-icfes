@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import crypto from 'crypto';
 import { supabase } from '../../supabaseClient.js';
+import { generarTokenJWT } from '../middleware';
 
 const router = Router();
 const SERVER_VERSION = "v21.1.0-ENTERPRISE_PRODUCTION";
@@ -159,6 +160,16 @@ router.post('/login-perimetral', async (req, res) => {
 
         const onboardingCompletado = esOnboardingCompletadoEnDB;
 
+        // 🛡️ GENERACIÓN DE TOKEN JWT FIRMADO CON CLAIMS CORPORATIVOS
+        const jwtToken = generarTokenJWT({
+            user_id: usuario.id || usuario.email || studentAlias,
+            email: usuario.email || `${identifierClean}@danteos.edu.co`,
+            role: userRole,
+            rol: userRole,
+            institution_id: usuario.institution_id || tenantClean,
+            estudiante: studentAlias
+        });
+
         // 🎯 LÓGICA DE REDIRECCIÓN DINÁMICA
         let rutaRedireccion = 'index.html';
         if (userRole === 'rector') {
@@ -172,14 +183,15 @@ router.post('/login-perimetral', async (req, res) => {
         return res.status(200).json({
             success: true,
             message: "Autenticación perimetral exitosa.",
-            token_session: sessionToken,
+            token: jwtToken,
+            token_session: jwtToken,
             user: { 
                 email: usuario.email || `${identifierClean}@danteos.edu.co`, 
                 document_id: usuario.document_id || (identifierClean.includes('@') ? null : identifierClean),
                 estudiante: studentAlias,
                 role: userRole,
                 rol: userRole, 
-                institution_id: usuario.institution_id,
+                institution_id: usuario.institution_id || tenantClean,
                 arquetipo: arquetipoRegistrado || usuario.arquetipo || null,
                 onboarding_completed: onboardingCompletado
             },
