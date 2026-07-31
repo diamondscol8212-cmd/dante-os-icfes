@@ -86,27 +86,37 @@ let redisInstance;
 
 if (redisUrl) {
     try {
-        redisInstance = new Redis(redisUrl, {
-            maxRetriesPerRequest: 2,
-            lazyConnect: false,
-            tls: {
-                rejectUnauthorized: false
-            },
+        const isTls = redisUrl.startsWith('rediss://');
+        const redisOptions = {
+            maxRetriesPerRequest: 1,
+            lazyConnect: true,
             retryStrategy(times) {
-                if (times > 3) {
-                    return null; // Stop retrying
+                if (times > 2) {
+                    return null;
                 }
-                return Math.min(times * 100, 1000);
+                return Math.min(times * 100, 500);
             }
+        };
+
+        if (isTls) {
+            redisOptions.tls = { rejectUnauthorized: false };
+        }
+
+        const realRedis = new Redis(redisUrl, redisOptions);
+
+        realRedis.on('connect', () => {
+            console.log('\n🚀 [REDIS CACHE CONNECTED]: Conexión exitosa con el clúster Redis.');
         });
 
-        redisInstance.on('connect', () => {
-            console.log('\n🚀 [REDIS CACHE CONNECTED]: Conexión TLS exitosa con el clúster Upstash Cloud.');
+        realRedis.on('error', (err) => {
+            console.warn('🚨 [REDIS ERROR / DEGRADED MODE]:', err.message);
         });
 
-        redisInstance.on('error', (err) => {
-            console.error('🚨 [REDIS ERROR]:', err.message);
+        realRedis.connect().catch((err) => {
+            console.warn('⚠️ [REDIS CONNECT WARN]: No se pudo conectar a Redis. Operando con cliente local/in-memory:', err.message);
         });
+
+        redisInstance = realRedis;
     } catch (e) {
         console.warn('⚠️ [REDIS INIT WARN]: Fallo al instanciar Redis. Usando fallback en memoria.', e.message);
         redisInstance = new InMemoryRedisMock();
