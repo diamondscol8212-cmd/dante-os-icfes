@@ -3,9 +3,20 @@ import crypto from 'crypto';
 import { supabase } from '../../supabaseClient.js';
 import { redis } from '../../redisClient.js';
 import { procesarInteraccionEstudiante } from '../services/catController.js';
+import { verifyToken, optionalToken, requireRole, validateInstitution } from '../middleware';
 
 const router = Router();
 const SERVER_VERSION = "v20.6.3-FIX_MASTER";
+
+/**
+ * Seudonomiza identificadores de PII mediante HMAC-SHA256 con sal para telemetría pública y eventos
+ */
+export function seudonomizarPII(identifier) {
+    if (!identifier) return "anon_student";
+    const secret = process.env.PII_SALT_SECRET || "dante_os_pii_anonymization_salt_2026";
+    const str = String(identifier).toLowerCase().trim();
+    return "anon_" + crypto.createHmac('sha256', secret).update(str).digest('hex').substring(0, 16);
+}
 
 // 🛡️ Bypassed Fallback para evitar 'Exited with status 1' en Render
 const INTEGRITY_SECRET = process.env.INTEGRITY_SECRET || "dante_enterprise_integrity_secret_2026";
@@ -126,7 +137,7 @@ router.get('/gemelo/:id', async (req, res) => {
 // ====================================================================
 // 🪐 ENDPOINT C: AUDITORÍA GLOBAL MULTI-MATERIA CON EXTRACCIÓN INTELIGENTE
 // ====================================================================
-router.get('/auditoria', async (req, res) => {
+router.get('/auditoria', verifyToken, requireRole(['rector', 'profesor', 'admin']), validateInstitution, async (req, res) => {
     try {
         const { estudiante, materia } = req.query;
         const materiaFiltro = (materia && materia !== 'todas' && materia !== 'diagnostico_general') 
@@ -243,7 +254,7 @@ router.get('/auditoria', async (req, res) => {
 // ====================================================================
 // 🪐 ENDPOINT D: MOTOR DE IMPRESIÓN SINCRO B2B
 // ====================================================================
-router.get('/reporte-pdf/:id', async (req, res) => {
+router.get('/reporte-pdf/:id', verifyToken, requireRole(['rector', 'profesor', 'admin']), validateInstitution, async (req, res) => {
     try {
         const { id } = req.params;
 
@@ -334,7 +345,7 @@ router.get('/reporte-pdf/:id', async (req, res) => {
 // ====================================================================
 // 🪐 ENDPOINT E: CONSOLIDACIÓN DE ÉPOCA
 // ====================================================================
-router.post('/reset-epoca', async (req, res) => {
+router.post('/reset-epoca', verifyToken, requireRole(['rector', 'admin']), validateInstitution, async (req, res) => {
     try {
         const { materia } = req.body;
         const materiaFiltro = materia ? String(materia).toLowerCase().trim() : 'matematicas';
