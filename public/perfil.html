@@ -60,12 +60,13 @@
         body.light-mode .bg-slate-900\/80,
         body.light-mode .bg-slate-900,
         body.light-mode .bg-slate-950,
+        body.light-mode .bg-slate-950\/60,
         body.light-mode .bg-\[\#08090c\]\/80,
         body.light-mode .bg-\[\#0d121f\]\/90 {
             background-color: #ffffff !important;
             border-color: #cbd5e1 !important;
             color: #0f172a !important;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05) !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06) !important;
         }
         body.light-mode .text-slate-200,
         body.light-mode .text-slate-300,
@@ -77,7 +78,31 @@
         body.light-mode .text-\[\#D4AF37\] { color: #b45309 !important; }
         body.light-mode .text-\[var\(--primary\)\],
         body.light-mode .text-\[\#51e2f5\] { color: #0284c7 !important; }
+        body.light-mode .text-emerald-400,
+        body.light-mode .text-emerald-300,
+        body.light-mode .text-emerald-500 { color: #047857 !important; }
+        body.light-mode .text-cyan-400,
+        body.light-mode .text-cyan-300,
+        body.light-mode .text-cyan-500 { color: #0369a1 !important; }
+        body.light-mode .text-rose-400,
+        body.light-mode .text-rose-300,
+        body.light-mode .text-rose-500 { color: #be123c !important; }
+        body.light-mode .text-purple-400,
+        body.light-mode .text-purple-300 { color: #6b21a8 !important; }
         body.light-mode .mision-item { background: #f8fafc !important; border-color: #cbd5e1 !important; color: #0f172a !important; }
+        body.light-mode .bottom-nav {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border-color: #cbd5e1 !important;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+        }
+        body.light-mode .bottom-nav .nav-text { color: #1e293b !important; }
+        body.light-mode .bottom-nav .icon-circle { background: #f1f5f9 !important; border-color: #cbd5e1 !important; }
+        body.light-mode #modalForense .adn-card {
+            background-color: #ffffff !important;
+            color: #0f172a !important;
+            border-color: #cbd5e1 !important;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2) !important;
+        }
 
         body, html { 
             background: var(--bg); color: #f0f1f5; margin: 0; font-family: 'Outfit', sans-serif; 
@@ -557,17 +582,19 @@
 
     <!-- MODAL FORENSE DE DETALLE DE PRUEBA -->
     <div id="modalForense" class="modal-overlay">
-        <div class="adn-card max-w-lg text-left" style="padding: 1.5rem;">
-            <div class="flex justify-between items-center border-b border-zinc-800 pb-2 mb-3">
-                <h3 class="font-mono text-xs font-bold text-[#51e2f5] uppercase" id="lblModalForenseTitulo">
+        <div class="adn-card max-w-2xl w-full text-left p-5 sm:p-6 shadow-2xl relative">
+            <div class="flex justify-between items-center border-b border-zinc-800 pb-3 mb-4">
+                <h3 class="font-mono text-xs sm:text-sm font-bold text-[#51e2f5] uppercase tracking-wider" id="lblModalForenseTitulo">
                     🔍 INSPECCIÓN FORENSE DE EXAMEN
                 </h3>
-                <button type="button" onclick="document.getElementById('modalForense').style.display='none'" class="text-slate-400 hover:text-white font-mono text-sm">✕</button>
+                <button type="button" onclick="document.getElementById('modalForense').style.display='none'" class="text-slate-400 hover:text-white font-mono text-base font-bold px-2 py-1 transition">✕</button>
             </div>
-            <div id="lblModalForenseCuerpo" class="text-xs text-slate-300 font-mono space-y-2 max-h-60 overflow-y-auto">
+            <div id="lblModalForenseCuerpo" class="text-xs text-slate-200 font-mono space-y-3 max-h-[70vh] overflow-y-auto pr-1">
                 Cargando datos del examen...
             </div>
-            <button type="button" class="w-full mt-4 py-2 bg-slate-800 border border-slate-700 text-slate-300 font-mono text-xs rounded hover:bg-slate-700" onclick="document.getElementById('modalForense').style.display='none'">Cerrar Inspección</button>
+            <button type="button" class="w-full mt-4 py-2.5 bg-[#D4AF37] hover:bg-amber-400 text-slate-950 font-mono font-bold text-xs uppercase tracking-wider rounded-lg transition shadow-md" onclick="document.getElementById('modalForense').style.display='none'">
+                ✕ CERRAR INSPECCIÓN
+            </button>
         </div>
     </div>
 
@@ -892,6 +919,15 @@
                 const tieneExamenes = examenesFiltrados.length > 0;
                 const isGlobal = currentMateriaFiltro === 'todas';
                 const badgeMCER = document.getElementById("lblBadgeMCER");
+                const banner = document.getElementById("lblBannerProyeccion");
+                const escalaTitle = document.getElementById("lblEscalaTitulo");
+                const escalaUnit = document.getElementById("lblEscalaUnidad");
+                const metaEscala = document.getElementById("lblMetaEscala");
+
+                if (banner) banner.innerText = isGlobal ? "PROYECCIÓN REAL ICFES" : `DIAGNÓSTICO DE ${currentMateriaFiltro.replace('_', ' ').toUpperCase()}`;
+                if (escalaTitle) escalaTitle.innerText = isGlobal ? "Puntaje Global Estimado (Media Ponderada 1 - 500)" : `Calificación en ${currentMateriaFiltro.replace('_', ' ').toUpperCase()} (Escala 1 - 100)`;
+                if (escalaUnit) escalaUnit.innerText = isGlobal ? "/ 500 pts" : "/ 100 pts";
+                if (metaEscala) metaEscala.innerText = isGlobal ? "350+ pts" : "70+ pts";
 
                 if (badgeMCER) {
                     if (currentMateriaFiltro === 'ingles') {
@@ -905,15 +941,9 @@
                 }
 
                 if (!tieneExamenes) {
-                    const banner = document.getElementById("lblBannerProyeccion");
-                    const escalaTitle = document.getElementById("lblEscalaTitulo");
-                    const escalaUnit = document.getElementById("lblEscalaUnidad");
                     const global500 = document.getElementById("lblPuntajeGlobal500");
                     const barGlobal = document.getElementById("barPuntajeGlobal");
 
-                    if (banner) banner.innerText = isGlobal ? "PROYECCIÓN REAL ICFES" : `DIAGNÓSTICO DE ${currentMateriaFiltro.toUpperCase()}`;
-                    if (escalaTitle) escalaTitle.innerText = isGlobal ? "Puntaje Global Estimado (Media Ponderada 1 - 500)" : `Calificación en ${currentMateriaFiltro.replace('_', ' ').toUpperCase()} (Escala 1 - 100)`;
-                    if (escalaUnit) escalaUnit.innerText = isGlobal ? "/ 500 pts" : "/ 100 pts";
                     if (global500) global500.innerHTML = `0 <span class="text-lg sm:text-xl text-slate-400 font-normal">${isGlobal ? '/ 500 pts' : '/ 100 pts'}</span>`;
                     if (barGlobal) barGlobal.style.width = `0%`;
 
@@ -1300,7 +1330,7 @@
                 if (clics.length === 0) {
                     htmlCuerpo += `<p class="italic text-slate-500 font-mono text-xs p-3 text-center">No se registraron vectores de clic individuales para esta sesión de evaluación.</p>`;
                 } else {
-                    htmlCuerpo += `<div class="space-y-3 max-h-[60vh] overflow-y-auto pr-1">`;
+                    htmlCuerpo += `<div class="space-y-3">`;
                     clics.forEach((c, i) => {
                         const itemId = c.itemId || 'item_math_01';
                         const info = CATALOGO_FORENSE_ITEMS[itemId] || {
@@ -1313,28 +1343,29 @@
                         const marcada = c.opcionSeleccionada || (c.correcto ? info.correcta : 'B');
 
                         htmlCuerpo += `
-                            <div class="p-3 rounded-xl bg-slate-900 border ${c.correcto ? 'border-emerald-500/40' : 'border-rose-500/40'} text-left space-y-2">
+                            <div class="p-3.5 rounded-xl bg-slate-900 border ${c.correcto ? 'border-emerald-500/50' : 'border-rose-500/50'} text-left space-y-2.5 shadow-sm">
                                 <div class="flex justify-between items-center text-xs font-mono font-bold">
-                                    <span class="text-slate-200">Reactivo #${i+1} [${itemId}]</span>
-                                    <span class="${c.correcto ? 'text-emerald-400 bg-emerald-950/60 border border-emerald-500/40' : 'text-rose-400 bg-rose-950/60 border border-rose-500/40'} px-2 py-0.5 rounded text-[10px]">
+                                    <span class="text-slate-100 font-extrabold">Reactivo #${i+1} <span class="text-cyan-400 font-mono text-[10px]">[${itemId}]</span></span>
+                                    <span class="${c.correcto ? 'text-emerald-400 bg-emerald-950/80 border border-emerald-500/50' : 'text-rose-400 bg-rose-950/80 border border-rose-500/50'} px-2.5 py-0.5 rounded text-[10px] font-bold">
                                         ${c.correcto ? '✓ CORRECTO' : '✕ ERROR'} (${c.responseTime || 0.0}s)
                                     </span>
                                 </div>
-                                <p class="text-xs text-slate-200 font-sans leading-relaxed bg-black/40 p-2.5 rounded border border-white/5">
-                                    <strong>Enunciado Real:</strong> ${info.enunciado}
-                                </p>
-                                <div class="grid grid-cols-2 gap-2 text-[11px] font-mono">
-                                    <div class="p-2 rounded ${c.correcto ? 'bg-emerald-950/40 text-emerald-300 border border-emerald-500/30' : 'bg-rose-950/40 text-rose-300 border border-rose-500/30'}">
-                                        <span class="block text-[9px] text-slate-400 font-bold uppercase">Opción Marcada:</span>
-                                        <strong>${marcada}) ${info.opciones[marcada] || marcada}</strong>
+                                <div class="text-xs text-slate-100 font-sans leading-relaxed bg-slate-950/80 p-3 rounded-lg border border-slate-800">
+                                    <strong class="text-cyan-300 font-mono block mb-1">Enunciado Real:</strong>
+                                    <span>${info.enunciado}</span>
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] font-mono">
+                                    <div class="p-2.5 rounded-lg ${c.correcto ? 'bg-emerald-950/60 text-emerald-300 border border-emerald-500/40' : 'bg-rose-950/60 text-rose-300 border border-rose-500/40'}">
+                                        <span class="block text-[9px] text-slate-400 font-bold uppercase mb-0.5">Opción Marcada:</span>
+                                        <strong class="text-xs">${marcada}) ${info.opciones[marcada] || marcada}</strong>
                                     </div>
-                                    <div class="p-2 rounded bg-cyan-950/40 text-cyan-300 border border-cyan-500/30">
-                                        <span class="block text-[9px] text-slate-400 font-bold uppercase">Opción Correcta:</span>
-                                        <strong>${info.correcta}) ${info.opciones[info.correcta] || info.correcta}</strong>
+                                    <div class="p-2.5 rounded-lg bg-cyan-950/60 text-cyan-200 border border-cyan-500/40">
+                                        <span class="block text-[9px] text-slate-400 font-bold uppercase mb-0.5">Opción Correcta:</span>
+                                        <strong class="text-xs">${info.correcta}) ${info.opciones[info.correcta] || info.correcta}</strong>
                                     </div>
                                 </div>
-                                <div class="p-2 rounded bg-amber-950/30 border border-amber-500/30 text-[10.5px] font-mono text-amber-200/90 leading-tight">
-                                    <strong class="text-amber-400 font-bold block mb-0.5">💡 Análisis Forense de la Trampa:</strong>
+                                <div class="p-2.5 rounded-lg bg-amber-950/40 border border-amber-500/40 text-[11px] font-sans text-amber-100 leading-relaxed">
+                                    <strong class="text-amber-400 font-bold font-mono block mb-0.5">💡 Análisis Forense de la Trampa:</strong>
                                     ${info.explicacion}
                                 </div>
                             </div>
