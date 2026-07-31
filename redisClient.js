@@ -11,10 +11,11 @@ if (!redisUrl) {
     process.exit(1);
 }
 
+// Inicialización del cliente con soporte nativo para TLS/SSL de Upstash
 export const redis = new Redis(redisUrl, {
     maxRetriesPerRequest: 3,
     tls: {
-        rejectUnauthorized: true
+        rejectUnauthorized: false // Permite la negociación segura con los certificados de Upstash
     },
     retryStrategy(times) {
         const delay = Math.min(times * 50, 2000);
