@@ -202,4 +202,40 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-app.listen(PORT, '0.0.0.0', () => console.log(`\n🚀 [DANTE OS ENTERPRISE GATEWAY ${SERVER_VERSION}]: Activo en http://0.0.0.0:${PORT}`));
+// ====================================================================
+// 🛡️ MIDDLEWARE DE ERRORES GLOBAL Y CONTROL DE RESILIENCIA DEL PROCESO
+// ====================================================================
+app.use((err, req, res, next) => {
+    console.error('🚨 [EXPRESS UNHANDLED ROUTE ERROR]:', err);
+    res.status(500).json({
+        success: false,
+        error: "Error interno del servidor. Proceso recuperado por middleware de resiliencia.",
+        details: err.message || "Excepción no controlada"
+    });
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('🚨 [PROCESS UNHANDLED REJECTION]: Excepción asíncrona capturada:', reason);
+});
+
+process.on('uncaughtException', (error) => {
+    console.error('🚨 [PROCESS UNCAUGHT EXCEPTION]: Excepción síncrona capturada:', error);
+});
+
+const server = app.listen(PORT, '0.0.0.0', () => console.log(`\n🚀 [DANTE OS ENTERPRISE GATEWAY ${SERVER_VERSION}]: Activo en http://0.0.0.0:${PORT}`));
+
+const gracefulShutdown = (signal) => {
+    console.log(`\n🛑 [SHUTDOWN SIGNAL ${signal}]: Cerrando servidor HTTP y limpiando conexiones...`);
+    server.close(() => {
+        console.log('✅ [HTTP SERVER CLOSED]: Servidor HTTP cerrado correctamente.');
+        process.exit(0);
+    });
+    setTimeout(() => {
+        console.error('⚠️ [FORCED EXIT]: Finalizando proceso forzosamente tras timeout.');
+        process.exit(1);
+    }, 5000);
+};
+
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+
