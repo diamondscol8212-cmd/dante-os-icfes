@@ -8,7 +8,7 @@ import { redis } from './redisClient.js';
 import { supabase } from './supabaseClient.js';
 import catRouter from './src/routes/catRoutes.js';
 import authRouter from './src/routes/authRoutes.js'; 
-import { verifyToken, requireRole, validateInstitution } from './src/middleware';
+import { verifyToken, requireRole, validateInstitution } from './src/middleware.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
