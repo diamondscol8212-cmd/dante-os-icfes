@@ -78,21 +78,25 @@
         body.light-mode .text-slate-100,
         body.light-mode .text-slate-200,
         body.light-mode .text-slate-300,
+        body.light-mode .text-slate-300\/90,
         body.light-mode .text-slate-400,
         body.light-mode .text-zinc-200,
         body.light-mode .text-zinc-300,
         body.light-mode .text-white { color: #0f172a !important; }
         body.light-mode .text-amber-400,
         body.light-mode .text-amber-300,
-        body.light-mode .text-[#D4AF37] { color: #b45309 !important; }
+        body.light-mode .text-amber-500,
+        body.light-mode .text-[#D4AF37] { color: #b45309 !important; font-weight: 700 !important; }
         body.light-mode .text-[var(--primary)],
-        body.light-mode .text-[#51e2f5] { color: #0284c7 !important; }
+        body.light-mode .text-[#51e2f5] { color: #0284c7 !important; font-weight: 700 !important; }
         body.light-mode .text-emerald-400,
         body.light-mode .text-emerald-300,
+        body.light-mode .text-emerald-300\/90,
         body.light-mode .text-emerald-500 { color: #047857 !important; font-weight: 700 !important; }
         body.light-mode .text-cyan-400,
         body.light-mode .text-cyan-300,
-        body.light-mode .text-cyan-500 { color: #0369a1 !important; font-weight: 700 !important; }
+        body.light-mode .text-cyan-500,
+        body.light-mode .text-sky-400 { color: #0369a1 !important; font-weight: 700 !important; }
         body.light-mode .text-rose-400,
         body.light-mode .text-rose-300,
         body.light-mode .text-rose-500 { color: #be123c !important; font-weight: 700 !important; }
@@ -101,9 +105,11 @@
         
         /* CONTENEDORES DE ESTADO EN MODO CLARO CON ALTO CONTRASTE */
         body.light-mode .bg-emerald-950,
+        body.light-mode .bg-emerald-950\/20,
         body.light-mode .bg-emerald-950\/60,
         body.light-mode .bg-emerald-950\/80,
-        body.light-mode .bg-emerald-500\/10 {
+        body.light-mode .bg-emerald-500\/10,
+        body.light-mode .bg-emerald-500\/20 {
             background-color: #ecfdf5 !important;
             border-color: #a7f3d0 !important;
             color: #047857 !important;
@@ -132,8 +138,29 @@
             color: #b45309 !important;
         }
         body.light-mode .mision-item {
-            background: #f8fafc !important;
+            background: #ffffff !important;
             border-color: #cbd5e1 !important;
+            color: #0f172a !important;
+        }
+        body.light-mode .mision-item span {
+            color: #0f172a !important;
+        }
+        body.light-mode .mision-item .text-emerald-300,
+        body.light-mode .mision-item .text-emerald-300\/90,
+        body.light-mode .mision-item .text-emerald-400 {
+            color: #047857 !important;
+            font-weight: 700 !important;
+        }
+        body.light-mode table th {
+            color: #475569 !important;
+            background: #f8fafc !important;
+            border-bottom: 2px solid #cbd5e1 !important;
+        }
+        body.light-mode table td {
+            color: #0f172a !important;
+            border-bottom-color: #e2e8f0 !important;
+        }
+        body.light-mode strong {
             color: #0f172a !important;
         }
         body.light-mode .bottom-nav {
