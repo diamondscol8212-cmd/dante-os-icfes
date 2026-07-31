@@ -1,0 +1,13 @@
+# Environment variables (SECRETS - NEVER COMMIT)
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+
+# Build and temp
+dist/
+build/
+*.log
+.DS_Store
