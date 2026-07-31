@@ -5,7 +5,7 @@ export const SPECTRUM_CONTROLS = {
     MIN_THETA: -4.0000,
     MAX_THETA: 4.0000,
     RESOLUTION_STEP: 0.50,
-    UMBRAL_SEM_CRITICO: 0.38,      // Flexibilizado para permitir parada precisa
+    UMBRAL_SEM_CRITICO: 0.28,      // Umbral estándar de precisión psicométrica IRT (SEM <= 0.28)
     MIN_ITEMS_MANDATORIOS: 5,     // Evaluación mínima para reporte válido
     MAX_ITEMS_MANDATORIOS: 15     // Límite superior garantizado de cierre
 };
@@ -137,3 +137,4 @@ export function obtenerSiguienteItem(sessionState, cacheInstancia) {
         }
     };
 }
+
