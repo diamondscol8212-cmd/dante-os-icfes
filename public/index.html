@@ -192,17 +192,17 @@
         @media (min-width: 640px) { .alias-title { font-size: 15px; letter-spacing: 2px; } }
         .geo-tag { font-family: var(--font-mono); font-size: 9px; color: var(--cyan-core); letter-spacing: 1px; text-transform: uppercase; white-space: nowrap; }
 
-        .app-view { display: none; min-height: 100vh; padding: 75px 1rem 2.5rem; position: relative; z-index: 10; transition: opacity 0.3s ease; }
-        @media (min-width: 768px) { .app-view { padding: 85px 2.5rem 2.5rem; } }
+        .app-view { display: none; min-height: 100vh; padding: 85px 1rem 140px; position: relative; z-index: 10; transition: opacity 0.3s ease; }
+        @media (min-width: 768px) { .app-view { padding: 90px 2.5rem 150px; } }
         .app-view.active { display: flex; flex-direction: column; opacity: 1; }
 
-        #viewGateway { justify-content: center; align-items: center; }
+        #viewGateway { justify-content: flex-start; align-items: center; padding-top: 90px; padding-bottom: 160px; }
         
         .gateway-card {
             background: var(--bg-surface); border: 1px solid var(--graphite);
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6); border-radius: 14px; 
             padding: 2rem 1.4rem; width: 100%; max-width: 560px; text-align: center; position: relative;
-            backdrop-filter: blur(16px);
+            backdrop-filter: blur(16px); margin: 0 auto;
         }
         @media (min-width: 640px) { .gateway-card { padding: 3.2rem 2.5rem; } }
 
@@ -227,6 +227,21 @@
             width: 100%; padding: 1rem; background: rgba(26, 29, 38, 0.95); border: 1.5px solid var(--gold-satin);
             color: #fff; border-radius: 10px; font-size: 0.95rem; outline: none; font-family: var(--font-main);
             font-weight: 700; transition: all 0.25s ease; box-shadow: 0 0 15px rgba(212, 175, 55, 0.15);
+        }
+        select option {
+            background-color: #1a1d26 !important;
+            color: #ffffff !important;
+            padding: 10px !important;
+            font-size: 0.92rem;
+        }
+        body.light-mode select {
+            background: #ffffff !important;
+            color: #0f172a !important;
+            border-color: #cbd5e1 !important;
+        }
+        body.light-mode select option {
+            background-color: #ffffff !important;
+            color: #0f172a !important;
         }
         select:focus { border-color: var(--cyan-core); box-shadow: 0 0 20px rgba(81, 226, 245, 0.25); }
 
