@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import crypto from 'crypto';
 import { supabase } from '../../supabaseClient.js';
-import { generarTokenJWT } from '../middleware';
+import { generarTokenJWT } from '../middleware.js';
 
 const router = Router();
 const SERVER_VERSION = "v21.1.0-ENTERPRISE_PRODUCTION";
