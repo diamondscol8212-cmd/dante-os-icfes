@@ -1,0 +1,6 @@
+{
+  "name": "Dante OS",
+  "description": "Plataforma Adaptativa Enterprise - Evaluación Adaptativa Psicométrica Multi-Tenant",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
