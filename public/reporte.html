@@ -584,7 +584,12 @@
             }
         }
 
-        window.onload = () => { ReporteEngine.init(); };
+        document.addEventListener("DOMContentLoaded", () => {
+            try { ReporteEngine.init(); } catch (e) { console.error("Error init reporte:", e); }
+        });
+        window.onload = () => {
+            try { ReporteEngine.init(); } catch (e) { console.error("Error onload reporte:", e); }
+        };
     </script>
 </body>
 </html>
