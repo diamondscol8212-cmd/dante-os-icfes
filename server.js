@@ -8,6 +8,7 @@ import { redis } from './redisClient.js';
 import { supabase } from './supabaseClient.js';
 import catRouter from './src/routes/catRoutes.js';
 import authRouter from './src/routes/authRoutes.js'; 
+import { verifyToken, requireRole, validateInstitution } from './src/middleware';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -24,12 +25,25 @@ const ALLOWED_ORIGINS = [
     'https://dante-os-platform.onrender.com'
 ];
 
+if (process.env.ALLOWED_ORIGINS) {
+    process.env.ALLOWED_ORIGINS.split(',').forEach(o => {
+        if (o.trim()) ALLOWED_ORIGINS.push(o.trim());
+    });
+}
+
 app.use(cors({
     origin(origin, callback) {
-        if (!origin || ALLOWED_ORIGINS.includes(origin) || origin.includes('localhost') || origin.includes('127.0.0.1') || origin.endsWith('.run.app') || origin.endsWith('.ai.studio') || origin.endsWith('.google.com') || origin.endsWith('.googleusercontent.com')) {
+        if (!origin) return callback(null, true);
+        const isAllowed = ALLOWED_ORIGINS.includes(origin) ||
+            origin.includes('localhost') || origin.includes('127.0.0.1') ||
+            origin.endsWith('.run.app') || origin.endsWith('.ai.studio') ||
+            origin.endsWith('.google.com') || origin.endsWith('.googleusercontent.com') ||
+            origin.endsWith('.danteos.com');
+        
+        if (isAllowed) {
             return callback(null, true);
         }
-        return callback(null, true);
+        return callback(new Error("Acceso bloqueado: Origen no permitido por la política CORS perimetral."));
     },
     credentials: true
 }));
@@ -53,11 +67,11 @@ app.get('/api/health', (req, res) => {
 });
 
 // ====================================================================
-// 🪐 PIPELINE ADMINISTRATIVO DE CONTROL DE ENTORNO
+// 🪐 PIPELINE ADMINISTRATIVO DE CONTROL DE ENTORNO (PROTEGIDO JWT + RBAC)
 // ====================================================================
-app.get('/api/admin/obtain-cohorte', async (req, res) => {
+app.get('/api/admin/obtain-cohorte', verifyToken, requireRole(['rector', 'profesor', 'admin']), validateInstitution, async (req, res) => {
     try {
-        const tenantId = req.headers['x-institution-id'] || req.query.institution_id || "colegio_sandbox_default";
+        const tenantId = req.user.institution_id || req.headers['x-institution-id'] || req.query.institution_id || "colegio_sandbox_default";
         const key = `dante:${tenantId.toLowerCase().trim()}:system:cohorte_global`;
         const miembros = await redis.smembers(key);
         return res.status(200).json({ success: true, cohorte: miembros.sort(), institution_id: tenantId, version: SERVER_VERSION });
@@ -66,9 +80,9 @@ app.get('/api/admin/obtain-cohorte', async (req, res) => {
     }
 });
 
-app.get('/api/admin/listar-epocas', async (req, res) => {
+app.get('/api/admin/listar-epocas', verifyToken, requireRole(['rector', 'profesor', 'admin']), validateInstitution, async (req, res) => {
     try {
-        const tenantId = req.headers['x-institution-id'] || req.query.institution_id || "colegio_sandbox_default";
+        const tenantId = req.user.institution_id || req.headers['x-institution-id'] || req.query.institution_id || "colegio_sandbox_default";
         const tenantClean = String(tenantId).toLowerCase().trim();
 
         const { data: epocas, error } = await supabase
@@ -85,10 +99,10 @@ app.get('/api/admin/listar-epocas', async (req, res) => {
     }
 });
 
-app.post('/api/admin/registrar-estudiante', async (req, res) => {
+app.post('/api/admin/registrar-estudiante', verifyToken, requireRole(['rector', 'profesor', 'admin']), validateInstitution, async (req, res) => {
     try {
         const { nombreEstudiante, institution_id } = req.body;
-        const tenantId = institution_id || req.headers['x-institution-id'] || "colegio_sandbox_default";
+        const tenantId = req.user.institution_id || institution_id || req.headers['x-institution-id'] || "colegio_sandbox_default";
         if (!nombreEstudiante) return res.status(400).json({ success: false, error: "Falta identificador alumno." });
         
         const cleanName = String(nombreEstudiante).toLowerCase().trim();
@@ -102,7 +116,7 @@ app.post('/api/admin/registrar-estudiante', async (req, res) => {
     }
 });
 
-app.post('/api/admin/reset-epoca', async (req, res) => {
+app.post('/api/admin/reset-epoca', verifyToken, requireRole(['rector', 'admin']), validateInstitution, async (req, res) => {
     try {
         const { materia, institution_id } = req.body;
         const tenantId = institution_id || req.headers['x-institution-id'] || "colegio_sandbox_default";
@@ -207,11 +221,18 @@ app.get('/', (req, res) => {
 // ====================================================================
 app.use((err, req, res, next) => {
     console.error('🚨 [EXPRESS UNHANDLED ROUTE ERROR]:', err);
-    res.status(500).json({
+    
+    // Ocultar detalles de stack trace en respuestas de producción
+    const responsePayload = {
         success: false,
-        error: "Error interno del servidor. Proceso recuperado por middleware de resiliencia.",
-        details: err.message || "Excepción no controlada"
-    });
+        error: "Error interno del servidor. Proceso recuperado por middleware de resiliencia."
+    };
+
+    if (process.env.NODE_ENV === 'development') {
+        responsePayload.details = err.message || "Excepción no controlada";
+    }
+
+    res.status(err.status || 500).json(responsePayload);
 });
 
 process.on('unhandledRejection', (reason, promise) => {
