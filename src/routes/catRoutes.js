@@ -18,8 +18,8 @@ export function seudonomizarPII(identifier) {
     return "anon_" + crypto.createHmac('sha256', secret).update(str).digest('hex').substring(0, 16);
 }
 
-// 🛡️ Bypassed Fallback para evitar 'Exited with status 1' en Render
-const INTEGRITY_SECRET = process.env.INTEGRITY_SECRET || "dante_enterprise_integrity_secret_2026";
+// 🛡️ Secreto de Integridad verificado en middleware
+const INTEGRITY_SECRET = process.env.INTEGRITY_SECRET;
 
 // 🪐 Middleware Perimetral Multi-Tenant
 router.use((req, res, next) => {
@@ -55,16 +55,38 @@ router.post('/interactuar', async (req, res) => {
 });
 
 // ====================================================================
-// 🪐 ENDPOINT B: GEMELO DIGITAL DINÁMICO (COMPATIBLE CON ARREGLO PARA PERFIL.HTML)
+// 🪐 ENDPOINT B: GEMELO DIGITAL DINÁMICO (PROTEGIDO CON BAC Y SANITIZACIÓN ESTRICTA)
 // ====================================================================
-router.get('/gemelo/:id', async (req, res) => {
+router.get('/gemelo/:id', verifyToken, validateInstitution, async (req, res) => {
     try {
         const studentIdRaw = req.params.id;
-        if (!studentIdRaw) {
+        if (!studentIdRaw || typeof studentIdRaw !== 'string') {
             return res.status(400).json({ success: false, error: "Identificador de estudiante requerido." });
         }
 
+        // 🛡️ SANITIZACIÓN ESTRICTA DE ENTRADA: Permite solo alfanuméricos, guiones, puntos y @
+        const safeIdPattern = /^[a-zA-Z0-9._\-@]+$/;
+        if (!safeIdPattern.test(studentIdRaw.trim()) || studentIdRaw.length > 128) {
+            return res.status(400).json({
+                success: false,
+                error: "Sintaxis anómala en el ID de estudiante. Formato no válido o entrada insegura."
+            });
+        }
+
         const studentIdSaneado = String(studentIdRaw).toLowerCase().trim().split('@')[0];
+
+        // 🛡️ AISLAMIENTO DE ROLES Y PRIVACIDAD (BAC Protection - Broken Access Control):
+        const reqUserId = String(req.user.user_id || req.user.id || req.user.email || req.user.estudiante || '').toLowerCase().trim().split('@')[0];
+        const reqRole = String(req.user.role || req.user.rol || 'estudiante').toLowerCase().trim();
+        const privilegedRoles = ['admin', 'rector', 'profesor', 'auditor'];
+
+        // Si el usuario es rol estudiante, solo puede consultar su propio gemelo digital
+        if (!privilegedRoles.includes(reqRole) && reqUserId !== studentIdSaneado) {
+            return res.status(403).json({
+                success: false,
+                error: "Acceso prohibido: Control de Acceso (BAC). No posee privilegios para consultar el gemelo digital de otro usuario."
+            });
+        }
 
         // 1. Consultar la tabla de progreso consolidado
         let { data: progreso, error: progErr } = await supabase
