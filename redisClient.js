@@ -280,6 +280,11 @@ if (redisUrl) {
 
         const realRedis = new Redis(redisUrl, redisOptions);
 
+        // 🚨 PREVENCIÓN CRÍTICA DE CRASH EN NODE: Registrar listener 'error' inmediatamente tras crear la instancia
+        realRedis.on('error', (err) => {
+            console.warn('⚠️ [REDIS WARN / EVENTO DE ERROR CAPTURADO]:', err.message);
+        });
+
         realRedis.connect().catch((err) => {
             console.warn('⚠️ [REDIS CONNECT WARN]: No se pudo conectar a Redis. Operando con fallback in-memory:', err.message);
         });
@@ -295,3 +300,4 @@ if (redisUrl) {
 }
 
 export const redis = redisExport;
+export default redisExport;
