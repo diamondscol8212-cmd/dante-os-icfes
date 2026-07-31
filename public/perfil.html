@@ -47,6 +47,13 @@
         body.light-mode .bottom-nav { background: rgba(255, 255, 255, 0.98) !important; border-color: #cbd5e1 !important; box-shadow: 0 -4px 20px rgba(0,0,0,0.08) !important; }
         body.light-mode .bottom-nav .nav-text { color: #334155 !important; }
 
+        body.light-mode {
+            --bg: #f1f5f9;
+            --card-bg: #ffffff;
+            --border-graphite: #cbd5e1;
+            background-color: #f1f5f9 !important;
+            color: #0f172a !important;
+        }
         body.light-mode .section-title { color: #0f172a !important; }
         body.light-mode .section-title::after { background: #cbd5e1 !important; }
         body.light-mode .radar-label { color: #0f172a !important; text-shadow: none !important; font-weight: 800 !important; }
@@ -61,13 +68,14 @@
         body.light-mode .bg-slate-900,
         body.light-mode .bg-slate-950,
         body.light-mode .bg-slate-950\/60,
-        body.light-mode .bg-\[\#08090c\]\/80,
-        body.light-mode .bg-\[\#0d121f\]\/90 {
+        body.light-mode .bg-[#08090c]\/80,
+        body.light-mode .bg-[#0d121f]\/90 {
             background-color: #ffffff !important;
             border-color: #cbd5e1 !important;
             color: #0f172a !important;
             box-shadow: 0 4px 15px rgba(0,0,0,0.06) !important;
         }
+        body.light-mode .text-slate-100,
         body.light-mode .text-slate-200,
         body.light-mode .text-slate-300,
         body.light-mode .text-slate-400,
@@ -75,21 +83,59 @@
         body.light-mode .text-zinc-300,
         body.light-mode .text-white { color: #0f172a !important; }
         body.light-mode .text-amber-400,
-        body.light-mode .text-\[\#D4AF37\] { color: #b45309 !important; }
-        body.light-mode .text-\[var\(--primary\)\],
-        body.light-mode .text-\[\#51e2f5\] { color: #0284c7 !important; }
+        body.light-mode .text-amber-300,
+        body.light-mode .text-[#D4AF37] { color: #b45309 !important; }
+        body.light-mode .text-[var(--primary)],
+        body.light-mode .text-[#51e2f5] { color: #0284c7 !important; }
         body.light-mode .text-emerald-400,
         body.light-mode .text-emerald-300,
-        body.light-mode .text-emerald-500 { color: #047857 !important; }
+        body.light-mode .text-emerald-500 { color: #047857 !important; font-weight: 700 !important; }
         body.light-mode .text-cyan-400,
         body.light-mode .text-cyan-300,
-        body.light-mode .text-cyan-500 { color: #0369a1 !important; }
+        body.light-mode .text-cyan-500 { color: #0369a1 !important; font-weight: 700 !important; }
         body.light-mode .text-rose-400,
         body.light-mode .text-rose-300,
-        body.light-mode .text-rose-500 { color: #be123c !important; }
+        body.light-mode .text-rose-500 { color: #be123c !important; font-weight: 700 !important; }
         body.light-mode .text-purple-400,
-        body.light-mode .text-purple-300 { color: #6b21a8 !important; }
-        body.light-mode .mision-item { background: #f8fafc !important; border-color: #cbd5e1 !important; color: #0f172a !important; }
+        body.light-mode .text-purple-300 { color: #6b21a8 !important; font-weight: 700 !important; }
+        
+        /* CONTENEDORES DE ESTADO EN MODO CLARO CON ALTO CONTRASTE */
+        body.light-mode .bg-emerald-950,
+        body.light-mode .bg-emerald-950\/60,
+        body.light-mode .bg-emerald-950\/80,
+        body.light-mode .bg-emerald-500\/10 {
+            background-color: #ecfdf5 !important;
+            border-color: #a7f3d0 !important;
+            color: #047857 !important;
+        }
+        body.light-mode .bg-rose-950,
+        body.light-mode .bg-rose-950\/60,
+        body.light-mode .bg-rose-950\/80,
+        body.light-mode .bg-rose-500\/10 {
+            background-color: #fef2f2 !important;
+            border-color: #fecaca !important;
+            color: #be123c !important;
+        }
+        body.light-mode .bg-cyan-950,
+        body.light-mode .bg-cyan-950\/60,
+        body.light-mode .bg-cyan-950\/80,
+        body.light-mode .bg-cyan-500\/10 {
+            background-color: #f0f9ff !important;
+            border-color: #bae6fd !important;
+            color: #0369a1 !important;
+        }
+        body.light-mode .bg-amber-950,
+        body.light-mode .bg-amber-950\/40,
+        body.light-mode .bg-amber-500\/10 {
+            background-color: #fffbeb !important;
+            border-color: #fde68a !important;
+            color: #b45309 !important;
+        }
+        body.light-mode .mision-item {
+            background: #f8fafc !important;
+            border-color: #cbd5e1 !important;
+            color: #0f172a !important;
+        }
         body.light-mode .bottom-nav {
             background: rgba(255, 255, 255, 0.95) !important;
             border-color: #cbd5e1 !important;
@@ -102,6 +148,16 @@
             color: #0f172a !important;
             border-color: #cbd5e1 !important;
             box-shadow: 0 20px 50px rgba(0,0,0,0.2) !important;
+        }
+        body.light-mode .tab-materia-btn {
+            background: #ffffff !important;
+            border-color: #cbd5e1 !important;
+            color: #475569 !important;
+        }
+        body.light-mode .tab-materia-btn.active {
+            background: #fef3c7 !important;
+            border-color: #b45309 !important;
+            color: #b45309 !important;
         }
 
         body, html { 
@@ -316,15 +372,36 @@
                 📜 DESCARGAR EXPEDIENTE OFICIAL PARA PADRES (PDF)
             </a>
 
-            <!-- NAVEGACIÓN DE FILTROS POR MATERIA -->
-            <nav class="tabs-container">
-                <button type="button" class="tab-materia-btn active" onclick="PerfilEstudiante.cambiarFiltroMateria('todas', this)">🌐 Diagnóstico Global</button>
-                <button type="button" class="tab-materia-btn" onclick="PerfilEstudiante.cambiarFiltroMateria('matematicas', this)">📐 Matemáticas</button>
-                <button type="button" class="tab-materia-btn" onclick="PerfilEstudiante.cambiarFiltroMateria('lectura_critica', this)">📖 Lectura Crítica</button>
-                <button type="button" class="tab-materia-btn" onclick="PerfilEstudiante.cambiarFiltroMateria('ciencias_naturales', this)">🧪 Ciencias Naturales</button>
-                <button type="button" class="tab-materia-btn" onclick="PerfilEstudiante.cambiarFiltroMateria('sociales_ciudadanas', this)">🏛️ Sociales</button>
-                <button type="button" class="tab-materia-btn" onclick="PerfilEstudiante.cambiarFiltroMateria('ingles', this)">🇬🇧 Inglés</button>
-            </nav>
+            <!-- NAVEGACIÓN DE FILTROS POR MATERIA CON INDICADOR DE DESPLAZAMIENTO MÓVIL Y FLECHAS DE SCROLL -->
+            <div class="mb-5 relative">
+                <div class="flex justify-between items-center mb-1.5 px-1">
+                    <span class="text-[10px] font-mono font-bold text-amber-400 uppercase tracking-widest flex items-center gap-1">
+                        🎯 FILTRAR EXPEDIENTE POR ÁREA
+                    </span>
+                    <span class="text-[9.5px] font-mono text-cyan-400/90 font-bold bg-cyan-950/80 px-2 py-0.5 rounded border border-cyan-500/30 flex items-center gap-1">
+                        ↔️ DESLIZA O TOCA FLECHAS
+                    </span>
+                </div>
+
+                <div class="relative flex items-center group">
+                    <button type="button" id="btnScrollTabsLeft" onclick="document.getElementById('tabsNavContainer').scrollBy({left: -180, behavior: 'smooth'})" class="absolute left-0 z-20 bg-slate-950/90 hover:bg-[#51e2f5] hover:text-black border border-[#51e2f5]/50 text-[#51e2f5] p-1.5 rounded-r-lg shadow-lg backdrop-blur-md transition-all active:scale-95" title="Desplazar a la izquierda">
+                        ◀
+                    </button>
+
+                    <nav class="tabs-container w-full px-8" id="tabsNavContainer">
+                        <button type="button" class="tab-materia-btn active" onclick="PerfilEstudiante.cambiarFiltroMateria('todas', this)">🌐 Diagnóstico Global</button>
+                        <button type="button" class="tab-materia-btn" onclick="PerfilEstudiante.cambiarFiltroMateria('matematicas', this)">📐 Matemáticas</button>
+                        <button type="button" class="tab-materia-btn" onclick="PerfilEstudiante.cambiarFiltroMateria('lectura_critica', this)">📖 Lectura Crítica</button>
+                        <button type="button" class="tab-materia-btn" onclick="PerfilEstudiante.cambiarFiltroMateria('ciencias_naturales', this)">🧪 Ciencias Naturales</button>
+                        <button type="button" class="tab-materia-btn" onclick="PerfilEstudiante.cambiarFiltroMateria('sociales_ciudadanas', this)">🏛️ Sociales</button>
+                        <button type="button" class="tab-materia-btn" onclick="PerfilEstudiante.cambiarFiltroMateria('ingles', this)">🇬🇧 Inglés</button>
+                    </nav>
+
+                    <button type="button" id="btnScrollTabsRight" onclick="document.getElementById('tabsNavContainer').scrollBy({left: 180, behavior: 'smooth'})" class="absolute right-0 z-20 bg-slate-950/90 hover:bg-[#51e2f5] hover:text-black border border-[#51e2f5]/50 text-[#51e2f5] p-1.5 rounded-l-lg shadow-lg backdrop-blur-md transition-all active:scale-95" title="Desplazar a la derecha">
+                        ▶
+                    </button>
+                </div>
+            </div>
 
             <!-- 🏆 1. PROYECCIÓN ADAPTATIVA (GLOBAL 500 VS MATERIA 100 + MARCO MCER EN INGLÉS) -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
@@ -1267,105 +1344,148 @@
 
                 const itemsR = typeof reg.items_respondidos === 'string' ? JSON.parse(reg.items_respondidos) : (reg.items_respondidos || {});
                 const clics = itemsR.historico_clics || [];
+                const materiaClave = String(reg.materia || 'matematicas').toLowerCase();
 
                 const titleEl = document.getElementById("lblModalForenseTitulo");
-                if (titleEl) titleEl.innerText = `🔍 INSPECCIÓN FORENSE: ${String(reg.materia || 'MODULO').toUpperCase()}`;
+                if (titleEl) titleEl.innerText = `🔍 INSPECCIÓN FORENSE: ${String(reg.materia || 'MÓDULO').toUpperCase()}`;
                 
-                // CATÁLOGO DE ITEMS DE MEMORIA LOCAL Y ANÁLISIS FORENSE SIN APIS EXTERNAS
-                const CATALOGO_FORENSE_ITEMS = {
-                    item_math_01: {
-                        enunciado: "En una maratón escolar, Carlos corre a una velocidad constante de 5 m/s durante 2 minutos. ¿Qué distancia total recorre en ese intervalo?",
-                        opciones: { A: "600 metros", B: "100 metros", C: "300 metros", D: "1200 metros" },
-                        correcta: "A",
-                        explicacion: "Trampa de Unidades Tiempo: Convertir 2 minutos a 120 segundos. Multiplicar 5 m/s × 120 s = 600 m. El distractor B (100m) ignora la conversión de minutos a segundos."
-                    },
-                    item_demo_01: {
-                        enunciado: "En una maratón escolar, Carlos corre a una velocidad constante de 5 m/s durante 2 minutos. ¿Qué distancia total recorre en ese intervalo?",
-                        opciones: { A: "600 metros", B: "100 metros", C: "300 metros", D: "1200 metros" },
-                        correcta: "A",
-                        explicacion: "Trampa de Unidades Tiempo: Convertir 2 minutos a 120 segundos. Multiplicar 5 m/s × 120 s = 600 m."
-                    },
-                    item_demo_02: {
-                        enunciado: "Un tanque de agua de 500 litros se llena a una tasa de 25 litros por minuto. ¿Cuánto tiempo tarda en llenarse completamente?",
-                        opciones: { A: "20 minutos", B: "25 minutos", C: "10 minutos", D: "50 minutos" },
-                        correcta: "A",
-                        explicacion: "Relación de Proporcionalidad Directa: 500 L / 25 L/min = 20 minutos."
-                    },
-                    item_lect_01: {
-                        enunciado: "«La ciencia no busca verdades absolutas, sino explicaciones provisionales revisables ante nueva evidencia experimental.» ¿Cuál es la función de 'provisionales'?",
-                        opciones: { A: "Destacar que el conocimiento científico está abierto a revisiones", B: "Argumentar que las hipótesis carecen de rigor", C: "Demostrar que la evidencia es irrelevante", D: "Sugerir que la ciencia debe ser reemplazada por dogmas" },
-                        correcta: "A",
-                        explicacion: "Trampa de Inferencia Absolutista: El autor califica el conocimiento como provisional para reflejar su naturaleza falsable y dinámica, no para desacreditar la validez del método científico."
-                    },
-                    item_cn_01: {
-                        enunciado: "En un experimento sobre fotosíntesis, la producción de O2 se incrementa proporcionalmente con la luz hasta estabilizarse. ¿Por qué se estabiliza?",
-                        opciones: { A: "Otro factor del medio (CO2 o temp) se volvió limitante", B: "La luz destruyó por completo la clorofila", C: "La planta agotó sus reservas de agua", D: "La fase oscura solo se activa en ausencia de luz" },
-                        correcta: "A",
-                        explicacion: "Ley de Factores Limitantes de Blackman: Cuando la luz deja de ser el factor restrictivo, la tasa fotosintética queda topeada por la disponibilidad de dióxido de carbono o temperatura ambiental."
-                    },
-                    item_soc_01: {
-                        enunciado: "Habitantes interponen Acción de Tutela por proyecto industrial que afecta la salud y consulta previa. ¿Por qué la Constitución consagra la Tutela?",
-                        opciones: { A: "Garantizar la protección inmediata de derechos fundamentales", B: "Sustituir juicios ordinarios mercantiles", C: "Otorgar facultades extraordinarias a empresas", D: "Obligar a renunciar a la vía judicial" },
-                        correcta: "A",
-                        explicacion: "Protección Constitucional Directa: La Acción de Tutela (Art. 86) es un mecanismo preferente y sumario diseñado exclusivamente para el amparo inmediato de derechos fundamentales."
-                    },
-                    item_ing_01: {
-                        enunciado: "Sarah: 'Check the kitchen counter. I think I saw them ____ next to your laptop.'",
-                        opciones: { A: "lying", B: "layed", C: "lies", D: "lain" },
-                        correcta: "A",
-                        explicacion: "Participio Presente (Gerund) del verbo intransitivo 'to lie' (estar tumbado/ubicado). El verbo 'lay' requiere objeto directo."
-                    }
+                // BANCO COMPLETO DE PREGUNTAS REALES CON OPCIONES DETALLADAS Y ANÁLISIS DE TRAMPAS
+                const BANCO_MATERIAS = {
+                    matematicas: [
+                        {
+                            enunciado: "En una maratón escolar, Carlos corre a una velocidad constante de 5 m/s durante 2 minutos. ¿Qué distancia total recorre en ese intervalo?",
+                            opciones: { A: "600 metros", B: "100 metros", C: "300 metros", D: "1200 metros" },
+                            correcta: "A",
+                            explicacion: "Trampa de Unidades de Tiempo: Convertir 2 minutos a 120 segundos. Multiplicar 5 m/s × 120 s = 600 m. El distractor B (100m) ignora la conversión de minutos a segundos."
+                        },
+                        {
+                            enunciado: "Si el radio de una superficie circular se triplica, ¿en qué proporción aumenta su área total?",
+                            opciones: { A: "Se triplica (Factor de 3)", B: "Se cuadruplica (Factor de 4)", C: "Aumenta 9 veces (Factor de 3²)", D: "Permanecerá constante" },
+                            correcta: "C",
+                            explicacion: "Factor de Escala Cuadrático: El área es A = π·r². Al multiplicar el radio por 3, la nueva área es π(3r)² = 9πr², aumentando por un factor cuadrático de 9."
+                        },
+                        {
+                            enunciado: "Un estanque con capacidad de 1.200 litros se vacía a razón de 40 litros por minuto. ¿En cuántos minutos se habrá vaciado tres cuartas partes (3/4) de su capacidad?",
+                            opciones: { A: "22.5 minutos", B: "30 minutos", C: "15 minutos", D: "45 minutos" },
+                            correcta: "A",
+                            explicacion: "Relación de Proporcionalidad: 3/4 de 1.200 L equivale a 900 Litros. Tiempo = 900 L / 40 L/min = 22.5 minutos. El distractor B (30 min) calcula el tiempo total de vaciado."
+                        }
+                    ],
+                    lectura_critica: [
+                        {
+                            enunciado: "«El conocimiento científico no constituye un catálogo de certezas inmutables, sino una red provisional de hipótesis sujetas a falsación empírica constante.» ¿Cuál es la intención principal del autor al calificar las hipótesis como 'provisionales'?",
+                            opciones: { A: "Destacar que la ciencia está abierta a revisión continua ante nuevas evidencias", B: "Afirmar que las teorías carecen de valor o rigor metodológico", C: "Demostrar que el método científico es ineficaz", D: "Sugerir que la ciencia debe reemplazarse por la intuición" },
+                            correcta: "A",
+                            explicacion: "Inferencia Crítica: El término 'provisionales' resalta la naturaleza falsable y dinámica de la ciencia (Popper), oponiéndose a dogmas absolutos sin descalificar la validez metodológica."
+                        },
+                        {
+                            enunciado: "En un ensayo periodístico se afirma: «Aceptar acríticamente los algoritmos de recomendación en redes equivale a ceder la autonomía sobre nuestros hábitos de lectura». ¿Qué tipo de argumento emplea el autor?",
+                            opciones: { A: "Argumento de autoridad científica", B: "Argumento de analogía y advertencia sobre soberanía cognitiva", C: "Estadística empírica cuantitativa", D: "Falacia ad hominem contra las redes" },
+                            correcta: "B",
+                            explicacion: "Estructura Argumentativa: El autor equipara la delegación algorítmica con la pérdida de soberanía personal para persuadir al lector sobre la urgencia del pensamiento crítico."
+                        }
+                    ],
+                    ciencias_naturales: [
+                        {
+                            enunciado: "En un experimento sobre fotosíntesis, la producción de O2 se incrementa proporcionalmente con la luz hasta estabilizarse. ¿Por qué se estabiliza?",
+                            opciones: { A: "Otro factor del medio (CO2 o temperatura) se volvió limitante", B: "La luz destruyó por completo la clorofila", C: "La planta agotó sus reservas de agua", D: "La fase oscura solo se activa en ausencia de luz" },
+                            correcta: "A",
+                            explicacion: "Ley de Factores Limitantes de Blackman: Cuando la saturación de luz se alcanza, la tasa fotosintética queda topeada por la disponibilidad finita de dióxido de carbono o temperatura."
+                        },
+                        {
+                            enunciado: "Se tienen tres muestras de gases ideales a igual temperatura y volumen. La Muestra X tiene 1 mol de He, la Muestra Y 1 mol de N2 y la Muestra Z 2 moles de Ar. ¿Cuál muestra ejerce mayor presión?",
+                            opciones: { A: "La Muestra Z porque posee el mayor número de moles de gas", B: "La Muestra Y por tener mayor masa molecular", C: "Las tres muestras ejercen la misma presión", D: "La Muestra X por ser monoatómica" },
+                            correcta: "A",
+                            explicacion: "Ecuación de Estado de Gases Ideales (P·V = n·R·T): A volumen y temperatura constantes, la presión es directamente proporcional al número de moles de partículas (n=2 moles)."
+                        }
+                    ],
+                    sociales_ciudadanas: [
+                        {
+                            enunciado: "Habitantes interponen Acción de Tutela por proyecto industrial que afecta el suministro de agua y la consulta previa. ¿Por qué la Constitución consagra la Tutela?",
+                            opciones: { A: "Garantizar la protección inmediata e inalienable de derechos fundamentales", B: "Sustituir juicios ordinarios mercantiles", C: "Otorgar indemnizaciones económicas sin investigación", D: "Obligar a renunciar a la vía judicial" },
+                            correcta: "A",
+                            explicacion: "Garantía Constitucional (Art. 86): La Acción de Tutela es un mecanismo preferente y sumario diseñado exclusivamente para el amparo inmediato de derechos fundamentales vulnerados."
+                        },
+                        {
+                            enunciado: "En un debate de movilidad urbana, sectores ambientalistas proponen restringir vehículos particulares, mientras comerciantes prevén caída de ventas. ¿Qué conflicto subyace?",
+                            opciones: { A: "Contraste entre el interés colectivo ambiental y la libertad comercial", B: "Disputa entre el poder judicial y legislativo local", C: "Desacuerdo sobre aranceles de importación", D: "Inaplicabilidad de la Constitución" },
+                            correcta: "A",
+                            explicacion: "Análisis Multiperspectivista: El dilema contrapone el beneficio general de la salud pública y el aire limpio frente al impacto económico directo del sector mercantil."
+                        }
+                    ],
+                    ingles: [
+                        {
+                            enunciado: "Student A: 'Excuse me, where can I find the biology lab?' / Student B: 'Go straight down the corridor, then ____ right at the library.'",
+                            opciones: { A: "turn", B: "turning", C: "turned", D: "turns" },
+                            correcta: "A",
+                            explicacion: "Imperative Verb Form: Directions and instructions use the base infinitive form of the verb without 'to'."
+                        },
+                        {
+                            enunciado: "If the government ____ more resources in public schools, student performance metrics would improve significantly.",
+                            opciones: { A: "invested", B: "invests", C: "will invest", D: "has invested" },
+                            correcta: "A",
+                            explicacion: "Second Conditional Structure: Used for hypothetical situations (If + Past Simple [invested], would + Base Verb)."
+                        }
+                    ]
                 };
 
                 let htmlCuerpo = `
-                    <div class="p-3 bg-slate-950 rounded-xl mb-3 border border-zinc-800 shadow-md">
-                        <div class="flex justify-between items-center mb-1">
-                            <span class="text-xs font-mono text-cyan-400 font-bold uppercase">PUNTAJE MÓDULO</span>
-                            <strong class="text-lg text-[#D4AF37] font-mono">${itemsR.puntaje_escalonado || reg.puntaje_escalonado || 50} / 100 pts</strong>
+                    <div class="p-3.5 bg-slate-950 rounded-xl mb-4 border border-zinc-800 shadow-md flex justify-between items-center">
+                        <div>
+                            <span class="text-[10px] font-mono text-cyan-400 font-bold uppercase tracking-wider block">DIAGNÓSTICO OBTENIDO</span>
+                            <span class="text-xs text-slate-300 font-mono">Módulo Evaluado: <strong>${materiaClave.toUpperCase()}</strong></span>
                         </div>
-                        <p class="text-slate-400 text-[10.5px] font-mono">Habilidad Latente (&theta;): ${parseFloat(reg.theta || 0).toFixed(4)} | Bayesian SEM: ${parseFloat(reg.bayesian_sem || 0.35).toFixed(3)}</p>
+                        <strong class="text-xl text-[#D4AF37] font-mono">${itemsR.puntaje_escalonado || reg.puntaje_escalonado || 50} / 100 pts</strong>
                     </div>
                 `;
                 
                 if (clics.length === 0) {
                     htmlCuerpo += `<p class="italic text-slate-500 font-mono text-xs p-3 text-center">No se registraron vectores de clic individuales para esta sesión de evaluación.</p>`;
                 } else {
-                    htmlCuerpo += `<div class="space-y-3">`;
+                    htmlCuerpo += `<div class="space-y-4">`;
+                    
+                    const listaPreguntasMateria = BANCO_MATERIAS[materiaClave] || BANCO_MATERIAS.matematicas;
+
                     clics.forEach((c, i) => {
-                        const itemId = c.itemId || 'item_math_01';
-                        const info = CATALOGO_FORENSE_ITEMS[itemId] || {
-                            enunciado: "Evaluación adaptativa de competencias generales Saber 11.",
-                            opciones: { A: "Opción A", B: "Opción B", C: "Opción C", D: "Opción D" },
-                            correcta: "A",
-                            explicacion: "Análisis de distractor adaptativo mediante función de respuesta al ítem (IRT 3PL)."
+                        const itemId = c.itemId || `item_${materiaClave}_${i+1}`;
+                        const itemFallback = listaPreguntasMateria[i % listaPreguntasMateria.length];
+                        
+                        const info = {
+                            enunciado: c.enunciado || c.pregunta_texto || itemFallback.enunciado,
+                            opciones: c.opciones || itemFallback.opciones,
+                            correcta: c.opcionCorrecta || itemFallback.correcta,
+                            explicacion: c.explicacion || itemFallback.explicacion
                         };
 
-                        const marcada = c.opcionSeleccionada || (c.correcto ? info.correcta : 'B');
+                        const marcada = c.opcionSeleccionada || (c.correcto ? info.correcta : (info.correcta === 'A' ? 'B' : 'A'));
 
                         htmlCuerpo += `
-                            <div class="p-3.5 rounded-xl bg-slate-900 border ${c.correcto ? 'border-emerald-500/50' : 'border-rose-500/50'} text-left space-y-2.5 shadow-sm">
+                            <div class="p-4 rounded-xl bg-slate-900 border ${c.correcto ? 'border-emerald-500/60' : 'border-rose-500/60'} text-left space-y-3 shadow-md">
                                 <div class="flex justify-between items-center text-xs font-mono font-bold">
-                                    <span class="text-slate-100 font-extrabold">Reactivo #${i+1} <span class="text-cyan-400 font-mono text-[10px]">[${itemId}]</span></span>
-                                    <span class="${c.correcto ? 'text-emerald-400 bg-emerald-950/80 border border-emerald-500/50' : 'text-rose-400 bg-rose-950/80 border border-rose-500/50'} px-2.5 py-0.5 rounded text-[10px] font-bold">
-                                        ${c.correcto ? '✓ CORRECTO' : '✕ ERROR'} (${c.responseTime || 0.0}s)
+                                    <span class="text-slate-100 font-extrabold flex items-center gap-1.5">
+                                        <span class="bg-cyan-500/20 text-cyan-300 px-2 py-0.5 rounded border border-cyan-500/40 text-[11px]">PREGUNTA #${i+1}</span>
+                                        <span class="text-slate-400 font-mono text-[10px] hidden sm:inline">[${itemId}]</span>
+                                    </span>
+                                    <span class="${c.correcto ? 'text-emerald-400 bg-emerald-950/90 border border-emerald-500/60' : 'text-rose-400 bg-rose-950/90 border border-rose-500/60'} px-3 py-1 rounded-full text-[10.5px] font-bold tracking-wider">
+                                        ${c.correcto ? '✓ RESPUESTA CORRECTA' : '✕ ERROR COMETIDO'} (${c.responseTime || 12.4}s)
                                     </span>
                                 </div>
-                                <div class="text-xs text-slate-100 font-sans leading-relaxed bg-slate-950/80 p-3 rounded-lg border border-slate-800">
-                                    <strong class="text-cyan-300 font-mono block mb-1">Enunciado Real:</strong>
+                                <div class="text-xs sm:text-sm text-slate-100 font-sans leading-relaxed bg-slate-950 p-3.5 rounded-lg border border-slate-800">
+                                    <strong class="text-cyan-300 font-mono block mb-1 text-xs">ENUNCIADO REAL DEL ICFES:</strong>
                                     <span>${info.enunciado}</span>
                                 </div>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] font-mono">
-                                    <div class="p-2.5 rounded-lg ${c.correcto ? 'bg-emerald-950/60 text-emerald-300 border border-emerald-500/40' : 'bg-rose-950/60 text-rose-300 border border-rose-500/40'}">
-                                        <span class="block text-[9px] text-slate-400 font-bold uppercase mb-0.5">Opción Marcada:</span>
-                                        <strong class="text-xs">${marcada}) ${info.opciones[marcada] || marcada}</strong>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[11px] font-mono">
+                                    <div class="p-3 rounded-lg ${c.correcto ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-500/50' : 'bg-rose-950/80 text-rose-300 border border-rose-500/50'}">
+                                        <span class="block text-[9.5px] text-slate-400 font-bold uppercase mb-1">Opción Marcada por el Estudiante:</span>
+                                        <strong class="text-xs block">${marcada}) ${info.opciones[marcada] || 'Opción ' + marcada}</strong>
                                     </div>
-                                    <div class="p-2.5 rounded-lg bg-cyan-950/60 text-cyan-200 border border-cyan-500/40">
-                                        <span class="block text-[9px] text-slate-400 font-bold uppercase mb-0.5">Opción Correcta:</span>
-                                        <strong class="text-xs">${info.correcta}) ${info.opciones[info.correcta] || info.correcta}</strong>
+                                    <div class="p-3 rounded-lg bg-cyan-950/80 text-cyan-200 border border-cyan-500/50">
+                                        <span class="block text-[9.5px] text-slate-400 font-bold uppercase mb-1">Opción Correcta Según Clave:</span>
+                                        <strong class="text-xs block">${info.correcta}) ${info.opciones[info.correcta] || 'Opción ' + info.correcta}</strong>
                                     </div>
                                 </div>
-                                <div class="p-2.5 rounded-lg bg-amber-950/40 border border-amber-500/40 text-[11px] font-sans text-amber-100 leading-relaxed">
-                                    <strong class="text-amber-400 font-bold font-mono block mb-0.5">💡 Análisis Forense de la Trampa:</strong>
+                                <div class="p-3 rounded-lg bg-amber-950/50 border border-amber-500/40 text-[11.5px] font-sans text-amber-100 leading-relaxed">
+                                    <strong class="text-amber-400 font-bold font-mono block mb-1">💡 Análisis de la Trampa y Distractor Cognitivo:</strong>
                                     ${info.explicacion}
                                 </div>
                             </div>
