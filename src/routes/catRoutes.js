@@ -13,13 +13,16 @@ const SERVER_VERSION = "v20.6.3-FIX_MASTER";
  */
 export function seudonomizarPII(identifier) {
     if (!identifier) return "anon_student";
-    const secret = process.env.PII_SALT_SECRET || "dante_os_pii_anonymization_salt_2026";
+    const secret = process.env.PII_SALT_SECRET;
+    if (!secret) {
+        throw new Error("🚨 [CRITICAL CRYPTO ERROR]: process.env.PII_SALT_SECRET no está configurada. Operación rechazada.");
+    }
     const str = String(identifier).toLowerCase().trim();
     return "anon_" + crypto.createHmac('sha256', secret).update(str).digest('hex').substring(0, 16);
 }
 
-// 🛡️ Secreto de Integridad con fallback seguro para despliegues en Render
-const INTEGRITY_SECRET = process.env.INTEGRITY_SECRET || "dante_enterprise_integrity_secret_2026";
+// 🛡️ Secreto de Integridad perimetral
+const INTEGRITY_SECRET = process.env.INTEGRITY_SECRET;
 
 // 🪐 Middleware Perimetral Multi-Tenant
 router.use((req, res, next) => {
