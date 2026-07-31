@@ -193,18 +193,38 @@ class ResilientRedisWrapper {
         this.realRedis = realRedis;
         this.mockRedis = mockRedis;
         this.isRealAvailable = false;
+        this.errorCount = 0;
+        this.maxAllowedErrors = 3;
+        this.isDisconnected = false;
 
         if (this.realRedis) {
             this.realRedis.on('connect', () => {
                 this.isRealAvailable = true;
+                this.errorCount = 0;
                 console.log('🚀 [REDIS CACHE CONNECTED]: Conexión exitosa con el clúster Redis.');
             });
             this.realRedis.on('ready', () => {
                 this.isRealAvailable = true;
+                this.errorCount = 0;
             });
             this.realRedis.on('error', (err) => {
                 this.isRealAvailable = false;
-                console.warn('🚨 [REDIS WARN / MÓDULO DEGRADADO]:', err.message);
+                this.errorCount++;
+                const errMsg = String(err?.message || '').toUpperCase();
+
+                console.warn(`🚨 [REDIS WARN / MÓDULO DEGRADADO] (Fallo ${this.errorCount}/${this.maxAllowedErrors}):`, err.message);
+
+                // 🧹 DETECCIÓN DE ERRORES CRÍTICOS O LÍMITE DE REINTENTOS: Desconexión explícita para liberar Event Loop y RAM
+                const isAuthError = errMsg.includes('WRONGPASS') || errMsg.includes('NOAUTH') || errMsg.includes('NOPERM') || errMsg.includes('AUTH');
+                const isLimitReached = this.errorCount >= this.maxAllowedErrors;
+
+                if ((isAuthError || isLimitReached) && !this.isDisconnected) {
+                    this.isDisconnected = true;
+                    console.warn('⚡ [REDIS FORCE DISCONNECT]: Cierre explícito de sockets para liberar el Event Loop de Node.js. Activando In-Memory Fallback.');
+                    try {
+                        this.realRedis.disconnect();
+                    } catch (_) {}
+                }
             });
             this.realRedis.on('end', () => {
                 this.isRealAvailable = false;
@@ -268,6 +288,7 @@ if (redisUrl) {
             connectTimeout: 5000,
             retryStrategy(times) {
                 if (times > 2) {
+                    console.warn('⚡ [REDIS RETRY STRATEGY]: Se alcanzó el límite máximo de reintentos (2). Suspendiendo reconexión.');
                     return null;
                 }
                 return Math.min(times * 100, 500);
@@ -287,6 +308,7 @@ if (redisUrl) {
 
         realRedis.connect().catch((err) => {
             console.warn('⚠️ [REDIS CONNECT WARN]: No se pudo conectar a Redis. Operando con fallback in-memory:', err.message);
+            try { realRedis.disconnect(); } catch (_) {}
         });
 
         redisExport = new ResilientRedisWrapper(realRedis, mockInstance);
