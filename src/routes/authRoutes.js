@@ -6,7 +6,10 @@ import { generarTokenJWT, setHttpOnlyCookie, verifyToken, optionalToken } from '
 // 🛡️ Motor de Cifrado en Reposo AES-256-GCM para PII y datos sensibles (Autónomo)
 const ALGORITHM = 'aes-256-gcm';
 const IV_LENGTH = 12;
-const MASTER_SECRET = process.env.ENCRYPTION_KEY || process.env.JWT_SECRET || 'dante_os_enterprise_master_encryption_key_2026_aes256_secure_#9921';
+const MASTER_SECRET = process.env.ENCRYPTION_KEY || process.env.JWT_SECRET;
+if (!MASTER_SECRET) {
+    throw new Error("🚨 [FAIL-FAST CRITICAL ERROR]: Ni process.env.ENCRYPTION_KEY ni process.env.JWT_SECRET están definidas en authRoutes.js.");
+}
 const ENCRYPTION_KEY = crypto.createHash('sha256').update(MASTER_SECRET).digest();
 
 export function cifrarDatosSensibles(data) {
