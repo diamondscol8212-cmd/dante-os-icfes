@@ -3,60 +3,46 @@ import crypto from 'crypto';
 import { supabase } from '../../supabaseClient.js';
 import { redis } from '../../redisClient.js';
 import { generarTokenJWT, setHttpOnlyCookie, verifyToken, optionalToken } from '../middleware.js';
-// 🛡️ Motor de Cifrado en Reposo AES-256-GCM para PII y datos sensibles (Autónomo)
-const ALGORITHM = 'aes-256-gcm';
-const IV_LENGTH = 12;
-const MASTER_SECRET = process.env.ENCRYPTION_KEY || process.env.JWT_SECRET;
-if (!MASTER_SECRET) {
-    throw new Error("🚨 [FAIL-FAST CRITICAL ERROR]: Ni process.env.ENCRYPTION_KEY ni process.env.JWT_SECRET están definidas en authRoutes.js.");
-}
-const ENCRYPTION_KEY = crypto.createHash('sha256').update(MASTER_SECRET).digest();
+import { cifrarDatosSensibles, descifrarDatosSensibles } from '../services/encryptionService.js';
 
-export function cifrarDatosSensibles(data) {
-    if (data === null || data === undefined) return null;
-    try {
-        const textToEncrypt = typeof data === 'object' ? JSON.stringify(data) : String(data);
-        const iv = crypto.randomBytes(IV_LENGTH);
-        const cipher = crypto.createCipheriv(ALGORITHM, ENCRYPTION_KEY, iv);
-        let encrypted = cipher.update(textToEncrypt, 'utf8', 'hex');
-        encrypted += cipher.final('hex');
-        const authTag = cipher.getAuthTag().toString('hex');
-        return `${iv.toString('hex')}:${authTag}:${encrypted}`;
-    } catch (error) {
-        console.error("🚨 [CRYPTO ERROR] Fallo al cifrar datos sensibles:", error.message);
-        return null;
-    }
-}
-
-export function descifrarDatosSensibles(encryptedString) {
-    if (!encryptedString || typeof encryptedString !== 'string') return encryptedString;
-    if (!encryptedString.includes(':')) return encryptedString;
-    try {
-        const parts = encryptedString.split(':');
-        if (parts.length !== 3) return encryptedString;
-        const iv = Buffer.from(parts[0], 'hex');
-        const authTag = Buffer.from(parts[1], 'hex');
-        const encryptedText = parts[2];
-        const decipher = crypto.createDecipheriv(ALGORITHM, ENCRYPTION_KEY, iv);
-        decipher.setAuthTag(authTag);
-        let decrypted = decipher.update(encryptedText, 'hex', 'utf8');
-        decrypted += decipher.final('utf8');
-        try { return JSON.parse(decrypted); } catch { return decrypted; }
-    } catch (error) {
-        return encryptedString;
-    }
-}
+export { cifrarDatosSensibles, descifrarDatosSensibles };
 
 const router = Router();
 const SERVER_VERSION = "v21.1.0-ENTERPRISE_PRODUCTION";
 
 // ====================================================================
-// 🧠 MOTOR DE FUNCIONES CRIPTOGRÁFICAS PURAS DE DANTE OS (SHA-512 / 10K ITERACIONES)
+// 🧠 MOTOR DE FUNCIONES CRIPTOGRÁFICAS DE ALTA SEGURIDAD DE DANTE OS (PBKDF2-SHA512 / 210K ITERACIONES OWASP)
 // ====================================================================
-function generarHashPassword(password, saltExistente = null) {
+function generarHashPassword(password, saltExistente = null, iterations = 210000) {
     const salt = saltExistente ? saltExistente.trim() : crypto.randomBytes(16).toString('hex');
-    const hash = crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha512').toString('hex');
-    return { hash, salt };
+    const hash = crypto.pbkdf2Sync(password, salt, iterations, 64, 'sha512').toString('hex');
+    return { hash, salt, iterations };
+}
+
+function verificarHashPassword(password, salt, hashAlmacenado) {
+    const saltLimpio = String(salt || '').trim();
+    const targetHash = String(hashAlmacenado || '').trim();
+
+    if (!saltLimpio || !targetHash) return { isMatch: false, isLegacy: false };
+
+    // 1. Probar con estándar OWASP 210,000 iteraciones
+    const hash210k = crypto.pbkdf2Sync(password, saltLimpio, 210000, 64, 'sha512').toString('hex');
+    const buf210k = Buffer.from(hash210k, 'hex');
+    const bufTarget = Buffer.from(targetHash, 'hex');
+
+    if (buf210k.length === bufTarget.length && crypto.timingSafeEqual(buf210k, bufTarget)) {
+        return { isMatch: true, isLegacy: false };
+    }
+
+    // 2. Fallback de compatibilidad: Probar con 10,000 iteraciones legacy
+    const hash10k = crypto.pbkdf2Sync(password, saltLimpio, 10000, 64, 'sha512').toString('hex');
+    const buf10k = Buffer.from(hash10k, 'hex');
+
+    if (buf10k.length === bufTarget.length && crypto.timingSafeEqual(buf10k, bufTarget)) {
+        return { isMatch: true, isLegacy: true };
+    }
+
+    return { isMatch: false, isLegacy: false };
 }
 
 // ====================================================================
@@ -131,13 +117,13 @@ router.post('/register-secure-user', async (req, res) => {
 // ====================================================================
 router.post('/login-perimetral', async (req, res) => {
     try {
-        const { email, identity, password, institution_id, role_target } = req.body;
+        const { email, identity, password, institution_id, role_target, sandbox_mode } = req.body;
         const tenantClean = String(institution_id || "colegio_sandbox_default").toLowerCase().trim();
         const rawIdentifier = String(identity || email || "").trim();
-        const identifierClean = rawIdentifier.toLowerCase();
+        const identifierClean = rawIdentifier.toLowerCase().replace(/[^a-z0-9@._-]/gi, '');
 
         if (!identifierClean || !password) {
-            return res.status(400).json({ success: false, error: "Credenciales incompletas." });
+            return res.status(400).json({ success: false, error: "Credenciales de acceso incompletas." });
         }
 
         let usuario = null;
@@ -153,69 +139,68 @@ router.post('/login-perimetral', async (req, res) => {
             usuario = data;
             queryError = error;
         } else {
+            const safeDoc = identifierClean.replace(/,/g, '');
             const { data, error } = await supabase
                 .from('usuarios')
                 .select('*')
-                .or(`document_id.eq.${identifierClean},email.eq.${identifierClean}`)
+                .or(`document_id.eq.${safeDoc},email.eq.${safeDoc}`)
                 .eq('institution_id', tenantClean)
                 .maybeSingle();
             usuario = data;
             queryError = error;
         }
 
+        // Manejo de usuario no encontrado
         if (queryError || !usuario) {
-            console.log(`💡 [DANTE AUTH]: Usuario [${identifierClean}] no encontrado en T-[${tenantClean}]. Auto-registrando usuario...`);
-            const { hash: newHash, salt: newSalt } = generarHashPassword(password);
-            const userRole = (role_target || 'estudiante').toLowerCase().trim();
-            const userEmail = identifierClean.includes('@') ? identifierClean : `${identifierClean}@danteos.edu.co`;
-            const docId = identifierClean.includes('@') ? null : identifierClean;
+            // Permitir sandbox/demo temporal de un solo clic si sandbox_mode está explícitamente activado
+            if (sandbox_mode === true || identifierClean.startsWith('sandbox_') || identifierClean.startsWith('guest_')) {
+                console.log(`💡 [DANTE AUTH]: Creando sesión efímera Sandbox para [${identifierClean}] en T-[${tenantClean}]...`);
+                const { hash: newHash, salt: newSalt } = generarHashPassword(password, null, 210000);
+                const userRole = (role_target || 'estudiante').toLowerCase().trim();
+                const userEmail = identifierClean.includes('@') ? identifierClean : `${identifierClean}@danteos.edu.co`;
+                const docId = identifierClean.includes('@') ? null : identifierClean;
 
-            const newUserData = {
-                email: userEmail,
-                document_id: docId,
-                password_hash: newHash,
-                salt: newSalt,
-                rol: userRole,
-                institution_id: tenantClean,
-                account_status: 'active_approved',
-                created_at: new Date().toISOString()
-            };
-
-            const { data: insertedUser, error: insertError } = await supabase
-                .from('usuarios')
-                .insert([newUserData])
-                .select('*')
-                .maybeSingle();
-
-            if (insertedUser) {
-                usuario = insertedUser;
+                usuario = {
+                    email: userEmail,
+                    document_id: docId,
+                    password_hash: newHash,
+                    salt: newSalt,
+                    rol: userRole,
+                    institution_id: tenantClean,
+                    account_status: 'sandbox_guest',
+                    is_sandbox: true,
+                    created_at: new Date().toISOString()
+                };
             } else {
-                usuario = newUserData;
+                return res.status(401).json({
+                    success: false,
+                    error: "Acceso denegado: Usuario no encontrado o credenciales inválidas. Por favor regístrese en la plataforma."
+                });
             }
         } else {
-            // Verificar hash
-            const saltLimpio = String(usuario.salt || "").trim();
-            const hashAlmacenado = String(usuario.password_hash || "").trim();
+            // Verificar hash de contraseña sin sobrescribir claves en caso de error
+            const { isMatch, isLegacy } = verificarHashPassword(password, usuario.salt, usuario.password_hash);
 
-            const { hash } = generarHashPassword(password, saltLimpio);
-            const hashCalculado = hash.trim();
-
-            const bufferCalculado = Buffer.from(hashCalculado, 'hex');
-            const bufferAlmacenado = Buffer.from(hashAlmacenado, 'hex');
-
-            const isMatch = bufferCalculado.length === bufferAlmacenado.length && crypto.timingSafeEqual(bufferCalculado, bufferAlmacenado);
-
-            // Si no coincide la clave, permitir actualización si es cuenta demo o actualizar hash
             if (!isMatch) {
-                console.log(`⚠️ [DANTE AUTH]: Clave no coincidente para [${identifierClean}]. Actualizando hash con nueva clave proporcionada...`);
-                const { hash: updateHash, salt: updateSalt } = generarHashPassword(password);
+                return res.status(401).json({
+                    success: false,
+                    error: "Acceso denegado: Credenciales de acceso incorrectas (usuario o contraseña no coinciden)."
+                });
+            }
+
+            // Si coincidió con el hash legacy de 10,000 iteraciones, migrar en caliente a 210,000 iteraciones OWASP
+            if (isLegacy) {
+                console.log(`🔄 [DANTE SECURITY]: Migrando hash de contraseña de [${usuario.email}] a 210,000 iteraciones OWASP PBKDF2-SHA512...`);
+                const { hash: upgradedHash, salt: upgradedSalt } = generarHashPassword(password, null, 210000);
                 try {
                     await supabase
                         .from('usuarios')
-                        .update({ password_hash: updateHash, salt: updateSalt })
-                        .eq('email', usuario.email || identifierClean);
-                } catch(e) {
-                    console.warn("⚠️ Error actualizando clave en DB:", e.message);
+                        .update({ password_hash: upgradedHash, salt: upgradedSalt })
+                        .eq('email', usuario.email);
+                    usuario.password_hash = upgradedHash;
+                    usuario.salt = upgradedSalt;
+                } catch (e) {
+                    console.warn("⚠️ [DANTE SECURITY]: No se pudo actualizar hash legacy en DB:", e.message);
                 }
             }
         }
