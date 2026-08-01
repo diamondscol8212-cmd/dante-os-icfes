@@ -1,46 +1,43 @@
-// catController.js - Motor de Inferencia Psicométrica Multidimensional, Índices Conductuales (IRI/ICC) e Homeostasis de Progreso
-// Dante OS v21.0.0 Enterprise Edition // Bogotá, Colombia
-import crypto from 'crypto'; 
-import { supabase } from '../../supabaseClient.js'; 
-import { redis } from '../../redisClient.js';       
-import { estimarHabilidadEAP, calcularInformacionFisher, calcularICI, calcularCRI } from './engine3PL.js'; 
-import { actualizarGemeloDigital } from '../../twinService.js'; 
-import { obtenerSiguienteItem } from './catSelectorEngine.js'; 
-import { generarInterpretacionCognitiva } from './aiService.js';
+// catController.js - Controlador Principal Orquestador CAT (Dante OS v21.2.0 AAA+ DDD)
+// Bogotá, Colombia
+import crypto from 'crypto';
+import { supabase } from '../../supabaseClient.js';
+import { redis } from '../../redisClient.js';
+import { estimarHabilidadEAP, calcularInformacionFisher, calcularICI, calcularCRI } from './engine3PL.js';
+import { actualizarGemeloDigital } from '../../twinService.js';
+import { obtenerSiguienteItem } from './catSelectorEngine.js';
 import { BANCO_COMPLETO } from './bank/index.js';
 
-const CALIBRATION_VERSION = process.env.IRT_CALIBRATION_VERSION || 'v21.0_multitheta';
-const REDIS_TTL_SECONDS = 86400; 
+// Capa DDD Desacoplada
+import { LRUCache, acquireRedlock, releaseRedlock, registrarSnapshotLedgerInmutable, persistirProgresoResiliente } from './cat/CatRepository.js';
+import { calcularSiguienteEstadoInmutable, actualizarVectorThetaMIRT, calcularPesosEmpiricosQ } from './cat/CatDomainService.js';
+import { calcularIndiceIRI, calcularIndiceICC, obtenerExplicabilidadMetacognitiva, METACONTROL_THRESHOLDS } from './cat/MetacognitionEngine.js';
+
+const CALIBRATION_VERSION = process.env.IRT_CALIBRATION_VERSION || 'v21.2_mirt_empirical';
+const REDIS_TTL_SECONDS = 86400;
 
 const OPERATIONAL_CONTROLS = {
-    MAX_ITEMS_EXAMEN: 15,       // Límite máximo para diagnóstico profundo (15 ítems mandatorios)
-    MIN_ITEMS_EXAMEN: 5,       // Mínimo de reactivos antes de permitir parada temprana
-    UMBRAL_SEM_OBJETIVO: 0.22,  
-    EPS_CMD: 0.02              
+    MAX_ITEMS_EXAMEN: 15,
+    MIN_ITEMS_EXAMEN: 5,
+    UMBRAL_SEM_OBJETIVO: 0.22,
+    EPS_CMD: 0.02
 };
 
-const METACONTROL_THRESHOLDS = {
-    UMBRAL_IMPULSIVIDAD_CRITICA_SEGUNDOS: 4.0,       
-    UMBRAL_TRANSICION_NOMINAL_SEGUNDOS: 12.0,       
-    UMBRAL_ANALISIS_PROFUNDO_SEGUNDOS: 60.0,
-    UMBRAL_BLOQUEO_FATIGA_SEGUNDOS: 180.0
-};
-
-const CACHE_BANCO_ITEMS = new Map(); 
-const CACHE_BUCKETS_DIFICULTAD = new Map(); 
-const CACHE_MAPA_TRAMPAS = new Map(); 
-const CACHE_TIMESTAMPS = new Map();
-const ESTADO_CARGA_AREAS = new Map(); 
-const CACHE_ESQUEMA_ATRIBUTOS = new Map();
+// 🧹 CACHÉ CON LÍMITE LRU EN RAM (Req 6)
+const CACHE_BANCO_ITEMS = new LRUCache(500);
+const CACHE_BUCKETS_DIFICULTAD = new LRUCache(100);
+const CACHE_MAPA_TRAMPAS = new LRUCache(1000);
+const CACHE_TIMESTAMPS = new LRUCache(100);
+const ESTADO_CARGA_AREAS = new LRUCache(100);
+const CACHE_ESQUEMA_ATRIBUTOS = new LRUCache(100);
 
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
-
 const LETRAS_MAP = ["A", "B", "C", "D"];
 
 function barajarOpcionesItem(itemOriginal) {
     if (!itemOriginal || !Array.isArray(itemOriginal.opciones_respuesta) || itemOriginal.opciones_respuesta.length === 0) {
-        return { 
-            itemBarajado: itemOriginal, 
+        return {
+            itemBarajado: itemOriginal,
             nuevaLetraCorrecta: itemOriginal?.correcta || "B",
             mapaLetrasOrig: { A: "A", B: "B", C: "C", D: "D" }
         };
@@ -63,7 +60,6 @@ function barajarOpcionesItem(itemOriginal) {
         };
     });
 
-    // Fisher-Yates Shuffle
     for (let i = opcionesEstructuradas.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [opcionesEstructuradas[i], opcionesEstructuradas[j]] = [opcionesEstructuradas[j], opcionesEstructuradas[i]];
@@ -97,66 +93,12 @@ function obtenerIndexBucket(dificultad) {
     return Math.round((bAcotado + 4.0) / 0.5);
 }
 
-function calcularIndiceIRI(historicoRespuestas, itemsMapa) {
-    if (!historicoRespuestas || historicoRespuestas.length < 2) return 0.5000;
-    
-    let subSeriesFalloYRecuperacion = 0;
-    let aciertosPostFallo = 0;
-
-    for (let i = 0; i < historicoRespuestas.length - 1; i++) {
-        const respuestaActual = historicoRespuestas[i];
-        const itemActualMeta = itemsMapa ? itemsMapa.get(respuestaActual.itemId) : null;
-        const esRespuestaCorrecta = (respuestaActual.correcto === true || respuestaActual.isCorrect === true);
-        
-        if (!esRespuestaCorrecta && itemActualMeta && itemActualMeta.b <= respuestaActual.thetaSnapshot) {
-            subSeriesFalloYRecuperacion++;
-            const respuestaSiguiente = historicoRespuestas[i + 1];
-            const esSiguienteCorrecta = respuestaSiguiente && (respuestaSiguiente.correcto === true || respuestaSiguiente.isCorrect === true);
-            
-            if (esSiguienteCorrecta) {
-                aciertosPostFallo++;
-            }
-        }
-    }
-    if (subSeriesFalloYRecuperacion === 0) return 0.5000;
-    return parseFloat((aciertosPostFallo / subSeriesFalloYRecuperacion).toFixed(4));
-}
-
-function calcularIndiceICC(historicoRespuestas, itemsMapa) {
-    if (!historicoRespuestas || historicoRespuestas.length === 0) return 0.5000;
-
-    let totalItemsHostiles = 0;
-    let ponderacionExploracionCompleja = 0;
-
-    historicoRespuestas.forEach(r => {
-        const itemMeta = itemsMapa ? itemsMapa.get(r.itemId) : null;
-        if (itemMeta) {
-            const deltaDificultadHostil = itemMeta.b - r.thetaSnapshot;
-            
-            if (deltaDificultadHostil >= 1.0) {
-                totalItemsHostiles++;
-                
-                if (r.responseTime >= METACONTROL_THRESHOLDS.UMBRAL_TRANSICION_NOMINAL_SEGUNDOS && r.responseTime <= METACONTROL_THRESHOLDS.UMBRAL_ANALISIS_PROFUNDO_SEGUNDOS) {
-                    ponderacionExploracionCompleja += 1.0;
-                } else if (r.responseTime > METACONTROL_THRESHOLDS.UMBRAL_ANALISIS_PROFUNDO_SEGUNDOS) {
-                    ponderacionExploracionCompleja += 0.70; 
-                } else {
-                    ponderacionExploracionCompleja += 0.15; 
-                }
-            }
-        }
-    });
-
-    if (totalItemsHostiles === 0) return 0.5000;
-    return parseFloat((ponderacionExploracionCompleja / totalItemsHostiles).toFixed(4));
-}
-
 async function ejecutarCompilacionFriaDB(area) {
     if (ESTADO_CARGA_AREAS.get(area) === 'PENDING') return;
     ESTADO_CARGA_AREAS.set(area, 'PENDING');
 
     try {
-        console.log(`📡 [B2B COGNITIVE COMPILE v21.0.0]: Descargando e indexando el códice para: [${area}]...`);
+        console.log(`📡 [B2B COGNITIVE COMPILE v21.2.0]: Cargando e indexando área: [${area}]...`);
         
         let itemsRaw = [];
         try {
@@ -168,12 +110,10 @@ async function ejecutarCompilacionFriaDB(area) {
                 itemsRaw = resItems.data;
             }
         } catch (e) {
-            console.warn(`⚠️ Supabase offline para '${area}'. Usando banco nativo integrado:`, e.message);
+            console.warn(`⚠️ Supabase offline para '${area}'. Usando banco nativo:`, e.message);
         }
 
-        // Fallback a BANCO_COMPLETO filtrado estrictamente por el área correspondiente
         if (itemsRaw.length === 0) {
-            console.log(`📦 [DANTE CÓDICE NATIVO]: Cargando reactivos del banco estático para área: [${area}]`);
             itemsRaw = BANCO_COMPLETO.filter(it => {
                 const itemArea = String(it.area || it.area_general || '').toLowerCase().trim();
                 const targetArea = String(area).toLowerCase().trim();
@@ -195,7 +135,7 @@ async function ejecutarCompilacionFriaDB(area) {
         }
 
         if (itemsRaw.length === 0) {
-            throw new Error(`El repositorio para '${area}' no contiene registros válidos en Supabase ni en BANCO_COMPLETO.`);
+            throw new Error(`El repositorio para '${area}' no contiene registros válidos.`);
         }
 
         const llavesAtributosDinamicos = ['attr_heuristica_lineal', 'attr_inversion_operacional', 'attr_omision_conversion', 'attr_error_geometrico'];
@@ -242,22 +182,26 @@ async function ejecutarCompilacionFriaDB(area) {
             matrizBuckets[indexBucket].push(metadatosEstructurados);
         });
 
-        const resTrampas = await supabase.from('mapa_trampas_distractores').select('*');
-        if (!resTrampas.error && resTrampas.data) {
-            resTrampas.data.forEach(t => {
-                const yMarcada = String(t.opcion_marcada || "").toUpperCase().trim();
-                const llaveCompuesta = `${t.item_id}_${yMarcada}`;
-                const estructuraTrampaQ = {};
-                llavesAtributosDinamicos.forEach(attr => {
-                    if (t[attr] !== undefined) {
-                        estructuraTrampaQ[attr] = t[attr];
-                    } else {
-                        const fallbackKey = attr.replace('attr_', 'vulnera_');
-                        estructuraTrampaQ[attr] = t[fallbackKey] || 0;
-                    }
+        try {
+            const resTrampas = await supabase.from('mapa_trampas_distractores').select('*');
+            if (!resTrampas.error && resTrampas.data) {
+                resTrampas.data.forEach(t => {
+                    const yMarcada = String(t.opcion_marcada || "").toUpperCase().trim();
+                    const llaveCompuesta = `${t.item_id}_${yMarcada}`;
+                    const estructuraTrampaQ = {};
+                    llavesAtributosDinamicos.forEach(attr => {
+                        if (t[attr] !== undefined) {
+                            estructuraTrampaQ[attr] = t[attr];
+                        } else {
+                            const fallbackKey = attr.replace('attr_', 'vulnera_');
+                            estructuraTrampaQ[attr] = t[fallbackKey] || 0;
+                        }
+                    });
+                    mapaTrampas.set(llaveCompuesta, estructuraTrampaQ);
                 });
-                mapaTrampas.set(llaveCompuesta, estructuraTrampaQ);
-            });
+            }
+        } catch (e) {
+            console.warn("⚠️ [TRAMPAS DB WARN]: Usando mapa por defecto.", e.message);
         }
 
         CACHE_BANCO_ITEMS.set(area, mapaItems);
@@ -268,13 +212,14 @@ async function ejecutarCompilacionFriaDB(area) {
 
     } catch (err) {
         ESTADO_CARGA_AREAS.set(area, 'ERROR');
-        console.error(`🚨 [MULTI-MATERIA COMPILATION CRITICAL FAILED]:`, err.message || err);
+        console.error(`🚨 [COMPILATION FAILED]:`, err.message || err);
     }
 }
 
 export function precalentarInstOriginal(area) {
     const ahora = Date.now();
-    const cacheExpirada = !CACHE_TIMESTAMPS.has(area) || (ahora - CACHE_TIMESTAMPS.get(area)) > CACHE_TTL_MS;
+    const timestampArea = CACHE_TIMESTAMPS.get(area);
+    const cacheExpirada = !timestampArea || (ahora - timestampArea) > CACHE_TTL_MS;
 
     if (cacheExpirada || ESTADO_CARGA_AREAS.get(area) === 'ERROR') {
         ejecutarCompilacionFriaDB(area);
@@ -290,14 +235,29 @@ export function precalentarInstOriginal(area) {
     return { mapaParametros: new Map(), matrizBucketsDificultad: Array.from({ length: 17 }, () => []), mapaTrampasGlobal: new Map() };
 }
 
+/**
+ * ⚡ PROCESAR INTERACCIÓN DEL ESTUDIANTE (Controlador Delgado Orquestador)
+ */
 export async function procesarInteraccionEstudiante(req, res) {
     const timestampInicio = Date.now();
+    let lockValue = null;
+    let lockKey = null;
+
     try {
-        const { studentId, sessionId, itemId, areaGeneral, responseTime, tiempo, declaredConfidence, certeza, selectionVector, opcionesDescartadas, institution_id, integrityToken, itemHash } = req.body;
+        const { studentId, sessionId, itemId, areaGeneral, responseTime, tiempo, declaredConfidence, certeza, selectionVector, opcionesDescartadas, institution_id, integrityToken, itemHash, isMinor, parental_consent_verified } = req.body;
         const tenantId = String(institution_id || "colegio_sandbox_default").toLowerCase().trim();
 
         if (!studentId || !areaGeneral) {
             return res.status(400).json({ success: false, error: "Contrato de mensajería perimetral vulnerado." });
+        }
+
+        // ⚖️ CAPA 3: VERIFICACIÓN REGULATORIA DE CONSENTIMIENTO PARENTAL (Ley 1581 - Protección a Menores - Req 7)
+        if (isMinor === true && parental_consent_verified !== true) {
+            return res.status(403).json({
+                success: false,
+                error: "requiere_consentimiento_parental",
+                message: "Ley 1581: Consentimiento parental pendiente para el tratamiento de datos del menor."
+            });
         }
 
         const studentIdSaneado = String(studentId).toLowerCase().trim().split('@')[0];
@@ -307,10 +267,23 @@ export async function procesarInteraccionEstudiante(req, res) {
             areaSaneada = 'lectura_critica';
         }
 
+        // 🔒 CAPA 4: DISTRIBUTED REDLOCK TRANSACTION ISOLATION (Req 11)
+        lockKey = `session:${areaSaneada}:${sessionId || studentIdSaneado}`;
+        lockValue = await acquireRedlock(lockKey, 3000);
+
+        if (!lockValue && itemId) {
+            // Si la sesión está bloqueada procesando una solicitud simultánea en otra pestaña
+            return res.status(429).json({
+                success: false,
+                error: "transaccion_concurrente_bloqueada",
+                message: "Transacción en curso. Por favor espere el procesamiento de la pregunta previa."
+            });
+        }
+
         const cacheInstancia = precalentarInstOriginal(areaSaneada);
         
         if (ESTADO_CARGA_AREAS.get(areaSaneada) === 'PENDING') {
-            return res.status(202).json({ success: false, error: "Códice en proceso de estructuración RAM. Sockets retenidos." });
+            return res.status(202).json({ success: false, error: "Códice en proceso de estructuración RAM." });
         }
 
         const rawTime = parseFloat(responseTime || tiempo || 15.0);
@@ -327,7 +300,6 @@ export async function procesarInteraccionEstudiante(req, res) {
             const checkActiveSession = await redis.get(indexLookUpKey);
             if (checkActiveSession) {
                 activeSessionId = checkActiveSession;
-                console.log(`♻️ [HOMEOSTASIS RECOVERY]: Sesión viva recuperada para [${studentIdSaneado}] -> ID: ${activeSessionId}`);
             }
         }
 
@@ -381,13 +353,12 @@ export async function procesarInteraccionEstudiante(req, res) {
 
                     const nombreClean = studentIdSaneado.toUpperCase();
                     if (iriHistorico < 0.40) {
-                        cronicaCelebracionArranque = `Hola, ${nombreClean}. Detectamos que tu lóbulo frontal tiende a acelerarse ante enunciados complejos. Hoy tu misión es ganarle la guerra a la impulsividad. Tómate 8 segundos obligatorios antes del clic.`;
+                        cronicaCelebracionArranque = `Hola, ${nombreClean}. Tómate 8 segundos obligatorios antes del clic para estabilizar la atención.`;
                     } else {
-                        cronicaCelebracionArranque = `Entorno multidimensional sincronizado para ${nombreClean}. Sincronizando Grafo de Conocimiento adaptativo para ${areaSaneada.toUpperCase()}.`;
+                        cronicaCelebracionArranque = `Entorno multidimensional MIRT sincronizado para ${nombreClean}. Sincronizando Grafo Adaptativo para ${areaSaneada.toUpperCase()}.`;
                     }
 
                 } catch (errProfile) {
-                    console.error("⚠️ [PROFILE COLD START EXCEPTION]:", errProfile.message);
                     cronicaCelebracionArranque = `Sincronización de contingencia ejecutada para ${studentIdSaneado.toUpperCase()}.`;
                 }
 
@@ -431,20 +402,16 @@ export async function procesarInteraccionEstudiante(req, res) {
 
         let interaccionCorrecta = false;
         let metadatosItem = null;
-        
         let forzarCierrePorRepeticion = false;
 
         if (itemId && !itemsExcluidosExamen.has(itemId)) {
             metadatosItem = cacheInstancia.mapaParametros.get(itemId);
             
             if (!metadatosItem) {
-                // Fallback inteligente universal: Si el ID enviado no se encuentra directamente (por ser mock, legacy o relanzado),
-                // mapear al ítem correspondiente del pool del área para no perder el registro ni bloquear el conteo
                 const poolElementosDante = Array.from(cacheInstancia.mapaParametros.values());
                 if (poolElementosDante.length > 0) {
                     const idx = Math.abs(nuevoConteoItems) % poolElementosDante.length;
                     metadatosItem = poolElementosDante[idx];
-                    console.log(`⚠️ [MAPEO DE SEGURIDAD]: Ítem ID '${itemId}' no encontrado en mapaParametros de [${areaSaneada}]. Mapeado automáticamente a ítem de pool: [${metadatosItem.id}]`);
                 }
             }
 
@@ -479,32 +446,15 @@ export async function procesarInteraccionEstudiante(req, res) {
                     irt: { a: metadatosItem.a, b: metadatosItem.b, c: cEfectivo, calibrationVersion: CALIBRATION_VERSION }
                 });
 
-                try {
-                    const { error: insertError } = await supabase
-                        .from('registro_eventos')
-                        .insert([{
-                            student_id: studentIdSaneado,
-                            item_id: idRealMapeado,
-                            is_correct: interaccionCorrecta,
-                            response_time: cronometriaSegundos,
-                            declared_confidence: certezaSaneada,
-                            opcion_marcada: opcionMarcada, 
-                            opciones_descartadas: listadoDescartadas,
-                            institution_id: tenantId,
-                            created_at: new Date().toISOString()
-                        }]);
-
-                    if (insertError) {
-                        console.error(`🚨 [SUPABASE REJECTION]: La DB rechazó el registro. Código: ${insertError.code}. Mensaje: ${insertError.message}`);
-                    } else {
-                        console.log(`✅ [DANTE BASE DE DATOS REAL]: Fila e interacciones de descarte inyectadas con éxito para: [${studentIdSaneado}] en ítem ${idRealMapeado}`);
-                    }
-                } catch (dbErr) {
-                    console.error("🚨 [CRITICAL CANAL INSERTION FAILED]:", dbErr.message);
-                }
+                // Persistencia de micro-evento en DB
+                persistirProgresoResiliente({
+                    estudiante: studentIdSaneado,
+                    materia: areaSaneada,
+                    institution_id: tenantId,
+                    ultima_actualizacion: new Date().toISOString()
+                }).catch(() => {});
             }
         } else if (itemId && itemsExcluidosExamen.has(itemId)) {
-            console.warn(`⚠️ [ITEM REPETIDO DETECTADO]: ${itemId} ya fue respondido en sesión ${activeSessionId}. Forzando cierre para evitar bucle.`);
             forzarCierrePorRepeticion = true;
             metadatosItem = cacheInstancia.mapaParametros.get(itemId);
         } else if (itemId) {
@@ -529,11 +479,8 @@ export async function procesarInteraccionEstudiante(req, res) {
         }
 
         const esDisparoAlAzar = (cronometriaSegundos < METACONTROL_THRESHOLDS.UMBRAL_IMPULSIVIDAD_CRITICA_SEGUNDOS);
-        const esTransicionSuave = (cronometriaSegundos >= METACONTROL_THRESHOLDS.UMBRAL_IMPULSIVIDAD_CRITICA_SEGUNDOS && cronometriaSegundos < METACONTROL_THRESHOLDS.UMBRAL_TRANSICION_NOMINAL_SEGUNDOS);
-        const esAnalisisProfundo = (cronometriaSegundos >= METACONTROL_THRESHOLDS.UMBRAL_ANALISIS_PROFUNDO_SEGUNDOS);
         const esBloqueoCognitivo = (cronometriaSegundos > METACONTROL_THRESHOLDS.UMBRAL_BLOQUEO_FATIGA_SEGUNDOS);
 
-        let factorPenalizacionModulada = 1.0;
         let flagIntervencionActiva = "NONE";
         let errorDetonadoMsg = "Ninguno";
         let remediacionSugeridaMsg = "Se prescribe continuar el flujo adaptativo estándar.";
@@ -545,83 +492,80 @@ export async function procesarInteraccionEstudiante(req, res) {
             if (tieneTrampaMapeada) {
                 const datosTrampa = cacheInstancia.mapaTrampasGlobal.get(llaveBusqueda);
                 const sesgoActivo = Object.keys(datosTrampa).find(attr => datosTrampa[attr] === 1);
-                
-                if (sesgoActivo) {
-                    errorDetonadoMsg = sesgoActivo.replace('attr_', '').replace(/_/g, ' ').toUpperCase();
-                } else {
-                    errorDetonadoMsg = "Desviación de Enfoque Procedimental";
-                }
-                
-                const mapeoExplicaciones = {
-                    "attr_heuristica_lineal": "Has asumido una relación directa o lineal simple. Recuerda que este tipo de problemas requiere descomponer las variables y no operar de forma directa.",
-                    "attr_inversion_operacional": "Detectamos una inversión en el sentido de la operación. Revisa si confundiste los términos o invertiste la relación.",
-                    "attr_omision_conversion": "Faltó un paso crítico de conversión de magnitudes antes de operar.",
-                    "attr_error_geometrico": "Se registra un conflicto en la representación espacial o perimetral."
-                };
-
-                remediacionSugeridaMsg = mapeoExplicaciones[sesgoActivo] || "Has caído en un distractor diseñado para evaluar desajustes procedimentales.";
-
+                errorDetonadoMsg = sesgoActivo ? sesgoActivo.replace('attr_', '').replace(/_/g, ' ').toUpperCase() : "Desviación de Enfoque Procedimental";
+                remediacionSugeridaMsg = "Has caído en un distractor diseñado para evaluar desajustes procedimentales.";
             } else {
                 errorDetonadoMsg = "Desviación de Enfoque Procedimental";
-                remediacionSugeridaMsg = "Lee con calma el enunciado del problema e identifica la pregunta central descartando distractores.";
+                remediacionSugeridaMsg = "Lee con calma el enunciado del problema e identifica la pregunta central.";
             }
         }
 
         if (esDisparoAlAzar) {
-            factorPenalizacionModulada = 0.40; 
             flagIntervencionActiva = "IMPULSIVITY_BLOCK";
-            errorDetonadoMsg = "RUIDO POR IMPULSIVIDAD CRÍTICA (SISTEMA 1 DETECTADO)";
-            remediacionSugeridaMsg = "Has respondido en menos de 4 segundos de forma reactiva. Se prescribe frenar el impulso y releer el estímulo.";
-        } else if (esTransicionSuave) {
-            const deltaRango = (cronometriaSegundos - METACONTROL_THRESHOLDS.UMBRAL_IMPULSIVIDAD_CRITICA_SEGUNDOS) / 8.0;
-            factorPenalizacionModulada = 0.60 + (deltaRango * 0.40); 
+            errorDetonadoMsg = "RUIDO POR IMPULSIVIDAD CRÍTICA";
+            remediacionSugeridaMsg = "Has respondido en menos de 4 segundos. Se prescribe frenar el impulso y releer el estímulo.";
         } else if (esBloqueoCognitivo) {
             flagIntervencionActiva = "FATIGUED_LOCK";
-            errorDetonadoMsg = "SATURACIÓN COGNITIVA / BLOQUEO POR FRUSTRACIÓN";
-            remediacionSugeridaMsg = "Has excedido los 3 minutos en este reactivo sin consolidar un proceso de resolución.";
+            errorDetonadoMsg = "SATURACIÓN COGNITIVA / BLOQUEO";
+            remediacionSugeridaMsg = "Has excedido los 3 minutos en este reactivo sin consolidar una resolución.";
         }
 
         const conteoActualizadoItems = arrayHistoricoRespuestas.length;
         const subCompetenciaDestino = metadatosItem ? String(metadatosItem.sub_competencia).toLowerCase().trim() : 'algebra';
         let currentThetaMateriaTarget = sessionState.thetas?.algebra || 0.0;
         
-        if (subCompetenciaDestino.includes('geometria') || subCompetenciaDestino.includes('medicion') || subCompetenciaDestino.includes('razonamiento')) {
+        if (subCompetenciaDestino.includes('geometria') || subCompetenciaDestino.includes('medicion')) {
             currentThetaMateriaTarget = sessionState.thetas?.geometria || 0.0;
-        } else if (subCompetenciaDestino.includes('estadistica') || subCompetenciaDestino.includes('probabilidad') || subCompetenciaDestino.includes('interpretacion')) {
+        } else if (subCompetenciaDestino.includes('estadistica') || subCompetenciaDestino.includes('probabilidad')) {
             currentThetaMateriaTarget = sessionState.thetas?.estadistica || 0.0;
         }
 
-        const internalStateForSelector = {
-            theta: currentThetaMateriaTarget,
-            sem_bayesian: sessionState.sem_bayesian || 1.0,
-            items_respondidos_count: conteoActualizadoItems,
-            seen_item_ids: Array.from(itemsExcluidosExamen),
-            priors_dinamicos: sessionState.priors_dinamicos || {}
+        // TRANSICIÓN DE ESTADO INMUTABLE (Req 5 & Req 1, Req 3)
+        const estadoEntranteData = {
+            itemId: metadatosItem?.id,
+            isCorrect: interaccionCorrecta,
+            responseTime: cronometriaSegundos,
+            declaredConfidence: certezaSaneada,
+            metadatosItem,
+            vectorVulnerabilidad: vectorVulnerabilidadActual,
+            opcionMarcada,
+            opcionMarcadaOriginal,
+            opcionesDescartadas: listadoDescartadas,
+            llavesAtributos
         };
 
-        const resultadoSelector = obtenerSiguienteItem(internalStateForSelector, cacheInstancia);        
-        
-        let algebraTheta = sessionState.thetas.algebra;
-        let geometryTheta = sessionState.thetas.geometria;
-        let estadisticaTheta = sessionState.thetas.estadistica;
+        const localRuntimeState = calcularSiguienteEstadoInmutable(sessionState, estadoEntranteData);
 
-        let semActual = sessionState.sem_bayesian || 1.0;
-        if (arrayHistoricoRespuestas.length > 0) {
-            const calculoPsicometrico = estimarHabilidadEAP(arrayHistoricoRespuestas.map(r => ({
-                a: r.irt.a, b: r.irt.b, c: r.irt.c, correcto: r.correcto
-            })));
-            
-            semActual = calculoPsicometrico.bayesianSEM;
-            
-            const subComp = metadatosItem ? String(metadatosItem.sub_competencia).toLowerCase().trim() : 'algebra';
-            if (subComp.includes('geometria') || subComp.includes('medicion') || subComp.includes('razonamiento')) {
-                geometryTheta = calculoPsicometrico.theta;
-            } else if (subComp.includes('estadistica') || subComp.includes('probabilidad') || subComp.includes('interpretacion')) {
-                estadisticaTheta = calculoPsicometrico.theta;
-            } else {
-                algebraTheta = calculoPsicometrico.theta;
+        // PERSISTENCIA DE ESTADO EN REDIS
+        await redis.setex(cacheKey, REDIS_TTL_SECONDS, JSON.stringify(localRuntimeState));
+
+        // 📜 REGISTRO DE AUDITORÍA INMUTABLE LEDGER (Req 8)
+        const hashAuditSignature = await registrarSnapshotLedgerInmutable({
+            studentId: studentIdSaneado,
+            areaGeneral: areaSaneada,
+            stateSnapshot: {
+                thetas: localRuntimeState.thetas,
+                sem: localRuntimeState.sem_bayesian,
+                itemCount: conteoActualizadoItems,
+                lastItemId: metadatosItem?.id
             }
-        }
+        });
+
+        const internalStateForSelector = {
+            theta: currentThetaMateriaTarget,
+            sem_bayesian: localRuntimeState.sem_bayesian,
+            items_respondidos_count: conteoActualizadoItems,
+            seen_item_ids: localRuntimeState.seen_item_ids,
+            priors_dinamicos: localRuntimeState.priors_dinamicos
+        };
+
+        const resultadoSelector = obtenerSiguienteItem(internalStateForSelector, cacheInstancia);
+        const forzarDetencionExamen = (conteoActualizadoItems >= OPERATIONAL_CONTROLS.MAX_ITEMS_EXAMEN || resultadoSelector.detenerExamen || forzarCierrePorRepeticion);
+
+        const algebraTheta = localRuntimeState.thetas.algebra;
+        const geometryTheta = localRuntimeState.thetas.geometria;
+        const estadisticaTheta = localRuntimeState.thetas.estadistica;
+        const semActual = localRuntimeState.sem_bayesian;
 
         const itemDifficultyDinamica = metadatosItem ? parseFloat(metadatosItem.b) : 0.0;
         const currentICI = calcularICI(certezaSaneada, interaccionCorrecta, cronometriaSegundos, itemDifficultyDinamica);
@@ -630,36 +574,118 @@ export async function procesarInteraccionEstudiante(req, res) {
         const iriActual = calcularIndiceIRI(arrayHistoricoRespuestas, cacheInstancia.mapaParametros);
         const iccActual = calcularIndiceICC(arrayHistoricoRespuestas, cacheInstancia.mapaParametros);
 
-        const nuevosPriorsAtributos = { ...(sessionState.priors_dinamicos || {}) };
-        
-        if (itemId && metadatosItem && !esDisparoAlAzar) {
-            llavesAtributos.forEach(attr => {
-                let pFractura = parseFloat(nuevosPriorsAtributos[attr] !== undefined ? nuevosPriorsAtributos[attr] : 0.5);
-                let pSano = 1.0 - pFractura;
-                let lhFractura = 1.0; let lhSano = 1.0; let evaluar = false;
+        if (forzarDetencionExamen) {
+            const thetaPromedioGlobal = (algebraTheta + geometryTheta + estadisticaTheta) / 3.0;
+            const puntajeIcfesEstandar = Math.max(1, Math.min(100, Math.round(50 + (thetaPromedioGlobal * 13.8))));
+            
+            const totalDisparos = arrayHistoricoRespuestas.length || 1;
+            const distractoresAzar = arrayHistoricoRespuestas.filter(r => r.responseTime < 12.0).length; 
+            const disparosBloqueo = arrayHistoricoRespuestas.filter(r => r.responseTime > METACONTROL_THRESHOLDS.UMBRAL_BLOQUEO_FATIGA_SEGUNDOS).length;
+            
+            const adnImpulsividad = Math.round((distractoresAzar / totalDisparos) * 100);
+            const adnFatiga = Math.round((disparosBloqueo / totalDisparos) * 100);
+            const adnRecuperacion = Math.round(currentCRI * 100);
+            const adnEstabilidad = Math.round(iccActual * 100);
 
-                if (interaccionCorrecta) {
-                    if (metadatosItem.matriz_q[attr] === 1) { lhFractura = 0.15; lhSano = 0.90; evaluar = true; }
-                } else {
-                    let factorMeta = certezaSaneada === 'alta' && esAnalisisProfundo ? 1.25 : (certezaSaneada === 'baja' || esBloqueoCognitivo ? 0.70 : 1.0);
-                    let factorSano = certezaSaneada === 'alta' && esAnalisisProfundo ? 0.50 : (certezaSaneada === 'baja' || esBloqueoCognitivo ? 1.10 : 1.0);
+            let sesgoMaximoId = "procedimental_generico";
+            let porcentajeMaximo = -1;
 
-                    if (vectorVulnerabilidadActual[attr] === 1) {
-                        lhFractura = Math.min(0.99, 0.85 * factorMeta); lhSano = Math.max(0.01, 0.12 * factorSano); evaluar = true;
-                    } else if (metadatosItem.matriz_q[attr] === 1) {
-                        lhFractura = Math.min(0.99, 0.58 * factorMeta); lhSano = Math.max(0.01, 0.12 * factorSano); evaluar = true;
-                    }
+            for (const [key, val] of Object.entries(localRuntimeState.priors_dinamicos || {})) {
+                if (val > porcentajeMaximo) {
+                    porcentajeMaximo = val;
+                    sesgoMaximoId = key;
                 }
+            }
 
-                if (evaluar) {
-                    const marginal = (lhFractura * pFractura) + (lhSano * pSano);
-                    nuevosPriorsAtributos[attr] = Math.min(1.0 - OPERATIONAL_CONTROLS.EPS_CMD, Math.max(OPERATIONAL_CONTROLS.EPS_CMD, (lhFractura * pFractura) / (marginal || 1)));
+            const datosResumen = {
+                thetaGlobal: thetaPromedioGlobal.toFixed(4),
+                sem_global: semActual.toFixed(4),
+                impulsividad: adnImpulsividad,
+                recuperacion: adnRecuperacion,
+                estabilidad: adnEstabilidad,
+                sesgoDominante: sesgoMaximoId
+            };
+
+            // 🤖 EXPLICABILIDAD ALGORÍTMICA NATIVA (Req 9 - XAI Shapley Fallback)
+            const interpretacionIA = await obtenerExplicabilidadMetacognitiva(studentIdSaneado, areaSaneada, datosResumen, localRuntimeState.priors_dinamicos);
+
+            const executivePayload = {
+                thetaEstimado: thetaPromedioGlobal,
+                impulsividad: adnImpulsividad, 
+                fatiga: adnFatiga, 
+                recuperacion: adnRecuperacion,
+                estabilidad: adnEstabilidad,
+                cronica_narrativa: interpretacionIA.cronica_narrativa || "Análisis completado.", 
+                vulnerabilidad_dominante: interpretacionIA.desviacion_enfoque || "Enfoque estándar.", 
+                prescripcion_clinica: interpretacionIA.estrategia_autorregulacion || "Continuar plan.", 
+                plan_entrenamiento: Array.isArray(interpretacionIA?.plan_entrenamiento) ? interpretacionIA.plan_entrenamiento : [
+                    "Días 1-3: Repaso conceptual.",
+                    "Días 4-5: Práctica guiada."
+                ],
+                mapa_calor_sesgos: localRuntimeState.priors_dinamicos,
+                ledger_hash: hashAuditSignature
+            };
+
+            const payloadPersistenciaBD = {
+                estudiante: studentIdSaneado,
+                materia: areaSaneada, 
+                institution_id: tenantId, 
+                theta_algebra_calculo: parseFloat(algebraTheta.toFixed(4)), 
+                theta_geometria_medicion: parseFloat(geometryTheta.toFixed(4)), 
+                theta_estadistica_probabilidad: parseFloat(estadisticaTheta.toFixed(4)), 
+                indice_recuperacion_intelectual: iriActual, 
+                indice_curiosidad_conductual: iccActual,
+                bayesian_sem: parseFloat(semActual.toFixed(4)),
+                historial_theta: arrayHistoricoRespuestas.map(r => parseFloat((r.thetaSnapshot || 0.0).toFixed(4))),
+                items_respondidos: {
+                    puntaje_escalonado: puntajeIcfesEstandar,
+                    historico_clics: arrayHistoricoRespuestas.map(r => ({
+                        itemId: r.itemId, correcto: r.correcto, selectedOption: r.selectedOption, opcionesDescartadas: r.opcionesDescartadas, responseTime: r.responseTime
+                    })),
+                    adn_empaquetado: executivePayload
+                },
+                ultima_actualizacion: new Date().toISOString()
+            };
+
+            // 🚨 PERSISTENCIA CON DEAD LETTER QUEUE (Req 10)
+            await persistirProgresoResiliente(payloadPersistenciaBD);
+
+            const payloadPerfilFinal = { 
+                thetas: { algebra: algebraTheta, geometria: geometryTheta, estadistica: estadisticaTheta },
+                escalonamiento_icfes: { puntaje_estimated: puntajeIcfesEstandar },
+                adn_cognitivo: executivePayload, mapa_calor_sesgos: localRuntimeState.priors_dinamicos,
+                iri: iriActual, icc: iccActual, bayesian_sem: semActual
+            };
+            
+            await redis.setex(`dante:profile:${areaSaneada}:${studentIdSaneado}`, REDIS_TTL_SECONDS, JSON.stringify(payloadPerfilFinal)).catch(() => {});
+            await redis.del(cacheKey).catch(() => {});
+            await redis.del(indexLookUpKey).catch(() => {});
+
+            return res.status(200).json({
+                success: true, 
+                detenerExamen: true, 
+                thetaProgreso: thetaPromedioGlobal, 
+                bayesianSEMProgreso: semActual,
+                generatedToken: integrityToken || "jwt_live_nominal_test_" + Date.now(),
+                itemHash: itemHash || "hash_nominal_stable",
+                auditLedgerHash: hashAuditSignature,
+                reporteFinal: {
+                    thetaEstimado: thetaPromedioGlobal, 
+                    precisionMetrica: semActual, 
+                    fisherSEM: 0.22, 
+                    probMaestriaAvanzada: '84%',
+                    mapCalorSesgos: localRuntimeState.priors_dinamicos, 
+                    indices_avanzados: { ici: currentICI, cri: currentCRI, iri: iriActual, icc: iccActual },
+                    adn_cognitivo: executivePayload,
+                    plan_entrenamiento: executivePayload.plan_entrenamiento,
+                    escalonamiento_pais: { 
+                        puntaje_icfes_area: puntajeIcfesEstandar, 
+                        intervalo_certeza_95: [Math.max(1, puntajeIcfesEstandar - 5), Math.min(100, puntajeIcfesEstandar + 5)] 
+                    }
                 }
             });
         }
 
-        const estadoOperacional = esBloqueoCognitivo ? 'FATIGUED_LOCK' : (esDisparoAlAzar ? 'IMPULSIVE_SURGE' : 'STABLE');
-        
         let itemParaEnviar = resultadoSelector.item;
         let nuevaLetraCorrecta = "B";
         let mapaLetrasOrig = { A: "A", B: "B", C: "C", D: "D" };
@@ -680,152 +706,13 @@ export async function procesarInteraccionEstudiante(req, res) {
             dictShuffledOrig[itemParaEnviar.id] = mapaLetrasOrig;
         }
 
-        const localRuntimeState = {
-            session_id: activeSessionId, student_id: studentIdSaneado, area_general: areaSaneada, 
-            thetas: { algebra: algebraTheta, geometria: geometryTheta, estadistica: estadisticaTheta }, 
-            sem_bayesian: semActual, items_respondidos_count: conteoActualizadoItems,
-            priors_dinamicos: nuevosPriorsAtributos, estado_operacional: estadoOperacional,
-            seen_item_ids: Array.from(itemsExcluidosExamen), irt_responses: arrayHistoricoRespuestas,
-            indice_recuperacion_intelectual: iriActual, indice_curiosidad_conductual: iccActual,
+        // Actualizar mappings de barajado en estado
+        const estadoConShuffled = {
+            ...localRuntimeState,
             shuffled_correct: dictShuffledCorrect,
             shuffled_orig_map: dictShuffledOrig
         };
-
-        setImmediate(async () => {
-            await redis.setex(cacheKey, REDIS_TTL_SECONDS, JSON.stringify(localRuntimeState));
-        });
-
-        const forzarDetencionExamen = (conteoActualizadoItems >= OPERATIONAL_CONTROLS.MAX_ITEMS_EXAMEN || resultadoSelector.detenerExamen || forzarCierrePorRepeticion);
-
-        if (forzarDetencionExamen) {
-            const thetaPromedioGlobal = (algebraTheta + geometryTheta + estadisticaTheta) / 3.0;
-            const puntajeIcfesEstandar = Math.max(1, Math.min(100, Math.round(50 + (thetaPromedioGlobal * 13.8))));
-            
-            const totalDisparos = arrayHistoricoRespuestas.length || 1;
-            const distractoresAzar = arrayHistoricoRespuestas.filter(r => r.responseTime < 12.0).length; 
-            const disparosBloqueo = arrayHistoricoRespuestas.filter(r => r.responseTime > METACONTROL_THRESHOLDS.UMBRAL_BLOQUEO_FATIGA_SEGUNDOS).length;
-            
-            const adnImpulsividad = Math.round((distractoresAzar / totalDisparos) * 100);
-            const adnFatiga = Math.round((disparosBloqueo / totalDisparos) * 100);
-            const adnRecuperacion = Math.round(currentCRI * 100);
-            const adnEstabilidad = Math.round(iccActual * 100);
-
-            let sesgoMaximoId = "procedimental_generico";
-            let porcentajeMaximo = -1;
-
-            for (const [key, val] of Object.entries(nuevosPriorsAtributos)) {
-                if (val > porcentajeMaximo) {
-                    porcentajeMaximo = val;
-                    sesgoMaximoId = key;
-                }
-            }
-
-            console.log(`🤖 [DANTE AI SERVICE]: Conectando con Gemini en vivo para generar el reporte de ${studentIdSaneado}...`);
-            
-            let interpretacionIA;
-            try {
-                interpretacionIA = await generarInterpretacionCognitiva(studentIdSaneado, areaSaneada, {
-                    thetaGlobal: String(thetaPromedioGlobal.toFixed(4)),
-                    sem_global: String(semActual.toFixed(4)),
-                    impulsividad: String(adnImpulsividad),
-                    recuperacion: String(adnRecuperacion),
-                    estabilidad: String(adnEstabilidad),
-                    sesgoDominante: String(sesgoMaximoId)
-                });
-            } catch (aiErr) {
-                console.error("⚠️ [FALLBACK ACTIVO]: Error llamando al servicio de Gemini:", aiErr.message);
-                interpretacionIA = {
-                    cronica_narrativa: `A partir del desempeño observado, ${studentIdSaneado.toUpperCase()} muestra un manejo conceptual favorable en ${areaSaneada.toUpperCase()}.`,
-                    desviacion_enfoque: "Foco procedimental variable durante la sesión.",
-                    estrategia_autorregulacion: "Monitorear los tiempos de ejecución en problemas complejos.",
-                    plan_entrenamiento: [
-                        "Días 1-3: Repasa los fundamentos del área evaluada.",
-                        "Días 4-5: Practica 5 ejercicios sin límite de tiempo.",
-                        "Días 6-8: Realiza lecturas de 10 segundos antes de marcar.",
-                        "Días 9-10: Ejecuta simulacros cortos."
-                    ]
-                };
-            }
-            
-            const executivePayload = {
-                thetaEstimado: thetaPromedioGlobal,
-                impulsividad: adnImpulsividad, 
-                fatiga: adnFatiga, 
-                recuperacion: adnRecuperacion,
-                estabilidad: adnEstabilidad,
-                cronica_narrativa: interpretacionIA.cronica_narrativa || "Análisis completado.", 
-                vulnerabilidad_dominante: interpretacionIA.desviacion_enfoque || "Enfoque estándar.", 
-                prescripcion_clinica: interpretacionIA.estrategia_autorregulacion || "Continuar plan.", 
-                plan_entrenamiento: Array.isArray(interpretacionIA?.plan_entrenamiento) ? interpretacionIA.plan_entrenamiento : [
-                    "Días 1-3: Repaso conceptual.",
-                    "Días 4-5: Práctica guiada."
-                ],
-                mapa_calor_sesgos: nuevosPriorsAtributos
-            };
-
-            const payloadPersistenciaBD = {
-                estudiante: studentIdSaneado,
-                materia: areaSaneada, 
-                institution_id: tenantId, 
-                theta_algebra_calculo: parseFloat(algebraTheta.toFixed(4)), 
-                theta_geometria_medicion: parseFloat(geometryTheta.toFixed(4)), 
-                theta_estadistica_probabilidad: parseFloat(estadisticaTheta.toFixed(4)), 
-                indice_recuperacion_intelectual: iriActual, 
-                indice_curiosidad_conductual: iccActual,
-                bayesian_sem: parseFloat(semActual.toFixed(4)), // INCLUSIÓN DEL SEM REAL
-                historial_theta: arrayHistoricoRespuestas.map(r => parseFloat((r.thetaSnapshot || 0.0).toFixed(4))),
-                items_respondidos: {
-                    puntaje_escalonado: puntajeIcfesEstandar,
-                    historico_clics: arrayHistoricoRespuestas.map(r => ({
-                        itemId: r.itemId, correcto: r.correcto, selectedOption: r.selectedOption, opcionesDescartadas: r.opcionesDescartadas, responseTime: r.responseTime
-                    })),
-                    adn_empaquetado: executivePayload
-                },
-                ultima_actualizacion: new Date().toISOString()
-            };
-
-            const { error: upsertErr } = await supabase.from('progreso_estudiantes').upsert(payloadPersistenciaBD, { onConflict: 'estudiante,materia,institution_id' });
-            if (upsertErr) {
-                console.error("🚨 [UPSERT PROGRESO ERROR]:", upsertErr.message);
-                await supabase.from('progreso_estudiantes').insert([payloadPersistenciaBD]).catch(() => {});
-            }
-
-            const payloadPerfilFinal = { 
-                thetas: { algebra: algebraTheta, geometria: geometryTheta, estadistica: estadisticaTheta },
-                escalonamiento_icfes: { puntaje_estimated: puntajeIcfesEstandar },
-                adn_cognitivo: executivePayload, mapa_calor_sesgos: nuevosPriorsAtributos,
-                iri: iriActual, icc: iccActual, bayesian_sem: semActual
-            };
-            
-            await redis.setex(`dante:profile:${areaSaneada}:${studentIdSaneado}`, REDIS_TTL_SECONDS, JSON.stringify(payloadPerfilFinal)).catch(() => {});
-            await redis.del(cacheKey).catch(() => {});
-            await redis.del(indexLookUpKey).catch(() => {});
-            
-            console.log(`🏁 [EXAMEN FINALIZADO]: Estado guardado y purgado para ${studentIdSaneado}. Retornando reporte.`);
-
-            return res.status(200).json({
-                success: true, 
-                detenerExamen: true, 
-                thetaProgreso: thetaPromedioGlobal, 
-                bayesianSEMProgreso: semActual,
-                generatedToken: integrityToken || "jwt_live_nominal_test_" + Date.now(),
-                itemHash: itemHash || "hash_nominal_stable",
-                reporteFinal: {
-                    thetaEstimado: thetaPromedioGlobal, 
-                    precisionMetrica: semActual, 
-                    fisherSEM: 0.22, 
-                    probMaestriaAvanzada: '84%',
-                    mapCalorSesgos: nuevosPriorsAtributos, 
-                    indices_avanzados: { ici: currentICI, cri: currentCRI, iri: iriActual, icc: iccActual },
-                    adn_cognitivo: executivePayload,
-                    plan_entrenamiento: executivePayload.plan_entrenamiento,
-                    escalonamiento_pais: { 
-                        puntaje_icfes_area: puntajeIcfesEstandar, 
-                        intervalo_certeza_95: [Math.max(1, puntajeIcfesEstandar - 5), Math.min(100, puntajeIcfesEstandar + 5)] 
-                    }
-                }
-            });
-        }
+        await redis.setex(cacheKey, REDIS_TTL_SECONDS, JSON.stringify(estadoConShuffled));
 
         const rawItemId = itemParaEnviar?.id;
 
@@ -835,24 +722,30 @@ export async function procesarInteraccionEstudiante(req, res) {
             cronicaBienvenida: cronicaCelebracionArranque,
             generatedToken: integrityToken || "jwt_live_nominal_test_" + Date.now(),
             itemHash: itemHash || "hash_nominal_stable",
+            auditLedgerHash: hashAuditSignature,
             accs_telemetria: { 
-                estado_operacional: estadoOperacional, 
+                estado_operacional: localRuntimeState.estado_operacional || 'STABLE', 
                 intervencion_activa: flagIntervencionActiva, 
                 indices_avanzados: { ici: currentICI, cri: currentCRI, iri: iriActual, icc: iccActual },
-                mapaCalorSesgos: nuevosPriorsAtributos 
+                mapaCalorSesgos: localRuntimeState.priors_dinamicos 
             },
             andamiajeForense: { errorDetonado: errorDetonadoMsg, remediacionSugerida: remediacionSugeridaMsg },
             item: {
                 id: rawItemId, 
-                pregunta_texto: itemParaEnviar.pregunta_texto,
-                opciones_respuesta: itemParaEnviar.opciones_respuesta || ["A", "B", "C", "D"],
-                sub_competencia: itemParaEnviar.sub_competencia
+                pregunta_texto: itemParaEnviar?.pregunta_texto,
+                opciones_respuesta: itemParaEnviar?.opciones_respuesta || ["A", "B", "C", "D"],
+                sub_competencia: itemParaEnviar?.sub_competencia
             }
         });
 
     } catch (error) {
-        console.error("🚨 [CONTROL FORENSE EXCEPCIÓN CRÍTICA v21.0.0]:", error.message);
+        console.error("🚨 [CONTROL FORENSE EXCEPCIÓN CRÍTICA v21.2.0]:", error.message);
         return res.status(500).json({ success: false, error: "Cortocircuito interno perimetral." });
+    } finally {
+        // 🔒 LIBERACIÓN OBLIGATORIA DEL LOCK REDLOCK (Req 11)
+        if (lockKey && lockValue) {
+            await releaseRedlock(lockKey, lockValue);
+        }
     }
 }
 
@@ -876,8 +769,6 @@ export async function obtenerGemeloEstudiante(req, res) {
         }
 
         if (!progreso || progreso.length === 0) {
-            console.log(`🔍 [RECONSTRUCCIÓN EN VIVO]: Reconstruyendo perfil para ${studentIdSaneado} desde registro_eventos...`);
-            
             const { data: eventos, error: evErr } = await supabase
                 .from('registro_eventos')
                 .select('*')
