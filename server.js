@@ -1,6 +1,7 @@
 import 'dotenv/config'; 
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import path from 'path';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
@@ -49,8 +50,16 @@ app.use(cors({
 }));
 
 app.use(express.json({ limit: '1mb' }));
+app.use(cookieParser());
 
+// 🛡️ Middleware de Encabezados Perimetrales de Seguridad
 app.use((req, res, next) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    if (process.env.NODE_ENV === 'production') {
+        res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+    }
     console.log(`📡 [GATEWAY MULTI-TENANT ${SERVER_VERSION}] -> ${req.method} desde ${req.url}`);
     next();
 });
@@ -60,6 +69,8 @@ app.use((req, res, next) => {
 // ====================================================================
 app.use('/api/cat', catRouter);
 app.use('/api/auth', authRouter); 
+app.use('/api/v1/users', authRouter); // Alias v1 para endpoints ARCO
+app.use('/api/v1/auth', authRouter);  // Alias v1 para endpoints de Auth y Consentimiento Parental 
 
 // ENDPOINT DE MONITOREO DE SALUD DEL CLÚSTER (HEALTHCHECK)
 app.get('/api/health', (req, res) => {
