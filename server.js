@@ -83,10 +83,10 @@ const globalLimiter = rateLimit({
 
 const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 Minutos
-    max: 15,
+    max: 100,
     standardHeaders: true,
     legacyHeaders: false,
-    message: { success: false, error: "Demasiados intentos de autenticación desde esta IP. Bloqueo temporal por seguridad." }
+    message: { success: false, error: "Demasiados intentos de autenticación desde esta IP. Por favor intente en unos minutos." }
 });
 
 const catLimiter = rateLimit({
