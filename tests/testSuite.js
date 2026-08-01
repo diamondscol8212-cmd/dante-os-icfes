@@ -4,7 +4,7 @@ import { verificarBanderaIntervencion } from './verificarFlujo.js';
 import { resetearBanderaControl } from '../resetter.js';
 
 // ID de usuario único para esta simulación de estrés
-const TEST_STUDENT_ID = "sandbox-user-2026";
+const TEST_STUDENT_ID = `sandbox-user-${Date.now()}`;
 const METADATA_PREGUNTA = {
   itemId: "c5d6e7f8-9a0b-1c2d-3e4f-5a6b7c8d9e0f",
   skill: "algebra_calculo"
