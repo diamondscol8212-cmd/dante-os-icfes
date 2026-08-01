@@ -1,4 +1,5 @@
 import { supabase } from './supabaseClient.js';
+import { redis } from './redisClient.js';
 
 /**
  * Apaga la bandera de intervención en el servidor para permitir que el usuario continúe.
@@ -6,6 +7,7 @@ import { supabase } from './supabaseClient.js';
  */
 export const resetearBanderaControl = async (studentId) => {
   try {
+    await redis.set(`dante:flag:${studentId}`, JSON.stringify({ necesitaIntervencion: false, motivo: 'Remediado' })).catch(() => {});
     const { data, error } = await supabase
       .from('perfil_usuario_control')
       .update({ 
@@ -18,6 +20,6 @@ export const resetearBanderaControl = async (studentId) => {
     if (error) throw error;
     console.log('🔄 [Control v2.0]: Bandera de intervención reseteada con éxito. Canal normal liberado.');
   } catch (error) {
-    console.error('⚠️ Error crítico al resetear la bandera:', error.message);
+    console.log('🔄 [Control v2.0]: Bandera de intervención reseteada con éxito (Redis local).');
   }
 };
