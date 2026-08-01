@@ -410,39 +410,67 @@ router.post('/complete-onboarding', async (req, res) => {
 // ====================================================================
 const ejecutarHardDeleteARCO = async (req, res) => {
     try {
-        const { email, document_id, motivo, confirmacion_usuario } = req.body;
-        const targetIdentifier = String(email || document_id || (req.user ? req.user.email : '')).trim().toLowerCase();
-
-        if (!targetIdentifier) {
-            return res.status(400).json({ success: false, error: "Identificador de usuario no proporcionado para la solicitud ARCO." });
+        if (!req.user) {
+            return res.status(401).json({
+                success: false,
+                error: "Acceso denegado: Autenticación requerida para solicitar el ejercicio de derechos ARCO (Ley 1581 Art 15)."
+            });
         }
 
-        console.log(`⚖️ [DERECHO AL OLVIDO ARCO]: Ejecutando Hard Delete en cascada para titular [${targetIdentifier}]...`);
+        const { email, document_id, motivo, confirmacion_usuario } = req.body;
+        const targetIdentifier = String(email || document_id || req.user.email || '').trim().toLowerCase().replace(/[^a-z0-9@._-]/gi, '');
+
+        if (!targetIdentifier) {
+            return res.status(400).json({ success: false, error: "Identificador de usuario inválido o no proporcionado para la solicitud ARCO." });
+        }
+
+        const userEmail = String(req.user.email || '').toLowerCase().trim();
+        const userId = String(req.user.user_id || req.user.id || '').toLowerCase().trim();
+        const userEstudiante = String(req.user.estudiante || '').toLowerCase().trim();
+        const userRole = String(req.user.role || req.user.rol || '').toLowerCase().trim();
+
+        const isSelf = (
+            targetIdentifier === userEmail ||
+            targetIdentifier === userId ||
+            targetIdentifier === userEstudiante ||
+            targetIdentifier === `${userEstudiante}@danteos.edu.co`
+        );
+
+        if (!isSelf && userRole !== 'admin') {
+            return res.status(403).json({
+                success: false,
+                error: "Acceso denegado: Únicamente el titular autenticado de la cuenta o un Administrador del sistema pueden solicitar la supresión definitiva de datos."
+            });
+        }
+
+        console.log(`⚖️ [DERECHO AL OLVIDO ARCO]: Ejecutando Hard Delete en cascada para titular [${targetIdentifier}] (Solicitado por: ${userEmail})...`);
 
         const studentAlias = targetIdentifier.includes('@') ? targetIdentifier.split('@')[0] : targetIdentifier;
+        const safeTarget = targetIdentifier.replace(/,/g, '');
+        const safeAlias = studentAlias.replace(/,/g, '');
 
         // 1. Eliminación en usuarios
         const { error: errUsuarios } = await supabase
             .from('usuarios')
             .delete()
-            .or(`email.eq.${targetIdentifier},email.eq.${studentAlias}@danteos.edu.co,document_id.eq.${studentAlias}`);
+            .or(`email.eq.${safeTarget},email.eq.${safeAlias}@danteos.edu.co,document_id.eq.${safeAlias}`);
 
         // 2. Eliminación en dante_arquetipos_iniciales
         const { error: errArquetipos } = await supabase
             .from('dante_arquetipos_iniciales')
             .delete()
-            .or(`id_sesion.eq.${targetIdentifier},id_sesion.eq.${studentAlias}`);
+            .or(`id_sesion.eq.${safeTarget},id_sesion.eq.${safeAlias}`);
 
         // 3. Eliminación en progreso_estudiantes
         const { error: errProgreso } = await supabase
             .from('progreso_estudiantes')
             .delete()
-            .or(`estudiante.eq.${studentAlias},estudiante_id.eq.${studentAlias},estudiante.eq.${targetIdentifier}`);
+            .or(`estudiante.eq.${safeAlias},estudiante_id.eq.${safeAlias},estudiante.eq.${safeTarget}`);
 
         // 4. Limpieza de caché y estado en Redis
         try {
             if (redis) {
-                const keys = await redis.keys(`*${studentAlias}*`);
+                const keys = await redis.keys(`*${safeAlias}*`);
                 if (keys && keys.length > 0) {
                     await redis.del(...keys);
                 }
@@ -453,7 +481,7 @@ const ejecutarHardDeleteARCO = async (req, res) => {
 
         // 5. Generación de Certificado Criptográfico Auditable de Supresión
         const timestamp = new Date().toISOString();
-        const certificadoPayload = `HARD_DELETE_SUCCESS:${targetIdentifier}:${timestamp}:DANTE_OS_DPO_SEAL`;
+        const certificadoPayload = `HARD_DELETE_SUCCESS:${safeTarget}:${timestamp}:DANTE_OS_DPO_SEAL`;
         const hashCertificado = crypto.createHash('sha256').update(certificadoPayload).digest('hex');
 
         // Limpiar cookie de sesión en cliente
@@ -461,7 +489,7 @@ const ejecutarHardDeleteARCO = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: `Supresión definitiva de datos (Hard Delete) completada exitosamente para [${targetIdentifier}].`,
+            message: `Supresión definitiva de datos (Hard Delete) completada exitosamente para [${safeTarget}].`,
             radicado_arco: `ARCO-${Date.now()}`,
             timestamp_supresion: timestamp,
             hash_certificado_supresion: hashCertificado,
@@ -475,8 +503,8 @@ const ejecutarHardDeleteARCO = async (req, res) => {
     }
 };
 
-router.delete('/arco/hard-delete', optionalToken, ejecutarHardDeleteARCO);
-router.post('/arco/hard-delete', optionalToken, ejecutarHardDeleteARCO);
+router.delete('/arco/hard-delete', verifyToken, ejecutarHardDeleteARCO);
+router.post('/arco/hard-delete', verifyToken, ejecutarHardDeleteARCO);
 
 /*
  * =========================================================================================
