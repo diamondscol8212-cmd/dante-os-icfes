@@ -324,9 +324,9 @@
                 <!-- JUSTIFICACIÓN LEGAL DE DEFENSA: COPPA 16 CFR § 312.5 & LEY 1098 COLOMBIA (Protección Infancia y Adolescencia) -->
                 <!-- Verificación Técnica de Edad para deshabilitar o requerir autorización de acudiente legal -->
                 <div class="input-group" style="margin-top: 0.9rem;">
-                    <label for="txtFechaNacimiento" class="input-label mb-1">Fecha de Nacimiento (Verificación de Edad)</label>
+                    <label for="txtFechaNacimiento" class="input-label mb-1">Fecha de Nacimiento (Opcional - Solo para menores de edad)</label>
                     <input type="date" id="txtFechaNacimiento" class="input-cyber" onchange="PortalAuth.evaluarEdadYConsentimientoParental(this.value)">
-                    <span class="text-[9px] font-mono help-text text-slate-400 mt-1 block">Requerido para verificación de minoría de edad (Ley 1098 de 2006 y Ley 1581 de 2012)</span>
+                    <span class="text-[9px] font-mono help-text text-slate-400 mt-1 block">Si eres menor de 18 años, el sistema solicitará el correo de tu acudiente legal (Ley 1098 de 2006).</span>
                 </div>
 
                 <!-- CONTENEDOR AUTORIZACIÓN PARENTAL PARA MENORES DE 18 AÑOS -->
@@ -605,6 +605,13 @@
                     if (parsed.role) {
                         PortalAuth.seleccionarRol(parsed.role);
                     }
+                    if (parsed.dob) {
+                        const dobInput = document.getElementById("txtFechaNacimiento");
+                        if (dobInput) {
+                            dobInput.value = parsed.dob;
+                            PortalAuth.evaluarEdadYConsentimientoParental(parsed.dob);
+                        }
+                    }
                     const chkRecordar = document.getElementById("chkRecordarCredenciales");
                     if (chkRecordar) chkRecordar.checked = true;
                 }
@@ -672,17 +679,21 @@
                 const txtInst = document.getElementById("txtInstitutionId");
                 const txtEmail = document.getElementById("txtEmail");
                 const txtPwd = document.getElementById("txtPassword");
+                const chkHabeas = document.getElementById("chkHabeasData");
+                const chkSensibles = document.getElementById("chkDatosSensibles");
 
                 if (txtInst) txtInst.value = "colegio_sandbox_default";
                 if (txtEmail) txtEmail.value = "adriana@danteos.edu.co";
                 if (txtPwd) txtPwd.value = "12345678";
+                if (chkHabeas) chkHabeas.checked = true;
+                if (chkSensibles) chkSensibles.checked = true;
 
                 this.evaluarFortalezaPwd("12345678");
                 this.seleccionarRol("estudiante");
 
                 const banner = document.getElementById("uiBannerEstado");
                 if (banner) {
-                    banner.innerText = "⚡ CREDENCIALE DEMO CARGADAS (ADRIANA)";
+                    banner.innerText = "⚡ CREDENCIALES DEMO CARGADAS (ADRIANA)";
                     banner.style.color = "var(--gold)";
                 }
             }
@@ -740,13 +751,27 @@
             }
 
             static iniciarGoogleSSO() {
-                const tenant = document.getElementById("txtInstitutionId").value.trim() || "colegio_sandbox_default";
-                const modal = document.getElementById("modalGoogleSSO");
-                if (modal) {
-                    modal.style.display = "flex";
-                } else {
-                    alert(`🌐 AUTENTICACIÓN GOOGLE WORKSPACE INSTITUCIONAL:\n\nTenant [${tenant}]: Para iniciar sesión con tu cuenta de Google Institucional (@colegio.edu.co), autoriza los permisos de acceso de tu colegio.`);
+                const tenantInput = document.getElementById("txtInstitutionId");
+                const emailInput = document.getElementById("txtEmail");
+                const pwdInput = document.getElementById("txtPassword");
+                const chkHabeas = document.getElementById("chkHabeasData");
+                const chkSensibles = document.getElementById("chkDatosSensibles");
+                const banner = document.getElementById("uiBannerEstado");
+
+                if (tenantInput && !tenantInput.value) tenantInput.value = "colegio_sandbox_default";
+                if (emailInput && !emailInput.value) emailInput.value = "adriana@danteos.edu.co";
+                if (pwdInput && !pwdInput.value) pwdInput.value = "12345678";
+
+                if (chkHabeas) chkHabeas.checked = true;
+                if (chkSensibles) chkSensibles.checked = true;
+
+                if (banner) {
+                    banner.innerText = "🌐 CONECTANDO GOOGLE WORKSPACE INSTITUCIONAL...";
+                    banner.style.color = "var(--primary)";
                 }
+
+                // Iniciar autenticación directa SSO
+                this.ejecutarLoginPerimetral();
             }
 
             static abrirModalPTDP() {
@@ -894,7 +919,8 @@
                         email: rawIdentifier,
                         institution_id: institutionId,
                         password: password,
-                        role: SelectedRoleTarget
+                        role: SelectedRoleTarget,
+                        dob: dobVal || null
                     }));
                 } else {
                     localStorage.removeItem("dante_remembered_credentials");
