@@ -296,7 +296,8 @@ if (redisUrl) {
         };
 
         if (isTls) {
-            redisOptions.tls = { rejectUnauthorized: false };
+            const rejectUnauthorized = process.env.REDIS_REJECT_UNAUTHORIZED === 'false' ? false : (process.env.NODE_ENV === 'production');
+            redisOptions.tls = { rejectUnauthorized };
         }
 
         const realRedis = new Redis(redisUrl, redisOptions);
