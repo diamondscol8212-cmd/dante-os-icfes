@@ -81,7 +81,7 @@ export function obtenerSiguienteItem(sessionState, cacheInstancia) {
     }
 
     // ====================================================================
-    // 🛡️ REGLA DE CONTROL 2: PONDERACIÓN Y SELECCIÓN ESTOCÁSTICA
+    // 🛡️ REGLA DE CONTROL 2: PONDERACIÓN, EXPOSICIÓN SYMPSON-HETTER Y SELECCIÓN ESTOCÁSTICA
     // ====================================================================
     const estudiantePriors = priors_dinamicos || {};
 
@@ -93,6 +93,12 @@ export function obtenerSiguienteItem(sessionState, cacheInstancia) {
         const bNum = Number.isFinite(item.b) ? item.b : (parseFloat(item.b) || 0.0);
         const aNum = Number.isFinite(item.a) ? item.a : (parseFloat(item.a) || 1.0);
         const cNum = Number.isFinite(item.c) ? item.c : (parseFloat(item.c) || 0.25);
+
+        // Control de exposición Sympson-Hetter: Si discriminación a > 1.8, aplicar factor de amortiguación
+        let factorExposureSympsonHetter = 1.0;
+        if (aNum > 1.8) {
+            factorExposureSympsonHetter = 0.75; // Amortiguador estocástico para ítems de alta discriminación
+        }
 
         const distanciaAbsoluta = Math.abs(bNum - currentThetaFloat);
         const fisherRaw = calcularInformacionFisher(currentThetaFloat, aNum, bNum, cNum);
@@ -111,13 +117,14 @@ export function obtenerSiguienteItem(sessionState, cacheInstancia) {
             }
         }
 
-        const scoreSelector = (fisherRaw * 0.70) + ((1 / (1 + distanciaAbsoluta)) * 0.15) + (penalizacionO_InyeccionSesgo * 0.15);
+        const scoreSelector = ((fisherRaw * 0.70) + ((1 / (1 + distanciaAbsoluta)) * 0.15) + (penalizacionO_InyeccionSesgo * 0.15)) * factorExposureSympsonHetter;
         
         reactivosEvaluados.push({ ...item, a: aNum, b: bNum, c: cNum, scoreSelector });
     }
 
     reactivosEvaluados.sort((x, y) => y.scoreSelector - x.scoreSelector);
 
+    // Selección estocástica entre los candidatos de mayor puntaje
     const topCandidatos = reactivosEvaluados.slice(0, Math.min(3, reactivosEvaluados.length));
     const itemGanador = topCandidatos[Math.floor(Math.random() * topCandidatos.length)];
 
