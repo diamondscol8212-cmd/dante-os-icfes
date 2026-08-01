@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#010103">
+    <meta name="theme-color" content="#080c14">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.json">
     <title>Dante OS // Portal de Acceso Unificado</title>
 
-    <!-- CDN Tailwind CSS & FontAwesome & Fuentes de Google -->
+    <!-- Tailwind CSS, Google Fonts & FontAwesome -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&family=JetBrains+Mono:wght@400;500;700;900&family=Oswald:wght@700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
@@ -22,29 +22,61 @@
             --primary-hover: #0284c7;
             --gold: #f59e0b;
             --alert: #ef4444;
-            --bg: #0b0f17; 
-            --card-bg: rgba(17, 24, 39, 0.85);
+            --bg: #070a11; 
+            --card-bg: rgba(15, 23, 42, 0.85);
             --border-graphite: rgba(255, 255, 255, 0.1);
             --emerald: #10b981;
             --text-main: #f3f4f6;
             --text-muted: #9ca3af;
         }
 
-        /* RESET GLOBAL DE BOTONES PARA EVITAR RECTÁNGULOS BLANCOS NATIVOS */
-        button {
+        /* RESET ABSOLUTO DE BOTONES E INPUTS PARA NAVEGADORES MOVILES Y DESKTOP */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        button, input, select, textarea {
             background: transparent;
             border: none;
             padding: 0;
             margin: 0;
             font: inherit;
             color: inherit;
-            cursor: pointer;
             outline: none;
             -webkit-appearance: none;
             appearance: none;
-            box-sizing: border-box;
         }
 
+        /* ESTILIZADO DE CHECKBOXES CUSTOM */
+        input[type="checkbox"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border: 1.5px solid rgba(255, 255, 255, 0.25);
+            border-radius: 4px;
+            background: rgba(0, 0, 0, 0.4);
+            cursor: pointer;
+            display: inline-grid;
+            place-content: center;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        input[type="checkbox"]:checked {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        input[type="checkbox"]:checked::before {
+            content: "✓";
+            color: #080c14;
+            font-weight: 900;
+            font-size: 11px;
+            line-height: 1;
+        }
+
+        /* MODO CLARO / ALTO CONTRASTE */
         body.light-mode {
             --bg: #f8fafc;
             --card-bg: #ffffff;
@@ -58,6 +90,83 @@
             background-color: #f8fafc !important;
             background-image: radial-gradient(#cbd5e1 1px, transparent 1px) !important;
             background-size: 24px 24px !important;
+            color: #0f172a !important;
+        }
+
+        body.light-mode .master-hud {
+            background: rgba(255, 255, 255, 0.92) !important;
+            border-bottom-color: #e2e8f0 !important;
+            box-shadow: 0 1px 10px rgba(0,0,0,0.05) !important;
+        }
+
+        body.light-mode .gateway-card {
+            background: #ffffff !important;
+            border-color: #cbd5e1 !important;
+            box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.12) !important;
+        }
+
+        body.light-mode .role-container {
+            background: #f1f5f9 !important;
+            border-color: #cbd5e1 !important;
+        }
+
+        body.light-mode .role-card {
+            background: transparent !important;
+            color: #475569 !important;
+        }
+
+        body.light-mode .role-card.active {
+            background: #ffffff !important;
+            color: #0284c7 !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+            border-color: #0284c7 !important;
+        }
+
+        body.light-mode .input-cyber {
+            background: #ffffff !important;
+            border-color: #cbd5e1 !important;
+            color: #0f172a !important;
+        }
+
+        body.light-mode .input-cyber:focus {
+            border-color: #0284c7 !important;
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15) !important;
+        }
+
+        body.light-mode input[type="checkbox"] {
+            background: #ffffff;
+            border-color: #cbd5e1;
+        }
+
+        body.light-mode input[type="checkbox"]:checked {
+            background: #0284c7;
+            border-color: #0284c7;
+        }
+
+        body.light-mode input[type="checkbox"]:checked::before {
+            color: #ffffff;
+        }
+
+        body.light-mode .btn-google {
+            background: #ffffff !important;
+            border-color: #cbd5e1 !important;
+            color: #0f172a !important;
+        }
+
+        body.light-mode .btn-google:hover {
+            background: #f1f5f9 !important;
+            border-color: #0284c7 !important;
+        }
+
+        body.light-mode .legal-box {
+            background: #f8fafc !important;
+            border-color: #e2e8f0 !important;
+        }
+
+        body.light-mode .modal-content {
+            background: #ffffff !important;
+            border-color: #cbd5e1 !important;
+            color: #0f172a !important;
         }
 
         body, html { 
@@ -76,104 +185,185 @@
 
         .font-mono { font-family: 'JetBrains Mono', monospace !important; }
 
-        /* CANVASES Y EFECTOS */
-        #dante-fractal-bg { position: fixed; inset: 0; z-index: 0; opacity: 0.12; pointer-events: none; }
-        .scanline { position: fixed; inset: 0; background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.3) 51%); background-size: 100% 4px; z-index: 1; pointer-events: none; opacity: 0.15; }
+        /* CANVASES Y EFECTOS AMBIENTALES */
+        #dante-fractal-bg { position: fixed; inset: 0; z-index: 0; opacity: 0.15; pointer-events: none; }
+        .scanline { position: fixed; inset: 0; background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.2) 51%); background-size: 100% 4px; z-index: 1; pointer-events: none; opacity: 0.12; }
         #fx-flash { position: fixed; inset: 0; z-index: 999999; background: var(--alert); opacity: 0; pointer-events: none; transition: opacity 0.3s; }
 
         /* HEADER HUD */
         .master-hud {
-            position: fixed; top: 0; width: 100%; z-index: 1000; padding: 12px 20px;
-            background: rgba(11, 15, 23, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            position: fixed; top: 0; width: 100%; z-index: 1000; padding: 14px 24px;
+            background: rgba(7, 10, 17, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
             display: flex; justify-content: space-between; align-items: center;
             border-bottom: 1px solid var(--border-graphite);
         }
-        body.light-mode .master-hud { background: rgba(255, 255, 255, 0.92); border-bottom-color: #e2e8f0; }
 
         .alias-title { font-size: 13px; font-weight: 800; letter-spacing: 1.2px; color: var(--text-main); }
         .geo-tag { font-family: 'JetBrains Mono'; font-size: 9px; color: var(--primary); letter-spacing: 0.8px; text-transform: uppercase; font-weight: 600; }
 
-        .gateway-container { display: flex; justify-content: center; align-items: center; flex-grow: 1; padding: 100px 16px 40px; position: relative; z-index: 10; }
+        .gateway-container { 
+            display: flex; justify-content: center; align-items: center; 
+            flex-grow: 1; padding: 110px 16px 50px; position: relative; z-index: 10; 
+        }
         
         .gateway-card {
-            background: var(--card-bg); border: 1px solid var(--border-graphite);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); border-radius: 16px; 
-            padding: 2.2rem 1.8rem; width: 100%; max-width: 480px; text-align: center; position: relative;
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            background: var(--card-bg); 
+            border: 1px solid var(--border-graphite);
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.7), 0 0 40px rgba(56, 189, 248, 0.05); 
+            border-radius: 20px; 
+            padding: 2.4rem 2rem; 
+            width: 100%; 
+            max-width: 480px; 
+            text-align: center; 
+            position: relative;
+            backdrop-filter: blur(24px); 
+            -webkit-backdrop-filter: blur(24px);
         }
-        @media (min-width: 640px) { .gateway-card { padding: 2.8rem 2.4rem; } }
+        @media (min-width: 640px) { .gateway-card { padding: 2.8rem 2.5rem; } }
 
         .gateway-card::before {
             content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
             background: linear-gradient(90deg, #0284c7, #38bdf8, #f59e0b); 
-            border-radius: 16px 16px 0 0;
+            border-radius: 20px 20px 0 0;
         }
 
-        .gateway-title { font-size: 1.4rem; font-family: 'Outfit', sans-serif; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 0.2rem; color: var(--text-main); }
+        .gateway-title { font-size: 1.5rem; font-family: 'Outfit', sans-serif; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 0.2rem; color: var(--text-main); }
         
         .verification-banner {
             background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25);
-            padding: 0.45rem 0.75rem; border-radius: 8px; color: var(--primary); font-size: 0.7rem;
-            font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem;
-            font-family: 'JetBrains Mono'; transition: all 0.3s ease;
+            padding: 0.45rem 0.85rem; border-radius: 20px; color: var(--primary); font-size: 0.7rem;
+            font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1.2rem;
+            font-family: 'JetBrains Mono'; transition: all 0.3s ease; display: inline-block;
         }
 
         .system-version-tag {
             position: absolute; top: 1.2rem; right: 1.2rem; font-size: 0.65rem; font-weight: 700;
             color: var(--primary); letter-spacing: 0.5px; font-family: 'JetBrains Mono';
-            cursor: pointer; background: transparent; border: none; padding: 2px 6px; border-radius: 4px;
+            cursor: pointer; background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.2); 
+            padding: 3px 8px; border-radius: 12px; transition: all 0.2s;
         }
-        .system-version-tag:hover { background: rgba(56, 189, 248, 0.1); }
+        .system-version-tag:hover { background: rgba(56, 189, 248, 0.2); }
 
-        /* SELECCIÓN DE ROLES */
-        .role-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; margin-top: 1rem; }
-        .role-selection-card {
-            background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-graphite); border-radius: 10px; padding: 0.75rem 0.4rem; cursor: pointer; transition: all 0.2s ease;
-            display: flex; flex-direction: column; align-items: center; gap: 0.3rem;
+        /* SELECCIÓN DE ROLES TABBED CONTROL */
+        .role-container {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-graphite);
+            border-radius: 14px;
+            padding: 4px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+            margin-top: 1.2rem;
         }
-        body.light-mode .role-selection-card { background: rgba(241, 245, 249, 0.8); border-color: #cbd5e1; }
-        .role-selection-card:hover { border-color: var(--primary); background: rgba(56, 189, 248, 0.06); }
-        .role-selection-card.active { border-color: var(--primary); background: rgba(56, 189, 248, 0.12); box-shadow: 0 0 12px rgba(56, 189, 248, 0.2); }
-        .role-icon { font-size: 1.1rem; color: var(--text-muted); transition: color 0.2s; }
-        .role-selection-card.active .role-icon { color: var(--primary); }
-        .role-title { font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; font-family: 'JetBrains Mono'; color: var(--text-main); }
 
-        .input-group { text-align: left; margin-top: 1rem; }
+        .role-card {
+            padding: 0.65rem 0.4rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            border: 1px solid transparent;
+            color: var(--text-muted);
+        }
+
+        .role-card:hover:not(.active) {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .role-card.active {
+            background: rgba(56, 189, 248, 0.12);
+            border-color: rgba(56, 189, 248, 0.4);
+            color: var(--primary);
+            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.15);
+        }
+
+        .role-icon { font-size: 1.05rem; }
+        .role-title { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; font-family: 'JetBrains Mono'; }
+
+        .input-group { text-align: left; margin-top: 1.1rem; }
         .input-label { display: block; color: var(--text-muted); margin-bottom: 0.35rem; font-weight: 700; text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.8px; font-family: 'JetBrains Mono'; }
         
         .input-cyber {
-            width: 100%; padding: 0.75rem 0.9rem; background: rgba(0, 0, 0, 0.25); border: 1px solid var(--border-graphite);
-            color: var(--text-main); border-radius: 8px; outline: none; font-size: 0.85rem; transition: all 0.2s; font-family: 'JetBrains Mono';
-            box-sizing: border-border-box;
+            width: 100%; 
+            padding: 0.8rem 1rem; 
+            background: rgba(0, 0, 0, 0.35); 
+            border: 1px solid var(--border-graphite);
+            color: var(--text-main); 
+            border-radius: 10px; 
+            outline: none; 
+            font-size: 0.85rem; 
+            transition: all 0.2s ease; 
+            font-family: 'JetBrains Mono';
+            box-sizing: border-box;
         }
-        body.light-mode .input-cyber { background: #ffffff; color: #0f172a; border-color: #cbd5e1; }
-        .input-cyber:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15); }
+        .input-cyber:focus { 
+            border-color: var(--primary); 
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15); 
+            background: rgba(0, 0, 0, 0.5);
+        }
 
         .domain-pill {
-            display: inline-block; padding: 2px 6px; font-size: 9px; font-family: 'JetBrains Mono';
-            background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.25);
-            color: var(--primary); border-radius: 4px; cursor: pointer; transition: all 0.2s; font-weight: 600;
+            display: inline-flex; 
+            align-items: center;
+            padding: 2px 8px; 
+            font-size: 9px; 
+            font-family: 'JetBrains Mono';
+            background: rgba(56, 189, 248, 0.1); 
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            color: var(--primary); 
+            border-radius: 6px; 
+            cursor: pointer; 
+            transition: all 0.2s; 
+            font-weight: 700;
         }
-        .domain-pill:hover { background: var(--primary); color: #fff; }
+        .domain-pill:hover { background: var(--primary); color: #080c14; }
 
         .pwd-strength-bar { height: 3px; border-radius: 2px; background: rgba(255,255,255,0.1); margin-top: 6px; transition: all 0.3s; width: 0%; }
 
         .btn-premium {
-            width: 100%; padding: 0.85rem; background: var(--primary); border: none;
-            color: #0b0f17; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px;
-            border-radius: 8px; cursor: pointer; transition: all 0.2s ease; margin-top: 1.2rem;
-            font-size: 0.8rem; font-family: 'JetBrains Mono'; display: flex; align-items: center; justify-content: center; gap: 0.5rem;
-            box-shadow: 0 4px 14px rgba(56, 189, 248, 0.3);
+            width: 100%; 
+            padding: 0.9rem 1.2rem; 
+            background: linear-gradient(135deg, #38bdf8, #0284c7); 
+            border: none;
+            color: #080c14; 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            letter-spacing: 1.5px;
+            border-radius: 12px; 
+            cursor: pointer; 
+            transition: all 0.25s ease; 
+            margin-top: 1.3rem;
+            font-size: 0.8rem; 
+            font-family: 'JetBrains Mono'; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 0.6rem;
+            box-shadow: 0 6px 20px rgba(56, 189, 248, 0.3);
         }
-        .btn-premium:hover:not(:disabled) { background: #0284c7; color: #fff; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(2, 132, 199, 0.4); }
-        .btn-premium:disabled { background: rgba(255,255,255,0.1); color: var(--text-muted); cursor: not-allowed; box-shadow: none; transform: none; }
+        .btn-premium:hover:not(:disabled) { 
+            transform: translateY(-2px); 
+            box-shadow: 0 10px 25px rgba(2, 132, 199, 0.45); 
+            color: #ffffff;
+        }
+        .btn-premium:disabled { 
+            background: rgba(255,255,255,0.08); 
+            color: var(--text-muted); 
+            cursor: not-allowed; 
+            box-shadow: none; 
+            transform: none; 
+        }
 
         .btn-google {
             width: 100%;
-            padding: 0.75rem 1rem;
-            border-radius: 8px;
+            padding: 0.8rem 1rem;
+            border-radius: 12px;
             border: 1px solid var(--border-graphite);
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.04);
             color: var(--text-main);
             font-size: 0.82rem;
             font-family: 'JetBrains Mono', monospace;
@@ -181,19 +371,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.6rem;
+            gap: 0.7rem;
             cursor: pointer;
             transition: all 0.2s ease;
         }
-        body.light-mode .btn-google {
-            background: #ffffff;
-            border-color: #cbd5e1;
-            color: #0f172a;
-        }
         .btn-google:hover {
-            background: rgba(56, 189, 248, 0.1);
-            border-color: var(--primary);
-            color: var(--primary);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(-1px);
         }
         .btn-google svg {
             width: 18px;
@@ -201,13 +386,33 @@
             flex-shrink: 0;
         }
 
-        /* MODAL RELEASE NOTES Y LEGALES */
+        /* MODALES ESTRUCTURADOS CON BLUR Y ESTÉTICA PREMIUM */
         .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-            z-index: 99999; display: none; align-items: center; justify-content: center; padding: 1rem;
+            position: fixed; inset: 0; 
+            background: rgba(0, 0, 0, 0.8); 
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            z-index: 99999; display: none; align-items: center; justify-content: center; padding: 1.2rem;
         }
 
-        footer { text-align: center; padding: 16px; font-size: 10px; color: var(--text-muted); letter-spacing: 0.8px; font-family: 'JetBrains Mono'; position: relative; z-index: 10; }
+        .modal-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-graphite);
+            border-radius: 18px;
+            padding: 1.8rem;
+            width: 100%;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8);
+        }
+
+        footer { 
+            text-align: center; 
+            padding: 18px 20px; 
+            font-size: 10px; 
+            color: var(--text-muted); 
+            letter-spacing: 0.8px; 
+            font-family: 'JetBrains Mono'; 
+            position: relative; 
+            z-index: 10; 
+        }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -216,126 +421,130 @@
     <div class="scanline"></div>
     <canvas id="dante-fractal-bg"></canvas>
 
-    <!-- HEADER HUD PERIMETRAL -->
+    <!-- FONDOS DE LUZ AMBIENTAL TIPO PORTADA DE APLICACIÓN WEB INTERNACIONAL -->
+    <div class="fixed top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-tr from-cyan-500/10 via-purple-500/10 to-amber-500/10 rounded-full blur-[120px] pointer-events-none z-0"></div>
+
+    <!-- HEADER HUD PERIMETRAL ELEGANTE -->
     <header class="master-hud">
-        <div>
-            <div class="alias-title" id="lblHudTitle" data-final="DANTE OS // AUTENTICACIÓN">DANTE OS // AUTENTICACIÓN</div>
-            <div class="geo-tag" id="ui-geo">BOGOTÁ, COLOMBIA</div>
+        <div class="flex items-center gap-3">
+            <div class="h-2 w-2 rounded-full bg-cyan-400 animate-pulse"></div>
+            <div>
+                <div class="alias-title" id="lblHudTitle" data-final="DANTE OS // AUTENTICACIÓN">DANTE OS // AUTENTICACIÓN</div>
+                <div class="geo-tag" id="ui-geo">BOGOTÁ, COLOMBIA</div>
+            </div>
         </div>
         
         <div class="flex items-center gap-3">
-            <!-- BOTÓN MODO CONTRASTE (AULA / PROYECTOR) -->
-            <button type="button" onclick="PortalAuth.toggleContraste()" class="text-xs text-amber-400 hover:text-white p-1" title="Cambiar modo de contraste" aria-label="Cambiar modo de contraste">
+            <button type="button" onclick="PortalAuth.toggleContraste()" class="p-2 rounded-lg border border-white/10 hover:border-cyan-400/40 text-amber-400 hover:text-white transition cursor-pointer" title="Cambiar modo de contraste" aria-label="Cambiar modo de contraste">
                 <i class="fas fa-sun" id="iconContrast"></i>
             </button>
 
             <div class="text-right hidden sm:block">
-                <div class="text-xs font-black italic font-mono">MODO <span class="text-[#D4AF37]">ENTERPRISE</span></div>
+                <div class="text-[11px] font-bold font-mono text-slate-300">MODO <span class="text-amber-400">ENTERPRISE</span></div>
             </div>
         </div>
     </header>
 
+    <!-- CONTENEDOR PRINCIPAL DEL GATEWAY -->
     <div class="gateway-container">
         <div class="gateway-card">
-            <!-- ETIQUETA DE VERSIÓN E HISTORIAL DE NOVEDADES -->
+            <!-- VERSIÓN DEL SISTEMA -->
             <button type="button" class="system-version-tag" onclick="PortalAuth.abrirReleaseNotes()" title="Ver novedades v21.1.0">v21.1.0 ℹ️</button>
             
             <div class="verification-banner" id="uiBannerEstado">> AUTENTICACIÓN ALUMNO // MODO ADAPTATIVO</div>
             
             <h1 class="gateway-title" id="lblGatewayTitle" data-final="PORTAL DE ACCESO UNIFICADO">PORTAL DE ACCESO UNIFICADO</h1>
-            <p style="font-size: 0.72rem; color: #8a8f9d; text-transform: uppercase; letter-spacing: 1px;" class="font-mono" id="uiSubtitulo">Sincronización de Trayectoria Cognitiva</p>
+            <p style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;" class="font-mono mb-2" id="uiSubtitulo">Sincronización de Trayectoria Cognitiva</p>
 
-            <!-- FORMULARIO DE ACCESO FORMAL -->
+            <!-- FORMULARIO DE ACCESO -->
             <form id="frmLogin" onsubmit="PortalAuth.ejecutarLoginPerimetral(event); return false;">
                 
-                <div class="role-grid" role="radiogroup" aria-label="Selección de Rol">
-                    <button type="button" id="cardRoleEstudiante" class="role-selection-card active" onclick="PortalAuth.seleccionarRol('estudiante')" role="radio" aria-checked="true">
+                <!-- SELECCIÓN DE ROL MODERNA EN SEGMENTED CONTROL -->
+                <div class="role-container" role="radiogroup" aria-label="Selección de Rol">
+                    <button type="button" id="cardRoleEstudiante" class="role-card active" onclick="PortalAuth.seleccionarRol('estudiante')" role="radio" aria-checked="true">
                         <i class="fas fa-brain role-icon" aria-hidden="true"></i>
                         <span class="role-title">Alumno</span>
                     </button>
-                    <button type="button" id="cardRoleProfesor" class="role-selection-card" onclick="PortalAuth.seleccionarRol('profesor')" role="radio" aria-checked="false">
+                    <button type="button" id="cardRoleProfesor" class="role-card" onclick="PortalAuth.seleccionarRol('profesor')" role="radio" aria-checked="false">
                         <i class="fas fa-chalkboard-user role-icon" aria-hidden="true"></i>
                         <span class="role-title">Docente</span>
                     </button>
-                    <button type="button" id="cardRoleRector" class="role-selection-card" onclick="PortalAuth.seleccionarRol('rector')" role="radio" aria-checked="false">
+                    <button type="button" id="cardRoleRector" class="role-card" onclick="PortalAuth.seleccionarRol('rector')" role="radio" aria-checked="false">
                         <i class="fas fa-shield-halved role-icon" aria-hidden="true"></i>
                         <span class="role-title">Rector</span>
                     </button>
                 </div>
 
-                <div class="input-group" style="margin-top: 1.4rem;">
+                <!-- TENANT ID -->
+                <div class="input-group">
                     <label for="txtInstitutionId" class="input-label">ID de Institución (Tenant)</label>
                     <input type="text" id="txtInstitutionId" class="input-cyber" value="colegio_sandbox_default" placeholder="colegio_id" required>
                 </div>
 
+                <!-- CREDENCIAL -->
                 <div class="input-group">
                     <div class="flex justify-between items-center mb-1">
                         <label for="txtEmail" class="input-label mb-0">Credencial (Correo o N° Documento TI / CC)</label>
-                        <div class="space-x-1">
-                            <button type="button" class="domain-pill" onclick="PortalAuth.autocompletarDominio('@danteos.edu.co')">+@danteos.edu.co</button>
-                        </div>
+                        <button type="button" class="domain-pill" onclick="PortalAuth.autocompletarDominio('@danteos.edu.co')">+@danteos.edu.co</button>
                     </div>
                     <input type="text" id="txtEmail" class="input-cyber" placeholder="Correo o N° Documento (TI / CC)" autocomplete="username" required oninput="PortalAuth.detectarTipoIdentificador(this.value)">
-                    <span class="text-[9px] font-mono help-text text-slate-400 mt-1 block">Ingresa tu correo institucional o número de documento (TI / CC) registrado</span>
+                    <span class="text-[9.5px] font-mono help-text text-slate-400 mt-1 block">Ingresa tu correo institucional o número de documento registrado</span>
                 </div>
 
+                <!-- CONTRASEÑA CON TOGGLE DE OJO LÍMPIDO -->
                 <div class="input-group">
                     <div class="flex justify-between items-center mb-1">
                         <label for="txtPassword" class="input-label mb-0">Firma Secreta Acceso</label>
-                        <button type="button" onclick="PortalAuth.solicitarRecuperacion()" class="text-[9px] font-mono text-[#51e2f5] hover:underline bg-transparent border-0 p-0 cursor-pointer">¿Olvidaste tu Firma?</button>
+                        <button type="button" onclick="PortalAuth.solicitarRecuperacion()" class="text-[10px] font-mono text-cyan-400 hover:underline cursor-pointer">¿Olvidaste tu Firma?</button>
                     </div>
                     <div class="relative flex items-center">
                         <input type="password" id="txtPassword" class="input-cyber pr-10" placeholder="••••••••" autocomplete="current-password" required oninput="PortalAuth.evaluarFortalezaPwd(this.value)">
-                        <button type="button" id="btnTogglePassword" onclick="PortalAuth.toggleMostrarPassword()" class="absolute right-2 text-slate-400 hover:text-[#51e2f5] p-2 bg-transparent border-0 cursor-pointer text-xs" title="Mostrar u ocultar contraseña" aria-label="Mostrar u ocultar contraseña">
+                        <button type="button" id="btnTogglePassword" onclick="PortalAuth.toggleMostrarPassword()" class="absolute right-3 text-slate-400 hover:text-cyan-400 cursor-pointer text-xs" title="Mostrar u ocultar contraseña" aria-label="Mostrar u ocultar contraseña">
                             <i class="fas fa-eye" id="iconEye"></i>
                         </button>
                     </div>
                     <div id="pwdBar" class="pwd-strength-bar"></div>
                 </div>
 
-                <!-- JUSTIFICACIÓN LEGAL DE DEFENSA: COPPA 16 CFR § 312.5 & LEY 1098 COLOMBIA (Protección Infancia y Adolescencia) -->
-                <!-- Verificación Técnica de Edad para deshabilitar o requerir autorización de acudiente legal -->
-                <div class="input-group" style="margin-top: 0.9rem;">
-                    <label for="txtFechaNacimiento" class="input-label mb-1">Fecha de Nacimiento (Opcional - Solo para menores de edad)</label>
+                <!-- VERIFICACIÓN DE FECHA DE NACIMIENTO (COPPA / LEY 1098 COLOMBIA) -->
+                <div class="input-group">
+                    <label for="txtFechaNacimiento" class="input-label mb-1">Fecha de Nacimiento (Opcional - Solo menores de edad)</label>
                     <input type="date" id="txtFechaNacimiento" class="input-cyber" onchange="PortalAuth.evaluarEdadYConsentimientoParental(this.value)">
-                    <span class="text-[9px] font-mono help-text text-slate-400 mt-1 block">Si eres menor de 18 años, el sistema solicitará el correo de tu acudiente legal (Ley 1098 de 2006).</span>
+                    <span class="text-[9.5px] font-mono help-text text-slate-400 mt-1 block">Si eres menor de 18 años, el sistema solicitará el correo de tu acudiente legal (Ley 1098 de 2006).</span>
                 </div>
 
-                <!-- CONTENEDOR AUTORIZACIÓN PARENTAL PARA MENORES DE 18 AÑOS -->
-                <div id="containerParentalAuth" class="input-group p-3 rounded-lg bg-amber-950/40 border border-amber-500/50" style="display: none; margin-top: 0.8rem;">
+                <!-- CONTENEDOR AUTORIZACIÓN PARENTAL -->
+                <div id="containerParentalAuth" class="input-group p-3 rounded-xl bg-amber-950/40 border border-amber-500/40" style="display: none;">
                     <div class="flex items-center gap-2 mb-1">
                         <i class="fas fa-user-shield text-amber-400 text-xs"></i>
-                        <span class="text-[10px] font-mono font-bold text-amber-400 uppercase tracking-wide">Autorización Parental Requerida (< 18 Años)</span>
+                        <span class="text-[10px] font-mono font-bold text-amber-400 uppercase tracking-wide">Autorización Parental Requerida (&lt; 18 Años)</span>
                     </div>
                     <label for="txtParentEmail" class="input-label mb-1 text-slate-300">Correo del Padre, Madre o Tutor Legal</label>
                     <input type="email" id="txtParentEmail" class="input-cyber text-xs" placeholder="acudiente@ejemplo.com">
-                    <p class="text-[9px] font-mono text-amber-200/90 mt-1.5 leading-tight">
+                    <p class="text-[9.5px] font-mono text-amber-200/80 mt-1.5 leading-tight">
                         ⚖️ <strong>Gobernanza de Datos de Menores:</strong> Se registrará una solicitud de autorización verificable previa al tratamiento de métricas académicas (COPPA & Decreto 1377).
                     </p>
                 </div>
 
-                <!-- CHECKBOXES DE CONSENTIMIENTO GRANULAR (DOUBLE OPT-IN) -->
-                <!-- JUSTIFICACIÓN LEGAL DE DEFENSA: LEY 1581 ART 6, 9 & GDPR ART 7 - Casillas expresamente desmarcadas por defecto -->
-                <div class="mt-3 text-left space-y-2">
-                    <label class="flex items-start gap-2 cursor-pointer">
-                        <input type="checkbox" id="chkRecordarCredenciales" class="rounded border-slate-700 bg-slate-900 text-[#51e2f5] focus:ring-0 mt-0.5">
-                        <span class="text-[9.5px] font-mono chk-label text-slate-300 leading-tight">
+                <!-- CHECKBOXES DE CONSENTIMIENTO Y HABEAS DATA -->
+                <div class="mt-4 text-left space-y-2.5">
+                    <label class="flex items-start gap-2.5 cursor-pointer">
+                        <input type="checkbox" id="chkRecordarCredenciales">
+                        <span class="text-[10px] font-mono text-slate-300 leading-tight">
                             🔐 Recordar Firma y Credenciales en este navegador.
                         </span>
                     </label>
 
-                    <!-- CONSENTIMIENTO HABEAS DATA TRATAMIENTO DE DATOS -->
-                    <label class="flex items-start gap-2 cursor-pointer">
-                        <input type="checkbox" id="chkHabeasData" class="rounded border-slate-700 bg-slate-900 text-[#51e2f5] focus:ring-0 mt-0.5">
-                        <span class="text-[9.5px] font-mono chk-label text-slate-300 leading-tight">
-                            Acepto la <button type="button" onclick="PortalAuth.abrirModalPTDP()" class="text-[#51e2f5] underline hover:text-white bg-transparent border-0 p-0 cursor-pointer">Política de Tratamiento de Datos Personales (PTDP)</button> y Términos (Ley 1581/2012).
+                    <label class="flex items-start gap-2.5 cursor-pointer">
+                        <input type="checkbox" id="chkHabeasData">
+                        <span class="text-[10px] font-mono text-slate-300 leading-tight">
+                            Acepto la <button type="button" onclick="PortalAuth.abrirModalPTDP()" class="text-cyan-400 underline hover:text-white cursor-pointer">Política de Tratamiento de Datos Personales (PTDP)</button> y Términos (Ley 1581/2012).
                         </span>
                     </label>
 
-                    <!-- CONSENTIMIENTO EXPRESO Y SEPARADO PARA DATOS SENSIBLES Y PSICOMÉTRICOS -->
-                    <label class="flex items-start gap-2 cursor-pointer p-2 rounded bg-cyan-950/40 border border-cyan-500/40">
-                        <input type="checkbox" id="chkDatosSensibles" class="rounded border-cyan-500/60 bg-slate-900 text-[#51e2f5] focus:ring-0 mt-0.5">
-                        <span class="text-[9.5px] font-mono chk-label text-cyan-200 leading-tight">
+                    <label class="flex items-start gap-2.5 cursor-pointer p-2.5 rounded-xl bg-cyan-950/30 border border-cyan-500/30">
+                        <input type="checkbox" id="chkDatosSensibles">
+                        <span class="text-[9.5px] font-mono text-cyan-200 leading-tight">
                             <strong>[AUTORIZACIÓN EXPRESA - DATOS SENSIBLES & PSICOMÉTRICOS]</strong> Autorizo voluntariamente el procesamiento de mis respuestas cognitivas, tiempo de reacción y perfilamiento adaptativo (Ley 1581 Art. 6, Decreto 1377 y GDPR Art. 9).
                         </span>
                     </label>
@@ -346,11 +555,11 @@
                     <span id="btnValidarText">Validar Firmas Criptográficas</span>
                 </button>
 
-                <!-- DIVIDER & BOTÓN DE GOOGLE SSO INSTITUCIONAL -->
-                <div class="relative flex py-3 items-center">
-                    <div class="flex-grow border-t border-zinc-800"></div>
-                    <span class="flex-shrink mx-2 text-[9px] font-mono text-slate-400 uppercase">o autenticación SSO</span>
-                    <div class="flex-grow border-t border-zinc-800"></div>
+                <!-- DIVIDER DE GOOGLE SSO -->
+                <div class="relative flex py-4 items-center">
+                    <div class="flex-grow border-t border-white/10"></div>
+                    <span class="flex-shrink mx-3 text-[9px] font-mono text-slate-400 uppercase tracking-wider">o autenticación SSO</span>
+                    <div class="flex-grow border-t border-white/10"></div>
                 </div>
 
                 <button type="button" onclick="PortalAuth.iniciarGoogleSSO()" class="btn-google">
@@ -366,10 +575,10 @@
         </div>
     </div>
 
-    <!-- MODAL RELEASE NOTES (NOVEDADES) -->
+    <!-- MODAL RELEASE NOTES -->
     <div id="modalReleaseNotes" class="modal-overlay">
-        <div class="gateway-card max-w-md text-left">
-            <h3 class="font-mono text-sm font-bold text-[#D4AF37] uppercase border-b border-zinc-800 pb-2 mb-3">
+        <div class="modal-card modal-content max-w-md text-left">
+            <h3 class="font-mono text-sm font-bold text-amber-400 uppercase border-b border-white/10 pb-2 mb-3">
                 🚀 NOVEDADES DANTE OS v21.1.0
             </h3>
             <ul class="text-xs text-slate-300 space-y-2 font-mono list-disc pl-4 mb-4">
@@ -384,21 +593,21 @@
 
     <!-- MODAL GOOGLE WORKSPACE SSO -->
     <div id="modalGoogleSSO" class="modal-overlay">
-        <div class="gateway-card max-w-md text-left">
-            <h3 class="font-mono text-sm font-bold text-[#4285F4] uppercase border-b border-zinc-800 pb-2 mb-3 flex items-center gap-2">
+        <div class="modal-card modal-content max-w-md text-left">
+            <h3 class="font-mono text-sm font-bold text-blue-400 uppercase border-b border-white/10 pb-2 mb-3 flex items-center gap-2">
                 <i class="fab fa-google"></i> SSO GOOGLE WORKSPACE
             </h3>
             <p class="text-xs text-slate-300 font-mono mb-3 leading-relaxed">
                 El inicio de sesión único (Single Sign-On) permite a estudiantes y docentes autenticarse en Dante OS con su cuenta institucional de Google Workspace sin recordar contraseñas adicionales.
             </p>
-            <div class="p-3 bg-zinc-900/90 sso-status-badge border border-zinc-800 rounded-lg text-[11px] font-mono text-amber-400 mb-4">
+            <div class="p-3 bg-white/5 border border-white/10 rounded-xl text-[11px] font-mono text-amber-400 mb-4">
                 🔒 <strong>Estado Tenant:</strong> Sincronización Google Workspace activa para colegios aliados.
             </div>
             <div class="flex gap-2">
                 <button type="button" class="btn-premium py-2 mt-0 w-full" onclick="document.getElementById('modalGoogleSSO').style.display = 'none'; PortalAuth.cargarAccesoDemo();">
                     Probar Acceso SSO Institucional
                 </button>
-                <button type="button" class="py-2 px-3 bg-zinc-800 modal-btn-close text-slate-300 font-mono text-xs rounded-lg hover:bg-zinc-700 cursor-pointer" onclick="document.getElementById('modalGoogleSSO').style.display = 'none'">
+                <button type="button" class="py-2 px-4 bg-white/10 text-slate-300 font-mono text-xs rounded-xl hover:bg-white/20 cursor-pointer" onclick="document.getElementById('modalGoogleSSO').style.display = 'none'">
                     Cerrar
                 </button>
             </div>
@@ -406,25 +615,24 @@
     </div>
 
     <!-- MODAL POLÍTICA DE TRATAMIENTO DE DATOS PERSONALES (PTDP) -->
-    <!-- JUSTIFICACIÓN LEGAL DE DEFENSA: Cumplimiento de Principio de Transparencia Ley 1581 Art. 4 y GDPR Art. 12/13 -->
     <div id="modalPTDP" class="modal-overlay">
-        <div class="gateway-card max-w-2xl text-left max-h-[85vh] overflow-y-auto">
-            <div class="flex justify-between items-center border-b border-zinc-800 pb-3 mb-3">
-                <h3 class="font-mono text-sm font-bold text-[#51e2f5] uppercase flex items-center gap-2">
+        <div class="modal-card modal-content max-w-2xl text-left max-h-[85vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-white/10 pb-3 mb-3">
+                <h3 class="font-mono text-sm font-bold text-cyan-400 uppercase flex items-center gap-2">
                     <i class="fas fa-file-contract"></i> POLÍTICA DE TRATAMIENTO DE DATOS PERSONALES (PTDP)
                 </h3>
-                <button type="button" onclick="document.getElementById('modalPTDP').style.display='none'" class="text-slate-400 hover:text-white bg-transparent border-0 text-base cursor-pointer">&times;</button>
+                <button type="button" onclick="document.getElementById('modalPTDP').style.display='none'" class="text-slate-400 hover:text-white text-base cursor-pointer">&times;</button>
             </div>
 
             <div class="text-xs text-slate-300 font-mono space-y-3 leading-relaxed pr-1">
-                <p class="bg-zinc-900/80 p-2.5 rounded border border-zinc-800 text-[11px] text-cyan-200">
+                <p class="bg-white/5 p-3 rounded-xl border border-white/10 text-[11px] text-cyan-200">
                     <strong>MARCO REGULATORIO:</strong> En cumplimiento de la Ley Estatutaria 1581 de 2012 (Colombia), Decreto Reglamentario 1377 de 2013, Reglamento General de Protección de Datos (GDPR UE 2016/679) y COPPA (EE. UU. 16 CFR § 312.5), Dante OS establece las pautas de gobierno y seguridad de la información.
                 </p>
 
-                <h4 class="font-bold text-[#D4AF37] uppercase text-[11px] mt-2">1. RESPONSABLE DEL TRATAMIENTO DE DATOS</h4>
-                <p>El responsable del tratamiento es Dante OS Enterprise Edition. Correo electrónico del Oficial de Protección de Datos (DPO): <strong class="text-[#51e2f5]">protecciondedatos@danteos.edu.co</strong>.</p>
+                <h4 class="font-bold text-amber-400 uppercase text-[11px] mt-2">1. RESPONSABLE DEL TRATAMIENTO DE DATOS</h4>
+                <p>El responsable del tratamiento es Dante OS Enterprise Edition. Correo electrónico del Oficial de Protección de Datos (DPO): <strong class="text-cyan-400">protecciondedatos@danteos.edu.co</strong>.</p>
 
-                <h4 class="font-bold text-[#D4AF37] uppercase text-[11px] mt-2">2. FINALIDADES DEL TRATAMIENTO PSICOMÉTRICO Y COGNITIVO</h4>
+                <h4 class="font-bold text-amber-400 uppercase text-[11px] mt-2">2. FINALIDADES DEL TRATAMIENTO PSICOMÉTRICO Y COGNITIVO</h4>
                 <ul class="list-disc pl-5 space-y-1 text-[11px]">
                     <li>Perfilamiento pedagógico adaptativo con modelos Bayesiano IRT 3PL para estimación de desempeño ICFES.</li>
                     <li>Telemetría de tiempo de respuesta y vacilación exclusivamente para optimización de reactivos académicos.</li>
@@ -432,30 +640,29 @@
                     <li><strong>Prohibición Categórica:</strong> Dante OS no comercializa, transfiere ni vende datos a terceros ni los utiliza con fines publicitarios.</li>
                 </ul>
 
-                <h4 class="font-bold text-[#D4AF37] uppercase text-[11px] mt-2">3. TRATAMIENTO DE DATOS SENSIBLES Y DE MENORES DE EDAD</h4>
+                <h4 class="font-bold text-amber-400 uppercase text-[11px] mt-2">3. TRATAMIENTO DE DATOS SENSIBLES Y DE MENORES DE EDAD</h4>
                 <p class="text-[11px]">Los datos de respuestas psicométricas son clasificados como sensibles (Ley 1581 Art. 6). El usuario tiene la facultad libre y explícita de autorizar o no su tratamiento. Para menores de 18 años, el tratamiento respeta el interés superior consagrado en la Ley 1098 de 2006 y requiere la concurrencia del acudiente legal.</p>
 
-                <h4 class="font-bold text-[#D4AF37] uppercase text-[11px] mt-2">4. DERECHOS DE LOS TITULARES (DERECHOS ARCO)</h4>
+                <h4 class="font-bold text-amber-400 uppercase text-[11px] mt-2">4. DERECHOS DE LOS TITULARES (DERECHOS ARCO)</h4>
                 <p class="text-[11px]">Todo usuario tiene derecho a Conocer, Actualizar, Rectificar, Suprimir (Derecho al Olvido / Hard Delete) sus datos personales o Revocar la autorización prestada escribiendo a <em>protecciondedatos@danteos.edu.co</em>.</p>
             </div>
 
-            <div class="mt-4 pt-3 border-t border-zinc-800 flex justify-end gap-2">
+            <div class="mt-4 pt-3 border-t border-white/10 flex justify-end gap-2">
                 <button type="button" class="btn-premium py-2 mt-0 w-auto px-6" onclick="document.getElementById('modalPTDP').style.display='none'">
-                    Entendido & Entendido
+                    Entendido
                 </button>
             </div>
         </div>
     </div>
 
     <!-- MODAL DERECHOS ARCO (DERECHO AL OLVIDO) -->
-    <!-- JUSTIFICACIÓN LEGAL DE DEFENSA: Cumplimiento de Procedimiento de Supresión y Revocatoria Ley 1581 Art. 15 y GDPR Art. 17 -->
     <div id="modalARCO" class="modal-overlay">
-        <div class="gateway-card max-w-lg text-left">
-            <div class="flex justify-between items-center border-b border-zinc-800 pb-2 mb-3">
+        <div class="modal-card modal-content max-w-lg text-left">
+            <div class="flex justify-between items-center border-b border-white/10 pb-2 mb-3">
                 <h3 class="font-mono text-sm font-bold text-amber-400 uppercase flex items-center gap-2">
                     <i class="fas fa-balance-scale"></i> EJERCICIO DE DERECHOS ARCO (DERECHO AL OLVIDO)
                 </h3>
-                <button type="button" onclick="document.getElementById('modalARCO').style.display='none'" class="text-slate-400 hover:text-white bg-transparent border-0 text-base cursor-pointer">&times;</button>
+                <button type="button" onclick="document.getElementById('modalARCO').style.display='none'" class="text-slate-400 hover:text-white text-base cursor-pointer">&times;</button>
             </div>
 
             <p class="text-xs text-slate-300 font-mono mb-3 leading-relaxed">
@@ -482,10 +689,10 @@
                 </div>
 
                 <div class="flex gap-2 pt-2">
-                    <button type="submit" class="btn-premium py-2 mt-0 w-full" style="border-color: var(--gold); color: var(--gold);">
+                    <button type="submit" class="btn-premium py-2 mt-0 w-full">
                         Enviar Solicitud al DPO
                     </button>
-                    <button type="button" class="py-2 px-3 bg-zinc-800 text-slate-300 font-mono text-xs rounded-lg hover:bg-zinc-700 cursor-pointer" onclick="document.getElementById('modalARCO').style.display='none'">
+                    <button type="button" class="py-2 px-4 bg-white/10 text-slate-300 font-mono text-xs rounded-xl hover:bg-white/20 cursor-pointer" onclick="document.getElementById('modalARCO').style.display='none'">
                         Cancelar
                     </button>
                 </div>
@@ -493,15 +700,16 @@
         </div>
     </div>
 
-    <footer class="py-4 px-3 text-center text-[10px] font-mono text-slate-400 border-t border-zinc-800/80 bg-black/60 backdrop-blur-md relative z-20">
+    <!-- FOOTER -->
+    <footer class="py-4 px-4 text-center text-[10px] font-mono text-slate-400 border-t border-white/10 bg-black/60 backdrop-blur-md relative z-20">
         <div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
             <div>DANTE OS ENTERPRISE EDITION // INFRAESTRUCTURA BIOMÉTRICA Y PSICOMÉTRICA ADAPTATIVA</div>
             <div class="flex items-center gap-3 text-[9px]">
-                <button type="button" onclick="PortalAuth.abrirModalPTDP()" class="text-[#51e2f5] hover:underline bg-transparent border-0 cursor-pointer">
+                <button type="button" onclick="PortalAuth.abrirModalPTDP()" class="text-cyan-400 hover:underline cursor-pointer">
                     📜 Política de Datos Personales (PTDP)
                 </button>
                 <span>•</span>
-                <button type="button" onclick="PortalAuth.abrirModalARCO()" class="text-amber-400 hover:underline bg-transparent border-0 cursor-pointer">
+                <button type="button" onclick="PortalAuth.abrirModalARCO()" class="text-amber-400 hover:underline cursor-pointer">
                     ⚖️ Derechos ARCO (Derecho al Olvido)
                 </button>
             </div>
@@ -512,7 +720,6 @@
         const HOST_URL = window.location.origin;
         let SelectedRoleTarget = "estudiante";
 
-        // DICCIONARIOS DE SUBTÍTULOS POR ROL
         const SUBTITULOS_ROL = {
             estudiante: "Sincronización de Trayectoria Cognitiva",
             profesor: "Consola de Gestión Pedagógica & Cohortes",
@@ -525,9 +732,7 @@
             rector: "rector.html"
         };
 
-        // SOPORTE DINÁMICO DE TENANT POR PARÁMETRO URL Y RESTAURACIÓN DE RECORDAR FIRMA Y TEMA
         window.addEventListener('DOMContentLoaded', () => {
-            // Restaurar tema
             const savedTheme = localStorage.getItem("dante_theme");
             if (savedTheme === "light") {
                 document.body.classList.add("light-mode");
@@ -535,7 +740,6 @@
                 if (icon) icon.className = "fas fa-moon";
             }
 
-            // Tenant URL param
             const urlParams = new URLSearchParams(window.location.search);
             const tenantParam = urlParams.get('tenant') || urlParams.get('institution_id');
             if (tenantParam) {
@@ -547,7 +751,6 @@
                 }
             }
 
-            // Cargar credenciales recordadas si existen
             try {
                 const savedCreds = localStorage.getItem("dante_remembered_credentials");
                 if (savedCreds) {
@@ -589,7 +792,7 @@
                 if (!input) return;
                 if (input.type === "password") {
                     input.type = "text";
-                    if (icon) icon.className = "fas fa-eye-slash text-[#51e2f5]";
+                    if (icon) icon.className = "fas fa-eye-slash text-cyan-400";
                 } else {
                     input.type = "password";
                     if (icon) icon.className = "fas fa-eye text-slate-400";
@@ -635,29 +838,6 @@
                 }
 
                 if (sub) sub.innerText = SUBTITULOS_ROL[rol] || SUBTITULOS_ROL.estudiante;
-            }
-
-            static cargarAccesoDemo() {
-                const txtInst = document.getElementById("txtInstitutionId");
-                const txtEmail = document.getElementById("txtEmail");
-                const txtPwd = document.getElementById("txtPassword");
-                const chkHabeas = document.getElementById("chkHabeasData");
-                const chkSensibles = document.getElementById("chkDatosSensibles");
-
-                if (txtInst) txtInst.value = "colegio_sandbox_default";
-                if (txtEmail) txtEmail.value = "adriana@danteos.edu.co";
-                if (txtPwd) txtPwd.value = "12345678";
-                if (chkHabeas) chkHabeas.checked = true;
-                if (chkSensibles) chkSensibles.checked = true;
-
-                this.evaluarFortalezaPwd("12345678");
-                this.seleccionarRol("estudiante");
-
-                const banner = document.getElementById("uiBannerEstado");
-                if (banner) {
-                    banner.innerText = "⚡ CREDENCIALES DEMO CARGADAS (ADRIANA)";
-                    banner.style.color = "var(--gold)";
-                }
             }
 
             static abrirReleaseNotes() {
@@ -732,7 +912,6 @@
                     banner.style.color = "var(--primary)";
                 }
 
-                // Iniciar autenticación directa SSO
                 this.ejecutarLoginPerimetral();
             }
 
@@ -746,8 +925,6 @@
                 if (modal) modal.style.display = "flex";
             }
 
-            /* JUSTIFICACIÓN LEGAL DE DEFENSA: COPPA 16 CFR § 312.5 Y LEY 1098 COLOMBIA (Protección Infancia) */
-            /* Evaluación dinámica de edad. Si es menor de 18 años, activa exigencia técnica de correo de tutor legal */
             static evaluarEdadYConsentimientoParental(dobValue) {
                 if (!dobValue) return;
                 const dob = new Date(dobValue);
@@ -779,7 +956,6 @@
                 }
             }
 
-            /* JUSTIFICACIÓN LEGAL DE DEFENSA: Cumplimiento Ley 1581 Art. 15 y GDPR Art. 17 (Atención a Solicitudes ARCO / Hard Delete) */
             static ejecutarSolicitudARCO(event) {
                 if (event && event.preventDefault) event.preventDefault();
                 const tipo = document.getElementById("selTipoARCO")?.value || "supresion";
@@ -800,7 +976,6 @@
                     estado: "REGISTRADA_EN_SISTEMA"
                 };
 
-                // Guardar solicitud en almacenamiento local auditable
                 try {
                     const prev = JSON.parse(localStorage.getItem("dante_arco_requests") || "[]");
                     prev.push(solicitud);
@@ -816,21 +991,18 @@
             static async ejecutarLoginPerimetral(event) {
                 if (event && event.preventDefault) event.preventDefault();
 
-                // JUSTIFICACIÓN LEGAL DE DEFENSA: Ley 1581 Art. 9 - Verificación de Aceptación de PTDP
                 const chkHabeas = document.getElementById("chkHabeasData");
                 if (chkHabeas && !chkHabeas.checked) {
                     alert("🚨 REQUISITO LEGAL (LEY 1581): Debes aceptar la Política de Tratamiento de Datos Personales (PTDP) para continuar.");
                     return;
                 }
 
-                // JUSTIFICACIÓN LEGAL DE DEFENSA: Ley 1581 Art. 6 & GDPR Art. 9 - Verificación de Consentimiento Expreso e Inequívoco para Datos Sensibles/Psicométricos
                 const chkSensibles = document.getElementById("chkDatosSensibles");
                 if (chkSensibles && !chkSensibles.checked) {
                     alert("🚨 REQUISITO LEGAL DE DATOS SENSIBLES (LEY 1581 ART 6): Para proceder con la medición adaptativa psicométrica es obligatorio autorizar el tratamiento explícito de datos cognitivos.");
                     return;
                 }
 
-                // JUSTIFICACIÓN LEGAL DE DEFENSA: COPPA & Ley 1098 - Verificación de Autorización Parental para Menores de Edad
                 const dobVal = document.getElementById("txtFechaNacimiento")?.value;
                 let isMinor = false;
                 if (dobVal) {
@@ -848,7 +1020,6 @@
                     return;
                 }
 
-                /* JUSTIFICACIÓN LEGAL DE DEFENSA: Generación y persistencia de evidencia Criptográfica-Temporal del consentimiento */
                 const consentEvidence = {
                     habeasDataAccepted: true,
                     sensitiveDataAccepted: true,
@@ -874,7 +1045,6 @@
                     return;
                 }
 
-                // Guardar o limpiar credenciales recordadas (SIN almacenar contraseña en texto plano)
                 const chkRecordar = document.getElementById("chkRecordarCredenciales");
                 if (chkRecordar && chkRecordar.checked) {
                     localStorage.setItem("dante_remembered_credentials", JSON.stringify({
@@ -915,7 +1085,6 @@
                         const userObj = json.user || {};
                         const studentIdClean = String(userObj.estudiante || userObj.email || rawIdentifier).split('@')[0].toLowerCase().trim();
                         
-                        // Purga estricta de caché de sesión previa para evitar fuga de perfil entre estudiantes
                         localStorage.removeItem("dante_active_student");
                         localStorage.removeItem("dante_onboarding_completed");
                         localStorage.removeItem("dante_onboarding_profile");
@@ -974,7 +1143,6 @@
                 } catch (err) {
                     console.warn("⚠️ [BACKEND UNCONNECTED OR OFFLINE MODE]:", err.message);
                     
-                    // MODO FALLBACK SANDBOX GRACIOSO SI EL SERVIDOR NO RESPONDE AÚN
                     const studentIdClean = String(rawIdentifier).split('@')[0].toLowerCase().trim();
 
                     const previousProfile = localStorage.getItem("dante_onboarding_profile");
@@ -1024,7 +1192,6 @@
             }
         }
 
-        /* ANIMACIÓN DESENCRIPTADO */
         const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*";
         function decryptText() {
             const elements = document.querySelectorAll('[data-final]');
@@ -1074,7 +1241,7 @@
                 let x = bgCanvas.width/2 + Math.cos(p.angle) * p.dist; 
                 let y = bgCanvas.height/2 + Math.sin(p.angle) * p.dist;
                 if(x < 0 || x > bgCanvas.width || y < 0 || y > bgCanvas.height) p.dist = 0;
-                bgCtx.beginPath(); bgCtx.arc(x, y, p.s, 0, Math.PI*2); bgCtx.fillStyle = '#51e2f5'; bgCtx.globalAlpha = 0.22; bgCtx.fill();
+                bgCtx.beginPath(); bgCtx.arc(x, y, p.s, 0, Math.PI*2); bgCtx.fillStyle = '#38bdf8'; bgCtx.globalAlpha = 0.22; bgCtx.fill();
             });
             requestAnimationFrame(animateCanvas);
         }
