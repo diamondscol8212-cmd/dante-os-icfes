@@ -35,8 +35,52 @@ router.use((req, res, next) => {
 // ====================================================================
 // 🪐 ENDPOINT A: INTERACCIÓN ADAPTATIVA DEL ESTUDIANTE
 // ====================================================================
-router.post('/interactuar', async (req, res) => {
+router.post('/interactuar', optionalToken, async (req, res) => {
     const { studentId, sessionId, responseTime, itemId } = req.body;
+
+    if (!studentId) {
+        return res.status(400).json({ success: false, error: "Identificador de estudiante no proporcionado." });
+    }
+
+    const cleanStudentId = String(studentId).trim().toLowerCase();
+    const isGuestOrSim = (
+        cleanStudentId.startsWith('sim_') ||
+        cleanStudentId.startsWith('guest_') ||
+        cleanStudentId.startsWith('demo_') ||
+        cleanStudentId.startsWith('anon_') ||
+        cleanStudentId.startsWith('sandbox_') ||
+        cleanStudentId === 'estudiante_demo'
+    );
+
+    // Validación de identidad y sesión para perfiles reales
+    if (req.user) {
+        const userEmail = String(req.user.email || '').toLowerCase().trim();
+        const userId = String(req.user.user_id || req.user.id || '').toLowerCase().trim();
+        const userEstudiante = String(req.user.estudiante || '').toLowerCase().trim();
+        const userRole = String(req.user.role || req.user.rol || '').toLowerCase().trim();
+
+        const isOwner = (
+            cleanStudentId === userEmail ||
+            cleanStudentId === userId ||
+            cleanStudentId === userEstudiante ||
+            cleanStudentId === `${userEstudiante}@danteos.edu.co` ||
+            isGuestOrSim
+        );
+
+        const isAuthorizedStaff = ['admin', 'profesor', 'rector'].includes(userRole);
+
+        if (!isOwner && !isAuthorizedStaff) {
+            return res.status(403).json({
+                success: false,
+                error: "Acceso denegado: No posee permisos para responder en la sesión de evaluación de otro estudiante."
+            });
+        }
+    } else if (!isGuestOrSim) {
+        return res.status(401).json({
+            success: false,
+            error: "Acceso denegado: Se requiere inicio de sesión con token activo para realizar evaluaciones sobre un perfil de estudiante real."
+        });
+    }
 
     if (!itemId) {
         const tokenToken = crypto.createHmac('sha256', INTEGRITY_SECRET)
