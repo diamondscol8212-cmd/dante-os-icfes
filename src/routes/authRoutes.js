@@ -60,18 +60,9 @@ router.post('/register-secure-user', async (req, res) => {
 
         const { hash, salt } = generarHashPassword(password);
 
-        // Verificar minoría de edad para requerir consentimiento parental
+        // Desactivación temporal del bloqueo por fecha de nacimiento/menor de edad para acceso rápido
         let isMinor = false;
-        if (dob) {
-            const birthDate = new Date(dob);
-            const today = new Date();
-            let age = today.getFullYear() - birthDate.getFullYear();
-            const monthDiff = today.getMonth() - birthDate.getMonth();
-            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) age--;
-            if (age < 18) isMinor = true;
-        }
-
-        const accountStatus = isMinor ? 'pending_parental_approval' : 'active_approved';
+        const accountStatus = 'active_approved';
 
         const { data, error } = await supabase
             .from('usuarios')
