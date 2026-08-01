@@ -23,14 +23,14 @@
             --gold: #f59e0b;
             --alert: #ef4444;
             --bg: #070a11; 
-            --card-bg: rgba(13, 19, 34, 0.88);
+            --card-bg: rgba(13, 19, 34, 0.92);
             --border-graphite: rgba(255, 255, 255, 0.1);
             --emerald: #10b981;
             --text-main: #f3f4f6;
             --text-muted: #9ca3af;
         }
 
-        /* RESET ABSOLUTO DE BOTONES E INPUTS */
+        /* RESET DE BOTONES E INPUTS */
         *, *::before, *::after {
             box-sizing: border-box;
         }
@@ -47,13 +47,13 @@
             appearance: none;
         }
 
-        /* ESTILIZADO DE CHECKBOXES CUSTOM */
+        /* ESTILIZADO DE CHECKBOXES CUSTOM TOUCH-FRIENDLY */
         input[type="checkbox"] {
             -webkit-appearance: none;
             appearance: none;
-            width: 17px;
-            height: 17px;
-            border: 1.5px solid rgba(255, 255, 255, 0.25);
+            width: 18px;
+            height: 18px;
+            border: 1.5px solid rgba(255, 255, 255, 0.3);
             border-radius: 5px;
             background: rgba(0, 0, 0, 0.4);
             cursor: pointer;
@@ -73,17 +73,17 @@
             content: "✓";
             color: #070a11;
             font-weight: 900;
-            font-size: 11px;
+            font-size: 12px;
             line-height: 1;
         }
 
-        /* MODO CLARO / ALTO CONTRASTE */
+        /* MODO CLARO / ALTO CONTRASTE (PROYECTOR AULA) */
         body.light-mode {
             --bg: #f8fafc;
             --card-bg: #ffffff;
             --border-graphite: #cbd5e1;
             --text-main: #0f172a;
-            --text-muted: #64748b;
+            --text-muted: #475569;
             --primary: #0284c7;
             --primary-hover: #0369a1;
             --gold: #d97706;
@@ -103,7 +103,7 @@
         body.light-mode .gateway-card {
             background: #ffffff !important;
             border-color: #cbd5e1 !important;
-            box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.1) !important;
+            box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.12) !important;
         }
 
         body.light-mode .role-container {
@@ -113,7 +113,7 @@
 
         body.light-mode .role-card {
             background: transparent !important;
-            color: #475569 !important;
+            color: #64748b !important;
         }
 
         body.light-mode .role-card.active {
@@ -136,7 +136,7 @@
 
         body.light-mode input[type="checkbox"] {
             background: #ffffff;
-            border-color: #cbd5e1;
+            border-color: #94a3b8;
         }
 
         body.light-mode input[type="checkbox"]:checked {
@@ -159,7 +159,7 @@
             border-color: #0284c7 !important;
         }
 
-        body.light-mode .modal-content {
+        body.light-mode .modal-card {
             background: #ffffff !important;
             border-color: #cbd5e1 !important;
             color: #0f172a !important;
@@ -186,10 +186,10 @@
         .scanline { position: fixed; inset: 0; background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.2) 51%); background-size: 100% 4px; z-index: 1; pointer-events: none; opacity: 0.08; }
         #fx-flash { position: fixed; inset: 0; z-index: 999999; background: var(--alert); opacity: 0; pointer-events: none; transition: opacity 0.3s; }
 
-        /* HEADER HUD */
+        /* HEADER HUD PERIMETRAL */
         .master-hud {
-            position: fixed; top: 0; width: 100%; z-index: 1000; padding: 14px 28px;
-            background: rgba(7, 10, 17, 0.88); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            position: fixed; top: 0; width: 100%; z-index: 1000; padding: 12px 20px;
+            background: rgba(7, 10, 17, 0.90); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             display: flex; justify-content: space-between; align-items: center;
             border-bottom: 1px solid var(--border-graphite);
         }
@@ -199,23 +199,23 @@
 
         .portal-layout-container { 
             display: flex; justify-content: center; align-items: center; 
-            flex-grow: 1; padding: 100px 20px 40px; position: relative; z-index: 10; 
-            width: 100%; max-width: 1280px; margin: 0 auto;
+            flex-grow: 1; padding: 80px 16px 30px; position: relative; z-index: 10; 
+            width: 100%; max-width: 1200px; margin: 0 auto;
         }
         
         .gateway-card {
             background: var(--card-bg); 
             border: 1px solid var(--border-graphite);
-            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.7), 0 0 40px rgba(56, 189, 248, 0.05); 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.75), 0 0 30px rgba(56, 189, 248, 0.06); 
             border-radius: 20px; 
-            padding: 2.2rem 1.8rem; 
+            padding: 1.8rem 1.4rem; 
             width: 100%; 
             position: relative;
             backdrop-filter: blur(24px); 
             -webkit-backdrop-filter: blur(24px);
             text-align: left;
         }
-        @media (min-width: 640px) { .gateway-card { padding: 2.6rem 2.2rem; } }
+        @media (min-width: 640px) { .gateway-card { padding: 2.2rem 2rem; } }
 
         .gateway-card::before {
             content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
@@ -223,12 +223,12 @@
             border-radius: 20px 20px 0 0;
         }
 
-        .gateway-title { font-size: 1.45rem; font-family: 'Outfit', sans-serif; font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 0.15rem; color: var(--text-main); }
+        .gateway-title { font-size: 1.35rem; font-family: 'Outfit', sans-serif; font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 0.15rem; color: var(--text-main); }
         
         .verification-banner {
             background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25);
-            padding: 0.4rem 0.8rem; border-radius: 20px; color: var(--primary); font-size: 0.68rem;
-            font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem;
+            padding: 0.35rem 0.75rem; border-radius: 20px; color: var(--primary); font-size: 0.65rem;
+            font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.85rem;
             font-family: 'JetBrains Mono'; transition: all 0.3s ease; display: inline-block;
         }
 
@@ -249,18 +249,20 @@
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 4px;
-            margin-top: 1rem;
+            margin-top: 0.85rem;
         }
 
         .role-card {
-            padding: 0.6rem 0.4rem;
+            padding: 0.65rem 0.4rem;
+            min-height: 44px;
             border-radius: 10px;
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 0.25rem;
+            justify-content: center;
+            gap: 0.2rem;
             border: 1px solid transparent;
             color: var(--text-muted);
             text-align: center;
@@ -278,21 +280,22 @@
             box-shadow: 0 4px 12px rgba(56, 189, 248, 0.15);
         }
 
-        .role-icon { font-size: 1rem; }
+        .role-icon { font-size: 0.95rem; }
         .role-title { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; font-family: 'JetBrains Mono'; }
 
-        .input-group { text-align: left; margin-top: 1rem; }
-        .input-label { display: block; color: var(--text-muted); margin-bottom: 0.35rem; font-weight: 700; text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.8px; font-family: 'JetBrains Mono'; }
+        .input-group { text-align: left; margin-top: 0.9rem; }
+        .input-label { display: block; color: var(--text-muted); margin-bottom: 0.3rem; font-weight: 700; text-transform: uppercase; font-size: 0.65rem; letter-spacing: 0.8px; font-family: 'JetBrains Mono'; }
         
         .input-cyber {
             width: 100%; 
-            padding: 0.75rem 1rem; 
+            min-height: 46px;
+            padding: 0.7rem 0.9rem; 
             background: rgba(0, 0, 0, 0.35); 
             border: 1px solid var(--border-graphite);
             color: var(--text-main); 
-            border-radius: 10px; 
+            border-radius: 12px; 
             outline: none; 
-            font-size: 0.85rem; 
+            font-size: 0.875rem; 
             transition: all 0.2s ease; 
             font-family: 'JetBrains Mono';
             box-sizing: border-box;
@@ -306,8 +309,8 @@
         .domain-pill {
             display: inline-flex; 
             align-items: center;
-            padding: 2px 8px; 
-            font-size: 9px; 
+            padding: 3px 8px; 
+            font-size: 9.5px; 
             font-family: 'JetBrains Mono';
             background: rgba(56, 189, 248, 0.1); 
             border: 1px solid rgba(56, 189, 248, 0.25);
@@ -319,10 +322,11 @@
         }
         .domain-pill:hover { background: var(--primary); color: #080c14; }
 
-        .pwd-strength-bar { height: 3px; border-radius: 2px; background: rgba(255,255,255,0.1); margin-top: 6px; transition: all 0.3s; width: 0%; }
+        .pwd-strength-bar { height: 3px; border-radius: 2px; background: rgba(255,255,255,0.1); margin-top: 5px; transition: all 0.3s; width: 0%; }
 
         .btn-premium {
             width: 100%; 
+            min-height: 48px;
             padding: 0.85rem 1.2rem; 
             background: linear-gradient(135deg, #38bdf8, #0284c7); 
             border: none;
@@ -333,18 +337,18 @@
             border-radius: 12px; 
             cursor: pointer; 
             transition: all 0.25s ease; 
-            margin-top: 1.2rem;
+            margin-top: 1.1rem;
             font-size: 0.8rem; 
             font-family: 'JetBrains Mono'; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
             gap: 0.6rem;
-            box-shadow: 0 6px 20px rgba(56, 189, 248, 0.3);
+            box-shadow: 0 6px 20px rgba(56, 189, 248, 0.25);
         }
         .btn-premium:hover:not(:disabled) { 
-            transform: translateY(-2px); 
-            box-shadow: 0 10px 25px rgba(2, 132, 199, 0.45); 
+            transform: translateY(-1px); 
+            box-shadow: 0 10px 25px rgba(2, 132, 199, 0.4); 
             color: #ffffff;
         }
         .btn-premium:disabled { 
@@ -357,7 +361,8 @@
 
         .btn-google {
             width: 100%;
-            padding: 0.75rem 1rem;
+            min-height: 46px;
+            padding: 0.7rem 1rem;
             border-radius: 12px;
             border: 1px solid var(--border-graphite);
             background: rgba(255, 255, 255, 0.04);
@@ -395,14 +400,14 @@
             background: var(--card-bg);
             border: 1px solid var(--border-graphite);
             border-radius: 18px;
-            padding: 1.8rem;
+            padding: 1.6rem;
             width: 100%;
             box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8);
         }
 
         footer { 
             text-align: center; 
-            padding: 18px 20px; 
+            padding: 16px 20px; 
             font-size: 10px; 
             color: var(--text-muted); 
             letter-spacing: 0.8px; 
@@ -418,13 +423,12 @@
     <div class="scanline"></div>
     <canvas id="dante-fractal-bg"></canvas>
 
-    <!-- FONDOS DE LUZ AMBIENTAL DE ALTA INTENSIDAD -->
-    <div class="fixed top-1/3 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-tr from-cyan-500/15 via-blue-600/10 to-amber-500/10 rounded-full blur-[140px] pointer-events-none z-0"></div>
-    <div class="fixed bottom-1/4 right-1/4 translate-x-1/3 translate-y-1/3 w-[500px] h-[500px] bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-cyan-500/10 rounded-full blur-[130px] pointer-events-none z-0"></div>
+    <!-- FONDOS DE LUZ AMBIENTAL ELEGANTES -->
+    <div class="fixed top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-gradient-to-tr from-cyan-500/12 via-blue-600/10 to-amber-500/10 rounded-full blur-[140px] pointer-events-none z-0"></div>
 
-    <!-- HEADER HUD PERIMETRAL ELEGANTE -->
+    <!-- HEADER HUD PERIMETRAL -->
     <header class="master-hud">
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2.5">
             <div class="h-2 w-2 rounded-full bg-cyan-400 animate-pulse"></div>
             <div>
                 <div class="alias-title" id="lblHudTitle" data-final="DANTE OS // AUTENTICACIÓN">DANTE OS // AUTENTICACIÓN</div>
@@ -443,62 +447,60 @@
         </div>
     </header>
 
-    <!-- CONTENEDOR PRINCIPAL: SPLIT-SCREEN EDITORIAL EN PANTALLAS GRANDES -->
+    <!-- CONTENEDOR PRINCIPAL: PANTALLA CENTRADA Y OPTIMIZADA EN MÓVIL Y DESKTOP -->
     <main class="portal-layout-container">
         <div class="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
 
             <!-- LADO IZQUIERDO: HERO EDITORIAL DANTE OS (VISIBLE EN LG+) -->
-            <div class="hidden lg:flex lg:col-span-6 flex-col justify-center space-y-6 text-left pr-4">
+            <div class="hidden lg:flex lg:col-span-5 flex-col justify-center space-y-6 text-left pr-2">
                 
                 <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-950/40 border border-cyan-500/30 text-cyan-400 font-mono text-xs w-max">
                     <span class="h-2 w-2 rounded-full bg-cyan-400 animate-ping"></span>
                     <span class="font-bold">DANTE OS ENTERPRISE // v21.1.0</span>
-                    <span class="text-slate-400">•</span>
-                    <span class="text-slate-300">Sincronización Cuántica</span>
                 </div>
 
                 <h1 class="text-3xl xl:text-4xl font-extrabold text-white tracking-tight leading-tight">
                     Infraestructura Biométrica & Psicométrica Adaptativa
                 </h1>
 
-                <p class="text-sm text-slate-300 font-mono leading-relaxed">
+                <p class="text-xs xl:text-sm text-slate-300 font-mono leading-relaxed">
                     Motor de evaluación de alto impacto impulsado por modelos Bayesianos IRT 3PL y perfilamiento cognitivo en tiempo real para instituciones líderes.
                 </p>
 
                 <!-- TARJETAS DE TELEMETRÍA EN TIEMPO REAL -->
-                <div class="grid grid-cols-3 gap-3 pt-2">
-                    <div class="p-3.5 rounded-xl bg-slate-900/60 border border-white/10 backdrop-blur-md">
-                        <div class="text-[10px] font-mono font-bold text-slate-400 uppercase">θ Capacidad</div>
-                        <div class="text-base font-extrabold font-mono text-cyan-400 mt-1">+2.84 IRT</div>
-                        <div class="text-[9px] font-mono text-emerald-400 mt-0.5">High Mastery</div>
+                <div class="grid grid-cols-3 gap-2.5 pt-1">
+                    <div class="p-3 rounded-xl bg-slate-900/60 border border-white/10 backdrop-blur-md">
+                        <div class="text-[9.5px] font-mono font-bold text-slate-400 uppercase">θ Capacidad</div>
+                        <div class="text-sm font-extrabold font-mono text-cyan-400 mt-0.5">+2.84 IRT</div>
+                        <div class="text-[8.5px] font-mono text-emerald-400 mt-0.5">High Mastery</div>
                     </div>
 
-                    <div class="p-3.5 rounded-xl bg-slate-900/60 border border-white/10 backdrop-blur-md">
-                        <div class="text-[10px] font-mono font-bold text-slate-400 uppercase">Precisión</div>
-                        <div class="text-base font-extrabold font-mono text-amber-400 mt-1">99.4%</div>
-                        <div class="text-[9px] font-mono text-slate-400 mt-0.5">Calibrado 3PL</div>
+                    <div class="p-3 rounded-xl bg-slate-900/60 border border-white/10 backdrop-blur-md">
+                        <div class="text-[9.5px] font-mono font-bold text-slate-400 uppercase">Precisión</div>
+                        <div class="text-sm font-extrabold font-mono text-amber-400 mt-0.5">99.4%</div>
+                        <div class="text-[8.5px] font-mono text-slate-400 mt-0.5">Calibrado 3PL</div>
                     </div>
 
-                    <div class="p-3.5 rounded-xl bg-slate-900/60 border border-white/10 backdrop-blur-md">
-                        <div class="text-[10px] font-mono font-bold text-slate-400 uppercase">Gobernanza</div>
-                        <div class="text-base font-extrabold font-mono text-emerald-400 mt-1">100% Legal</div>
-                        <div class="text-[9px] font-mono text-slate-400 mt-0.5">Ley 1581 / GDPR</div>
+                    <div class="p-3 rounded-xl bg-slate-900/60 border border-white/10 backdrop-blur-md">
+                        <div class="text-[9.5px] font-mono font-bold text-slate-400 uppercase">Gobernanza</div>
+                        <div class="text-sm font-extrabold font-mono text-emerald-400 mt-0.5">100% Legal</div>
+                        <div class="text-[8.5px] font-mono text-slate-400 mt-0.5">Ley 1581 / GDPR</div>
                     </div>
                 </div>
 
                 <!-- CITA O TESTIMONIO INSTITUCIONAL -->
-                <div class="p-4 rounded-xl bg-gradient-to-r from-cyan-950/30 to-slate-900/50 border border-cyan-500/20 backdrop-blur-md text-xs text-slate-300 font-mono flex items-start gap-3">
-                    <i class="fas fa-quote-left text-cyan-400 text-lg flex-shrink-0 mt-0.5"></i>
+                <div class="p-3.5 rounded-xl bg-gradient-to-r from-cyan-950/30 to-slate-900/50 border border-cyan-500/20 backdrop-blur-md text-xs text-slate-300 font-mono flex items-start gap-2.5">
+                    <i class="fas fa-quote-left text-cyan-400 text-base flex-shrink-0 mt-0.5"></i>
                     <div>
                         <p class="italic">"Medición precisa del conocimiento y entrenamiento adaptativo continuo en una sola plataforma unificada."</p>
-                        <div class="text-[10px] font-bold text-cyan-400 uppercase mt-1.5">— Red de Colegios Aliados Dante OS</div>
+                        <div class="text-[9.5px] font-bold text-cyan-400 uppercase mt-1">— Red de Colegios Aliados Dante OS</div>
                     </div>
                 </div>
 
             </div>
 
             <!-- LADO DERECHO: FORMULARIO DE ACCESO UNIFICADO -->
-            <div class="lg:col-span-6 w-full max-w-md mx-auto">
+            <div class="lg:col-span-7 xl:col-span-6 w-full max-w-md mx-auto">
                 <div class="gateway-card">
                     <!-- VERSIÓN DEL SISTEMA -->
                     <button type="button" class="system-version-tag" onclick="PortalAuth.abrirReleaseNotes()" title="Ver novedades v21.1.0">v21.1.0 ℹ️</button>
@@ -539,7 +541,7 @@
                         <!-- CREDENCIAL -->
                         <div class="input-group">
                             <div class="flex justify-between items-center mb-1">
-                                <label for="txtEmail" class="input-label mb-0">Credencial (Correo o N° Documento TI / CC)</label>
+                                <label for="txtEmail" class="input-label mb-0">Credencial (Correo o Documento TI / CC)</label>
                                 <button type="button" class="domain-pill" onclick="PortalAuth.autocompletarDominio('@danteos.edu.co')">+@danteos.edu.co</button>
                             </div>
                             <div class="relative flex items-center">
@@ -615,7 +617,7 @@
                         </button>
 
                         <!-- DIVIDER DE GOOGLE SSO -->
-                        <div class="relative flex py-3.5 items-center">
+                        <div class="relative flex py-3 items-center">
                             <div class="flex-grow border-t border-white/10"></div>
                             <span class="flex-shrink mx-3 text-[9px] font-mono text-slate-400 uppercase tracking-wider">o autenticación SSO</span>
                             <div class="flex-grow border-t border-white/10"></div>
@@ -639,7 +641,7 @@
 
     <!-- MODAL RELEASE NOTES -->
     <div id="modalReleaseNotes" class="modal-overlay">
-        <div class="modal-card modal-content max-w-md text-left">
+        <div class="modal-card max-w-md text-left">
             <h3 class="font-mono text-sm font-bold text-amber-400 uppercase border-b border-white/10 pb-2 mb-3">
                 🚀 NOVEDADES DANTE OS v21.1.0
             </h3>
@@ -655,7 +657,7 @@
 
     <!-- MODAL GOOGLE WORKSPACE SSO -->
     <div id="modalGoogleSSO" class="modal-overlay">
-        <div class="modal-card modal-content max-w-md text-left">
+        <div class="modal-card max-w-md text-left">
             <h3 class="font-mono text-sm font-bold text-blue-400 uppercase border-b border-white/10 pb-2 mb-3 flex items-center gap-2">
                 <i class="fab fa-google"></i> SSO GOOGLE WORKSPACE
             </h3>
@@ -678,7 +680,7 @@
 
     <!-- MODAL POLÍTICA DE TRATAMIENTO DE DATOS PERSONALES (PTDP) -->
     <div id="modalPTDP" class="modal-overlay">
-        <div class="modal-card modal-content max-w-2xl text-left max-h-[85vh] overflow-y-auto">
+        <div class="modal-card max-w-2xl text-left max-h-[85vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b border-white/10 pb-3 mb-3">
                 <h3 class="font-mono text-sm font-bold text-cyan-400 uppercase flex items-center gap-2">
                     <i class="fas fa-file-contract"></i> POLÍTICA DE TRATAMIENTO DE DATOS PERSONALES (PTDP)
@@ -719,7 +721,7 @@
 
     <!-- MODAL DERECHOS ARCO (DERECHO AL OLVIDO) -->
     <div id="modalARCO" class="modal-overlay">
-        <div class="modal-card modal-content max-w-lg text-left">
+        <div class="modal-card max-w-lg text-left">
             <div class="flex justify-between items-center border-b border-white/10 pb-2 mb-3">
                 <h3 class="font-mono text-sm font-bold text-amber-400 uppercase flex items-center gap-2">
                     <i class="fas fa-balance-scale"></i> EJERCICIO DE DERECHOS ARCO (DERECHO AL OLVIDO)
@@ -902,6 +904,30 @@
                 if (sub) sub.innerText = SUBTITULOS_ROL[rol] || SUBTITULOS_ROL.estudiante;
             }
 
+            static cargarAccesoDemo() {
+                const txtInst = document.getElementById("txtInstitutionId");
+                const txtEmail = document.getElementById("txtEmail");
+                const txtPwd = document.getElementById("txtPassword");
+
+                if (txtInst) txtInst.value = "colegio_sandbox_default";
+                if (txtEmail) txtEmail.value = "adriana@danteos.edu.co";
+                if (txtPwd) txtPwd.value = "12345678";
+
+                this.evaluarFortalezaPwd("12345678");
+                this.seleccionarRol("estudiante");
+
+                const chkHabeas = document.getElementById("chkHabeasData");
+                const chkSensibles = document.getElementById("chkDatosSensibles");
+                if (chkHabeas) chkHabeas.checked = true;
+                if (chkSensibles) chkSensibles.checked = true;
+
+                const banner = document.getElementById("uiBannerEstado");
+                if (banner) {
+                    banner.innerText = "⚡ CREDENCIALES DEMO CARGADAS (ADRIANA)";
+                    banner.style.color = "var(--gold)";
+                }
+            }
+
             static abrirReleaseNotes() {
                 const modal = document.getElementById("modalReleaseNotes");
                 if (modal) modal.style.display = "flex";
@@ -955,26 +981,8 @@
             }
 
             static iniciarGoogleSSO() {
-                const tenantInput = document.getElementById("txtInstitutionId");
-                const emailInput = document.getElementById("txtEmail");
-                const pwdInput = document.getElementById("txtPassword");
-                const chkHabeas = document.getElementById("chkHabeasData");
-                const chkSensibles = document.getElementById("chkDatosSensibles");
-                const banner = document.getElementById("uiBannerEstado");
-
-                if (tenantInput && !tenantInput.value) tenantInput.value = "colegio_sandbox_default";
-                if (emailInput && !emailInput.value) emailInput.value = "adriana@danteos.edu.co";
-                if (pwdInput && !pwdInput.value) pwdInput.value = "12345678";
-
-                if (chkHabeas) chkHabeas.checked = true;
-                if (chkSensibles) chkSensibles.checked = true;
-
-                if (banner) {
-                    banner.innerText = "🌐 CONECTANDO GOOGLE WORKSPACE INSTITUCIONAL...";
-                    banner.style.color = "var(--primary)";
-                }
-
-                this.ejecutarLoginPerimetral();
+                const modal = document.getElementById("modalGoogleSSO");
+                if (modal) modal.style.display = "flex";
             }
 
             static abrirModalPTDP() {
