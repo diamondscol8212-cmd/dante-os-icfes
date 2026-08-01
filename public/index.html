@@ -2416,7 +2416,62 @@
             await AppController.resolverContextoAutenticado(); 
             initCanvas();
             setTimeout(decryptText, 300);
+
+            // 🛡️ PWA SERVICE WORKER REGISTRATION (Dinámico con versión de build + Notificador Metacognitivo)
+            if ('serviceWorker' in navigator) {
+                const SW_VERSION = "v21.2.0-ENTERPRISE_GOLD";
+                navigator.serviceWorker.register(`/service-worker.js?v=${SW_VERSION}`)
+                    .then(reg => {
+                        console.log(`🚀 [PWA SERVICE WORKER REGISTRADO]: Dante OS ${SW_VERSION} activo.`);
+                    })
+                    .catch(err => console.warn("⚠️ [PWA SW REGISTRATION FAILED]:", err));
+
+                navigator.serviceWorker.addEventListener('message', (event) => {
+                    if (event.data && event.data.type === 'DANTE_OFFLINE_SYNC_TRIGGER') {
+                        console.log("⚡ [PWA SYNC TRIGGER]: Sincronización en segundo plano completada.");
+                        mostrarNotificacionPWA("✅ Conexión Restaurada: Respuestas Certificadas en la Nube", "success");
+                    }
+                });
+
+                window.addEventListener('online', () => {
+                    mostrarNotificacionPWA("📶 Conexión Restablecida: Sincronizando datos con el Servidor...", "info");
+                });
+
+                window.addEventListener('offline', () => {
+                    mostrarNotificacionPWA("⚡ Modo Contingencia Local Activo: La prueba continúa guardando localmente.", "warning");
+                });
+            }
         };
+
+        function mostrarNotificacionPWA(msg, tipo = "info") {
+            let pwaToast = document.getElementById('dante-pwa-toast');
+            if (!pwaToast) {
+                pwaToast = document.createElement('div');
+                pwaToast.id = 'dante-pwa-toast';
+                pwaToast.className = 'fixed bottom-20 left-1/2 transform -translate-x-1/2 z-50 px-4 py-2.5 rounded-full text-xs font-mono font-bold tracking-wider shadow-2xl transition-all duration-300 flex items-center gap-2 border';
+                document.body.appendChild(pwaToast);
+            }
+            if (tipo === 'warning') {
+                pwaToast.style.backgroundColor = '#1e1b18';
+                pwaToast.style.color = '#f59e0b';
+                pwaToast.style.borderColor = '#d97706';
+            } else if (tipo === 'success') {
+                pwaToast.style.backgroundColor = '#14231a';
+                pwaToast.style.color = '#10b981';
+                pwaToast.style.borderColor = '#059669';
+            } else {
+                pwaToast.style.backgroundColor = '#0f172a';
+                pwaToast.style.color = '#38bdf8';
+                pwaToast.style.borderColor = '#0284c7';
+            }
+            pwaToast.innerHTML = `<i class="fa-solid fa-satellite-dish animate-pulse"></i> <span>${msg}</span>`;
+            pwaToast.classList.remove('hidden', 'opacity-0');
+            pwaToast.classList.add('opacity-100');
+            setTimeout(() => {
+                pwaToast.classList.add('opacity-0');
+                setTimeout(() => pwaToast.classList.add('hidden'), 300);
+            }, 4000);
+        }
     </script>
 </body>
 </html>
