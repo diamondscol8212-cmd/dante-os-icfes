@@ -2,14 +2,26 @@
 // Dante OS Enterprise Edition
 import jwt from 'jsonwebtoken';
 
-// 🛡️ PATRÓN RESILIENTE DE SECRETOS DE INICIALIZACIÓN
-if (!process.env.JWT_SECRET || !process.env.INTEGRITY_SECRET || !process.env.PII_SALT_SECRET) {
-    console.warn("⚠️ [SECURITY WARNING]: Variables criptográficas ausentes en entorno. Se utilizarán claves de resguardo resilientes para garantizar el arranque del servidor.");
+// 🛡️ PATRÓN FAIL-FAST DE SEGURIDAD PARA PRODUCCIÓN CON RESGUARDO EN DESARROLLO
+const isProduction = process.env.NODE_ENV === 'production';
+
+if (isProduction) {
+    if (!process.env.JWT_SECRET) {
+        throw new Error("🚨 [FAIL-FAST CRITICAL ERROR]: process.env.JWT_SECRET no está definida. Configure esta variable en el panel del servidor antes de desplegar en producción.");
+    }
+    if (!process.env.INTEGRITY_SECRET) {
+        throw new Error("🚨 [FAIL-FAST CRITICAL ERROR]: process.env.INTEGRITY_SECRET no está definida. Configure esta variable en el panel del servidor antes de desplegar en producción.");
+    }
+    if (!process.env.PII_SALT_SECRET) {
+        throw new Error("🚨 [FAIL-FAST CRITICAL ERROR]: process.env.PII_SALT_SECRET no está definida. Configure esta variable en el panel del servidor para garantizar la seudonomización de PII.");
+    }
+} else if (!process.env.JWT_SECRET || !process.env.INTEGRITY_SECRET || !process.env.PII_SALT_SECRET) {
+    console.warn("⚠️ [DEV MODE WARNING]: Variables criptográficas ausentes en entorno local/desarrollo. Se utilizan claves efímeras de desarrollo.");
 }
 
-const JWT_SECRET = process.env.JWT_SECRET || 'dante_os_jwt_secret_master_key_fallback_2026';
-const INTEGRITY_SECRET = process.env.INTEGRITY_SECRET || 'dante_os_integrity_secret_master_key_fallback_2026';
-const PII_SALT_SECRET = process.env.PII_SALT_SECRET || 'dante_os_pii_salt_secret_master_key_fallback_2026';
+const JWT_SECRET = process.env.JWT_SECRET || 'dante_os_jwt_secret_dev_key_2026';
+const INTEGRITY_SECRET = process.env.INTEGRITY_SECRET || 'dante_os_integrity_secret_dev_key_2026';
+const PII_SALT_SECRET = process.env.PII_SALT_SECRET || 'dante_os_pii_salt_secret_dev_key_2026';
 
 /*
  * =========================================================================================
