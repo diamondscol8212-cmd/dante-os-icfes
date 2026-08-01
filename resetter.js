@@ -7,15 +7,20 @@ import { redis } from './redisClient.js';
  */
 export const resetearBanderaControl = async (studentId) => {
   try {
-    await redis.set(`dante:flag:${studentId}`, JSON.stringify({ necesitaIntervencion: false, motivo: 'Remediado' })).catch(() => {});
-    const { data, error } = await supabase
+    try {
+      await redis.set(`dante:flag:${studentId}`, JSON.stringify({ necesitaIntervencion: false, motivo: 'Remediado' }));
+    } catch (e) {
+      // redis fallback
+    }
+
+    const { error } = await supabase
       .from('perfil_usuario_control')
-      .update({ 
+      .upsert({ 
+        student_id: studentId,
         necesita_intervencion: false,
         motivo_intervencion: 'Remediado (Continuación de Examen)',
         ultima_actualizacion: new Date().toISOString()
-      })
-      .eq('student_id', studentId);
+      });
 
     if (error) throw error;
     console.log('🔄 [Control v2.0]: Bandera de intervención reseteada con éxito. Canal normal liberado.');
