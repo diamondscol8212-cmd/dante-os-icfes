@@ -7,6 +7,7 @@ import { estimarHabilidadEAP, calcularInformacionFisher, calcularICI, calcularCR
 import { actualizarGemeloDigital } from '../../twinService.js'; 
 import { obtenerSiguienteItem } from './catSelectorEngine.js'; 
 import { generarInterpretacionCognitiva } from './aiService.js';
+import { BANCO_COMPLETO } from './bank/index.js';
 
 const CALIBRATION_VERSION = process.env.IRT_CALIBRATION_VERSION || 'v21.0_multitheta';
 const REDIS_TTL_SECONDS = 86400; 
@@ -157,13 +158,44 @@ async function ejecutarCompilacionFriaDB(area) {
     try {
         console.log(`📡 [B2B COGNITIVE COMPILE v21.0.0]: Descargando e indexando el códice para: [${area}]...`);
         
-        const resItems = await supabase.from('banco_items_irt').select(`
-            id, pregunta_texto, opciones_respuesta, parametro_a_discriminacion, parametro_b_dificultad, parametro_c_adivinacion, sub_competencia, correcta, matriz_q_items(*)
-        `).eq('area_general', area);
+        let itemsRaw = [];
+        try {
+            const resItems = await supabase.from('banco_items_irt').select(`
+                id, pregunta_texto, opciones_respuesta, parametro_a_discriminacion, parametro_b_dificultad, parametro_c_adivinacion, sub_competencia, correcta, matriz_q_items(*)
+            `).eq('area_general', area);
 
-        if (resItems.error) throw resItems.error;
-        if (!resItems.data || resItems.data.length === 0) {
-            throw new Error(`El repositorio para '${area}' no contiene registros válidos en Supabase.`);
+            if (!resItems.error && resItems.data && resItems.data.length > 0) {
+                itemsRaw = resItems.data;
+            }
+        } catch (e) {
+            console.warn(`⚠️ Supabase offline para '${area}'. Usando banco nativo integrado:`, e.message);
+        }
+
+        // Fallback a BANCO_COMPLETO filtrado estrictamente por el área correspondiente
+        if (itemsRaw.length === 0) {
+            console.log(`📦 [DANTE CÓDICE NATIVO]: Cargando reactivos del banco estático para área: [${area}]`);
+            itemsRaw = BANCO_COMPLETO.filter(it => {
+                const itemArea = String(it.area || it.area_general || '').toLowerCase().trim();
+                const targetArea = String(area).toLowerCase().trim();
+                if (targetArea.includes('lectura') || targetArea.includes('lenguaje')) {
+                    return itemArea.includes('lectura') || itemArea.includes('lenguaje');
+                }
+                return itemArea === targetArea;
+            }).map(it => ({
+                id: it.id || crypto.randomUUID(),
+                pregunta_texto: it.texto || it.pregunta_texto,
+                opciones_respuesta: it.opciones || it.opciones_respuesta,
+                parametro_a_discriminacion: it.a || it.parametro_a_discriminacion || 1.2,
+                parametro_b_dificultad: it.b || it.parametro_b_dificultad || 0.0,
+                parametro_c_adivinacion: it.c || it.parametro_c_adivinacion || 0.25,
+                sub_competencia: it.sub || it.sub_competencia || 'general',
+                correcta: it.ok || it.correcta || 'B',
+                matriz_q_items: it.q || it.matriz_q || {}
+            }));
+        }
+
+        if (itemsRaw.length === 0) {
+            throw new Error(`El repositorio para '${area}' no contiene registros válidos en Supabase ni en BANCO_COMPLETO.`);
         }
 
         const llavesAtributosDinamicos = ['attr_heuristica_lineal', 'attr_inversion_operacional', 'attr_omision_conversion', 'attr_error_geometrico'];
@@ -173,7 +205,7 @@ async function ejecutarCompilacionFriaDB(area) {
         const matrizBuckets = Array.from({ length: 17 }, () => []);
         const mapaTrampas = new Map();
 
-        resItems.data.forEach(item => {
+        itemsRaw.forEach(item => {
             let estructuraQ = {};
             llavesAtributosDinamicos.forEach(attr => {
                 estructuraQ[attr] = item.matriz_q_items?.[attr] || 0;
