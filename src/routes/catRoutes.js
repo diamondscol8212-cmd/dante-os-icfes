@@ -43,16 +43,10 @@ router.post('/interactuar', optionalToken, async (req, res) => {
     }
 
     const cleanStudentId = String(studentId).trim().toLowerCase();
-    const isGuestOrSim = (
-        cleanStudentId.startsWith('sim_') ||
-        cleanStudentId.startsWith('guest_') ||
-        cleanStudentId.startsWith('demo_') ||
-        cleanStudentId.startsWith('anon_') ||
-        cleanStudentId.startsWith('sandbox_') ||
-        cleanStudentId === 'estudiante_demo'
-    );
 
-    // Validación de identidad y sesión para perfiles reales
+    // 🛡️ AISLAMIENTO ESTRICTO DE SESIONES Y PREVENCIÓN DE BYPASS DE PREFIJO
+    let targetStudentId = cleanStudentId;
+
     if (req.user) {
         const userEmail = String(req.user.email || '').toLowerCase().trim();
         const userId = String(req.user.user_id || req.user.id || '').toLowerCase().trim();
@@ -60,26 +54,44 @@ router.post('/interactuar', optionalToken, async (req, res) => {
         const userRole = String(req.user.role || req.user.rol || '').toLowerCase().trim();
 
         const isOwner = (
-            cleanStudentId === userEmail ||
-            cleanStudentId === userId ||
-            cleanStudentId === userEstudiante ||
-            cleanStudentId === `${userEstudiante}@danteos.edu.co` ||
-            isGuestOrSim
+            targetStudentId === userEmail ||
+            targetStudentId === userId ||
+            targetStudentId === userEstudiante ||
+            targetStudentId === `${userEstudiante}@danteos.edu.co` ||
+            targetStudentId.startsWith('sandbox_guest_')
         );
 
         const isAuthorizedStaff = ['admin', 'profesor', 'rector'].includes(userRole);
 
-        if (!isOwner && !isAuthorizedStaff) {
+        if (!isOwner && !isAuthorizedStaff && !req.user.is_sandbox) {
             return res.status(403).json({
                 success: false,
                 error: "Acceso denegado: No posee permisos para responder en la sesión de evaluación de otro estudiante."
             });
         }
-    } else if (!isGuestOrSim) {
-        return res.status(401).json({
-            success: false,
-            error: "Acceso denegado: Se requiere inicio de sesión con token activo para realizar evaluaciones sobre un perfil de estudiante real."
-        });
+    } else {
+        // Petición no autenticada: Verificar si es simulación demo y forzar aislamiento en sandbox
+        const isGuestRequest = (
+            cleanStudentId.startsWith('sim_') ||
+            cleanStudentId.startsWith('guest_') ||
+            cleanStudentId.startsWith('demo_') ||
+            cleanStudentId.startsWith('anon_') ||
+            cleanStudentId.startsWith('sandbox_') ||
+            cleanStudentId === 'estudiante_demo'
+        );
+
+        if (!isGuestRequest) {
+            return res.status(401).json({
+                success: false,
+                error: "Acceso denegado: Se requiere token de autenticación activo para interactuar con un perfil de estudiante real."
+            });
+        }
+
+        // 🛡️ PREVENCIÓN DE SUPLANTACIÓN Y POLLUTION:
+        // Mapear peticiones demo no autenticadas a un espacio aislado que no interactúa con Supabase de estudiantes reales
+        const safeSessionHash = crypto.createHash('sha256').update(`${sessionId}:${cleanStudentId}`).digest('hex').substring(0, 12);
+        targetStudentId = `sandbox_guest_${safeSessionHash}`;
+        req.body.studentId = targetStudentId;
     }
 
     if (!itemId) {
