@@ -1,5 +1,12 @@
-const CACHE_NAME_STATIC = 'dante-os-static-v21.2';
-const CACHE_NAME_DYNAMIC = 'dante-os-dynamic-v21.2';
+// service-worker.js - PWA Offline & Shell Caching Manager (Dante OS Enterprise Gold)
+// Bogotá, Colombia
+
+// Extract dynamic version from registration URL query parameter or fallback
+const params = new URL(location).searchParams;
+const BUILD_VERSION = params.get('v') || 'v21.2.0-ENTERPRISE_GOLD';
+
+const CACHE_NAME_STATIC = `dante-os-static-${BUILD_VERSION}`;
+const CACHE_NAME_DYNAMIC = `dante-os-dynamic-${BUILD_VERSION}`;
 
 const STATIC_ASSETS = [
   './',
@@ -13,7 +20,7 @@ const STATIC_ASSETS = [
   './manifest.json'
 ];
 
-// Instalar el Service Worker y pre-cachear el Shell de la PWA
+// 1. Instalar el Service Worker y pre-cachear el Shell de la PWA
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME_STATIC).then((cache) => {
@@ -22,29 +29,30 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Activar y purgar cachés obsoletos
+// 2. Activar y PURGAR AUTOMÁTICAMENTE cachés obsoletos con filtro explícito de promesas (Estructura AAA+)
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME_STATIC && key !== CACHE_NAME_DYNAMIC) {
+        keys
+          .filter((key) => key !== CACHE_NAME_STATIC && key !== CACHE_NAME_DYNAMIC)
+          .map((key) => {
+            console.log(`🧹 [PWA SERVICE WORKER]: Eliminando caché obsoleta -> ${key}`);
             return caches.delete(key);
-          }
-        })
+          })
       );
     }).then(() => self.clients.claim())
   );
 });
 
-// Estrategia Doblada: Stale-While-Revalidate (Assets) & Network-First con Fallback Offline (APIs/Preguntas)
+// 3. Estrategia Doblada: Stale-While-Revalidate (Assets) & Network-First con Fallback Offline (APIs/Preguntas)
 self.addEventListener('fetch', (event) => {
   const reqUrl = new URL(event.request.url);
 
   // Excluir peticiones de no-GET o externas incompatibles
   if (event.request.method !== 'GET') return;
 
-  // 1. ESTRATEGIA NETWORK FIRST WITH OFFLINE FALLBACK: Preguntas, APIs y Rutas dinámicas
+  // ESTRATEGIA 1: NETWORK FIRST WITH OFFLINE FALLBACK para APIs y JSONs dinámicos
   if (reqUrl.pathname.includes('/api/') || reqUrl.pathname.endsWith('.json')) {
     event.respondWith(
       fetch(event.request)
@@ -58,7 +66,6 @@ self.addEventListener('fetch', (event) => {
         .catch(() => {
           return caches.match(event.request).then((cachedResponse) => {
             if (cachedResponse) return cachedResponse;
-            // Fallback sintético en caso de desconexión total
             return new Response(JSON.stringify({ 
               offline: true, 
               message: "Modo Offline Activo: Operando con banco local en caché." 
@@ -71,7 +78,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 2. ESTRATEGIA STALE-WHILE-REVALIDATE: Assets estáticos (HTML, CSS, JS, Fuentes, Manifest)
+  // ESTRATEGIA 2: STALE-WHILE-REVALIDATE para Assets estáticos
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       const fetchPromise = fetch(event.request).then((networkResponse) => {
@@ -87,7 +94,7 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// 🔄 BACKGROUND SYNC Y RETENCIÓN DE RESPUESTAS OFFLINE
+// 4. BACKGROUND SYNC Y RETENCIÓN DE RESPUESTAS OFFLINE
 self.addEventListener('sync', (event) => {
   if (event.tag === 'sync-dante-responses') {
     event.waitUntil(sincronizarRespuestasEncoladas());
@@ -96,7 +103,6 @@ self.addEventListener('sync', (event) => {
 
 async function sincronizarRespuestasEncoladas() {
   console.log("🔄 [PWA BACKGROUND SYNC]: Procesando cola de respuestas almacenadas offline...");
-  // Notificar a clientes conectados para desencadenar sincronización local
   const clients = await self.clients.matchAll();
   clients.forEach(client => {
     client.postMessage({ type: 'DANTE_OFFLINE_SYNC_TRIGGER' });
