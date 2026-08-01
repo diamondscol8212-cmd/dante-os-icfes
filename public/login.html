@@ -934,6 +934,7 @@
                     const response = await fetch(`${HOST_URL}/api/auth/login-perimetral`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
                         body: JSON.stringify({
                             identity: rawIdentifier,
                             email: rawIdentifier,
@@ -942,10 +943,6 @@
                             role_target: SelectedRoleTarget
                         })
                     });
-
-                    if (!response.ok && response.status !== 401 && response.status !== 403) {
-                        throw new Error(`HTTP Error ${response.status}`);
-                    }
 
                     const json = await response.json();
 
@@ -958,11 +955,11 @@
                         localStorage.removeItem("dante_onboarding_completed");
                         localStorage.removeItem("dante_onboarding_profile");
                         localStorage.removeItem("dante_user_arquetipo");
+                        localStorage.removeItem("dante_token");
 
                         const onboardingCompletado = userObj.onboarding_completed === true || Boolean(userObj.arquetipo) || Boolean(userObj.perfil && userObj.perfil.arquetipo);
 
                         localStorage.setItem("dante_active_student", studentIdClean);
-                        localStorage.setItem("dante_token", json.token_session || `token_live_${Date.now()}`);
                         
                         if (onboardingCompletado) {
                             localStorage.setItem("dante_onboarding_completed", "true");
@@ -1041,7 +1038,7 @@
                     };
 
                     localStorage.setItem("dante_active_student", studentIdClean);
-                    localStorage.setItem("dante_token", `token_sandbox_${Date.now()}`);
+                    localStorage.removeItem("dante_token");
                     localStorage.setItem("dante_user", JSON.stringify(userLocal));
 
                     if (btnText) btnText.innerText = "¡Bienvenido (Modo Sandbox)!";
