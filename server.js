@@ -2,6 +2,8 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import path from 'path';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
@@ -16,7 +18,26 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const SERVER_VERSION = "v21.1.0-ENTERPRISE_PRODUCTION";
+const SERVER_VERSION = "v21.2.0-ENTERPRISE_GOLD";
+
+// 🛡️ CONFIGURACIÓN HELMET & POLÍTICA DE SEGURIDAD CONTENT-SECURITY-POLICY (CSP)
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://cdn.jsdelivr.net", "https://unpkg.com"],
+            styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://fonts.googleapis.com"],
+            fontSrc: ["'self'", "https://fonts.gstatic.com", "data:"],
+            imgSrc: ["'self'", "data:", "blob:", "https:"],
+            connectSrc: ["'self'", "https:", "wss:", "ws:"],
+            frameAncestors: ["'self'", "https://*.google.com", "https://*.googleusercontent.com", "https://*.run.app", "https://*.ai.studio", "https://ai.studio"],
+            objectSrc: ["'none'"],
+            upgradeInsecureRequests: []
+        }
+    },
+    crossOriginEmbedderPolicy: false,
+    frameguard: false // Permitir embebido iframe controlado por CSP frameAncestors para AI Studio Preview
+}));
 
 const ALLOWED_ORIGINS = [
     'http://localhost:5173', 'http://127.0.0.1:5173',
@@ -32,14 +53,14 @@ if (process.env.ALLOWED_ORIGINS) {
     });
 }
 
+const ALLOWED_DOMAINS_REGEX = /\.(run\.app|ai\.studio|google\.com|googleusercontent\.com|danteos\.com)$/i;
+
 app.use(cors({
     origin(origin, callback) {
         if (!origin) return callback(null, true);
         const isAllowed = ALLOWED_ORIGINS.includes(origin) ||
             origin.includes('localhost') || origin.includes('127.0.0.1') ||
-            origin.endsWith('.run.app') || origin.endsWith('.ai.studio') ||
-            origin.endsWith('.google.com') || origin.endsWith('.googleusercontent.com') ||
-            origin.endsWith('.danteos.com');
+            ALLOWED_DOMAINS_REGEX.test(new URL(origin).hostname);
         
         if (isAllowed) {
             return callback(null, true);
@@ -52,7 +73,47 @@ app.use(cors({
 app.use(express.json({ limit: '1mb' }));
 app.use(cookieParser());
 
-// 🛡️ Middleware de Encabezados Perimetrales de Seguridad
+// 🛡️ LIMITADORES DE TASA DE PETICIONES (RATE LIMITING ANTI-BRUTE FORCE / DDoS)
+const globalLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 Minutos
+    max: 500, // 500 peticiones por ventana
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { success: false, error: "Límite de peticiones globales excedido. Por favor intente más tarde." }
+});
+
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 Minutos
+    max: 15, // Máximo 15 intentos de autenticación
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { success: false, error: "Demasiados intentos de autenticación desde esta IP. Bloqueo temporal por seguridad." }
+});
+
+const catLimiter = rateLimit({
+    windowMs: 1 * 60 * 1000, // 1 Minuto
+    max: 60, // Máximo 60 respuestas adaptativas por minuto
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { success: false, error: "Límite de tasa en evaluación adaptativa excedido. Por favor responda a un ritmo normal." }
+});
+
+const arcoLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 Hora
+    max: 5, // Máximo 5 solicitudes ARCO por hora
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { success: false, error: "Límite de solicitudes de supresión ARCO excedido por hora." }
+});
+
+app.use('/api/', globalLimiter);
+app.use('/api/auth/login-perimetral', authLimiter);
+app.use('/api/auth/register-secure-user', authLimiter);
+app.use('/api/auth/arco/hard-delete', arcoLimiter);
+app.use('/api/v1/users/arco/hard-delete', arcoLimiter);
+app.use('/api/cat/interactuar', catLimiter);
+
+// 🛡️ Middleware de Encabezados Perimetrales Complementarios
 app.use((req, res, next) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('X-XSS-Protection', '1; mode=block');
