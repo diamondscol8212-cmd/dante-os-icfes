@@ -596,11 +596,8 @@
                         if (tenantInput) tenantInput.value = parsed.institution_id;
                     }
                     if (parsed.password) {
-                        const pwdInput = document.getElementById("txtPassword");
-                        if (pwdInput) {
-                            pwdInput.value = parsed.password;
-                            PortalAuth.evaluarFortalezaPwd(parsed.password);
-                        }
+                        delete parsed.password;
+                        localStorage.setItem("dante_remembered_credentials", JSON.stringify(parsed));
                     }
                     if (parsed.role) {
                         PortalAuth.seleccionarRol(parsed.role);
@@ -912,13 +909,12 @@
                     return;
                 }
 
-                // Guardar o limpiar credenciales recordadas
+                // Guardar o limpiar credenciales recordadas (SIN almacenar contraseña en texto plano)
                 const chkRecordar = document.getElementById("chkRecordarCredenciales");
                 if (chkRecordar && chkRecordar.checked) {
                     localStorage.setItem("dante_remembered_credentials", JSON.stringify({
                         email: rawIdentifier,
                         institution_id: institutionId,
-                        password: password,
                         role: SelectedRoleTarget,
                         dob: dobVal || null
                     }));
