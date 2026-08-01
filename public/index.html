@@ -2007,8 +2007,28 @@
                 } catch (err) {
                     console.warn("⚠️ Fallo en red/backend. Modo de contingencia local:", err.message);
                     
-                    // MOCK DE RESPUESTA EN CASO OFFLINE
+                    // MOCK DE RESPUESTA EN CASO OFFLINE (RESPECTA RIGUROSAMENTE LA MATERIA ACTIVA)
                     const isMockCorrect = (AppState.seleccionActual && AppState.seleccionActual.id === "A");
+                    const materiaKey = (AppState.materia || 'matematicas').toLowerCase();
+                    const mockItemSiguiente = (typeof MOCKS_INICIALES_POR_MATERIA !== 'undefined' && MOCKS_INICIALES_POR_MATERIA[materiaKey]) 
+                        ? MOCKS_INICIALES_POR_MATERIA[materiaKey] 
+                        : {
+                            id: `item_off_${materiaKey}_02`,
+                            pregunta_texto: materiaKey === 'lectura_critica' 
+                                ? "¿Cuál es la función del término 'provisionales' en el contexto del argumento del autor?"
+                                : (materiaKey === 'ingles' 
+                                    ? "Select the correct option to complete the paragraph." 
+                                    : (materiaKey === 'ciencias_naturales' 
+                                        ? "Analiza la relación de causa y efecto en el experimento." 
+                                        : (materiaKey === 'sociales_ciudadanas' 
+                                            ? "¿Por qué la Constitución consagra mecanismos de protección de derechos?" 
+                                            : "Un tanque de agua de 500 litros se llena a una tasa de 25 litros por minuto. ¿Cuánto tiempo tarda en llenarse completamente?"))),
+                            opciones_respuesta: materiaKey === 'lectura_critica' 
+                                ? ["Resaltar el carácter dinámico y revisable de la ciencia.", "Argumentar que las hipótesis carecen de rigor.", "Demostrar que la evidencia es irrelevante.", "Sugerir verdades dogmáticas."] 
+                                : ["Opción A", "Opción B", "Opción C", "Opción D"],
+                            sub_competencia: materiaKey.toUpperCase()
+                        };
+
                     const mockData = {
                         success: true,
                         detenerExamen: false,
@@ -2016,15 +2036,10 @@
                         thetaProgreso: AppState.theta + (isMockCorrect ? 0.2 : -0.1),
                         bayesianSEMProgreso: 0.45,
                         andamiajeForense: {
-                            errorDetonado: "Cálculo de magnitud de velocidad",
-                            remediacionSugerida: "Recuerda convertir los minutos a segundos (2 min = 120s) antes de multiplicar por la velocidad."
+                            errorDetonado: "Análisis conceptual de opción seleccionada",
+                            remediacionSugerida: "Revisa cuidadosamente los postulados de la pregunta antes de tu elección definitiva."
                         },
-                        item: {
-                            id: "item_demo_02",
-                            pregunta_texto: "Un tanque de agua de 500 litros se llena a una tasa de 25 litros por minuto. ¿Cuánto tiempo tarda en llenarse completamente?",
-                            opciones_respuesta: ["20 minutos", "25 minutos", "10 minutos", "50 minutos"],
-                            sub_competencia: "Matemáticas - Razonamiento Cuantitativo"
-                        }
+                        item: mockItemSiguiente
                     };
 
                     AppState.bufferRetornoSiguiente = mockData;
