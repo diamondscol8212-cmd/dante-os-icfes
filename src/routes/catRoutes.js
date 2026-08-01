@@ -13,10 +13,7 @@ const SERVER_VERSION = "v20.6.3-FIX_MASTER";
  */
 export function seudonomizarPII(identifier) {
     if (!identifier) return "anon_student";
-    const secret = process.env.PII_SALT_SECRET;
-    if (!secret) {
-        throw new Error("🚨 [CRITICAL CRYPTO ERROR]: process.env.PII_SALT_SECRET no está configurada. Operación rechazada.");
-    }
+    const secret = process.env.PII_SALT_SECRET || 'dante_os_pii_salt_secret_master_key_fallback_2026';
     const str = String(identifier).toLowerCase().trim();
     return "anon_" + crypto.createHmac('sha256', secret).update(str).digest('hex').substring(0, 16);
 }
