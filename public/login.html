@@ -715,8 +715,14 @@
                             }
                         }, 500);
 
+                    } else if (response.status === 401 || response.status === 400 || response.status === 429) {
+                        if (btnText) btnText.innerText = "Ingresar al Portal";
+                        if (btnIcon) btnIcon.innerHTML = `<i class="fas fa-arrow-right-to-bracket"></i>`;
+                        if (btn) btn.disabled = false;
+                        alert(`⚠️ ${json?.error || "Credenciales incorrectas. Verifica tu usuario y contraseña."}`);
+                        return;
                     } else {
-                        throw new Error(json?.error || "Credenciales inválidas");
+                        throw new Error(json?.error || "Error de servidor en autenticación");
                     }
                 } catch (err) {
                     console.info("Acceso local/offline directo:", err.message);
