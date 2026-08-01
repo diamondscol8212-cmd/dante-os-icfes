@@ -1,44 +1,130 @@
 [
   {
-    "pregunta_texto": "En una carrera de atletismo, Samantha corre a una velocidad constante de 6 metros por segundo. ¿Qué distancia recorrerá en un minuto y medio?",
-    "opcion_correcta": "C",
-    "parametro_a_discriminacion": 1.25,
-    "parametro_b_dificultad": -0.8,
+    "id": "item_math_01",
+    "pregunta_texto": "Una empresa de transporte masivo en Bogotá cobra una tarifa base de $3.000 COP por pasaje, más un recargo de $150 COP por kilómetro recorrido en rutas zonales. Si un usuario tiene un saldo disponible de $50.000 COP en su tarjeta, ¿cuál de las siguientes ecuaciones modela el saldo remanente S en función de los kilómetros k recorridos?",
+    "opcion_correcta": "B",
+    "parametro_a_discriminacion": 1.45,
+    "parametro_b_dificultad": -0.25,
     "parametro_c_adivinacion": 0.25,
     "area_general": "matematicas",
     "sub_competencia": "algebra",
-    "distractores_metadata": {
-      "A": "Multiplica por 60 segundos pero olvida el medio minuto restante (360m)",
-      "B": "Suma simple de los números del enunciado (6 + 90 = 96m)",
-      "D": "Multiplica erróneamente por 90 pero divide por dos sin motivo (270m)"
-    }
+    "opciones_respuesta": [
+      "S = 50.000 - 3.150k",
+      "S = 50.000 - (3.000 + 150k)",
+      "S = 3.000k + 150 - 50.000",
+      "S = 47.000 - 150k"
+    ]
   },
   {
-    "pregunta_texto": "Si Elizabeth duplica la longitud del radio de una pizza circular, ¿qué ocurre con el área total de la superficie de la pizza?",
-    "opcion_correcta": "D",
-    "parametro_a_discriminacion": 1.6,
-    "parametro_b_dificultad": 0.5,
+    "id": "item_math_02",
+    "pregunta_texto": "El Ministerio de Vivienda proyecta un terreno rectangular para una cancha comunitaria con un área total de 108 m². Por especificaciones del diseño, el largo del lote debe ser el triple de su ancho. Si se va a instalar un cerramiento con malla metálica en todo el borde exterior, ¿cuántos metros de malla se deben comprar?",
+    "opcion_correcta": "C",
+    "parametro_a_discriminacion": 1.85,
+    "parametro_b_dificultad": 0.65,
     "parametro_c_adivinacion": 0.25,
     "area_general": "matematicas",
     "sub_competencia": "geometria",
-    "distractores_metadata": {
-      "A": "Asume una relación lineal y cree que el área también se duplica",
-      "B": "Confunde la fórmula del área con la del perímetro de la circunferencia",
-      "C": "Cree que el área se triplica al no elevar el factor de escala al cuadrado"
-    }
+    "opciones_respuesta": [
+      "12 metros",
+      "24 metros",
+      "48 metros",
+      "72 metros"
+    ]
   },
   {
-    "pregunta_texto": "Un canal de televisión registra que el 40% de los televidentes prefiere programas educativos. Si se encuesta a un grupo de personas de forma consecutiva, ¿cuál es la probabilidad de que las dos primeras personas encuestadas prefieran este tipo de programas?",
-    "opcion_correcta": "A",
-    "parametro_a_discriminacion": 1.45,
-    "parametro_b_dificultad": 1.1,
+    "id": "item_lect_01",
+    "pregunta_texto": "Un editorialista escribe: 'Si bien la tecnología fomenta la interconexión global, su uso desmedido en adolescentes erosiona la capacidad de sostener atención prolongada en lecturas complejas'. ¿Cuál de las siguientes afirmaciones sintetiza la tesis central del autor?",
+    "opcion_correcta": "B",
+    "parametro_a_discriminacion": 1.55,
+    "parametro_b_dificultad": 0.1,
     "parametro_c_adivinacion": 0.25,
-    "area_general": "matematicas",
-    "sub_competencia": "estadistica",
-    "distractores_metadata": {
-      "B": "Suma las probabilidades de forma lineal en lugar de multiplicarlas (40% + 40% = 80%)",
-      "C": "Mantiene el valor base del enunciado sin calcular la secuencia combinada (40%)",
-      "D": "Divide la probabilidad entre dos de forma arbitraria (20%)"
-    }
+    "area_general": "lectura_critica",
+    "sub_competencia": "argumentacion",
+    "opciones_respuesta": [
+      "La tecnología debe prohibirse en entornos educativos.",
+      "La conectividad digital tiene consecuencias negativas en los hábitos cognitivos de lectura.",
+      "Los adolescentes leen más libros impresos hoy que en décadas pasadas.",
+      "La atención prolongada es una cualidad innata que no se altera con la tecnología."
+    ]
+  },
+  {
+    "id": "item_lect_02",
+    "pregunta_texto": "En el Mito de la Caverna de Platón, los prisioneros confunden las sombras proyectadas en la pared con la realidad verdadera. En el contexto filosófico, las sombras representan:",
+    "opcion_correcta": "A",
+    "parametro_a_discriminacion": 1.8,
+    "parametro_b_dificultad": 0.75,
+    "parametro_c_adivinacion": 0.25,
+    "area_general": "lectura_critica",
+    "sub_competencia": "filosofia",
+    "opciones_respuesta": [
+      "El conocimiento empírico derivado de las percepciones sensoriales engañosas.",
+      "La verdad absoluta alcanzada mediante la razón pura.",
+      "Las leyes científicas comprobadas en laboratorios.",
+      "Las ideas abstractas e inmutables del mundo inteligible."
+    ]
+  },
+  {
+    "id": "item_cn_01",
+    "pregunta_texto": "Un vehículo reduce su velocidad uniformemente de 24 m/s a 0 m/s en un intervalo de 6 segundos al aproximarse a un semáforo. La magnitud de su desaceleración constante es de:",
+    "opcion_correcta": "A",
+    "parametro_a_discriminacion": 1.4,
+    "parametro_b_dificultad": -0.1,
+    "parametro_c_adivinacion": 0.25,
+    "area_general": "ciencias_naturales",
+    "sub_competencia": "fisica",
+    "opciones_respuesta": [
+      "4 m/s²",
+      "8 m/s²",
+      "144 m/s²",
+      "24 m/s²"
+    ]
+  },
+  {
+    "id": "item_cn_02",
+    "pregunta_texto": "En un recipiente cerrado se mezclan 2 moles de gas hidrógeno (H₂) y 1 mol de gas oxígeno (O₂) a temperatura constante. Al reaccionar completamente para formar agua (H₂O), considerando la ley de conservación de la masa, se producen exactamente:",
+    "opcion_correcta": "A",
+    "parametro_a_discriminacion": 1.55,
+    "parametro_b_dificultad": 0.2,
+    "parametro_c_adivinacion": 0.25,
+    "area_general": "ciencias_naturales",
+    "sub_competencia": "quimica",
+    "opciones_respuesta": [
+      "2 moles de agua",
+      "1 mol de agua",
+      "4 moles de agua",
+      "3 moles de agua"
+    ]
+  },
+  {
+    "id": "item_soc_01",
+    "pregunta_texto": "Un grupo de habitantes interpone una Acción de Tutela al considerar que un proyecto industrial vulnera su derecho fundamental a la salud y a la consulta previa comunitaria. ¿Por qué la Constitución de 1991 consagra la Tutela como un mecanismo preferente para este tipo de situaciones?",
+    "opcion_correcta": "A",
+    "parametro_a_discriminacion": 1.5,
+    "parametro_b_dificultad": -0.1,
+    "parametro_c_adivinacion": 0.25,
+    "area_general": "sociales_ciudadanas",
+    "sub_competencia": "pensamiento_social",
+    "opciones_respuesta": [
+      "Para garantizar la protección inmediata de los derechos fundamentales ante una amenaza o vulneración.",
+      "Para sustituir los juicios ordinarios en todos los litigios de índole comercial y mercantil.",
+      "Para otorgar facultades legislativas extraordinarias a la empresa encargada de la obra.",
+      "Para obligar a los ciudadanos a renunciar a la vía judicial y acudir al arbitraje privado."
+    ]
+  },
+  {
+    "id": "item_ing_01",
+    "pregunta_texto": "Complete the sentence with the correct grammatical option: 'If students __________ more attention during classes, they would pass the national exams with higher scores.'",
+    "opcion_correcta": "B",
+    "parametro_a_discriminacion": 1.5,
+    "parametro_b_dificultad": 0.2,
+    "parametro_c_adivinacion": 0.25,
+    "area_general": "ingles",
+    "sub_competencia": "grammar_reading",
+    "opciones_respuesta": [
+      "pay",
+      "paid",
+      "will pay",
+      "have paid"
+    ]
   }
 ]
