@@ -382,7 +382,7 @@
                                 <span>Acepto los <button type="button" onclick="PortalAuth.abrirModalPTDP()" class="text-cyan-400 underline font-semibold">Términos y Política de Datos</button></span>
                             </label>
 
-                            <input type="checkbox" id="chkDatosSensibles" checked class="hidden">
+                            <input type="checkbox" id="chkDatosSensibles" checked class="hidden" style="display: none !important;">
                         </div>
 
                         <!-- SUBMIT BUTTON -->
@@ -677,6 +677,9 @@
                         localStorage.removeItem("dante_user_arquetipo");
                         localStorage.removeItem("dante_token");
 
+                        const activeToken = json.token || `dante_jwt_token_${Date.now()}`;
+                        localStorage.setItem("dante_token", activeToken);
+
                         const onboardingCompletado = userObj.onboarding_completed === true || Boolean(userObj.arquetipo) || Boolean(userObj.perfil && userObj.perfil.arquetipo);
 
                         localStorage.setItem("dante_active_student", studentIdClean);
@@ -736,6 +739,7 @@
 
                     localStorage.setItem("dante_active_student", studentIdClean);
                     localStorage.setItem("dante_user", JSON.stringify(userLocal));
+                    localStorage.setItem("dante_token", `dante_jwt_token_local_${Date.now()}`);
                     if (previousCompleted) {
                         localStorage.setItem("dante_onboarding_completed", "true");
                         localStorage.setItem("dante_user_arquetipo", previousArquetipo);
