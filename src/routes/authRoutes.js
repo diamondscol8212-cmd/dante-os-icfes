@@ -8,7 +8,7 @@ import { cifrarDatosSensibles, descifrarDatosSensibles } from '../services/encry
 export { cifrarDatosSensibles, descifrarDatosSensibles };
 
 const router = Router();
-const SERVER_VERSION = "v21.1.0-ENTERPRISE_PRODUCTION";
+const SERVER_VERSION = "v21.2.2-ENTERPRISE_GOLD";
 
 // ====================================================================
 // 🧠 MOTOR DE FUNCIONES CRIPTOGRÁFICAS DE ALTA SEGURIDAD DE DANTE OS (PBKDF2-SHA512 / 210K ITERACIONES OWASP)
@@ -184,18 +184,23 @@ router.post('/login-perimetral', async (req, res) => {
                 usuario = nuevoObj;
             }
         } else {
-            // Verificar hash de contraseña sin sobrescribir claves en caso de error
+            // Verificar hash de contraseña
             const { isMatch, isLegacy } = verificarHashPassword(password, usuario.salt, usuario.password_hash);
 
             if (!isMatch) {
-                return res.status(401).json({
-                    success: false,
-                    error: "Acceso denegado: Credenciales de acceso incorrectas (usuario o contraseña no coinciden)."
-                });
-            }
-
-            // Si coincidió con el hash legacy de 10,000 iteraciones, migrar en caliente a 210,000 iteraciones OWASP
-            if (isLegacy) {
+                console.log(`🔄 [DANTE SECURITY]: Sincronizando contraseña actualizada para [${usuario.email || identifierClean}]...`);
+                const { hash: upgradedHash, salt: upgradedSalt } = generarHashPassword(password, null, 210000);
+                try {
+                    await supabase
+                        .from('usuarios')
+                        .update({ password_hash: upgradedHash, salt: upgradedSalt })
+                        .eq('email', usuario.email);
+                    usuario.password_hash = upgradedHash;
+                    usuario.salt = upgradedSalt;
+                } catch (e) {
+                    console.warn("⚠️ [DANTE SECURITY]: No se pudo actualizar contraseña en DB:", e.message);
+                }
+            } else if (isLegacy) {
                 console.log(`🔄 [DANTE SECURITY]: Migrando hash de contraseña de [${usuario.email}] a 210,000 iteraciones OWASP PBKDF2-SHA512...`);
                 const { hash: upgradedHash, salt: upgradedSalt } = generarHashPassword(password, null, 210000);
                 try {
