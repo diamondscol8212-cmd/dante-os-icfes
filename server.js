@@ -1,4 +1,4 @@
-// server.js - Gateway Central Orquestador Multi-Tenant (Dante OS v21.2.1 Enterprise Gold)
+// server.js - Gateway Central Orquestador Multi-Tenant (Dante OS v21.2.2 Enterprise Gold)
 // Bogotá, Colombia
 import 'dotenv/config'; 
 import express from 'express';
@@ -17,7 +17,7 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const SERVER_VERSION = "v21.2.1-ENTERPRISE_GOLD";
+const SERVER_VERSION = "v21.2.2-ENTERPRISE_GOLD";
 
 // 🛡️ CONFIGURACIÓN HELMET & POLÍTICA DE SEGURIDAD CONTENT-SECURITY-POLICY (CSP)
 app.use(helmet({
