@@ -598,7 +598,7 @@
     <header class="master-hud">
         <div class="min-w-0 max-w-[40%] sm:max-w-none flex-shrink flex items-center gap-2">
             <div class="alias-title truncate" id="ui-main-title" data-final="RED DANTE OS">RED DANTE OS</div>
-            <span class="hidden xs:inline-block px-2 py-0.5 rounded bg-cyan-500/20 border border-cyan-500/40 text-cyan-300 font-mono text-[10px] font-bold shadow-sm">v21.2.2</span>
+            <span class="hidden xs:inline-block px-2 py-0.5 rounded bg-cyan-500/20 border border-cyan-500/40 text-cyan-300 font-mono text-[10px] font-bold shadow-sm">v21.2.3</span>
             <div class="geo-tag truncate" id="lblRutaHeaderTag">SECUENCIA ADAPTATIVA: MATEMÁTICAS (1/5)</div>
         </div>
 
@@ -642,7 +642,7 @@
     <!-- VISTA 1: GATEWAY DE ENTRADA CON MAPA DE RUTA -->
     <main id="viewGateway" class="app-view active">
         <div class="gateway-card">
-            <div class="system-version-tag">v21.2.2-ENTERPRISE_GOLD</div>
+            <div class="system-version-tag">v21.2.3-ENTERPRISE_GOLD</div>
             <div class="verification-banner" id="lblTenantBanner">AUTENTICANDO CONTEXTO...</div>
             <h1 class="gateway-title" id="lblGatewayWelcome" data-final="DANTE OS RUNTIME">Dante OS Runtime</h1>
             
@@ -1334,13 +1334,27 @@
                 } catch(e) {}
 
                 this.cargarTemaGuardado();
-                const rawUser = localStorage.getItem("dante_user");
-                const token = localStorage.getItem("dante_token");
+                let rawUser = localStorage.getItem("dante_user");
+                let token = localStorage.getItem("dante_token");
 
                 if (!rawUser || !token) {
-                    console.warn("⚠️ Sesión no detectada, redirigiendo a login...");
-                    window.location.href = "login.html";
-                    return;
+                    console.info("💡 Auto-creando sesión de visualización directa para index.html (Cédula: 10203040)...");
+                    const guestUser = {
+                        email: "10203040@danteos.edu.co",
+                        document_id: "10203040",
+                        institution_id: "colegio_sandbox_default",
+                        role: "estudiante",
+                        estudiante: "10203040",
+                        onboarding_completed: true,
+                        arquetipo: "Estratega Reflexivo S2"
+                    };
+                    rawUser = JSON.stringify(guestUser);
+                    token = `dante_jwt_token_direct_${Date.now()}`;
+                    localStorage.setItem("dante_user", rawUser);
+                    localStorage.setItem("dante_token", token);
+                    localStorage.setItem("dante_active_student", "10203040");
+                    localStorage.setItem("dante_onboarding_completed", "true");
+                    localStorage.setItem("dante_user_arquetipo", "Estratega Reflexivo S2");
                 }
 
                 try {
@@ -1445,7 +1459,7 @@
                     }
 
                     if (!onboardingCompleted) {
-                        console.info("💡 Auto-asignando acceso directo a index.html v21.2.2...");
+                        console.info("💡 Auto-asignando acceso directo a index.html v21.2.3...");
                         onboardingCompleted = true;
                         localStorage.setItem("dante_onboarding_completed", "true");
                         if (!localStorage.getItem("dante_user_arquetipo")) {
@@ -2438,7 +2452,7 @@
 
             // 🛡️ PWA SERVICE WORKER REGISTRATION (Dinámico con versión de build + Notificador Metacognitivo)
             if ('serviceWorker' in navigator) {
-                const SW_VERSION = "v21.2.2-ENTERPRISE_GOLD";
+                const SW_VERSION = "v21.2.3-ENTERPRISE_GOLD";
                 navigator.serviceWorker.register(`/service-worker.js?v=${SW_VERSION}`)
                     .then(reg => {
                         console.log(`🚀 [PWA SERVICE WORKER REGISTRADO]: Dante OS ${SW_VERSION} activo.`);
