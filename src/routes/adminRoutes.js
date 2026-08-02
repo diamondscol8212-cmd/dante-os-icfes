@@ -5,7 +5,7 @@ import { redis } from '../../redisClient.js';
 import { verifyToken, requireRole, validateInstitution } from '../middleware.js';
 
 const router = Router();
-const SERVER_VERSION = "v21.2.0-ENTERPRISE_GOLD";
+const SERVER_VERSION = "v21.2.1-ENTERPRISE_GOLD";
 
 // ====================================================================
 // 🪐 PIPELINE ADMINISTRATIVO DE CONTROL DE ENTORNO (PROTEGIDO JWT + RBAC)
