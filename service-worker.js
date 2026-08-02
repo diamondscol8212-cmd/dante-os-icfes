@@ -108,3 +108,4 @@ async function sincronizarRespuestasEncoladas() {
     client.postMessage({ type: 'DANTE_OFFLINE_SYNC_TRIGGER' });
   });
 }
+
