@@ -2434,7 +2434,7 @@
 
             // 🛡️ PWA SERVICE WORKER REGISTRATION (Dinámico con versión de build + Notificador Metacognitivo)
             if ('serviceWorker' in navigator) {
-                const SW_VERSION = "v21.2.0-ENTERPRISE_GOLD";
+                const SW_VERSION = "v21.2.1-ENTERPRISE_GOLD";
                 navigator.serviceWorker.register(`/service-worker.js?v=${SW_VERSION}`)
                     .then(reg => {
                         console.log(`🚀 [PWA SERVICE WORKER REGISTRADO]: Dante OS ${SW_VERSION} activo.`);
