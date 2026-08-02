@@ -315,7 +315,7 @@
                 <i class="fas fa-sun text-amber-400" id="iconContrast"></i>
             </button>
             <span class="hidden sm:inline-block px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs font-mono font-semibold">
-                Saber 11 ICFES v21.2.1
+                Saber 11 ICFES v21.2.2
             </span>
         </div>
     </header>
@@ -438,7 +438,7 @@
                             <div class="relative flex items-center">
                                 <input type="password" id="txtPassword" class="custom-input pl-10 pr-12" placeholder="••••••••" autocomplete="current-password" required>
                                 <i class="fas fa-lock absolute left-3.5 text-slate-400 text-sm pointer-events-none"></i>
-                                <button type="button" onclick="PortalAuth.toggleMostrarPassword(event)" class="absolute right-3 z-20 p-1.5 text-slate-400 hover:text-cyan-400 focus:outline-none cursor-pointer" title="Ver u ocultar contraseña">
+                                <button type="button" id="btnToggleEye" onclick="PortalAuth.toggleMostrarPassword(event)" class="absolute right-3 z-30 p-2 text-slate-400 hover:text-cyan-400 focus:outline-none cursor-pointer flex items-center justify-center" title="Ver u ocultar contraseña">
                                     <i class="fas fa-eye text-base pointer-events-none" id="iconEye"></i>
                                 </button>
                             </div>
@@ -891,8 +891,15 @@
                 PortalAuth.seleccionarRol("estudiante");
             }
 
+            const btnEye = document.getElementById("btnToggleEye");
+            if (btnEye) {
+                btnEye.addEventListener("click", function(e) {
+                    PortalAuth.toggleMostrarPassword(e);
+                });
+            }
+
             if ('serviceWorker' in navigator) {
-                const SW_VERSION = "v21.2.1-ENTERPRISE_GOLD";
+                const SW_VERSION = "v21.2.2-ENTERPRISE_GOLD";
                 navigator.serviceWorker.register(`/service-worker.js?v=${SW_VERSION}`).catch(() => {});
             }
         });
