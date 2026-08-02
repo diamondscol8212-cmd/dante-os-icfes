@@ -406,7 +406,7 @@
                     </div>
 
                     <!-- FORM -->
-                    <form id="frmLogin" onsubmit="PortalAuth.ejecutarLoginPerimetral(event); return false;" class="space-y-4">
+                    <form id="frmLogin" onsubmit="event.preventDefault(); PortalAuth.ejecutarLoginPerimetral(event); return false;" class="space-y-4">
                         
                         <!-- INSTITUTION ID -->
                         <div>
@@ -577,7 +577,10 @@
 
         class PortalAuth {
             static toggleMostrarPassword(event) {
-                if (event && event.preventDefault) { event.preventDefault(); event.stopPropagation(); }
+                if (event) {
+                    if (typeof event.preventDefault === 'function') event.preventDefault();
+                    if (typeof event.stopPropagation === 'function') event.stopPropagation();
+                }
                 const input = document.getElementById("txtPassword");
                 const icon = document.getElementById("iconEye");
                 if (!input) return;
@@ -859,40 +862,6 @@
             if (tenantParam) {
                 const tenantInput = document.getElementById("txtInstitutionId");
                 if (tenantInput) tenantInput.value = tenantParam.toLowerCase().trim();
-            }
-
-            // Direct event listeners for role selection buttons
-            const cardRoleEstudiante = document.getElementById("cardRoleEstudiante");
-            const cardRoleProfesor = document.getElementById("cardRoleProfesor");
-            const cardRoleRector = document.getElementById("cardRoleRector");
-
-            if (cardRoleEstudiante) {
-                cardRoleEstudiante.addEventListener("click", (e) => {
-                    e.preventDefault();
-                    PortalAuth.seleccionarRol("estudiante");
-                });
-            }
-
-            if (cardRoleProfesor) {
-                cardRoleProfesor.addEventListener("click", (e) => {
-                    e.preventDefault();
-                    PortalAuth.seleccionarRol("profesor");
-                });
-            }
-
-            if (cardRoleRector) {
-                cardRoleRector.addEventListener("click", (e) => {
-                    e.preventDefault();
-                    PortalAuth.seleccionarRol("rector");
-                });
-            }
-
-            // Direct event listener for password eye toggle
-            const eyeBtn = document.querySelector('button[onclick*="toggleMostrarPassword"]');
-            if (eyeBtn) {
-                eyeBtn.addEventListener("click", (e) => {
-                    PortalAuth.toggleMostrarPassword(e);
-                });
             }
 
             try {
