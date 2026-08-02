@@ -691,7 +691,7 @@
             </div>
 
             <!-- BOTÓN PERMISO DE BAÑO 🚻 -->
-            <button type="button" onclick="AppController.abrirModalPausaBano()" class="px-2 py-0.5 bg-cyan-950/80 border border-cyan-500/40 text-cyan-300 rounded font-mono text-[11px] font-bold hover:bg-cyan-900 transition-all cursor-pointer flex items-center gap-1 shadow-sm" title="Solicitar Pausa / Permiso de Baño">
+            <button type="button" id="btnBanoHeader" onclick="AppController.abrirModalPausaBano()" class="px-2 py-0.5 bg-cyan-950/80 border border-cyan-500/40 text-cyan-300 rounded font-mono text-[11px] font-bold hover:bg-cyan-900 transition-all cursor-pointer flex items-center gap-1 shadow-sm" title="Solicitar Pausa / Permiso de Baño" style="display: none;">
                 🚻 Baño
             </button>
 
@@ -723,25 +723,38 @@
 
     <!-- VISTA 1: GATEWAY DE ENTRADA CON MAPA DE RUTA -->
     <main id="viewGateway" class="app-view active">
-        <div class="gateway-card">
+        <div class="gateway-card border-2 border-cyan-500/30 shadow-[0_20px_60px_rgba(0,0,0,0.8),0_0_40px_rgba(81,226,245,0.15)]">
             <div class="system-version-tag">v21.2.3-ENTERPRISE_GOLD</div>
             <div class="verification-banner" id="lblTenantBanner">AUTENTICANDO CONTEXTO...</div>
             <h1 class="gateway-title" id="lblGatewayWelcome" data-final="DANTE OS RUNTIME">Dante OS Runtime</h1>
             
-            <div class="selector-group" style="margin-top: 1.2rem;">
-                <label for="selMateria" class="selector-label">Secuencia de Diagnóstico (Prueba <span id="lblPasoActualNum">1</span> de 5)</label>
-                <select id="selMateria" onchange="AppController.actualizarIndicadorSecuencia()">
-                    <option value="matematicas">📐 1. Matemáticas</option>
-                    <option value="lectura_critica">📖 2. Lectura Crítica</option>
-                    <option value="ciencias_naturales">🧪 3. Ciencias Naturales</option>
-                    <option value="sociales_ciudadanas">🏛️ 4. Sociales y Ciudadanas</option>
-                    <option value="ingles">🇬🇧 5. Inglés</option>
-                </select>
+            <!-- TARJETA DE SELECCIÓN DE MÓDULO MATERIA -->
+            <div class="p-4 rounded-xl bg-slate-900/80 border border-amber-500/30 backdrop-blur-md shadow-inner text-left my-4 transition-all hover:border-amber-500/50">
+                <div class="flex items-center justify-between mb-2">
+                    <label for="selMateria" class="selector-label mb-0 text-amber-400 font-bold uppercase tracking-wider text-xs flex items-center gap-1.5">
+                        <i class="fa-solid fa-layer-group text-amber-400"></i> SECUENCIA DE DIAGNÓSTICO
+                    </label>
+                    <span class="px-2 py-0.5 rounded-full bg-cyan-500/20 border border-cyan-500/40 text-cyan-300 font-mono text-[10px] font-bold">
+                        Paso <span id="lblPasoActualNum">1</span> de 5
+                    </span>
+                </div>
+                
+                <div class="relative">
+                    <select id="selMateria" onchange="AppController.actualizarIndicadorSecuencia()" class="w-full p-3.5 bg-slate-950/90 border-1.5 border-cyan-500/50 text-white rounded-xl font-mono font-bold text-sm outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/30 transition-all cursor-pointer shadow-lg">
+                        <option value="matematicas">📐 1. Matemáticas</option>
+                        <option value="lectura_critica">📖 2. Lectura Crítica</option>
+                        <option value="ciencias_naturales">🧪 3. Ciencias Naturales</option>
+                        <option value="sociales_ciudadanas">🏛️ 4. Sociales y Ciudadanas</option>
+                        <option value="ingles">🇬🇧 5. Inglés</option>
+                    </select>
+                </div>
             </div>
 
-            <div class="p-3 bg-amber-500/10 border border-[#D4AF37]/30 rounded-lg my-3 text-left">
-                <span class="text-[10px] font-mono font-bold text-[#D4AF37] uppercase tracking-wider block mb-1">🏷️ MAPA DE RUTA ADAPTATIVO</span>
-                <p class="text-[11px] text-zinc-300 font-sans leading-relaxed" id="lblRutaExplicacionTexto">
+            <div class="p-3.5 bg-amber-500/10 border border-[#D4AF37]/35 rounded-xl my-3 text-left backdrop-blur-md">
+                <span class="text-[10px] font-mono font-bold text-[#D4AF37] uppercase tracking-wider block mb-1 flex items-center gap-1.5">
+                    <i class="fa-solid fa-route text-amber-400"></i> MAPA DE RUTA ADAPTATIVO
+                </span>
+                <p class="text-[11.5px] text-zinc-300 font-sans leading-relaxed" id="lblRutaExplicacionTexto">
                     ⏱️ Completa cada módulo en orden. Dante OS calibrará tu habilidad y te guiará automáticamente al siguiente módulo al terminar.
                 </p>
             </div>
@@ -752,13 +765,17 @@
                 <button type="button" class="btn-premium btn-pulse-glow" style="margin-top: 1rem; border-color: var(--cyan-core); color: var(--cyan-core);" onclick="AppController.liberarEntornoHaciaWorkspace()">🚀 DESPLEGAR DESAFÍO</button>
             </div>
 
-            <!-- BOTÓN ÚNICO -->
-            <button type="button" class="btn-premium btn-pulse-glow" id="btnIngresar" onclick="AppController.inicializarSesion()">🚀 INICIAR SIMULACRO ADAPTATIVO</button>
+            <!-- BOTONES DE ACCIÓN PRINCIPALES -->
+            <button type="button" class="btn-premium btn-pulse-glow shadow-[0_0_25px_rgba(81,226,245,0.25)]" id="btnIngresar" onclick="AppController.inicializarSesion()">
+                🚀 INICIAR SIMULACRO ADAPTATIVO
+            </button>
             
-            <a href="perfil.html" class="btn-premium" style="border-color: var(--cyan-core); color: var(--cyan-core);">
+            <a href="perfil.html" class="btn-premium hover:border-cyan-400 hover:text-cyan-300 transition-all" style="border-color: var(--cyan-core); color: var(--cyan-core);">
                 👤 CONSULTAR MI PERFIL / HISTORIAL
             </a>
-            <button type="button" class="btn-premium" style="border-color:var(--crimson); color:var(--crimson); margin-top:0.4rem;" onclick="AppController.cerrarSesionGated()">Cerrar Portal</button>
+            <button type="button" class="btn-premium hover:bg-red-950/40 transition-all" style="border-color:var(--crimson); color:var(--crimson); margin-top:0.4rem;" onclick="AppController.cerrarSesionGated()">
+                Cerrar Portal
+            </button>
         </div>
     </main>
 
@@ -960,27 +977,6 @@
     <!-- VISTA 4: CLAUSURA Y PANTALLA DE RECOMPENSA -->
     <main id="viewFinalReport" class="app-view" style="justify-content: center; align-items: center;"></main>
 
-    <!-- DOCK FLOTANTE INFERIOR -->
-    <nav class="bottom-nav">
-        <div class="nav-item" onclick="window.location.reload()">
-            <div class="icon-circle">
-                <i class="fas fa-layer-group text-[var(--cyan-core)] text-sm"></i>
-            </div>
-            <span class="nav-text" style="color: var(--cyan-core)">EXAMEN</span>
-        </div>
-        
-        <div id="dante-anchor" onclick="window.location.reload()">
-            <i class="fas fa-brain"></i>
-        </div>
-        
-        <div class="nav-item" onclick="window.location.href='perfil.html'">
-            <div class="icon-circle" style="border-color: rgba(212,175,55,0.3)">
-                <i class="fas fa-user-astronaut text-[var(--gold-satin)] text-sm"></i>
-            </div>
-            <span class="nav-text" style="color: var(--gold-satin)">PERFIL</span>
-        </div>
-    </nav>
-
     <!-- MODAL POLÍTICA DE TRATAMIENTO DE DATOS PERSONALES (PTDP) -->
     <!-- JUSTIFICACIÓN LEGAL DE DEFENSA: Cumplimiento de Principio de Transparencia Ley 1581 Art. 4 y GDPR Art. 12/13 -->
     <div id="modalPTDP" class="modal-overlay">
@@ -1070,7 +1066,7 @@
     </div>
 
     <!-- FOOTER LEGAL DE CUMPLIMIENTO -->
-    <footer class="py-4 px-3 text-center text-[10px] font-mono text-slate-400 border-t border-zinc-800/80 bg-black/80 backdrop-blur-md relative z-20 mb-16 sm:mb-0">
+    <footer class="py-4 px-3 text-center text-[10px] font-mono text-slate-400 border-t border-zinc-800/80 bg-black/80 backdrop-blur-md relative z-20 my-0">
         <div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
             <div>DANTE OS ENTERPRISE EDITION // INFRAESTRUCTURA BIOMÉTRICA Y PSICOMÉTRICA ADAPTATIVA</div>
             <div class="flex items-center gap-3 text-[9px]">
@@ -1947,6 +1943,13 @@
                 document.querySelectorAll('.app-view').forEach(view => view.classList.remove('active'));
                 const targetView = document.getElementById(viewId);
                 if (targetView) targetView.classList.add('active');
+                
+                // El permiso de baño solo se activa durante la resolución de preguntas (viewWorkspace)
+                const btnBano = document.getElementById("btnBanoHeader");
+                if (btnBano) {
+                    btnBano.style.display = (viewId === "viewWorkspace") ? "inline-flex" : "none";
+                }
+
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         }
