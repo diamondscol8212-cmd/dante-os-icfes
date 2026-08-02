@@ -596,8 +596,9 @@
 
     <!-- HEADER HUD SUPERIOR CON MAPA DE RUTA Y SECUENCIA -->
     <header class="master-hud">
-        <div class="min-w-0 max-w-[40%] sm:max-w-none flex-shrink">
+        <div class="min-w-0 max-w-[40%] sm:max-w-none flex-shrink flex items-center gap-2">
             <div class="alias-title truncate" id="ui-main-title" data-final="RED DANTE OS">RED DANTE OS</div>
+            <span class="hidden xs:inline-block px-2 py-0.5 rounded bg-cyan-500/20 border border-cyan-500/40 text-cyan-300 font-mono text-[10px] font-bold shadow-sm">v21.2.2</span>
             <div class="geo-tag truncate" id="lblRutaHeaderTag">SECUENCIA ADAPTATIVA: MATEMÁTICAS (1/5)</div>
         </div>
 
@@ -641,7 +642,7 @@
     <!-- VISTA 1: GATEWAY DE ENTRADA CON MAPA DE RUTA -->
     <main id="viewGateway" class="app-view active">
         <div class="gateway-card">
-            <div class="system-version-tag">v21.1.0-PRO</div>
+            <div class="system-version-tag">v21.2.2-ENTERPRISE_GOLD</div>
             <div class="verification-banner" id="lblTenantBanner">AUTENTICANDO CONTEXTO...</div>
             <h1 class="gateway-title" id="lblGatewayWelcome" data-final="DANTE OS RUNTIME">Dante OS Runtime</h1>
             
@@ -1444,9 +1445,12 @@
                     }
 
                     if (!onboardingCompleted) {
-                        console.warn("⚠️ Onboarding no detectado. Redirigiendo a onboarding.html...");
-                        window.location.href = "onboarding.html";
-                        return;
+                        console.info("💡 Auto-asignando acceso directo a index.html v21.2.2...");
+                        onboardingCompleted = true;
+                        localStorage.setItem("dante_onboarding_completed", "true");
+                        if (!localStorage.getItem("dante_user_arquetipo")) {
+                            localStorage.setItem("dante_user_arquetipo", "Estratega Reflexivo S2");
+                        }
                     }
 
                     const arquetipo = localStorage.getItem("dante_user_arquetipo") || sessionData.arquetipo || (onboardingProfile && onboardingProfile.arquetipo) || "Estratega Reflexivo S2";
@@ -2434,7 +2438,7 @@
 
             // 🛡️ PWA SERVICE WORKER REGISTRATION (Dinámico con versión de build + Notificador Metacognitivo)
             if ('serviceWorker' in navigator) {
-                const SW_VERSION = "v21.2.1-ENTERPRISE_GOLD";
+                const SW_VERSION = "v21.2.2-ENTERPRISE_GOLD";
                 navigator.serviceWorker.register(`/service-worker.js?v=${SW_VERSION}`)
                     .then(reg => {
                         console.log(`🚀 [PWA SERVICE WORKER REGISTRADO]: Dante OS ${SW_VERSION} activo.`);
