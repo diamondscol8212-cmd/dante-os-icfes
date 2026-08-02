@@ -476,10 +476,20 @@
         #dante-anchor i { font-size: 18px; color: var(--gold-satin); }
 
         /* TUTORIAL Y MODALES OVERLAYS */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(3, 5, 12, 0.88); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            z-index: 99999; display: none; justify-content: center; align-items: center; padding: 1.25rem; overflow-y: auto;
+        }
         .tutorial-overlay {
             position: fixed; inset: 0; background: rgba(1, 2, 6, 0.92); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
             z-index: 99999; display: flex; justify-content: center; align-items: center; padding: 1.25rem; overflow-y: auto;
         }
+        .input-label { display: block; color: var(--text-muted); font-size: 0.72rem; font-weight: 700; margin-bottom: 0.35rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .input-cyber {
+            width: 100%; padding: 0.75rem 0.9rem; background: rgba(22, 27, 42, 0.85); border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fff; border-radius: 10px; font-family: var(--font-mono); outline: none; transition: all 0.2s ease;
+        }
+        .input-cyber:focus { border-color: var(--cyan-core); box-shadow: 0 0 15px rgba(81, 226, 245, 0.25); }
         .tutorial-card {
             background: rgba(15, 18, 28, 0.98); border: 1.5px solid var(--gold-satin); border-radius: 16px;
             padding: 2.2rem 1.6rem; max-width: 520px; width: 100%; max-height: 85vh; overflow-y: auto; text-align: center;
@@ -2605,10 +2615,6 @@
                 setTimeout(() => pwaToast.classList.add('hidden'), 300);
             }, 4000);
         }
-    </script>
-</body>
-</html>
-
     </script>
 </body>
 </html>
