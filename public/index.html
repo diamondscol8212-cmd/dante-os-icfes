@@ -1350,6 +1350,16 @@
                     INSTITUTION_ID = sessionData.institution_id || "colegio_sandbox_default";
                     AppState.integrityToken = token;
 
+                    const userRole = (sessionData.role || sessionData.rol || 'estudiante').toLowerCase().trim();
+                    if (userRole === 'profesor' || userRole === 'docente') {
+                        window.location.href = "profesor.html";
+                        return;
+                    }
+                    if (userRole === 'rector') {
+                        window.location.href = "rector.html";
+                        return;
+                    }
+
                     const streak = localStorage.getItem("dante_streak_count") || "1";
                     const rachaEl = document.getElementById("lblRachaDias");
                     if (rachaEl) rachaEl.innerText = `${streak} ${streak === "1" ? 'Día' : 'Días'}`;
@@ -1371,6 +1381,11 @@
                     
                     // Verificación de Onboarding Completado
                     let onboardingCompleted = localStorage.getItem("dante_onboarding_completed") === "true" || sessionData.onboarding_completed === true || Boolean(sessionData.arquetipo);
+
+                    if (AppState.estudiante === "demostrativo" || (sessionData.email && sessionData.email.includes("demostrativo"))) {
+                        onboardingCompleted = true;
+                        localStorage.setItem("dante_onboarding_completed", "true");
+                    }
 
                     // Si no está en LocalStorage, consultar a la base de datos Supabase antes de forzar redirección
                     if (!onboardingCompleted && window.supabaseClient) {
