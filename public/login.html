@@ -575,49 +575,9 @@
             rector: { email: "rector@sandbox.edu.co", pass: "12345678" }
         };
 
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedTheme = localStorage.getItem("dante_theme");
-            if (savedTheme === "light") {
-                document.body.classList.add("light-mode");
-                const icon = document.getElementById("iconContrast");
-                if (icon) icon.className = "fas fa-moon text-slate-700";
-            }
-
-            const urlParams = new URLSearchParams(window.location.search);
-            const tenantParam = urlParams.get('tenant') || urlParams.get('institution_id');
-            if (tenantParam) {
-                const tenantInput = document.getElementById("txtInstitutionId");
-                if (tenantInput) tenantInput.value = tenantParam.toLowerCase().trim();
-            }
-
-            try {
-                const savedCreds = localStorage.getItem("dante_remembered_credentials");
-                if (savedCreds) {
-                    const parsed = JSON.parse(savedCreds);
-                    if (parsed.email) {
-                        const emailInput = document.getElementById("txtEmail");
-                        if (emailInput) emailInput.value = parsed.email;
-                    }
-                    if (parsed.institution_id) {
-                        const tenantInput = document.getElementById("txtInstitutionId");
-                        if (tenantInput) tenantInput.value = parsed.institution_id;
-                    }
-                    if (parsed.role) {
-                        PortalAuth.seleccionarRol(parsed.role);
-                    } else {
-                        PortalAuth.seleccionarRol("estudiante");
-                    }
-                } else {
-                    PortalAuth.seleccionarRol("estudiante");
-                }
-            } catch (e) {
-                PortalAuth.seleccionarRol("estudiante");
-            }
-        });
-
         class PortalAuth {
             static toggleMostrarPassword(event) {
-                if (event) { event.preventDefault(); event.stopPropagation(); }
+                if (event && event.preventDefault) { event.preventDefault(); event.stopPropagation(); }
                 const input = document.getElementById("txtPassword");
                 const icon = document.getElementById("iconEye");
                 if (!input) return;
@@ -878,6 +838,87 @@
                 }
             }
         }
+
+        // Export explicitly to window object for global inline access
+        window.PortalAuth = PortalAuth;
+        window.toggleMostrarPassword = PortalAuth.toggleMostrarPassword;
+        window.seleccionarRol = PortalAuth.seleccionarRol;
+        window.toggleContraste = PortalAuth.toggleContraste;
+
+        // DOM Event Listeners Initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem("dante_theme");
+            if (savedTheme === "light") {
+                document.body.classList.add("light-mode");
+                const icon = document.getElementById("iconContrast");
+                if (icon) icon.className = "fas fa-moon text-slate-700";
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const tenantParam = urlParams.get('tenant') || urlParams.get('institution_id');
+            if (tenantParam) {
+                const tenantInput = document.getElementById("txtInstitutionId");
+                if (tenantInput) tenantInput.value = tenantParam.toLowerCase().trim();
+            }
+
+            // Direct event listeners for role selection buttons
+            const cardRoleEstudiante = document.getElementById("cardRoleEstudiante");
+            const cardRoleProfesor = document.getElementById("cardRoleProfesor");
+            const cardRoleRector = document.getElementById("cardRoleRector");
+
+            if (cardRoleEstudiante) {
+                cardRoleEstudiante.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    PortalAuth.seleccionarRol("estudiante");
+                });
+            }
+
+            if (cardRoleProfesor) {
+                cardRoleProfesor.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    PortalAuth.seleccionarRol("profesor");
+                });
+            }
+
+            if (cardRoleRector) {
+                cardRoleRector.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    PortalAuth.seleccionarRol("rector");
+                });
+            }
+
+            // Direct event listener for password eye toggle
+            const eyeBtn = document.querySelector('button[onclick*="toggleMostrarPassword"]');
+            if (eyeBtn) {
+                eyeBtn.addEventListener("click", (e) => {
+                    PortalAuth.toggleMostrarPassword(e);
+                });
+            }
+
+            try {
+                const savedCreds = localStorage.getItem("dante_remembered_credentials");
+                if (savedCreds) {
+                    const parsed = JSON.parse(savedCreds);
+                    if (parsed.email) {
+                        const emailInput = document.getElementById("txtEmail");
+                        if (emailInput) emailInput.value = parsed.email;
+                    }
+                    if (parsed.institution_id) {
+                        const tenantInput = document.getElementById("txtInstitutionId");
+                        if (tenantInput) tenantInput.value = parsed.institution_id;
+                    }
+                    if (parsed.role) {
+                        PortalAuth.seleccionarRol(parsed.role);
+                    } else {
+                        PortalAuth.seleccionarRol("estudiante");
+                    }
+                } else {
+                    PortalAuth.seleccionarRol("estudiante");
+                }
+            } catch (e) {
+                PortalAuth.seleccionarRol("estudiante");
+            }
+        });
     </script>
 </body>
 </html>
