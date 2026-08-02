@@ -1,110 +1,194 @@
-// service-worker.js - PWA Offline & Shell Caching Manager (Dante OS Enterprise Gold)
+// server.js - Gateway Central Orquestador Multi-Tenant (Dante OS v21.2.2 Enterprise Gold)
 // Bogotá, Colombia
+import 'dotenv/config'; 
+import express from 'express';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import catRouter from './src/routes/catRoutes.js';
+import authRouter from './src/routes/authRoutes.js'; 
+import adminRouter from './src/routes/adminRoutes.js';
 
-// Extract dynamic version from registration URL query parameter or fallback
-const params = new URL(location).searchParams;
-const BUILD_VERSION = params.get('v') || 'v21.2.0-ENTERPRISE_GOLD';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const CACHE_NAME_STATIC = `dante-os-static-${BUILD_VERSION}`;
-const CACHE_NAME_DYNAMIC = `dante-os-dynamic-${BUILD_VERSION}`;
+const app = express();
+const PORT = process.env.PORT || 3000;
+const SERVER_VERSION = "v21.2.2-ENTERPRISE_GOLD";
 
-const STATIC_ASSETS = [
-  './',
-  './index.html',
-  './onboarding.html',
-  './login.html',
-  './reporte.html',
-  './rector.html',
-  './profesor.html',
-  './bancoPreguntas.json',
-  './manifest.json'
+// 🛡️ CONFIGURACIÓN HELMET & POLÍTICA DE SEGURIDAD CONTENT-SECURITY-POLICY (CSP)
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://cdn.jsdelivr.net", "https://unpkg.com", "https://cdn.tailwindcss.com"],
+            styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"],
+            fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com", "data:"],
+            imgSrc: ["'self'", "data:", "blob:", "https:"],
+            connectSrc: ["'self'", "https:", "wss:", "ws:"],
+            frameAncestors: ["'self'", "https://*.google.com", "https://*.googleusercontent.com", "https://*.run.app", "https://*.ai.studio", "https://ai.studio"],
+            objectSrc: ["'none'"],
+            upgradeInsecureRequests: []
+        }
+    },
+    crossOriginEmbedderPolicy: false,
+    frameguard: false
+}));
+
+const ALLOWED_ORIGINS = [
+    'http://localhost:5173', 'http://127.0.0.1:5173',
+    'http://localhost:3000', 'http://127.0.0.1:5500', 
+    'http://localhost:5500', 'https://danteos.com',
+    'https://app.danteos.com',
+    'https://dante-os-platform.onrender.com'
 ];
 
-// 1. Instalar el Service Worker y pre-cachear el Shell de la PWA
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME_STATIC).then((cache) => {
-      return cache.addAll(STATIC_ASSETS);
-    }).then(() => self.skipWaiting())
-  );
-});
-
-// 2. Activar y PURGAR AUTOMÁTICAMENTE cachés obsoletos con filtro explícito de promesas (Estructura AAA+)
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys
-          .filter((key) => key !== CACHE_NAME_STATIC && key !== CACHE_NAME_DYNAMIC)
-          .map((key) => {
-            console.log(`🧹 [PWA SERVICE WORKER]: Eliminando caché obsoleta -> ${key}`);
-            return caches.delete(key);
-          })
-      );
-    }).then(() => self.clients.claim())
-  );
-});
-
-// 3. Estrategia Doblada: Stale-While-Revalidate (Assets) & Network-First con Fallback Offline (APIs/Preguntas)
-self.addEventListener('fetch', (event) => {
-  const reqUrl = new URL(event.request.url);
-
-  // Excluir peticiones de no-GET o externas incompatibles
-  if (event.request.method !== 'GET') return;
-
-  // ESTRATEGIA 1: NETWORK FIRST WITH OFFLINE FALLBACK para APIs y JSONs dinámicos
-  if (reqUrl.pathname.includes('/api/') || reqUrl.pathname.endsWith('.json')) {
-    event.respondWith(
-      fetch(event.request)
-        .then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200) {
-            const resClone = networkResponse.clone();
-            caches.open(CACHE_NAME_DYNAMIC).then((cache) => cache.put(event.request, resClone));
-          }
-          return networkResponse;
-        })
-        .catch(() => {
-          return caches.match(event.request).then((cachedResponse) => {
-            if (cachedResponse) return cachedResponse;
-            return new Response(JSON.stringify({ 
-              offline: true, 
-              message: "Modo Offline Activo: Operando con banco local en caché." 
-            }), {
-              headers: { 'Content-Type': 'application/json' }
-            });
-          });
-        })
-    );
-    return;
-  }
-
-  // ESTRATEGIA 2: STALE-WHILE-REVALIDATE para Assets estáticos
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      const fetchPromise = fetch(event.request).then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200) {
-          const resClone = networkResponse.clone();
-          caches.open(CACHE_NAME_STATIC).then((cache) => cache.put(event.request, resClone));
-        }
-        return networkResponse;
-      }).catch(() => {/* Red no disponible, retorno suave */});
-
-      return cachedResponse || fetchPromise;
-    })
-  );
-});
-
-// 4. BACKGROUND SYNC Y RETENCIÓN DE RESPUESTAS OFFLINE
-self.addEventListener('sync', (event) => {
-  if (event.tag === 'sync-dante-responses') {
-    event.waitUntil(sincronizarRespuestasEncoladas());
-  }
-});
-
-async function sincronizarRespuestasEncoladas() {
-  console.log("🔄 [PWA BACKGROUND SYNC]: Procesando cola de respuestas almacenadas offline...");
-  const clients = await self.clients.matchAll();
-  clients.forEach(client => {
-    client.postMessage({ type: 'DANTE_OFFLINE_SYNC_TRIGGER' });
-  });
+if (process.env.ALLOWED_ORIGINS) {
+    process.env.ALLOWED_ORIGINS.split(',').forEach(o => {
+        if (o.trim()) ALLOWED_ORIGINS.push(o.trim());
+    });
 }
+
+const ALLOWED_DOMAINS_REGEX = /\.(run\.app|ai\.studio|google\.com|googleusercontent\.com|danteos\.com)$/i;
+
+app.use(cors({
+    origin(origin, callback) {
+        if (!origin) return callback(null, true);
+        const isAllowed = ALLOWED_ORIGINS.includes(origin) ||
+            origin.includes('localhost') || origin.includes('127.0.0.1') ||
+            ALLOWED_DOMAINS_REGEX.test(new URL(origin).hostname);
+        
+        if (isAllowed) {
+            return callback(null, true);
+        }
+        return callback(new Error("Acceso bloqueado: Origen no permitido por la política CORS perimetral."));
+    },
+    credentials: true
+}));
+
+app.use(express.json({ limit: '1mb' }));
+app.use(cookieParser());
+
+// 🛡️ LIMITADORES DE TASA DE PETICIONES (RATE LIMITING ANTI-BRUTE FORCE / DDoS)
+const globalLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 Minutos
+    max: 500,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { success: false, error: "Límite de peticiones globales excedido. Por favor intente más tarde." }
+});
+
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 Minutos
+    max: 100,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { success: false, error: "Demasiados intentos de autenticación desde esta IP. Por favor intente en unos minutos." }
+});
+
+const catLimiter = rateLimit({
+    windowMs: 1 * 60 * 1000, // 1 Minuto
+    max: 60,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { success: false, error: "Límite de tasa en evaluación adaptativa excedido. Por favor responda a un ritmo normal." }
+});
+
+const arcoLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 Hora
+    max: 5,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { success: false, error: "Límite de solicitudes de supresión ARCO excedido por hora." }
+});
+
+// Aplicación de Limitadores Perimetrales (Incluyendo Aliases v1)
+app.use('/api/', globalLimiter);
+app.use('/api/auth/login-perimetral', authLimiter);
+app.use('/api/v1/auth/login-perimetral', authLimiter);
+app.use('/api/auth/register-secure-user', authLimiter);
+app.use('/api/v1/auth/register-secure-user', authLimiter);
+app.use('/api/auth/arco/hard-delete', arcoLimiter);
+app.use('/api/v1/users/arco/hard-delete', arcoLimiter);
+app.use('/api/cat/interactuar', catLimiter);
+
+// 🛡️ Middleware de Encabezados Perimetrales Complementarios
+app.use((req, res, next) => {
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+    if (process.env.NODE_ENV === 'production') {
+        res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+    }
+    console.log(`📡 [GATEWAY MULTI-TENANT ${SERVER_VERSION}] -> ${req.method} desde ${req.url}`);
+    next();
+});
+
+// ====================================================================
+// 🛡️ MONTAJE DE RUTAS CORE DEL SISTEMA OPERATIVO COGNITIVO
+// ====================================================================
+app.use('/api/cat', catRouter);
+app.use('/api/auth', authRouter); 
+app.use('/api/v1/users', authRouter); // Alias v1 para endpoints ARCO
+app.use('/api/v1/auth', authRouter);  // Alias v1 para endpoints de Auth y Consentimiento Parental
+app.use('/api/admin', adminRouter);   // Desacoplado SRP: Rutas administrativas B2B
+
+// ENDPOINT DE MONITOREO DE SALUD DEL CLÚSTER (HEALTHCHECK)
+app.get('/api/health', (req, res) => {
+    return res.status(200).json({ success: true, status: "HEALTHY", version: SERVER_VERSION, timestamp: new Date().toISOString() });
+});
+
+// ====================================================================
+// 🪐 ENTRADA DE INTERFAZ GRÁFICA (Vistas Estáticas)
+// ====================================================================
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// ====================================================================
+// 🛡️ MIDDLEWARE DE ERRORES GLOBAL Y CONTROL DE RESILIENCIA DEL PROCESO
+// ====================================================================
+app.use((err, req, res, next) => {
+    console.error('🚨 [EXPRESS UNHANDLED ROUTE ERROR]:', err);
+    
+    const responsePayload = {
+        success: false,
+        error: "Error interno del servidor. Proceso recuperado por middleware de resiliencia."
+    };
+
+    if (process.env.NODE_ENV === 'development') {
+        responsePayload.details = err.message || "Excepción no controlada";
+    }
+
+    res.status(err.status || 500).json(responsePayload);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('🚨 [PROCESS UNHANDLED REJECTION]: Excepción asíncrona capturada:', reason);
+});
+
+process.on('uncaughtException', (error) => {
+    console.error('🚨 [PROCESS UNCAUGHT EXCEPTION]: Excepción síncrona capturada:', error);
+});
+
+const server = app.listen(PORT, '0.0.0.0', () => console.log(`\n🚀 [DANTE OS ENTERPRISE GATEWAY ${SERVER_VERSION}]: Activo en http://0.0.0.0:${PORT}`));
+
+const gracefulShutdown = (signal) => {
+    console.log(`\n🛑 [SHUTDOWN SIGNAL ${signal}]: Cerrando servidor HTTP y limpiando conexiones...`);
+    server.close(() => {
+        console.log('✅ [HTTP SERVER CLOSED]: Servidor HTTP cerrado correctamente.');
+        process.exit(0);
+    });
+    setTimeout(() => {
+        console.error('⚠️ [FORCED EXIT]: Finalizando proceso forzosamente tras timeout.');
+        process.exit(1);
+    }, 5000);
+};
+
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
