@@ -315,7 +315,7 @@
                 <i class="fas fa-sun text-amber-400" id="iconContrast"></i>
             </button>
             <span class="hidden sm:inline-block px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs font-mono font-semibold">
-                Saber 11 ICFES v21.2
+                Saber 11 ICFES v21.2.1
             </span>
         </div>
     </header>
@@ -406,7 +406,7 @@
                     </div>
 
                     <!-- FORM -->
-                    <form id="frmLogin" onsubmit="event.preventDefault(); PortalAuth.ejecutarLoginPerimetral(event); return false;" class="space-y-4">
+                    <form id="frmLogin" action="javascript:void(0);" onsubmit="if(event){event.preventDefault(); event.stopPropagation();} PortalAuth.ejecutarLoginPerimetral(event); return false;" class="space-y-4">
                         
                         <!-- INSTITUTION ID -->
                         <div>
@@ -704,30 +704,33 @@
             }
 
             static async ejecutarLoginPerimetral(event) {
-                if (event && event.preventDefault) event.preventDefault();
+                if (event && typeof event.preventDefault === 'function') event.preventDefault();
+                if (event && typeof event.stopPropagation === 'function') event.stopPropagation();
 
+                let rawIdentifier = "demostrativo@dante.edu.com";
+                let institutionId = "colegio_sandbox_default";
                 const btn = document.getElementById("btnValidar");
                 const btnText = document.getElementById("btnValidarText");
                 const btnIcon = document.getElementById("btnValidarIcon");
 
-                const institutionId = document.getElementById("txtInstitutionId")?.value.trim() || "colegio_sandbox_default";
-                const rawIdentifier = document.getElementById("txtEmail")?.value.trim() || "demostrativo@dante.edu.com";
-                const password = document.getElementById("txtPassword")?.value || "DemoR2026#";
-
-                const chkRecordar = document.getElementById("chkRecordarCredenciales");
-                if (chkRecordar && chkRecordar.checked) {
-                    localStorage.setItem("dante_remembered_credentials", JSON.stringify({
-                        email: rawIdentifier,
-                        institution_id: institutionId,
-                        role: SelectedRoleTarget
-                    }));
-                }
-
-                if (btnText) btnText.innerText = "Iniciando sesión...";
-                if (btnIcon) btnIcon.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
-                if (btn) btn.disabled = true;
-
                 try {
+                    institutionId = document.getElementById("txtInstitutionId")?.value.trim() || "colegio_sandbox_default";
+                    rawIdentifier = document.getElementById("txtEmail")?.value.trim() || "demostrativo@dante.edu.com";
+                    const password = document.getElementById("txtPassword")?.value || "DemoR2026#";
+
+                    const chkRecordar = document.getElementById("chkRecordarCredenciales");
+                    if (chkRecordar && chkRecordar.checked) {
+                        localStorage.setItem("dante_remembered_credentials", JSON.stringify({
+                            email: rawIdentifier,
+                            institution_id: institutionId,
+                            role: SelectedRoleTarget
+                        }));
+                    }
+
+                    if (btnText) btnText.innerText = "Iniciando sesión...";
+                    if (btnIcon) btnIcon.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
+                    if (btn) btn.disabled = true;
+
                     const response = await fetch(`${HOST_URL}/api/auth/login-perimetral`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -886,6 +889,11 @@
                 }
             } catch (e) {
                 PortalAuth.seleccionarRol("estudiante");
+            }
+
+            if ('serviceWorker' in navigator) {
+                const SW_VERSION = "v21.2.1-ENTERPRISE_GOLD";
+                navigator.serviceWorker.register(`/service-worker.js?v=${SW_VERSION}`).catch(() => {});
             }
         });
     </script>
