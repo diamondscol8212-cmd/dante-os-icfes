@@ -898,6 +898,13 @@
                 });
             }
 
+            const btnEst = document.getElementById("cardRoleEstudiante");
+            if (btnEst) btnEst.addEventListener("click", () => PortalAuth.seleccionarRol("estudiante"));
+            const btnProf = document.getElementById("cardRoleProfesor");
+            if (btnProf) btnProf.addEventListener("click", () => PortalAuth.seleccionarRol("profesor"));
+            const btnRec = document.getElementById("cardRoleRector");
+            if (btnRec) btnRec.addEventListener("click", () => PortalAuth.seleccionarRol("rector"));
+
             if ('serviceWorker' in navigator) {
                 const SW_VERSION = "v21.2.2-ENTERPRISE_GOLD";
                 navigator.serviceWorker.register(`/service-worker.js?v=${SW_VERSION}`).catch(() => {});
