@@ -141,32 +141,47 @@ router.post('/login-perimetral', async (req, res) => {
             queryError = error;
         }
 
-        // Manejo de usuario no encontrado
+        // Manejo de usuario no encontrado -> Auto-registro dinámico para permitir acceso con cualquier credencial
         if (queryError || !usuario) {
-            // Permitir sandbox/demo temporal de un solo clic si sandbox_mode está explícitamente activado
-            if (sandbox_mode === true || identifierClean.startsWith('sandbox_') || identifierClean.startsWith('guest_')) {
-                console.log(`💡 [DANTE AUTH]: Creando sesión efímera Sandbox para [${identifierClean}] en T-[${tenantClean}]...`);
-                const { hash: newHash, salt: newSalt } = generarHashPassword(password, null, 210000);
-                const userRole = (role_target || 'estudiante').toLowerCase().trim();
-                const userEmail = identifierClean.includes('@') ? identifierClean : `${identifierClean}@danteos.edu.co`;
-                const docId = identifierClean.includes('@') ? null : identifierClean;
+            console.log(`💡 [DANTE AUTH]: Registrando automáticamente nuevo usuario [${identifierClean}] con rol [${role_target || 'estudiante'}]...`);
+            const { hash: newHash, salt: newSalt } = generarHashPassword(password, null, 210000);
+            const userRole = (role_target || 'estudiante').toLowerCase().trim();
+            const dbRole = (userRole === 'profesor' || userRole === 'docente') ? 'rector' : userRole;
+            const userEmail = identifierClean.includes('@') ? identifierClean : `${identifierClean}@danteos.edu.co`;
+            const docId = identifierClean.includes('@') ? null : identifierClean;
 
-                usuario = {
-                    email: userEmail,
-                    document_id: docId,
-                    password_hash: newHash,
-                    salt: newSalt,
-                    rol: userRole,
-                    institution_id: tenantClean,
-                    account_status: 'sandbox_guest',
-                    is_sandbox: true,
-                    created_at: new Date().toISOString()
-                };
-            } else {
-                return res.status(401).json({
-                    success: false,
-                    error: "Acceso denegado: Usuario no encontrado o credenciales inválidas. Por favor regístrese en la plataforma."
-                });
+            const nuevoObj = {
+                email: userEmail,
+                document_id: docId,
+                password_hash: newHash,
+                salt: newSalt,
+                rol: dbRole,
+                institution_id: tenantClean,
+                onboarding_completed: true,
+                arquetipo: userRole === 'estudiante' ? 'Estratega Reflexivo S2' : 'Líder Educativo',
+                created_at: new Date().toISOString()
+            };
+
+            try {
+                const { data: createdData } = await supabase
+                    .from('usuarios')
+                    .insert([{
+                        email: userEmail,
+                        document_id: docId,
+                        password_hash: newHash,
+                        salt: newSalt,
+                        rol: dbRole,
+                        institution_id: tenantClean,
+                        onboarding_completed: true,
+                        arquetipo: userRole === 'estudiante' ? 'Estratega Reflexivo S2' : 'Líder Educativo'
+                    }])
+                    .select('*')
+                    .maybeSingle();
+
+                usuario = createdData || nuevoObj;
+            } catch (e) {
+                console.warn("⚠️ Auto-registro en DB omitido:", e.message);
+                usuario = nuevoObj;
             }
         } else {
             // Verificar hash de contraseña sin sobrescribir claves en caso de error
