@@ -1528,7 +1528,7 @@
                 }
             }
 
-            openOdysseusContractModal() {
+            openOdysseusContractModal(onSignedCallback = null) {
                 let modal = document.getElementById('modalOdysseusContract');
                 if (!modal) {
                     modal = document.createElement('div');
@@ -1568,17 +1568,24 @@
                         </div>
                     `;
                     document.body.appendChild(modal);
+                }
 
-                    const btnSeal = modal.querySelector('#btnOdysseusSeal');
-                    if (btnSeal) {
-                        this.setupHoldToCommit(btnSeal, 3500, async () => {
-                            const checked = Array.from(modal.querySelectorAll('.chk-odysseus:checked')).map(el => el.value);
-                            await SignOdysseusContract.sign(AppState.estudiante || 'estudiante', checked, () => {
-                                mostrarNotificacionPWA("📜 Pacto de Odiseo Certificado con Éxito", "success");
-                                modal.style.display = 'none';
-                            });
+                modal._onSignedCallback = onSignedCallback;
+
+                const btnSeal = modal.querySelector('#btnOdysseusSeal');
+                if (btnSeal) {
+                    this.setupHoldToCommit(btnSeal, 3500, async () => {
+                        const checked = Array.from(modal.querySelectorAll('.chk-odysseus:checked')).map(el => el.value);
+                        await SignOdysseusContract.sign(AppState.estudiante || 'estudiante', checked, () => {
+                            mostrarNotificacionPWA("📜 Pacto de Odiseo Certificado con Éxito", "success");
+                            modal.style.display = 'none';
+                            if (typeof modal._onSignedCallback === 'function') {
+                                const cb = modal._onSignedCallback;
+                                modal._onSignedCallback = null;
+                                cb();
+                            }
                         });
-                    }
+                    });
                 }
                 modal.style.display = 'flex';
             }
@@ -2480,6 +2487,20 @@
             }
 
             static async inicializarSesion() {
+                const keyOdysseus = `dante_odysseus_${AppState.estudiante}`;
+                const hasSigned = localStorage.getItem(keyOdysseus);
+
+                if (!hasSigned && window.hapticEngine) {
+                    window.hapticEngine.openOdysseusContractModal(() => {
+                        this.ejecutarInicializarSesionDirecto();
+                    });
+                    return;
+                }
+
+                await this.ejecutarInicializarSesionDirecto();
+            }
+
+            static async ejecutarInicializarSesionDirecto() {
                 const btn = document.getElementById("btnIngresar");
                 if (btn) {
                     btn.innerText = "Sincronizando trayectoria cognitiva..."; 
