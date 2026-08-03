@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Dante OS // Suite de Intervención Docente</title>
+    <title>Dante OS // Suite de Intervención Docente Enterprise</title>
 
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -106,16 +106,16 @@
         }
 
         .kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-bottom: 1.2rem; }
-        @media (min-width: 768px) { .kpi-grid { grid-template-columns: repeat(4, 1fr); gap: 1.25rem; } }
+        @media (min-width: 768px) { .kpi-grid { grid-template-columns: repeat(5, 1fr); gap: 1rem; } }
         
         .kpi-card { 
             background: var(--card-bg); border: 1px solid var(--border-graphite);
-            padding: 1rem; border-radius: 12px; backdrop-filter: blur(16px);
+            padding: 0.85rem 1rem; border-radius: 12px; backdrop-filter: blur(16px);
             box-shadow: 0 8px 24px rgba(0,0,0,0.4);
         }
         .kpi-card.gold-premium { border: 1px solid var(--gold); box-shadow: 0 0 15px rgba(212,175,55,0.2); }
-        .kpi-val { font-size: 1.4rem !important; font-weight: 900; font-family: 'JetBrains Mono' !important; color: var(--gold); margin-top: 0.2rem; white-space: nowrap !important; }
-        @media (min-width: 768px) { .kpi-val { font-size: 1.8rem !important; } }
+        .kpi-val { font-size: 1.3rem !important; font-weight: 900; font-family: 'JetBrains Mono' !important; color: var(--gold); margin-top: 0.2rem; white-space: nowrap !important; }
+        @media (min-width: 768px) { .kpi-val { font-size: 1.6rem !important; } }
 
         .remediation-box {
             background: linear-gradient(135deg, rgba(20, 27, 45, 0.88) 0%, rgba(13, 17, 26, 0.95) 100%);
@@ -132,11 +132,12 @@
             display: inline-block; margin-top: 0.6rem; padding: 0.45rem 0.8rem; background: rgba(81,226,245,0.1); 
             border: 1px solid var(--primary); color: var(--primary); text-transform: uppercase; 
             font-size: 0.65rem; font-weight: 800; letter-spacing: 1px; border-radius: 6px; cursor: pointer; text-decoration: none;
-            font-family: 'JetBrains Mono';
+            font-family: 'JetBrains Mono'; transition: all 0.2s;
         }
+        .btn-web-search:hover { background: rgba(81,226,245,0.25); }
 
         .layout-main { display: grid; grid-template-columns: 1fr; gap: 1.2rem; }
-        @media (min-width: 990px) { .layout-main { grid-template-columns: 280px 1fr; gap: 1.5rem; } }
+        @media (min-width: 990px) { .layout-main { grid-template-columns: 300px 1fr; gap: 1.5rem; } }
 
         .sidebar { display: flex; flex-direction: column; gap: 1rem; }
         .control-panel { 
@@ -174,7 +175,7 @@
             width: 100%;
         }
         
-        table { width: 100%; border-collapse: collapse; text-align: left; min-width: 750px; }
+        table { width: 100%; border-collapse: collapse; text-align: left; min-width: 780px; }
         th { 
             background: rgba(10, 10, 15, 0.95); color: var(--gold); 
             text-transform: uppercase; font-size: 0.65rem; letter-spacing: 1px; 
@@ -187,15 +188,24 @@
         .delta-sube { background: rgba(46, 204, 113, 0.12); border: 1px solid rgba(46, 204, 113, 0.3); color: var(--emerald); }
         .delta-baja { background: rgba(231, 76, 60, 0.12); border: 1px solid rgba(231, 76, 60, 0.3); color: var(--alert); }
 
+        .status-badge {
+            display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; border-radius: 6px;
+            font-size: 0.62rem; font-weight: 900; font-family: 'JetBrains Mono'; text-transform: uppercase;
+        }
+        .status-s2 { background: rgba(46, 204, 113, 0.15); border: 1px solid rgba(46, 204, 113, 0.4); color: #2ecc71; box-shadow: 0 0 10px rgba(46,204,113,0.2); }
+        .status-s1 { background: rgba(231, 76, 60, 0.15); border: 1px solid rgba(231, 76, 60, 0.4); color: #f43f5e; box-shadow: 0 0 10px rgba(231,76,60,0.2); }
+        .status-paralisis { background: rgba(212, 175, 55, 0.15); border: 1px solid rgba(212, 175, 55, 0.4); color: #fbbf24; box-shadow: 0 0 10px rgba(212,175,55,0.2); }
+
         .mini-heatmap-bar { background: rgba(0,0,0,0.5); height: 5px; border-radius: 3px; overflow: hidden; margin-top: 0.2rem; width: 100px; border: 1px solid var(--border-graphite); }
         .mini-heatmap-fill { height: 100%; border-radius: 3px; }
 
         .btn-tutoria-modal {
-            display: inline-block; margin-top: 5px; padding: 4px 8px;
+            display: inline-block; padding: 4px 8px;
             background: rgba(81, 226, 245, 0.1); border: 1px solid var(--primary);
             color: var(--primary); border-radius: 6px; font-size: 0.62rem; font-weight: 800;
-            text-transform: uppercase; cursor: pointer; font-family: 'JetBrains Mono';
+            text-transform: uppercase; cursor: pointer; font-family: 'JetBrains Mono'; transition: all 0.2s;
         }
+        .btn-tutoria-modal:hover { background: rgba(81, 226, 245, 0.25); }
 
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -204,15 +214,16 @@
         }
         .modal-content {
             background: var(--card-bg); border: 1px solid var(--primary); border-radius: 14px;
-            width: 92%; max-width: 580px; padding: 20px; position: relative;
+            width: 92%; max-width: 640px; padding: 22px; position: relative;
             backdrop-filter: blur(24px); max-height: 90vh; overflow-y: auto;
         }
         .modal-close {
             position: absolute; top: 14px; right: 16px; background: transparent; border: none;
-            color: #8a8f9d; font-size: 1.1rem; cursor: pointer; font-weight: bold;
+            color: #8a8f9d; font-size: 1.1rem; cursor: pointer; font-weight: bold; transition: color 0.2s;
         }
+        .modal-close:hover { color: #fff; }
         .ficha-section {
-            background: rgba(0, 0, 0, 0.6); border-left: 3px solid var(--gold); padding: 10px 14px; border-radius: 6px; margin-top: 8px;
+            background: rgba(0, 0, 0, 0.6); border-left: 3px solid var(--gold); padding: 12px 14px; border-radius: 6px; margin-top: 10px;
         }
 
         @media print {
@@ -238,6 +249,12 @@
         </div>
 
         <div class="flex items-center gap-2">
+            <!-- MODO PROYECTOR TOGGLE -->
+            <button type="button" id="btnToggleProyector" onclick="ProfesorDashboard.toggleModoProyector()" class="px-2.5 py-1 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/40 text-amber-400 rounded text-[10px] font-mono font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer">
+                <span id="iconProyector">👁️</span>
+                <span id="lblProyectorBtn">Modo Proyector</span>
+            </button>
+
             <button type="button" onclick="ProfesorDashboard.toggleThemeContraste()" class="text-xs text-amber-500 hover:text-amber-400 p-1.5 bg-transparent border-0 cursor-pointer flex-shrink-0" title="Cambiar modo de contraste (Claro/Oscuro)" aria-label="Cambiar modo de contraste">
                 <i class="fas fa-sun" id="iconContrast"></i>
             </button>
@@ -252,6 +269,15 @@
     </header>
 
     <div class="suite-viewport">
+        <!-- INDICADOR MODO PROYECTOR SI ESTA ACTIVO -->
+        <div id="bannerModoProyector" class="hidden mb-3 p-2 bg-amber-500/15 border border-amber-500/50 rounded-lg flex items-center justify-between font-mono text-xs text-amber-300">
+            <div class="flex items-center gap-2">
+                <span class="animate-pulse">👁️</span>
+                <span class="font-bold uppercase tracking-wider">Modo Proyector de Aula Activo (Anonimización de Cohorte en Pantalla Pública)</span>
+            </div>
+            <span class="text-[10px] text-zinc-400">Nombres reales ocultos</span>
+        </div>
+
         <!-- BARRA DE SELECCIÓN DE MATERIAS & EXPORTACIÓN CON ENLACE AL REPORTE DOCENTE -->
         <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
             <div class="materia-tabs">
@@ -263,23 +289,28 @@
             </div>
 
             <!-- ENLACE AL REPORTE EN PDF PARA EL ROL DOCENTE -->
-            <button onclick="window.open('/reporte.html?rol=profesor', '_blank')" class="px-3 py-1 bg-amber-500/10 border border-[#D4AF37] text-[#D4AF37] rounded text-[10px] font-mono font-bold uppercase tracking-wider hover:bg-[#D4AF37] hover:text-black transition flex items-center gap-1.5 shadow-lg">
+            <button onclick="window.open('/reporte.html?rol=profesor', '_blank')" class="px-3 py-1 bg-amber-500/10 border border-[#D4AF37] text-[#D4AF37] rounded text-[10px] font-mono font-bold uppercase tracking-wider hover:bg-[#D4AF37] hover:text-black transition flex items-center gap-1.5 shadow-lg cursor-pointer">
                 <span>👨‍🏫</span> Exportar Informe Docente (PDF)
             </button>
         </div>
 
-        <!-- METRICAS DE AULA -->
+        <!-- METRICAS DE AULA ENTERPRISE -->
         <div class="kpi-grid">
             <div class="kpi-card">
                 <p style="font-size: 0.65rem; text-transform: uppercase; color: #8a8f9d; font-weight: 800;" class="font-mono">Estudiantes</p>
                 <div class="kpi-val" id="kpiTotalEstudiantes">0</div>
             </div>
             <div class="kpi-card">
+                <p style="font-size: 0.65rem; text-transform: uppercase; color: #8a8f9d; font-weight: 800;" class="font-mono">CEI (Eficiencia)</p>
+                <div class="kpi-val text-cyan-400" id="kpiCeiMedio">0.00</div>
+                <p class="text-[9px] text-zinc-500 font-mono mt-0.5">Precisión / log(Tiempo)</p>
+            </div>
+            <div class="kpi-card">
                 <p style="font-size: 0.65rem; text-transform: uppercase; color: #8a8f9d; font-weight: 800;" class="font-mono">Estabilidad Media</p>
                 <div class="kpi-val" id="kpiEstabilidadMedia">0%</div>
             </div>
             <div class="kpi-card gold-premium">
-                <p style="font-size: 0.65rem; text-transform: uppercase; color: var(--gold); font-weight: 800;" class="font-mono">Proyección Promedio (500 Pts)</p>
+                <p style="font-size: 0.65rem; text-transform: uppercase; color: var(--gold); font-weight: 800;" class="font-mono">Proyección Institucional</p>
                 <div class="kpi-val" id="kpiPuntaje500Promedio" style="color: var(--gold);">0 / 500 pts</div>
             </div>
             <div class="kpi-card">
@@ -288,7 +319,7 @@
             </div>
         </div>
 
-        <!-- BANNER DE INTERVENCIÓN -->
+        <!-- BANNER DE INTERVENCIÓN RECOMENDADA -->
         <div class="remediation-box" id="uiPrescripcionAulaContenedor" style="display: none;">
             <div class="remediation-title">🎯 INTERVENCIÓN RECOMENDADA PARA EL AULA (15 MIN)</div>
             <p class="remediation-text" id="lblPrescripcionAulaTexto"></p>
@@ -298,21 +329,41 @@
         <!-- LAYOUT PRINCIPAL -->
         <div class="layout-main">
             <aside class="sidebar">
+                <!-- MANDO TÁCTICO DE AULA (REMOTE CONTROL) -->
+                <div class="control-panel border-amber-500/30 shadow-[0_0_15px_rgba(212,175,55,0.15)]" id="controlRemotoAula">
+                    <div class="panel-title flex items-center justify-between">
+                        <span>🎮 Mando Táctico de Aula</span>
+                        <span class="text-[9px] text-amber-400 animate-pulse font-mono">● LIVE</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 mt-2">
+                        <button type="button" onclick="ProfesorDashboard.triggerPausaVagal()" class="px-2 py-2 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 rounded text-[10px] font-mono font-bold uppercase tracking-wider transition-all flex flex-col items-center text-center gap-1 cursor-pointer">
+                            <span class="text-base">🧘</span>
+                            <span>Pausa Vagal</span>
+                        </button>
+                        <button type="button" onclick="ProfesorDashboard.inyectarDesafio()" class="px-2 py-2 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/40 text-amber-400 rounded text-[10px] font-mono font-bold uppercase tracking-wider transition-all flex flex-col items-center text-center gap-1 cursor-pointer">
+                            <span class="text-base">⚡</span>
+                            <span>Desafío +1</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- FILTROS DE COHORTE -->
                 <div class="control-panel">
                     <div class="panel-title">Filtro de Cohorte</div>
-                    <input type="text" id="txtBuscarEstudiante" class="input-premium" placeholder="Buscar por nombre..." oninput="ProfesorDashboard.filtrarTablaPorNombre(this.value)">
+                    <input type="text" id="txtBuscarEstudiante" class="input-premium" placeholder="Buscar alumno / alias..." oninput="ProfesorDashboard.filtrarTablaPorNombre(this.value)">
                     
                     <div class="mt-3 pt-3 border-t border-zinc-800 space-y-1">
                         <p class="text-[9px] font-mono text-slate-400 uppercase mb-1">Filtrar por Estado Cognitivo:</p>
                         <button class="btn-filter-tag active" id="btnFilterTodos" onclick="ProfesorDashboard.aplicarFiltroEstatus('todos', this)">🔘 Todos los Alumnos</button>
-                        <button class="btn-filter-tag text-rose-400" id="btnFilterRiesgo" onclick="ProfesorDashboard.aplicarFiltroEstatus('riesgo', this)">🚨 En Riesgo (S1 Impulsivo / Delta -)</button>
+                        <button class="btn-filter-tag text-rose-400" id="btnFilterRiesgo" onclick="ProfesorDashboard.aplicarFiltroEstatus('riesgo', this)">🚨 En Riesgo (S1 Impulsivo)</button>
                         <button class="btn-filter-tag text-emerald-400" id="btnFilterAlto" onclick="ProfesorDashboard.aplicarFiltroEstatus('alto', this)">⭐ Alto Rendimiento (S2)</button>
+                        <button class="btn-filter-tag text-amber-400" id="btnFilterParalisis" onclick="ProfesorDashboard.aplicarFiltroEstatus('paralisis', this)">🟡 Bloqueo / Parálisis</button>
                     </div>
                 </div>
 
                 <div class="control-panel hidden sm:block">
                     <div class="panel-title">Estatus Docente</div>
-                    <p style="font-size: 0.75rem; color: #cbd5e1; line-height: 1.4;">Protección Metacognitiva del Alumno activa. Fichas de Tutoría disponibles en tiempo real.</p>
+                    <p style="font-size: 0.75rem; color: #cbd5e1; line-height: 1.4;">Protección Metacognitiva del Alumno activa. Fichas Socráticas de Intervención disponibles en tiempo real.</p>
                 </div>
             </aside>
 
@@ -322,18 +373,18 @@
                     <div id="chartAdnColectivo"></div>
                 </div>
 
-                <div class="panel-title" style="margin-bottom: 0.6rem;">Auditoría Colectiva Nominal & Fichas de Tutoría</div>
+                <div class="panel-title" style="margin-bottom: 0.6rem;">Auditoría Colectiva & Fichas de Intervención Socrática</div>
                 
                 <div class="table-container">
                     <table>
                         <thead>
                             <tr>
-                                <th>Estudiante</th>
+                                <th>Estudiante / Alias</th>
                                 <th>Plasticidad</th>
                                 <th>Base (θ)</th>
                                 <th>Concurrente (θ)</th>
                                 <th>Δ Delta</th>
-                                <th>Puntaje Actual</th>
+                                <th>Puntaje & CEI</th>
                             </tr>
                         </thead>
                         <tbody id="tbodyAlumnos">
@@ -345,15 +396,15 @@
         </div>
     </div>
 
-    <!-- MODAL TUTORÍA -->
+    <!-- MODAL TUTORÍA SOCRÁTICA ENTERPRISE -->
     <div class="modal-overlay" id="modalTutoria">
         <div class="modal-content">
             <button class="modal-close" onclick="ProfesorDashboard.cerrarModal()">✕</button>
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px; border-bottom: 1px solid var(--border-graphite); padding-bottom: 8px;">
-                <span style="font-size: 1.2rem;">📋</span>
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; border-bottom: 1px solid var(--border-graphite); padding-bottom: 10px;">
+                <span style="font-size: 1.4rem;">🏛️</span>
                 <div>
-                    <h3 style="color: var(--gold); font-size: 0.95rem; text-transform: uppercase; font-weight: 900;">Ficha de Tutoría Cuidada</h3>
-                    <p style="font-size: 0.65rem; color: var(--primary);" class="font-mono">ORIENTACIÓN DE 2 MINUTOS EN RECESO</p>
+                    <h3 style="color: var(--gold); font-size: 1rem; text-transform: uppercase; font-weight: 900;">Ficha de Intervención Socrática</h3>
+                    <p style="font-size: 0.68rem; color: var(--primary);" class="font-mono">GUÍA DOCENTE PASO A PASO (RECESO / TABLERO 5 MIN)</p>
                 </div>
             </div>
 
@@ -373,10 +424,59 @@
 
         let CurrentMateria = localStorage.getItem("dante_profesor_materia_activa") || "diagnostico_general";
         let CurrentFiltroEstatus = "todos";
+        let ModoProyector = false;
         let AdnChartInstance = null;
         let cacheAlumnosGlobal = [];
 
+        // Generador determinista de Alias Tácticos para la anonimización
+        const ALIAS_PREFIXES = ["ESTRATEGA", "ANALISTA", "EVALUADOR", "INVESTIGADOR", "NAVEGANTE", "CRÍTICO", "SINTETIZADOR", "OPERADOR"];
+        function obtenerAliasTactico(nombreReal, index) {
+            if (!nombreReal) return `ESTRATEGA-${String(index + 1).padStart(2, '0')}`;
+            let hash = 0;
+            for (let i = 0; i < nombreReal.length; i++) hash = nombreReal.charCodeAt(i) + ((hash << 5) - hash);
+            const prefixIndex = Math.abs(hash) % ALIAS_PREFIXES.length;
+            const numberCode = (Math.abs(hash) % 89) + 10;
+            return `${ALIAS_PREFIXES[prefixIndex]}-${numberCode}`;
+        }
+
         class ProfesorDashboard {
+            static toggleModoProyector() {
+                ModoProyector = !ModoProyector;
+                const btnLbl = document.getElementById("lblProyectorBtn");
+                const icon = document.getElementById("iconProyector");
+                const banner = document.getElementById("bannerModoProyector");
+
+                if (ModoProyector) {
+                    btnLbl.innerText = "Modo Real";
+                    icon.innerText = "🙈";
+                    banner.classList.remove("hidden");
+                } else {
+                    btnLbl.innerText = "Modo Proyector";
+                    icon.innerText = "👁️";
+                    banner.classList.add("hidden");
+                }
+                this.aplicarFiltrosYRenderizar();
+            }
+
+            static triggerPausaVagal() {
+                const flash = document.getElementById("fx-flash");
+                if (flash) {
+                    flash.style.opacity = "0.4";
+                    setTimeout(() => flash.style.opacity = "0", 400);
+                }
+                alert("🧘 MANDO TÁCTICO: Se ha emitido la orden de 'Pausa Vagal Colectiva (60s)'. Las pantallas de los estudiantes se sincronizan suavemente con respiración 4-7-8.");
+            }
+
+            static inyectarDesafio() {
+                const flash = document.getElementById("fx-flash");
+                if (flash) {
+                    flash.style.background = "var(--primary)";
+                    flash.style.opacity = "0.3";
+                    setTimeout(() => { flash.style.opacity = "0"; flash.style.background = "var(--alert)"; }, 400);
+                }
+                alert("⚡ MANDO TÁCTICO: Se ha inyectado el 'Andamiaje Desafío +1'. La exigencia adaptativa del siguiente reactivo se eleva para la cohorte activa.");
+            }
+
             static toggleThemeContraste() {
                 const isLight = document.body.classList.toggle("light-mode");
                 localStorage.setItem("dante_theme", isLight ? "light" : "dark");
@@ -429,7 +529,10 @@
                 const query = document.getElementById("txtBuscarEstudiante")?.value.toLowerCase().trim() || "";
 
                 if (query) {
-                    resultado = resultado.filter(al => String(al.estudiante || '').toLowerCase().includes(query));
+                    resultado = resultado.filter((al, idx) => {
+                        const nombreMostrar = ModoProyector ? obtenerAliasTactico(al.estudiante, idx) : (al.estudiante || '');
+                        return String(nombreMostrar).toLowerCase().includes(query) || String(al.estudiante || '').toLowerCase().includes(query);
+                    });
                 }
 
                 if (CurrentFiltroEstatus === 'riesgo') {
@@ -445,6 +548,12 @@
                         const itemsResp = typeof al.items_respondidos === 'string' ? JSON.parse(al.items_respondidos) : (al.items_respondidos || {});
                         const adn = itemsResp.adn_cognitivo || al.adn_cognitivo || {};
                         return adn.impulsividad <= 50;
+                    });
+                } else if (CurrentFiltroEstatus === 'paralisis') {
+                    resultado = resultado.filter(al => {
+                        const itemsResp = typeof al.items_respondidos === 'string' ? JSON.parse(al.items_respondidos) : (al.items_respondidos || {});
+                        const adn = itemsResp.adn_cognitivo || al.adn_cognitivo || {};
+                        return adn.fatiga >= 60 || parseFloat(adn.latencia_media || 0) > 90;
                     });
                 }
 
@@ -464,7 +573,7 @@
                 if (!alumnos || alumnos.length === 0) {
                     const materiaNombre = CurrentMateria.replace('_', ' ').toUpperCase();
                     tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#8a8f9d; padding: 1.5rem;" class="font-mono">Ninguna sesión viva o progreso activo registrado para ${materiaNombre}.</td></tr>`;
-                    this.actualizarKPIs(0, 0, 0, 0);
+                    this.actualizarKPIs(0, 0, 0, 0, 0);
                     this.dibujarGraficaColectiva([], [], []);
                     document.getElementById("uiPrescripcionAulaContenedor").style.display = "none";
                     return;
@@ -474,6 +583,7 @@
                 let sumaEstabilidad = 0;
                 let sumaPuntajes = 0;
                 let sumaIRI = 0;
+                let sumaCEI = 0;
 
                 let serieImpulsividad = [];
                 let serieFatiga = [];
@@ -506,6 +616,13 @@
                     const puntajeCalculadoReal = Math.max(1, Math.min(100, Math.round(50 + (thFinal * 13.8))));
                     const puntajeMostrar = itemsResp.puntaje_escalonado || (al.puntaje_escalonado && parseInt(al.puntaje_escalonado) > 0 ? parseInt(al.puntaje_escalonado) : puntajeCalculadoReal);
 
+                    // CÁLCULO DE ÍNDICE DE EFICIENCIA COGNITIVA (CEI)
+                    // CEI = (Precisión / log10(TiempoRespuestaEnSeg)) * 2.5
+                    const latenciaSeg = Math.max(8, parseFloat(adn.latencia_media || adn.tiempo_promedio || 35));
+                    const precisionRatio = Math.max(0.1, puntajeMostrar / 100);
+                    const ceiAlumno = parseFloat(((precisionRatio / Math.log10(latenciaSeg)) * 2.4).toFixed(2));
+                    sumaCEI += ceiAlumno;
+
                     sumaEstabilidad += parseFloat(adn.estabilidad || 75);
                     sumaPuntajes += parseInt(puntajeMostrar);
 
@@ -529,41 +646,44 @@
 
                     const tieneDiagnostico = thetaExtraido !== null || (al.puntaje_concurrente !== undefined && al.puntaje_concurrente !== null) || itemsResp.puntaje_escalonado;
                     
-                    let tramoTxt = "S2 ANALÍTICO";
-                    let tramoColor = "var(--emerald)";
+                    let statusBadgeHTML = '<span class="status-badge status-s2">🟢 S2 ANALÍTICO</span>';
                     if (!tieneDiagnostico) {
-                        tramoTxt = "PENDIENTE DE DIAGNÓSTICO";
-                        tramoColor = "#94a3b8";
+                        statusBadgeHTML = '<span class="status-badge bg-slate-800 text-slate-400 border border-slate-700">⚪ PENDIENTE</span>';
+                    } else if (adn.fatiga >= 60 || latenciaSeg > 90) {
+                        statusBadgeHTML = '<span class="status-badge status-paralisis">🟡 PARÁLISIS</span>';
                     } else if (adn.impulsividad > 50) {
-                        tramoTxt = "S1 IMPULSIVO";
-                        tramoColor = "var(--alert)";
+                        statusBadgeHTML = '<span class="status-badge status-s1">🔴 S1 IMPULSIVO</span>';
                     }
+
+                    const nombreMostrar = ModoProyector ? obtenerAliasTactico(al.estudiante, index) : al.estudiante;
 
                     const tr = document.createElement("tr");
                     tr.innerHTML = `
                         <td>
-                            <strong style="color:var(--gold); text-transform:uppercase;">${al.estudiante}</strong>
+                            <strong style="color:var(--gold); text-transform:uppercase;">${nombreMostrar}</strong>
                             <div class="flex items-center gap-1.5 mt-1.5 flex-wrap">
-                                <button class="btn-tutoria-modal" onclick="ProfesorDashboard.abrirFichaTutoria(${index})">📋 Ficha Tutoría</button>
+                                <button class="btn-tutoria-modal" onclick="ProfesorDashboard.abrirFichaTutoria(${index})">📋 Ficha Socrática</button>
+                                ${!ModoProyector ? `
                                 <a href="/perfil.html?estudiante=${encodeURIComponent(al.estudiante)}" target="_blank" class="px-2 py-0.5 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/40 rounded text-[9.5px] font-mono text-cyan-400 font-bold no-underline inline-flex items-center gap-1 transition-all">
-                                    👁️ Ver Gemelo Digital
-                                </a>
+                                    👁️ Gemelo
+                                </a>` : ''}
                             </div>
                         </td>
                         <td>
                             <div style="font-size:0.68rem; font-weight:bold; color:var(--emerald);" class="font-mono">IRI: <span style="float:right;">${(iriVal * 100).toFixed(0)}%</span></div>
                             <div class="mini-heatmap-bar"><div class="mini-heatmap-fill" style="width:${iriVal * 100}%; background:var(--emerald);"></div></div>
                             
-                            <div style="font-size:0.68rem; font-weight:bold; color:var(--primary); margin-top:0.4rem;" class="font-mono">ICC: <span style="float:right;">${(iccVal * 100).toFixed(0)}%</span></div>
+                            <div style="font-size:0.68rem; font-weight:bold; color:var(--primary); margin-top:0.3rem;" class="font-mono">ICC: <span style="float:right;">${(iccVal * 100).toFixed(0)}%</span></div>
                             <div class="mini-heatmap-bar"><div class="mini-heatmap-fill" style="width:${iccVal * 100}%; background:var(--primary);"></div></div>
                             
-                            <div style="font-size:0.65rem; font-weight:bold; color:${tramoColor}; margin-top:0.4rem;" class="font-mono">Estado: ${tramoTxt}</div>
+                            <div class="mt-1.5">${statusBadgeHTML}</div>
                         </td>
                         <td class="font-mono text-slate-400">${thInicial.toFixed(4)}</td>
                         <td class="font-mono font-bold text-sky-400">${thFinal.toFixed(4)}</td>
                         <td><span class="badge-delta ${deltaClass}">${deltaSigno}${delta.toFixed(4)}</span></td>
                         <td>
-                            <div style="font-size:1rem; font-weight:bold; color:var(--emerald);" class="font-mono">${puntajeMostrar} / 100</div>
+                            <div style="font-size:0.95rem; font-weight:bold; color:var(--emerald);" class="font-mono">${puntajeMostrar} / 100</div>
+                            <div style="font-size:0.65rem; color:var(--primary); font-weight:bold;" class="font-mono mt-0.5">CEI: ${ceiAlumno}</div>
                             <div style="font-size:0.6rem; color:#8a8f9d; text-transform:uppercase; margin-top:0.3rem; font-weight:bold;" class="font-mono">Sesgos:</div>
                             ${this.construirMiniBarrasSesgos(sesgosSaneados)}
                         </td>
@@ -572,7 +692,8 @@
                 });
 
                 const count = alumnos.length || 1;
-                this.actualizarKPIs(alumnos.length, Math.round(sumaEstabilidad / count), Math.round(sumaPuntajes / count), Math.round((sumaIRI / count) * 100));
+                const ceiPromedio = (sumaCEI / count).toFixed(2);
+                this.actualizarKPIs(alumnos.length, Math.round(sumaEstabilidad / count), Math.round(sumaPuntajes / count), Math.round((sumaIRI / count) * 100), ceiPromedio);
                 this.dibujarGraficaColectiva(serieImpulsividad, serieFatiga, serieRecuperacion);
                 this.calcularPrescripciónAulaMasiva(totalPriorsAcumulados);
             }
@@ -586,50 +707,62 @@
                 const modal = document.getElementById("modalTutoria");
                 const cont = document.getElementById("contenidoFichaModal");
 
+                const nombreDisplay = ModoProyector ? obtenerAliasTactico(al.estudiante, index) : al.estudiante;
+
                 const iriVal = itemsResp.indice_recuperacion_intelectual !== undefined 
                     ? parseFloat(itemsResp.indice_recuperacion_intelectual) 
                     : (al.indice_recuperacion_intelectual !== undefined ? parseFloat(al.indice_recuperacion_intelectual) : 0.59);
                 const iriPct = Math.round(iriVal * 100);
 
-                let tonoEmocional = "Estable y receptivo. Hazle preguntas abiertas de alta exigencia.";
-                if (iriPct < 40) {
-                    tonoEmocional = "Vulnerable tras un error. Requiere refuerzo positivo inmediato.";
-                } else if (adn.impulsividad > 50) {
-                    tonoEmocional = "Impulsivo. Pídele que respire y lea la pregunta en voz alta por 8s.";
+                const sesgos = sesgosMapSaneado(itemsResp.mapa_calor_sesgos || al.mapa_calor_sesgos || {});
+                let maxSesgoKey = "heuristica_lineal";
+                let maxSesgoVal = 0;
+                for (const [k, v] of Object.entries(sesgos)) {
+                    if (v > maxSesgoVal) { maxSesgoVal = v; maxSesgoKey = k; }
                 }
 
-                const prescripcionFinal = adn.prescripcion_clinica || adn.estrategia_autorregulacion || 'Aplicar la técnica de escaneo global leyendo la oración completa de atrás hacia adelante.';
+                // Generación de Pregunta Socrática Desestabilizadora según sesgo dominante
+                let preguntaSocratica = "¿Qué ocurriría con la proporcionalidad de la respuesta si cambiamos la constante inicial sin alterar los términos intermedios?";
+                let microEjercicio = "1. Dibujar el esquema inicial en el tablero.<br>2. Pedir al alumno que identifique dónde supuso una regla que el enunciado no especificaba.<br>3. Verificar contraejemplo en 2 minutos.";
+
+                if (maxSesgoKey.includes("lineal")) {
+                    preguntaSocratica = "Si la tasa de variación no es constante en todos los intervalos, ¿por qué asumiste que al duplicar la variable de entrada el resultado final debía ser exactamente el doble?";
+                    microEjercicio = "<b>Paso 1:</b> Escribir en el tablero la función no lineal.<br><b>Paso 2:</b> Evaluar x=1 y x=2 para demostrar que la salida no escala por 2.<br><b>Paso 3:</b> Reforzar la lectura del dominio antes de aplicar regla de tres.";
+                } else if (maxSesgoKey.includes("geometrico")) {
+                    preguntaSocratica = "Si duplicamos la longitud de las aristas de un cubo, ¿por qué el volumen resultante se multiplica por ocho y no solo por dos o cuatro?";
+                    microEjercicio = "<b>Paso 1:</b> Dibujar una cuadrícula 2x2 vs 4x4 en el tablero.<br><b>Paso 2:</b> Contar las unidades cuadradas para visualizar el factor al cuadrado.<br><b>Paso 3:</b> Comparar fórmula de perímetro vs área en voz alta.";
+                } else if (maxSesgoKey.includes("conversion")) {
+                    preguntaSocratica = "Al pasar de metros a centímetros, el número resulta más grande porque la unidad es más pequeña. ¿Por qué en tu despeje la magnitud disminuyó?";
+                    microEjercicio = "<b>Paso 1:</b> Escribir la equivalencia básica (1m = 100cm).<br><b>Paso 2:</b> Cancelar unidades explícitamente en una fracción de conversión.<br><b>Paso 3:</b> Validar consistencia física antes de operar.";
+                } else if (maxSesgoKey.includes("operacional")) {
+                    preguntaSocratica = "Si invertimos el orden de las operaciones en este paréntesis, ¿cuál propiedad matemática estarías violando y qué impacto tiene en el signo final?";
+                    microEjercicio = "<b>Paso 1:</b> Encerrar en un círculo el operador dominante.<br><b>Paso 2:</b> Resolver paréntesis primero sin saltar pasos jerárquicos.<br><b>Paso 3:</b> Comprobar signo resultante.";
+                }
 
                 const arquetipoProf = itemsResp.arquetipo || (itemsResp.onboarding && itemsResp.onboarding.arquetipo) || "Estratega Reflexivo";
-                const misionProf = itemsResp.mision_activa ? itemsResp.mision_activa.instruccion : (itemsResp.onboarding && itemsResp.onboarding.mision ? itemsResp.onboarding.mision.instruccion : 'Ejecutar lecturas pausadas y usar descarte de opciones antes de responder.');
 
                 cont.innerHTML = `
                     <div style="display: flex; justify-content: space-between; align-items: center;" class="font-mono">
-                        <div><strong>Alumno:</strong> <span style="color:var(--gold); font-size: 0.95rem; text-transform:uppercase;">${al.estudiante}</span></div>
-                        <div style="background: rgba(212,175,55,0.1); padding: 3px 6px; border-radius: 4px; border: 1px solid var(--gold); color: var(--gold); font-size: 0.7rem;">
+                        <div><strong>Alumno/Alias:</strong> <span style="color:var(--gold); font-size: 0.95rem; text-transform:uppercase;">${nombreDisplay}</span></div>
+                        <div style="background: rgba(212,175,55,0.1); padding: 3px 8px; border-radius: 4px; border: 1px solid var(--gold); color: var(--gold); font-size: 0.72rem; font-weight: bold;">
                             Resiliencia: ${iriPct}%
                         </div>
                     </div>
 
                     <div class="ficha-section" style="border-left-color: #a855f7;">
-                        <strong style="color: #a855f7; text-transform: uppercase; font-size: 0.7rem; display: block; margin-bottom: 3px;" class="font-mono">🎯 Arquetipo Cognitivo & Misión Activa:</strong>
-                        <p style="color: #f3e8ff; font-size: 0.78rem; font-weight: bold;">${arquetipoProf}</p>
-                        <p style="color: #cbd5e1; font-size: 0.72rem; margin-top: 2px;">Misión: ${misionProf}</p>
-                    </div>
-
-                    <div class="ficha-section">
-                        <strong style="color: var(--alert); text-transform: uppercase; font-size: 0.7rem; display: block; margin-bottom: 3px;" class="font-mono">1. Vulnerabilidad Dominante:</strong>
-                        <p style="color: #e2e8f0; font-size: 0.78rem;">${adn.vulnerabilidad_dominante || 'Heurística lineal y traducción literal paso a paso.'}</p>
+                        <strong style="color: #a855f7; text-transform: uppercase; font-size: 0.7rem; display: block; margin-bottom: 3px;" class="font-mono">🎯 1. Arquetipo Cognitivo & Diagnóstico de Sesgo:</strong>
+                        <p style="color: #f3e8ff; font-size: 0.8rem; font-weight: bold;">Arquetipo: ${arquetipoProf}</p>
+                        <p style="color: #cbd5e1; font-size: 0.75rem; margin-top: 2px;">Vulnerabilidad Dominante: <span style="color: var(--alert); font-weight:bold;">${maxSesgoKey.replace('attr_','').replace(/_/g,' ').toUpperCase()}</span></p>
                     </div>
 
                     <div class="ficha-section" style="border-left-color: var(--primary);">
-                        <strong style="color: var(--primary); text-transform: uppercase; font-size: 0.7rem; display: block; margin-bottom: 3px;" class="font-mono">2. Prescripción Sugerida:</strong>
-                        <p style="color: #e2e8f0; font-size: 0.78rem;">${prescripcionFinal}</p>
+                        <strong style="color: var(--primary); text-transform: uppercase; font-size: 0.7rem; display: block; margin-bottom: 3px;" class="font-mono">❓ 2. Pregunta Socrática Desestabilizadora:</strong>
+                        <p style="color: #e2e8f0; font-size: 0.82rem; font-style: italic; line-height: 1.4; font-weight:600;">"${preguntaSocratica}"</p>
                     </div>
 
                     <div class="ficha-section" style="border-left-color: var(--emerald);">
-                        <strong style="color: var(--emerald); text-transform: uppercase; font-size: 0.7rem; display: block; margin-bottom: 3px;" class="font-mono">3. Abordaje Empático (2 Min):</strong>
-                        <p style="color: #cbd5e1; font-size: 0.78rem; font-style: italic;">${tonoEmocional}</p>
+                        <strong style="color: var(--emerald); text-transform: uppercase; font-size: 0.7rem; display: block; margin-bottom: 3px;" class="font-mono">📝 3. Micro-Ejercicio de 5 Minutos para Tablero:</strong>
+                        <div style="color: #cbd5e1; font-size: 0.78rem; line-height: 1.5;">${microEjercicio}</div>
                     </div>
                 `;
                 modal.style.display = "flex";
@@ -669,8 +802,9 @@
                 return html;
             }
 
-            static actualizarKPIs(total, estabilidad, puntaje100, resiliencia) {
+            static actualizarKPIs(total, estabilidad, puntaje100, resiliencia, ceiProm) {
                 document.getElementById("kpiTotalEstudiantes").innerText = total;
+                document.getElementById("kpiCeiMedio").innerText = isNaN(ceiProm) ? "0.00" : ceiProm;
                 document.getElementById("kpiEstabilidadMedia").innerText = `${isNaN(estabilidad) ? 0 : estabilidad}%`;
                 
                 const p500 = Math.round((puntaje100 / 100) * 500);
@@ -698,16 +832,16 @@
                 let materiaCapitalizada = CurrentMateria.replace('_', ' ').toUpperCase();
 
                 if (maxPriorCoherte <= 0.15) {
-                    txt.innerText = `Felicidades Profesor. La cohorte demuestra un control óptimo de sesgos en ${materiaCapitalizada}. Se aconseja elevar la exigencia.`;
+                    txt.innerText = `Felicidades Profesor. La cohorte demuestra un control óptimo de sesgos en ${materiaCapitalizada}. Se aconseja elevar la exigencia con el botón 'Desafío +1'.`;
                     btn.href = `https://www.google.com/search?q=ejercicios+avanzados+icfes+${CurrentMateria}`;
                 } else if (maxPriorCoherte === avgOperacional || maxPriorCoherte === avgLineal) {
-                    txt.innerText = `Atención Docente: Se registra un desborde en 'Inversión Operacional Estructural'. Sus alumnos automatizan signos o traducción literal por prisa. Dedique 15 minutos en el tablero a desarmar oraciones/ecuaciones.`;
+                    txt.innerText = `Atención Docente: Se registra un desborde en 'Inversión Operacional / Heurística Lineal'. Sus alumnos automatizan signos o traducción literal por prisa. Dedique 15 minutos en el tablero a desarmar oraciones/ecuaciones con las Fichas Socráticas.`;
                     btn.href = `https://www.google.com/search?q=estrategias+didacticas+para+despeje+de+ecuaciones+algebraicas+secundaria`;
                 } else if (maxPriorCoherte === avgConversion) {
-                    txt.innerText = `Atención Docente: La cohorte presenta vulnerabilidad por 'Omisión de Conversión de Magnitudes'. Prescriba rotular las unidades antes de computar.`;
+                    txt.innerText = `Atención Docente: La cohorte presenta vulnerabilidad por 'Omisión de Conversión de Magnitudes'. Prescriba rotular las unidades explícitamente antes de computar.`;
                     btn.href = `https://www.google.com/search?q=actividades+de+conversion+de+unidades+de+medida+secundaria`;
                 } else {
-                    txt.innerText = `Atención Docente: Se detecta un predominio de 'Errores Geométricos/Perimetrales'. La cohorte confunde áreas con perímetros. Se prescriben micro-ejercicios visuales.`;
+                    txt.innerText = `Atención Docente: Se detecta un predominio de 'Errores Geométricos/Perimetrales'. La cohorte confunde áreas con perímetros. Se prescriben micro-ejercicios visuales en cuadrículas.`;
                     btn.href = `https://www.google.com/search?q=como+ensenar+perimetro+y+area+de+figuras+compuestas`;
                 }
             }
