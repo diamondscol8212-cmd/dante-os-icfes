@@ -281,20 +281,17 @@
         .selector-label { display: block; color: var(--text-muted); margin-bottom: 0.5rem; font-weight: 700; font-size: 0.75rem; letter-spacing: 0.5px; font-family: var(--font-mono); }
         
         select {
-            width: 100%; padding: 1rem; background: rgba(18, 22, 34, 0.9); border: 1.5px solid var(--gold-satin);
-            color: #fff; border-radius: 12px; font-size: 0.95rem; outline: none; font-family: var(--font-main);
-            font-weight: 700; transition: all 0.25s ease; box-shadow: 0 0 20px rgba(212, 175, 55, 0.18);
-            backdrop-filter: blur(14px);
+            width: 100%; padding: 0.9rem 1rem; background: rgba(14, 18, 28, 0.95); border: 1.5px solid var(--gold-satin);
+            color: #ffffff; border-radius: 12px; font-size: 0.9rem; outline: none; font-family: var(--font-mono);
+            font-weight: 700; transition: all 0.25s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.3), 0 0 15px rgba(212, 175, 55, 0.15);
+            backdrop-filter: blur(14px); cursor: pointer;
         }
         select option {
-            background-color: #121520 !important;
+            background-color: #0f172a !important;
             color: #ffffff !important;
-            padding: 10px !important;
-            font-size: 0.92rem;
-        }
-            color: #ffffff !important;
-            padding: 10px !important;
-            font-size: 0.92rem;
+            padding: 12px !important;
+            font-size: 0.9rem;
+            font-family: var(--font-mono);
         }
         body.light-mode select {
             background: #ffffff !important;
@@ -309,14 +306,28 @@
 
         .btn-premium {
             width: 100%; padding: 1.05rem 1.4rem; background: rgba(212, 175, 55, 0.14); 
-            border: 2px solid var(--gold-satin); color: var(--gold-satin); font-weight: 800; 
+            border: 1.5px solid var(--gold-satin); color: var(--gold-satin); font-weight: 800; 
             letter-spacing: 1px; border-radius: 12px; cursor: pointer; 
             transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1); margin-top: 0.8rem; display: inline-block; text-align: center; 
             text-decoration: none; font-size: 0.9rem; font-family: var(--font-mono); backdrop-filter: blur(12px);
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.25);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3), 0 0 15px rgba(212, 175, 55, 0.15);
         }
-        .btn-premium:hover:not(:disabled) { background: var(--gold-satin); color: var(--bg-deep); box-shadow: 0 0 35px var(--gold-glow); transform: translateY(-2px); }
+        .btn-premium:hover:not(:disabled) { background: rgba(212, 175, 55, 0.25); color: #ffffff; border-color: var(--gold-satin); box-shadow: 0 0 25px var(--gold-glow); transform: translateY(-2px); }
         .btn-premium:disabled { opacity: 0.5; cursor: not-allowed; border-color: rgba(255,255,255,0.1); }
+
+        .btn-cyan {
+            background: rgba(81, 226, 245, 0.1) !important;
+            border: 1.5px solid var(--cyan-core) !important;
+            color: var(--cyan-core) !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3), 0 0 15px rgba(81, 226, 245, 0.15) !important;
+        }
+        .btn-cyan:hover:not(:disabled) {
+            background: rgba(81, 226, 245, 0.22) !important;
+            border-color: var(--cyan-core) !important;
+            color: #ffffff !important;
+            box-shadow: 0 0 25px rgba(81, 226, 245, 0.35) !important;
+            transform: translateY(-2px);
+        }
 
         .btn-pulse-glow { animation: pulseGlow 1.8s infinite alternate; }
         @keyframes pulseGlow {
@@ -701,6 +712,11 @@
         </div>
 
         <div class="flex items-center gap-1.5 sm:gap-2.5 flex-shrink-0" style="pointer-events: auto;">
+            <!-- BOTÓN REGRESAR A LA SALA (SOLO EN WORKSPACE) -->
+            <button type="button" id="btnVolverSalaHeader" onclick="AppController.regresarASala()" class="px-2.5 py-0.5 bg-amber-500/20 border border-amber-500/40 text-amber-300 rounded font-mono text-[11px] font-bold hover:bg-amber-500/35 transition-all cursor-pointer flex items-center gap-1 shadow-sm" title="Regresar a la Sala Principal" style="display: none;">
+                🏛️ Sala
+            </button>
+
             <!-- RELOJ DISCRETO DE SESIÓN (SOLO EN WORKSPACE DE PREGUNTAS) -->
             <div id="lblRelojSesion" class="px-2 py-0.5 bg-slate-900 border border-slate-700 text-slate-300 rounded font-mono text-[11px] font-bold shadow-inner" style="display: none;">
                 ⏱️ 00:00
@@ -756,7 +772,7 @@
                 </div>
                 
                 <div class="relative">
-                    <select id="selMateria" onchange="AppController.actualizarIndicadorSecuencia()" class="w-full p-3.5 bg-slate-950/90 border-1.5 border-cyan-500/50 text-white rounded-xl font-mono font-bold text-sm outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/30 transition-all cursor-pointer shadow-lg">
+                    <select id="selMateria" onchange="AppController.actualizarIndicadorSecuencia()">
                         <option value="matematicas">📐 1. Matemáticas</option>
                         <option value="lectura_critica">📖 2. Lectura Crítica</option>
                         <option value="ciencias_naturales">🧪 3. Ciencias Naturales</option>
@@ -786,7 +802,7 @@
                 🚀 INICIAR SIMULACRO ADAPTATIVO
             </button>
             
-            <a href="perfil.html" class="btn-premium hover:border-cyan-400 hover:text-cyan-300 transition-all" style="border-color: var(--cyan-core); color: var(--cyan-core);">
+            <a href="perfil.html" class="btn-premium btn-cyan transition-all">
                 👤 CONSULTAR MI PERFIL / HISTORIAL
             </a>
             <button type="button" class="btn-premium hover:bg-red-950/40 transition-all" style="border-color:var(--crimson); color:var(--crimson); margin-top:0.4rem;" onclick="AppController.cerrarSesionGated()">
@@ -798,9 +814,14 @@
     <!-- VISTA 2: WORKSPACE EXAMEN -->
     <main id="viewWorkspace" class="app-view">
         <header class="workspace-header">
-            <div>
-                <h2 id="lblEstudiante" style="color: var(--gold-satin); font-size: 1rem;" class="font-mono">Estudiante: -</h2>
-                <p id="lblMateria" style="color: var(--text-muted); font-size: 0.72rem;" class="font-mono">Módulo Analítico</p>
+            <div class="flex items-center gap-2.5">
+                <button type="button" onclick="AppController.regresarASala()" class="px-3 py-1.5 bg-amber-500/15 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 font-mono text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shadow-sm cursor-pointer" title="Pausar y regresar a la Sala Principal">
+                    <i class="fa-solid fa-arrow-left text-amber-400"></i> 🏛️ Volver a Sala
+                </button>
+                <div>
+                    <h2 id="lblEstudiante" style="color: var(--gold-satin); font-size: 1rem;" class="font-mono">Estudiante: -</h2>
+                    <p id="lblMateria" style="color: var(--text-muted); font-size: 0.72rem;" class="font-mono">Módulo Analítico</p>
+                </div>
             </div>
 
             <div style="display: flex; align-items: center; gap: 0.6rem;">
@@ -1613,9 +1634,9 @@
                     const nombreBase = nombresMap[matKey] || matKey.toUpperCase();
                     
                     if (completada) {
-                        opt.text = `[COMPLETADA 🏅] ${nombreBase}`;
+                        opt.text = `✅ ${nombreBase} - Completada`;
                     } else {
-                        opt.text = `[PENDIENTE ⚡] ${nombreBase}`;
+                        opt.text = `⚡ ${nombreBase} - Pendiente`;
                         if (!primerIncompleta) primerIncompleta = matKey;
                     }
                 });
@@ -1958,6 +1979,13 @@
                 }
             }
 
+            static regresarASala() {
+                if (confirm("🏛️ ¿Deseas pausar esta sesión y regresar a la Sala Principal? Tu progreso actual de la secuencia quedará guardado.")) {
+                    this.cambiarVista("viewGateway");
+                    this.autoselectSiguienteMateria();
+                }
+            }
+
             static cambiarVista(viewId) {
                 document.querySelectorAll('.app-view').forEach(view => view.classList.remove('active'));
                 const targetView = document.getElementById(viewId);
@@ -1965,7 +1993,7 @@
                 
                 const esWorkspace = (viewId === "viewWorkspace");
 
-                // El permiso de baño y el reloj de sesión solo se muestran durante la resolución de preguntas (viewWorkspace)
+                // El permiso de baño, reloj de sesión y botón de volver a la sala solo se muestran durante la resolución de preguntas (viewWorkspace)
                 const btnBano = document.getElementById("btnBanoHeader");
                 if (btnBano) {
                     btnBano.style.display = esWorkspace ? "inline-flex" : "none";
@@ -1974,6 +2002,11 @@
                 const lblReloj = document.getElementById("lblRelojSesion");
                 if (lblReloj) {
                     lblReloj.style.display = esWorkspace ? "inline-flex" : "none";
+                }
+
+                const btnVolver = document.getElementById("btnVolverSalaHeader");
+                if (btnVolver) {
+                    btnVolver.style.display = esWorkspace ? "inline-flex" : "none";
                 }
 
                 window.scrollTo({ top: 0, behavior: 'smooth' });
