@@ -138,6 +138,49 @@
             box-shadow: 0 4px 20px rgba(180, 83, 9, 0.12) !important;
         }
         body.light-mode #uiMetacognicion p { color: #0f172a !important; }
+
+        /* HOJA DE RESPUESTAS ÓPTICA - MODO CLARO HIPER-LEGIBLE */
+        body.light-mode .optica-workspace-container {
+            background: #ffffff !important;
+            border-color: #cbd5e1 !important;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06) !important;
+            color: #0f172a !important;
+        }
+        body.light-mode .optica-title {
+            color: #0f172a !important;
+            font-weight: 800 !important;
+        }
+        body.light-mode .optica-badge {
+            background: #fef3c7 !important;
+            color: #b45309 !important;
+            border-color: #fde68a !important;
+        }
+        body.light-mode .optica-facsimile {
+            color: #475569 !important;
+        }
+        body.light-mode .optica-inner-strip {
+            background: #f8fafc !important;
+            border-color: #e2e8f0 !important;
+        }
+        body.light-mode .optica-item-lbl {
+            color: #0f172a !important;
+            font-weight: 800 !important;
+        }
+        body.light-mode .optica-oval-ws {
+            background: #f1f5f9 !important;
+            border-color: #64748b !important;
+            color: #0f172a !important;
+        }
+        body.light-mode .optica-oval-ws:hover {
+            background: #e2e8f0 !important;
+            border-color: #0f172a !important;
+        }
+        body.light-mode .optica-oval-ws.oval-graphite-filled {
+            background: radial-gradient(circle, #0f172a 0%, #1e293b 70%, #000000 100%) !important;
+            color: #ffffff !important;
+            border-color: #0f172a !important;
+            box-shadow: 0 0 12px rgba(15,23,42,0.4) !important;
+        }
         body.light-mode .btn-meta {
             background: #f1f5f9 !important;
             color: #0f172a !important;
@@ -355,6 +398,11 @@
             border: 1px solid rgba(212, 175, 55, 0.35); border-radius: 16px; padding: 1rem 1.2rem; margin-top: 0.9rem;
             box-shadow: 0 12px 35px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); font-family: var(--font-mono); color: #f1f5f9;
+        }
+
+        .optica-inner-strip {
+            background: rgba(12, 15, 24, 0.85);
+            border: 1px solid rgba(212, 175, 55, 0.25);
         }
 
         .optica-oval-ws {
@@ -648,17 +696,17 @@
     <header class="master-hud">
         <div class="min-w-0 max-w-[40%] sm:max-w-none flex-shrink flex items-center gap-2">
             <div class="alias-title truncate" id="ui-main-title" data-final="RED DANTE OS">RED DANTE OS</div>
-            <span class="hidden xs:inline-block px-2 py-0.5 rounded bg-cyan-500/20 border border-cyan-500/40 text-cyan-300 font-mono text-[10px] font-bold shadow-sm">v21.2.3</span>
-            <div class="geo-tag truncate" id="lblRutaHeaderTag">SECUENCIA ADAPTATIVA: MATEMÁTICAS (1/5)</div>
+            <span class="hidden xs:inline-block px-2 py-0.5 rounded bg-cyan-500/20 border border-cyan-500/40 text-cyan-300 font-mono text-[10px] font-bold shadow-sm">v21.2.4</span>
+            <div class="geo-tag truncate" id="lblRutaHeaderTag"><span class="hidden sm:inline">SECUENCIA ADAPTATIVA:</span><span class="sm:hidden">R. SECUENCIA:</span> MATEMÁTICAS (1/5)</div>
         </div>
 
         <div class="flex items-center gap-1.5 sm:gap-2.5 flex-shrink-0" style="pointer-events: auto;">
-            <!-- RELOJ DISCRETO DE SESIÓN (ESTILO PARED AULA) -->
-            <div id="lblRelojSesion" class="px-2 py-0.5 bg-slate-900 border border-slate-700 text-slate-300 rounded font-mono text-[11px] font-bold shadow-inner">
+            <!-- RELOJ DISCRETO DE SESIÓN (SOLO EN WORKSPACE DE PREGUNTAS) -->
+            <div id="lblRelojSesion" class="px-2 py-0.5 bg-slate-900 border border-slate-700 text-slate-300 rounded font-mono text-[11px] font-bold shadow-inner" style="display: none;">
                 ⏱️ 00:00
             </div>
 
-            <!-- BOTÓN PERMISO DE BAÑO 🚻 -->
+            <!-- BOTÓN PERMISO DE BAÑO 🚻 (SOLO EN WORKSPACE DE PREGUNTAS) -->
             <button type="button" id="btnBanoHeader" onclick="AppController.abrirModalPausaBano()" class="px-2 py-0.5 bg-cyan-950/80 border border-cyan-500/40 text-cyan-300 rounded font-mono text-[11px] font-bold hover:bg-cyan-900 transition-all cursor-pointer flex items-center gap-1 shadow-sm" title="Solicitar Pausa / Permiso de Baño" style="display: none;">
                 🚻 Baño
             </button>
@@ -692,7 +740,7 @@
     <!-- VISTA 1: GATEWAY DE ENTRADA CON MAPA DE RUTA -->
     <main id="viewGateway" class="app-view active">
         <div class="gateway-card border-2 border-cyan-500/30 shadow-[0_20px_60px_rgba(0,0,0,0.8),0_0_40px_rgba(81,226,245,0.15)]">
-            <div class="system-version-tag">v21.2.3-ENTERPRISE_GOLD</div>
+            <div class="system-version-tag">v21.2.4-ENTERPRISE_GOLD</div>
             <div class="verification-banner" id="lblTenantBanner">AUTENTICANDO CONTEXTO...</div>
             <h1 class="gateway-title" id="lblGatewayWelcome" data-final="DANTE OS RUNTIME">Dante OS Runtime</h1>
             
@@ -784,15 +832,15 @@
                     
                     <!-- HOJA DE RESPUESTAS ÓPTICA DIGITAL -->
                     <div id="uiHojaOptica" class="optica-workspace-container">
-                        <div class="flex items-center justify-between border-b border-slate-400 pb-1.5 mb-2">
-                            <div class="flex items-center gap-2">
-                                <span class="text-xs font-black text-slate-900 tracking-wider">📝 HOJA DE RESPUESTAS ÓPTICA</span>
-                                <span class="text-[10px] bg-amber-900/10 text-amber-900 px-2 py-0.5 rounded border border-amber-900/30 font-bold">LÁPIZ GRAFITO #2</span>
+                        <div class="flex items-center justify-between border-b border-amber-500/30 pb-1.5 mb-2">
+                            <div class="flex items-center gap-1.5 sm:gap-2">
+                                <span class="text-xs font-black text-amber-400 tracking-wider optica-title">📝 HOJA DE RESPUESTAS ÓPTICA</span>
+                                <span class="text-[9px] sm:text-[10px] bg-amber-500/15 text-amber-300 px-1.5 py-0.5 rounded border border-amber-500/30 font-bold optica-badge">LÁPIZ GRAFITO #2</span>
                             </div>
-                            <span class="text-[10px] text-slate-600 font-bold">FACSÍMIL #2026-ICFES</span>
+                            <span class="text-[9px] sm:text-[10px] text-slate-300 font-bold optica-facsimile">FACSÍMIL #2026-ICFES</span>
                         </div>
-                        <div class="flex items-center justify-around gap-2 bg-[#eae4d6] p-2 rounded-lg border border-[#c5bcb0]">
-                            <span class="text-xs font-bold text-slate-800" id="lblOpticaItemNum">Reactivo 1.</span>
+                        <div class="flex items-center justify-around gap-2 optica-inner-strip p-2.5 rounded-xl border border-amber-500/20">
+                            <span class="text-xs font-bold text-amber-300 optica-item-lbl" id="lblOpticaItemNum">Reactivo 1.</span>
                             <div class="flex items-center gap-2 sm:gap-4">
                                 <div class="flex items-center gap-1 cursor-pointer" onclick="QuizEngine.seleccionarOvalWorkspace('A')">
                                     <div class="optica-oval-ws" id="oval_ws_A">A</div>
@@ -1505,7 +1553,7 @@
                     }
 
                     if (!onboardingCompleted) {
-                        console.info("💡 Auto-asignando acceso directo a index.html v21.2.3...");
+                        console.info("💡 Auto-asignando acceso directo a index.html v21.2.4...");
                         onboardingCompleted = true;
                         localStorage.setItem("dante_onboarding_completed", "true");
                         if (!localStorage.getItem("dante_user_arquetipo")) {
@@ -1608,7 +1656,10 @@
                     "ingles": "5. INGLÉS"
                 };
                 const tagEl = document.getElementById("lblRutaHeaderTag");
-                if (tagEl) tagEl.innerText = `SECUENCIA ADAPTATIVA: ${nombresMap[selValue] || selValue.toUpperCase()} (${idx}/5)`;
+                if (tagEl) {
+                    const nombreBase = nombresMap[selValue] || selValue.toUpperCase();
+                    tagEl.innerHTML = `<span class="hidden sm:inline">SECUENCIA ADAPTATIVA:</span><span class="sm:hidden">R. SECUENCIA:</span> ${nombreBase} (${idx}/5)`;
+                }
             }
 
             static cerrarSesionGated() {
@@ -1912,10 +1963,17 @@
                 const targetView = document.getElementById(viewId);
                 if (targetView) targetView.classList.add('active');
                 
-                // El permiso de baño solo se activa durante la resolución de preguntas (viewWorkspace)
+                const esWorkspace = (viewId === "viewWorkspace");
+
+                // El permiso de baño y el reloj de sesión solo se muestran durante la resolución de preguntas (viewWorkspace)
                 const btnBano = document.getElementById("btnBanoHeader");
                 if (btnBano) {
-                    btnBano.style.display = (viewId === "viewWorkspace") ? "inline-flex" : "none";
+                    btnBano.style.display = esWorkspace ? "inline-flex" : "none";
+                }
+
+                const lblReloj = document.getElementById("lblRelojSesion");
+                if (lblReloj) {
+                    lblReloj.style.display = esWorkspace ? "inline-flex" : "none";
                 }
 
                 window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -2533,7 +2591,7 @@
 
             // 🛡️ PWA SERVICE WORKER REGISTRATION (Dinámico con versión de build + Notificador Metacognitivo)
             if ('serviceWorker' in navigator) {
-                const SW_VERSION = "v21.2.3-ENTERPRISE_GOLD";
+                const SW_VERSION = "v21.2.4-ENTERPRISE_GOLD";
                 navigator.serviceWorker.register(`/service-worker.js?v=${SW_VERSION}`)
                     .then(reg => {
                         console.log(`🚀 [PWA SERVICE WORKER REGISTRADO]: Dante OS ${SW_VERSION} activo.`);
