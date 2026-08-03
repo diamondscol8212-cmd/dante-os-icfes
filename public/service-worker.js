@@ -45,7 +45,7 @@ self.addEventListener('activate', (event) => {
         keys
           .filter((key) => key !== CACHE_NAME_STATIC && key !== CACHE_NAME_DYNAMIC)
           .map((key) => {
-            console.log(`🧹 [PWA SERVICE WORKER]: Purando caché obsoleta -> ${key}`);
+            console.log(`🧹 [PWA SERVICE WORKER]: Purgando caché obsoleta -> ${key}`);
             return caches.delete(key);
           })
       );
