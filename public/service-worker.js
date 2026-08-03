@@ -3,7 +3,7 @@
 
 // Extract dynamic version from registration URL query parameter or fallback
 const params = new URL(location).searchParams;
-const BUILD_VERSION = params.get('v') || 'v21.2.3-ENTERPRISE_GOLD';
+const BUILD_VERSION = params.get('v') || 'v21.2.4-ENTERPRISE_GOLD';
 
 const CACHE_NAME_STATIC = `dante-os-static-${BUILD_VERSION}`;
 const CACHE_NAME_DYNAMIC = `dante-os-dynamic-${BUILD_VERSION}`;
