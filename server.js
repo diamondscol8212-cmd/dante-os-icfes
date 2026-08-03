@@ -132,6 +132,12 @@ app.use((req, res, next) => {
 // 🛡️ MONTAJE DE RUTAS CORE DEL SISTEMA OPERATIVO COGNITIVO
 // ====================================================================
 app.use('/api/cat', catRouter);
+app.use('/api/neuro', catRouter);      // Alias directo para /api/neuro/telemetry
+app.use('/api/contracts', catRouter);  // Alias directo para /api/contracts/odysseus
+app.get('/api/stimuli/:id', (req, res, next) => {
+    req.url = `/stimuli/${req.params.id}`;
+    catRouter(req, res, next);
+}); // Alias directo para /api/stimuli/:id
 app.use('/api/auth', authRouter); 
 app.use('/api/v1/users', authRouter); // Alias v1 para endpoints ARCO
 app.use('/api/v1/auth', authRouter);  // Alias v1 para endpoints de Auth y Consentimiento Parental
