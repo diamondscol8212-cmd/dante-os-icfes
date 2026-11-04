@@ -35,7 +35,8 @@
     try { localStorage.setItem('dante_pendiente_nube', JSON.stringify(cola.slice(-12))); } catch (e) {}
   }
 
-  function avisar(texto) {
+  /** Aviso en pantalla: solo errores de sesión (entrar de nuevo). Cola offline = silenciosa. */
+  function avisar(texto, opts) {
     try {
       localStorage.setItem('dante_guardado_estado', texto ? 'pendiente' : 'ok');
     } catch (e) {}
@@ -43,6 +44,11 @@
     if (!texto) {
       if (previo) previo.remove();
       document.body.classList.remove('aviso-nube');
+      return;
+    }
+    const visible = opts && opts.visible === true;
+    if (!visible) {
+      try { console.info('[DanteRegistro]', texto); } catch (e) {}
       return;
     }
     const el = previo || document.createElement('div');
@@ -105,7 +111,7 @@
     }
     const alumno = idAlumno();
     if (!alumno) {
-      avisar('Entra de nuevo con tu correo para poder guardar las respuestas.');
+      avisar('Entra de nuevo con tu correo para poder guardar las respuestas.', { visible: true });
       return { ok: false, motivo: 'sin_alumno' };
     }
     try {
@@ -143,7 +149,8 @@
         return directo;
       }
       encolar(paquete);
-      avisar('No se pudo guardar. Quedó en este celular y se reintenta al abrir la sala.');
+      // Sin toast molesto: queda en cola local y vaciarCola reintenta al abrir la sala.
+      avisar('pendiente_local');
       return { ok: false, motivo: (data && data.motivo) || directo.motivo || 'error' };
     } catch (e) {
       const directo = await publicarDirecto(alumno, paquete);
@@ -152,7 +159,7 @@
         return directo;
       }
       encolar(paquete);
-      avisar('Sin conexión. La respuesta quedó en este celular y se reintenta al abrir la sala.');
+      avisar('pendiente_local');
       return { ok: false, motivo: 'sin_red' };
     }
   }

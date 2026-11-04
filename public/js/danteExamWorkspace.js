@@ -4182,6 +4182,8 @@
           localStorage.setItem('dante_diagnostic_completed', 'true');
           localStorage.setItem('dante_diagnostico_completado', 'true');
           localStorage.setItem('dante_onboarding_completed', 'true');
+          // Tras diagnóstico: obligar a conocer Hackea (espiral: clic + mantener)
+          localStorage.setItem('dante_hackea_obligatorio', '1');
           sessionStorage.removeItem('dante_is_diagnostic');
           localStorage.removeItem('dante_is_diagnostic');
           localStorage.removeItem('dante_diagnostico_en_curso');
@@ -4526,19 +4528,16 @@
                 <div id="danteTareaEstudioDiag" class="text-xs"></div>
               </div>
 
-              <!-- ACCIONES DE CONTINUIDAD (GHOST BUTTON Y MARGEN REDUCIDO) -->
+              <!-- Tras diagnóstico: primero Hackea tu mente (espiral) -->
               <div class="space-y-1.5 pt-1">
-                <button type="button" onclick="if(window.DanteHubEngine){DanteHubEngine.abrirPuertaRuta();}" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-500 text-white font-mono font-black text-xs uppercase tracking-wider active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-2">
-                  <span>CONOCER MI RUTA VOCACIONAL</span>
+                <button type="button" onclick="DanteExamWorkspace.irAHackeaObligatorio()" class="w-full py-3.5 px-4 rounded-xl bg-[#e7d7c3] text-[#1c1917] font-mono font-black text-xs uppercase tracking-wider active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-2 shadow-[0_0_24px_rgba(231,215,195,0.35)]">
+                  <span>Continuar · Hackea tu mente</span>
                 </button>
-                <button type="button" onclick="DanteExamWorkspace.irAlPerfil()" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-cyan-500 via-sky-400 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-mono font-black text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(6,182,212,0.4)] active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-2">
-                  <i class="fa-solid fa-compass text-slate-950 text-sm"></i>
-                  <span>EXPLORAR MI EXPEDIENTE Y RADAR COGNITIVO</span>
-                  <i class="fa-solid fa-arrow-right text-slate-950 text-sm"></i>
-                </button>
-                <button type="button" onclick="DanteExamWorkspace.regresarAlHub()" class="w-full py-2 px-3 text-center text-[11px] font-mono font-semibold text-slate-400 hover:text-cyan-300 hover:bg-slate-800/50 rounded-lg border border-transparent hover:border-slate-700/60 cursor-pointer bg-transparent transition-all flex items-center justify-center gap-1.5">
-                  <i class="fa-solid fa-house-user text-xs opacity-70"></i>
-                  <span>Regresar a la sala principal de Dante OS</span>
+                <p class="text-[11px] text-stone-400 font-sans leading-snug px-1">
+                  En la sala: <strong class="text-stone-200">presiona la espiral y mantén</strong> unos segundos. Ahí aprendes el método Hackea.
+                </p>
+                <button type="button" onclick="DanteExamWorkspace.irAlPerfil()" class="w-full py-2.5 px-3 text-center text-[11px] font-mono font-semibold text-slate-400 hover:text-cyan-300 rounded-lg cursor-pointer bg-transparent border border-slate-700/50 transition-all">
+                  Ver expediente después
                 </button>
               </div>
             </div>
@@ -4637,6 +4636,19 @@
         else DanteRecorrido.cerrarBloque(this.respuestasSesionActiva, idMision);
       }
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    /** Tras diagnóstico: vuelve a la sala con coach de espiral (Hackea obligatorio). */
+    irAHackeaObligatorio() {
+      try { localStorage.setItem('dante_hackea_obligatorio', '1'); } catch (e) {}
+      this.regresarAlHub();
+      setTimeout(function () {
+        try {
+          if (window.HackeaCoach && typeof window.HackeaCoach.showObligatorio === 'function') {
+            window.HackeaCoach.showObligatorio();
+          }
+        } catch (e) {}
+      }, 450);
     }
 
     /**

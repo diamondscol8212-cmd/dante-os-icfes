@@ -1101,12 +1101,20 @@
     syncPortalShell(portalHold.progress);
   }
 
+  function clearHackeaObligatorio() {
+    try { localStorage.removeItem('dante_hackea_obligatorio'); } catch (_) {}
+    if (global.HackeaCoach && typeof global.HackeaCoach.hide === 'function') {
+      global.HackeaCoach.hide();
+    }
+  }
+
   function openPortalAfterBreach() {
     clearPortalShell();
     portalHold.active = false;
     portalHold.completed = false;
     portalHold.pointerId = null;
     if (window.DanteSpiral) window.DanteSpiral.cancelPortalBreach();
+    clearHackeaObligatorio();
 
     const calibrated = !!(mindProfile && typeof mindProfile.isCalibrated === 'function' && mindProfile.isCalibrated());
     const arcSt = global.HackeaArc ? global.HackeaArc.status() : { phase: 'none' };
@@ -1321,6 +1329,51 @@
     mindProfile.bindStudent(studentKey());
   }
 
+  const HackeaCoach = {
+    showObligatorio: function () {
+      const calibrated = mindProfile && mindProfile.isCalibrated && mindProfile.isCalibrated();
+      let flag = false;
+      try { flag = localStorage.getItem('dante_hackea_obligatorio') === '1'; } catch (_) {}
+      if (!flag || calibrated) {
+        this.hide();
+        return;
+      }
+      let root = document.getElementById('hackeaCoachObligatorio');
+      if (!root) {
+        root = document.createElement('div');
+        root.id = 'hackeaCoachObligatorio';
+        root.innerHTML = `
+          <div class="hackea-coach-card" role="dialog" aria-labelledby="hackeaCoachTitle">
+            <p class="hackea-coach-kicker">Método obligatorio</p>
+            <h2 class="hackea-coach-title" id="hackeaCoachTitle">Hackea tu mente</h2>
+            <p class="hackea-coach-body">
+              Ya terminaste el diagnóstico. Ahora debes conocer el método.<br><br>
+              <strong>Presiona la espiral y mantén</strong> el dedo unos segundos (no solo un toque).
+              Ahí empieza Hackea tu mente.
+            </p>
+          </div>`;
+        document.body.appendChild(root);
+      }
+      root.classList.add('is-on');
+      document.body.classList.add('hackea-coach-on');
+      const cap = document.getElementById('hackeaPortalCaption');
+      if (cap && !cap.classList.contains('hackea-breach-cap')) {
+        cap.innerHTML = 'Hackea tu mente<span class="hackea-hold-hint">Mantén presionada la espiral</span>';
+      }
+    },
+    hide: function () {
+      const root = document.getElementById('hackeaCoachObligatorio');
+      if (root) root.classList.remove('is-on');
+      document.body.classList.remove('hackea-coach-on');
+    },
+    maybeShow: function () {
+      try {
+        if (localStorage.getItem('dante_hackea_obligatorio') === '1') this.showObligatorio();
+      } catch (_) { /* ignore */ }
+    }
+  };
+  global.HackeaCoach = HackeaCoach;
+
   function bootHackeaDoor() {
     bindSpiralDoor();
     try {
@@ -1329,6 +1382,7 @@
       if (q.get('hackea') === '1') {
         setTimeout(() => enterHackeaFromPortal(), 400);
       }
+      setTimeout(() => HackeaCoach.maybeShow(), 700);
     } catch (_) { /* ignore */ }
   }
 
