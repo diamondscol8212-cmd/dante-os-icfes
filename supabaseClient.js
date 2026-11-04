@@ -1,7 +1,11 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Preferir service role en el servidor (bypass RLS). El anon no debe ir al navegador.
-const supabaseUrl = process.env.SUPABASE_URL;
+let supabaseUrl = process.env.SUPABASE_URL || '';
+// Typo en Render: q1l (dígito) vs qll (eles) rompe Auth/DB
+if (supabaseUrl.includes('lnjcbcdudokkjq1lrqlf')) {
+  supabaseUrl = supabaseUrl.replace('lnjcbcdudokkjq1lrqlf', 'lnjcbcdudokkjqllrqlf');
+}
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 const anonKey = process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_KEY || '';
 const supabaseKey = serviceKey || anonKey;
