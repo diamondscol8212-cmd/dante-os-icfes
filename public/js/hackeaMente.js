@@ -129,9 +129,9 @@
       let modeHint = null;
       if (conf >= 0.55) {
         if (L.sesgoCierre > 0.7) {
-          modeHint = 'Hoy te conviene decidir antes: las dudas largas casi no te cambian la marca.';
+          modeHint = 'Hoy te conviene decidir antes: dudar mucho casi no cambia la letra que eliges.';
         } else if (L.umbralCerteza > 0.7) {
-          modeHint = 'Ancla el enunciado un segundo antes de marcar; te estabiliza más que recorrer opciones.';
+          modeHint = 'Lee el enunciado un segundo antes de tocar una opción; te estabiliza más que saltar de letra en letra.';
         } else if (L.reservaCognitiva < 0.35) {
           modeHint = 'Bloques más cortos te rinden más hoy.';
         }
@@ -168,7 +168,7 @@
       } else if (scaffoldingMode === 'contrast') {
         shaped = `Compara lo que pide el texto con lo que afirma tu opción. ${text}`;
       } else {
-        shaped = `Ancla: qué pide · qué dato usas · qué descarta tu marca. ${text}`;
+        shaped = `Ancla: qué pide · qué dato usas · qué descarta la opción que vas a elegir. ${text}`;
       }
 
       if (modeHint && confidence >= 0.6 && Math.random() < 0.32) {
@@ -581,7 +581,7 @@
             </div>
             <h2 class="hackea-act-title">Mismo juicio · otro aire</h2>
             <div class="hackea-act-body">
-              <p class="hackea-prompt hackea-prompt-storm">Quedan segundos del bloque. La última pregunta es larga. Si marcas ya, cierras; si lees entero, el ritmo del grupo puede caer.</p>
+              <p class="hackea-prompt hackea-prompt-storm">Quedan segundos del bloque. La última pregunta es larga. Si eliges ya una opción, cierras; si lees entero, el ritmo del grupo puede caer.</p>
               <div class="hackea-choices" id="hackeaAct2">
                 <button type="button" class="hackea-choice" data-v="rush">Marco con lo que alcanzó</button>
                 <button type="button" class="hackea-choice" data-v="read">Leo completo aunque se cierre</button>
@@ -716,7 +716,7 @@
                 </button>
                 <button type="button" class="hackea-channel" data-v="contrast" data-canal="contrast" data-val="0.5">
                   <span class="ch-kicker">CONTRASTE</span>
-                  <span class="ch-body">Lo que exige el texto frente a lo que afirma tu marca.</span>
+                  <span class="ch-body">Lo que exige el texto frente a lo que afirma la opción que elegiste.</span>
                 </button>
                 <button type="button" class="hackea-channel" data-v="narrative" data-canal="narrative" data-val="0.85">
                   <span class="ch-kicker">ESCENA</span>
@@ -855,7 +855,7 @@
           <div class="hackea-act-shell hackea-cierre-sheet">
             <div class="hackea-act-label">MODO DANTE</div>
             <h2 class="hackea-act-title">Ya te escucha</h2>
-            <p class="hackea-prompt hackea-cierre-copy">Primer pulso: ítems reales. Sin ayudas. Sin pausa. La forma de marcar cuenta.</p>
+            <p class="hackea-prompt hackea-cierre-copy">Primer pulso: preguntas reales. Sin ayudas. Sin pausa. Cómo eliges tu respuesta (A, B, C o D) cuenta.</p>
             <p class="hackea-cierre-sub">Tres a cinco ensayos. El formato cambia según cómo respondes.</p>
             <button type="button" class="hl-cta hackea-pulso-cta" id="hackeaBtnPulso">Empezar el pulso</button>
           </div>

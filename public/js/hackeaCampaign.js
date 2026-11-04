@@ -15,12 +15,12 @@
       day: 1,
       phase: 'calibrate',
       kicker: 'DÍA 1 · PRIMERA LECTURA',
-      title: 'Cómo marcas cuando nadie empuja',
-      teach: 'Hoy solo miramos. Sin prisa inventada.',
+      title: 'Cómo eliges tu respuesta cuando nadie apura',
+      teach: 'Hoy solo miramos cómo tocas una opción (A, B, C o D). Sin prisa inventada.',
       intro: {
         ms: 5600,
         kicker: 'DÍA 1 · PRIMERA LECTURA',
-        line: 'Hoy no hay prisa. Solo vemos cómo marcas.',
+        line: 'Hoy no hay prisa. Solo vemos cómo eliges tu respuesta.',
         hint: 'Sin cronómetro · Sin ruido'
       },
       nMin: 3, nMax: 5,
@@ -36,13 +36,13 @@
       day: 2,
       phase: 'read',
       kicker: 'DÍA 2 · EL ENUNCIADO MANDA',
-      title: 'Primero el texto, después la letra',
-      teach: 'El ICFES premia quien ancla el enunciado antes de enamorar una opción.',
+      title: 'Primero el enunciado, después la opción',
+      teach: 'El ICFES premia quien entiende el enunciado antes de enamorarse de una letra.',
       intro: {
         ms: 5800,
         kicker: 'DÍA 2 · EL ENUNCIADO MANDA',
-        line: 'Antes de la letra: el texto. Ancla ahí.',
-        hint: 'Lee · Luego marca'
+        line: 'Antes de tocar A, B, C o D: lee el texto. Ancla ahí.',
+        hint: 'Lee el enunciado · Luego elige'
       },
       nMin: 3, nMax: 5,
       preferModes: ['ancla', 'estandar4'],
@@ -57,13 +57,13 @@
       day: 3,
       phase: 'read',
       kicker: 'DÍA 3 · LETRA MAYÚSCULA',
-      title: 'La marca es un acto, no un vistazo',
-      teach: 'Agrandamos la letra para que sientas el peso de elegir.',
+      title: 'Elegir una opción es un acto, no un vistazo',
+      teach: 'Agrandamos A, B, C y D para que sientas el peso de responder.',
       intro: {
         ms: 5400,
         kicker: 'DÍA 3 · LETRA MAYÚSCULA',
-        line: 'Hoy la letra pesa. Elegir es un acto.',
-        hint: 'Toca · Confirma'
+        line: 'Hoy la letra pesa. Elegir tu respuesta es un acto.',
+        hint: 'Toca la opción · Confirma'
       },
       nMin: 3, nMax: 5,
       preferModes: ['estandar4', 'sello'],
@@ -141,12 +141,12 @@
       day: 7,
       phase: 'attack',
       kicker: 'DÍA 7 · SELLO',
-      title: '¿La sostienes?',
-      teach: 'La metacognición se entrena: confirmar o cambiar con razón.',
+      title: '¿Confirmas esa respuesta?',
+      teach: 'Se entrena pensar dos veces: confirmas la letra o la cambias con una razón.',
       intro: {
         ms: 5600,
         kicker: 'DÍA 7 · SELLO',
-        line: 'Marcas. Luego te preguntas: ¿la sostengo?',
+        line: 'Eliges una opción. Luego te preguntas: ¿confirmo esta respuesta?',
         hint: 'Confirmar · O cambiar con razón'
       },
       nMin: 4, nMax: 6,
@@ -289,12 +289,12 @@
       day: 14,
       phase: 'seal',
       kicker: 'DÍA 14 · SÍNTESIS',
-      title: 'Todo lo que aprendiste a marcar',
-      teach: 'Mezcla de modos. Tu perfil intelectual se compacta.',
+      title: 'Todo lo que aprendiste al elegir tu respuesta',
+      teach: 'Mezcla de modos. Compactamos cómo respondes bajo distintas formas.',
       intro: {
         ms: 5600,
         kicker: 'DÍA 14 · SÍNTESIS',
-        line: 'Mezcla de modos. Compactamos lo que ya sabes marcar.',
+        line: 'Mezcla de modos. Compactamos cómo ya eliges tu respuesta.',
         hint: 'Duelo · Sello · Ventana · Ancla'
       },
       nMin: 5, nMax: 7,

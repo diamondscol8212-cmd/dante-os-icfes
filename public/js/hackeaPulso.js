@@ -11,16 +11,16 @@
 
   const ECO_LINES = {
     structural: {
-      wrong: 'Premisa → puente → dónde se rompe tu opción.',
-      right: 'La estructura sostuvo la marca.'
+      wrong: 'Premisa → puente → dónde se rompe la opción que elegiste.',
+      right: 'La estructura sostuvo tu respuesta.'
     },
     contrast: {
-      wrong: 'Lo que pide el texto frente a lo que afirmó tu marca.',
-      right: 'El contraste sostuvo la marca.'
+      wrong: 'Compara lo que pide el texto con lo que afirma la opción que elegiste.',
+      right: 'El contraste sostuvo tu respuesta.'
     },
     narrative: {
-      wrong: 'Si la escena no cabe, la opción cae.',
-      right: 'La escena sostuvo la marca.'
+      wrong: 'Si la escena no cabe, esa opción cae.',
+      right: 'La escena sostuvo tu respuesta.'
     }
   };
 
@@ -193,7 +193,7 @@
                   <span class="pulso-confirm-hint" aria-hidden="true">Toca otra vez para confirmar</span>
                 </button>`).join('')}
             </div>
-            <p class="hackea-act-note">No hay nota. Solo tu movimiento.</p>
+            <p class="hackea-act-note">No hay nota. Solo eliges cómo responderías.</p>
           </div>
         </div>`;
       const root = stage.querySelector('#hackeaDilemma');
@@ -358,18 +358,18 @@
               <div class="hackea-pulso-ancla" id="hackeaPulsoAncla">
                 <button type="button" class="hackea-pulso-ancla-btn" id="hackeaAnclaHold">
                   <span class="ancla-fill" id="hackeaAnclaFill"></span>
-                  <span class="ancla-label">Sostén el enunciado</span>
+                  <span class="ancla-label">Mantén pulsado: lee el enunciado primero</span>
                 </button>
               </div>` : ''}
             <div class="hackea-pulso-opts layout-${esc(layout)} ${mode === 'ancla' ? 'is-locked' : ''}" id="hackeaPulsoOpts">
               ${optsHtml}
             </div>
             <p class="hackea-act-note">${
-              mode === 'duelo2' ? 'Solo dos caminos. Elige.'
-                : mode === 'sello' ? 'Marca. Luego confirmas.'
-                : mode === 'ancla' ? 'Primero el texto. Después las letras.'
-                : mode === 'ventana' || useTimer ? 'El aire aprieta. Tú decides.'
-                : 'A · B · C · D'
+              mode === 'duelo2' ? 'Solo dos opciones. Elige la que sostiene el texto.'
+                : mode === 'sello' ? 'Elige una letra. Luego confirmas o cambias.'
+                : mode === 'ancla' ? 'Primero lee el enunciado. Después elige A, B, C o D.'
+                : mode === 'ventana' || useTimer ? 'El tiempo aprieta. Elige tu respuesta.'
+                : 'Toca una letra (A · B · C · D) y confirma.'
             }</p>
           </div>
         </div>`;
@@ -507,10 +507,10 @@
       overlay.className = 'hackea-pulso-seal';
       overlay.innerHTML = `
         <p class="seal-kicker">SELLO</p>
-        <p class="seal-q">Marcaste <strong>${esc(letter)}</strong>. ¿La sostienes?</p>
+        <p class="seal-q">Elegiste la opción <strong>${esc(letter)}</strong>. ¿Confirmas esa respuesta?</p>
         <div class="seal-actions">
-          <button type="button" class="seal-btn seal-keep" data-a="keep">Confirmar ${esc(letter)}</button>
-          <button type="button" class="seal-btn seal-change" data-a="change">Cambiar</button>
+          <button type="button" class="seal-btn seal-keep" data-a="keep">Confirmar respuesta ${esc(letter)}</button>
+          <button type="button" class="seal-btn seal-change" data-a="change">Cambiar de opción</button>
         </div>`;
       sheet.appendChild(overlay);
       requestAnimationFrame(() => overlay.classList.add('is-on'));
@@ -729,7 +729,7 @@
                   ? 'Sin espera: vuelve a la espiral y sigue al día ' + nextDay + '.'
                   : 'Día ' + nextDay + ' se abre según tu capacidad — no es el reloj de la sala.')}</span>
             </div>
-            <p class="sello-cap-hint">Te leemos en la forma de marcar. Sin informe. Con efecto.</p>
+            <p class="sello-cap-hint">Te leemos en cómo eliges tu respuesta. Sin informe. Con efecto.</p>
             <button type="button" class="hackea-exit-btn" id="hackeaBtnSalirPulso">Volver a la sala</button>
           </div>
         </div>`;

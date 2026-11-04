@@ -242,7 +242,7 @@
       id: 'dil_seal_15', tags: ['seal'],
       prompt: 'Tras estos días, ¿qué quieres que Dante priorice en ti?',
       options: [
-        { v: 'anchor', text: 'Frenar la marca impulsiva' },
+        { v: 'anchor', text: 'Frenar la respuesta impulsiva (no tocar letra al azar)' },
         { v: 'commit', text: 'Confirmar con más seguridad cuando sí sé' },
         { v: 'evidence', text: 'Atar cada opción a una evidencia del texto' }
       ]
