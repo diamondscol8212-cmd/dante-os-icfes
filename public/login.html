@@ -1304,16 +1304,18 @@
                         const configResp = await fetch("/api/v1/auth/config").catch(() => null);
                         if (configResp && configResp.ok) {
                             const configData = await configResp.json();
-                            if (configData.hasSupabase && configData.supabaseUrl && configData.supabaseKey && window.supabase) {
+                            if (configData.supabaseUrl && configData.supabaseKey && window.supabase) {
                                 window.supabaseClient = window.supabase.createClient(configData.supabaseUrl, configData.supabaseKey);
+                            } else if (!configData.googleAuthReady) {
+                                PortalAuth.mostrarFeedbackAuth("Google aún no está listo en el servidor. Entra con correo y contraseña.", "warning");
+                                return;
                             }
                         }
                     }
 
                     if (!window.supabaseClient) {
-                        const errNoClient = new Error("Servicio de autenticación no inicializado.");
-                        console.error("Detalle del error Supabase:", errNoClient);
-                        throw errNoClient;
+                        PortalAuth.mostrarFeedbackAuth("Google no disponible ahora. Usa correo y contraseña.", "warning");
+                        return;
                     }
 
                     const callbackUrl = window.location.origin + '/onboarding.html';
@@ -1347,7 +1349,13 @@
 
                 } catch (e) {
                     console.error("Error en Google OAuth:", e);
-                    PortalAuth.mostrarFeedbackAuth("Error de conexión con el servidor. Intenta de nuevo.", "error");
+                    const msg = (e && e.message) ? String(e.message) : "";
+                    PortalAuth.mostrarFeedbackAuth(
+                        msg && msg.length < 120
+                            ? msg
+                            : "No se pudo abrir Google. Prueba correo y contraseña.",
+                        "error"
+                    );
                 } finally {
                     if (btnGoogle) {
                         btnGoogle.disabled = false;

@@ -80,17 +80,27 @@ function verificarHashPassword(password, salt, hashAlmacenado) {
 // 🪐 ENDPOINT 0: CONFIGURACIÓN PÚBLICA DE AUTENTICACIÓN
 // ====================================================================
 router.get('/config', (req, res) => {
-    // No exponer anon key al navegador. Persistencia de progreso va por API server-side.
+    // Anon/publishable key SÍ va al navegador (OAuth Google). Nunca service_role / SUPABASE_KEY.
     const supabaseUrl = process.env.SUPABASE_URL || '';
+    // Fallback solo para este proyecto (clave anon pública). Preferir SUPABASE_ANON_KEY en Render.
+    const projectAnonFallback =
+      supabaseUrl.includes('lnjcbcdudokkjqllrqlf')
+        ? 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxuamNiY2R1ZG9ra2pxbGxycWxmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk5OTE4OTEsImV4cCI6MjA5NTU2Nzg5MX0.DpXDnwgLYvnX87q4Pr7PLgxYgOisCjJ-duOk2r7KhGo'
+        : '';
+    const supabaseAnon =
+      process.env.SUPABASE_ANON_KEY ||
+      process.env.SUPABASE_PUBLISHABLE_KEY ||
+      projectAnonFallback;
     const hasServerSupabase = Boolean(
       supabaseUrl &&
-      (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_KEY)
+      (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_KEY || supabaseAnon)
     );
     return res.status(200).json({
         success: true,
-        supabaseUrl: '',
-        supabaseKey: '',
+        supabaseUrl: supabaseUrl || '',
+        supabaseKey: supabaseAnon || '',
         hasSupabase: hasServerSupabase,
+        googleAuthReady: Boolean(supabaseUrl && supabaseAnon),
         persistenciaViaApi: true
     });
 });

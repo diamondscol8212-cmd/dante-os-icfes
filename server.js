@@ -78,6 +78,11 @@ const ALLOWED_ORIGINS = [
     'http://localhost:3000', 'http://127.0.0.1:5500', 
     'http://localhost:5500', 'https://danteos.com',
     'https://app.danteos.com',
+    'https://danteos.app',
+    'https://www.danteos.app',
+    'capacitor://localhost',
+    'https://localhost',
+    'http://localhost',
     'https://dante-os-platform.onrender.com'
 ];
 
