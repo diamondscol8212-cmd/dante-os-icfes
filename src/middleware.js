@@ -1,6 +1,7 @@
 // middleware.js - Middleware Centralizado de Autenticación JWT, Control de Acceso (RBAC) y Soberanía de Datos
 // Dante OS Enterprise Edition
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 
 // 🛡️ PATRÓN FAIL-FAST DE SEGURIDAD PARA PRODUCCIÓN CON RESGUARDO EN DESARROLLO
 const isProduction = process.env.NODE_ENV === 'production';
@@ -16,12 +17,16 @@ if (isProduction) {
         throw new Error("🚨 [FAIL-FAST CRITICAL ERROR]: process.env.PII_SALT_SECRET no está definida. Configure esta variable en el panel del servidor para garantizar la seudonomización de PII.");
     }
 } else if (!process.env.JWT_SECRET || !process.env.INTEGRITY_SECRET || !process.env.PII_SALT_SECRET) {
-    console.warn("⚠️ [DEV MODE WARNING]: Variables criptográficas ausentes en entorno local/desarrollo. Se utilizan claves efímeras de desarrollo.");
+    console.warn("⚠️ [DEV MODE WARNING]: Variables criptográficas ausentes en entorno local/desarrollo. Se utilizan claves efímeras dinámicas de 256 bits.");
 }
 
-const JWT_SECRET = process.env.JWT_SECRET || 'dante_os_jwt_secret_dev_key_2026';
-const INTEGRITY_SECRET = process.env.INTEGRITY_SECRET || 'dante_os_integrity_secret_dev_key_2026';
-const PII_SALT_SECRET = process.env.PII_SALT_SECRET || 'dante_os_pii_salt_secret_dev_key_2026';
+const ephemeralJwtSecret = crypto.randomBytes(32).toString('hex');
+const ephemeralIntegritySecret = crypto.randomBytes(32).toString('hex');
+const ephemeralPiiSaltSecret = crypto.randomBytes(32).toString('hex');
+
+export const JWT_SECRET = process.env.JWT_SECRET || ephemeralJwtSecret;
+export const INTEGRITY_SECRET = process.env.INTEGRITY_SECRET || ephemeralIntegritySecret;
+export const PII_SALT_SECRET = process.env.PII_SALT_SECRET || ephemeralPiiSaltSecret;
 
 /*
  * =========================================================================================
@@ -29,7 +34,7 @@ const PII_SALT_SECRET = process.env.PII_SALT_SECRET || 'dante_os_pii_salt_secret
  * =========================================================================================
  * 1. MITIGACIÓN DE ATAQUES XSS Y ROBO DE CREDENCIALES: Eliminar el almacenamiento de tokens en
  *    `localStorage` y forzar la autenticación mediante cookies con atributo `HttpOnly`, `Secure`
- *    y `SameSite=Strict` garantiza que el token de sesión sea inaccesible para scripts maliciosos.
+ *    y `SameSite=Lax` garantiza que el token de sesión sea inaccesible para scripts maliciosos y protegido contra CSRF.
  * 2. CUMPLIMIENTO DEL PRINCIPIO DE SEGURIDAD (LEY 1581 ART. 4 LITERAL G): Se implementan medidas
  *    técnicas avanzadas para evitar la adulteración, pérdida, consulta o acceso no autorizado a
  *    los perfiles analíticos y psicométricos de los estudiantes.
@@ -105,7 +110,7 @@ export function verifyToken(req, res, next) {
         const decoded = jwt.verify(token, JWT_SECRET);
         req.user = decoded;
         next();
-    } catch (err) {
+    } catch {
         return res.status(401).json({
             success: false,
             error: "Acceso denegado: Token JWT inválido, alterado o expirado."
@@ -138,8 +143,12 @@ export function optionalToken(req, res, next) {
             const decoded = jwt.verify(token, JWT_SECRET);
             req.user = decoded;
         }
-    } catch (err) {
+    } catch {
         // Ignorar fallo de token opcional
+    }
+
+    if (!req.user) {
+        req.user = null;
     }
     next();
 }

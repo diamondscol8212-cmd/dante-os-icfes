@@ -1,0 +1,15 @@
+@import url('./design-tokens.css');
+@import url('./css/theme.css');
+
+/* Fallback variable definitions if import fails in old browsers */
+:root {
+  --color-primary-gold: #f59e0b;
+  --color-gold-hover: #d97706;
+  --bg-dark-main: #090d16;
+  --bg-card-surface: rgba(15, 23, 42, 0.85);
+  --color-cyan-accent: #06b6d4;
+  --color-purple-accent: #8b5cf6;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+}

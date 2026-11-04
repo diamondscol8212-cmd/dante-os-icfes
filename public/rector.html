@@ -3,14 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Dante OS // Suite de Gobernanza Rectoral v21.8.0 (FASE R4 LEVEL 5 MESH & AUTO-HEALING)</title>
+    <title>Dante OS v23.1.0-ENTERPRISE // Suite de Gobernanza Rectoral</title>
 
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=JetBrains+Mono:wght@400;500;700;900&family=Oswald:wght@700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/design-tokens.css">
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="theme.css">
+    <script src="js/danteVectorIcons.js"></script>
+    <script src="js/i18n.js"></script>
 
     <style>
         :root {
@@ -24,37 +26,7 @@
             --purple-core: #a855f7;
         }
 
-        /* TEMA DE ALTO CONTRASTE / MODO AULA PROYECTOR */
-        body.light-mode {
-            --bg: #f1f5f9;
-            --card-bg: #ffffff;
-            --border-graphite: #cbd5e1;
-            --gold: #b45309;
-            --primary: #0284c7;
-            background-color: #f1f5f9 !important;
-            color: #0f172a !important;
-        }
-        body.light-mode .master-hud { background: rgba(255, 255, 255, 0.98) !important; border-bottom-color: #cbd5e1 !important; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        body.light-mode .alias-title { color: #0f172a !important; }
-        body.light-mode .geo-tag { color: #0284c7 !important; }
-        body.light-mode .kpi-card { background: #ffffff !important; border-color: #cbd5e1 !important; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        body.light-mode .remediation-box { background: #f8fafc !important; border-color: #cbd5e1 !important; border-left-color: #b45309 !important; }
-        body.light-mode .remediation-text { color: #334155 !important; }
-        body.light-mode .war-room-card { background: #ffffff !important; border-color: #b45309 !important; box-shadow: 0 4px 20px rgba(180, 83, 9, 0.1); }
-        body.light-mode .war-room-text { color: #1e293b !important; }
-        body.light-mode .control-panel { background: #ffffff !important; border-color: #cbd5e1 !important; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        body.light-mode .chart-box { background: #ffffff !important; border-color: #cbd5e1 !important; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        body.light-mode .table-container { background: #ffffff !important; border-color: #cbd5e1 !important; }
-        body.light-mode table th { background: #f1f5f9 !important; color: #0f172a !important; border-bottom-color: #cbd5e1 !important; }
-        body.light-mode table td { border-bottom-color: #e2e8f0 !important; color: #0f172a !important; }
-        body.light-mode .input-premium, body.light-mode select.select-premium { background: #ffffff !important; color: #0f172a !important; border-color: #cbd5e1 !important; }
-        body.light-mode .tab-btn { background: #ffffff !important; color: #475569 !important; border-color: #cbd5e1 !important; }
-        body.light-mode .tab-btn.active { background: #fffbeb !important; color: #b45309 !important; border-color: #b45309 !important; }
-        body.light-mode .text-white, body.light-mode .text-slate-100, body.light-mode .text-slate-200, body.light-mode .text-slate-300 { color: #0f172a !important; }
-        body.light-mode .text-slate-400, body.light-mode .text-zinc-400 { color: #475569 !important; }
-        body.light-mode .r2-card { background: #ffffff !important; border-color: #cbd5e1 !important; color: #0f172a !important; }
-        body.light-mode .r2-card-title { color: #0284c7 !important; }
-        body.light-mode .modal-content { background: #ffffff !important; color: #0f172a !important; border-color: #cbd5e1 !important; }
+
 
         body, html { 
             background: var(--bg); color: #f0f1f5; margin: 0; font-family: 'Outfit', sans-serif; 
@@ -309,14 +281,18 @@
 
     <!-- HEADER MASTER HUD SUPERIOR RECTOR -->
     <header class="master-hud">
-        <div>
-            <div class="alias-title" data-final="DANTE OS // SUITE DE GOBERNANZA RECTORAL v21.8.0">DANTE OS // SUITE DE GOBERNANZA RECTORAL v21.8.0</div>
-            <div class="geo-tag" id="ui-geo">BOGOTÁ, COLOMBIA // WAR ROOM DIRECTIVO (FASE R4 LEVEL 5 AUTO-HEALING MESH)</div>
+        <div class="flex items-center gap-2">
+            <script>document.write(window.DanteVectorIcons ? window.DanteVectorIcons.logoDante({size: 32}) : '');</script>
+            <div>
+                <div class="alias-title" data-final="DANTE OS // SUITE DE GOBERNANZA RECTORAL v23.1.0">Dante OS v23.1.0 - Enterprise Edition</div>
+                <div class="geo-tag" id="ui-geo">BOGOTÁ, COLOMBIA // WAR ROOM DIRECTIVO (v23.1.0-ENTERPRISE)</div>
+            </div>
         </div>
 
         <div class="flex items-center gap-2">
-            <button type="button" onclick="RectorDashboard.toggleThemeContraste()" class="text-xs text-amber-500 hover:text-amber-400 p-1.5 bg-transparent border-0 cursor-pointer flex-shrink-0" title="Cambiar modo de contraste Proyector (Claro/Oscuro)" aria-label="Cambiar modo de contraste">
-                <i class="fas fa-sun" id="iconContrast"></i>
+            <!-- Botón de Alternancia Bilingüe (Colegios Bilingües / Bilingual Schools) -->
+            <button type="button" onclick="window.DanteI18n.toggleLanguage()" class="dante-lang-toggle-btn px-2.5 py-1 bg-sky-500/20 hover:bg-sky-500/30 border border-sky-500/50 text-sky-300 rounded text-[10px] font-mono font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer shadow" title="Switch Language / Cambiar Idioma">
+                🇪🇸 <span class="font-bold">ES</span> / EN
             </button>
             <div class="live-indicator hidden sm:inline-flex" id="uiStatusStream">
                 <div class="pulse-dot"></div>Stream Activo
@@ -326,8 +302,16 @@
                 ⚡ Simulador
             </a>
 
+            <button type="button" onclick="descargarDossierCientifico()" class="btn-dossier-pdf px-2.5 py-1 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/50 text-amber-300 rounded text-[10px] font-mono font-bold uppercase tracking-wider transition-all flex items-center gap-1.5 cursor-pointer shadow" title="Descargar Dossier Psicométrico Científico en PDF para Consejo Directivo">
+                <svg class="w-3.5 h-3.5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Dossier PDF
+            </button>
+
+            <button type="button" onclick="cerrarSesion()" class="btn-logout-enterprise" title="Cerrar Sesión">
+                <svg class="w-3.5 h-3.5 inline-block mr-1 text-slate-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> Cerrar Sesión
+            </button>
+
             <div class="text-right hidden sm:block pl-2 border-l border-zinc-800">
-                <div class="text-xs font-black italic text-white font-mono">MODO <span class="text-[#D4AF37]">C-SUITE</span></div>
+                <div class="text-xs font-black italic text-white font-mono">MODO <span class="text-[#D4AF37]">C-SUITE</span> <span class="text-[9px] font-normal text-amber-400">v22.0.0</span></div>
                 <div class="font-mono text-[8px] text-zinc-400 uppercase" id="lblTenantBannerHeader">TENANT: DEFAULT</div>
             </div>
         </div>
@@ -443,6 +427,168 @@
                     </div>
                     <div class="text-[11px] text-zinc-400 leading-snug">
                         Cifrado AES-256 en tránsito y reposo en Supabase/Redis con cabecera estricta <code>x-institution-id</code>.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- FASE 4: PANEL DE AUDITORÍA RECTORAL, SESGO ALGORÍTMICO (DIF) & SANITIZACIÓN PII (#uiAuditoriaDIF) -->
+        <!-- ========================================================================= -->
+        <div class="r2-card" id="uiAuditoriaDIF">
+            <div class="r2-card-header">
+                <div class="r2-card-title">
+                    <i class="fas fa-balance-scale text-amber-400"></i>
+                    <span>⚖️ AUDITORÍA DE CALIDAD PSICOMÉTRICA & SESGO ALGORÍTMICO (DIF / PII)</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-[10px] font-mono text-zinc-400 bg-zinc-900/80 px-2.5 py-1 rounded border border-zinc-800">
+                        Estándares AERA / APA / NCME
+                    </span>
+                    <button onclick="RectorDashboard.consultarAuditoriaCalidad()" class="px-2.5 py-1 bg-amber-500/20 hover:bg-amber-500/40 border border-amber-500/50 text-amber-300 text-[10px] font-mono font-bold rounded uppercase transition">
+                        🔄 Ejecutar Auditoría
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-3">
+                <div class="bg-zinc-900/60 border border-amber-500/30 rounded-xl p-3 backdrop-blur">
+                    <div class="text-[10px] font-mono text-amber-400 uppercase font-bold mb-1">Confiabilidad Empírica</div>
+                    <div class="text-xl font-mono font-black text-amber-300" id="lblAuditConfiabilidad">---</div>
+                    <div class="text-[10px] text-zinc-400 mt-1">Sintonía Relación Señal/Ruido $1 - \text{SEM}^2$</div>
+                </div>
+                <div class="bg-zinc-900/60 border border-emerald-500/30 rounded-xl p-3 backdrop-blur">
+                    <div class="text-[10px] font-mono text-emerald-400 uppercase font-bold mb-1">Error Estándar (SEM)</div>
+                    <div class="text-xl font-mono font-black text-emerald-300" id="lblAuditSEM">---</div>
+                    <div class="text-[10px] text-zinc-400 mt-1">Precisión de estimación latente theta</div>
+                </div>
+                <div class="bg-zinc-900/60 border border-sky-500/30 rounded-xl p-3 backdrop-blur">
+                    <div class="text-[10px] font-mono text-sky-400 uppercase font-bold mb-1">Auditoría PII & IDOR</div>
+                    <div class="text-xs font-mono font-bold text-sky-300" id="lblAuditSeguridad">AES-256-GCM</div>
+                    <div class="text-[10px] text-zinc-400 mt-1">Muestras ofuscadas para reguladores</div>
+                </div>
+                <div class="bg-zinc-900/60 border border-purple-500/30 rounded-xl p-3 backdrop-blur">
+                    <div class="text-[10px] font-mono text-purple-400 uppercase font-bold mb-1">Dictamen de Calidad</div>
+                    <div class="text-xs font-mono font-bold text-emerald-300" id="lblAuditDictamen">EN EVALUACIÓN</div>
+                    <div class="text-[10px] text-zinc-400 mt-1">Aprobación para entes territoriales</div>
+                </div>
+            </div>
+
+            <!-- Muestra PII Sanitizada Auditada -->
+            <div class="bg-zinc-950/70 border border-zinc-800 rounded-xl p-3">
+                <div class="text-[11px] font-mono font-bold text-amber-400 uppercase mb-2 flex justify-between items-center">
+                    <span>🛡️ Muestra de Telemetría Sanitizada (PII / Ley 1581)</span>
+                    <span class="text-[9px] text-zinc-500">MASCARAS DE IDENTIFICADOR ACTIVAS</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs font-mono" id="tablaAuditoriaPII">
+                        <thead>
+                            <tr class="border-b border-zinc-800 text-zinc-400">
+                                <th class="p-1.5">Identificador Ofuscado</th>
+                                <th class="p-1.5">Email Mascarado</th>
+                                <th class="p-1.5">Habilidad Latente $\theta$</th>
+                                <th class="p-1.5">Estado PII</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyAuditoriaPII">
+                            <tr><td colspan="4" class="p-2 text-zinc-500 italic text-center">Cargando telemetría auditada...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- FASE 4: SIMULADOR DE CARGA Y ESTRÉS DE EVALUACIÓN ADAPTATIVA E2E (#uiSimuladorCarga) -->
+        <!-- ========================================================================= -->
+        <div class="r2-card" id="uiSimuladorCarga">
+            <div class="r2-card-header">
+                <div class="r2-card-title">
+                    <i class="fas fa-tachometer-alt text-sky-400"></i>
+                    <span>⚡ PRUEBAS DE ESTRÉS, CONCURRENCIA & BENCHMARK E2E (WORKER POOL)</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="RectorDashboard.ejecutarSimulacionCarga(100)" class="px-2.5 py-1 bg-sky-500/20 hover:bg-sky-500/40 border border-sky-500/50 text-sky-300 text-[10px] font-mono font-bold rounded uppercase transition">
+                        ⚡ 100 EAP
+                    </button>
+                    <button onclick="RectorDashboard.ejecutarSimulacionCarga(500)" class="px-2.5 py-1 bg-indigo-500/20 hover:bg-indigo-500/40 border border-indigo-500/50 text-indigo-300 text-[10px] font-mono font-bold rounded uppercase transition">
+                        🚀 500 EAP
+                    </button>
+                    <button onclick="RectorDashboard.ejecutarSimulacionCarga(1000)" class="px-2.5 py-1 bg-amber-500/20 hover:bg-amber-500/40 border border-amber-500/50 text-amber-300 text-[10px] font-mono font-bold rounded uppercase transition">
+                        🔥 1,000 EAP
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-3">
+                <div class="bg-zinc-900/60 border border-sky-500/30 rounded-xl p-3 backdrop-blur">
+                    <div class="text-[10px] font-mono text-sky-400 uppercase font-bold mb-1">Peticiones Procesadas</div>
+                    <div class="text-xl font-mono font-black text-sky-300" id="lblCargaProcesadas">---</div>
+                    <div class="text-[10px] text-zinc-400 mt-1">Concurrencia simétrica en paralelo</div>
+                </div>
+                <div class="bg-zinc-900/60 border border-emerald-500/30 rounded-xl p-3 backdrop-blur">
+                    <div class="text-[10px] font-mono text-emerald-400 uppercase font-bold mb-1">Throughput (Ops/Seg)</div>
+                    <div class="text-xl font-mono font-black text-emerald-300" id="lblCargaThroughput">---</div>
+                    <div class="text-[10px] text-zinc-400 mt-1">Rendimiento continuo del motor</div>
+                </div>
+                <div class="bg-zinc-900/60 border border-purple-500/30 rounded-xl p-3 backdrop-blur">
+                    <div class="text-[10px] font-mono text-purple-400 uppercase font-bold mb-1">Latencia Promedio</div>
+                    <div class="text-xl font-mono font-black text-purple-300" id="lblCargaLatencia">---</div>
+                    <div class="text-[10px] text-zinc-400 mt-1">Tiempo promedio por iteración EAP</div>
+                </div>
+                <div class="bg-zinc-900/60 border border-amber-500/30 rounded-xl p-3 backdrop-blur">
+                    <div class="text-[10px] font-mono text-amber-400 uppercase font-bold mb-1">Heap RAM Delta</div>
+                    <div class="text-xl font-mono font-black text-amber-300" id="lblCargaRAM">---</div>
+                    <div class="text-[10px] text-zinc-400 mt-1">Variación de memoria asignada</div>
+                </div>
+            </div>
+
+            <!-- Terminal de Telemetría -->
+            <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-3 text-xs font-mono text-zinc-300 h-24 overflow-y-auto" id="consoleBenchmarkLog">
+                <div class="text-zinc-500">▶ Terminal de Benchmark en vivo lista. Seleccione una ráfaga de carga para ejecutar...</div>
+            </div>
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- FASE 4: GENERADOR Y VERIFICADOR DE CERTIFICADOS OFICIALES (#uiCertificadosOficiales) -->
+        <!-- ========================================================================= -->
+        <div class="r2-card" id="uiCertificadosOficiales">
+            <div class="r2-card-header">
+                <div class="r2-card-title">
+                    <i class="fas fa-file-contract text-emerald-400"></i>
+                    <span>📜 REPORTE RECTORAL INSTITUCIONAL & CERTIFICACIÓN CRIPTOGRÁFICA INMUTABLE</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="RectorDashboard.generarCertificadoOficial()" class="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-zinc-950 font-mono font-bold text-xs rounded transition flex items-center gap-1">
+                        <i class="fas fa-certificate"></i> Generar Certificado Oficial
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-zinc-900/60 border border-zinc-800 rounded-xl p-3 backdrop-blur flex flex-col justify-between">
+                    <div>
+                        <div class="text-xs font-mono text-emerald-400 uppercase font-bold mb-2 flex items-center gap-2">
+                            <i class="fas fa-shield-alt"></i> Estado del Último Certificado Generado
+                        </div>
+                        <div class="text-xs font-mono text-zinc-300 space-y-1" id="divDetalleCertificado">
+                            <div class="text-zinc-500 italic">No se ha generado ningún certificado en esta sesión. Haga clic en 'Generar Certificado Oficial'.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-zinc-900/60 border border-zinc-800 rounded-xl p-3 backdrop-blur flex flex-col justify-between">
+                    <div>
+                        <div class="text-xs font-mono text-sky-400 uppercase font-bold mb-2 flex items-center gap-2">
+                            <i class="fas fa-check-circle"></i> Verificador Criptográfico HMAC-SHA256
+                        </div>
+                        <div class="space-y-2">
+                            <textarea id="txtCertificadoJSON" rows="3" class="w-full bg-zinc-950 border border-zinc-800 rounded p-2 text-[10px] font-mono text-zinc-300 focus:outline-none focus:border-sky-500" placeholder="Pegue el objeto JSON del certificado para verificar su firma inmutable..."></textarea>
+                            <button onclick="RectorDashboard.verificarCertificado()" class="w-full py-1.5 bg-sky-500/20 hover:bg-sky-500/40 border border-sky-500/50 text-sky-300 text-xs font-mono font-bold rounded transition">
+                                🔍 Verificar Integridad Criptográfica
+                            </button>
+                        </div>
+                        <div class="mt-2 text-xs font-mono font-bold" id="lblResultadoVerificacion"></div>
                     </div>
                 </div>
             </div>
@@ -893,6 +1039,7 @@
                 'x-institution-id': INSTITUTION_ID,
                 'x-idempotency-key': idempotencyKey,
                 'Authorization': `Bearer ${sessionToken}`,
+                'Accept-Language': (window.DanteI18n ? window.DanteI18n.getLanguage() : 'es'),
                 ...(options.headers || {})
             };
 
@@ -962,21 +1109,17 @@
             }
 
             static toggleThemeContraste() {
-                const isLight = document.body.classList.toggle("light-mode");
-                localStorage.setItem("dante_theme", isLight ? "light" : "dark");
-                const icon = document.getElementById("iconContrast");
-                if (icon) {
-                    icon.className = isLight ? "fas fa-moon" : "fas fa-sun";
-                }
+                document.documentElement.classList.add("dark");
+                document.body.classList.add("dark");
+                document.body.classList.remove("light-mode", "theme-light", "mode-clinic");
+                localStorage.removeItem("dante_theme");
             }
 
             static cargarTemaGuardado() {
-                const theme = localStorage.getItem("dante_theme");
-                if (theme === "light") {
-                    document.body.classList.add("light-mode");
-                    const icon = document.getElementById("iconContrast");
-                    if (icon) icon.className = "fas fa-moon";
-                }
+                document.documentElement.classList.add("dark");
+                document.body.classList.add("dark");
+                document.body.classList.remove("light-mode", "theme-light", "mode-clinic");
+                localStorage.removeItem("dante_theme");
             }
 
             static async procesarCsvMatricula(e) {
@@ -1946,6 +2089,157 @@
             static async ejecutarCierreEpoca() {
                 this.confirmarCierreEpocaInmutable();
             }
+
+            static async consultarAuditoriaCalidad() {
+                try {
+                    const json = await resilientFetch(`${HOST_URL}/api/admin/auditoria-calidad`, {
+                        method: 'GET'
+                    });
+
+                    if (json && json.success && json.reporteAuditoria) {
+                        const rep = json.reporteAuditoria;
+                        const confEl = document.getElementById("lblAuditConfiabilidad");
+                        const semEl = document.getElementById("lblAuditSEM");
+                        const dictEl = document.getElementById("lblAuditDictamen");
+
+                        if (confEl) confEl.innerText = `${(rep.confiabilidadEmpirica * 100).toFixed(1)}%`;
+                        if (semEl) semEl.innerText = `±${rep.semPromedio.toFixed(3)}`;
+                        if (dictEl) dictEl.innerText = rep.dictamenAuditoria.replace(/_/g, ' ');
+
+                        const tbody = document.getElementById("tbodyAuditoriaPII");
+                        if (tbody && Array.isArray(json.muestraAuditadaPII)) {
+                            tbody.innerHTML = json.muestraAuditadaPII.map(m => `
+                                <tr class="border-b border-zinc-800/50 hover:bg-zinc-900/50">
+                                    <td class="p-1.5 font-bold text-amber-300">${m.nombre || 'Desconocido'}</td>
+                                    <td class="p-1.5 text-sky-300">${m.email || 'N/A'}</td>
+                                    <td class="p-1.5 text-zinc-300">${typeof m.theta === 'number' ? m.theta.toFixed(2) : '0.00'}</td>
+                                    <td class="p-1.5"><span class="px-1.5 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 rounded text-[9px]">SANATIZED_PII</span></td>
+                                </tr>
+                            `).join('');
+                        }
+                    }
+                } catch (err) {
+                    console.warn("⚠️ Error obteniendo auditoría de calidad:", err.message);
+                }
+            }
+
+            static async ejecutarSimulacionCarga(cantidad = 100) {
+                const logEl = document.getElementById("consoleBenchmarkLog");
+                if (logEl) {
+                    logEl.innerHTML = `<div class="text-sky-400 font-bold">⚡ Despachando ráfaga paralela de ${cantidad} evaluaciones EAP al Worker Pool...</div>`;
+                }
+
+                try {
+                    const json = await resilientFetch(`${HOST_URL}/api/admin/simular-carga`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ cantidadPeticiones: cantidad })
+                    });
+
+                    if (json && json.success && json.metricas) {
+                        const m = json.metricas;
+                        const procEl = document.getElementById("lblCargaProcesadas");
+                        const tpEl = document.getElementById("lblCargaThroughput");
+                        const latEl = document.getElementById("lblCargaLatencia");
+                        const ramEl = document.getElementById("lblCargaRAM");
+
+                        if (procEl) procEl.innerText = `${m.peticionesProcesadas} / ${cantidad}`;
+                        if (tpEl) tpEl.innerText = `${m.throughputOpsSec} ops/s`;
+                        if (latEl) latEl.innerText = `${m.latenciaPromedioMs} ms`;
+                        if (ramEl) ramEl.innerText = `+${m.deltaMemoriaMb} MB`;
+
+                        if (logEl) {
+                            logEl.innerHTML += `
+                                <div class="text-emerald-400 font-bold mt-1">✅ BATCH COMPLETADO CON ÉXITO:</div>
+                                <div class="text-zinc-300">   • Tiempo Lote: ${m.duracionTotalMs} ms</div>
+                                <div class="text-zinc-300">   • Latencia Prom: ${m.latenciaPromedioMs} ms | Throughput: ${m.throughputOpsSec} ops/seg</div>
+                                <div class="text-zinc-300">   • Estado Concurrencia: ${m.estadoConcurrencia}</div>
+                            `;
+                            logEl.scrollTop = logEl.scrollHeight;
+                        }
+                    } else if (logEl) {
+                        logEl.innerHTML += `<div class="text-rose-400 font-bold mt-1">🚨 Error ejecutando simulación: ${json?.error || 'Falló petición'}</div>`;
+                    }
+                } catch (err) {
+                    if (logEl) {
+                        logEl.innerHTML += `<div class="text-rose-400 font-bold mt-1">🚨 Excepción en benchmark: ${err.message}</div>`;
+                    }
+                }
+            }
+
+            static async generarCertificadoOficial() {
+                const detEl = document.getElementById("divDetalleCertificado");
+                const txtArea = document.getElementById("txtCertificadoJSON");
+                if (detEl) detEl.innerHTML = `<div class="text-amber-400 italic font-mono">⏳ Generando certificado firmado inmutablemente...</div>`;
+
+                try {
+                    const json = await resilientFetch(`${HOST_URL}/api/admin/generar-certificado`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+
+                    if (json && json.success && json.certificado) {
+                        const cert = json.certificado;
+                        if (detEl) {
+                            detEl.innerHTML = `
+                                <div class="text-emerald-400 font-bold mb-1">✅ CERTIFICADO EMITIDO: ${cert.idCertificado}</div>
+                                <div><span class="text-zinc-500">Emisor:</span> <span class="text-zinc-200">${cert.emisor}</span></div>
+                                <div><span class="text-zinc-500">Fecha:</span> <span class="text-zinc-200">${cert.timestamp}</span></div>
+                                <div><span class="text-zinc-500">Norma:</span> <span class="text-zinc-200">${cert.normaPsicometrica}</span></div>
+                                <div><span class="text-zinc-500">Firma HMAC:</span> <span class="text-amber-300 break-all font-mono text-[10px]">${cert.hashFirmaInmutable}</span></div>
+                            `;
+                        }
+                        if (txtArea) {
+                            txtArea.value = JSON.stringify(cert, null, 2);
+                        }
+                    } else if (detEl) {
+                        detEl.innerHTML = `<div class="text-rose-400">🚨 Error generando certificado: ${json?.error || 'Falló petición'}</div>`;
+                    }
+                } catch (err) {
+                    if (detEl) detEl.innerHTML = `<div class="text-rose-400">🚨 Error: ${err.message}</div>`;
+                }
+            }
+
+            static async verificarCertificado() {
+                const txtArea = document.getElementById("txtCertificadoJSON");
+                const resEl = document.getElementById("lblResultadoVerificacion");
+                if (!txtArea || !txtArea.value.trim()) {
+                    if (resEl) {
+                        resEl.className = "mt-2 text-xs font-mono font-bold text-amber-400";
+                        resEl.innerText = "⚠️ Pegue primero un certificado JSON válido.";
+                    }
+                    return;
+                }
+
+                try {
+                    const certObj = JSON.parse(txtArea.value.trim());
+                    const json = await resilientFetch(`${HOST_URL}/api/admin/verificar-certificado`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ certificado: certObj })
+                    });
+
+                    if (json && json.success) {
+                        if (resEl) {
+                            if (json.esValido) {
+                                resEl.className = "mt-2 text-xs font-mono font-bold text-emerald-400";
+                                resEl.innerText = `✅ FIRMA VÁLIDA: ${json.dictamenSeguridad} (${json.timestampVerificacion})`;
+                            } else {
+                                resEl.className = "mt-2 text-xs font-mono font-bold text-rose-400";
+                                resEl.innerText = `🚨 ALERTA: ${json.dictamenSeguridad}`;
+                            }
+                        }
+                    } else if (resEl) {
+                        resEl.className = "mt-2 text-xs font-mono font-bold text-rose-400";
+                        resEl.innerText = `🚨 Error: ${json?.error || 'Fallo en verificación'}`;
+                    }
+                } catch (err) {
+                    if (resEl) {
+                        resEl.className = "mt-2 text-xs font-mono font-bold text-rose-400";
+                        resEl.innerText = `🚨 JSON inválido: ${err.message}`;
+                    }
+                }
+            }
         }
 
         /* Funciones Auxiliares Psicométricas */
@@ -1975,6 +2269,41 @@
             return sumaDiferencias / (2 * n * sumaTotal);
         }
 
+        function descargarDossierCientifico() {
+            const win = window.open('whitepaper_irt.html?mode=print', '_blank');
+            if (!win) {
+                window.location.href = 'whitepaper_irt.html?mode=print';
+            }
+        }
+
+        async function cerrarSesion() {
+            try {
+                const keysToRemove = [
+                    'dante_token', 'user_role', 'user_session', 'dante_jwt_token', 
+                    'jwt_token', 'dante_user', 'dante_institution_id', 'dante_rol', 
+                    'dante_estudiante', 'dante_session_id', 'dante_state'
+                ];
+                keysToRemove.forEach(k => {
+                    localStorage.removeItem(k);
+                    sessionStorage.removeItem(k);
+                });
+                localStorage.clear();
+                sessionStorage.clear();
+
+                document.cookie = 'dante_token=; Max-Age=0; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+                document.cookie = 'dante_jwt_token=; Max-Age=0; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+
+                await fetch('/api/auth/logout', { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' } 
+                }).catch(() => {});
+            } catch (e) {
+                console.warn("⚠️ Error en cierre de sesión:", e);
+            } finally {
+                window.location.href = '/login.html';
+            }
+        }
+
         /* Inicialización Principal al Cargar el DOM */
         document.addEventListener("DOMContentLoaded", () => {
             RectorDashboard.cargarTemaGuardado();
@@ -1989,11 +2318,13 @@
             }
 
             RectorDashboard.consultarDatos();
+            RectorDashboard.consultarAuditoriaCalidad();
 
             // Sincronización periódica en segundo plano cada 30 segundos
             setInterval(() => {
                 if (CurrentEpoca === "LIVE_NOW") {
                     RectorDashboard.consultarDatos();
+                    RectorDashboard.consultarAuditoriaCalidad();
                 }
             }, 30000);
         });

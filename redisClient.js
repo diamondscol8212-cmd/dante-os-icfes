@@ -19,7 +19,7 @@ class InMemoryRedisMock {
         return this.store.get(key) ?? null;
     }
 
-    async set(key, val, ...args) {
+    async set(key, val, ..._args) {
         this.store.set(key, String(val));
         return 'OK';
     }
@@ -126,8 +126,8 @@ class InMemoryRedisMock {
         const list = this.lists.get(key);
         if (!list) return [];
         const len = list.length;
-        let s = start < 0 ? Math.max(0, len + start) : start;
-        let e = stop < 0 ? Math.max(0, len + stop) : stop;
+        const s = start < 0 ? Math.max(0, len + start) : start;
+        const e = stop < 0 ? Math.max(0, len + stop) : stop;
         if (s >= len) return [];
         return list.slice(s, e + 1);
     }
@@ -172,11 +172,11 @@ class InMemoryRedisMock {
         return (this.store.has(key) || this.sets.has(key) || this.lists.has(key) || this.hashes.has(key)) ? 1 : 0;
     }
 
-    async expire(key, seconds) {
+    async expire(_key, _seconds) {
         return 1;
     }
 
-    async ttl(key) {
+    async ttl(_key) {
         return -1;
     }
 
@@ -223,7 +223,7 @@ class ResilientRedisWrapper {
                     console.warn('⚡ [REDIS FORCE DISCONNECT]: Cierre explícito de sockets para liberar el Event Loop de Node.js. Activando In-Memory Fallback.');
                     try {
                         this.realRedis.disconnect();
-                    } catch (_) {}
+                    } catch {}
                 }
             });
             this.realRedis.on('end', () => {
@@ -309,7 +309,7 @@ if (redisUrl) {
 
         realRedis.connect().catch((err) => {
             console.warn('⚠️ [REDIS CONNECT WARN]: No se pudo conectar a Redis. Operando con fallback in-memory:', err.message);
-            try { realRedis.disconnect(); } catch (_) {}
+            try { realRedis.disconnect(); } catch {}
         });
 
         redisExport = new ResilientRedisWrapper(realRedis, mockInstance);

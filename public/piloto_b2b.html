@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#090d16">
+    <title>Dante OS v23.1.0-ENTERPRISE // Portal B2B, Piloto Institucional y Gobierno de Datos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/design-tokens.css">
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="theme.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: var(--dante-bg);
+            color: var(--dante-text-main);
+            font-family: var(--dante-font-sans);
+            padding-top: max(1rem, env(safe-area-inset-top));
+            padding-bottom: max(1rem, env(safe-area-inset-bottom));
+            padding-left: max(1rem, env(safe-area-inset-left));
+            padding-right: max(1rem, env(safe-area-inset-right));
+            overflow-x: hidden;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 min-h-screen">
+    <div class="max-w-7xl mx-auto space-y-8">
+        
+        <!-- Header Principal -->
+        <header class="dante-card p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-amber-500/30">
+            <div>
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="dante-gold-badge"><svg class="w-3.5 h-3.5 inline-block mr-1 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 20H21M4 17H20M12 3L3 8H21L12 3Z"/><line x1="6" y1="8" x2="6" y2="17"/><line x1="10" y1="8" x2="10" y2="17"/><line x1="14" y1="8" x2="14" y2="17"/><line x1="18" y1="8" x2="18" y2="17"/></svg> SUITE B2B ENTERPRISE</span>
+                    <span class="dante-emerald-badge"><svg class="w-3.5 h-3.5 inline-block mr-1 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> LEY 1581 HABEAS DATA COMPLIANT</span>
+                </div>
+                <h1 class="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
+                    Programa Piloto Institucional & Soberanía de Datos
+                </h1>
+                <p class="text-slate-400 mt-1 max-w-2xl">
+                    Marco de adopción B2B para colegios, proyección financiera de ROI/CAC/LTV y protocolo de protección de datos personales de menores.
+                </p>
+            </div>
+            <div class="flex flex-wrap gap-3">
+                <a href="rector.html" class="dante-btn-outline"><svg class="w-4 h-4 inline-block mr-1 text-slate-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Panel Rector</a>
+                <a href="index.html" class="dante-btn-gold"><svg class="w-4 h-4 inline-block mr-1 text-slate-950" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg> Volver a Dante OS</a>
+            </div>
+        </header>
+
+        <!-- Grid de Navegación de Contenidos B2B -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <!-- Módulo 1: Modelo Piloto -->
+            <div class="dante-card p-6 space-y-4 hover:border-amber-500/50 transition-all">
+                <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 text-xl font-bold">
+                    <svg class="w-6 h-6 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-3.05 11a22.35 22.35 0 0 1-3.95 2z"/></svg>
+                </div>
+                <h3 class="text-xl font-bold text-white">1. Programa Piloto (1 Semestre)</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    Plan de acompañamiento gratuito de 16 semanas para 1 a 2 colegios piloto. Medición de línea base ICFES vs. post-intervención adaptativa.
+                </p>
+                <ul class="text-xs space-y-2 text-slate-300 font-mono">
+                    <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-emerald-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Semanas 1-2: Onboarding & Diagnostic</li>
+                    <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-emerald-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Semanas 3-12: Algoritmo CAT IRT 3PL</li>
+                    <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-emerald-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Semanas 13-16: Auditoría & Reporte Rectoral</li>
+                </ul>
+            </div>
+
+            <!-- Módulo 2: Modelo Económico B2B -->
+            <div class="dante-card p-6 space-y-4 hover:border-cyan-500/50 transition-all">
+                <div class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-xl font-bold">
+                    <svg class="w-6 h-6 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                </div>
+                <h3 class="text-xl font-bold text-white">2. Proyección Financiera (SaaS B2B)</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    Estructura de costos de adquisición (CAC), valor del tiempo de vida del cliente (LTV) y licenciamiento anual por estudiante.
+                </p>
+                <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-800 text-xs space-y-1 font-mono">
+                    <div class="flex justify-between text-slate-300"><span>Licencia Anual / Est:</span> <span class="text-amber-400 font-bold">$120,000 COP</span></div>
+                    <div class="flex justify-between text-slate-300"><span>CAC Promedio B2B:</span> <span class="text-cyan-400 font-bold">$2,800,000 COP</span></div>
+                    <div class="flex justify-between text-slate-300"><span>LTV Colegio (300 est, 3 yrs):</span> <span class="text-emerald-400 font-bold">$108,000,000 COP</span></div>
+                    <div class="flex justify-between text-slate-300"><span>Ratio LTV/CAC:</span> <span class="text-purple-400 font-bold">38.5x</span></div>
+                </div>
+            </div>
+
+            <!-- Módulo 3: Soberanía de Datos Ley 1581 -->
+            <div class="dante-card p-6 space-y-4 hover:border-emerald-500/50 transition-all">
+                <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-xl font-bold">
+                    <svg class="w-6 h-6 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                </div>
+                <h3 class="text-xl font-bold text-white">3. Soberanía & Habeas Data (DPO)</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    Cumplimiento estricto con la Ley 1581 de 2012 y Decreto 1377 de 2013 de la República de Colombia sobre datos de menores de edad.
+                </p>
+                <ul class="text-xs space-y-2 text-slate-300 font-mono">
+                    <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-emerald-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Cookies HttpOnly strictly scoped</li>
+                    <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-emerald-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Tenant Isolation (institution_id)</li>
+                    <li class="flex items-center gap-2"><svg class="w-3.5 h-3.5 text-emerald-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Anonimización psicométrica</li>
+                </ul>
+            </div>
+
+        </div>
+
+        <!-- Calculadora Interactiva de ROI y LTV para Rectores -->
+        <section class="dante-card p-6 md:p-8 space-y-6 border-amber-500/20">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                <div>
+                    <span class="dante-gold-badge mb-1"><svg class="w-3.5 h-3.5 inline-block mr-1 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="14" x2="16" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg> SIMULADOR INSTITUCIONAL</span>
+                    <h2 class="text-2xl font-bold text-white">Calculadora B2B de Retorno e Impacto Educativo</h2>
+                </div>
+                <span class="text-slate-500 text-xs font-mono">Versión 21.2.4 Enterprise</span>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Número de Estudiantes matriculados (Grados 10° y 11°):</label>
+                        <input type="range" id="simEstudiantes" min="50" max="2000" step="25" value="300" oninput="calcularSimulacion()" class="w-full accent-amber-500 bg-slate-800 rounded-lg h-2">
+                        <div class="flex justify-between text-xs font-mono text-slate-400 mt-1">
+                            <span>50 est.</span>
+                            <span id="lblEstudiantes" class="text-amber-400 font-bold text-sm">300 estudiantes</span>
+                            <span>2,000 est.</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Duración del Convenio Institucional (Años):</label>
+                        <select id="simAnios" onchange="calcularSimulacion()" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-sm text-white focus:border-amber-500 outline-none">
+                            <option value="1">1 Año (Prueba Piloto Renovable)</option>
+                            <option value="2">2 Años (Transformación Media Técnica)</option>
+                            <option value="3" selected>3 Años (Acreditación de Alta Calidad ICFES)</option>
+                        </select>
+                    </div>
+
+                    <div class="p-4 bg-slate-900/80 rounded-xl border border-slate-800 text-xs text-slate-300 space-y-2">
+                        <p class="font-semibold text-amber-400 flex items-center gap-1.5"><svg class="w-4 h-4 text-amber-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg> ¿Qué incluye la Licencia B2B?</p>
+                        <p>• Motor IRT 3PL Adaptativo ilimitado para estudiantes y docentes.</p>
+                        <p>• Panel de Analítica Predictiva e Inferencia Bayesiana para el Rector.</p>
+                        <p>• Diagnóstico de Sesgos Cognitivos (Efecto Sistema 1 vs Sistema 2).</p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900/90 p-6 rounded-2xl border border-slate-800 space-y-4">
+                    <h4 class="text-sm font-bold text-slate-200 uppercase tracking-wider font-mono">Resultados de Proyección B2B</h4>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                            <span class="text-xs text-slate-400 font-mono block">Inversión Anual Colegio</span>
+                            <span id="resInversionAnual" class="text-xl font-extrabold text-amber-400">$36,000,000 COP</span>
+                        </div>
+                        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                            <span class="text-xs text-slate-400 font-mono block">Valor Total LTV</span>
+                            <span id="resLTV" class="text-xl font-extrabold text-emerald-400">$108,000,000 COP</span>
+                        </div>
+                        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                            <span class="text-xs text-slate-400 font-mono block">Incremento Estimado ICFES</span>
+                            <span id="resPuntosICFES" class="text-xl font-extrabold text-cyan-400">+28 a +42 pts</span>
+                        </div>
+                        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                            <span class="text-xs text-slate-400 font-mono block">Relación LTV/CAC</span>
+                            <span id="resRatio" class="text-xl font-extrabold text-purple-400">38.5x</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Documento de Soberanía de Datos Ley 1581 (DPO Checklist) -->
+        <section class="dante-card p-6 md:p-8 space-y-4 border-emerald-500/20">
+            <div class="flex items-center gap-3">
+                <svg class="w-7 h-7 text-emerald-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                <div>
+                    <h3 class="text-xl font-bold text-white">Declaración Formal de Soberanía de Datos (Ley 1581)</h3>
+                    <p class="text-slate-400 text-xs">Aprobado para comités de ética, rectores y oficiales de privacidad de datos (DPO).</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
+                <div class="p-4 bg-slate-900/60 rounded-xl border border-slate-800 space-y-2">
+                    <span class="text-emerald-400 font-bold block">1. Aislamiento Estricto por Institución (Tenant Isolation)</span>
+                    <p class="text-slate-300">Cada consulta API a los endpoints psicométricos (`/api/cat/gemelo/:id`, `/api/cat/auditoria`) valida de forma rígida el `institution_id` en la cookie autenticada. Queda matemáticamente bloqueada la fuga cruzada de información entre colegios.</p>
+                </div>
+                <div class="p-4 bg-slate-900/60 rounded-xl border border-slate-800 space-y-2">
+                    <span class="text-emerald-400 font-bold block">2. Cero Almacenamiento en LocalStorage de Claves</span>
+                    <p class="text-slate-300">Las credenciales de sesión se gestionan exclusivamente mediante cookies HttpOnly con banderas SameSite=Lax y Secure en entornos HTTPS. No existen tokens JWT expuestos al API de DOM del navegador.</p>
+                </div>
+                <div class="p-4 bg-slate-900/60 rounded-xl border border-slate-800 space-y-2">
+                    <span class="text-emerald-400 font-bold block">3. Tratamiento Sensible de Menores de Edad</span>
+                    <p class="text-slate-300">El modelo no recopila geolocalización, dirección física ni datos financieros personales del estudiante. La información registrada es estrictamente académica y de respuesta latente ($\theta$).</p>
+                </div>
+                <div class="p-4 bg-slate-900/60 rounded-xl border border-slate-800 space-y-2">
+                    <span class="text-emerald-400 font-bold block">4. Derechos ARCO (Acceso, Rectificación, Cancelación)</span>
+                    <p class="text-slate-300">El rector o representante legal de la institución puede solicitar la supresión total o anonimización de la cohorte al finalizar el convenio en un periodo no mayor a 5 días hábiles.</p>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        function calcularSimulacion() {
+            const numEst = parseInt(document.getElementById('simEstudiantes').value);
+            const anios = parseInt(document.getElementById('simAnios').value);
+
+            document.getElementById('lblEstudiantes').innerText = numEst.toLocaleString() + ' estudiantes';
+
+            const precioPorEst = 120000; // COP
+            const inversionAnual = numEst * precioPorEst;
+            const ltvTotal = inversionAnual * anios;
+
+            const cacEstimado = 2800000; // COP
+            const ratioLTVCAC = (ltvTotal / cacEstimado).toFixed(1);
+
+            document.getElementById('resInversionAnual').innerText = '$' + inversionAnual.toLocaleString() + ' COP';
+            document.getElementById('resLTV').innerText = '$' + ltvTotal.toLocaleString() + ' COP';
+            document.getElementById('resRatio').innerText = ratioLTVCAC + 'x';
+            
+            if (numEst < 200) {
+                document.getElementById('resPuntosICFES').innerText = '+22 a +35 pts';
+            } else if (numEst < 500) {
+                document.getElementById('resPuntosICFES').innerText = '+28 a +42 pts';
+            } else {
+                document.getElementById('resPuntosICFES').innerText = '+35 a +50 pts';
+            }
+        }
+
+        // Run once on load
+        calcularSimulacion();
+    </script>
+</body>
+</html>

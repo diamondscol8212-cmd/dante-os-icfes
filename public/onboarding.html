@@ -3,956 +3,1036 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Dante OS // Calibración de ADN Cognitivo v21.1</title>
+    <meta name="theme-color" content="#08090c">
+    <title>Dante OS · Tu meta</title>
+    <script>
+        try { sessionStorage.setItem('dante_entrada_viva', String(Date.now())); } catch (e) {}
+    </script>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;600;800;900&family=JetBrains+Mono:wght@400;500;700;900&family=Oswald:wght@700;900&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/design-tokens.css">
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="theme.css">
+
+    <script src="js/danteVectorIcons.js"></script>
+    <script src="js/danteStorage.js"></script>
 
     <style>
-        *, *::before, *::after {
-            box-sizing: border-box !important;
-        }
-
         :root {
-            --primary: #51e2f5; 
-            --gold: #D4AF37;
-            --gold-satin: #d4af37;
-            --alert: #ff0044;
-            --bg-deep: #08090c; 
+            --primary: #38bdf8;
+            --gold: #f59e0b;
+            --emerald: #10b981;
+            --bg-deep: #08090c;
             --card-bg: rgba(12, 14, 22, 0.94);
             --border-graphite: rgba(255, 255, 255, 0.12);
             --font-main: 'Plus Jakarta Sans', sans-serif;
             --font-mono: 'JetBrains Mono', monospace;
         }
 
-        body, html { 
-            background: var(--bg-deep); 
-            color: #f0f1f5; 
-            margin: 0; 
+        *, *::before, *::after {
+            box-sizing: border-box !important;
+        }
+
+        body, html {
+            background: var(--bg-deep);
+            color: #f0f1f5;
+            margin: 0;
             padding: 0;
             width: 100%;
-            max-width: 100vw;
-            font-family: var(--font-main); 
+            font-family: var(--font-main);
             min-height: 100vh;
-            min-height: 100dvh; 
-            overflow-x: hidden; 
-            overflow-y: auto;
-            display: flex; 
-            flex-direction: column; 
-            justify-content: flex-start; 
-            align-items: center;
-            padding: 0.5rem 0.5rem 1.5rem 0.5rem;
-            background-image: radial-gradient(circle at 50% 20%, #171a26 0%, #08090c 100%);
-        }
-        @media(min-width: 640px) and (min-height: 520px) {
-            body, html {
-                justify-content: center;
-                padding: 1rem 0;
-            }
-        }
-
-        /* MODO ALTO CONTRASTE / MODO CLARO */
-        body.light-mode {
-            --bg-deep: #f1f5f9;
-            --card-bg: #ffffff;
-            --border-graphite: #cbd5e1;
-            color: #0f172a !important;
-            background-color: #f1f5f9 !important;
-            background-image: radial-gradient(#cbd5e1 1.2px, transparent 1.2px) !important;
-            background-size: 24px 24px !important;
-        }
-        body.light-mode .onboard-card {
-            background: #ffffff !important;
-            border-color: #cbd5e1 !important;
-            box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.12), 0 0 20px rgba(2, 132, 199, 0.08) !important;
-        }
-        body.light-mode #dilema-text {
-            background: #f8fafc !important;
-            border-color: #cbd5e1 !important;
-            color: #1e293b !important;
-            box-shadow: inset 0 1px 2px rgba(0,0,0,0.03) !important;
-        }
-        body.light-mode .option-btn {
-            background: #ffffff !important;
-            border-color: #cbd5e1 !important;
-            color: #0f172a !important;
-        }
-        body.light-mode .option-btn:hover {
-            background: #f0f9ff !important;
-            border-color: #0284c7 !important;
-            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.15) !important;
-        }
-        body.light-mode .text-zinc-200, 
-        body.light-mode .text-zinc-300, 
-        body.light-mode .text-zinc-400 {
-            color: #334155 !important;
-        }
-        body.light-mode .text-white {
-            color: #0f172a !important;
-        }
-
-        .font-mono { font-family: var(--font-mono) !important; }
-
-        #dante-fractal-bg { position: fixed; inset: 0; z-index: 0; opacity: 0.18; pointer-events: none; mix-blend-mode: screen; }
-        .scanline { position: fixed; inset: 0; background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.5) 51%); background-size: 100% 4px; z-index: 1; pointer-events: none; opacity: 0.2; }
-
-        .onboard-card, .unicorn-card {
-            background: var(--card-bg); 
-            border: 1px solid var(--border-graphite);
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.95); 
-            border-radius: 16px; 
-            padding: 0.85rem 0.65rem !important; 
-            width: 100% !important; 
-            max-width: 720px !important; 
-            text-align: center; 
-            position: relative; 
-            z-index: 10;
-            backdrop-filter: blur(24px); 
-            margin: 0.25rem auto !important;
-            height: auto !important;
+            min-height: 100dvh;
+            overflow-x: hidden;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            box-sizing: border-box !important;
-            overflow-x: hidden;
-        }
-        @media(min-width: 640px) {
-            .onboard-card, .unicorn-card { 
-                padding: 1.8rem 2.2rem !important; 
-                width: 92% !important;
-                margin: 1rem auto !important;
-            }
-        }
-        .onboard-card::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--gold), var(--primary)); 
-            box-shadow: 0 0 20px var(--gold); border-radius: 16px 16px 0 0;
-        }
-
-        .option-btn {
-            background: rgba(20, 24, 35, 0.85); border: 1px solid var(--border-graphite); border-radius: 12px;
-            padding: 0.55rem 0.65rem; width: 100%; text-align: left; font-size: 0.8rem; font-weight: 600; color: #fff;
-            transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer; font-family: var(--font-mono); margin-top: 0.35rem;
-            line-height: 1.35; min-height: 40px; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
-            word-break: break-word; box-sizing: border-box; overflow-x: hidden;
-        }
-        @media(min-width: 640px) {
-            .option-btn {
-                padding: 0.85rem 1.1rem;
-                font-size: 0.9rem;
-                margin-top: 0.6rem;
-                min-height: 48px;
-                gap: 0.75rem;
-            }
-        }
-        .option-btn:hover { border-color: var(--gold); background: rgba(212, 175, 55, 0.12); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(212, 175, 55, 0.18); }
-        .option-btn:active { transform: scale(0.98); }
-        .option-btn.tachado {
-            opacity: 0.35;
-            text-decoration: line-through;
-            background: rgba(239, 68, 68, 0.1) !important;
-            border-color: rgba(239, 68, 68, 0.4) !important;
-            filter: grayscale(0.8);
-        }
-
-        .strike-tool-btn {
-            padding: 4px 8px;
-            font-size: 10px;
-            border-radius: 6px;
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: #cbd5e1;
-            transition: all 0.2s;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-        .strike-tool-btn:hover {
-            background: rgba(239, 68, 68, 0.25);
-            color: #f87171;
-            border-color: rgba(239, 68, 68, 0.5);
-        }
-
-        /* BANNER DE BÚNKER DE PRIVACIDAD */
-        .bunker-privacy-banner {
-            background: rgba(15, 23, 42, 0.9);
-            border: 1px solid rgba(81, 226, 245, 0.3);
-            border-radius: 12px;
-            padding: 0.4rem 0.6rem;
-            font-size: 10px;
-            font-family: 'JetBrains Mono', monospace;
-            color: #94a3b8;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-            max-width: 720px;
-            width: 100%;
-            z-index: 10;
-            margin-bottom: 0.3rem;
-            box-sizing: border-box !important;
-        }
-        @media(min-width: 640px) {
-            .bunker-privacy-banner {
-                padding: 0.6rem 1rem;
-                font-size: 11px;
-                width: 94%;
-                margin-bottom: 0.6rem;
-            }
-        }
-
-        /* PREGUNTA 5: FACSÍMIL PAPEL ICFES Y HOJA ÓPTICA */
-        .facsimile-paper {
-            background: #fdfbf7;
-            background-image: linear-gradient(#e5e0d8 1px, transparent 1px);
-            background-size: 100% 28px;
-            color: #1a1a1a;
-            border: 2px solid #8c8275;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5), inset 0 0 40px rgba(180,160,130,0.15);
-            font-family: 'Merriweather', serif;
-            position: relative;
-        }
-        .facsimile-stamp {
-            border: 2px dashed #7a1d1d;
-            color: #7a1d1d;
-            font-weight: 900;
-            font-family: 'JetBrains Mono', monospace;
-            transform: rotate(-3deg);
-            padding: 2px 8px;
-            font-size: 10px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        /* MINI HOJA DE RESPUESTAS ÓPTICA EN FACSÍMIL */
-        .optica-sheet-box {
-            background: #f4efe6;
-            border: 2px solid #a39682;
-            border-radius: 10px;
-            padding: 0.65rem 0.75rem;
-            margin-top: 0.6rem;
-            box-shadow: inset 0 2px 6px rgba(0,0,0,0.08);
-            font-family: 'JetBrains Mono', monospace;
-        }
-        @media(min-width: 640px) {
-            .optica-sheet-box {
-                padding: 0.85rem 1rem;
-                margin-top: 0.85rem;
-            }
-        }
-        .optica-oval {
-            width: 28px;
-            height: 22px;
-            border-radius: 50%;
-            border: 2px solid #2d2b27;
-            background: #ffffff;
-            color: #2d2b27;
-            font-weight: 800;
-            font-size: 10px;
-            display: inline-flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            user-select: none;
-            box-shadow: inset 0 1px 2px rgba(0,0,0,0.15);
-        }
-        @media(min-width: 640px) {
-            .optica-oval {
-                width: 32px;
-                height: 24px;
-                font-size: 11px;
-            }
-        }
-        .optica-oval:hover {
-            transform: scale(1.12);
-            border-color: #000;
-            background: #e2ded5;
-        }
-        .optica-oval.graphite-filled {
-            background: radial-gradient(circle, #0a0a0a 70%, #222222 100%) !important;
-            color: #ffffff !important;
-            border-color: #000000 !important;
-            box-shadow: 0 0 8px rgba(0,0,0,0.8), inset 0 0 4px #000 !important;
-            animation: graphitePencilFill 0.35s ease-out forwards;
-        }
-        @keyframes graphitePencilFill {
-            0% { transform: scale(0.9); opacity: 0.6; background: #666; }
-            50% { transform: scale(1.15); background: #222; }
-            100% { transform: scale(1); opacity: 1; background: #0a0a0a; }
+            background-image: radial-gradient(circle at 50% 20%, #171a26 0%, #08090c 100%);
         }
 
-        /* MODAL UNICORNIO CELEBRACIÓN */
-        .modal-celebration-overlay {
-            position: fixed; inset: 0; z-index: 99999;
-            background: rgba(4, 6, 12, 0.94); backdrop-filter: blur(20px);
-            display: flex; justify-content: center; align-items: center; padding: 0.8rem;
-            animation: fadeInModal 0.4s ease-out;
-            overflow-y: auto;
+        .onboard-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-graphite);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.9), 0 0 40px rgba(6, 182, 212, 0.15);
         }
-        @keyframes fadeInModal {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
+
+        .step-option {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
         }
-        .unicorn-card {
-            background: linear-gradient(145deg, rgba(20, 24, 38, 0.98), rgba(12, 14, 24, 0.98));
-            border: 2px solid var(--gold-satin);
-            border-radius: 20px;
-            box-shadow: 0 0 60px rgba(212, 175, 55, 0.35), 0 0 100px rgba(81, 226, 245, 0.2);
-            padding: 1.5rem 1.1rem;
-            max-width: 620px;
-            width: 100%;
-            max-height: 94dvh;
-            overflow-y: auto;
-            text-align: center;
-            position: relative;
+
+        .step-option:hover {
+            border-color: rgba(6, 182, 212, 0.6);
+            background: rgba(15, 23, 42, 0.9);
+            transform: translateY(-2px);
         }
-        @media(min-width: 640px) {
-            .unicorn-card {
-                padding: 2.2rem 1.8rem;
-            }
+
+        .step-option.selected {
+            border-color: #22d3ee !important; /* border-cyan-400 */
+            background: rgba(8, 51, 68, 0.35) !important; /* bg-cyan-950/30 */
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.25), 0 0 25px rgba(6, 182, 212, 0.15) !important;
         }
-        .unicorn-card::before {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(212, 175, 55, 0.12) 0%, transparent 60%);
-            pointer-events: none; animation: spinGlow 12s linear infinite;
+
+        .font-mono {
+            font-family: var(--font-mono), monospace !important;
         }
-        @keyframes spinGlow {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+
+        /* Chrome/Safari: el date nativo queda negro vacío sobre fondo oscuro */
+        input[type="date"] {
+            color-scheme: dark;
+            color: #f8fafc;
+            background: #0c0a09;
+            min-height: 2.75rem;
         }
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            cursor: pointer;
+            opacity: 0.9;
+            filter: invert(1);
+        }
+        input[type="date"]::-webkit-datetime-edit,
+        input[type="date"]::-webkit-datetime-edit-fields-wrapper,
+        input[type="date"]::-webkit-datetime-edit-text,
+        input[type="date"]::-webkit-datetime-edit-month-field,
+        input[type="date"]::-webkit-datetime-edit-day-field,
+        input[type="date"]::-webkit-datetime-edit-year-field {
+            color: #f8fafc;
+        }
+        input[type="date"]::-webkit-datetime-edit-month-field:focus,
+        input[type="date"]::-webkit-datetime-edit-day-field:focus,
+        input[type="date"]::-webkit-datetime-edit-year-field:focus {
+            background: rgba(231, 215, 195, 0.2);
+            color: #fff;
+            outline: none;
+        }
+        body {
+            background: #0c0b09 !important;
+            background-image: none !important;
+            color: #f5f5f4 !important;
+        }
+        .onboard-card {
+            background: #161310 !important;
+            border: 1px solid rgba(231, 215, 195, 0.28) !important;
+            box-shadow: none !important;
+        }
+        .step-option {
+            background: #1c1917 !important;
+            border-color: rgba(231, 215, 195, 0.22) !important;
+        }
+        .step-option:hover { border-color: rgba(231, 215, 195, 0.5) !important; background: #241f1a !important; transform: none !important; }
+        .step-option.selected {
+            border-color: #e7d7c3 !important;
+            background: #241f1a !important;
+            box-shadow: none !important;
+        }
+        #btnNextStep, #btnSendResetEmail {
+            background: #e7d7c3 !important;
+            color: #1c1917 !important;
+            box-shadow: none !important;
+            text-transform: none !important;
+            letter-spacing: 0 !important;
+        }
+        .text-cyan-300, .text-cyan-400, #lblStudentGreetingName { color: #e7d7c3 !important; }
+        .onboard-card .bg-gradient-to-br {
+            background: #e7d7c3 !important;
+            color: #1c1917 !important;
+            box-shadow: none !important;
+        }
+        #dotStep1, #dotStep2, #dotStep3 { box-shadow: none !important; }
+        #dotStep1[class*="cyan"], #dotStep2[class*="cyan"], #dotStep3[class*="cyan"] {
+            background: #e7d7c3 !important;
+        }
+        .onboard-card .uppercase { text-transform: none !important; letter-spacing: -0.02em !important; }
     </style>
 </head>
-<body oncontextmenu="return false;">
+<body class="p-3 sm:p-6 selection:bg-cyan-500 selection:text-slate-950">
 
-    <script>
-        // BLOQUEO RIGUROSO DEL BOTÓN ATRÁS EN EL NAVEGADOR
-        window.history.pushState({ locked: true }, null, window.location.href);
-        window.addEventListener('popstate', function (event) {
-            window.history.pushState({ locked: true }, null, window.location.href);
-        });
-    </script>
+    <!-- CONTENEDOR PRINCIPAL -->
+    <main class="w-full max-w-2xl lg:max-w-3xl mx-auto my-auto transition-all">
+        <div class="onboard-card rounded-3xl p-5 sm:p-8 relative overflow-hidden space-y-6">
 
-    <div class="scanline"></div>
-    <canvas id="dante-fractal-bg"></canvas>
-
-    <!-- BANNER DE PRIVACIDAD Y BÚNKER PSICOLÓGICO -->
-    <div class="bunker-privacy-banner flex flex-col sm:flex-row items-center justify-between gap-1 sm:gap-3 text-center sm:text-left">
-        <div class="flex items-center gap-1.5 text-cyan-400 font-bold shrink-0">
-            <i class="fa-solid fa-user-shield text-xs"></i>
-            <span class="uppercase text-[9px] sm:text-[10px] tracking-normal sm:tracking-wider">BÚNKER DE PRIVACIDAD ABSOLUTA</span>
-        </div>
-        <p class="text-[9px] sm:text-[10px] leading-tight text-slate-300">
-            Tus respuestas son <strong>100% confidenciales</strong>. Solo Dante OS procesa este diagnóstico.
-        </p>
-    </div>
-
-    <!-- BARRA RECOMENDACIÓN DE ORIENTACIÓN MÓVIL (TIPO PROFESOR.HTML) -->
-    <div class="sm:hidden w-full max-w-[720px] mx-auto mb-1.5 p-2 bg-amber-500/20 border border-amber-500/50 rounded-lg text-center text-amber-300 font-mono text-[10px] font-bold flex items-center justify-center gap-2 relative z-20 shadow-md">
-        <i class="fa-solid fa-rotate text-amber-400 animate-pulse text-xs"></i>
-        <span>🔄 Gira tu celular horizontalmente para mejor lectura</span>
-    </div>
-
-    <div class="onboard-card" id="card-main">
-        <div>
-            <!-- MICRO-BARRA DE PROYECCIÓN DINÁMICA ICFES EN TIEMPO REAL -->
-            <div class="mb-3 p-2.5 rounded-xl bg-slate-900/90 border border-amber-500/40 flex items-center justify-between gap-3 text-xs font-mono shadow-md">
-                <div class="flex items-center gap-2 min-w-0">
-                    <span class="relative flex h-2.5 w-2.5 shrink-0">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-500"></span>
-                    </span>
-                    <span class="text-amber-400 font-bold uppercase tracking-wide truncate" id="projection-live-text">Calibrando baseline... 300 pts ➔ Analizando Sistema 1/2</span>
-                </div>
-                <div class="text-right shrink-0">
-                    <span class="text-[10px] text-zinc-400 block">PROYECCIÓN ICFES</span>
-                    <span class="text-xs font-extrabold text-cyan-400" id="projection-score-num">300 pts</span>
-                </div>
-            </div>
-
-            <div class="font-mono text-[10px] sm:text-xs text-[#D4AF37] tracking-normal sm:tracking-[0.2em] uppercase mb-1 font-bold flex flex-wrap items-center justify-center gap-1 sm:gap-2 text-center leading-tight">
-                <span>⚡ NÚCLEO DANTE OS v21.1</span> <span class="hidden sm:inline">//</span> <span>ADN COGNITIVO</span>
-            </div>
-            
-            <h1 class="oswald font-black text-sm sm:text-lg md:text-xl tracking-wide text-white mb-2 uppercase text-center leading-tight break-words px-1" id="step-title">
-                PASO 01 / 05 // NIVELES DE COMPLEJIDAD
-            </h1>
-            
-            <!-- BARRA DE PROGRESO -->
-            <div class="w-full progress-track bg-white/10 h-1.5 rounded-full overflow-hidden mb-3">
-                <div id="progress-bar" class="bg-gradient-to-r from-cyan-400 via-amber-400 to-cyan-400 h-full transition-all duration-300" style="width: 20%;"></div>
-            </div>
-
-            <!-- CONTENEDOR ENUNCIADO Y TUTORIAL TUTOR -->
-            <div id="tutorial-tip-box" class="mb-3 p-2.5 rounded-lg bg-cyan-950/40 border border-cyan-500/30 text-cyan-300 text-xs font-mono text-left flex items-start gap-2">
-                <i class="fa-solid fa-compass-drafting text-cyan-400 text-sm mt-0.5"></i>
-                <div>
-                    <strong class="text-cyan-200 uppercase font-bold">Instrucción Tutorial:</strong>
-                    <span id="tutorial-tip-text">Responde según tu instinto natural. Dante calculará tu latencia de respuesta en milisegundos.</span>
-                </div>
-            </div>
-
-            <!-- CONTENEDOR ENUNCIADO GENERAL (PREGUNTAS 1-4) -->
-            <div id="dilema-container">
-                <p id="dilema-text" class="text-sm md:text-base font-medium text-zinc-200 mb-3 font-sans leading-relaxed text-left bg-black/50 p-3.5 rounded-lg border border-white/10 shadow-inner">
-                    Sincronizando estímulo conductual...
-                </p>
-            </div>
-
-            <!-- CONTENEDOR OPCIONES DINÁMICAS -->
-            <div id="options-container" class="space-y-2">
-                <!-- Inyección dinámica de opciones -->
-            </div>
-        </div>
-
-        <div class="mt-3 flex justify-between items-center text-[10px] sm:text-xs font-mono text-zinc-400 uppercase tracking-normal sm:tracking-wider pt-2 border-t border-white/10 flex-wrap gap-1">
-            <span>Latencia: <span id="timer-val" class="text-cyan-400 font-bold">0.0s</span></span>
-            <span class="flex items-center gap-1.5"><i class="fa-solid fa-lock text-cyan-400"></i> Cifrado de Estado: Activo</span>
-        </div>
-    </div>
-
-    <!-- MODAL CELEBRACIÓN UNICORNIO (COMPLETACIÓN ONBOARDING) -->
-    <div id="modalCelebration" class="modal-celebration-overlay" style="display: none;">
-        <div class="unicorn-card relative z-10">
-            <!-- INSIGNIA SUPERIOR Y MEDALLA DE INICIACIÓN -->
-            <div class="w-20 h-20 mx-auto mb-3 rounded-full border-2 border-[#D4AF37] bg-amber-500/10 flex items-center justify-center shadow-[0_0_35px_rgba(212,175,55,0.5)] animate-bounce">
-                <span class="text-4xl">🏅</span>
-            </div>
-
-            <div class="font-mono text-xs text-amber-400 tracking-[0.3em] uppercase font-bold mb-1">
-                ✨ ¡ADN COGNITIVO SINCRONIZADO! ✨
-            </div>
-
-            <h2 class="oswald font-black text-2xl md:text-3xl text-white mb-2 uppercase tracking-wide">
-                CALIBRACIÓN COMPLETADA
-            </h2>
-
-            <!-- ARQUETIPO DIAGNOSTICADO -->
-            <div class="my-3 p-4 bg-cyan-950/60 border border-cyan-400/50 rounded-xl text-left shadow-lg">
-                <div class="flex items-center justify-between border-b border-cyan-500/20 pb-2 mb-2">
-                    <span class="text-[11px] font-mono text-amber-400 font-bold uppercase tracking-wider">Arquetipo Diagnosticado:</span>
-                    <span class="text-[10px] font-mono text-emerald-400 font-bold px-2 py-0.5 rounded bg-emerald-950/60 border border-emerald-500/40">
-                        🏅 MEDALLA DE INICIACIÓN
-                    </span>
-                </div>
-                <div class="text-lg md:text-xl font-mono font-extrabold text-white uppercase flex items-center gap-2 mb-1">
-                    <span class="text-amber-400">👑</span> <span id="lblArquetipoFinal">Estratega Reflexivo S2</span>
-                </div>
-                <p class="text-xs font-mono text-cyan-300/90 mt-1">
-                    Proyección ICFES Inicial: <strong class="text-amber-300 font-extrabold" id="lblProyeccionScore">365 / 500 pts</strong>
-                </p>
-            </div>
-
-            <!-- MISIÓN PSICO-TÁCTICA #1 -->
-            <div class="p-4 bg-amber-950/40 border border-amber-500/50 rounded-xl text-left mb-5 shadow-md">
-                <div class="flex items-center gap-2 text-amber-400 font-mono text-xs font-bold uppercase mb-1">
-                    <i class="fa-solid fa-crosshairs"></i>
-                    <span id="lblMisionTitulo">Misión Psico-Táctica #1: Control de Ritmo</span>
-                </div>
-                <p class="text-xs md:text-sm font-mono text-zinc-100 leading-relaxed bg-black/50 p-3 rounded border border-white/10" id="lblMisionInstruccion">
-                    "Ejecutar lecturas desaceleradas de 8 segundos antes del primer clic."
-                </p>
-            </div>
-
-            <!-- BOTÓN INGRESAR Y CONTINUAR CON REPLACEMENT DE HISTORIAL -->
-            <button type="button" onclick="irACabinaEntrenamiento()" class="w-full py-3.5 px-5 bg-gradient-to-r from-amber-500/30 via-amber-400/20 to-amber-500/30 hover:bg-amber-500/40 border-2 border-amber-400 text-amber-300 font-mono font-extrabold text-sm rounded-xl uppercase tracking-wider transition-all duration-300 shadow-[0_0_25px_rgba(212,175,55,0.35)] hover:scale-[1.02] cursor-pointer flex items-center justify-center gap-2">
-                <span>🚀 INGRESAR A MI CABINA DANTE OS</span>
-                <i class="fa-solid fa-arrow-right"></i>
-            </button>
-        </div>
-    </div>
-
-    <script>
-        // Sincronización automática de tema (Claro / Oscuro)
-        try {
-            if (localStorage.getItem('dante_theme') === 'light') {
-                document.body.classList.add('light-mode');
-            }
-        } catch(e) {}
-
-        const SUPABASE_URL = 'https://erjmvkmhpbvrqiqlddij.supabase.co'; 
-        const SUPABASE_KEY = 'sb_publishable_RZHft13G4xVwBIdhgZp1gQ_K9raK05f';
-        let supabaseClient = null;
-        try { if (window.supabase) supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e){}
-
-        // LOS 5 DILEMAS SIMPLIFICADOS CON PROYECCIÓN ICFES DINÁMICA Y FACSÍMIL DE PAPEL
-        const DILEMAS = [
-            {
-                stepNum: 1,
-                title: "PASO 01 / 05 // RITMO DE DECISIÓN",
-                tutorialTip: "Evolución mecánica (Paso 1 de 5). Dante mide tu ritmo de procesamiento ante estímulos directos.",
-                projectionText: "Calibrando baseline... 300 pts ➔ Analizando Sistema 1/2",
-                baselineScore: 300,
-                text: "Ante un ítem complejo en el examen Saber 11, ¿cuál es tu primer impulso instintivo?",
-                opts: [
-                    { text: "A) Seleccionar la alternativa que mi intuición señala de inmediato (Sistema 1 / Impulso Rápido).", type: "DECISION_INMEDIATA", id: "opt_a" },
-                    { text: "B) Detenerme a verificar y descomponer la premisa minuciosamente (Sistema 2 / Control Reflexivo).", type: "ANALISIS_MINUCIOSO", id: "opt_b" }
-                ]
-            },
-            {
-                stepNum: 2,
-                title: "PASO 02 / 05 // GESTIÓN DEL ENFOQUE",
-                tutorialTip: "Evolución mecánica (Paso 2 de 5). Evaluamos tu autorregulación ante pasajes extensos.",
-                projectionText: "Ajustando proyección: 315 pts ➔ Evaluando resistencia a la presión de tiempo",
-                baselineScore: 315,
-                text: "Cuando encuentras un texto extenso o denso en Lectura Crítica, ¿cómo reacciona tu atención?",
-                opts: [
-                    { text: "A) Siento presión por el reloj y acelero mi lectura para no perder segundos.", type: "SENSIBILIDAD_TIEMPO", id: "opt_a" },
-                    { text: "B) Leo rápidamente, descarto las respuestas ilógicas y elijo la más sólida.", type: "DESCARTE_INICIAL", id: "opt_b" },
-                    { text: "C) Mantengo la calma, identifico la idea central y descarto metódicamente los distractores.", type: "CONTROL_REGULADO", id: "opt_c" }
-                ]
-            },
-            {
-                stepNum: 3,
-                title: "PASO 03 / 05 // HERRAMIENTA DE DESCARTE TÁCTICO",
-                tutorialTip: "⚡ TUTORIAL DESCARTE: Haz clic en el botón [✂️ Tachar] para eliminar distractores visualmente antes de responder.",
-                projectionText: "Ajustando proyección: 330 pts ➔ Midiendo técnica de eliminación de trampas",
-                baselineScore: 330,
-                isRealIcfesSim: true,
-                text: "Frente a un dilema con opciones ambiguas, ¿cuál es tu táctica principal de descarte?",
-                opts: [
-                    { text: "A) Descarto primero opciones con términos absolutistas ('siempre', 'nunca', 'jamás') usando [✂️ Tachar].", type: "DESCARTE_METODICO", id: "opt_a" },
-                    { text: "B) Identifico la alternativa con mayor sustento técnico y la contrasto.", type: "HIPOTESIS_INICIAL", id: "opt_b" },
-                    { text: "C) Conecto la pregunta con el contexto general presentado en el enunciado.", type: "PERSPECTIVA_CREATIVA", id: "opt_c" },
-                    { text: "D) Analizo cada alternativa minuciosamente verificando veracidad lógica.", type: "ANALITICO_RIGUROSO", id: "opt_d" }
-                ]
-            },
-            {
-                stepNum: 4,
-                title: "PASO 04 / 05 // METAS Y METACOGNICIÓN",
-                tutorialTip: "Evolución psicométrica (Paso 4 de 5). Diagnóstico directo de autoconfianza y metas ICFES.",
-                projectionText: "Ajustando proyección: 345 pts ➔ Sincronizando metas de rendimiento académico",
-                baselineScore: 345,
-                text: "¿Cuál es tu meta principal de calibración para el examen Saber 11?",
-                opts: [
-                    { text: "A) Dominar la presión del tiempo y ganar seguridad absoluta en el Día D.", type: "ENFOQUE_DESARROLLO", id: "opt_a" },
-                    { text: "B) Optimizar la velocidad de respuesta por sesión (4.5 horas).", type: "OPTIMIZACION_CRONOMETRICA", id: "opt_b" },
-                    { text: "C) Fortalecer componentes cuantitativos y razonamiento científico.", type: "CONSOLIDACION_CONCEPTUAL", id: "opt_c" },
-                    { text: "D) Maximizar mi puntaje global para superar los 400+ puntos.", type: "ALTO_RENDIMIENTO", id: "opt_d" }
-                ]
-            },
-            {
-                stepNum: 5,
-                title: "PASO 05 / 05 // ESCÁNER FACSÍMIL DE PAPEL ICFES",
-                tutorialTip: "📄 EVALUACIÓN FACSÍMIL & HOJA ÓPTICA: Rellena el óvalo Ⓐ, Ⓑ, Ⓒ o Ⓓ con grafito para convalidar tu respuesta.",
-                projectionText: "Ajustando proyección: 360 pts ➔ Escaneando control de sesgos en papel tradicional",
-                baselineScore: 360,
-                isFacsimilePaper: true,
-                opts: [
-                    { text: "A) La tasa de variación de la cobertura boscosa previa a la construcción de vías.", type: "RESILIENTE_PROACTIVO", id: "opt_a" },
-                    { text: "B) El porcentaje de ganadería registrado en zonas con y sin acceso vial.", type: "RITMO_DINAMICO", id: "opt_b" },
-                    { text: "C) El volumen total de madera extraída durante el último quinquenio.", type: "AUTONOMO_ESTRATEGICO", id: "opt_c" },
-                    { text: "D) La inversión pública realizada en proyectos de infraestructura vial.", type: "SENSIBILIDAD_EVALUATIVA", id: "opt_d" }
-                ]
-            }
-        ];
-
-        let currentStep = 0;
-        let scores = {};
-        let historicoRespuestas = [];
-        let startTime = Date.now();
-        let timerInterval = null;
-        let optionStrikeMap = {};
-
-        function updateLatencyDisplay() {
-            if (timerInterval) clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                let elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-                const timerEl = document.getElementById('timer-val');
-                if (timerEl) timerEl.innerText = `${elapsed}s`;
-            }, 100);
-        }
-
-        function toggleStrikeOption(optId, e) {
-            if (e) e.stopPropagation();
-            optionStrikeMap[optId] = !optionStrikeMap[optId];
-            const btnEl = document.getElementById(`btn_${optId}`);
-            if (btnEl) {
-                if (optionStrikeMap[optId]) {
-                    btnEl.classList.add('tachado');
-                } else {
-                    btnEl.classList.remove('tachado');
-                }
-            }
-        }
-
-        function loadStep() {
-            if (currentStep >= DILEMAS.length) {
-                finalizeOnboarding();
-                return;
-            }
-
-            const d = DILEMAS[currentStep];
-            optionStrikeMap = {};
-
-            document.getElementById('step-title').innerText = d.title;
-            document.getElementById('tutorial-tip-text').innerText = d.tutorialTip;
-            document.getElementById('projection-live-text').innerText = d.projectionText;
-            document.getElementById('projection-score-num').innerText = `${d.baselineScore} pts`;
-            
-            // Barra de progreso
-            const pBar = document.getElementById('progress-bar');
-            if (pBar) {
-                pBar.style.width = `${((currentStep + 1) / DILEMAS.length) * 100}%`;
-            }
-
-            const dilemaCont = document.getElementById('dilema-container');
-            const optCont = document.getElementById('options-container');
-
-            if (d.isFacsimilePaper) {
-                // RENDERIZADO DE PREGUNTA 5: ESCÁNER FACSÍMIL DE PAPEL ICFES CON HOJA ÓPTICA INTEGRADA
-                dilemaCont.innerHTML = `
-                    <div class="facsimile-paper p-4 md:p-5 rounded-lg text-slate-900 mb-2 text-left relative shadow-2xl border-2 border-amber-900/40">
-                        <div class="flex items-center justify-between border-b border-slate-400 pb-2 mb-2">
-                            <div class="font-serif font-extrabold text-[11px] md:text-xs tracking-wider uppercase text-slate-800">
-                                📜 EXAMEN SABER 11 — PRUEBA DE DIAGNÓSTICO EN PAPEL
-                            </div>
-                            <div class="facsimile-stamp">
-                                FACSÍMIL #2026-ICFES
-                            </div>
-                        </div>
-
-                        <p class="font-serif text-xs md:text-sm leading-relaxed font-semibold text-slate-900 mb-2">
-                            <strong>Pregunta 5:</strong> Un investigador evalúa dos hipótesis sobre la deforestación en la Amazonía. La <em>Hipótesis A</em> afirma que las vías ilegales son la causa primaria, mientras la <em>Hipótesis B</em> la atribuye a la ganadería extensiva. Para determinar cuál causa es precursora en el tiempo, ¿qué dato exige el análisis?
-                        </p>
+            <!-- BARRA SUPERIOR DE 2 PASOS TÁCTICOS -->
+            <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500 via-sky-600 to-blue-700 flex items-center justify-center text-slate-950 font-black text-base shadow-[0_0_15px_rgba(6,182,212,0.4)]">
+                        D
                     </div>
+                    <div>
+                        <h1 class="text-sm font-black text-white tracking-tight flex items-center gap-2">
+                            Dante OS <span class="text-[9px] font-mono px-2 py-0.5 rounded-full bg-[#1c1917] text-[#e7d7c3] border border-[rgba(231,215,195,0.32)]">Saber 11°</span>
+                        </h1>
+                        <p id="lblStepTracker" class="text-[11px] text-slate-400 font-mono">Paso 1 de 3: Tu meta en Saber 11°</p>
+                    </div>
+                </div>
 
-                    <div class="optica-sheet-box text-left mb-3">
-                        <div class="flex items-center justify-between text-xs font-bold text-slate-800 border-b border-slate-300 pb-1 mb-2">
-                            <span>📝 HOJA DE RESPUESTAS ÓPTICA (SABER 11)</span>
-                            <span class="text-[10px] text-amber-800 font-mono">LÁPIZ GRAFITO #2</span>
+                <!-- INDICADOR DE PROGRESO DE 3 PASOS (meta → carrera → fecha) -->
+                <div class="flex items-center gap-2">
+                    <div id="dotStep1" class="w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.8)] transition-all"></div>
+                    <div id="dotStep2" class="w-2.5 h-2.5 rounded-full bg-slate-800 transition-all"></div>
+                    <div id="dotStep3" class="w-2.5 h-2.5 rounded-full bg-slate-800 transition-all"></div>
+                </div>
+            </div>
+
+            <div id="avisoSesionPerdida" class="hidden p-3 rounded-2xl border border-amber-500/40 bg-amber-500/10 text-left space-y-2">
+                <p class="text-sm text-amber-100 font-sans leading-relaxed">Si no ves tu nombre abajo, vuelve a entrar. Esta pantalla no te saca sola.</p>
+                <a href="login.html" class="inline-flex items-center justify-center w-full py-2.5 rounded-xl bg-[#e7d7c3] text-[#1c1917] text-sm font-bold">Volver a entrar</a>
+            </div>
+
+            <!-- ENCABEZADO PERSONALIZADO CON PRIMER NOMBRE DEL ESTUDIANTE -->
+            <div id="headerGreetingContainer" class="space-y-1">
+                <h2 class="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2">
+                    <i class="fa-solid fa-user-astronaut text-cyan-400 text-lg"></i>
+                    <span>¡Hola, <span id="lblStudentGreetingName" class="text-cyan-400">Estudiante</span>!</span>
+                </h2>
+                <p id="lblStepInstruction" class="text-xs text-slate-400 font-sans">
+                    Elige la meta de Saber 11°. Después van la carrera y la fecha del examen.
+                </p>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- PASO 1: SELECCIÓN DE 3 RUTAS TÁCTICAS CLARAS               -->
+            <!-- ========================================================= -->
+            <div id="stepContainer1" class="space-y-3">
+                <p class="text-xs font-mono font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                    <i class="fa-solid fa-bullseye text-cyan-400"></i>
+                    <span>1. ¿Cuál es tu meta en Saber 11°?</span>
+                </p>
+                <div class="grid grid-cols-1 gap-2.5">
+                    <div data-meta="380_ELITE" onclick="OnboardingManager.selectMeta('380_ELITE', this, 'ICFES')" class="step-option p-4 rounded-2xl bg-slate-900/80 border border-slate-800 flex items-center gap-3.5 hover:border-amber-500/50 transition">
+                        <div class="w-11 h-11 rounded-xl bg-amber-500/10 text-amber-300 flex items-center justify-center font-bold text-lg shrink-0 border border-amber-500/30 shadow-inner">
+                            <i class="fa-solid fa-trophy"></i>
                         </div>
-                        <div class="flex items-center justify-around gap-2 my-1">
-                            <div class="flex items-center gap-1.5 cursor-pointer" onclick="seleccionarOvalOptico('opt_a', 'RESILIENTE_PROACTIVO', 'A) La tasa de variación...')">
-                                <span class="text-xs font-bold text-slate-700">5.</span>
-                                <div class="optica-oval" id="oval_opt_a">A</div>
-                            </div>
-                            <div class="flex items-center gap-1.5 cursor-pointer" onclick="seleccionarOvalOptico('opt_b', 'RITMO_DINAMICO', 'B) El porcentaje de ganadería...')">
-                                <div class="optica-oval" id="oval_opt_b">B</div>
-                            </div>
-                            <div class="flex items-center gap-1.5 cursor-pointer" onclick="seleccionarOvalOptico('opt_c', 'AUTONOMO_ESTRATEGICO', 'C) El volumen total...')">
-                                <div class="optica-oval" id="oval_opt_c">C</div>
-                            </div>
-                            <div class="flex items-center gap-1.5 cursor-pointer" onclick="seleccionarOvalOptico('opt_d', 'SENSIBILIDAD_EVALUATIVA', 'D) La inversión pública...')">
-                                <div class="optica-oval" id="oval_opt_d">D</div>
-                            </div>
+                        <div class="flex-1">
+                            <h3 class="text-xs sm:text-sm font-bold text-white">380 o más</h3>
+                            <p class="text-[11px] text-slate-400 mt-0.5">Quieres un puntaje alto en Saber 11°.</p>
                         </div>
                     </div>
-                `;
-            } else {
-                dilemaCont.innerHTML = `
-                    <p id="dilema-text" class="text-sm md:text-base font-medium text-zinc-200 mb-3 font-sans leading-relaxed text-left bg-black/50 p-3.5 rounded-lg border border-white/10 shadow-inner">
-                        ${d.text}
+                    <div data-meta="300_BASE" onclick="OnboardingManager.selectMeta('300_BASE', this, 'ICFES')" class="step-option p-4 rounded-2xl bg-slate-900/80 border border-slate-800 flex items-center gap-3.5 hover:border-emerald-500/50 transition">
+                        <div class="w-11 h-11 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold text-lg shrink-0 border border-emerald-500/30 shadow-inner">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-xs sm:text-sm font-bold text-white">Pasar de 300</h3>
+                            <p class="text-[11px] text-slate-400 mt-0.5">Quieres un puntaje seguro en Saber 11°.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- PASO 2: SELECCIÓN DE CARRERA O ÁREA DE ENFOQUE             -->
+            <!-- ========================================================= -->
+            <div id="stepContainer2" class="space-y-3 hidden">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <div data-carrera="Medicina / Ciencias de la Salud" onclick="OnboardingManager.selectCarrera('Medicina / Ciencias de la Salud', this)" class="step-option p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 flex items-center gap-3">
+                        <i class="fa-solid fa-user-doctor text-cyan-400 text-lg shrink-0"></i>
+                        <div>
+                            <h3 class="text-xs font-bold text-white">Medicina / Salud</h3>
+                            <p class="text-[10px] text-slate-300 font-medium">Énfasis Biología y Química</p>
+                        </div>
+                    </div>
+
+                    <div data-carrera="Ingeniería / Ciencias Exactas" onclick="OnboardingManager.selectCarrera('Ingeniería / Ciencias Exactas', this)" class="step-option p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 flex items-center gap-3">
+                        <i class="fa-solid fa-gears text-cyan-400 text-lg shrink-0"></i>
+                        <div>
+                            <h3 class="text-xs font-bold text-white">Ingeniería / Exactas</h3>
+                            <p class="text-[10px] text-slate-300 font-medium">Énfasis Matemáticas y Física</p>
+                        </div>
+                    </div>
+
+                    <div data-carrera="Derecho / Ciencias Sociales" onclick="OnboardingManager.selectCarrera('Derecho / Ciencias Sociales', this)" class="step-option p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 flex items-center gap-3">
+                        <i class="fa-solid fa-scale-balanced text-cyan-400 text-lg shrink-0"></i>
+                        <div>
+                            <h3 class="text-xs font-bold text-white">Derecho / Sociales</h3>
+                            <p class="text-[10px] text-slate-300 font-medium">Énfasis Lectura y Sociales</p>
+                        </div>
+                    </div>
+
+                    <div data-carrera="Arquitectura / Diseño / Arte" onclick="OnboardingManager.selectCarrera('Arquitectura / Diseño / Arte', this)" class="step-option p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 flex items-center gap-3">
+                        <i class="fa-solid fa-palette text-cyan-400 text-lg shrink-0"></i>
+                        <div>
+                            <h3 class="text-xs font-bold text-white">Arquitectura / Arte</h3>
+                            <p class="text-[10px] text-slate-300 font-medium">Énfasis Espacial e Imagen</p>
+                        </div>
+                    </div>
+
+                    <div data-carrera="Administración / Economía" onclick="OnboardingManager.selectCarrera('Administración / Economía', this)" class="step-option p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 flex items-center gap-3">
+                        <i class="fa-solid fa-chart-line text-cyan-400 text-lg shrink-0"></i>
+                        <div>
+                            <h3 class="text-xs font-bold text-white">Economía / Negocios</h3>
+                            <p class="text-[10px] text-slate-300 font-medium">Énfasis Razonamiento Cuantitativo</p>
+                        </div>
+                    </div>
+
+                    <div data-carrera="Licenciatura / Educación" onclick="OnboardingManager.selectCarrera('Licenciatura / Educación', this)" class="step-option p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 flex items-center gap-3">
+                        <i class="fa-solid fa-book-open-reader text-cyan-400 text-lg shrink-0"></i>
+                        <div>
+                            <h3 class="text-xs font-bold text-white">Educación / Humanidades</h3>
+                            <p class="text-[10px] text-slate-300 font-medium">Énfasis Pedagógico y Crítico</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="stepContainer3" class="space-y-3 hidden">
+                <p class="text-xs font-mono font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+                    <i class="fa-solid fa-calendar-check text-cyan-400"></i>
+                    <span>3. ¿Cuándo presentas el examen?</span>
+                </p>
+                <div class="grid grid-cols-1 gap-2.5">
+                    <div data-fecha="CAL_A" onclick="OnboardingManager.selectFecha('CAL_A', this)" class="step-option p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800">
+                        <h3 class="text-xs font-bold text-white">Calendario A, agosto 2027</h3>
+                    </div>
+                    <div data-fecha="CAL_B" onclick="OnboardingManager.selectFecha('CAL_B', this)" class="step-option p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800">
+                        <h3 class="text-xs font-bold text-white">Calendario B, marzo 2027</h3>
+                    </div>
+                    <div data-fecha="CUSTOM" onclick="OnboardingManager.selectFecha('CUSTOM', this)" class="step-option p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-2">
+                        <h3 class="text-xs font-bold text-white">Otra fecha</h3>
+                        <input type="date" id="inputFechaExamenAjuste" onclick="event.stopPropagation()" onchange="OnboardingManager.selectFecha('CUSTOM', this.parentElement)" class="w-full p-3 rounded-xl bg-slate-950 border border-slate-700 text-white font-mono text-xs outline-none" style="color-scheme: dark;">
+                    </div>
+                </div>
+                <p id="lblDiasFechaAjuste" class="text-xs text-slate-400"></p>
+            </div>
+
+            <!-- ========================================================= -->
+            <!-- PANTALLA INMERSIVA DE CARGA / DISPARO AL DIAGNÓSTICO      -->
+            <!-- ========================================================= -->
+            <div id="stepContainerLoading" class="py-8 px-4 text-center space-y-4 hidden">
+                <div class="relative w-16 h-16 mx-auto flex items-center justify-center">
+                    <div class="absolute inset-0 rounded-full border-4 border-cyan-500/20 animate-ping"></div>
+                    <div class="w-14 h-14 rounded-full border-4 border-t-cyan-400 border-r-amber-400 border-b-transparent border-l-transparent animate-spin"></div>
+                    <i class="fa-solid fa-bolt text-cyan-300 text-xl absolute"></i>
+                </div>
+                <div class="space-y-1">
+                    <h3 id="txtLoadingTitle" class="text-base font-black text-white font-mono uppercase tracking-wide">
+                        Profesor Dante calibrando reactivos adaptativos...
+                    </h3>
+                    <p id="txtLoadingSubtitle" class="text-xs text-slate-400 font-sans max-w-sm mx-auto">
+                        Personalizando tu prueba diagnóstica de 10 reactivos según tu área de enfoque.
                     </p>
-                `;
-            }
+                </div>
+                <div class="w-48 h-1.5 bg-slate-800 rounded-full mx-auto overflow-hidden">
+                    <div id="barLoadingProgress" class="h-full bg-gradient-to-r from-cyan-400 to-amber-400 transition-all duration-1000" style="width: 20%;"></div>
+                </div>
+            </div>
 
-            optCont.innerHTML = "";
+            <!-- BOTONES NAVEGACIÓN PASOS CON CONDICIONALIDAD ESTRICTA -->
+            <div id="navButtonsContainer" class="flex items-center justify-between pt-2 border-t border-slate-800/80">
+                <button type="button" id="btnPrevStep" onclick="OnboardingManager.pasoAnterior(true)" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white font-mono text-xs font-bold transition flex items-center gap-2 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed">
+                    <i class="fa-solid fa-arrow-left text-xs"></i>
+                    <span>Atrás</span>
+                </button>
 
-            d.opts.forEach((o, idx) => {
-                const btn = document.createElement('div');
-                btn.id = `btn_${o.id}`;
-                btn.className = d.isFacsimilePaper ? "option-btn facsimile-option" : "option-btn";
-                
-                let strikeBtnHTML = '';
-                if (d.isRealIcfesSim || d.stepNum >= 3) {
-                    strikeBtnHTML = `
-                        <button type="button" class="strike-tool-btn" onclick="toggleStrikeOption('${o.id}', event)" title="Descartar / Tachar esta opción">
-                            <i class="fa-solid fa-strikethrough"></i> <span>Tachar</span>
-                        </button>
-                    `;
-                }
+                <button type="button" id="btnNextStep" onclick="OnboardingManager.pasoSiguiente()" disabled class="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 via-sky-400 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-mono font-black text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(6,182,212,0.4)] transition flex items-center gap-2 opacity-40 cursor-not-allowed pointer-events-none">
+                    <span id="lblNextBtn">Siguiente Paso</span>
+                    <i id="iconNextBtn" class="fa-solid fa-arrow-right text-slate-950 text-xs"></i>
+                </button>
+            </div>
 
-                const cleanText = o.text.replace(/^[A-D]\)\s*/, '');
-                btn.innerHTML = `
-                    <div class="flex items-center gap-2 sm:gap-3 pr-1 min-w-0 flex-grow cursor-pointer">
-                        <span class="inline-flex items-center justify-center w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-cyan-500/20 text-cyan-400 text-xs font-mono font-bold shrink-0 border border-cyan-500/30">
-                            ${String.fromCharCode(65 + idx)}
-                        </span>
-                        <span class="text-xs sm:text-sm text-left font-medium leading-snug text-zinc-100 break-words">${cleanText}</span>
-                    </div>
-                    ${strikeBtnHTML}
-                `;
+        </div>
+    </main>
 
-                btn.onclick = (e) => {
-                    if (!e.target.closest('.strike-tool-btn')) {
-                        if (d.isFacsimilePaper) {
-                            seleccionarOvalOptico(o.id, o.type, o.text);
-                        } else {
-                            registerChoice(o.type, o.id, o.text);
-                        }
-                    }
-                };
+    <!-- SCRIPT DE LÓGICA DE ONBOARDING REFACTORIZADA (FASE 2 & FASE 3) -->
+    <script>
+        // Sin selección previa forzada: inicia en null
+        let CurrentStep = 1;
+        let SelectedMeta = null;
+        let SelectedTrack = null;
+        let SelectedCarrera = null;
+        let AjustarMeta = new URLSearchParams(window.location.search).get('ajustar') === '1';
+        let SelectedFecha = null;
+        let FechaTexto = '';
+        let FechaCustom = '';
 
-                optCont.appendChild(btn);
-            });
+        class OnboardingManager {
+            static isLaunching = false;
 
-            startTime = Date.now();
-            updateLatencyDisplay();
-        }
-
-        function seleccionarOvalOptico(optId, type, text) {
-            // Animación de llenado de grafito en el óvalo óptico
-            const ovalEl = document.getElementById(`oval_${optId}`);
-            document.querySelectorAll('.optica-oval').forEach(el => el.classList.remove('graphite-filled'));
-            
-            if (ovalEl) {
-                ovalEl.classList.add('graphite-filled');
-            }
-
-            // Breve delay de 350ms para apreciar el rellenado con lápiz de grafito negro
-            setTimeout(() => {
-                registerChoice(type, optId, text);
-            }, 380);
-        }
-
-        function registerChoice(type, id, text) {
-            let latency = Date.now() - startTime;
-            scores[type] = (scores[type] || 0) + 1;
-            
-            historicoRespuestas.push({
-                step: currentStep + 1,
-                type: type,
-                optionId: id,
-                text: text,
-                latencyMs: latency
-            });
-
-            if (latency < 2000) {
-                scores['LATENCIA_IMPULSIVA'] = (scores['LATENCIA_IMPULSIVA'] || 0) + 1;
-            } else if (latency > 12000) {
-                scores['LATENCIA_REFLEXIVA'] = (scores['LATENCIA_REFLEXIVA'] || 0) + 1;
-            }
-
-            currentStep++;
-            loadStep();
-        }
-
-        async function finalizeOnboarding() {
-            if (timerInterval) clearInterval(timerInterval);
-
-            // Diagnóstico del Arquetipo
-            let arquetipoNombre = "Estratega Reflexivo S2";
-            let misionInmediata = {
-                id: "mision_01",
-                titulo: "Misión Psico-Táctica #1: Control de Ritmo",
-                instruccion: "Desacelerar en conectores de oposición y realizar lecturas de 8s antes del primer clic.",
-                protocolo: "MANTENER_LATENCIA_ESTABLE",
-                foco_cognitivo: "Comprensión Lectora y Descarte Metódico"
-            };
-
-            if (scores['SENSIBILIDAD_TIEMPO'] || scores['ENFOQUE_DESARROLLO']) {
-                arquetipoNombre = "Estratega Enfocado bajo Presión";
-                misionInmediata = {
-                    id: "mision_01",
-                    titulo: "Misión Psico-Táctica #1: Pausa de Descompresión",
-                    instruccion: "Aplicar la pausa consciente de 5 segundos al detectar preguntas con más de 3 renglones.",
-                    protocolo: "DESCOMPRESION_ANSIEDAD",
-                    foco_cognitivo: "Regulación de Oxigenación y Enfoque Directo"
-                };
-            } else if (scores['DECISION_INMEDIATA'] || scores['LATENCIA_IMPULSIVA']) {
-                arquetipoNombre = "Analista de Alta Velocidad";
-                misionInmediata = {
-                    id: "mision_01",
-                    titulo: "Misión Psico-Táctica #1: Freno de Mano y Descarte",
-                    instruccion: "Tachar obligatoriamente al menos 1 distractor con la herramienta [✂️ Tachar] antes de confirmar.",
-                    protocolo: "FRENO_DESCARTE_OBLIGATORIO",
-                    foco_cognitivo: "Verificación de Premisa y Eliminación de Distractores"
-                };
-            }
-
-            const baselineScore = 320;
-
-            // B2B & Multidimensional Storage Sincronización Definitiva
-            localStorage.setItem('dante_onboarding_completed', 'true');
-            localStorage.setItem('dante_user_arquetipo', arquetipoNombre);
-
-            let userObj = {};
-            try {
-                userObj = JSON.parse(localStorage.getItem('dante_user')) || {};
-            } catch(e) {}
-
-            userObj.onboarding_completed = true;
-            userObj.arquetipo = arquetipoNombre;
-            userObj.mision_activa = misionInmediata;
-            localStorage.setItem('dante_onboarding_completed', 'true');
-            localStorage.setItem('dante_user_arquetipo', arquetipoNombre);
-
-            userObj.onboarding_completed = true;
-            userObj.arquetipo = arquetipoNombre;
-            userObj.mision_activa = misionInmediata;
-            userObj.baseline_proyeccion = baselineScore;
-
-            localStorage.setItem('dante_user', JSON.stringify(userObj));
-            localStorage.setItem('dante_onboarding_profile', JSON.stringify({
-                arquetipo: arquetipoNombre,
-                mision_activa: misionInmediata,
-                baseline_proyeccion: baselineScore,
-                scores: scores,
-                historico_onboarding: historicoRespuestas,
-                fecha: new Date().toISOString()
-            }));
-
-            // Inyección en el Modal Unicornio
-            document.getElementById('lblArquetipoFinal').innerText = arquetipoNombre;
-            document.getElementById('lblProyeccionScore').innerText = `${baselineScore} / 500 Pts`;
-            document.getElementById('lblMisionTitulo').innerText = misionInmediata.titulo;
-            document.getElementById('lblMisionInstruccion').innerText = `"${misionInmediata.instruccion}"`;
-
-            // Persistencia en Backend Servidor Real
-            const userIdentifier = userObj.email || userObj.estudiante || userObj.document_id || `user_anon_${Date.now()}`;
-            const payload = {
-                onboarding_completed: true,
-                arquetipo: arquetipoNombre,
-                mision_activa: misionInmediata,
-                baseline_proyeccion: baselineScore,
-                historico_onboarding: historicoRespuestas
-            };
-
-            try {
-                fetch('/api/auth/complete-onboarding', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        studentId: userObj.estudiante || userObj.document_id || userIdentifier,
-                        email: userObj.email,
-                        arquetipo: arquetipoNombre,
-                        datos_onboarding: payload,
-                        institution_id: userObj.institution_id
-                    })
-                }).catch(err => console.warn("⚠️ Fetch complete-onboarding async:", err));
-            } catch(fetchErr) {
-                console.warn("⚠️ Error en llamada a complete-onboarding:", fetchErr);
-            }
-
-            // Persistencia directa defensiva en Supabase
-            if (supabaseClient) {
+            /**
+             * Extrae el nombre completo de la sesión
+             */
+            static getStudentFullName() {
                 try {
-                    const condEmail = userObj.email || `${userIdentifier}@danteos.edu.co`;
-                    supabaseClient.from('usuarios').update({
-                        arquetipo: arquetipoNombre,
-                        onboarding_completed: true,
-                        datos_onboarding: payload
-                    }).eq('email', condEmail).then(() => {}).catch(() => {});
+                    const storedName = localStorage.getItem("dante_student_name");
+                    if (storedName && storedName.trim() && storedName !== "Estudiante") {
+                        return storedName.trim();
+                    }
 
-                    supabaseClient.from('dante_arquetipos_iniciales').upsert({
-                        id_sesion: condEmail,
-                        arquetipo: arquetipoNombre,
-                        datos_psicometricos: payload,
-                        creado_en: new Date().toISOString()
-                    }, { onConflict: 'id_sesion' }).then(() => {}).catch(() => {});
-                } catch(e) { console.warn("Supabase async backup:", e.message); }
-            }
-
-            // Desplegar Modal Unicornio de Celebración
-            const modal = document.getElementById('modalCelebration');
-            if (modal) modal.style.display = 'flex';
-        }
-
-        function irACabinaEntrenamiento() {
-            // Reemplazo físico en el historial para impedir retroceder a onboarding
-            window.location.replace('index.html');
-        }
-
-        async function verificarEstadoOnboardingPrevio() {
-            // 1. Verificar LocalStorage (Ultra Rápido - 0ms)
-            const localCompleted = localStorage.getItem('dante_onboarding_completed') === 'true';
-            let userObj = {};
-            try { userObj = JSON.parse(localStorage.getItem('dante_user')) || {}; } catch(e) {}
-
-            const userCompleted = userObj.onboarding_completed === true || Boolean(userObj.arquetipo);
-
-            if (localCompleted || userCompleted) {
-                console.log("✅ Onboarding ya completado localmente. Redirigiendo a index.html...");
-                window.location.replace('index.html');
-                return true;
-            }
-
-            // 2. Comprobación defensiva con tiempo límite de 1.5s para evitar bloqueos
-            if (supabaseClient) {
-                const activeStudent = localStorage.getItem('dante_active_student');
-                const userIdentifier = userObj.email || userObj.estudiante || userObj.document_id || activeStudent;
-                if (userIdentifier) {
-                    try {
-                        const condEmail = userObj.email || (userIdentifier.includes('@') ? userIdentifier : `${userIdentifier}@danteos.edu.co`);
-                        
-                        // Promesa con Timeout de 1.5 segundos
-                        const dbCheckPromise = new Promise(async (resolve) => {
-                            try {
-                                const { data: usrData } = await supabaseClient
-                                    .from('usuarios')
-                                    .select('onboarding_completed, arquetipo')
-                                    .eq('email', condEmail)
-                                    .maybeSingle();
-
-                                if (usrData && (usrData.onboarding_completed || usrData.arquetipo)) {
-                                    return resolve(usrData);
-                                }
-                            } catch(e) {}
-                            resolve(null);
-                        });
-
-                        const timeoutPromise = new Promise((resolve) => setTimeout(() => resolve(null), 1500));
-                        const result = await Promise.race([dbCheckPromise, timeoutPromise]);
-
-                        if (result) {
-                            console.log("✅ Onboarding confirmado en BD Supabase. Redirigiendo...");
-                            localStorage.setItem('dante_onboarding_completed', 'true');
-                            if (result.arquetipo) localStorage.setItem('dante_user_arquetipo', result.arquetipo);
-                            userObj.onboarding_completed = true;
-                            if (result.arquetipo) userObj.arquetipo = result.arquetipo;
-                            localStorage.setItem('dante_user', JSON.stringify(userObj));
-                            window.location.replace('index.html');
-                            return true;
+                    const session = typeof DanteStorage !== 'undefined' ? DanteStorage.getSession() : null;
+                    if (session && session.user) {
+                        const nameCandidate = session.user.nombre || session.user.name || session.user.user_metadata?.full_name || session.user.user_metadata?.name;
+                        if (nameCandidate && String(nameCandidate).trim() && nameCandidate !== "Estudiante") {
+                            return String(nameCandidate).trim();
                         }
-                    } catch(e) {
-                        console.warn("⚠️ Error en comprobación de DB:", e.message);
+                        if (session.user.email) {
+                            return session.user.email.split('@')[0];
+                        }
+                    }
+
+                    const userRaw = localStorage.getItem("dante_user");
+                    if (userRaw) {
+                        const parsed = JSON.parse(userRaw);
+                        if (parsed) {
+                            const nameCandidate = parsed.nombre || parsed.name || parsed.user_metadata?.full_name;
+                            if (nameCandidate && String(nameCandidate).trim() && nameCandidate !== "Estudiante") {
+                                return String(nameCandidate).trim();
+                            }
+                            if (parsed.email) {
+                                return parsed.email.split('@')[0];
+                            }
+                        }
+                    }
+
+                    const activeStudent = localStorage.getItem("dante_active_student");
+                    if (activeStudent && activeStudent !== "estudiante") {
+                        return activeStudent;
+                    }
+                } catch (e) {
+                    console.warn("Error leyendo nombre de sesión:", e);
+                }
+                return localStorage.getItem("dante_student_name") || "Estudiante";
+            }
+
+            /**
+             * Extrae limpiamente el primer nombre de pila (ej. 'Javier' de 'Javier Penagos')
+             */
+            static getStudentFirstName() {
+                const raw = this.getStudentFullName();
+                if (!raw || raw === "Estudiante") return "Estudiante";
+                const first = raw.trim().split(/\s+/)[0];
+                return first.charAt(0).toUpperCase() + first.slice(1).toLowerCase();
+            }
+
+            /**
+             * Captura tokens de OAuth de Supabase si vienen en hash o URL
+             */
+            static async capturarOAuthHash() {
+                const hasTokens = window.location.hash.includes("access_token=") || 
+                                  window.location.hash.includes("refresh_token=") || 
+                                  window.location.search.includes("code=");
+
+                if (hasTokens) {
+                    try {
+                        const configResp = await fetch("/api/v1/auth/config").catch(() => null);
+                        if (configResp && configResp.ok) {
+                            const configData = await configResp.json();
+                            if (configData.hasSupabase && configData.supabaseUrl && configData.supabaseKey && window.supabase) {
+                                const client = window.supabase.createClient(configData.supabaseUrl, configData.supabaseKey);
+                                const { data: { session } } = await client.auth.getSession();
+                                if (session && session.user) {
+                                    const studentClean = (session.user.email || "estudiante").split('@')[0].replace(/[^a-z0-9_]/g, '');
+                                    const nombreReal = session.user.user_metadata?.full_name || session.user.user_metadata?.name || studentClean;
+                                    const primerNombre = nombreReal.trim().split(/\s+/)[0];
+                                    const firstNameClean = primerNombre.charAt(0).toUpperCase() + primerNombre.slice(1).toLowerCase();
+
+                                    const userObj = {
+                                        nombre: nombreReal,
+                                        email: session.user.email,
+                                        institution_id: "colegio_sandbox_default",
+                                        role: "estudiante",
+                                        estudiante: studentClean,
+                                        onboarding_completed: false,
+                                        plan: "EXPLORADOR"
+                                    };
+                                    localStorage.setItem("dante_student_name", nombreReal);
+                                    localStorage.setItem("dante_active_student", studentClean);
+                                    localStorage.setItem("dante_user", JSON.stringify(userObj));
+                                    localStorage.setItem("dante_token", session.access_token);
+                                    localStorage.setItem("dante_jwt", session.access_token);
+
+                                    if (typeof DanteStorage !== 'undefined') {
+                                        DanteStorage.setSession({ token: session.access_token, user: userObj, pacto_accepted: false });
+                                    }
+
+                                    if (window.history && window.history.replaceState) {
+                                        window.history.replaceState({ step: 1 }, document.title, window.location.pathname);
+                                    }
+                                    const lblGreeting = document.getElementById("lblStudentGreetingName");
+                                    if (lblGreeting) lblGreeting.innerText = firstNameClean;
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        console.warn("⚠️ Aviso al procesar tokens en onboarding:", e);
                     }
                 }
             }
-            return false;
-        }
 
-        // Canvas Fractal Background
-        const canvas = document.getElementById('dante-fractal-bg'); 
-        const ctx = canvas ? canvas.getContext('2d') : null;
-        let parts = [];
+            /**
+             * Inicialización y suscripción a eventos de historial móvil
+             */
+            static _adoptarSesionViva(copia) {
+                if (!copia || !copia.token || !copia.user || !(copia.user.email || copia.user.estudiante)) return false;
+                try {
+                    localStorage.setItem('dante_token', copia.token);
+                    localStorage.setItem('dante_jwt', copia.token);
+                    localStorage.setItem('dante_user', JSON.stringify(copia.user));
+                    localStorage.setItem('dante_session', JSON.stringify({
+                        token: copia.token,
+                        user: copia.user,
+                        pacto_accepted: Boolean(copia.pacto)
+                    }));
+                    localStorage.setItem('dante_onboarding_completed', copia.pacto ? 'true' : 'false');
+                    localStorage.setItem('dante_active_student', copia.user.estudiante || String(copia.user.email || '').split('@')[0] || 'estudiante');
+                    localStorage.setItem('dante_student_name', copia.user.nombre || copia.user.estudiante || 'Estudiante');
+                    sessionStorage.setItem('dante_sesion_viva', JSON.stringify(copia));
+                    window.__danteSesion = copia;
+                    return true;
+                } catch (e) {
+                    window.__danteSesion = copia;
+                    return true;
+                }
+            }
 
-        function initCanvas() {
-            if (!canvas || !ctx) return;
-            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-            for(let i=0; i<60; i++) {
-                parts.push({ 
-                    x: canvas.width/2, 
-                    y: canvas.height/2, 
-                    s: Math.random()*1.5, 
-                    v: Math.random()*0.35 + 0.1, 
-                    angle: i*137.5*(Math.PI/180), 
-                    dist: 0 
+            static _mostrarAvisoSesionPerdida() {
+                const aviso = document.getElementById('avisoSesionPerdida');
+                if (aviso) aviso.classList.remove('hidden');
+            }
+
+            static async init() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const forceMode = urlParams.get('force') === 'true';
+                const entradaFresh = urlParams.get('entrada') === '1';
+                const isAlreadyCompleted = localStorage.getItem('dante_onboarding_completed') === 'true';
+
+                let sessionUser = null;
+                let tieneSesion = false;
+                try {
+                    const s = localStorage.getItem('dante_session') || localStorage.getItem('dante_user');
+                    const token = localStorage.getItem('dante_token') || localStorage.getItem('dante_jwt');
+                    sessionUser = s ? JSON.parse(s) : null;
+                    if (sessionUser && sessionUser.user) sessionUser = sessionUser.user;
+                    tieneSesion = Boolean(token || (sessionUser && (sessionUser.email || sessionUser.estudiante)));
+                } catch(e) {}
+
+                if (!tieneSesion && window.__danteSesion && this._adoptarSesionViva(window.__danteSesion)) {
+                    sessionUser = window.__danteSesion.user;
+                    tieneSesion = true;
+                }
+
+                if (!tieneSesion) {
+                    try {
+                        const copia = JSON.parse(sessionStorage.getItem('dante_sesion_viva') || 'null');
+                        if (this._adoptarSesionViva(copia)) {
+                            sessionUser = copia.user;
+                            tieneSesion = true;
+                        }
+                    } catch (e) {}
+                }
+
+                // Una bandera vieja del examen no saca al estudiante de esta pantalla.
+                if (!isAlreadyCompleted) {
+                    sessionStorage.removeItem('dante_is_diagnostic');
+                    sessionStorage.removeItem('dante_exam_progress');
+                    localStorage.removeItem('dante_is_diagnostic');
+                }
+
+                if (!tieneSesion && !forceMode && typeof DanteStorage !== 'undefined' && DanteStorage.recuperarSesion) {
+                    const recuperada = await DanteStorage.recuperarSesion();
+                    if (recuperada && recuperada.user) {
+                        sessionUser = recuperada.user;
+                        tieneSesion = true;
+                        this._adoptarSesionViva({
+                            token: recuperada.token || localStorage.getItem('dante_token') || '',
+                            user: recuperada.user,
+                            pacto: Boolean(recuperada.pacto_accepted)
+                        });
+                    }
+                }
+
+                // Si la cookie llegó tarde o el reset viejo borró storage, reponemos desde la copia de la pestaña.
+                if (tieneSesion) {
+                    try {
+                        const viva = window.__danteSesion || JSON.parse(sessionStorage.getItem('dante_sesion_viva') || 'null');
+                        if (viva && viva.token) this._adoptarSesionViva(viva);
+                    } catch (e) {}
+                }
+
+                const onboardingYaHecho = isAlreadyCompleted || (sessionUser && sessionUser.onboarding_completed === true);
+                if (onboardingYaHecho && tieneSesion && !forceMode && !AjustarMeta) {
+                    window.location.replace("index.html");
+                    return;
+                }
+                // Solo avisar si realmente no hay sesión; con entrada=1 no se muestra el falso "se perdió".
+                if (!tieneSesion && !forceMode && !entradaFresh) {
+                    this._mostrarAvisoSesionPerdida();
+                }
+                if (entradaFresh && window.history && window.history.replaceState) {
+                    window.history.replaceState({}, document.title, 'onboarding.html');
+                }
+
+                // Restauración de Estado Intermedio (Draft / Auto-Resume)
+                let draftData = null;
+                try {
+                    const rawDraft = localStorage.getItem("dante_onboarding_draft") || sessionStorage.getItem("dante_onboarding_draft");
+                    if (rawDraft) draftData = JSON.parse(rawDraft);
+                } catch(e) {}
+
+                if (draftData && draftData.meta && draftData.track && (draftData.step === 2 || draftData.step === 3)) {
+                    SelectedMeta = draftData.meta;
+                    SelectedTrack = draftData.track;
+                    if (draftData.carrera) SelectedCarrera = draftData.carrera;
+                    CurrentStep = draftData.step === 3 && draftData.carrera ? 3 : 2;
+                    if (window.history && window.history.pushState) {
+                        window.history.pushState({ step: CurrentStep }, document.title, window.location.href);
+                    }
+                    console.info("⚡ [Dante Onboarding]: Borrador recuperado (paso " + CurrentStep + ").");
+                } else {
+                    // Configuración inicial de historial para control del botón atrás nativo
+                    if (window.history && window.history.replaceState) {
+                        window.history.replaceState({ step: 1 }, document.title, window.location.href);
+                    }
+                }
+
+                window.addEventListener('popstate', (event) => {
+                    if (CurrentStep === 2 || CurrentStep === 3) {
+                        OnboardingManager.pasoAnterior(false);
+                    } else if (window.history && window.history.pushState) {
+                        window.history.pushState({ step: 1 }, document.title, window.location.href);
+                    }
                 });
+
+                if (AjustarMeta) {
+                    const previa = localStorage.getItem('dante_pacto_meta');
+                    if (previa === '300_BASE' || previa === '380_ELITE') SelectedMeta = previa;
+                    SelectedCarrera = localStorage.getItem('dante_carrera_objetivo') || null;
+                    SelectedFecha = localStorage.getItem('dante_pacto_calendario') || null;
+                    FechaTexto = localStorage.getItem('dante_pacto_fecha_texto') || '';
+                    FechaCustom = localStorage.getItem('dante_pacto_fecha_custom') || '';
+                    const inp = document.getElementById('inputFechaExamenAjuste');
+                    if (inp && FechaCustom) inp.value = FechaCustom;
+                }
+
+                await this.capturarOAuthHash();
+                this.renderStep();
             }
-            animate();
+
+            /**
+             * Selección táctica del Paso 1 (Activa condicionalmente el botón Siguiente)
+             */
+            static selectMeta(val, el) {
+                SelectedMeta = (val === '300_BASE') ? '300_BASE' : '380_ELITE';
+                SelectedTrack = 'ICFES';
+                document.querySelectorAll("#stepContainer1 .step-option").forEach(opt => opt.classList.remove("selected"));
+                if (el) el.classList.add("selected");
+
+                // Habilitar condicionalmente botón Siguiente Paso
+                this.actualizarEstadoBotonNext(true);
+            }
+
+            /**
+             * Selección táctica del Paso 2 (Activa condicionalmente el botón Comenzar Diagnóstico)
+             */
+            static selectCarrera(val, el) {
+                SelectedCarrera = val;
+                document.querySelectorAll("#stepContainer2 .step-option").forEach(opt => {
+                    opt.classList.remove("selected", "border-cyan-400", "shadow-[0_0_15px_rgba(6,182,212,0.25)]", "bg-cyan-950/30");
+                });
+                if (el) {
+                    el.classList.add("selected", "border-cyan-400", "shadow-[0_0_15px_rgba(6,182,212,0.25)]", "bg-cyan-950/30");
+                }
+
+                // Habilitar condicionalmente botón Comenzar Diagnóstico
+                this.actualizarEstadoBotonNext(true);
+            }
+
+            /**
+             * Actualiza visual y funcionalmente el botón de avance según selección
+             */
+            static actualizarEstadoBotonNext(habilitado) {
+                const btnNext = document.getElementById("btnNextStep");
+                if (!btnNext) return;
+
+                if (habilitado) {
+                    btnNext.disabled = false;
+                    btnNext.classList.remove("opacity-40", "cursor-not-allowed", "pointer-events-none");
+                    btnNext.classList.add("cursor-pointer", "hover:scale-[1.01]", "active:scale-95");
+                } else {
+                    btnNext.disabled = true;
+                    btnNext.classList.add("opacity-40", "cursor-not-allowed", "pointer-events-none");
+                    btnNext.classList.remove("cursor-pointer", "hover:scale-[1.01]", "active:scale-95");
+                }
+            }
+
+            static pasoSiguiente() {
+                if (CurrentStep === 1) {
+                    if (!SelectedMeta) return;
+                    CurrentStep = 2;
+
+                    // Guardar borrador temporal para auto-recuperación si refresca la pantalla
+                    try {
+                        const draft = {
+                            step: 2,
+                            meta: SelectedMeta,
+                            track: SelectedTrack,
+                            timestamp: Date.now()
+                        };
+                        localStorage.setItem("dante_onboarding_draft", JSON.stringify(draft));
+                        sessionStorage.setItem("dante_onboarding_draft", JSON.stringify(draft));
+                    } catch(e) {}
+
+                    // Notificar estado al historial para interceptar botón Atrás nativo
+                    if (window.history && window.history.pushState) {
+                        window.history.pushState({ step: 2 }, document.title, window.location.href);
+                    }
+                    this.renderStep();
+                } else if (CurrentStep === 2) {
+                    if (!SelectedCarrera) return;
+                    CurrentStep = 3;
+                    try {
+                        const draft = {
+                            step: 3,
+                            meta: SelectedMeta,
+                            track: SelectedTrack,
+                            carrera: SelectedCarrera,
+                            timestamp: Date.now()
+                        };
+                        localStorage.setItem("dante_onboarding_draft", JSON.stringify(draft));
+                        sessionStorage.setItem("dante_onboarding_draft", JSON.stringify(draft));
+                    } catch (e) {}
+                    if (window.history && window.history.pushState) {
+                        window.history.pushState({ step: 3 }, document.title, window.location.href);
+                    }
+                    this.renderStep();
+                } else if (CurrentStep === 3) {
+                    if (!SelectedFecha) return;
+                    this.iniciarDiagnosticoDirecto();
+                }
+            }
+
+            static selectFecha(val, el) {
+                SelectedFecha = val === 'CAL_B' ? 'CAL_B' : (val === 'CUSTOM' ? 'CUSTOM' : 'CAL_A');
+                document.querySelectorAll('#stepContainer3 .step-option').forEach((opt) => {
+                    opt.classList.remove('selected', 'border-cyan-400');
+                });
+                if (el) el.classList.add('selected', 'border-cyan-400');
+                const ahora = new Date();
+                let examen = new Date('2027-08-15');
+                FechaTexto = 'Agosto 2027 (Calendario A)';
+                if (SelectedFecha === 'CAL_B') {
+                    examen = new Date('2027-03-21');
+                    FechaTexto = 'Marzo 2027 (Calendario B)';
+                } else if (SelectedFecha === 'CUSTOM') {
+                    const inp = document.getElementById('inputFechaExamenAjuste');
+                    if (!inp || !inp.value) {
+                        FechaTexto = '';
+                        this.actualizarEstadoBotonNext(false);
+                        return;
+                    }
+                    FechaCustom = inp.value;
+                    examen = new Date(inp.value);
+                    FechaTexto = inp.value;
+                }
+                const dias = Math.max(1, Math.ceil((examen - ahora) / 86400000));
+                const lbl = document.getElementById('lblDiasFechaAjuste');
+                if (lbl) lbl.textContent = dias + ' días hasta el examen.';
+                this.actualizarEstadoBotonNext(true);
+            }
+
+            static pasoAnterior(triggerHistory = true) {
+                if (CurrentStep === 3) {
+                    CurrentStep = 2;
+                    this.renderStep();
+                    return;
+                }
+                if (CurrentStep === 2) {
+                    CurrentStep = 1;
+                    this.renderStep();
+                    if (triggerHistory && window.history && window.history.state && window.history.state.step === 2) {
+                        window.history.back();
+                    }
+                }
+            }
+
+            static renderStep() {
+                const c1 = document.getElementById("stepContainer1");
+                const c2 = document.getElementById("stepContainer2");
+                const c3 = document.getElementById("stepContainer3");
+                const tracker = document.getElementById("lblStepTracker");
+                const btnPrev = document.getElementById("btnPrevStep");
+                const btnNextLabel = document.getElementById("lblNextBtn");
+                const btnNextIcon = document.getElementById("iconNextBtn");
+                const greetingContainer = document.getElementById("headerGreetingContainer");
+
+                const d1 = document.getElementById("dotStep1");
+                const d2 = document.getElementById("dotStep2");
+                const d3 = document.getElementById("dotStep3");
+
+                [c1, c2, c3].forEach(c => c?.classList.add("hidden"));
+                [d1, d2, d3].forEach(d => {
+                    if (d) d.className = "w-2.5 h-2.5 rounded-full bg-slate-800 transition-all";
+                });
+
+                if (btnPrev) btnPrev.disabled = (CurrentStep === 1);
+
+                const currentFirstName = this.getStudentFirstName();
+
+                if (CurrentStep === 1) {
+                    if (c1) c1.classList.remove("hidden");
+                    if (tracker) tracker.innerText = "Paso 1 de 3: Tu meta en Saber 11°";
+                    if (d1) d1.className = "w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.8)] transition-all";
+                    if (btnNextLabel) btnNextLabel.innerText = "Siguiente Paso";
+                    if (btnNextIcon) btnNextIcon.className = "fa-solid fa-arrow-right text-slate-950 text-xs";
+
+                    // Encabezado dinámico Paso 1: Saludo personalizado
+                    if (greetingContainer) {
+                        greetingContainer.innerHTML = `
+                            <h2 class="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2">
+                                <i class="fa-solid fa-user-astronaut text-cyan-400 text-lg"></i>
+                                <span>¡Hola, <span id="lblStudentGreetingName" class="text-cyan-400">${currentFirstName}</span>!</span>
+                            </h2>
+                            <p id="lblStepInstruction" class="text-xs text-slate-400 font-sans">
+                                Elige la meta de Saber 11°. Después van la carrera y la fecha del examen.
+                            </p>
+                        `;
+                    }
+
+                    // Retención de selección al volver atrás: mantener visualmente seleccionada la tarjeta
+                    if (SelectedMeta) {
+                        document.querySelectorAll("#stepContainer1 .step-option").forEach(opt => {
+                            if (opt.getAttribute("data-meta") === SelectedMeta) {
+                                opt.classList.add("selected");
+                            } else {
+                                opt.classList.remove("selected");
+                            }
+                        });
+                        this.actualizarEstadoBotonNext(true);
+                    } else {
+                        document.querySelectorAll("#stepContainer1 .step-option").forEach(opt => opt.classList.remove("selected"));
+                        this.actualizarEstadoBotonNext(false);
+                    }
+
+                } else if (CurrentStep === 2) {
+                    if (c2) c2.classList.remove("hidden");
+                    if (tracker) tracker.innerText = "Paso 2 de 3: Carrera / Enfoque";
+                    if (d2) d2.className = "w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.8)] transition-all";
+                    if (btnNextLabel) btnNextLabel.innerText = "Elegir la fecha";
+                    if (btnNextIcon) btnNextIcon.className = "fa-solid fa-arrow-right text-slate-950 text-xs";
+
+                    // Encabezado dinámico Paso 2: Sin saludos redundantes
+                    if (greetingContainer) {
+                        greetingContainer.innerHTML = `
+                            <h2 class="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center">
+                                <i class="fa-solid fa-compass text-cyan-400 text-lg mr-2"></i>
+                                <span>Área de Enfoque Vocacional</span>
+                            </h2>
+                            <p id="lblStepInstruction" class="text-xs text-slate-400 font-sans">
+                                Elige la carrera. Después fijamos la fecha del examen.
+                            </p>
+                        `;
+                    }
+
+                    // Retención de selección en Paso 2
+                    if (SelectedCarrera) {
+                        document.querySelectorAll("#stepContainer2 .step-option").forEach(opt => {
+                            if (opt.getAttribute("data-carrera") === SelectedCarrera) {
+                                opt.classList.add("selected", "border-cyan-400", "shadow-[0_0_15px_rgba(6,182,212,0.25)]", "bg-cyan-950/30");
+                            } else {
+                                opt.classList.remove("selected", "border-cyan-400", "shadow-[0_0_15px_rgba(6,182,212,0.25)]", "bg-cyan-950/30");
+                            }
+                        });
+                        this.actualizarEstadoBotonNext(true);
+                    } else {
+                        document.querySelectorAll("#stepContainer2 .step-option").forEach(opt => {
+                            opt.classList.remove("selected", "border-cyan-400", "shadow-[0_0_15px_rgba(6,182,212,0.25)]", "bg-cyan-950/30");
+                        });
+                        this.actualizarEstadoBotonNext(false);
+                    }
+                } else if (CurrentStep === 3) {
+                    if (c3) c3.classList.remove("hidden");
+                    if (tracker) tracker.innerText = "Paso 3 de 3: Fecha del examen";
+                    if (d3) d3.className = "w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.8)] transition-all";
+                    if (btnNextLabel) btnNextLabel.innerText = AjustarMeta ? "Guardar y volver al informe" : "Empezar el diagnóstico";
+                    if (btnNextIcon) btnNextIcon.className = AjustarMeta ? "fa-solid fa-check text-slate-950 text-xs" : "fa-solid fa-bolt text-slate-950 text-xs";
+                    if (greetingContainer) {
+                        greetingContainer.innerHTML = `
+                            <h2 class="text-xl sm:text-2xl font-black text-white tracking-tight">¿Cuándo presentas el examen?</h2>
+                            <p class="text-xs text-slate-400 font-sans">${AjustarMeta ? "Los días se cuentan desde esta fecha." : "Con esto armamos tu ruta. Luego ves cómo responder y entras al diagnóstico."}</p>
+                        `;
+                    }
+                    if (SelectedFecha) {
+                        document.querySelectorAll("#stepContainer3 .step-option").forEach((opt) => {
+                            opt.classList.toggle("selected", opt.getAttribute("data-fecha") === SelectedFecha);
+                            opt.classList.toggle("border-cyan-400", opt.getAttribute("data-fecha") === SelectedFecha);
+                        });
+                        this.actualizarEstadoBotonNext(SelectedFecha !== "CUSTOM" || Boolean(FechaCustom));
+                    } else {
+                        this.actualizarEstadoBotonNext(false);
+                    }
+                }
+            }
+
+            /* TRANSICIÓN INMERSIVA DE 1.5s, PREVENCIÓN DE DOBLE CLIC Y PERSISTENCIA ATÓMICA */
+            static async iniciarDiagnosticoDirecto() {
+                if (this.isLaunching) return;
+                if (!SelectedMeta || !SelectedCarrera || !SelectedFecha) return;
+
+                this.isLaunching = true;
+
+                const c1 = document.getElementById("stepContainer1");
+                const c2 = document.getElementById("stepContainer2");
+                const c3 = document.getElementById("stepContainer3");
+                const loadingContainer = document.getElementById("stepContainerLoading");
+                const navButtons = document.getElementById("navButtonsContainer");
+                const greetingHeader = document.getElementById("headerGreetingContainer");
+                const progressBar = document.getElementById("barLoadingProgress");
+                const txtLoadingTitle = document.getElementById("txtLoadingTitle");
+                const btnNext = document.getElementById("btnNextStep");
+                const btnPrev = document.getElementById("btnPrevStep");
+
+                // Inhabilitar inmediatamente para prevenir doble clic
+                if (btnNext) {
+                    btnNext.disabled = true;
+                    btnNext.style.pointerEvents = "none";
+                    btnNext.classList.add("opacity-50", "cursor-not-allowed");
+                }
+                if (btnPrev) {
+                    btnPrev.disabled = true;
+                    btnPrev.style.pointerEvents = "none";
+                }
+
+                // Ocultar selectores y mostrar vista de carga táctica
+                if (c1) c1.classList.add("hidden");
+                if (c2) c2.classList.add("hidden");
+                if (c3) c3.classList.add("hidden");
+                if (greetingHeader) greetingHeader.classList.add("hidden");
+                if (navButtons) navButtons.classList.add("hidden");
+                if (loadingContainer) loadingContainer.classList.remove("hidden");
+
+                // Actualizar estado del Tracker durante la carga táctica
+                const tracker = document.getElementById("lblStepTracker");
+                if (tracker) {
+                    tracker.innerText = AjustarMeta ? "Guardando tu meta" : "Armando tu ruta al diagnóstico";
+                }
+                const d1 = document.getElementById("dotStep1");
+                const d2 = document.getElementById("dotStep2");
+                const d3 = document.getElementById("dotStep3");
+                if (d1) d1.className = "w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.8)] transition-all animate-pulse";
+                if (d2) d2.className = "w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.8)] transition-all animate-pulse";
+                if (d3) d3.className = "w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.8)] transition-all animate-pulse";
+
+                if (txtLoadingTitle) {
+                    txtLoadingTitle.innerText = AjustarMeta
+                        ? "Guardando tu meta, la carrera y la fecha."
+                        : `Guardando tu meta para ${SelectedCarrera.split('/')[0].trim()}. Luego te muestro cómo responder.`;
+                }
+
+                // Animación fluida de barra de progreso táctica (1.5 segundos)
+                if (progressBar) {
+                    setTimeout(() => { progressBar.style.width = "75%"; }, 350);
+                    setTimeout(() => { progressBar.style.width = "100%"; }, 1100);
+                }
+
+                // Determinar arquetipo inicial según la carrera elegida
+                let arquetipo = "analitico";
+                if (SelectedCarrera.includes("Medicina")) arquetipo = "sistematico";
+                else if (SelectedCarrera.includes("Ingeniería")) arquetipo = "analitico";
+                else if (SelectedCarrera.includes("Derecho")) arquetipo = "estratega";
+                else if (SelectedCarrera.includes("Arquitectura")) arquetipo = "intuitivo";
+
+                // PERSISTENCIA ATÓMICA FINAL: un solo camino de meta (onboarding); el pacto no vuelve a pedirla.
+                SelectedTrack = 'ICFES';
+                if (SelectedMeta !== '300_BASE' && SelectedMeta !== '380_ELITE') SelectedMeta = '380_ELITE';
+                localStorage.setItem("dante_target_track", "ICFES");
+                localStorage.setItem("dante_pacto_meta", SelectedMeta);
+                localStorage.setItem("dante_carrera_objetivo", SelectedCarrera);
+                localStorage.setItem("dante_pacto_calendario", SelectedFecha);
+                localStorage.setItem("dante_pacto_fecha_texto", FechaTexto || "");
+                localStorage.setItem("dante_pacto_accepted", "true");
+                localStorage.setItem("dante_pacto_socratico", "true");
+                if (FechaCustom) localStorage.setItem("dante_pacto_fecha_custom", FechaCustom);
+                try {
+                    const ahora = new Date();
+                    let examen = new Date('2027-08-15');
+                    if (SelectedFecha === 'CAL_B') examen = new Date('2027-03-21');
+                    else if (SelectedFecha === 'CUSTOM' && FechaCustom) examen = new Date(FechaCustom);
+                    const dias = Math.max(1, Math.ceil((examen - ahora) / 86400000));
+                    localStorage.setItem("dante_pacto_dias_restantes", String(dias));
+                } catch (e) {}
+                localStorage.setItem("dante_onboarding_completed", "true");
+                localStorage.setItem("dante_user_arquetipo", arquetipo);
+                localStorage.setItem("dante_pacto_tiempo", "BASE_FREE");
+                localStorage.setItem("dante_plan", "EXPLORADOR");
+                localStorage.setItem("dante_user_plan", "EXPLORADOR");
+
+                // Eliminar borrador temporal al culminar exitosamente el Paso 2
+                localStorage.removeItem("dante_onboarding_draft");
+                sessionStorage.removeItem("dante_onboarding_draft");
+
+                // Bandera para lanzamiento limpio de diagnóstico
+                if (!AjustarMeta) {
+                    sessionStorage.setItem("dante_is_diagnostic", "true");
+                    localStorage.setItem("dante_is_diagnostic", "true");
+                }
+
+                // Actualizar objeto central dante_session
+                let activeToken = localStorage.getItem("dante_token") || localStorage.getItem("dante_jwt") || `dante_token_${Date.now()}`;
+                let activeEmail = null;
+                let activeStudent = localStorage.getItem("dante_active_student") || localStorage.getItem("dante_student_name") || "estudiante";
+
+                try {
+                    const sessionRaw = localStorage.getItem("dante_session");
+                    let sessionObj = sessionRaw ? JSON.parse(sessionRaw) : {};
+                    sessionObj.pacto_accepted = true;
+                    if (sessionObj.user) {
+                        sessionObj.user.onboarding_completed = true;
+                        sessionObj.user.arquetipo = arquetipo;
+                        sessionObj.user.plan = "EXPLORADOR";
+                        activeEmail = sessionObj.user.email;
+                        if (sessionObj.user.estudiante) activeStudent = sessionObj.user.estudiante;
+                    }
+                    sessionObj.token = sessionObj.token || activeToken;
+                    activeToken = sessionObj.token;
+
+                    if (typeof DanteStorage !== 'undefined') {
+                        DanteStorage.setSession(sessionObj);
+                    } else {
+                        localStorage.setItem("dante_session", JSON.stringify(sessionObj));
+                        localStorage.setItem("dante_token", activeToken);
+                        localStorage.setItem("dante_jwt", activeToken);
+                    }
+                } catch (e) {
+                    console.warn("⚠️ No se pudo actualizar dante_session:", e);
+                }
+
+                // PERSISTENCIA ATÓMICA EN BASE DE DATOS (Backend Gateway)
+                try {
+                    const respOnb = await fetch('/api/v1/auth/onboarding/complete', {
+                        method: 'POST',
+                        credentials: 'include',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${activeToken}`
+                        },
+                        body: JSON.stringify({
+                            studentId: activeStudent,
+                            email: activeEmail,
+                            meta: SelectedMeta,
+                            track: SelectedTrack,
+                            carrera: SelectedCarrera,
+                            tiempo: "BASE_FREE",
+                            arquetipo: arquetipo,
+                            fecha: FechaTexto || null,
+                            calendario: SelectedFecha || null
+                        })
+                    });
+                    if (!respOnb.ok) {
+                        console.warn("ℹ️ [DB Sync Aviso]: el onboarding no quedó guardado.");
+                    }
+                } catch (dbErr) {
+                    console.warn("⚠️ Aviso al sincronizar onboarding con base de datos:", dbErr);
+                }
+
+                // Disparo de navegación directo al Diagnóstico tras cumplir la animación de 1.5s
+                setTimeout(() => {
+                    window.location.replace(AjustarMeta ? "perfil.html" : "index.html?launch=diagnostic");
+                }, 1500);
+            }
         }
 
-        function animate() {
-            if (!ctx) return;
-            ctx.clearRect(0,0,canvas.width,canvas.height);
-            parts.forEach(p => {
-                p.dist += p.v; 
-                let x = canvas.width/2 + Math.cos(p.angle)*p.dist; 
-                let y = canvas.height/2 + Math.sin(p.angle)*p.dist;
-                if(x < 0 || x > canvas.width || y < 0 || y > canvas.height) p.dist = 0;
-                ctx.beginPath(); ctx.arc(x,y,p.s,0,Math.PI*2); ctx.fillStyle='#51e2f5'; ctx.globalAlpha=0.22; ctx.fill();
-            });
-            requestAnimationFrame(animate);
-        }
-
-        window.addEventListener('DOMContentLoaded', async () => {
-            initCanvas();
-            const redirigido = await verificarEstadoOnboardingPrevio();
-            if (!redirigido) {
-                loadStep();
-            }
+        document.addEventListener("DOMContentLoaded", () => {
+            OnboardingManager.init();
         });
     </script>
 </body>

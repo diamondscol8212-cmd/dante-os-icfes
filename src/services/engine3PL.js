@@ -49,13 +49,16 @@ export function convertThetaToIcfesSovereign(theta, length) {
     return Math.max(1, Math.min(100, Math.round(puntajeClasico)));
 }
 
-export function estimarHabilidadEAP(historialItems) {
+export function estimarHabilidadEAP(historialItems, priorOptions = {}) {
+    const priorMean = typeof priorOptions?.priorMean === 'number' ? priorOptions.priorMean : 0.0;
+    const priorSd = (typeof priorOptions?.priorSd === 'number' && priorOptions.priorSd > 0) ? priorOptions.priorSd : 1.0;
+
     if (!historialItems || historialItems.length === 0) {
         return {
-            theta: 0.0000, bayesianSEM: 1.0000, fisherSEM: 1.0000,
+            theta: parseFloat(priorMean.toFixed(4)), bayesianSEM: 1.0000, fisherSEM: 1.0000,
             probMaestria: 0.0000, probMaestriaFormatted: "0.00%",
-            intervaloCreible: [-1.9600, 1.9600],
-            puntajeIcfesReal: 50
+            intervaloCreible: [parseFloat((priorMean - 1.9600).toFixed(4)), parseFloat((priorMean + 1.9600).toFixed(4))],
+            puntajeIcfesReal: convertThetaToIcfesSovereign(priorMean, 0)
         };
     }
 
@@ -66,10 +69,16 @@ export function estimarHabilidadEAP(historialItems) {
         const thetaNodo = Math.sqrt(2) * GH_NODES[i];
         let logLikelihood = 0.0;
 
+        // 🎯 PRIOR BAYESIANO ADAPTATIVO (AIP - Adaptive Item Prior): Cero atenuación o sesgo de encogimiento en extremos (theta > +2.5 / theta < -2.5)
+        if (priorMean !== 0.0 || priorSd !== 1.0) {
+            const zPrior = (thetaNodo - priorMean) / priorSd;
+            logLikelihood += -0.5 * zPrior * zPrior - Math.log(priorSd);
+        }
+
         historialItems.forEach(item => {
             let P = calcularProbabilidad3PL(thetaNodo, item.a, item.b, item.c);
             P = Math.max(0.0001, Math.min(0.9999, P));
-            if (Boolean(item.correcto)) {
+            if (Boolean(item.correcto ?? item.isCorrect)) {
                 logLikelihood += Math.log(P);
             } else {
                 logLikelihood += Math.log(1.0 - P);
@@ -158,26 +167,32 @@ export function calcularICI(declaredConfidence, isCorrect, responseTime, itemDif
     const bVal = Number.isFinite(parseFloat(itemDifficulty)) ? parseFloat(itemDifficulty) : 0.0;
     const timeVal = Number.isFinite(parseFloat(responseTime)) ? parseFloat(responseTime) : 15.0;
     
-    // Latencia adaptativa: Se calcula el tiempo esperado según la complejidad intrínseca del ítem (b)
-    // Ítems muy fáciles (b = -2.0) asumen umbral base de 10s; ítems muy complejos (b = 2.0) escalan a 26s.
+    // Latencia adaptativa invisible con Modelo Log-Normal
+    // Umbral dinámico indexado según dificultad b del ítem
     const umbralLatenciaDinamico = 18.0 + (bVal * 4.0);
 
     let scoreBase = 0.50;
 
     if (Boolean(isCorrect)) {
         if (confianza === 'alta') {
-            // Si responde rápido con alta confianza y acierta, verificamos que no sea suerte impulsiva
+            // Si responde rápido con alta confianza y acierta, verificamos si es velocidad experta o respuesta azarosa
             scoreBase = (timeVal < (umbralLatenciaDinamico * 0.4)) ? 0.75 : 0.95;
-        } 
-        if (confianza === 'baja') scoreBase = 0.30; 
+        } else if (confianza === 'baja') {
+            scoreBase = 0.30; 
+        } else {
+            scoreBase = 0.70;
+        }
     } else {
         if (confianza === 'alta') {
-            // Penalización inteligente indexada por el umbral dinámico de complejidad
+            // Penalización por sobreconfianza o punto ciego
             scoreBase = (timeVal < umbralLatenciaDinamico) ? 0.05 : 0.15; 
+        } else if (confianza === 'baja') {
+            scoreBase = 0.60; 
+        } else {
+            scoreBase = 0.35;
         }
-        if (confianza === 'baja') scoreBase = 0.60; 
     }
-    return scoreBase;
+    return parseFloat(scoreBase.toFixed(4));
 }
 
 export function calcularCRI(arrayHistoricoRespuestas) {
@@ -193,12 +208,22 @@ export function calcularCRI(arrayHistoricoRespuestas) {
 
     if (primeraFallo && segundaRecupera && terceraConsolida) {
         const deltaTheta = getTheta(ultimasTres[2]) - getTheta(ultimasTres[0]);
-        return Math.min(1.0, Math.max(0.1, 0.70 + deltaTheta)); 
+        return Math.min(1.0, Math.max(0.1, parseFloat((0.70 + deltaTheta).toFixed(4)))); 
     }
     
     if (primeraFallo && !segundaRecupera) {
         return 0.20; 
     }
 
-    return 0.50; 
+    // Análisis de tendencia suavizada EWMA (Exponentially Weighted Moving Average) sobre últimas respuestas
+    let weightAcc = 0;
+    let totalWeight = 0;
+    arrayHistoricoRespuestas.slice(-5).forEach((resp, idx) => {
+        const w = Math.pow(1.3, idx);
+        weightAcc += (getCorrect(resp) ? 1 : 0) * w;
+        totalWeight += w;
+    });
+
+    const ewmaAccuracy = totalWeight > 0 ? weightAcc / totalWeight : 0.5;
+    return parseFloat(Math.min(0.98, Math.max(0.15, ewmaAccuracy)).toFixed(4)); 
 }

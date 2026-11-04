@@ -39,7 +39,7 @@ const ARQUETIPOS = {
 
 async function ejecutarFlujoExamen(arquetipo) {
     console.log(`\n🎬 [COGNITIVE LIVE INITIALIZING]: Desplegando canal concurrente para ${arquetipo.name}...`);
-    let sessionId = `session_sim_${arquetipo.id}_${Date.now()}`;
+    const sessionId = `session_sim_${arquetipo.id}_${Date.now()}`;
     let detenerExamen = false;
     let iteracion = 1;
 

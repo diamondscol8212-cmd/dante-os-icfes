@@ -4,7 +4,7 @@ import crypto from 'crypto';
 import { supabase } from '../../supabaseClient.js';
 import { BANCO_COMPLETO } from './bank/index.js';
 
-const INSTITUTION_ID = 'colegio_sandbox_default';
+export const INSTITUTION_ID = 'colegio_sandbox_default';
 const REACTIVOS_REALES = BANCO_COMPLETO;
 
 async function sembrarBancoSoberano() {
@@ -18,7 +18,7 @@ async function sembrarBancoSoberano() {
         console.log("🧹 Tablas purgadas con éxito.");
 
         for (const item of REACTIVOS_REALES) {
-            const itemId = crypto.randomUUID();
+            const itemId = item.id || crypto.randomUUID();
             const areaNormalized = String(item.area).toLowerCase().trim();
             const arregloOpcionesValido = Array.isArray(item.opciones) ? item.opciones : [item.opciones];
 
@@ -40,25 +40,29 @@ async function sembrarBancoSoberano() {
             if (errBase) throw new Error(`Error en banco_items_irt: ${errBase.message}`);
 
             if (item.q) {
-                await supabase.from('matriz_q_items').insert([{
-                    item_id: itemId,
-                    attr_heuristica_lineal: item.q.attr_heuristica_lineal || 0,
-                    attr_inversion_operacional: item.q.attr_inversion_operacional || 0,
-                    attr_omision_conversion: item.q.attr_omision_conversion || 0,
-                    attr_error_geometrico: item.q.attr_error_geometrico || 0
-                }]).catch(() => {});
+                try {
+                    await supabase.from('matriz_q_items').insert([{
+                        item_id: itemId,
+                        attr_heuristica_lineal: item.q.attr_heuristica_lineal || 0,
+                        attr_inversion_operacional: item.q.attr_inversion_operacional || 0,
+                        attr_omision_conversion: item.q.attr_omision_conversion || 0,
+                        attr_error_geometrico: item.q.attr_error_geometrico || 0
+                    }]);
+                } catch {}
             }
 
             if (Array.isArray(item.trampas)) {
                 for (const trampa of item.trampas) {
-                    await supabase.from('mapa_trampas_distractores').insert([{
-                        item_id: itemId,
-                        opcion_marcada: trampa.opcion,
-                        vulnera_heuristica_lineal: trampa.vulnera_heuristica_lineal || 0,
-                        vulnera_inversion_operacional: trampa.vulnera_inversion_operacional || 0,
-                        vulnera_omision_conversion: trampa.vulnera_omision_conversion || 0,
-                        vulnera_error_geometrico: trampa.vulnera_error_geometrico || 0
-                    }]).catch(() => {});
+                    try {
+                        await supabase.from('mapa_trampas_distractores').insert([{
+                            item_id: itemId,
+                            opcion_marcada: trampa.opcion,
+                            vulnera_heuristica_lineal: trampa.vulnera_heuristica_lineal || 0,
+                            vulnera_inversion_operacional: trampa.vulnera_inversion_operacional || 0,
+                            vulnera_omision_conversion: trampa.vulnera_omision_conversion || 0,
+                            vulnera_error_geometrico: trampa.vulnera_error_geometrico || 0
+                        }]);
+                    } catch {}
                 }
             }
 

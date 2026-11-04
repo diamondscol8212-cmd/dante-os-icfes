@@ -2,17 +2,48 @@ import { Router } from 'express';
 import crypto from 'crypto';
 import { supabase } from '../../supabaseClient.js';
 import { redis } from '../../redisClient.js';
-import { generarTokenJWT, setHttpOnlyCookie, verifyToken, optionalToken } from '../middleware.js';
+import { generarTokenJWT, setHttpOnlyCookie, verifyToken } from '../middleware.js';
 import { cifrarDatosSensibles, descifrarDatosSensibles } from '../services/encryptionService.js';
+import { aPuntosSaber } from '../services/cat/estimarEap.js';
 
 export { cifrarDatosSensibles, descifrarDatosSensibles };
 
 const router = Router();
-const SERVER_VERSION = "v21.2.2-ENTERPRISE_GOLD";
+const SERVER_VERSION = "v22.0.0-ENTERPRISE";
 
 // ====================================================================
 // 🧠 MOTOR DE FUNCIONES CRIPTOGRÁFICAS DE ALTA SEGURIDAD DE DANTE OS (PBKDF2-SHA512 / 210K ITERACIONES OWASP)
 // ====================================================================
+const loginAttemptsTracker = new Map(); // key: `${tenantClean}_${identifierClean}` -> { count: number, lockUntil: number }
+
+function checkLoginLock(key) {
+    const record = loginAttemptsTracker.get(key);
+    if (!record) return false;
+    if (record.lockUntil && Date.now() < record.lockUntil) {
+        return true;
+    }
+    if (record.lockUntil && Date.now() >= record.lockUntil) {
+        loginAttemptsTracker.delete(key);
+        return false;
+    }
+    return false;
+}
+
+function registerFailedLogin(key) {
+    const record = loginAttemptsTracker.get(key) || { count: 0, lockUntil: 0 };
+    record.count += 1;
+    if (record.count >= 5) {
+        record.lockUntil = Date.now() + 15 * 60 * 1000; // 15 minutos de bloqueo por fuerza bruta
+        console.warn(`🚨 [DANTE SECURITY]: Identidad/IP [${key}] bloqueada por 15 minutos tras ${record.count} intentos fallidos.`);
+    }
+    loginAttemptsTracker.set(key, record);
+    return record;
+}
+
+function clearLoginLock(key) {
+    loginAttemptsTracker.delete(key);
+}
+
 function generarHashPassword(password, saltExistente = null, iterations = 210000) {
     const salt = saltExistente ? saltExistente.trim() : crypto.randomBytes(16).toString('hex');
     const hash = crypto.pbkdf2Sync(password, salt, iterations, 64, 'sha512').toString('hex');
@@ -46,11 +77,31 @@ function verificarHashPassword(password, salt, hashAlmacenado) {
 }
 
 // ====================================================================
+// 🪐 ENDPOINT 0: CONFIGURACIÓN PÚBLICA DE AUTENTICACIÓN
+// ====================================================================
+router.get('/config', (req, res) => {
+    // No exponer anon key al navegador. Persistencia de progreso va por API server-side.
+    const supabaseUrl = process.env.SUPABASE_URL || '';
+    const hasServerSupabase = Boolean(
+      supabaseUrl &&
+      (process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_KEY)
+    );
+    return res.status(200).json({
+        success: true,
+        supabaseUrl: '',
+        supabaseKey: '',
+        hasSupabase: hasServerSupabase,
+        persistenciaViaApi: true
+    });
+});
+
+// ====================================================================
 // 🪐 ENDPOINT 1: REGISTRO DE USUARIOS CORPORATIVOS (SEED SEGURO)
 // ====================================================================
 router.post('/register-secure-user', async (req, res) => {
     try {
-        const { email, password, rol, institution_id, document_id, dob, parent_email } = req.body;
+        const { email, password, rol, institution_id, document_id, dob: _dob, parent_email } = req.body;
+        const rawNombre = req.body.nombre || req.body.full_name || '';
         const tenantClean = String(institution_id || "colegio_sandbox_default").toLowerCase().trim();
         const emailClean = String(email).toLowerCase().trim();
 
@@ -58,36 +109,158 @@ router.post('/register-secure-user', async (req, res) => {
             return res.status(400).json({ success: false, error: "Campos mandatorios ausentes." });
         }
 
+        // 🛡️ SANITIZACIÓN Y VALIDACIÓN ESTRICTA DE NOMBRE EN BACKEND (FASE 3)
+        const nombreClean = String(rawNombre).replace(/\s+/g, ' ').trim();
+        if (nombreClean) {
+            if (nombreClean.length < 3 || nombreClean.length > 50) {
+                return res.status(400).json({ success: false, error: "Ingresa un nombre real y válido" });
+            }
+            if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/.test(nombreClean)) {
+                return res.status(400).json({ success: false, error: "Ingresa un nombre válido (solo letras)" });
+            }
+            if (/(.)\1{2,}/i.test(nombreClean) || /[bcdfghjklmnñpqrstvwxyzBCDFGHJKLMNÑPQRSTVWXYZ]{4,}/.test(nombreClean)) {
+                return res.status(400).json({ success: false, error: "Ingresa un nombre real y válido" });
+            }
+            const tokens = nombreClean.split(' ');
+            for (const t of tokens) {
+                // Rechazar letras sueltas/aisladas excepto 'y' o 'e'
+                if (t.length === 1 && !/^[yeYE]$/.test(t)) {
+                    return res.status(400).json({ success: false, error: "Ingresa un nombre real y válido" });
+                }
+                if (t.length > 20 || (t.length >= 2 && !/[aeiouáéíóúüAEIOUÁÉÍÓÚÜ]/i.test(t))) {
+                    return res.status(400).json({ success: false, error: "Ingresa un nombre real y válido" });
+                }
+                if (/[bcdfghjklmnñpqrstvwxyzBCDFGHJKLMNÑPQRSTVWXYZ]{3,}$/.test(t)) {
+                    return res.status(400).json({ success: false, error: "Ingresa un nombre real y válido" });
+                }
+            }
+        }
+
         const { hash, salt } = generarHashPassword(password);
 
         // Desactivación temporal del bloqueo por fecha de nacimiento/menor de edad para acceso rápido
-        let isMinor = false;
+        const isMinor = false;
         const accountStatus = 'active_approved';
+        const studentIdClean = emailClean.split('@')[0].replace(/[^a-z0-9_]/g, '');
+        const finalNombre = nombreClean || studentIdClean;
 
-        const { data, error } = await supabase
+        // 1. Inserción con blindaje defensivo si faltan columnas extendidas en la tabla 'usuarios'
+        const payloadCompleto = {
+            email: emailClean, 
+            nombre: finalNombre,
+            document_id: document_id || null,
+            password_hash: hash, 
+            salt: salt,
+            rol: rol.toLowerCase().trim(), 
+            institution_id: tenantClean,
+            account_status: accountStatus,
+            is_minor: isMinor,
+            parent_email: parent_email || null,
+            created_at: new Date().toISOString()
+        };
+
+        let { error: errorUsuario } = await supabase
             .from('usuarios')
-            .insert([{
-                email: emailClean, 
-                document_id: document_id || null,
-                password_hash: hash, 
-                salt: salt,
-                rol: rol.toLowerCase().trim(), 
-                institution_id: tenantClean,
-                account_status: accountStatus,
-                is_minor: isMinor,
-                parent_email: parent_email || null,
-                created_at: new Date().toISOString()
-            }]);
+            .insert([payloadCompleto]);
 
-        if (error) throw error;
+        // Fallback defensivo: si Supabase rechaza columnas no creadas aún (ej. account_status, is_minor, parent_email)
+        if (errorUsuario && errorUsuario.message && (errorUsuario.message.includes("column") || errorUsuario.code === "PGRST204")) {
+            console.warn("⚠️ Columnas extendidas no encontradas en 'usuarios' de Supabase. Reintentando con esquema base...", errorUsuario.message);
+            const payloadBase = {
+                email: emailClean,
+                nombre: finalNombre,
+                document_id: document_id || null,
+                password_hash: hash,
+                salt: salt,
+                rol: rol.toLowerCase().trim(),
+                institution_id: tenantClean,
+                created_at: new Date().toISOString()
+            };
+            const retryRes = await supabase.from('usuarios').insert([payloadBase]);
+            errorUsuario = retryRes.error;
+        }
+
+        if (errorUsuario) {
+            console.error("🚨 Error definitivo de inserción en tabla usuarios:", errorUsuario);
+            throw errorUsuario;
+        }
+
+        const { data: expedientePrevio } = await supabase
+            .from('progreso_estudiantes')
+            .select('email')
+            .eq('estudiante', studentIdClean)
+            .eq('materia', 'saber_11')
+            .eq('institution_id', tenantClean)
+            .maybeSingle();
+
+        if (expedientePrevio && expedientePrevio.email && expedientePrevio.email !== emailClean) {
+            await supabase.from('usuarios').delete().eq('email', emailClean);
+            return res.status(409).json({
+                success: false,
+                error: "Este correo ya tiene una cuenta. Entra con tu contraseña."
+            });
+        }
+
+        const { error: errorProgreso } = await supabase
+            .from('progreso_estudiantes')
+            .upsert([{
+                estudiante: studentIdClean,
+                estudiante_id: studentIdClean,
+                email: emailClean,
+                nombre: finalNombre,
+                institution_id: tenantClean,
+                materia: 'saber_11',
+                theta_global: null,
+                sem_global: null,
+                baseline_proyeccion: null,
+                preguntas_respondidas: 0,
+                racha_dias: 0,
+                plan: 'EXPLORADOR',
+                onboarding_completed: false,
+                items_respondidos: [],
+                updated_at: new Date().toISOString(),
+                ultima_actualizacion: new Date().toISOString()
+            }], { onConflict: 'estudiante,materia,institution_id' });
+
+        if (errorProgreso) {
+            await supabase.from('usuarios').delete().eq('email', emailClean);
+            console.error("🚨 [DB] No se abrió el expediente:", errorProgreso.message);
+            return res.status(500).json({
+                success: false,
+                error: "La cuenta no pudo abrir su expediente. Intenta el registro otra vez."
+            });
+        }
+
+        console.info(`✅ [TRANSACTION CONFIRMED] Usuario ${emailClean} (${finalNombre}) persistido exitosamente en base de datos.`);
+
+        const jwtToken = generarTokenJWT({
+            user_id: emailClean,
+            email: emailClean,
+            role: rol.toLowerCase().trim(),
+            institution_id: tenantClean,
+            estudiante: studentIdClean
+        });
+        setHttpOnlyCookie(res, jwtToken);
 
         return res.status(201).json({ 
             success: true, 
-            message: `Usuario ${emailClean} registrado en T-${tenantClean} con éxito.`,
+            confirmed_db: true,
+            token: jwtToken,
+            message: `Usuario ${finalNombre} registrado en T-${tenantClean} con éxito.`,
+            user: {
+                nombre: finalNombre,
+                email: emailClean,
+                rol: rol.toLowerCase().trim(),
+                institution_id: tenantClean,
+                estudiante: studentIdClean,
+                plan: "EXPLORADOR",
+                onboarding_completed: false
+            },
             account_status: accountStatus,
             requires_parental_consent: isMinor
         });
     } catch (err) {
+        console.error("🚨 Error en /register-secure-user:", err);
         return res.status(500).json({ success: false, error: err.message });
     }
 });
@@ -97,7 +270,7 @@ router.post('/register-secure-user', async (req, res) => {
  * ⚖️ JUSTIFICACIÓN LEGAL DE DEFENSA: MIGRACIÓN A COOKIES HTTPONLY (GDPR ART. 32 / LEY 1581)
  * =========================================================================================
  * En el backend de autenticación `/login-perimetral`, se inyecta la credencial de sesión en una
- * Cookie con atributos `HttpOnly`, `Secure` y `SameSite=Strict` mediante `setHttpOnlyCookie(res, token)`.
+ * Cookie con atributos `HttpOnly`, `Secure` y `SameSite=Lax` mediante `setHttpOnlyCookie(res, token)`.
  * Esta arquitectura elimina de raíz la vulnerabilidad de exfiltración de tokens desde `localStorage`
  * a través de inyecciones Cross-Site Scripting (XSS), cumpliendo los estándares de seguridad de la
  * Superintendencia de Industria y Comercio (SIC) y la directiva europea GDPR Art. 32.
@@ -108,13 +281,23 @@ router.post('/register-secure-user', async (req, res) => {
 // ====================================================================
 router.post('/login-perimetral', async (req, res) => {
     try {
-        const { email, identity, password, institution_id, role_target, sandbox_mode } = req.body;
+        const { email, identity, identifier, password, institution_id, role_target, sandbox_mode: _sandbox_mode } = req.body;
         const tenantClean = String(institution_id || "colegio_sandbox_default").toLowerCase().trim();
-        const rawIdentifier = String(identity || email || "").trim();
+        const rawIdentifier = String(identity || identifier || email || "").trim();
         const identifierClean = rawIdentifier.toLowerCase().replace(/[^a-z0-9@._-]/gi, '');
 
         if (!identifierClean || !password) {
             return res.status(400).json({ success: false, error: "Credenciales de acceso incompletas." });
+        }
+
+        const lockKey = `${tenantClean}_${identifierClean}`;
+        if (checkLoginLock(lockKey)) {
+            const record = loginAttemptsTracker.get(lockKey);
+            const minutesLeft = Math.ceil((record.lockUntil - Date.now()) / 60000);
+            return res.status(429).json({
+                success: false,
+                error: `Cuenta temporalmente bloqueada por múltiples intentos fallidos. Intente de nuevo en ${minutesLeft} minutos.`
+            });
         }
 
         let usuario = null;
@@ -130,7 +313,7 @@ router.post('/login-perimetral', async (req, res) => {
             usuario = data;
             queryError = error;
         } else {
-            const safeDoc = identifierClean.replace(/,/g, '');
+            const safeDoc = identifierClean.replace(/[^a-zA-Z0-9@._-]/g, '');
             const { data, error } = await supabase
                 .from('usuarios')
                 .select('*')
@@ -141,9 +324,25 @@ router.post('/login-perimetral', async (req, res) => {
             queryError = error;
         }
 
-        // Manejo de usuario no encontrado -> Auto-registro dinámico para permitir acceso con cualquier credencial
+        const isDevOrSandbox = Boolean(
+            _sandbox_mode || 
+            req.body.sandbox_mode === true || 
+            process.env.NODE_ENV === 'development' || 
+            process.env.ALLOW_SANDBOX_AUTOREGISTER === 'true'
+        );
+
+        // Manejo de usuario no encontrado -> Auto-registro solo en entorno Sandbox/Desarrollo
         if (queryError || !usuario) {
-            console.log(`💡 [DANTE AUTH]: Registrando automáticamente nuevo usuario [${identifierClean}] con rol [${role_target || 'estudiante'}]...`);
+            if (!isDevOrSandbox) {
+                const record = registerFailedLogin(lockKey);
+                return res.status(401).json({
+                    success: false,
+                    error: "Usuario no registrado. Verifique sus credenciales o solicite acceso institucional.",
+                    intentos_restantes: Math.max(0, 5 - record.count)
+                });
+            }
+
+            console.log(`💡 [DANTE AUTH - SANDBOX]: Registrando automáticamente nuevo usuario sandbox [${identifierClean}] con rol [${role_target || 'estudiante'}]...`);
             const { hash: newHash, salt: newSalt } = generarHashPassword(password, null, 210000);
             const userRole = (role_target || 'estudiante').toLowerCase().trim();
             const dbRole = (userRole === 'profesor' || userRole === 'docente') ? 'rector' : userRole;
@@ -188,19 +387,17 @@ router.post('/login-perimetral', async (req, res) => {
             const { isMatch, isLegacy } = verificarHashPassword(password, usuario.salt, usuario.password_hash);
 
             if (!isMatch) {
-                console.log(`🔄 [DANTE SECURITY]: Sincronizando contraseña actualizada para [${usuario.email || identifierClean}]...`);
-                const { hash: upgradedHash, salt: upgradedSalt } = generarHashPassword(password, null, 210000);
-                try {
-                    await supabase
-                        .from('usuarios')
-                        .update({ password_hash: upgradedHash, salt: upgradedSalt })
-                        .eq('email', usuario.email);
-                    usuario.password_hash = upgradedHash;
-                    usuario.salt = upgradedSalt;
-                } catch (e) {
-                    console.warn("⚠️ [DANTE SECURITY]: No se pudo actualizar contraseña en DB:", e.message);
-                }
-            } else if (isLegacy) {
+                console.warn(`🚨 [DANTE SECURITY]: Contraseña incorrecta para [${usuario.email || identifierClean}]. Acceso denegado.`);
+                const record = registerFailedLogin(lockKey);
+                return res.status(401).json({
+                    success: false,
+                    error: "Credenciales de acceso inválidas.",
+                    intentos_restantes: Math.max(0, 5 - record.count)
+                });
+            }
+
+            // Si la contraseña coincide y es un hash legacy, migrar a 210,000 iteraciones OWASP PBKDF2-SHA512
+            if (isLegacy) {
                 console.log(`🔄 [DANTE SECURITY]: Migrando hash de contraseña de [${usuario.email}] a 210,000 iteraciones OWASP PBKDF2-SHA512...`);
                 const { hash: upgradedHash, salt: upgradedSalt } = generarHashPassword(password, null, 210000);
                 try {
@@ -214,6 +411,9 @@ router.post('/login-perimetral', async (req, res) => {
                     console.warn("⚠️ [DANTE SECURITY]: No se pudo actualizar hash legacy en DB:", e.message);
                 }
             }
+
+            // Éxito en autenticación -> Resetear contador de bloqueos
+            clearLoginLock(lockKey);
         }
 
         const userRole = (role_target || usuario.rol || 'estudiante').toLowerCase().trim();
@@ -264,6 +464,20 @@ router.post('/login-perimetral', async (req, res) => {
         }
 
         const onboardingCompletado = esOnboardingCompletadoEnDB;
+        let diagnosticoCompletado = false;
+        try {
+            const { data: medido } = await supabase
+                .from('progreso_estudiantes')
+                .select('preguntas_respondidas, baseline_proyeccion')
+                .eq('estudiante', studentAlias)
+                .eq('materia', 'saber_11')
+                .maybeSingle();
+            diagnosticoCompletado = Boolean(
+                medido && (Number(medido.preguntas_respondidas) > 0 || medido.baseline_proyeccion != null)
+            );
+        } catch (medicionErr) {
+            console.warn("⚠️ [AUTH] Sin lectura del diagnóstico previo:", medicionErr.message);
+        }
 
         // 🛡️ GENERACIÓN DE TOKEN JWT FIRMADO CON CLAIMS CORPORATIVOS
         const jwtToken = generarTokenJWT({
@@ -303,6 +517,7 @@ router.post('/login-perimetral', async (req, res) => {
                 account_status: usuario.account_status || 'active_approved'
             },
             redireccion: rutaRedireccion,
+            diagnostico_completado: diagnosticoCompletado,
             version: SERVER_VERSION
         });
 
@@ -365,19 +580,19 @@ router.post('/complete-onboarding', async (req, res) => {
             console.warn("⚠️ Error en dante_arquetipos_iniciales:", e.message);
         }
 
-        try {
-            await supabase
-                .from('progreso_estudiantes')
-                .upsert({
-                    estudiante: studentAlias,
-                    estudiante_id: studentAlias,
-                    institution_id: tenantClean,
-                    arquetipo: arquetipoNombre,
-                    materia: 'lectura_critica',
-                    ultima_actualizacion: new Date().toISOString()
-                }, { onConflict: 'estudiante,materia,institution_id' });
-        } catch (e) {
-            console.warn("⚠️ Error en progreso_estudiantes:", e.message);
+        const previoRuta = await supabase
+            .from('progreso_estudiantes')
+            .select('id')
+            .eq('estudiante', studentAlias.split('@')[0])
+            .eq('materia', 'saber_11')
+            .maybeSingle();
+        const datosRuta = {
+            arquetipo: arquetipoNombre,
+            onboarding_completed: true,
+            ultima_actualizacion: new Date().toISOString()
+        };
+        if (previoRuta.data && previoRuta.data.id) {
+            await supabase.from('progreso_estudiantes').update(datosRuta).eq('id', previoRuta.data.id);
         }
 
         return res.status(200).json({ 
@@ -413,7 +628,7 @@ const ejecutarHardDeleteARCO = async (req, res) => {
             });
         }
 
-        const { email, document_id, motivo, confirmacion_usuario } = req.body;
+        const { email, document_id, motivo, confirmacion_usuario: _confirmacion_usuario } = req.body;
         const targetIdentifier = String(email || document_id || req.user.email || '').trim().toLowerCase().replace(/[^a-z0-9@._-]/gi, '');
 
         if (!targetIdentifier) {
@@ -442,23 +657,23 @@ const ejecutarHardDeleteARCO = async (req, res) => {
         console.log(`⚖️ [DERECHO AL OLVIDO ARCO]: Ejecutando Hard Delete en cascada para titular [${targetIdentifier}] (Solicitado por: ${userEmail})...`);
 
         const studentAlias = targetIdentifier.includes('@') ? targetIdentifier.split('@')[0] : targetIdentifier;
-        const safeTarget = targetIdentifier.replace(/,/g, '');
-        const safeAlias = studentAlias.replace(/,/g, '');
+        const safeTarget = String(targetIdentifier).replace(/[^a-zA-Z0-9@._-]/g, '');
+        const safeAlias = String(studentAlias).replace(/[^a-zA-Z0-9@._-]/g, '');
 
         // 1. Eliminación en usuarios
-        const { error: errUsuarios } = await supabase
+        const { error: _errUsuarios } = await supabase
             .from('usuarios')
             .delete()
             .or(`email.eq.${safeTarget},email.eq.${safeAlias}@danteos.edu.co,document_id.eq.${safeAlias}`);
 
         // 2. Eliminación en dante_arquetipos_iniciales
-        const { error: errArquetipos } = await supabase
+        const { error: _errArquetipos } = await supabase
             .from('dante_arquetipos_iniciales')
             .delete()
             .or(`id_sesion.eq.${safeTarget},id_sesion.eq.${safeAlias}`);
 
         // 3. Eliminación en progreso_estudiantes
-        const { error: errProgreso } = await supabase
+        const { error: _errProgreso } = await supabase
             .from('progreso_estudiantes')
             .delete()
             .or(`estudiante.eq.${safeAlias},estudiante_id.eq.${safeAlias},estudiante.eq.${safeTarget}`);
@@ -502,6 +717,282 @@ const ejecutarHardDeleteARCO = async (req, res) => {
 router.delete('/arco/hard-delete', verifyToken, ejecutarHardDeleteARCO);
 router.post('/arco/hard-delete', verifyToken, ejecutarHardDeleteARCO);
 
+// ====================================================================
+// 🪐 ENDPOINT 5: REGISTRO Y PERSISTENCIA DE ONBOARDING COMPLETADO
+// ====================================================================
+function metaSaber(raw) {
+    const texto = String(raw || '').trim();
+    if (!texto) return null;
+    if (/UNAL|UDEA|PREU|COMBO/i.test(texto) && !/380|300/.test(texto)) return null;
+    if (texto.includes('300')) return { pts: 300, clave: '300_BASE' };
+    if (texto.includes('380')) return { pts: 380, clave: '380_ELITE' };
+    return null;
+}
+
+function nombreInforme(raw, alias) {
+    const texto = String(raw || '').replace(/\s+/g, ' ').trim().slice(0, 60);
+    if (!texto || texto.includes('@')) return null;
+    if (alias && texto.toLowerCase() === alias) return null;
+    if (/^\d+$/.test(texto)) return null;
+    return texto;
+}
+
+function claveAreaSaber(raw) {
+    const texto = String(raw || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '_');
+    const orden = ['ciencias_naturales', 'sociales_ciudadanas', 'lectura_critica', 'matematicas', 'ingles'];
+    if (orden.includes(texto)) return texto;
+    if (texto === 'ciencias' || texto.startsWith('ciencias_')) return 'ciencias_naturales';
+    if (texto === 'sociales' || texto.startsWith('sociales_')) return 'sociales_ciudadanas';
+    if (texto === 'lectura' || texto.startsWith('lectura_')) return 'lectura_critica';
+    if (texto === 'matematica' || texto.startsWith('matematica')) return 'matematicas';
+    if (texto === 'english') return 'ingles';
+    return '';
+}
+
+function serieDeHistorial(historia) {
+    if (!Array.isArray(historia)) return [];
+    return historia
+        .map((punto) => Number(punto))
+        .filter((theta) => Number.isFinite(theta))
+        .slice(-40)
+        .map((theta) => aPuntosSaber(theta))
+        .filter((puntos) => puntos > 0 && puntos <= 500);
+}
+
+function fechaLargaBogota(iso) {
+    const fecha = new Date(iso);
+    if (Number.isNaN(fecha.getTime())) return '';
+    return fecha.toLocaleDateString('es-CO', { timeZone: 'America/Bogota', year: 'numeric', month: 'long', day: 'numeric' });
+}
+
+function diaBogota(iso) {
+    const fecha = new Date(iso);
+    if (Number.isNaN(fecha.getTime())) return '';
+    return new Intl.DateTimeFormat('sv-SE', { timeZone: 'America/Bogota' }).format(fecha);
+}
+
+async function procesoDelRegistro(alias) {
+    const reciente = await supabase
+        .from('registro_eventos')
+        .select('created_at')
+        .eq('student_id', alias)
+        .order('created_at', { ascending: false })
+        .limit(600);
+    if (reciente.error || !Array.isArray(reciente.data) || !reciente.data.length) {
+        return { dias: null, desde: null, hasta: null };
+    }
+    const dias = new Set();
+    reciente.data.forEach((fila) => {
+        const dia = diaBogota(fila && fila.created_at);
+        if (dia) dias.add(dia);
+    });
+    const primero = await supabase
+        .from('registro_eventos')
+        .select('created_at')
+        .eq('student_id', alias)
+        .order('created_at', { ascending: true })
+        .limit(1);
+    const inicio = primero.data && primero.data[0] && primero.data[0].created_at;
+    const fin = reciente.data[0] && reciente.data[0].created_at;
+    return {
+        dias: dias.size > 0 ? dias.size : null,
+        desde: fechaLargaBogota(inicio || fin) || null,
+        hasta: fechaLargaBogota(fin) || null
+    };
+}
+
+function areasDelExpediente(items) {
+    const areas = {};
+    (Array.isArray(items) ? items : []).slice(-600).forEach((row) => {
+        const clave = claveAreaSaber(row && (row.area || row.materia));
+        if (!clave || !row || typeof row.correcta !== 'boolean') return;
+        if (!areas[clave]) areas[clave] = { total: 0, aciertos: 0 };
+        areas[clave].total += 1;
+        if (row.correcta) areas[clave].aciertos += 1;
+    });
+    return areas;
+}
+
+router.get('/meta', async (req, res) => {
+    try {
+        const crudo = String(req.query.estudiante || req.query.studentId || '').trim().toLowerCase();
+        const alias = crudo.split('@')[0].replace(/[^a-z0-9._-]/g, '').slice(0, 80);
+        if (!alias) return res.status(400).json({ success: false, error: 'Falta el estudiante.' });
+
+        const correo = `${alias}@danteos.edu.co`;
+        let usuario = await supabase
+            .from('usuarios')
+            .select('meta_puntaje, carrera_interes, nombre')
+            .or(`email.eq.${correo},document_id.eq.${alias}`)
+            .limit(1);
+        if (usuario.error) {
+            usuario = await supabase
+                .from('usuarios')
+                .select('meta_puntaje, carrera_interes')
+                .or(`email.eq.${correo},document_id.eq.${alias}`)
+                .limit(1);
+        }
+        const filaUser = usuario.data && usuario.data[0];
+        let progreso = await supabase
+            .from('progreso_estudiantes')
+            .select('mision_activa, baseline_proyeccion, preguntas_respondidas, historial_theta, items_respondidos, nombre, simulacro_oficial, historial_simulacros, onboarding_completed')
+            .eq('estudiante', alias)
+            .eq('materia', 'saber_11')
+            .limit(1);
+        if (progreso.error) {
+            progreso = await supabase
+                .from('progreso_estudiantes')
+                .select('mision_activa, baseline_proyeccion, simulacro_oficial')
+                .eq('estudiante', alias)
+                .eq('materia', 'saber_11')
+                .limit(1);
+        }
+        const fila = progreso.data && progreso.data[0];
+        const mision = fila && fila.mision_activa && typeof fila.mision_activa === 'object' ? fila.mision_activa : {};
+        const elegida = metaSaber(mision.meta) || metaSaber(filaUser && filaUser.meta_puntaje);
+        const carreraRaw = String(mision.carrera || (filaUser && filaUser.carrera_interes) || '').slice(0, 80);
+        const carrera = /UNAL|UDEA|PREU/i.test(carreraRaw) ? '' : carreraRaw;
+        const fecha = String(mision.fecha || '').slice(0, 80);
+        const calendario = ['CAL_A', 'CAL_B', 'CUSTOM'].includes(mision.calendario) ? mision.calendario : '';
+        const puntos = fila ? fila.baseline_proyeccion : null;
+        const puntosNum = Number(puntos);
+        const proyeccion = puntos != null && puntos !== '' && Number.isFinite(puntosNum) && puntosNum >= 0 && puntosNum <= 500
+            ? Math.round(puntosNum)
+            : null;
+        const areas = areasDelExpediente(fila && fila.items_respondidos);
+        const sumaAreas = Object.values(areas).reduce((suma, filaArea) => suma + filaArea.total, 0);
+        const preguntasCrudas = Number(fila && fila.preguntas_respondidas);
+        const preguntas = Number.isFinite(preguntasCrudas) && preguntasCrudas > 0
+            ? Math.round(preguntasCrudas)
+            : (sumaAreas > 0 ? sumaAreas : null);
+        const serie = serieDeHistorial(fila && fila.historial_theta);
+        const sesiones = serie.length || null;
+        const nombre = nombreInforme(filaUser && filaUser.nombre, alias) || nombreInforme(fila && fila.nombre, alias);
+        let proceso = { dias: null, desde: null, hasta: null };
+        try {
+            proceso = await procesoDelRegistro(alias);
+        } catch (e) {
+            proceso = { dias: null, desde: null, hasta: null };
+        }
+
+        const simulacro = fila && fila.simulacro_oficial && typeof fila.simulacro_oficial === 'object'
+            ? fila.simulacro_oficial
+            : null;
+
+        return res.json({
+            success: true,
+            meta: elegida ? elegida.pts : null,
+            metaClave: elegida ? elegida.clave : null,
+            carrera: carrera || null,
+            fecha: fecha || null,
+            calendario: calendario || null,
+            proyeccion,
+            nombre,
+            areas,
+            preguntas,
+            sesiones,
+            serie,
+            dias: actividad.dias,
+            desde: actividad.desde,
+            hasta: actividad.hasta,
+            onboarding_completed: Boolean(fila && fila.onboarding_completed),
+            simulacro,
+            historial_simulacros: Array.isArray(fila && fila.historial_simulacros) ? fila.historial_simulacros : []
+        });
+    } catch (err) {
+        return res.status(500).json({ success: false, error: 'No se pudo leer la meta.' });
+    }
+});
+
+router.post('/onboarding/complete', async (req, res) => {
+    try {
+        const { studentId, email, meta, track, carrera, tiempo, arquetipo, fecha, calendario } = req.body;
+        const candidate = email || studentId || (req.user ? req.user.email : null);
+        if (!candidate) {
+            return res.status(400).json({ success: false, error: "Identificador de estudiante requerido." });
+        }
+
+        const safeId = String(candidate).trim().toLowerCase();
+        const safeAlias = safeId.includes('@') ? safeId.split('@')[0] : safeId;
+        const safeEmail = safeId.includes('@') ? safeId : `${safeAlias}@danteos.edu.co`;
+
+        const updateData = {
+            onboarding_completed: true,
+            updated_at: new Date().toISOString()
+        };
+        if (arquetipo) updateData.arquetipo = arquetipo;
+        if (carrera) updateData.carrera_interes = carrera;
+        if (meta) updateData.meta_puntaje = meta;
+
+        // 1. Actualizar en tabla usuarios
+        const { error: errUsr } = await supabase
+            .from('usuarios')
+            .update(updateData)
+            .or(`email.eq.${safeEmail},email.eq.${safeId},document_id.eq.${safeAlias}`);
+
+        if (errUsr) {
+            console.warn("⚠️ [Onboarding Sync] Aviso actualizando usuarios:", errUsr.message);
+        }
+
+        const mision = {
+            track: track || null,
+            carrera: carrera || null,
+            tiempo: tiempo || null,
+            meta: meta || null,
+            fecha: fecha || null,
+            calendario: calendario || null
+        };
+        const previo = await supabase
+            .from('progreso_estudiantes')
+            .select('id, mision_activa')
+            .eq('estudiante', safeAlias)
+            .eq('materia', 'saber_11')
+            .maybeSingle();
+        const misionPrevia = previo.data && previo.data.mision_activa && typeof previo.data.mision_activa === 'object'
+            ? previo.data.mision_activa
+            : {};
+        const datosRuta = {
+            arquetipo: arquetipo || null,
+            onboarding_completed: true,
+            mision_activa: { ...misionPrevia, ...mision },
+            email: safeEmail,
+            updated_at: new Date().toISOString(),
+            ultima_actualizacion: new Date().toISOString()
+        };
+        const guardadoRuta = previo.data && previo.data.id
+            ? await supabase.from('progreso_estudiantes').update(datosRuta).eq('id', previo.data.id)
+            : await supabase.from('progreso_estudiantes').insert({
+                ...datosRuta,
+                id: crypto.randomUUID(),
+                estudiante: safeAlias,
+                estudiante_id: safeAlias,
+                institution_id: 'colegio_sandbox_default',
+                materia: 'saber_11',
+                theta_global: null,
+                sem_global: null,
+                baseline_proyeccion: null,
+                preguntas_respondidas: 0,
+                racha_dias: 0,
+                plan: 'EXPLORADOR',
+                items_respondidos: []
+            });
+        if (errUsr || guardadoRuta.error) {
+            console.warn("⚠️ [Onboarding Sync] Expediente:", (errUsr && errUsr.message) || guardadoRuta.error.message);
+            return res.status(500).json({ success: false, error: "No se pudo guardar el inicio del estudiante." });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Onboarding y calibración persistidos exitosamente en base de datos.",
+            student: safeAlias,
+            onboarding_completed: true
+        });
+    } catch (err) {
+        console.error("🚨 Error en /onboarding/complete:", err);
+        return res.status(500).json({ success: false, error: err.message });
+    }
+});
+
 /*
  * =========================================================================================
  * ⚖️ JUSTIFICACIÓN LEGAL DE DEFENSA: MOTOR DE CONSENTIMIENTO PARENTAL VERIFICABLE - VPC (COPPA & LEY 1098)
@@ -520,7 +1011,7 @@ router.post('/arco/hard-delete', verifyToken, ejecutarHardDeleteARCO);
 // Generar o solicitar aprobación parental para menor de edad
 router.post('/parental-consent/request', async (req, res) => {
     try {
-        const { student_id, parent_email, student_dob } = req.body;
+        const { student_id, parent_email, student_dob: _student_dob } = req.body;
 
         if (!student_id || !parent_email) {
             return res.status(400).json({ success: false, error: "Faltan datos obligatorios (student_id y parent_email)." });
@@ -636,6 +1127,60 @@ router.get('/parental-consent/status', async (req, res) => {
         return res.status(500).json({ success: false, error: err.message });
     }
 });
+
+// ====================================================================
+// 🪐 ENDPOINT 6: CIERRE DE SESIÓN SEGURO (LOGOUT)
+// ====================================================================
+const ejecutarLogout = (req, res) => {
+    try {
+        const opciones = {
+            path: '/',
+            sameSite: 'lax',
+            secure: process.env.NODE_ENV === 'production'
+        };
+        const actual = req.cookies && (req.cookies.dante_jwt_token || '');
+        const vinoPedido = req.body && Object.prototype.hasOwnProperty.call(req.body, 'token');
+        const pedido = vinoPedido ? String(req.body.token || '') : null;
+        if (vinoPedido && actual && pedido !== actual) {
+            return res.status(200).json({
+                success: true,
+                ignored: true,
+                message: "La sesión actual es más nueva. No se cerró."
+            });
+        }
+        res.clearCookie('dante_jwt_token', opciones);
+        res.clearCookie('dante_token', opciones);
+        return res.status(200).json({
+            success: true,
+            message: "Sesión finalizada exitosamente. Credenciales perimetrales eliminadas."
+        });
+    } catch (err) {
+        return res.status(500).json({ success: false, error: err.message });
+    }
+};
+
+router.get('/sesion', verifyToken, (req, res) => {
+    const u = req.user || {};
+    const email = String(u.email || '').toLowerCase();
+    const estudiante = String(u.estudiante || (email ? email.split('@')[0] : '')).replace(/[^a-z0-9_]/g, '');
+    const token = (req.cookies && (req.cookies.dante_jwt_token || req.cookies.token)) || '';
+    if (!email && !estudiante) return res.status(401).json({ ok: false });
+    return res.json({
+        ok: true,
+        token: token,
+        user: {
+            email: email || null,
+            estudiante: estudiante || null,
+            nombre: estudiante || 'Estudiante',
+            rol: u.rol || u.role || 'estudiante',
+            institution_id: u.institution_id || 'colegio_sandbox_default',
+            onboarding_completed: false
+        }
+    });
+});
+
+router.post('/logout', ejecutarLogout);
+router.get('/logout', ejecutarLogout);
 
 export default router;
 

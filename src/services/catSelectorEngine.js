@@ -1,5 +1,6 @@
 // catSelectorEngine.js - Motor de Selección Adaptativa Óptima (Dante OS v21.0.0 Enterprise)
 import { calcularInformacionFisher } from './engine3PL.js';
+import { sanitizarAreaMateria } from './cat/SessionService.js';
 
 export const SPECTRUM_CONTROLS = {
     MIN_THETA: -4.0000,
@@ -27,12 +28,14 @@ export function obtenerSiguienteItem(sessionState, cacheInstancia) {
         throw new Error("🚨 [SELECTOR CRITICAL]: Parámetros máster ausentes. Abortando selección.");
     }
 
-    const { theta, sem_bayesian, items_respondidos_count, seen_item_ids, priors_dinamicos } = sessionState;
+    const { theta, sem_bayesian, items_respondidos_count, seen_item_ids, priors_dinamicos, target_exam, carrera_objetivo } = sessionState;
     const { mapaParametros, matrizBucketsDificultad } = cacheInstancia;
 
     const currentThetaFloat = parseFloat(theta || 0.0);
     const currentSemFloat = parseFloat(sem_bayesian || 1.0);
     const currentCountInt = parseInt(items_respondidos_count || 0, 10);
+    const targetExamSaneado = String(target_exam || 'SABER_11').toUpperCase().trim();
+    const carreraSaneada = carrera_objetivo ? String(carrera_objetivo).toUpperCase().trim() : null;
 
     // ====================================================================
     // 🛡️ REGLA DE CONTROL 1: EVALUACIÓN Y DETENCIÓN AUTOMÁTICA
@@ -51,7 +54,7 @@ export function obtenerSiguienteItem(sessionState, cacheInstancia) {
     const maxBucketIdx = Math.max(0, (matrizBucketsDificultad?.length || 17) - 1);
     const ventanaIndices = [targetIndex, Math.max(0, targetIndex - 1), Math.min(maxBucketIdx, targetIndex + 1)];
     
-    const poolCandidatosAcotado = [];
+    let poolCandidatosAcotado = [];
 
     if (matrizBucketsDificultad && matrizBucketsDificultad.length > 0) {
         for (let i = 0; i < ventanaIndices.length; i++) {
@@ -74,6 +77,42 @@ export function obtenerSiguienteItem(sessionState, cacheInstancia) {
         }
     }
 
+    // 🎯 FILTRADO DE DOMINIO MULTI-EXAMEN Y MATERIA/ÁREA
+    if (poolCandidatosAcotado.length > 0) {
+        const targetArea = sanitizarAreaMateria(sessionState.area_general || sessionState.area || sessionState.materia || '');
+        if (targetArea) {
+            const candidatosAreaTarget = poolCandidatosAcotado.filter(item => {
+                const itemArea = sanitizarAreaMateria(item.area || item.area_general || item.materia || '');
+                if (!itemArea) return true;
+                return itemArea === targetArea;
+            });
+            if (candidatosAreaTarget.length > 0) {
+                poolCandidatosAcotado = candidatosAreaTarget;
+            }
+        }
+
+        const candidatosExamenTarget = poolCandidatosAcotado.filter(item => {
+            if (!item.target_exam) return true;
+            const itemTarget = String(item.target_exam).toUpperCase().trim();
+            if (itemTarget === 'ALL' || itemTarget === targetExamSaneado) return true;
+            if (targetExamSaneado.startsWith('UNAL') && itemTarget.startsWith('UNAL')) return true;
+            return false;
+        });
+
+        if (candidatosExamenTarget.length > 0) {
+            poolCandidatosAcotado = candidatosExamenTarget;
+        }
+
+        if (carreraSaneada) {
+            const candidatosCarrera = poolCandidatosAcotado.filter(item =>
+                item.carrera_objetivo && String(item.carrera_objetivo).toUpperCase().trim() === carreraSaneada
+            );
+            if (candidatosCarrera.length > 0) {
+                poolCandidatosAcotado = candidatosCarrera;
+            }
+        }
+    }
+
     // Si el banco se agota completamente, detiene el examen y guarda lo acumulado
     if (poolCandidatosAcotado.length === 0) {
         console.warn("⚠️ [HOMEOCONTROL AGOTAMIENTO]: No existen más ítems en RAM. Consolidando examen.");
@@ -81,9 +120,18 @@ export function obtenerSiguienteItem(sessionState, cacheInstancia) {
     }
 
     // ====================================================================
-    // 🛡️ REGLA DE CONTROL 2: PONDERACIÓN, EXPOSICIÓN SYMPSON-HETTER Y SELECCIÓN ESTOCÁSTICA
+    // 🛡️ REGLA DE CONTROL 2: PONDERACIÓN MFI, STA SHADOW ASSEMBLY, SYMPSON-HETTER & SELECCIÓN ESTOCÁSTICA
     // ====================================================================
     const estudiantePriors = priors_dinamicos || {};
+
+    // Mapeo de frecuencias de sub-competencias presentadas para Shadow Test Assembly (STA)
+    const conteoSubCompetencias = {};
+    if (Array.isArray(sessionState.irt_responses)) {
+        sessionState.irt_responses.forEach(r => {
+            const sub = String(r.sub_competencia || 'general').toLowerCase().trim();
+            conteoSubCompetencias[sub] = (conteoSubCompetencias[sub] || 0) + 1;
+        });
+    }
 
     const reactivosEvaluados = [];
     for (let i = 0; i < poolCandidatosAcotado.length; i++) {
@@ -103,6 +151,11 @@ export function obtenerSiguienteItem(sessionState, cacheInstancia) {
         const distanciaAbsoluta = Math.abs(bNum - currentThetaFloat);
         const fisherRaw = calcularInformacionFisher(currentThetaFloat, aNum, bNum, cNum);
         
+        // Contrapeso de Cobertura Competencial (Shadow Test Assembly - STA)
+        const subItem = String(item.sub_competencia || 'general').toLowerCase().trim();
+        const vecesPresentadoSub = conteoSubCompetencias[subItem] || 0;
+        const bonoCoberturaSTA = 0.20 / (1.0 + vecesPresentadoSub);
+
         let penalizacionO_InyeccionSesgo = 0.0;
         if (item.matriz_q) {
             const keys = Object.keys(item.matriz_q);
@@ -117,7 +170,7 @@ export function obtenerSiguienteItem(sessionState, cacheInstancia) {
             }
         }
 
-        const scoreSelector = ((fisherRaw * 0.70) + ((1 / (1 + distanciaAbsoluta)) * 0.15) + (penalizacionO_InyeccionSesgo * 0.15)) * factorExposureSympsonHetter;
+        const scoreSelector = ((fisherRaw * 0.60) + ((1 / (1 + distanciaAbsoluta)) * 0.10) + (penalizacionO_InyeccionSesgo * 0.15) + (bonoCoberturaSTA * 0.15)) * factorExposureSympsonHetter;
         
         reactivosEvaluados.push({ ...item, a: aNum, b: bNum, c: cNum, scoreSelector });
     }
@@ -135,7 +188,10 @@ export function obtenerSiguienteItem(sessionState, cacheInstancia) {
             id: itemGanador.id,
             pregunta_texto: itemGanador.pregunta_texto,
             opciones_respuesta: itemGanador.opciones_respuesta,
-            sub_competencia: itemGanador.sub_competencia
+            sub_competencia: itemGanador.sub_competencia,
+            target_exam: itemGanador.target_exam || targetExamSaneado,
+            carrera_objetivo: itemGanador.carrera_objetivo || carreraSaneada,
+            imagen_url: itemGanador.imagen_url || null
         },
         meta_seleccion: {
             distancia_logit: parseFloat(Math.abs(itemGanador.b - currentThetaFloat).toFixed(4)),
@@ -144,4 +200,5 @@ export function obtenerSiguienteItem(sessionState, cacheInstancia) {
         }
     };
 }
+
 

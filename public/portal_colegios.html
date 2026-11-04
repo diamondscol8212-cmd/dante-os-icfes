@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Portal Institucional & Ecosistema Colegios B2B • Dante OS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="js/danteVectorIcons.js"></script>
+    <style>
+        body {
+            background-color: #08090c;
+            color: #f1f5f9;
+            font-family: system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+        }
+        .font-mono { font-family: 'JetBrains Mono', monospace !important; }
+    </style>
+</head>
+<body class="p-4 sm:p-8 flex flex-col justify-between min-h-screen">
+    <div class="max-w-4xl mx-auto w-full space-y-6">
+        <!-- HEADER -->
+        <header class="flex items-center justify-between border-b border-slate-800 pb-4">
+            <div class="flex items-center gap-3">
+                <script>document.write(window.DanteVectorIcons ? window.DanteVectorIcons.logoDante({size: 36}) : '');</script>
+                <div>
+                    <h1 class="text-base sm:text-lg font-mono font-black text-white tracking-wide">DANTE OS B2B</h1>
+                    <p class="text-xs text-slate-400">Portal de Gestión Institucional para Colegios y Redes Educativas</p>
+                </div>
+            </div>
+            <a href="/perfil.html" class="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-xs font-mono text-cyan-300 transition">
+                ← Volver al Perfil
+            </a>
+        </header>
+
+        <!-- TARJETAS DE MÓDULOS -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 font-mono">
+            <div class="p-5 rounded-2xl bg-slate-950/90 border border-slate-800 hover:border-cyan-500/50 transition space-y-3 flex flex-col justify-between">
+                <div>
+                    <div class="w-10 h-10 rounded-xl bg-cyan-950/60 border border-cyan-500/40 text-cyan-400 flex items-center justify-center text-lg mb-2">
+                        🏛️
+                    </div>
+                    <h2 class="text-sm font-bold text-cyan-300">Rectoría & C-Suite</h2>
+                    <p class="text-xs text-slate-400 font-sans mt-1">Dashboard macro institucional, comparativa de cohortes Saber 11° y proyecciones universitarias.</p>
+                </div>
+                <a href="/rector.html" class="block w-full py-2 text-center rounded-xl bg-cyan-500 text-slate-950 font-bold text-xs uppercase hover:brightness-110 transition">
+                    Ingresar a Rectoría
+                </a>
+            </div>
+
+            <div class="p-5 rounded-2xl bg-slate-950/90 border border-slate-800 hover:border-amber-500/50 transition space-y-3 flex flex-col justify-between">
+                <div>
+                    <div class="w-10 h-10 rounded-xl bg-amber-950/60 border border-amber-500/40 text-amber-400 flex items-center justify-center text-lg mb-2">
+                        👨‍🏫
+                    </div>
+                    <h2 class="text-sm font-bold text-amber-300">Módulo de Profesor</h2>
+                    <p class="text-xs text-slate-400 font-sans mt-1">Seguimiento individual de aula, detección de distractores en tablero y prescripción formativa.</p>
+                </div>
+                <a href="/profesor.html" class="block w-full py-2 text-center rounded-xl bg-amber-500 text-slate-950 font-bold text-xs uppercase hover:brightness-110 transition">
+                    Ingresar a Docente
+                </a>
+            </div>
+
+            <div class="p-5 rounded-2xl bg-slate-950/90 border border-slate-800 hover:border-emerald-500/50 transition space-y-3 flex flex-col justify-between">
+                <div>
+                    <div class="w-10 h-10 rounded-xl bg-emerald-950/60 border border-emerald-500/40 text-emerald-400 flex items-center justify-center text-lg mb-2">
+                        🔬
+                    </div>
+                    <h2 class="text-sm font-bold text-emerald-300">Auditoría IRT 3PL</h2>
+                    <p class="text-xs text-slate-400 font-sans mt-1">Curvas características de ítem (CCI), calibración psicométrica Lord & Novick y discriminación.</p>
+                </div>
+                <a href="/auditor.html" class="block w-full py-2 text-center rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs uppercase hover:brightness-110 transition">
+                    Ingresar a Auditoría
+                </a>
+            </div>
+        </div>
+
+        <!-- CERTIFICACIÓN Y AVISO LEGAL -->
+        <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-xs text-slate-400 font-mono space-y-1">
+            <span class="font-bold text-slate-300 block">SEGURIDAD MULTI-TENANT & GOBERNANZA:</span>
+            <p class="font-sans">El acceso a los tableros institucionales requiere token autorizado o sesión con rol docente/directivo. Todas las consultas quedan registradas con firma criptográfica en el registro de auditoría de Dante OS.</p>
+        </div>
+    </div>
+
+    <footer class="text-center text-[10px] text-slate-600 font-mono py-4 border-t border-slate-900 mt-8">
+        DANTE OS ENTERPRISE • INFRAESTRUCTURA PSICOMÉTRICA ADAPTATIVA COLOMBIA 2026
+    </footer>
+</body>
+</html>

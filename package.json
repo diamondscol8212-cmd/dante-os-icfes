@@ -1,6 +1,6 @@
 {
   "name": "dante-os-icfes",
-  "version": "21.2.4",
+  "version": "23.1.0-enterprise",
   "type": "module",
   "main": "server.js",
   "scripts": {
@@ -8,11 +8,30 @@
     "dev": "node server.js",
     "seed": "node src/services/seeder.js",
     "build": "echo 'Build complete'",
-    "lint": "echo 'Lint pass'"
+    "lint": "eslint .",
+    "test": "node test/security.test.js",
+    "test:unit": "node tests/scoring.test.js",
+    "test:daily": "node tests/dailyMission.test.js",
+    "test:tutor": "node tests/tutorHint.test.js",
+    "test:stress": "node tests/stressWorker.test.js",
+    "test:phase4": "node tests/phase4Persistence.test.js",
+    "test:isolation": "node tests/profileIsolation.test.js",
+    "test:system": "node tests/systemIntegrity.test.js",
+    "test:all": "node tests/dailyMission.test.js && node tests/tutorHint.test.js && node tests/phase4Persistence.test.js && node tests/profileIsolation.test.js && node tests/systemIntegrity.test.js",
+    "banco:export": "node scripts/exportarBancoJson.mjs",
+    "cap:sync": "npx cap sync",
+    "cap:android": "npx cap open android",
+    "cap:ios": "npx cap open ios",
+    "cap:build": "npx cap copy && npx cap sync"
   },
   "dependencies": {
+    "@capacitor-community/admob": "^8.3.0",
+    "@capacitor/android": "8.6.0",
+    "@capacitor/cli": "8.6.0",
+    "@capacitor/core": "8.6.0",
     "@google/genai": "^2.12.0",
     "@google/generative-ai": "^0.24.1",
+    "@sentry/node": "^10.69.0",
     "@supabase/supabase-js": "^2.43.4",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -22,5 +41,8 @@
     "helmet": "^8.3.0",
     "ioredis": "^5.4.1",
     "jsonwebtoken": "^9.0.3"
+  },
+  "devDependencies": {
+    "eslint": "^10.8.0"
   }
 }

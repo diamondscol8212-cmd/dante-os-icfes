@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Dante OS · Planes</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100dvh;
+            background: #0c0b09;
+            color: #f5f5f4;
+            font-family: "Plus Jakarta Sans", "Segoe UI", sans-serif;
+        }
+        .pagina {
+            width: min(100%, 26rem);
+            margin: 0 auto;
+            padding: 1.4rem 1.15rem 2.4rem;
+        }
+        .volver {
+            color: #a8a29e;
+            font-size: 13px;
+            text-decoration: none;
+        }
+        h1 {
+            margin: 1.4rem 0 0.4rem;
+            font-size: 1.85rem;
+            letter-spacing: -0.03em;
+            font-weight: 650;
+        }
+        .lead {
+            margin: 0;
+            color: #a8a29e;
+            font-size: 0.98rem;
+            line-height: 1.45;
+        }
+        .precios {
+            display: grid;
+            gap: 0.7rem;
+            margin: 1.35rem 0 1.1rem;
+        }
+        .precio {
+            text-align: left;
+            width: 100%;
+            border-radius: 18px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: #14120f;
+            color: inherit;
+            padding: 1rem 1rem 0.95rem;
+            cursor: pointer;
+        }
+        .precio.elegido {
+            border-color: #e7d7c3;
+            background: #1c1917;
+        }
+        .precio span {
+            display: block;
+            font-size: 12px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #a8a29e;
+        }
+        .precio strong {
+            display: block;
+            margin-top: 0.2rem;
+            font-size: 2rem;
+            letter-spacing: -0.03em;
+        }
+        .precio em {
+            display: block;
+            margin-top: 0.25rem;
+            font-style: normal;
+            color: #d6d3d1;
+            font-size: 0.92rem;
+            line-height: 1.35;
+        }
+        ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        li {
+            padding: 0.72rem 0;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            color: #e7e5e4;
+            font-size: 0.98rem;
+        }
+        .activar {
+            width: 100%;
+            margin-top: 1.2rem;
+            min-height: 52px;
+            border: 0;
+            border-radius: 16px;
+            background: #e7d7c3;
+            color: #1c1917;
+            font-weight: 800;
+            font-size: 15px;
+            cursor: pointer;
+        }
+        .gratis {
+            display: block;
+            margin-top: 0.9rem;
+            text-align: center;
+            color: #a8a29e;
+            font-size: 13px;
+        }
+        .nota {
+            margin: 1rem 0 0;
+            color: #78716c;
+            font-size: 12px;
+            line-height: 1.4;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <main class="pagina">
+        <a class="volver" href="/">Volver a la sala</a>
+        <h1>Saber 11° sin anuncios</h1>
+        <p class="lead">Creemos en las mismas oportunidades: entrenamiento y ayudas iguales para todos. El plan solo quita el anuncio entre un bloque y el siguiente.</p>
+
+        <div class="precios">
+            <button type="button" id="btnCicloMensual" class="precio" onclick="cambiarCiclo('MENSUAL')">
+                <span>Un mes</span>
+                <strong>$9.000</strong>
+                <em>Cada mes.</em>
+            </button>
+            <button type="button" id="btnCicloTemporada" class="precio elegido" onclick="cambiarCiclo('TEMPORADA')">
+                <span>Seis meses</span>
+                <strong>$38.000</strong>
+                <em id="lblMontoAhorroTotal">Pagar el mes seis veces serían $54.000. Este pase cuesta $16.000 menos.</em>
+            </button>
+        </div>
+
+        <ul>
+            <li>Sin anuncio al entrar al bloque.</li>
+            <li>Cinco ayudas por bloque para todos (tope pedagógico).</li>
+            <li>Simulacro y ruta vocacional iguales en gratis y en pago.</li>
+        </ul>
+
+        <button type="button" id="btnProAccion" class="activar" onclick="procesarPagoPlan('PRO')">Quitar publicidad · seis meses · $38.000</button>
+        <a class="gratis" href="/">Seguir gratis</a>
+        <p class="nota">El plan se abre cuando el pago queda confirmado en la tienda o en la web. Hasta entonces ves el anuncio; las ayudas ya son las mismas.</p>
+    </main>
+
+    <script>
+        let cicloActual = 'TEMPORADA';
+
+        function cambiarCiclo(nuevoCiclo) {
+            cicloActual = nuevoCiclo;
+            document.getElementById('btnCicloMensual').classList.toggle('elegido', nuevoCiclo === 'MENSUAL');
+            document.getElementById('btnCicloTemporada').classList.toggle('elegido', nuevoCiclo === 'TEMPORADA');
+            const accion = document.getElementById('btnProAccion');
+            accion.textContent = nuevoCiclo === 'TEMPORADA'
+                ? 'Seguir con seis meses · $38.000'
+                : 'Seguir con el mes · $9.000';
+        }
+
+        async function procesarPagoPlan(planKey) {
+            const estudiante = localStorage.getItem('dante_student_id') || 'ESTUDIANTE';
+            const precioVisual = cicloActual === 'TEMPORADA' ? '$38.000 por seis meses' : '$9.000 el mes';
+            const metodo = prompt('Vas a pedir ' + precioVisual + '.\n1. Nequi\n2. Daviplata\n3. PSE\n\nEscribe 1, 2 o 3:', '1');
+            if (!metodo) return;
+
+            let metodoStr = 'NEQUI';
+            if (metodo === '2') metodoStr = 'DAVIPLATA';
+            if (metodo === '3') metodoStr = 'PSE';
+
+            try {
+                const res = await fetch('/api/cat/pagos/procesar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        studentId: estudiante,
+                        planKey: planKey,
+                        ciclo: cicloActual,
+                        metodoPago: metodoStr
+                    })
+                });
+                const json = await res.json();
+                if (json && json.success) {
+                    const finalPlan = json.userPlan || planKey;
+                    localStorage.setItem('dante_plan', finalPlan);
+                    localStorage.setItem('dante_user_plan', finalPlan);
+                    window.location.href = '/';
+                    return;
+                }
+            } catch (e) {}
+            alert('El pago quedó pendiente. El plan se abre cuando el cobro quede confirmado.');
+        }
+    </script>
+</body>
+</html>

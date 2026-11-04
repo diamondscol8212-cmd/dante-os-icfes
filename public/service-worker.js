@@ -1,4 +1,4 @@
-// service-worker.js - PWA Offline & Shell Caching Manager (Dante OS Enterprise Gold v21.2.4)
+// service-worker.js - PWA Offline & Shell Caching Manager (Dante OS Enterprise Gold v23.1.2-ENTERPRISE_GOLD)
 // Bogotá, Colombia - Resiliencia de Red y Cumplimiento de Baja Conectividad
 
 /**
@@ -8,7 +8,7 @@
  */
 
 const params = new URL(location).searchParams;
-const BUILD_VERSION = params.get('v') || 'v21.2.4-ENTERPRISE_GOLD';
+const BUILD_VERSION = params.get('v') || 'v23.1.3-LIVE_UPDATE';
 
 const CACHE_NAME_STATIC = `dante-os-static-${BUILD_VERSION}`;
 const CACHE_NAME_DYNAMIC = `dante-os-dynamic-${BUILD_VERSION}`;
@@ -22,6 +22,10 @@ const STATIC_ASSETS = [
   './reporte.html',
   './rector.html',
   './profesor.html',
+  './js/danteHubEngine.js',
+  './js/danteExamWorkspace.js',
+  './js/preunEngine.js',
+  './js/danteTutorEngine.js',
   './bancoPreguntas.json',
   './manifest.json'
 ];
@@ -88,7 +92,23 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // ESTRATEGIA 2: STALE-WHILE-REVALIDATE para Assets estáticos y vistas HTML
+  // ESTRATEGIA 2: NETWORK FIRST WITH CACHE FALLBACK para HTML y JS (garantiza siempre la última versión en vivo)
+  if (event.request.mode === 'navigate' || reqUrl.pathname.endsWith('.html') || reqUrl.pathname.endsWith('.js') || reqUrl.pathname === '/') {
+    event.respondWith(
+      fetch(new Request(event.request, { cache: 'no-store' }))
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const resClone = networkResponse.clone();
+            caches.open(CACHE_NAME_STATIC).then((cache) => cache.put(event.request, resClone));
+          }
+          return networkResponse;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // ESTRATEGIA 3: STALE-WHILE-REVALIDATE para Assets estáticos (imágenes, iconos, fuentes)
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       const fetchPromise = fetch(event.request).then((networkResponse) => {

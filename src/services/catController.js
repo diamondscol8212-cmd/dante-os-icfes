@@ -1,20 +1,42 @@
-// catController.js - Controlador Principal Orquestador CAT (Dante OS v21.2.0 AAA+ DDD)
+// catController.js - Controlador Delgado Orquestador CAT (Dante OS v22.2.0 Clean Architecture DDD)
 // Bogotá, Colombia
-import crypto from 'crypto';
-import { supabase } from '../../supabaseClient.js';
 import { redis } from '../../redisClient.js';
-import { estimarHabilidadEAP, calcularInformacionFisher, calcularICI, calcularCRI } from './engine3PL.js';
-import { actualizarGemeloDigital } from '../../twinService.js';
 import { obtenerSiguienteItem } from './catSelectorEngine.js';
 import { BANCO_COMPLETO } from './bank/index.js';
+import { generarExplicacionSocratica } from './ai/AiTutorService.js';
 
-// Capa DDD Desacoplada
-import { LRUCache, acquireRedlock, releaseRedlock, registrarSnapshotLedgerInmutable, persistirProgresoResiliente } from './cat/CatRepository.js';
-import { calcularSiguienteEstadoInmutable, actualizarVectorThetaMIRT, calcularPesosEmpiricosQ } from './cat/CatDomainService.js';
-import { calcularIndiceIRI, calcularIndiceICC, obtenerExplicabilidadMetacognitiva, METACONTROL_THRESHOLDS } from './cat/MetacognitionEngine.js';
+// Capa de Servicios de Dominio Desacoplados (SRP - Clean Architecture)
+import {
+    precalentarInstOriginal,
+    adquirirCandadoSesion,
+    liberarCandadoSesion,
+    obtenerOIniciarEstadoSesion,
+    guardarEstadoSesion,
+    limpiarSesionActiva,
+    barajarOpcionesItem,
+    CACHE_ESQUEMA_ATRIBUTOS,
+    ESTADO_CARGA_AREAS,
+    sanitizarAreaMateria
+} from './cat/SessionService.js';
+
+import {
+    evaluarIntervencionMetacognitiva,
+    procesarTransicionEstado,
+    generarConsolidadoRendimiento,
+    calcularIndicesMetacognitivos
+} from './cat/ScoringService.js';
+
+import {
+    registrarSnapshotLedgerInmutable,
+    persistirProgresoResiliente,
+    obtenerGemeloEstudianteService,
+    guardarPerfilCache,
+    actualizarGemeloDigital
+} from './cat/ProfileService.js';
+
+export { precalentarInstOriginal };
 
 const CALIBRATION_VERSION = process.env.IRT_CALIBRATION_VERSION || 'v21.2_mirt_empirical';
-const REDIS_TTL_SECONDS = 86400;
 
 const OPERATIONAL_CONTROLS = {
     MAX_ITEMS_EXAMEN: 15,
@@ -23,220 +45,8 @@ const OPERATIONAL_CONTROLS = {
     EPS_CMD: 0.02
 };
 
-// 🧹 CACHÉ CON LÍMITE LRU EN RAM (Req 6)
-const CACHE_BANCO_ITEMS = new LRUCache(500);
-const CACHE_BUCKETS_DIFICULTAD = new LRUCache(100);
-const CACHE_MAPA_TRAMPAS = new LRUCache(1000);
-const CACHE_TIMESTAMPS = new LRUCache(100);
-const ESTADO_CARGA_AREAS = new LRUCache(100);
-const CACHE_ESQUEMA_ATRIBUTOS = new LRUCache(100);
-
-const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
-const LETRAS_MAP = ["A", "B", "C", "D"];
-
-function barajarOpcionesItem(itemOriginal) {
-    if (!itemOriginal || !Array.isArray(itemOriginal.opciones_respuesta) || itemOriginal.opciones_respuesta.length === 0) {
-        return {
-            itemBarajado: itemOriginal,
-            nuevaLetraCorrecta: itemOriginal?.correcta || "B",
-            mapaLetrasOrig: { A: "A", B: "B", C: "C", D: "D" }
-        };
-    }
-
-    const opcionesRaw = itemOriginal.opciones_respuesta;
-    const correctaOriginal = String(itemOriginal.correcta || itemOriginal.correcta_db || "B").toUpperCase().trim();
-    
-    let indexCorrectaOrig = LETRAS_MAP.indexOf(correctaOriginal);
-    if (indexCorrectaOrig === -1) indexCorrectaOrig = 1;
-
-    const opcionesEstructuradas = opcionesRaw.map((opt, idx) => {
-        const textStr = typeof opt === 'string' ? opt : JSON.stringify(opt);
-        const textLimpio = textStr.replace(/^[A-Da-d][\)\.\:\-]\s*/, '');
-        const letraOrig = LETRAS_MAP[idx] || "A";
-        return {
-            texto: textLimpio,
-            letraOrig: letraOrig,
-            esCorrecta: idx === indexCorrectaOrig
-        };
-    });
-
-    for (let i = opcionesEstructuradas.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [opcionesEstructuradas[i], opcionesEstructuradas[j]] = [opcionesEstructuradas[j], opcionesEstructuradas[i]];
-    }
-
-    let nuevaLetraCorrecta = "B";
-    const mapaLetrasOrig = {};
-
-    const nuevasOpciones = opcionesEstructuradas.map((obj, newIdx) => {
-        const nuevaLetra = LETRAS_MAP[newIdx] || "A";
-        if (obj.esCorrecta) {
-            nuevaLetraCorrecta = nuevaLetra;
-        }
-        mapaLetrasOrig[nuevaLetra] = obj.letraOrig;
-        return obj.texto;
-    });
-
-    const itemBarajado = {
-        ...itemOriginal,
-        opciones_respuesta: nuevasOpciones,
-        correcta: nuevaLetraCorrecta,
-        correcta_db: nuevaLetraCorrecta
-    };
-
-    return { itemBarajado, nuevaLetraCorrecta, mapaLetrasOrig };
-}
-
-function obtenerIndexBucket(dificultad) {
-    const bFloat = parseFloat(dificultad || 0);
-    const bAcotado = Math.max(-4.0, Math.min(4.0, bFloat));
-    return Math.round((bAcotado + 4.0) / 0.5);
-}
-
-async function ejecutarCompilacionFriaDB(area) {
-    if (ESTADO_CARGA_AREAS.get(area) === 'PENDING') return;
-    ESTADO_CARGA_AREAS.set(area, 'PENDING');
-
-    try {
-        console.log(`📡 [B2B COGNITIVE COMPILE v21.2.0]: Cargando e indexando área: [${area}]...`);
-        
-        let itemsRaw = [];
-        try {
-            const resItems = await supabase.from('banco_items_irt').select(`
-                id, pregunta_texto, opciones_respuesta, parametro_a_discriminacion, parametro_b_dificultad, parametro_c_adivinacion, sub_competencia, correcta, matriz_q_items(*)
-            `).eq('area_general', area);
-
-            if (!resItems.error && resItems.data && resItems.data.length > 0) {
-                itemsRaw = resItems.data;
-            }
-        } catch (e) {
-            console.warn(`⚠️ Supabase offline para '${area}'. Usando banco nativo:`, e.message);
-        }
-
-        if (itemsRaw.length === 0) {
-            itemsRaw = BANCO_COMPLETO.filter(it => {
-                const itemArea = String(it.area || it.area_general || '').toLowerCase().trim();
-                const targetArea = String(area).toLowerCase().trim();
-                if (targetArea.includes('lectura') || targetArea.includes('lenguaje')) {
-                    return itemArea.includes('lectura') || itemArea.includes('lenguaje');
-                }
-                return itemArea === targetArea;
-            }).map(it => ({
-                id: it.id || crypto.randomUUID(),
-                pregunta_texto: it.texto || it.pregunta_texto,
-                opciones_respuesta: it.opciones || it.opciones_respuesta,
-                parametro_a_discriminacion: it.a || it.parametro_a_discriminacion || 1.2,
-                parametro_b_dificultad: it.b || it.parametro_b_dificultad || 0.0,
-                parametro_c_adivinacion: it.c || it.parametro_c_adivinacion || 0.25,
-                sub_competencia: it.sub || it.sub_competencia || 'general',
-                correcta: it.ok || it.correcta || 'B',
-                matriz_q_items: it.q || it.matriz_q || {}
-            }));
-        }
-
-        if (itemsRaw.length === 0) {
-            throw new Error(`El repositorio para '${area}' no contiene registros válidos.`);
-        }
-
-        const llavesAtributosDinamicos = ['attr_heuristica_lineal', 'attr_inversion_operacional', 'attr_omision_conversion', 'attr_error_geometrico'];
-        CACHE_ESQUEMA_ATRIBUTOS.set(area, llavesAtributosDinamicos);
-
-        const mapaItems = new Map();
-        const matrizBuckets = Array.from({ length: 17 }, () => []);
-        const mapaTrampas = new Map();
-
-        itemsRaw.forEach(item => {
-            let estructuraQ = {};
-            llavesAtributosDinamicos.forEach(attr => {
-                estructuraQ[attr] = item.matriz_q_items?.[attr] || 0;
-            });
-
-            let opcionesNormalizadas = ["A", "B", "C", "D"];
-            if (Array.isArray(item.opciones_respuesta)) {
-                opcionesNormalizadas = item.opciones_respuesta;
-            } else if (typeof item.opciones_respuesta === 'string') {
-                try {
-                    opcionesNormalizadas = JSON.parse(item.opciones_respuesta);
-                } catch (e) {
-                    opcionesNormalizadas = [item.opciones_respuesta];
-                }
-            } else if (item.opciones_respuesta && typeof item.opciones_respuesta === 'object') {
-                opcionesNormalizadas = Object.values(item.opciones_respuesta);
-            }
-
-            const metadatosEstructurados = {
-                id: item.id,
-                pregunta_texto: item.pregunta_texto,
-                opciones_respuesta: opcionesNormalizadas,
-                a: parseFloat(item.parametro_a_discriminacion || 1.0),
-                b: parseFloat(item.parametro_b_dificultad || 0.0),
-                c: parseFloat(item.parametro_c_adivinacion || 0.2),
-                sub_competencia: String(item.sub_competencia || 'general').toLowerCase().trim(),
-                correcta: String(item.correcta || 'B').toUpperCase().trim(),
-                correcta_db: String(item.correcta || 'B').toUpperCase().trim(),
-                matriz_q: estructuraQ
-            };
-
-            mapaItems.set(item.id, metadatosEstructurados);
-            const indexBucket = obtenerIndexBucket(metadatosEstructurados.b);
-            matrizBuckets[indexBucket].push(metadatosEstructurados);
-        });
-
-        try {
-            const resTrampas = await supabase.from('mapa_trampas_distractores').select('*');
-            if (!resTrampas.error && resTrampas.data) {
-                resTrampas.data.forEach(t => {
-                    const yMarcada = String(t.opcion_marcada || "").toUpperCase().trim();
-                    const llaveCompuesta = `${t.item_id}_${yMarcada}`;
-                    const estructuraTrampaQ = {};
-                    llavesAtributosDinamicos.forEach(attr => {
-                        if (t[attr] !== undefined) {
-                            estructuraTrampaQ[attr] = t[attr];
-                        } else {
-                            const fallbackKey = attr.replace('attr_', 'vulnera_');
-                            estructuraTrampaQ[attr] = t[fallbackKey] || 0;
-                        }
-                    });
-                    mapaTrampas.set(llaveCompuesta, estructuraTrampaQ);
-                });
-            }
-        } catch (e) {
-            console.warn("⚠️ [TRAMPAS DB WARN]: Usando mapa por defecto.", e.message);
-        }
-
-        CACHE_BANCO_ITEMS.set(area, mapaItems);
-        CACHE_BUCKETS_DIFICULTAD.set(area, matrizBuckets);
-        CACHE_MAPA_TRAMPAS.set(area, mapaTrampas);
-        CACHE_TIMESTAMPS.set(area, Date.now());
-        ESTADO_CARGA_AREAS.set(area, 'READY');
-
-    } catch (err) {
-        ESTADO_CARGA_AREAS.set(area, 'ERROR');
-        console.error(`🚨 [COMPILATION FAILED]:`, err.message || err);
-    }
-}
-
-export function precalentarInstOriginal(area) {
-    const ahora = Date.now();
-    const timestampArea = CACHE_TIMESTAMPS.get(area);
-    const cacheExpirada = !timestampArea || (ahora - timestampArea) > CACHE_TTL_MS;
-
-    if (cacheExpirada || ESTADO_CARGA_AREAS.get(area) === 'ERROR') {
-        ejecutarCompilacionFriaDB(area);
-    }
-
-    if (CACHE_BANCO_ITEMS.has(area) && CACHE_MAPA_TRAMPAS.has(area)) {
-        return {
-            mapaParametros: CACHE_BANCO_ITEMS.get(area),
-            matrizBucketsDificultad: CACHE_BUCKETS_DIFICULTAD.get(area),
-            mapaTrampasGlobal: CACHE_MAPA_TRAMPAS.get(area)
-        };
-    }
-    return { mapaParametros: new Map(), matrizBucketsDificultad: Array.from({ length: 17 }, () => []), mapaTrampasGlobal: new Map() };
-}
-
 /**
- * ⚡ PROCESAR INTERACCIÓN DEL ESTUDIANTE (Controlador Delgado Orquestador)
+ * ⚡ PROCESAR INTERACCIÓN DEL ESTUDIANTE (Controlador Delgado Orquestador - Clean Architecture)
  */
 export async function procesarInteraccionEstudiante(req, res) {
     const timestampInicio = Date.now();
@@ -244,14 +54,34 @@ export async function procesarInteraccionEstudiante(req, res) {
     let lockKey = null;
 
     try {
-        const { studentId, sessionId, itemId, areaGeneral, responseTime, tiempo, declaredConfidence, certeza, selectionVector, opcionesDescartadas, institution_id, integrityToken, itemHash, isMinor, parental_consent_verified } = req.body;
+        const {
+            studentId, sessionId, itemId, areaGeneral, responseTime, tiempo,
+            declaredConfidence, certeza, selectionVector, opcionesDescartadas,
+            institution_id, integrityToken, itemHash, isMinor, parental_consent_verified,
+            target_exam, targetExam, carrera_objetivo, carreraObjetivo,
+            userPlan, vidasDiarias
+        } = req.body;
+
+        const planUsuario = String(userPlan || req.headers['x-user-plan'] || 'EXPLORADOR').toUpperCase().trim();
+        let vidasRestantesBackend = (vidasDiarias !== undefined && vidasDiarias !== null) ? parseInt(vidasDiarias, 10) : 3;
+
         const tenantId = String(institution_id || "colegio_sandbox_default").toLowerCase().trim();
 
         if (!studentId || !areaGeneral) {
             return res.status(400).json({ success: false, error: "Contrato de mensajería perimetral vulnerado." });
         }
 
-        // ⚖️ CAPA 3: VERIFICACIÓN REGULATORIA DE CONSENTIMIENTO PARENTAL (Ley 1581 - Protección a Menores - Req 7)
+        const targetExamRaw = target_exam || targetExam || req.query?.target_exam || req.query?.targetExam || 'SABER_11';
+        const VALID_TARGET_EXAMS = ['SABER_11', 'UNAL_GENERAL', 'UNAL_CARRERAS', 'CONCURSO_DOCENTE', 'SABER_PRO'];
+        let targetExamSaneado = String(targetExamRaw).toUpperCase().trim();
+        if (!VALID_TARGET_EXAMS.includes(targetExamSaneado)) {
+            targetExamSaneado = 'SABER_11';
+        }
+
+        const carreraObjetivoRaw = carrera_objetivo || carreraObjetivo || req.query?.carrera_objetivo || req.query?.carreraObjetivo || null;
+        const carreraObjetivoSaneada = carreraObjetivoRaw ? String(carreraObjetivoRaw).toUpperCase().trim() : null;
+
+        // ⚖️ VERIFICACIÓN REGULATORIA DE CONSENTIMIENTO PARENTAL (Ley 1581 - Protección a Menores)
         if (isMinor === true && parental_consent_verified !== true) {
             return res.status(403).json({
                 success: false,
@@ -262,17 +92,14 @@ export async function procesarInteraccionEstudiante(req, res) {
 
         const studentIdSaneado = String(studentId).toLowerCase().trim().split('@')[0];
         
-        let areaSaneada = areaGeneral.toLowerCase().trim();
-        if (areaSaneada.includes('lectura') || areaSaneada.includes('lenguaje')) {
-            areaSaneada = 'lectura_critica';
-        }
+        const areaSaneada = sanitizarAreaMateria(areaGeneral);
 
-        // 🔒 CAPA 4: DISTRIBUTED REDLOCK TRANSACTION ISOLATION (Req 11)
-        lockKey = `session:${areaSaneada}:${sessionId || studentIdSaneado}`;
-        lockValue = await acquireRedlock(lockKey, 3000);
+        // 🔒 ATOMIC REDLOCK TRANSACTION ISOLATION
+        const candado = await adquirirCandadoSesion(areaSaneada, sessionId, studentIdSaneado, 3000);
+        lockKey = candado.lockKey;
+        lockValue = candado.lockValue;
 
         if (!lockValue && itemId) {
-            // Si la sesión está bloqueada procesando una solicitud simultánea en otra pestaña
             return res.status(429).json({
                 success: false,
                 error: "transaccion_concurrente_bloqueada",
@@ -292,117 +119,106 @@ export async function procesarInteraccionEstudiante(req, res) {
         const listadoDescartadas = Array.isArray(opcionesDescartadas) ? opcionesDescartadas : [];
 
         const llavesAtributos = CACHE_ESQUEMA_ATRIBUTOS.get(areaSaneada) || ['attr_heuristica_lineal', 'attr_inversion_operacional', 'attr_omision_conversion', 'attr_error_geometrico'];
-        
-        const indexLookUpKey = `dante:active_index:${areaSaneada}:${studentIdSaneado}`;
-        let activeSessionId = sessionId;
 
-        if (!itemId) {
-            const checkActiveSession = await redis.get(indexLookUpKey);
-            if (checkActiveSession) {
-                activeSessionId = checkActiveSession;
-            }
-        }
-
-        const cacheKey = `dante:session:${areaSaneada}:${activeSessionId}`; 
-        let sessionState = null;
-        let cronicaCelebracionArranque = "";
-
-        if (!itemId) {
-            const rawCachedState = await redis.get(cacheKey);
-            if (rawCachedState) {
-                sessionState = JSON.parse(rawCachedState);
-            } else {
-                let thetaAlgebra = 0.0;
-                let thetaGeometria = 0.0;
-                let thetaEstadistica = 0.0;
-                let iriHistorico = 0.5000;
-                let iccHistorico = 0.5000;
-                const profileCacheKey = `dante:profile:${areaSaneada}:${studentIdSaneado}`;
-
-                try {
-                    const cachedProfile = await redis.get(profileCacheKey);
-                    if (cachedProfile) {
-                        const parsedP = JSON.parse(cachedProfile);
-                        thetaAlgebra = parseFloat(parsedP.thetas?.algebra || 0.0);
-                        thetaGeometria = parseFloat(parsedP.thetas?.geometria || 0.0);
-                        thetaEstadistica = parseFloat(parsedP.thetas?.estadistica || 0.0);
-                        iriHistorico = parsedP.iri !== undefined ? parseFloat(parsedP.iri) : 0.5000;
-                        iccHistorico = parsedP.icc !== undefined ? parseFloat(parsedP.icc) : 0.5000;
-                    } else {
-                        const { data: historialProgreso } = await supabase
-                            .from('progreso_estudiantes')
-                            .select('*') 
-                            .eq('estudiante', studentIdSaneado)
-                            .eq('materia', areaSaneada)
-                            .eq('institution_id', tenantId)
-                            .maybeSingle();
-
-                        if (historialProgreso) {
-                            thetaAlgebra = parseFloat(historialProgreso.theta_algebra_calculo || 0.0);
-                            thetaGeometria = parseFloat(historialProgreso.theta_geometria_medicion || 0.0);
-                            thetaEstadistica = parseFloat(historialProgreso.theta_estadistica_probabilidad || 0.0);
-                            
-                            const empaquetado = historialProgreso.items_respondidos || {};
-                            const clics = empaquetado.historico_clics || [];
-                            
-                            iriHistorico = calcularIndiceIRI(clics, cacheInstancia.mapaParametros);
-                            iccHistorico = calcularIndiceICC(clics, cacheInstancia.mapaParametros);
-                        }
-                        await redis.setex(profileCacheKey, REDIS_TTL_SECONDS, JSON.stringify({ thetas: { algebra: thetaAlgebra, geometria: thetaGeometria, estadistica: thetaEstadistica }, iri: iriHistorico, icc: iccHistorico }));
-                    }
-
-                    const nombreClean = studentIdSaneado.toUpperCase();
-                    if (iriHistorico < 0.40) {
-                        cronicaCelebracionArranque = `Hola, ${nombreClean}. Tómate 8 segundos obligatorios antes del clic para estabilizar la atención.`;
-                    } else {
-                        cronicaCelebracionArranque = `Entorno multidimensional MIRT sincronizado para ${nombreClean}. Sincronizando Grafo Adaptativo para ${areaSaneada.toUpperCase()}.`;
-                    }
-
-                } catch (errProfile) {
-                    cronicaCelebracionArranque = `Sincronización de contingencia ejecutada para ${studentIdSaneado.toUpperCase()}.`;
-                }
-
-                const basePriors = {};
-                llavesAtributos.forEach(attr => { basePriors[attr] = 0.5000; });
-
-                sessionState = {
-                    session_id: activeSessionId, student_id: studentIdSaneado, area_general: areaSaneada,
-                    thetas: { algebra: thetaAlgebra, geometria: thetaGeometria, estadistica: thetaEstadistica }, 
-                    sem_bayesian: 1.0000, items_respondidos_count: 0,
-                    priors_dinamicos: basePriors, estado_operacional: 'STABLE', seen_item_ids: [], irt_responses: [],
-                    indice_recuperacion_intelectual: iriHistorico, indice_curiosidad_conductual: iccHistorico
-                };
-                
-                await redis.setex(indexLookUpKey, REDIS_TTL_SECONDS, activeSessionId);
-            }
-        } else {
-            const rawCachedState = await redis.get(cacheKey);
-            if (rawCachedState) {
-                sessionState = JSON.parse(rawCachedState);
-            } else {
-                const basePriors = {}; llavesAtributos.forEach(attr => { basePriors[attr] = 0.5000; });
-                sessionState = {
-                    session_id: activeSessionId, student_id: studentIdSaneado, area_general: areaSaneada,
-                    thetas: { algebra: 0.0, geometria: 0.0, estadistica: 0.0 }, sem_bayesian: 1.0000, items_respondidos_count: 0,
-                    priors_dinamicos: basePriors, estado_operacional: 'STABLE', seen_item_ids: [], irt_responses: [],
-                    indice_recuperacion_intelectual: 0.5000, indice_curiosidad_conductual: 0.5000
-                };
-            }
-        }
+        // 🧠 DELEGACIÓN A SessionService (DDD / SRP)
+        const {
+            sessionState,
+            activeSessionId: _activeSessionId,
+            cacheKey,
+            indexLookUpKey,
+            cronicaCelebracionArranque
+        } = await obtenerOIniciarEstadoSesion({
+            studentIdSaneado,
+            areaSaneada,
+            sessionId,
+            itemId,
+            targetExamSaneado,
+            carreraObjetivoSaneada,
+            tenantId,
+            cacheInstancia,
+            llavesAtributos
+        });
 
         const itemsExcluidosExamen = new Set(sessionState.seen_item_ids || []);
         let arrayHistoricoRespuestas = sessionState.irt_responses || [];
         const nuevoConteoItems = arrayHistoricoRespuestas.length;
 
+        // Guard de Cierre / Re-envío Idempotente
+        if (nuevoConteoItems >= OPERATIONAL_CONTROLS.MAX_ITEMS_EXAMEN) {
+            const algebraTheta = sessionState.thetas?.algebra || 0.0;
+            const semActual = sessionState.sem_bayesian || 0.22;
+            const currentThetaMateriaTarget = sessionState.thetas?.[areaSaneada] || algebraTheta;
+
+            const { ici: currentICI, cri: currentCRI, iri: iriActual, icc: iccActual } = calcularIndicesMetacognitivos({
+                certeza: certezaSaneada,
+                interaccionCorrecta: true,
+                responseTime: cronometriaSegundos,
+                difficulty: 0.0,
+                arrayHistoricoRespuestas,
+                mapaParametros: cacheInstancia.mapaParametros
+            });
+
+            const {
+                thetaPromedioGlobal,
+                puntajeGlobalEstandarizado,
+                puntajeAreaEstandarizado,
+                executivePayload
+            } = await generarConsolidadoRendimiento({
+                localRuntimeState: sessionState,
+                targetExamSaneado,
+                carreraObjetivoSaneada,
+                arrayHistoricoRespuestas,
+                currentThetaMateriaTarget,
+                semActual,
+                currentICI,
+                currentCRI,
+                iriActual,
+                iccActual,
+                studentIdSaneado,
+                areaSaneada,
+                hashAuditSignature: "audit_ledger_idempotent_completed"
+            });
+
+            return res.status(200).json({
+                success: true,
+                detenerExamen: true,
+                vidasDiarias: vidasRestantesBackend,
+                thetaProgreso: thetaPromedioGlobal,
+                bayesianSEMProgreso: semActual,
+                reporteFinal: {
+                    target_exam: targetExamSaneado,
+                    carrera_objetivo: carreraObjetivoSaneada,
+                    thetaEstimado: thetaPromedioGlobal,
+                    precisionMetrica: semActual,
+                    fisherSEM: 0.22,
+                    mapCalorSesgos: sessionState.priors_dinamicos,
+                    indices_avanzados: { ici: currentICI, cri: currentCRI, iri: iriActual, icc: iccActual },
+                    adn_cognitivo: executivePayload,
+                    plan_entrenamiento: executivePayload.plan_entrenamiento,
+                    escalonamiento_oficial: {
+                        target_exam: targetExamSaneado,
+                        puntaje_global: puntajeGlobalEstandarizado,
+                        puntaje_area: puntajeAreaEstandarizado
+                    }
+                }
+            });
+        }
+
         let opcionMarcada = "";
-        if (selectionVector && Array.isArray(selectionVector) && selectionVector.length > 0) {
+        const rawDirecta = req.body.selectedOption || req.body.opcionSeleccionada || req.body.respuestaUsuario;
+        if (rawDirecta) {
+            const matchDirecta = String(rawDirecta).toUpperCase().trim().match(/[A-D]/);
+            if (matchDirecta) opcionMarcada = matchDirecta[0];
+        }
+        if (!opcionMarcada && selectionVector && Array.isArray(selectionVector) && selectionVector.length > 0) {
             const opcionRaw = String(selectionVector[selectionVector.length - 1].option || "").toUpperCase().trim();
-            opcionMarcada = opcionRaw.includes(')') ? opcionRaw.split(')')[0].trim() : opcionRaw;
+            const matchOpcion = opcionRaw.match(/[A-D]/);
+            opcionMarcada = matchOpcion ? matchOpcion[0] : (opcionRaw.includes(')') ? opcionRaw.split(')')[0].trim() : opcionRaw);
         }
 
         let interaccionCorrecta = false;
         let metadatosItem = null;
-        let forzarCierrePorRepeticion = false;
+        const forzarCierrePorRepeticion = false;
 
         if (itemId && !itemsExcluidosExamen.has(itemId)) {
             metadatosItem = cacheInstancia.mapaParametros.get(itemId);
@@ -417,19 +233,28 @@ export async function procesarInteraccionEstudiante(req, res) {
 
             if (metadatosItem) {
                 const idRealMapeado = metadatosItem.id;
-                const respuestaCorrectaDB = String(
+                const rawCorrectaDB = String(
                     sessionState.shuffled_correct?.[idRealMapeado] ||
                     sessionState.shuffled_correct?.[itemId] ||
                     metadatosItem.correcta || 
+                    metadatosItem.ok ||
                     metadatosItem.correcta_db || 
+                    metadatosItem.respuestaCorrecta ||
                     'A'
                 ).toUpperCase().trim();
+                const matchCorrectaDB = rawCorrectaDB.match(/[A-D]/);
+                const respuestaCorrectaDB = matchCorrectaDB ? matchCorrectaDB[0] : 'A';
                 
                 interaccionCorrecta = (opcionMarcada === respuestaCorrectaDB);
                 itemsExcluidosExamen.add(idRealMapeado);
 
+                // 💔 Gestión de Vidas en Backend para Plan Free / Explorador
+                if (!interaccionCorrecta && (planUsuario === 'FREE' || planUsuario === 'EXPLORADOR' || planUsuario === 'BASICO')) {
+                    vidasRestantesBackend = Math.max(0, vidasRestantesBackend - 1);
+                }
+
                 let cEfectivo = metadatosItem.c;
-                if (listadoDescartadas.length > 0 && listadoDescartadas.length < 3) {
+                if (listadoDescartadas.length > 0 && listadoDescartadas.length < 4) {
                     const opcionesRestantes = Math.max(1, 4 - listadoDescartadas.length);
                     cEfectivo = parseFloat((1.0 / opcionesRestantes).toFixed(4));
                 }
@@ -446,7 +271,7 @@ export async function procesarInteraccionEstudiante(req, res) {
                     irt: { a: metadatosItem.a, b: metadatosItem.b, c: cEfectivo, calibrationVersion: CALIBRATION_VERSION }
                 });
 
-                // Persistencia de micro-evento en DB
+                // Persistencia de micro-evento en DB via ProfileService
                 persistirProgresoResiliente({
                     estudiante: studentIdSaneado,
                     materia: areaSaneada,
@@ -455,8 +280,23 @@ export async function procesarInteraccionEstudiante(req, res) {
                 }).catch(() => {});
             }
         } else if (itemId && itemsExcluidosExamen.has(itemId)) {
-            forzarCierrePorRepeticion = true;
             metadatosItem = cacheInstancia.mapaParametros.get(itemId);
+            if (metadatosItem) {
+                const idRealMapeado = metadatosItem.id;
+                const rawCorrectaDB = String(
+                    sessionState.shuffled_correct?.[idRealMapeado] ||
+                    sessionState.shuffled_correct?.[itemId] ||
+                    metadatosItem.correcta || 
+                    metadatosItem.ok ||
+                    metadatosItem.correcta_db || 
+                    metadatosItem.respuestaCorrecta ||
+                    'A'
+                ).toUpperCase().trim();
+                const matchCorrectaDB = rawCorrectaDB.match(/[A-D]/);
+                const respuestaCorrectaDB = matchCorrectaDB ? matchCorrectaDB[0] : 'A';
+                
+                interaccionCorrecta = (opcionMarcada === respuestaCorrectaDB);
+            }
         } else if (itemId) {
             metadatosItem = cacheInstancia.mapaParametros.get(itemId);
         }
@@ -478,37 +318,18 @@ export async function procesarInteraccionEstudiante(req, res) {
             }
         }
 
-        const esDisparoAlAzar = (cronometriaSegundos < METACONTROL_THRESHOLDS.UMBRAL_IMPULSIVIDAD_CRITICA_SEGUNDOS);
-        const esBloqueoCognitivo = (cronometriaSegundos > METACONTROL_THRESHOLDS.UMBRAL_BLOQUEO_FATIGA_SEGUNDOS);
-
-        let flagIntervencionActiva = "NONE";
-        let errorDetonadoMsg = "Ninguno";
-        let remediacionSugeridaMsg = "Se prescribe continuar el flujo adaptativo estándar.";
-
-        if (itemId && !interaccionCorrecta && metadatosItem) {
-            const llaveBusqueda = `${metadatosItem.id}_${opcionMarcadaOriginal}`;
-            const tieneTrampaMapeada = cacheInstancia.mapaTrampasGlobal.has(llaveBusqueda);
-
-            if (tieneTrampaMapeada) {
-                const datosTrampa = cacheInstancia.mapaTrampasGlobal.get(llaveBusqueda);
-                const sesgoActivo = Object.keys(datosTrampa).find(attr => datosTrampa[attr] === 1);
-                errorDetonadoMsg = sesgoActivo ? sesgoActivo.replace('attr_', '').replace(/_/g, ' ').toUpperCase() : "Desviación de Enfoque Procedimental";
-                remediacionSugeridaMsg = "Has caído en un distractor diseñado para evaluar desajustes procedimentales.";
-            } else {
-                errorDetonadoMsg = "Desviación de Enfoque Procedimental";
-                remediacionSugeridaMsg = "Lee con calma el enunciado del problema e identifica la pregunta central.";
-            }
-        }
-
-        if (esDisparoAlAzar) {
-            flagIntervencionActiva = "IMPULSIVITY_BLOCK";
-            errorDetonadoMsg = "RUIDO POR IMPULSIVIDAD CRÍTICA";
-            remediacionSugeridaMsg = "Has respondido en menos de 4 segundos. Se prescribe frenar el impulso y releer el estímulo.";
-        } else if (esBloqueoCognitivo) {
-            flagIntervencionActiva = "FATIGUED_LOCK";
-            errorDetonadoMsg = "SATURACIÓN COGNITIVA / BLOQUEO";
-            remediacionSugeridaMsg = "Has excedido los 3 minutos en este reactivo sin consolidar una resolución.";
-        }
+        // 🧠 EVALUACIÓN METAGOGNITIVA Y REMEDIACIÓN (DELEGACIÓN A ScoringService)
+        const {
+            flagIntervencionActiva,
+            errorDetonadoMsg,
+            remediacionSugeridaMsg
+        } = evaluarIntervencionMetacognitiva({
+            responseTime: cronometriaSegundos,
+            interaccionCorrecta,
+            metadatosItem,
+            opcionMarcadaOriginal,
+            mapaTrampasGlobal: cacheInstancia.mapaTrampasGlobal
+        });
 
         const conteoActualizadoItems = arrayHistoricoRespuestas.length;
         const subCompetenciaDestino = metadatosItem ? String(metadatosItem.sub_competencia).toLowerCase().trim() : 'algebra';
@@ -520,7 +341,7 @@ export async function procesarInteraccionEstudiante(req, res) {
             currentThetaMateriaTarget = sessionState.thetas?.estadistica || 0.0;
         }
 
-        // TRANSICIÓN DE ESTADO INMUTABLE (Req 5 & Req 1, Req 3)
+        // TRANSICIÓN DE ESTADO INMUTABLE
         const estadoEntranteData = {
             itemId: metadatosItem?.id,
             isCorrect: interaccionCorrecta,
@@ -534,12 +355,12 @@ export async function procesarInteraccionEstudiante(req, res) {
             llavesAtributos
         };
 
-        const localRuntimeState = calcularSiguienteEstadoInmutable(sessionState, estadoEntranteData);
+        const localRuntimeState = procesarTransicionEstado(sessionState, estadoEntranteData);
 
         // PERSISTENCIA DE ESTADO EN REDIS
-        await redis.setex(cacheKey, REDIS_TTL_SECONDS, JSON.stringify(localRuntimeState));
+        await guardarEstadoSesion(cacheKey, localRuntimeState);
 
-        // 📜 REGISTRO DE AUDITORÍA INMUTABLE LEDGER (Req 8)
+        // 📜 REGISTRO DE AUDITORÍA INMUTABLE LEDGER (ProfileService)
         const hashAuditSignature = await registrarSnapshotLedgerInmutable({
             studentId: studentIdSaneado,
             areaGeneral: areaSaneada,
@@ -568,63 +389,38 @@ export async function procesarInteraccionEstudiante(req, res) {
         const semActual = localRuntimeState.sem_bayesian;
 
         const itemDifficultyDinamica = metadatosItem ? parseFloat(metadatosItem.b) : 0.0;
-        const currentICI = calcularICI(certezaSaneada, interaccionCorrecta, cronometriaSegundos, itemDifficultyDinamica);
-        const currentCRI = calcularCRI(arrayHistoricoRespuestas);
 
-        const iriActual = calcularIndiceIRI(arrayHistoricoRespuestas, cacheInstancia.mapaParametros);
-        const iccActual = calcularIndiceICC(arrayHistoricoRespuestas, cacheInstancia.mapaParametros);
+        const { ici: currentICI, cri: currentCRI, iri: iriActual, icc: iccActual } = calcularIndicesMetacognitivos({
+            certeza: certezaSaneada,
+            interaccionCorrecta,
+            responseTime: cronometriaSegundos,
+            difficulty: itemDifficultyDinamica,
+            arrayHistoricoRespuestas,
+            mapaParametros: cacheInstancia.mapaParametros
+        });
 
         if (forzarDetencionExamen) {
-            const thetaPromedioGlobal = (algebraTheta + geometryTheta + estadisticaTheta) / 3.0;
-            const puntajeIcfesEstandar = Math.max(1, Math.min(100, Math.round(50 + (thetaPromedioGlobal * 13.8))));
-            
-            const totalDisparos = arrayHistoricoRespuestas.length || 1;
-            const distractoresAzar = arrayHistoricoRespuestas.filter(r => r.responseTime < 12.0).length; 
-            const disparosBloqueo = arrayHistoricoRespuestas.filter(r => r.responseTime > METACONTROL_THRESHOLDS.UMBRAL_BLOQUEO_FATIGA_SEGUNDOS).length;
-            
-            const adnImpulsividad = Math.round((distractoresAzar / totalDisparos) * 100);
-            const adnFatiga = Math.round((disparosBloqueo / totalDisparos) * 100);
-            const adnRecuperacion = Math.round(currentCRI * 100);
-            const adnEstabilidad = Math.round(iccActual * 100);
-
-            let sesgoMaximoId = "procedimental_generico";
-            let porcentajeMaximo = -1;
-
-            for (const [key, val] of Object.entries(localRuntimeState.priors_dinamicos || {})) {
-                if (val > porcentajeMaximo) {
-                    porcentajeMaximo = val;
-                    sesgoMaximoId = key;
-                }
-            }
-
-            const datosResumen = {
-                thetaGlobal: thetaPromedioGlobal.toFixed(4),
-                sem_global: semActual.toFixed(4),
-                impulsividad: adnImpulsividad,
-                recuperacion: adnRecuperacion,
-                estabilidad: adnEstabilidad,
-                sesgoDominante: sesgoMaximoId
-            };
-
-            // 🤖 EXPLICABILIDAD ALGORÍTMICA NATIVA (Req 9 - XAI Shapley Fallback)
-            const interpretacionIA = await obtenerExplicabilidadMetacognitiva(studentIdSaneado, areaSaneada, datosResumen, localRuntimeState.priors_dinamicos);
-
-            const executivePayload = {
-                thetaEstimado: thetaPromedioGlobal,
-                impulsividad: adnImpulsividad, 
-                fatiga: adnFatiga, 
-                recuperacion: adnRecuperacion,
-                estabilidad: adnEstabilidad,
-                cronica_narrativa: interpretacionIA.cronica_narrativa || "Análisis completado.", 
-                vulnerabilidad_dominante: interpretacionIA.desviacion_enfoque || "Enfoque estándar.", 
-                prescripcion_clinica: interpretacionIA.estrategia_autorregulacion || "Continuar plan.", 
-                plan_entrenamiento: Array.isArray(interpretacionIA?.plan_entrenamiento) ? interpretacionIA.plan_entrenamiento : [
-                    "Días 1-3: Repaso conceptual.",
-                    "Días 4-5: Práctica guiada."
-                ],
-                mapa_calor_sesgos: localRuntimeState.priors_dinamicos,
-                ledger_hash: hashAuditSignature
-            };
+            // DELEGACIÓN A ScoringService PARA RENDIMIENTO Y EXPLICABILIDAD
+            const {
+                thetaPromedioGlobal,
+                puntajeGlobalEstandarizado,
+                puntajeAreaEstandarizado,
+                executivePayload
+            } = await generarConsolidadoRendimiento({
+                localRuntimeState,
+                targetExamSaneado,
+                carreraObjetivoSaneada,
+                arrayHistoricoRespuestas,
+                currentThetaMateriaTarget,
+                semActual,
+                currentICI,
+                currentCRI,
+                iriActual,
+                iccActual,
+                studentIdSaneado,
+                areaSaneada,
+                hashAuditSignature
+            });
 
             const payloadPersistenciaBD = {
                 estudiante: studentIdSaneado,
@@ -638,7 +434,10 @@ export async function procesarInteraccionEstudiante(req, res) {
                 bayesian_sem: parseFloat(semActual.toFixed(4)),
                 historial_theta: arrayHistoricoRespuestas.map(r => parseFloat((r.thetaSnapshot || 0.0).toFixed(4))),
                 items_respondidos: {
-                    puntaje_escalonado: puntajeIcfesEstandar,
+                    puntaje_escalonado: puntajeAreaEstandarizado,
+                    puntaje_global_escalonado: puntajeGlobalEstandarizado,
+                    target_exam: targetExamSaneado,
+                    carrera_objetivo: carreraObjetivoSaneada,
                     historico_clics: arrayHistoricoRespuestas.map(r => ({
                         itemId: r.itemId, correcto: r.correcto, selectedOption: r.selectedOption, opcionesDescartadas: r.opcionesDescartadas, responseTime: r.responseTime
                     })),
@@ -647,29 +446,32 @@ export async function procesarInteraccionEstudiante(req, res) {
                 ultima_actualizacion: new Date().toISOString()
             };
 
-            // 🚨 PERSISTENCIA CON DEAD LETTER QUEUE (Req 10)
+            // PERSISTENCIA RESILIENTE (DLQ)
             await persistirProgresoResiliente(payloadPersistenciaBD);
 
             const payloadPerfilFinal = { 
                 thetas: { algebra: algebraTheta, geometria: geometryTheta, estadistica: estadisticaTheta },
-                escalonamiento_icfes: { puntaje_estimated: puntajeIcfesEstandar },
+                escalonamiento_oficial: { target_exam: targetExamSaneado, puntaje_global: puntajeGlobalEstandarizado, puntaje_area: puntajeAreaEstandarizado },
+                escalonamiento_icfes: { puntaje_estimated: puntajeAreaEstandarizado },
                 adn_cognitivo: executivePayload, mapa_calor_sesgos: localRuntimeState.priors_dinamicos,
                 iri: iriActual, icc: iccActual, bayesian_sem: semActual
             };
             
-            await redis.setex(`dante:profile:${areaSaneada}:${studentIdSaneado}`, REDIS_TTL_SECONDS, JSON.stringify(payloadPerfilFinal)).catch(() => {});
-            await redis.del(cacheKey).catch(() => {});
-            await redis.del(indexLookUpKey).catch(() => {});
+            await guardarPerfilCache(areaSaneada, studentIdSaneado, payloadPerfilFinal);
+            await limpiarSesionActiva(cacheKey, indexLookUpKey);
 
             return res.status(200).json({
                 success: true, 
                 detenerExamen: true, 
+                vidasDiarias: vidasRestantesBackend,
                 thetaProgreso: thetaPromedioGlobal, 
                 bayesianSEMProgreso: semActual,
                 generatedToken: integrityToken || "jwt_live_nominal_test_" + Date.now(),
                 itemHash: itemHash || "hash_nominal_stable",
                 auditLedgerHash: hashAuditSignature,
                 reporteFinal: {
+                    target_exam: targetExamSaneado,
+                    carrera_objetivo: carreraObjetivoSaneada,
                     thetaEstimado: thetaPromedioGlobal, 
                     precisionMetrica: semActual, 
                     fisherSEM: 0.22, 
@@ -678,9 +480,14 @@ export async function procesarInteraccionEstudiante(req, res) {
                     indices_avanzados: { ici: currentICI, cri: currentCRI, iri: iriActual, icc: iccActual },
                     adn_cognitivo: executivePayload,
                     plan_entrenamiento: executivePayload.plan_entrenamiento,
+                    escalonamiento_oficial: {
+                        target_exam: targetExamSaneado,
+                        puntaje_global: puntajeGlobalEstandarizado,
+                        puntaje_area: puntajeAreaEstandarizado
+                    },
                     escalonamiento_pais: { 
-                        puntaje_icfes_area: puntajeIcfesEstandar, 
-                        intervalo_certeza_95: [Math.max(1, puntajeIcfesEstandar - 5), Math.min(100, puntajeIcfesEstandar + 5)] 
+                        puntaje_icfes_area: puntajeAreaEstandarizado, 
+                        intervalo_certeza_95: [Math.max(1, puntajeAreaEstandarizado - 5), Math.min(100, puntajeAreaEstandarizado + 5)] 
                     }
                 }
             });
@@ -706,18 +513,17 @@ export async function procesarInteraccionEstudiante(req, res) {
             dictShuffledOrig[itemParaEnviar.id] = mapaLetrasOrig;
         }
 
-        // Actualizar mappings de barajado en estado
         const estadoConShuffled = {
             ...localRuntimeState,
             shuffled_correct: dictShuffledCorrect,
             shuffled_orig_map: dictShuffledOrig
         };
-        await redis.setex(cacheKey, REDIS_TTL_SECONDS, JSON.stringify(estadoConShuffled));
+        await guardarEstadoSesion(cacheKey, estadoConShuffled);
 
         const rawItemId = itemParaEnviar?.id;
 
         return res.status(200).json({
-            success: true, detenerExamen: false, thetaProgreso: currentThetaMateriaTarget, bayesianSEMProgreso: semActual,
+            success: true, detenerExamen: false, vidasDiarias: vidasRestantesBackend, thetaProgreso: currentThetaMateriaTarget, bayesianSEMProgreso: semActual,
             interaccionCorrecta, latencia_computo_ms: Date.now() - timestampInicio,
             cronicaBienvenida: cronicaCelebracionArranque,
             generatedToken: integrityToken || "jwt_live_nominal_test_" + Date.now(),
@@ -732,97 +538,39 @@ export async function procesarInteraccionEstudiante(req, res) {
             andamiajeForense: { errorDetonado: errorDetonadoMsg, remediacionSugerida: remediacionSugeridaMsg },
             item: {
                 id: rawItemId, 
-                pregunta_texto: itemParaEnviar?.pregunta_texto,
-                opciones_respuesta: itemParaEnviar?.opciones_respuesta || ["A", "B", "C", "D"],
-                sub_competencia: itemParaEnviar?.sub_competencia
+                pregunta_texto: itemParaEnviar?.pregunta_texto || itemParaEnviar?.texto || itemParaEnviar?.enunciado || "Pregunta de evaluación adaptativa",
+                opciones_respuesta: (Array.isArray(itemParaEnviar?.opciones_respuesta) && itemParaEnviar.opciones_respuesta.length > 0)
+                    ? itemParaEnviar.opciones_respuesta
+                    : (Array.isArray(itemParaEnviar?.opciones) ? itemParaEnviar.opciones : ["Opción A", "Opción B", "Opción C", "Opción D"]),
+                sub_competencia: itemParaEnviar?.sub_competencia,
+                target_exam: itemParaEnviar?.target_exam || targetExamSaneado,
+                carrera_objetivo: itemParaEnviar?.carrera_objetivo || carreraObjetivoSaneada,
+                imagen_url: itemParaEnviar?.imagen_url || null
             }
         });
 
     } catch (error) {
-        console.error("🚨 [CONTROL FORENSE EXCEPCIÓN CRÍTICA v21.2.0]:", error.message);
+        console.error("🚨 [CONTROL FORENSE EXCEPCIÓN CRÍTICA v22.2.0]:", error.message);
         return res.status(500).json({ success: false, error: "Cortocircuito interno perimetral." });
     } finally {
-        // 🔒 LIBERACIÓN OBLIGATORIA DEL LOCK REDLOCK (Req 11)
         if (lockKey && lockValue) {
-            await releaseRedlock(lockKey, lockValue);
+            await liberarCandadoSesion(lockKey, lockValue);
         }
     }
 }
 
+/**
+ * 💎 OBTENER GEMELO DIGITAL DE ESTUDIANTE (Delegación a ProfileService)
+ */
 export async function obtenerGemeloEstudiante(req, res) {
     try {
         const studentIdRaw = req.params.id || req.params.studentId;
-        if (!studentIdRaw) {
-            return res.status(400).json({ success: false, error: "Identificador de estudiante requerido." });
-        }
-
-        const studentIdSaneado = String(studentIdRaw).toLowerCase().trim().split('@')[0];
-
-        let { data: progreso, error: progErr } = await supabase
-            .from('progreso_estudiantes')
-            .select('*')
-            .eq('estudiante', studentIdSaneado)
-            .order('ultima_actualizacion', { ascending: false });
-
-        if (progErr) {
-            console.warn("⚠️ [CONSULTA PROGRESO WARN]:", progErr.message);
-        }
-
-        if (!progreso || progreso.length === 0) {
-            const { data: eventos, error: evErr } = await supabase
-                .from('registro_eventos')
-                .select('*')
-                .eq('student_id', studentIdSaneado)
-                .order('created_at', { ascending: false });
-
-            if (!evErr && eventos && eventos.length > 0) {
-                const totalRespuestas = eventos.length;
-                
-                const aciertos = eventos.filter(e => {
-                    if (e.is_correct === true) return true;
-                    if (typeof e.is_correct === 'string') {
-                        const str = e.is_correct.toLowerCase().trim();
-                        return str === 'true' || str === 't' || str === '1';
-                    }
-                    return false;
-                }).length;
-
-                const porcentajeAcierto = Math.round((aciertos / (totalRespuestas || 1)) * 100);
-                const puntajeEstimado = Math.max(15, Math.min(100, Math.round(porcentajeAcierto)));
-
-                progreso = [{
-                    estudiante: studentIdSaneado,
-                    materia: 'lectura_critica',
-                    theta_algebra_calculo: parseFloat(((puntajeEstimado - 50) / 13.8).toFixed(4)),
-                    theta_geometria_medicion: 0.5000,
-                    theta_estadistica_probabilidad: 0.5000,
-                    indice_recuperacion_intelectual: 0.50,
-                    indice_curiosidad_conductual: 0.50,
-                    bayesian_sem: 0.35,
-                    items_respondidos: {
-                        puntaje_escalonado: puntajeEstimado,
-                        adn_empaquetado: {
-                            vulnerabilidad_dominante: "Discriminación de opciones trampa en lecturas extensas.",
-                            prescripcion_clinica: "Ejecutar lecturas analíticas desacelerando en los conectores de oposición.",
-                            cronica_narrativa: `Se registran ${totalRespuestas} respuestas guardadas en Supabase con ${aciertos} aciertos acumulados para ${studentIdSaneado.toUpperCase()}.`,
-                            plan_entrenamiento: ["Revisión de técnicas de lectura crítica", "Práctica de discriminación de premisas"],
-                            mapa_calor_sesgos: {
-                                attr_heuristica_lineal: 0.15,
-                                attr_inversion_operacional: 0.10,
-                                attr_omision_conversion: 0.05,
-                                attr_error_geometrico: 0.05
-                            }
-                        }
-                    },
-                    ultima_actualizacion: eventos[0].created_at || new Date().toISOString()
-                }];
-            }
-        }
+        const gemelo = await obtenerGemeloEstudianteService(studentIdRaw);
 
         return res.status(200).json({
             success: true,
             origen: "SUPABASE LIVE",
-            gemelo: progreso || []
+            gemelo
         });
 
     } catch (err) {
@@ -838,22 +586,104 @@ async function procesarPipelineFondo() {
             return setTimeout(procesarPipelineFondo, 2000); 
         }
 
-        let paquete = JSON.parse(elementoRaw);
+        const paquete = JSON.parse(elementoRaw);
         try {
             if (paquete.tipo === 'GEMELO') {
                 await actualizarGemeloDigital(paquete.data);
             }
-        } catch (dbError) {
+        } catch {
             console.log("💡 [PIPELINE ABSORCION]: Sincronización en caché de gemelo completada.");
         }
 
         await redis.lpop('dante:pipeline:events');
         setTimeout(procesarPipelineFondo, 40); 
 
-    } catch (err) {
+    } catch {
         await redis.lpop('dante:pipeline:events');
         setTimeout(procesarPipelineFondo, 100);
     }
 }
 
 setTimeout(procesarPipelineFondo, 5000);
+
+/**
+ * 💡 CONTROLADOR DEL TUTOR SOCRÁTICO IA
+ */
+export async function explicarIaController(req, res) {
+    try {
+        const { itemId, opcionSeleccionada, tiempoRespuestaSec, targetExam, perfilConductual } = req.body;
+
+        // Tope pedagógico (5/día) se aplica en cliente; aquí no hay gate de plan.
+        // El pago solo quita anuncios.
+
+        const rawOpcion = opcionSeleccionada || req.body.opcion_seleccionada || req.body.seleccion || 'A';
+        const opcionFormateada = String(rawOpcion).toUpperCase().trim() || 'A';
+
+        let itemEncontrado = null;
+        if (itemId) {
+            itemEncontrado = BANCO_COMPLETO.find(i => String(i.id) === String(itemId));
+        }
+
+        if (!itemEncontrado) {
+            itemEncontrado = {
+                id: itemId || "item_generico",
+                pregunta_texto: req.body.pregunta_texto || "Pregunta de evaluación adaptativa",
+                opciones_respuesta: req.body.opciones_respuesta || ["Opción A", "Opción B", "Opción C", "Opción D"],
+                correcta: req.body.correcta || "A",
+                b: req.body.b || 0.0,
+                sub_competencia: req.body.sub_competencia || "competencia_general"
+            };
+        }
+
+        let perfilFinal = perfilConductual || {};
+        const tSec = Number(tiempoRespuestaSec) || 15;
+        if (!perfilConductual || Object.keys(perfilConductual).length === 0) {
+            perfilFinal = {
+                impulsivo: tSec < 10,
+                bloqueado: tSec > 120,
+                excesoConfianza: (itemEncontrado.b < -0.5)
+            };
+        }
+
+        const numIntento = parseInt(req.body.numeroIntento || req.body.intento || 1, 10);
+        const esReintentoBool = Boolean(req.body.esReintento || numIntento > 1);
+
+        const resultado = await generarExplicacionSocratica({
+            item: itemEncontrado,
+            opcionSeleccionada: String(opcionFormateada),
+            tiempoRespuestaSec: tSec,
+            perfilConductual: perfilFinal,
+            targetExam: targetExam || req.body.target_exam || 'SABER_11',
+            numeroIntento: numIntento,
+            esReintento: esReintentoBool
+        });
+
+        return res.status(200).json({
+            success: true,
+            itemId: itemEncontrado.id,
+            opcionSeleccionada,
+            numeroIntento: numIntento,
+            esReintento: esReintentoBool,
+            explicacion: resultado.explicacion,
+            esFallback: resultado.esFallback,
+            duracionMs: resultado.duracionMs,
+            guardarrailes_pedagogicos: {
+                sin_spoilers: true,
+                nivel_1_premisa_orientadora: true,
+                nivel_2_anatomia_distractor: true,
+                nivel_3_descarte_y_teoria: true,
+                andamiaje_reintento_gradual: esReintentoBool,
+                fase_5_auditoria_certificada: true,
+                brevedad_180_palabras: true
+            }
+        });
+
+    } catch (err) {
+        console.error("🚨 [EXPLICAR IA CONTROLLER ERROR]:", err.message);
+        return res.status(500).json({
+            success: false,
+            error: "No se pudo generar la retroalimentación socrática.",
+            detalle: err.message
+        });
+    }
+}

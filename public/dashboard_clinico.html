@@ -2,16 +2,25 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dante OS v13.1 - Panel de Auditoría Clínica Cognitiva</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#070a13">
+    <title>Dante OS v23.1.0-ENTERPRISE // Panel de Auditoría Clínica Cognitiva</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/design-tokens.css">
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="theme.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="js/danteSecurityDRM.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&display=swap');
-        
         body {
-            background-color: #070a13;
+            background-color: var(--bg-deep);
             color: #e2e8f0;
-            font-family: 'JetBrains Mono', monospace;
+            font-family: var(--font-mono);
+            padding-top: max(1.5rem, env(safe-area-inset-top));
+            padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+            padding-left: max(1.5rem, env(safe-area-inset-left));
+            padding-right: max(1.5rem, env(safe-area-inset-right));
+            overflow-x: hidden;
         }
 
         .cyber-panel {

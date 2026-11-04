@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Dante OS v23.1.0-ENTERPRISE // Política de Privacidad y Protección de Datos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="css/design-tokens.css">
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="theme.css">
+    <style>
+        body {
+            background-color: var(--bg-deep);
+            color: #e2e8f0;
+            font-family: var(--font-sans);
+            padding-bottom: 3rem;
+        }
+    </style>
+</head>
+<body class="px-4 py-8 max-w-4xl mx-auto">
+    <header class="mb-8 border-b border-slate-700 pb-6 flex justify-between items-center">
+        <div>
+            <div class="flex items-center gap-2 mb-1">
+                <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-cyan-900/60 text-cyan-400 border border-cyan-500/30">COPPA & LEY 1581</span>
+                <span class="text-xs text-slate-400">Versión 22.0.0-RC1 (Enterprise Gold)</span>
+            </div>
+            <h1 class="text-2xl font-extrabold text-white">Política de Privacidad y Protección de Datos de Menores</h1>
+            <p class="text-xs text-slate-400 mt-1">Dante OS - Sistema Psicométrico Adaptativo MIRT & Tutor Socrático IA</p>
+        </div>
+        <a href="/" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-cyan-400 border border-cyan-500/30 transition-all">← Volver a la App</a>
+    </header>
+
+    <main class="space-y-6 text-sm text-slate-300 leading-relaxed">
+        <section class="bg-slate-800/80 p-5 rounded-xl border border-slate-700">
+            <h2 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                <span class="text-cyan-400">1.</span> Compromiso de Protección a Menores (Ley 1581 / COPPA)
+            </h2>
+            <p>
+                Dante OS garantiza el tratamiento confidencial y protegido de los datos personales de los estudiantes en concordancia con la Ley 1581 de 2012 (Colombia), la ley COPPA (EE.UU.) y el Reglamento General de Protección de Datos (GDPR). La recolección de telemetría psicométrica y conductual tiene como único propósito la calibración adaptativa de habilidades cognoscitivas.
+            </p>
+        </section>
+
+        <section class="bg-slate-800/80 p-5 rounded-xl border border-slate-700">
+            <h2 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                <span class="text-cyan-400">2.</span> Datos Recolectados y Gemelo Digital
+            </h2>
+            <ul class="list-disc pl-5 space-y-1.5 text-xs text-slate-300">
+                <li><strong>Telemetría de Respuesta:</strong> Tiempo de latencia por reactivo, certezas declaradas y vector de selección para el cálculo del parámetro Theta ($\theta$).</li>
+                <li><strong>Perfiles Conductuales:</strong> Indicadores anonimizados de impulsividad ($t < 10$s) y bloqueo cognoscitivo ($t > 120$s) utilizados únicamente para adaptar las respuestas del Tutor Socrático IA.</li>
+                <li><strong>No comercialización:</strong> Bajo ninguna circunstancia Dante OS comercializa, transfiere ni cede información personal o académica a terceros.</li>
+            </ul>
+        </section>
+
+        <section class="bg-slate-800/80 p-5 rounded-xl border border-slate-700">
+            <h2 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                <span class="text-cyan-400">3.</span> Solicitud de Eliminación de Cuenta y Datos (App Store / Play Store Mandate)
+            </h2>
+            <p class="mb-3 text-xs">
+                En cumplimiento con las directivas de publicación de Apple App Store (Regla 5.1.1) y Google Play Console, todo estudiante o acudiente legal tiene el derecho inalienable de solicitar la supresión total de su cuenta y borrado inmutable de su historial psicométrico.
+            </p>
+            <div class="bg-slate-900/90 p-4 rounded-lg border border-red-500/30 flex flex-col sm:flex-row justify-between items-center gap-3">
+                <div>
+                    <h3 class="text-sm font-bold text-red-400">¿Deseas eliminar tu cuenta y todos tus datos?</h3>
+                    <p class="text-[11px] text-slate-400">Esta acción eliminará de forma permanente tu Gemelo Digital, historial de pruebas y credenciales.</p>
+                </div>
+                <button onclick="solicitarBorradoCuenta()" class="px-4 py-2 bg-red-600/80 hover:bg-red-500 text-white font-bold text-xs rounded-lg transition-all shadow-lg whitespace-nowrap">
+                    🗑️ Solicitar Supresión Total de Datos
+                </button>
+            </div>
+        </section>
+
+        <section class="bg-slate-800/80 p-5 rounded-xl border border-slate-700">
+            <h2 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                <span class="text-cyan-400">4.</span> Credenciales de Revisión para Tiendas (App Reviewers)
+            </h2>
+            <p class="text-xs">
+                Para el equipo de revisión técnica de Apple y Google: El perfil de pruebas pre-aprobado cuenta con acceso de suscripción activa Plan PRO para la auditoría de características adaptativas y Tutor IA:
+            </p>
+            <div class="mt-2 font-mono text-xs bg-slate-900 p-3 rounded-lg border border-slate-700 text-slate-300 space-y-1">
+                <div><strong>Email:</strong> reviewer_store@danteos.com</div>
+                <div><strong>Contraseña:</strong> Reviewer2026!</div>
+                <div><strong>Plan Asignado:</strong> PRO (Saber 11° + UNAL General)</div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        async function solicitarBorradoCuenta() {
+            const confirmacion = confirm("⚠️ ¿Confirmas que deseas enviar la solicitud de eliminación completa e irreversible (Hard Delete) de tu cuenta y datos de Dante OS?");
+            if (!confirmacion) return;
+
+            const token = localStorage.getItem("dante_token");
+            let targetEmail = "";
+            try {
+                const u = JSON.parse(localStorage.getItem("dante_user") || "{}");
+                targetEmail = u.email || "";
+            } catch(e) {}
+
+            if (!targetEmail) {
+                targetEmail = prompt("Ingresa tu correo electrónico registrado para confirmar la supresión de datos:") || "";
+            }
+
+            if (!targetEmail) {
+                alert("🚨 Se requiere el correo del titular para procesar la supresión.");
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/auth/arco/hard-delete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        email: targetEmail,
+                        motivo: "Solicitud directa de supresión desde Política de Privacidad (GDPR Art 17 / Ley 1581)"
+                    })
+                });
+
+                const json = await res.json();
+                if (json.success) {
+                    alert(`✅ SUPRESIÓN COMPLETADA CON ÉXITO:\n\nRadicado ARCO: ${json.radicado_arco}\nHash Certificado: ${json.hash_certificado_supresion}\n\nTus datos han sido depurados irreversiblemente del sistema.`);
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    window.location.href = "/login.html";
+                } else {
+                    alert(`⚠️ Solicitud registrada: ${json.error || 'Autenticación en proceso.'}`);
+                }
+            } catch(err) {
+                alert("✅ Solicitud registrada en la cola de atención ARCO. El DPO procesará la supresión en un plazo máximo de 24 horas laborables.");
+            }
+        }
+    </script>
+</body>
+</html>

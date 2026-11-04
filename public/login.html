@@ -1,29 +1,39 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#070a12">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="manifest.json">
-    <title>Dante OS // Portal de Acceso Enterprise</title>
+    <link rel="icon" type="image/svg+xml" href="assets/icons/icon-192.svg">
+    <link rel="apple-touch-icon" href="assets/icons/icon-192.svg">
+    <title>Dante OS · Entra</title>
+    <script>
+        try { sessionStorage.setItem('dante_entrada_viva', String(Date.now())); } catch (e) {}
+    </script>
 
-    <!-- Tailwind CSS, Google Fonts & FontAwesome -->
+    <!-- Tailwind CSS, FontAwesome & Design Tokens -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/design-tokens.css">
+    <link rel="stylesheet" href="css/theme.css">
+
+    <!-- Observabilidad Sentry Browser SDK -->
+    <script src="https://browser.sentry-cdn.com/7.x/bundle.min.js" crossorigin="anonymous"></script>
+    <script src="js/danteVectorIcons.js"></script>
+    <script src="js/danteStorage.js"></script>
 
     <style>
         :root {
             --primary: #38bdf8;
             --primary-hover: #0284c7;
             --gold: #f59e0b;
-            --bg: #0b0f19;
-            --card-bg: rgba(15, 23, 42, 0.85);
+            --bg: #070a12;
+            --card-bg: rgba(13, 19, 36, 0.88);
             --border-subtle: rgba(255, 255, 255, 0.12);
             --emerald: #10b981;
             --text-main: #f8fafc;
@@ -37,878 +47,1608 @@
         }
 
         body, html { 
-            background-color: var(--bg); 
-            color: var(--text-main); 
+            background-color: #0c0b09; 
+            color: #f5f5f4; 
             margin: 0; 
             padding: 0;
             font-family: var(--font-main); 
             min-height: 100vh; 
+            min-height: 100dvh;
             overflow-x: hidden;
             -webkit-tap-highlight-color: transparent;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            transition: background-color 0.3s ease, color 0.3s ease;
+            padding-bottom: env(safe-area-inset-bottom, 0px);
         }
 
-        /* LUZ Y CONTRASTE OPTIMIZADO PARA MODO CLARO */
-        body.light-mode {
-            --bg: #f8fafc;
-            --card-bg: #ffffff;
-            --border-subtle: #cbd5e1;
-            --text-main: #0f172a;
-            --text-muted: #475569;
-            --primary: #0284c7;
-            --primary-hover: #0369a1;
-            background-color: #f8fafc !important;
-            color: #0f172a !important;
+        /* CANVAS DE LA ESPIRAL DE DANTE */
+        #danteSpiralCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+            pointer-events: none;
         }
 
-        body.light-mode .glow-circle-1 {
-            background: radial-gradient(circle, rgba(2, 132, 199, 0.12) 0%, transparent 70%);
-        }
-        body.light-mode .glow-circle-2 {
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, transparent 70%);
-        }
-
-        body.light-mode .auth-card {
-            background: #ffffff !important;
-            border-color: #cbd5e1 !important;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08), 0 0 30px rgba(2, 132, 199, 0.1) !important;
-        }
-
-        body.light-mode h1,
-        body.light-mode h2,
-        body.light-mode h3,
-        body.light-mode h4,
-        body.light-mode .text-white {
-            color: #0f172a !important;
-        }
-
-        body.light-mode label,
-        body.light-mode .text-slate-300 {
-            color: #1e293b !important;
-        }
-
-        body.light-mode p,
-        body.light-mode .text-slate-400,
-        body.light-mode .text-slate-500 {
-            color: #475569 !important;
-        }
-
-        body.light-mode .custom-input {
-            background: #f1f5f9 !important;
-            border-color: #cbd5e1 !important;
-            color: #0f172a !important;
-        }
-
-        body.light-mode .custom-input:focus {
-            background: #ffffff !important;
-            border-color: #0284c7 !important;
-            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.18) !important;
-        }
-
-        body.light-mode .role-btn {
-            color: #475569 !important;
-            background: #f1f5f9 !important;
-            border-color: #cbd5e1 !important;
-        }
-
-        body.light-mode .role-btn.active {
-            background: #e0f2fe !important;
-            color: #0284c7 !important;
-            border-color: #0284c7 !important;
-            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.18) !important;
-        }
-
-        body.light-mode header,
-        body.light-mode footer {
-            border-color: #e2e8f0 !important;
-        }
-
-        body.light-mode .btn-quick-access {
-            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%) !important;
-            border-color: #f59e0b !important;
-            color: #92400e !important;
-        }
-
-        body.light-mode .btn-quick-access:hover {
-            background: linear-gradient(135deg, #fde68a 0%, #fcd34d 100%) !important;
-            color: #78350f !important;
-        }
-
-        /* Ambient Glow Background */
-        .glow-bg {
+        /* OVERLAY DE PROYECCIÓN INICIAL */
+        #spiralIntroOverlay {
             position: fixed;
             inset: 0;
+            z-index: 50;
+            background: #0c0b09;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s;
+            cursor: pointer;
+        }
+
+        #spiralIntroOverlay.fade-out {
+            opacity: 0;
+            visibility: hidden;
             pointer-events: none;
-            z-index: 0;
-            overflow: hidden;
         }
 
-        .glow-circle-1 {
-            position: absolute;
-            top: -10%;
-            left: 20%;
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, transparent 70%);
-            border-radius: 50%;
-            filter: blur(80px);
-        }
-
-        .glow-circle-2 {
-            position: absolute;
-            bottom: -10%;
-            right: 15%;
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 70%);
-            border-radius: 50%;
-            filter: blur(100px);
-        }
-
-        /* Card container */
         .auth-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-subtle);
-            border-radius: 24px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 0 40px rgba(56, 189, 248, 0.08);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            transition: all 0.3s ease;
+            background: #161310;
+            border: 1px solid rgba(231, 215, 195, 0.28);
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            box-shadow: none;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* Role selector pills */
-        .role-btn {
-            flex: 1;
-            padding: 11px 12px;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid var(--border-subtle);
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            cursor: pointer;
-            user-select: none;
+        .card-hidden {
+            opacity: 0;
+            transform: scale(0.92) translateY(20px);
+            pointer-events: none;
         }
 
-        .role-btn:hover {
-            color: var(--primary);
-            border-color: rgba(56, 189, 248, 0.3);
+        .card-visible {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            pointer-events: auto;
         }
 
-        .role-btn.active {
-            background: linear-gradient(135deg, rgba(56, 189, 248, 0.2) 0%, rgba(2, 132, 199, 0.3) 100%);
-            color: #ffffff;
-            border: 1.5px solid #38bdf8;
-            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.25);
+        .input-reactive {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Input styling */
-        .custom-input {
-            width: 100%;
-            padding: 12px 16px;
-            border-radius: 14px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1.5px solid var(--border-subtle);
-            color: var(--text-main);
-            font-size: 0.95rem;
-            font-weight: 500;
-            transition: all 0.2s ease;
+        .input-valid {
+            border-color: rgba(56, 189, 248, 0.8) !important;
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2) !important;
         }
 
-        .custom-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
-            background: rgba(0, 0, 0, 0.45);
+        .input-invalid {
+            border-color: rgba(245, 158, 11, 0.7) !important;
+            box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.15) !important;
         }
 
-        /* Button styling */
-        .btn-primary-action {
-            width: 100%;
-            padding: 14px 20px;
-            border-radius: 14px;
-            background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
-            color: #070913;
-            font-weight: 800;
-            font-size: 0.95rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            cursor: pointer;
-            box-shadow: 0 8px 20px rgba(56, 189, 248, 0.3);
-            transition: all 0.2s ease;
-            border: none;
+        .font-mono {
+            font-family: var(--font-mono), monospace !important;
         }
 
-        .btn-primary-action:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 12px 25px rgba(56, 189, 248, 0.45);
-            color: #ffffff;
+        @keyframes pulseGlowRing {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.15); opacity: 1; }
         }
 
-        .btn-quick-access {
-            width: 100%;
-            padding: 13px 20px;
-            border-radius: 14px;
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.25) 100%);
-            border: 1.5px solid rgba(245, 158, 11, 0.4);
-            color: #fbbf24;
-            font-weight: 700;
-            font-size: 0.92rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
+        .pulse-ring {
+            animation: pulseGlowRing 3s infinite ease-in-out;
         }
 
-        .btn-quick-access:hover {
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.3) 0%, rgba(217, 119, 6, 0.4) 100%);
-            transform: translateY(-1px);
-            color: #ffffff;
-            box-shadow: 0 8px 20px rgba(245, 158, 11, 0.25);
+        #spiralIntroOverlay { display: none !important; }
+        #danteSpiralCanvas { display: block !important; }
+
+        #hdrLogin {
+            flex-direction: row !important;
+            align-items: center !important;
+            gap: 0.75rem !important;
         }
 
-        /* Modals */
-        .modal-overlay {
-            position: fixed; inset: 0;
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(10px);
-            z-index: 9999; display: none;
-            align-items: center; justify-content: center;
-            padding: 16px;
+        #authCardElement.card-hidden {
+            opacity: 1;
+            transform: none;
+            pointer-events: auto;
         }
+        #hdrLogin span {
+            background: #1c1917 !important;
+            color: #e7d7c3 !important;
+            border-color: rgba(231, 215, 195, 0.28) !important;
+        }
+        #tabModoLogin, #tabModoRegister {
+            box-shadow: none !important;
+        }
+        #authCardElement button[class*="from-cyan"],
+        #authCardElement button[class*="from-amber"],
+        #tabModoLogin[class*="from-cyan"],
+        #tabModoRegister[class*="from-amber"] {
+            background: #e7d7c3 !important;
+            color: #1c1917 !important;
+            box-shadow: none !important;
+        }
+        #authCardElement input {
+            background: #1c1917 !important;
+            border-color: rgba(231, 215, 195, 0.22) !important;
+            color: #fafaf9 !important;
+        }
+        #authCardElement .text-cyan-300,
+        #authCardElement .text-cyan-400 { color: #e7d7c3 !important; }
     </style>
 </head>
-<body>
+<body class="selection:bg-cyan-500 selection:text-slate-950">
 
-    <!-- AMBIENT GLOW -->
-    <div class="glow-bg">
-        <div class="glow-circle-1"></div>
-        <div class="glow-circle-2"></div>
+    <!-- CANVAS INTERACTIVO "ESPIRAL DE DANTE" -->
+    <canvas id="danteSpiralCanvas"></canvas>
+
+    <!-- PROYECCIÓN INICIAL CON LA ESPIRAL Y PARTÍCULAS (INTRO MIGRATION) -->
+    <div id="spiralIntroOverlay" onclick="skipSpiralIntro()" title="Toca para continuar">
+        <div class="relative flex flex-col items-center justify-center text-center p-6 space-y-6">
+            <!-- EMBLEMA CENTRAL CON RESPLANDOR -->
+            <div class="relative w-24 h-24 flex items-center justify-center">
+                <div class="absolute inset-0 rounded-full bg-[#e7d7c3] blur-xl opacity-30 pulse-ring"></div>
+                <div class="relative w-20 h-20 rounded-2xl bg-[#161310] border border-[rgba(231,215,195,0.4)] flex items-center justify-center overflow-hidden p-2">
+                    <img src="assets/icons/dante-logo-icon.svg" alt="Dante Logo" class="w-full h-full object-contain" />
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <h2 class="text-xl sm:text-2xl font-black tracking-tight text-white">Dante OS</h2>
+                <p class="text-xs text-slate-300 font-medium">Práctica de Saber 11°</p>
+            </div>
+
+            <p class="text-[11px] text-slate-400 font-mono animate-pulse pt-4">
+                Toca la pantalla o espera un momento...
+            </p>
+        </div>
     </div>
 
-    <!-- HEADER NAVIGATION -->
-    <header class="relative z-10 w-full px-6 py-4 flex items-center justify-between border-b border-white/5 backdrop-blur-md">
-        <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white font-black text-lg shadow-lg shadow-cyan-500/20">
-                D
-            </div>
-            <div>
-                <span class="font-extrabold text-base tracking-wide text-white block leading-none">DANTE OS</span>
-                <span class="text-[11px] text-cyan-400 font-semibold tracking-wider uppercase">Enterprise Cognitive OS</span>
-            </div>
-        </div>
+    <!-- GLOWS AMBIENTALES DE FONDO -->
+    <div id="haloLogin" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[280px] h-[280px] rounded-full blur-[70px] pointer-events-none z-0" style="background: rgba(0, 242, 200, 0.16);"></div>
 
-        <div class="flex items-center gap-3">
-            <button type="button" onclick="PortalAuth.toggleContraste()" class="p-2.5 rounded-xl border border-white/10 text-slate-300 hover:text-white hover:bg-white/5 transition cursor-pointer" title="Cambiar modo claro/oscuro">
-                <i class="fas fa-sun text-amber-400" id="iconContrast"></i>
-            </button>
-            <span class="hidden sm:inline-block px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs font-mono font-semibold">
-                Saber 11 ICFES v21.2.2
-            </span>
+    <!-- HEADER DE NAVEGACIÓN (MOBILE FIRST RESPONSIVE) -->
+    <header id="hdrLogin" class="w-full max-w-md mx-auto px-4 py-3 sm:py-4 flex items-center justify-between relative z-10 box-border">
+        <div class="flex items-center gap-3 min-w-0">
+            <img src="assets/icons/dante-logo-icon.svg" alt="Dante OS" class="w-10 h-10 rounded-xl shrink-0 object-contain" />
+            <div class="min-w-0">
+                <h1 class="text-sm font-black tracking-tight text-white">Dante OS</h1>
+                <p class="text-[11px] text-slate-400">Práctica de Saber 11°</p>
+            </div>
         </div>
+        <span class="text-[10px] font-mono px-2 py-1 rounded-lg bg-slate-900/80 text-slate-300 border border-slate-800 shrink-0">www.danteos.com</span>
     </header>
 
-    <!-- MAIN CONTENT AREA -->
-    <main class="relative z-10 flex-grow flex items-center justify-center p-4 sm:p-6 md:p-10 my-auto">
-        <div class="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-            
-            <!-- LEFT HERO COLUMN (DESKTOP) -->
-            <div class="hidden lg:flex lg:col-span-6 flex-col space-y-6 text-left pr-4">
-                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-semibold w-max">
-                    <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-                    <span>Plataforma Evaluativa Adaptativa</span>
-                </div>
+    <!-- CONTENEDOR PRINCIPAL DEL FORMULARIO (MOBILE FIRST RESPONSIVE) -->
+    <main class="flex-1 flex items-center justify-center px-4 py-4 sm:px-6 sm:py-6 relative z-10 w-full max-w-md mx-auto box-border">
+        <div id="authCardElement" class="auth-card card-hidden w-full max-w-md mx-auto rounded-3xl p-5 sm:p-8 relative overflow-hidden space-y-5 sm:space-y-6 box-border">
 
-                <h1 class="text-4xl xl:text-5xl font-black text-white leading-tight tracking-tight">
-                    Prepara tu examen ICFES con <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">IA Adaptativa</span>
-                </h1>
-
-                <p class="text-slate-300 text-base leading-relaxed font-normal">
-                    Entrenamiento personalizado con simulacros en tiempo real, análisis de desempeño por áreas y retroalimentación cognitiva inmediata.
-                </p>
-
-                <!-- FEATURE HIGHLIGHTS -->
-                <div class="grid grid-cols-2 gap-4 pt-2">
-                    <div class="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
-                        <div class="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center text-cyan-400 mb-2">
-                            <i class="fas fa-brain text-sm"></i>
-                        </div>
-                        <h4 class="font-bold text-white text-sm">Ruta Personalizada</h4>
-                        <p class="text-slate-400 text-xs mt-1">Diagnóstico continuo de fortalezas y debilidades.</p>
-                    </div>
-
-                    <div class="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
-                        <div class="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400 mb-2">
-                            <i class="fas fa-chart-line text-sm"></i>
-                        </div>
-                        <h4 class="font-bold text-white text-sm">Reportes Directos</h4>
-                        <p class="text-slate-400 text-xs mt-1">Métricas detalladas para estudiantes, docentes y rectores.</p>
-                    </div>
-                </div>
-
-                <div class="p-4 rounded-2xl bg-gradient-to-r from-cyan-950/40 to-slate-900/60 border border-cyan-500/20 flex items-center gap-3">
-                    <i class="fas fa-shield-halved text-cyan-400 text-xl flex-shrink-0"></i>
-                    <p class="text-xs text-slate-300 leading-snug">
-                        Acceso seguro e instantáneo para estudiantes, docentes y directivos colegiales.
+            <!-- BANNER DETECCIÓN DE COLISIÓN DE CORREO -->
+            <div id="alertCollisionBanner" class="hidden p-3.5 rounded-2xl bg-amber-500/15 border border-amber-500/40 text-amber-200 text-xs font-mono flex items-start gap-3 animate-fade-in">
+                <i class="fa-solid fa-circle-info text-amber-400 text-base shrink-0 mt-0.5"></i>
+                <div class="space-y-1">
+                    <p class="font-bold text-amber-300">Este correo ya tiene cuenta</p>
+                    <p id="lblCollisionMsg" class="text-[11px] text-amber-200/90 leading-relaxed">
+                        Escribe la contraseña para entrar. Sirve en la app y en esta página.
                     </p>
                 </div>
             </div>
 
-            <!-- RIGHT LOGIN FORM CARD -->
-            <div class="lg:col-span-6 w-full max-w-md mx-auto">
-                <div class="auth-card p-6 sm:p-8">
-                    
-                    <div class="text-center sm:text-left mb-6">
-                        <h2 class="text-2xl font-extrabold text-white tracking-tight" id="lblGatewayTitle">¡Bienvenido a Dante OS!</h2>
-                        <p class="text-slate-400 text-xs sm:text-sm mt-1" id="uiSubtitulo">Selecciona tu rol e ingresa al portal educativo</p>
-                    </div>
-
-                    <!-- BOTÓN PRINCIPAL DE INGRESO RÁPIDO (1-CLIC) -->
-                    <div class="mb-5 p-1 rounded-2xl bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-amber-500/20 border border-amber-500/30">
-                        <button type="button" onclick="PortalAuth.ingresoRapidoDirecto()" class="btn-quick-access">
-                            <i class="fas fa-bolt text-amber-400 text-lg"></i>
-                            <span id="txtBtnDemo">⚡ Ingreso Rápido Demo (1-Clic)</span>
-                        </button>
-                    </div>
-
-                    <div class="relative flex py-2 items-center mb-5">
-                        <div class="flex-grow border-t border-white/10"></div>
-                        <span class="flex-shrink mx-3 text-xs text-slate-400 font-medium uppercase tracking-wider">o mediante credenciales</span>
-                        <div class="flex-grow border-t border-white/10"></div>
-                    </div>
-
-                    <!-- ROLE SELECTOR -->
-                    <div class="p-1 rounded-xl bg-black/30 border border-white/10 flex gap-1.5 mb-5" role="radiogroup">
-                        <button type="button" id="cardRoleEstudiante" class="role-btn active" onclick="PortalAuth.seleccionarRol('estudiante')" aria-selected="true">
-                            <i class="fas fa-user-graduate"></i>
-                            <span>Alumno</span>
-                        </button>
-                        <button type="button" id="cardRoleProfesor" class="role-btn" onclick="PortalAuth.seleccionarRol('profesor')" aria-selected="false">
-                            <i class="fas fa-chalkboard-user"></i>
-                            <span>Docente</span>
-                        </button>
-                        <button type="button" id="cardRoleRector" class="role-btn" onclick="PortalAuth.seleccionarRol('rector')" aria-selected="false">
-                            <i class="fas fa-user-shield"></i>
-                            <span>Rector</span>
-                        </button>
-                    </div>
-
-                    <!-- FORM -->
-                    <form id="frmLogin" action="javascript:void(0);" onsubmit="if(event){event.preventDefault(); event.stopPropagation();} PortalAuth.ejecutarLoginPerimetral(event); return false;" class="space-y-4">
-                        
-                        <!-- INSTITUTION ID -->
-                        <div>
-                            <label for="txtInstitutionId" class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Institución / Colegio</label>
-                            <div class="relative flex items-center">
-                                <input type="text" id="txtInstitutionId" class="custom-input pl-10" value="colegio_sandbox_default" placeholder="ID Colegio" required>
-                                <i class="fas fa-school absolute left-3.5 text-slate-400 text-sm pointer-events-none"></i>
-                            </div>
-                        </div>
-
-                        <!-- USER IDENTIFIER -->
-                        <div>
-                            <div class="flex justify-between items-center mb-1.5">
-                                <label for="txtEmail" class="block text-xs font-bold text-slate-300 uppercase tracking-wider">Correo o N° Documento</label>
-                                <button type="button" onclick="PortalAuth.autocompletarDominio('@danteos.edu.co')" class="text-[11px] text-cyan-400 hover:underline font-semibold">+@danteos.edu.co</button>
-                            </div>
-                            <div class="relative flex items-center">
-                                <input type="text" id="txtEmail" class="custom-input pl-10" placeholder="ejemplo@danteos.edu.co o TI/CC" autocomplete="username" required>
-                                <i class="fas fa-user absolute left-3.5 text-slate-400 text-sm pointer-events-none"></i>
-                            </div>
-                        </div>
-
-                        <!-- PASSWORD WITH WORKING EYE TOGGLE -->
-                        <div>
-                            <div class="flex justify-between items-center mb-1.5">
-                                <label for="txtPassword" class="block text-xs font-bold text-slate-300 uppercase tracking-wider">Contraseña</label>
-                                <button type="button" onclick="PortalAuth.solicitarRecuperacion()" class="text-[11px] text-cyan-400 hover:underline">¿Olvidaste tu contraseña?</button>
-                            </div>
-                            <div class="relative flex items-center">
-                                <input type="password" id="txtPassword" class="custom-input pl-10 pr-12" placeholder="••••••••" autocomplete="current-password" required>
-                                <i class="fas fa-lock absolute left-3.5 text-slate-400 text-sm pointer-events-none"></i>
-                                <button type="button" id="btnToggleEye" onclick="PortalAuth.toggleMostrarPassword(event)" class="absolute right-3 z-30 p-2 text-slate-400 hover:text-cyan-400 focus:outline-none cursor-pointer flex items-center justify-center" title="Ver u ocultar contraseña">
-                                    <i class="fas fa-eye text-base pointer-events-none" id="iconEye"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- OPTIONS & LEGAL -->
-                        <div class="pt-1 space-y-3 text-xs">
-                            <div class="flex items-center gap-2.5">
-                                <input type="checkbox" id="chkRecordarCredenciales" checked class="w-4 h-4 rounded cursor-pointer accent-cyan-500 focus:ring-1 focus:ring-cyan-400">
-                                <label for="chkRecordarCredenciales" class="cursor-pointer text-slate-300 hover:text-white select-none">
-                                    Recordar mi sesión en este dispositivo
-                                </label>
-                            </div>
-
-                            <div class="flex items-center gap-2.5 flex-wrap">
-                                <input type="checkbox" id="chkHabeasData" checked class="w-4 h-4 rounded cursor-pointer accent-cyan-500 focus:ring-1 focus:ring-cyan-400">
-                                <label for="chkHabeasData" class="cursor-pointer text-slate-300 hover:text-white select-none">
-                                    Acepto los
-                                </label>
-                                <button type="button" onclick="event.stopPropagation(); PortalAuth.abrirModalPTDP();" class="text-cyan-400 hover:underline font-semibold cursor-pointer p-0 bg-transparent border-0">
-                                    Términos y Política de Datos
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- SUBMIT BUTTON -->
-                        <button type="submit" class="btn-primary-action mt-2" id="btnValidar">
-                            <span id="btnValidarIcon"><i class="fas fa-arrow-right-to-bracket"></i></span>
-                            <span id="btnValidarText">Ingresar al Portal</span>
-                        </button>
-
-                        <!-- GOOGLE SSO -->
-                        <button type="button" onclick="PortalAuth.iniciarGoogleSSO()" class="w-full py-3 px-4 rounded-xl border border-white/10 hover:border-white/20 bg-white/5 hover:bg-white/10 text-white text-xs font-semibold flex items-center justify-center gap-2 transition cursor-pointer">
-                            <svg class="w-4 h-4" viewBox="0 0 24 24">
-                                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-                            </svg>
-                            <span>Iniciar con Google Institucional</span>
-                        </button>
-                    </form>
-                </div>
+            <!-- ENCABEZADO Y TÍTULO -->
+            <div class="text-center space-y-1.5">
+                <h2 id="lblAuthTitle" class="text-2xl font-black text-white tracking-tight">
+                    Entra a tu práctica
+                </h2>
+                <p id="lblAuthSubtitle" class="text-sm text-slate-300 font-sans leading-relaxed">
+                    Saber 11°. La misma cuenta en la app y en esta página.
+                </p>
+                <p id="notaAcceso" class="text-[13px] text-slate-400 leading-relaxed pt-1">
+                    Estás en www.danteos.com. Si descargaste la app en la tienda, entra con el mismo correo.
+                </p>
             </div>
 
+            <!-- SELECTOR PESTAÑAS (LOGIN vs REGISTRO) -->
+            <div class="flex items-center p-1 rounded-2xl bg-slate-950/80 border border-slate-800/80">
+                <button type="button" id="tabModoLogin" onclick="PortalAuth.cambiarModoAuth('login')" class="flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-500 to-sky-400 text-slate-950 shadow-md cursor-pointer">
+                    <i class="fa-solid fa-right-to-bracket text-xs"></i>
+                    <span>Iniciar Sesión</span>
+                </button>
+                <button type="button" id="tabModoRegister" onclick="PortalAuth.cambiarModoAuth('register')" class="flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 text-slate-400 hover:text-white hover:bg-white/5 cursor-pointer">
+                    <i class="fa-solid fa-user-plus text-xs"></i>
+                    <span>Crear Cuenta</span>
+                </button>
+            </div>
+
+            <!-- BOTÓN GOOGLE OAUTH NATIVO (1-CLIC) -->
+            <div>
+                <button type="button" id="btnGoogleAuth" onclick="PortalAuth.ejecutarGoogleOAuth()" class="w-full py-3.5 px-4 rounded-2xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 hover:border-cyan-500/50 text-slate-100 hover:text-white font-sans text-xs font-bold transition-all flex items-center justify-center gap-3 shadow-sm active:scale-[0.98] cursor-pointer">
+                    <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24">
+                        <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.3 9 5 12 5z"/>
+                        <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/>
+                        <path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12.3 0 15s.7 5.3 1.9 7.7l3.7-2.9c-.2-.7-.4-1.5-.4-2.3z"/>
+                        <path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.3-6.4-5.2L1.9 16C3.7 19.7 7.5 22.3 12 23z"/>
+                    </svg>
+                    <span>Entrar con Google</span>
+                </button>
+            </div>
+
+            <!-- DIVISOR CON TEXTO (RESPIRACIÓN VISUAL: MIN 1.5rem / 24px) -->
+            <div class="relative flex items-center justify-center my-6 py-2">
+                <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-slate-800"></div></div>
+                <span class="relative px-4 bg-slate-900/95 border border-slate-800/80 rounded-full text-[11px] text-slate-400 font-medium shadow-sm">o con tu correo</span>
+            </div>
+
+            <!-- FORMULARIO DE ACCESO Y REGISTRO (CON novalidate PARA SUPRIMIR TOOLTIPS NATIVOS) -->
+            <form id="formAuthPortal" novalidate onsubmit="PortalAuth.procesarFormularioAuth(event)" class="space-y-4">
+
+                <!-- VISTA ESPECIAL: RECUPERACIÓN DE CONTRASEÑA -->
+                <div id="viewForgotPassword" class="hidden space-y-4 animate-fade-in">
+                    <div class="p-3.5 rounded-2xl bg-cyan-950/40 border border-cyan-500/30 text-xs font-sans space-y-2">
+                        <div class="flex items-center gap-2 text-cyan-300 font-bold font-mono">
+                            <i class="fa-solid fa-key text-cyan-400"></i>
+                            <span>Recuperar contraseña</span>
+                        </div>
+                        <p class="text-slate-300 text-[13px] leading-relaxed">
+                            Escribe el correo de tu cuenta. Te llega un enlace para elegir otra contraseña.
+                        </p>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label for="txtResetEmail" class="block text-xs font-mono font-bold text-slate-300">
+                            Correo <span class="text-amber-400">*</span>
+                        </label>
+                        <div class="relative">
+                            <input type="email" id="txtResetEmail" autocomplete="email" oninput="PortalAuth.onResetEmailInput(this)" placeholder="tu@correo.com" class="w-full px-4 py-3 rounded-xl bg-slate-950/80 border border-slate-800 text-white text-sm placeholder-slate-500 focus:outline-none input-reactive">
+                            <div id="iconResetEmailState" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none">
+                                <i class="fa-solid fa-envelope text-xs"></i>
+                            </div>
+                        </div>
+                        <p id="lblResetEmailFeedback" class="text-[10px] font-mono text-red-400 hidden"></p>
+                    </div>
+
+                    <div class="pt-2 flex flex-col gap-2">
+                        <button type="button" id="btnSendResetEmail" onclick="PortalAuth.enviarEnlaceRecuperacion(event)" disabled class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-cyan-500 via-sky-400 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-mono font-black text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(56,189,248,0.3)] transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none active:scale-[0.98]">
+                            <span id="btnResetIcon"><i class="fa-solid fa-paper-plane text-slate-950"></i></span>
+                            <span id="btnResetText">Enviar el enlace</span>
+                        </button>
+                        <button type="button" onclick="PortalAuth.ocultarRecuperarClave(event)" class="w-full py-2.5 px-3 rounded-xl text-xs font-mono text-slate-400 hover:text-white hover:bg-slate-800/50 transition-all flex items-center justify-center gap-2 cursor-pointer">
+                            <i class="fa-solid fa-arrow-left text-[10px]"></i>
+                            <span>Volver</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- CONTENEDOR DE CAMPOS PRINCIPALES (LOGIN / REGISTRO) -->
+                <div id="mainAuthFields" class="space-y-4">
+                    <!-- CAMPO 1: NOMBRE COMPLETO (MODO REGISTRO: MAXLENGTH 50, MINLENGTH 3) -->
+                    <div id="groupFullName" class="hidden space-y-1.5">
+                        <label for="txtFullName" class="block text-xs font-mono font-bold text-slate-300">
+                            Tu nombre <span class="text-amber-400">*</span>
+                        </label>
+                        <div class="relative">
+                            <input type="text" id="txtFullName" autocomplete="name" maxlength="50" minlength="3" spellcheck="false" oninput="PortalAuth.onNameInput(this)" onblur="PortalAuth.onNameBlur(this)" placeholder="ej. María Camila Rodríguez" class="w-full px-4 py-3 rounded-xl bg-slate-950/80 border border-slate-800 text-white text-sm placeholder-slate-500 focus:outline-none input-reactive font-sans">
+                            <div id="iconNameState" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none">
+                                <i class="fa-solid fa-user text-xs"></i>
+                            </div>
+                        </div>
+                        <p id="lblNameFeedback" class="text-[10px] font-mono text-red-400 hidden"></p>
+                    </div>
+
+                    <!-- CAMPO 2: CORREO ELECTRÓNICO -->
+                    <div class="space-y-1.5">
+                        <label id="lblEmailTitle" for="txtEmail" class="block text-xs font-mono font-bold text-slate-300">
+                            Correo <span class="text-amber-400">*</span>
+                        </label>
+                        <div class="relative">
+                            <input type="email" id="txtEmail" autocomplete="email" oninput="PortalAuth.onEmailInput(this)" placeholder="tu@correo.com" class="w-full px-4 py-3 rounded-xl bg-slate-950/80 border border-slate-800 text-white text-sm placeholder-slate-500 focus:outline-none input-reactive">
+                            <div id="iconEmailState" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none">
+                                <i class="fa-solid fa-envelope text-xs"></i>
+                            </div>
+                        </div>
+                        <p id="lblEmailFeedback" class="text-[10px] font-mono text-red-400 hidden"></p>
+                    </div>
+
+                    <!-- CAMPO 3: CONTRASEÑA -->
+                    <div class="space-y-1.5">
+                        <div class="flex items-center justify-between">
+                            <label for="txtPassword" class="block text-xs font-mono font-bold text-slate-300">
+                                Contraseña <span class="text-amber-400">*</span>
+                            </label>
+                            <button type="button" id="btnForgotPass" onclick="PortalAuth.mostrarRecuperarClave(event)" class="text-[11px] font-mono text-cyan-400 hover:underline cursor-pointer">
+                                ¿Olvidaste la contraseña?
+                            </button>
+                        </div>
+                        <div class="relative">
+                            <input type="password" id="txtPassword" autocomplete="current-password" oninput="PortalAuth.onPasswordInput(this)" placeholder="••••••••" class="w-full px-4 py-3 rounded-xl bg-slate-950/80 border border-slate-800 text-white text-sm placeholder-slate-500 focus:outline-none input-reactive font-mono pr-10">
+                            <button type="button" onclick="PortalAuth.toggleMostrarPassword(event)" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white p-1 cursor-pointer">
+                                <i id="eyeIconPwd" class="fa-solid fa-eye text-xs"></i>
+                            </button>
+                        </div>
+
+                        <!-- MEDIDOR DE FORTALEZA -->
+                        <div id="groupStrength" class="space-y-1 pt-1 hidden">
+                            <div class="flex items-center justify-between text-[10px] font-mono">
+                                <span class="text-slate-400" id="lblStrengthPrefix">Requisito: <strong id="lblStrengthText" class="text-slate-300">Mínimo 8 caracteres</strong></span>
+                                <span id="lblCharCount" class="text-slate-500 font-mono">0/8</span>
+                            </div>
+                            <div class="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden flex gap-1">
+                                <div id="strBar1" class="h-full flex-1 bg-slate-800 transition-all"></div>
+                                <div id="strBar2" class="h-full flex-1 bg-slate-800 transition-all"></div>
+                                <div id="strBar3" class="h-full flex-1 bg-slate-800 transition-all"></div>
+                                <div id="strBar4" class="h-full flex-1 bg-slate-800 transition-all"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CAMPO 4: TÉRMINOS LEGALES (MODO REGISTRO) -->
+                    <div id="groupTermsLegal" class="hidden pt-1">
+                        <label class="flex items-start gap-2.5 cursor-pointer text-xs text-slate-300 leading-tight select-none">
+                            <input type="checkbox" id="chkTerms" onchange="PortalAuth.validarFormularioEnVivo()" class="mt-0.5 rounded border-slate-700 bg-slate-950 text-cyan-500 focus:ring-cyan-500/40 w-4 h-4 cursor-pointer">
+                            <span>Acepto el <a href="privacy.html" class="text-cyan-400 underline">tratamiento de mis datos</a>.</span>
+                        </label>
+                    </div>
+
+                    <!-- CAMPO RECORDAR SESIÓN -->
+                    <div id="groupRecordar" class="flex items-center justify-between text-xs pt-1">
+                        <label class="flex items-center gap-2 cursor-pointer text-slate-300 select-none">
+                            <input type="checkbox" id="chkRememberMe" checked class="rounded border-slate-700 bg-slate-950 text-cyan-500 focus:ring-cyan-500/40 w-4 h-4 cursor-pointer">
+                            <span>Recordarme en este celular</span>
+                        </label>
+                    </div>
+
+                    <!-- BOTÓN PRINCIPAL DE ENVÍO -->
+                    <div class="pt-2">
+                        <button type="submit" id="btnValidar" disabled class="w-full py-4 px-4 rounded-xl bg-gradient-to-r from-cyan-500 via-sky-400 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-sans font-bold text-sm shadow-[0_0_25px_rgba(56,189,248,0.35)] transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none active:scale-[0.98]">
+                            <span id="btnValidarText">Entrar</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
     </main>
 
-    <!-- FOOTER -->
-    <footer class="relative z-10 w-full py-4 px-6 text-center text-xs text-slate-500 border-t border-white/5">
-        <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-            <span>Dante OS Platform © 2026 — Todos los derechos reservados.</span>
-            <div class="flex gap-4">
-                <button type="button" onclick="PortalAuth.abrirModalPTDP()" class="hover:text-slate-300">Política de Privacidad</button>
-                <button type="button" onclick="PortalAuth.abrirModalARCO()" class="hover:text-slate-300">Soporte y Derechos</button>
-            </div>
+    <!-- FOOTER LEGAL (MOBILE FIRST RESPONSIVE) -->
+    <footer class="w-full max-w-md mx-auto px-4 py-3 sm:py-4 text-center text-[10.5px] sm:text-[11px] text-slate-500 font-mono relative z-10 box-border space-y-1">
+        <div>Dante OS · práctica de Saber 11°</div>
+        <div>
+            <a href="reset.html" class="text-slate-400 hover:text-white underline text-[11px]">Borrar la sesión de este celular</a>
         </div>
     </footer>
 
-    <!-- MODAL GOOGLE SSO -->
-    <div id="modalGoogleSSO" class="modal-overlay">
-        <div class="auth-card p-6 max-w-md w-full text-left">
-            <h3 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
-                <i class="fab fa-google text-blue-400"></i> Autenticación Google Workspace
-            </h3>
-            <p class="text-xs text-slate-300 mb-4 leading-relaxed">
-                Ingresa directamente con tu cuenta de correo institucional autorizada por tu colegio o institución educativa.
-            </p>
-            <div class="flex gap-3">
-                <button type="button" class="btn-primary-action py-2.5 text-xs" onclick="document.getElementById('modalGoogleSSO').style.display='none'; PortalAuth.ingresoRapidoDirecto();">
-                    Probar Acceso Demo
-                </button>
-                <button type="button" class="px-4 py-2.5 rounded-xl border border-white/10 text-slate-300 text-xs hover:bg-white/5 cursor-pointer" onclick="document.getElementById('modalGoogleSSO').style.display='none'">
-                    Cerrar
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL PTDP -->
-    <div id="modalPTDP" class="modal-overlay">
-        <div class="auth-card p-6 max-w-lg w-full text-left max-h-[85vh] overflow-y-auto">
-            <div class="flex justify-between items-center border-b border-white/10 pb-3 mb-3">
-                <h3 class="text-base font-bold text-white">Política de Tratamiento de Datos (Ley 1581)</h3>
-                <button type="button" onclick="document.getElementById('modalPTDP').style.display='none'" class="text-slate-400 hover:text-white text-lg cursor-pointer">&times;</button>
-            </div>
-            <p class="text-xs text-slate-300 leading-relaxed font-sans">
-                En cumplimiento de la Ley Estatutaria 1581 de 2012 y el Decreto 1377 de 2013, Dante OS garantiza el tratamiento confidencial y seguro de tus datos académicos. Tu información no es compartida comercialmente con terceros.
-            </p>
-            <div class="mt-4 pt-3 border-t border-white/10 text-right">
-                <button type="button" class="btn-primary-action py-2 px-6 w-auto inline-flex" onclick="document.getElementById('modalPTDP').style.display='none'">
-                    Entendido
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL ARCO -->
-    <div id="modalARCO" class="modal-overlay">
-        <div class="auth-card p-6 max-w-lg w-full text-left">
-            <div class="flex justify-between items-center border-b border-white/10 pb-3 mb-3">
-                <h3 class="text-base font-bold text-white">Atención y Soporte Técnico</h3>
-                <button type="button" onclick="document.getElementById('modalARCO').style.display='none'" class="text-slate-400 hover:text-white text-lg cursor-pointer">&times;</button>
-            </div>
-            <p class="text-xs text-slate-300 leading-relaxed mb-4 font-sans">
-                Puedes solicitar el ejercicio de derechos ARCO enviando un correo a <em>soporte@danteos.edu.co</em>.
-            </p>
-            <button type="button" class="btn-primary-action py-2.5" onclick="document.getElementById('modalARCO').style.display='none'">
-                Cerrar
-            </button>
-        </div>
-    </div>
-
-    <!-- SCRIPT PRINCIPAL DE AUTENTICACIÓN -->
+    <!-- SCRIPT DE LA ESPIRAL Y LÓGICA PORTAL AUTH -->
     <script>
         const HOST_URL = window.location.origin;
-        let SelectedRoleTarget = "estudiante";
+        let CurrentAuthMode = "login"; // 'login' | 'register'
+        let spiralAnimationId = null;
 
-        const SUBTITULOS_ROL = {
-            estudiante: "Ingresa con tu correo o documento de alumno",
-            profesor: "Consola de Gestión Pedagógica y Docentes",
-            rector: "Tablero de Control y Métricas Institucionales"
-        };
+        /* 🌀 ANIMACIÓN CANVAS DE LA ESPIRAL DE DANTE Y PARTÍCULAS COATED */
+        function initDanteSpiral() {
+            const canvas = document.getElementById('danteSpiralCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
 
-        const RUTAS_POR_ROL = {
-            estudiante: "index.html",
-            profesor: "profesor.html",
-            rector: "rector.html"
-        };
+            function resize() {
+                const ancho = Math.max(window.innerWidth, 320);
+                const alto = Math.max(window.innerHeight, 480);
+                if (canvas.width !== ancho) canvas.width = ancho;
+                if (canvas.height !== alto) canvas.height = alto;
+            }
+            resize();
+            window.addEventListener('resize', resize);
 
-        const DEMO_CREDS = {
-            estudiante: { email: "demostrativo@dante.edu.com", pass: "DemoR2026#" },
-            profesor: { email: "profesor@sandbox.edu.co", pass: "12345678" },
-            rector: { email: "rector@sandbox.edu.co", pass: "12345678" }
-        };
+            const gamas = [[0,255,140],[0,220,255],[70,120,255],[186,80,255],[255,70,170],[255,140,40],[255,220,70],[170,255,60]];
+            let fase = 0;
+            let ultimo = 0;
+            function colorEn(x) {
+                const i = Math.floor(x) % gamas.length;
+                const j = (i + 1) % gamas.length;
+                const t = x - Math.floor(x);
+                const a = gamas[i];
+                const b = gamas[j];
+                return [
+                    Math.round(a[0] + (b[0] - a[0]) * t),
+                    Math.round(a[1] + (b[1] - a[1]) * t),
+                    Math.round(a[2] + (b[2] - a[2]) * t)
+                ];
+            }
+
+            function render(ahora) {
+                resize();
+                const dt = (!ultimo || ahora - ultimo > 50) ? 16 : (ahora - ultimo);
+                ultimo = ahora;
+                fase = (fase + dt * 0.00035) % gamas.length;
+                const [r, g, b] = colorEn(fase);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height * 0.42;
+                const halo = document.getElementById('haloLogin');
+                if (halo) halo.style.background = `rgba(${r}, ${g}, ${b}, 0.22)`;
+
+                ctx.save();
+                ctx.translate(centerX, centerY);
+                ctx.rotate(fase * 0.35);
+                ctx.beginPath();
+                const a0 = 2.2;
+                const b0 = 0.2;
+                for (let theta = 0; theta < Math.PI * 7; theta += 0.045) {
+                    const radio = a0 * Math.exp(b0 * theta);
+                    const x = radio * Math.cos(theta);
+                    const y = radio * Math.sin(theta);
+                    if (theta === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, 0.85)`;
+                ctx.lineWidth = 2.2;
+                ctx.shadowBlur = 18;
+                ctx.shadowColor = `rgba(${r}, ${g}, ${b}, 0.7)`;
+                ctx.stroke();
+                ctx.restore();
+                spiralAnimationId = requestAnimationFrame(render);
+            }
+
+            render();
+        }
+
+        /* 🚀 FUNCIÓN PARA SALTAR O FINALIZAR LA INTRO MIGRATIVA DE LA ESPIRAL */
+        function skipSpiralIntro() {
+            const overlay = document.getElementById('spiralIntroOverlay');
+            const authCard = document.getElementById('authCardElement');
+            if (overlay) {
+                overlay.classList.add('fade-out');
+                setTimeout(() => {
+                    overlay.remove();
+                }, 800);
+            }
+            if (authCard) {
+                authCard.classList.remove('card-hidden');
+                authCard.classList.add('card-visible');
+            }
+        }
+
+        /* 🧹 PURGA QUIRÚRGICA DE MEMORIA (ELIMINA ÚNICAMENTE ESTADOS TEMPORALES, SIN TOCAR SESIONES ACTIVAS NI SUPABASE) */
+        async function ejecutarPurgaAtomicMemoria() {
+            try {
+                // Eliminar únicamente claves transitorias u obsoletas. NUNCA localStorage.clear()
+                const llavesTemporales = [
+                    'dante_temp_eval', 'dante_temp_items', 'dante_temp_diagnostico',
+                    'dante_simulacro_state', 'dante_offline_sync_queue'
+                ];
+                llavesTemporales.forEach(k => localStorage.removeItem(k));
+                
+                if ('caches' in window) {
+                    const keys = await caches.keys();
+                    // Limpiar caches de assets viejos si existen
+                    const cachePurger = keys.filter(k => k.includes('dante-temp') || k.includes('v22'));
+                    await Promise.all(cachePurger.map(k => caches.delete(k)));
+                }
+            } catch (e) {
+                console.warn("🧹 Purga quirúrgica de memoria:", e);
+            }
+        }
+
+        /* 🔒 GESTIÓN CENTRALIZADA DE SESIÓN (dante_session, danteStorage y claves sincronizadas) */
+        function guardarSesionDante(token, userObj, pactoAccepted = false) {
+            const finalToken = token || `dante_token_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+            const isPactoDone = Boolean(pactoAccepted || userObj?.onboarding_completed);
+            
+            // Garantizar estructura de objeto limpia
+            const cleanUser = (typeof userObj === 'object' && userObj !== null) ? { ...userObj } : {};
+            cleanUser.onboarding_completed = isPactoDone;
+
+            const session = {
+                token: finalToken,
+                user: cleanUser,
+                pacto_accepted: isPactoDone,
+                created_at: new Date().toISOString()
+            };
+
+            // 1. Guardar en formato unificado dante_session
+            localStorage.setItem("dante_session", JSON.stringify(session));
+
+            // 2. Guardar tokens compatibles con todos los guardianes
+            localStorage.setItem("dante_token", finalToken);
+            localStorage.setItem("dante_jwt", finalToken);
+            localStorage.setItem("dante_session_token", finalToken);
+
+            // 3. Sincronizar datos de usuario (siempre string JSON para evitar [object Object])
+            const studentId = cleanUser.estudiante || cleanUser.email?.split('@')[0] || "estudiante";
+            localStorage.setItem("dante_active_student", studentId);
+            localStorage.setItem("dante_student_id", studentId);
+            localStorage.setItem("dante_student_name", cleanUser.nombre || studentId);
+            localStorage.setItem("dante_user_plan", cleanUser.plan || "EXPLORADOR");
+            localStorage.setItem("dante_user", JSON.stringify(cleanUser));
+            try {
+                const viva = {
+                    token: finalToken,
+                    user: cleanUser,
+                    pacto: isPactoDone,
+                    creada: Date.now()
+                };
+                sessionStorage.setItem("dante_sesion_viva", JSON.stringify(viva));
+                window.__danteSesion = viva;
+            } catch (e) {
+                window.__danteSesion = {
+                    token: finalToken,
+                    user: cleanUser,
+                    pacto: isPactoDone,
+                    creada: Date.now()
+                };
+            }
+
+            // 4. Banderas explícitas de calibración / Onboarding ("true" o "false")
+            if (isPactoDone) {
+                localStorage.setItem("dante_pacto_accepted", "true");
+                localStorage.setItem("dante_onboarding_completed", "true");
+            } else {
+                localStorage.setItem("dante_pacto_accepted", "false");
+                localStorage.setItem("dante_onboarding_completed", "false");
+            }
+
+            // 5. Soporte directo para DanteStorage si está disponible
+            if (typeof DanteStorage !== 'undefined' && DanteStorage.setSession) {
+                try {
+                    DanteStorage.setSession(session);
+                } catch (e) {
+                    console.warn("Aviso al guardar con DanteStorage:", e);
+                }
+            }
+
+            return session;
+        }
+
+        function obtenerSesionDante() {
+            try {
+                const raw = localStorage.getItem("dante_session");
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (parsed && (parsed.token || parsed.user?.estudiante || parsed.user?.email)) {
+                        return parsed;
+                    }
+                }
+                const activeStudent = localStorage.getItem("dante_active_student");
+                const jwt = localStorage.getItem("dante_jwt");
+                const userRaw = localStorage.getItem("dante_user");
+                if (activeStudent || jwt || userRaw) {
+                    const userObj = userRaw ? JSON.parse(userRaw) : {
+                        estudiante: activeStudent,
+                        nombre: localStorage.getItem("dante_student_name") || activeStudent,
+                        plan: localStorage.getItem("dante_user_plan") || "EXPLORADOR"
+                    };
+                    const pactoAcc = localStorage.getItem("dante_pacto_accepted") === "true" || localStorage.getItem("dante_onboarding_completed") === "true";
+                    return guardarSesionDante(jwt || "", userObj, pactoAcc);
+                }
+            } catch (e) {
+                console.warn("⚠️ Error al obtener dante_session:", e);
+            }
+            return null;
+        }
 
         class PortalAuth {
-            static toggleMostrarPassword(event) {
-                if (event) {
-                    if (typeof event.preventDefault === 'function') event.preventDefault();
-                    if (typeof event.stopPropagation === 'function') event.stopPropagation();
-                }
-                const input = document.getElementById("txtPassword");
-                const icon = document.getElementById("iconEye");
-                if (!input) return;
-                if (input.type === "password") {
-                    input.type = "text";
-                    if (icon) icon.className = "fas fa-eye-slash text-cyan-400 text-base pointer-events-none";
+            static toggleTheme() {
+                document.documentElement.classList.add("dark");
+                document.body.classList.add("dark");
+                document.body.classList.remove("light-mode", "theme-light", "mode-clinic");
+                localStorage.removeItem("dante_theme");
+            }
+
+            static cambiarModoAuth(modo) {
+                CurrentAuthMode = modo;
+                // Si la vista de recuperación de clave estaba abierta, restaurar los campos principales
+                this.ocultarRecuperarClave();
+
+                const tabLogin = document.getElementById("tabModoLogin");
+                const tabReg = document.getElementById("tabModoRegister");
+                const groupName = document.getElementById("groupFullName");
+                const groupRecordar = document.getElementById("groupRecordar");
+                const groupTerms = document.getElementById("groupTermsLegal");
+                const groupStrength = document.getElementById("groupStrength");
+                const btnForgotPass = document.getElementById("btnForgotPass");
+                const btnText = document.getElementById("btnValidarText");
+                const lblTitle = document.getElementById("lblAuthTitle");
+                const lblSub = document.getElementById("lblAuthSubtitle");
+                const lblEmailTitle = document.getElementById("lblEmailTitle");
+
+                if (modo === "register") {
+                    if (tabLogin) tabLogin.className = "flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 text-slate-400 hover:text-white hover:bg-white/5";
+                    if (tabReg) tabReg.className = "flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-yellow-400 text-slate-950 shadow-md";
+                    
+                    if (groupName) groupName.classList.remove("hidden");
+                    if (groupTerms) groupTerms.classList.remove("hidden");
+                    if (groupStrength) groupStrength.classList.remove("hidden");
+                    if (groupRecordar) groupRecordar.classList.add("hidden");
+                    if (btnForgotPass) btnForgotPass.classList.add("hidden");
+                    
+                    if (lblTitle) lblTitle.innerText = "Crea tu cuenta";
+                    if (lblSub) lblSub.innerText = "Con este correo entras en la app y en www.danteos.com.";
+                    if (lblEmailTitle) lblEmailTitle.innerText = "Correo";
+                    if (btnText) btnText.innerText = "Crear cuenta";
                 } else {
-                    input.type = "password";
-                    if (icon) icon.className = "fas fa-eye text-slate-400 text-base pointer-events-none";
+                    if (tabLogin) tabLogin.className = "flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-500 to-sky-400 text-slate-950 shadow-md";
+                    if (tabReg) tabReg.className = "flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 text-slate-400 hover:text-white hover:bg-white/5";
+                    
+                    if (groupName) groupName.classList.add("hidden");
+                    if (groupTerms) groupTerms.classList.add("hidden");
+                    if (groupStrength) groupStrength.classList.add("hidden");
+                    if (groupRecordar) groupRecordar.classList.remove("hidden");
+                    if (btnForgotPass) btnForgotPass.classList.remove("hidden");
+                    
+                    if (lblTitle) lblTitle.innerText = "Entra a tu práctica";
+                    if (lblSub) lblSub.innerText = "Saber 11°. La misma cuenta en la app y en esta página.";
+                    if (lblEmailTitle) lblEmailTitle.innerText = "Correo";
+                    if (btnText) btnText.innerText = "Entrar";
                 }
+
+                this.validarFormularioEnVivo();
             }
 
-            static toggleContraste() {
-                document.body.classList.toggle('light-mode');
-                const isLight = document.body.classList.contains('light-mode');
-                localStorage.setItem("dante_theme", isLight ? "light" : "dark");
-                const icon = document.getElementById("iconContrast");
-                if (icon) {
-                    icon.className = isLight ? "fas fa-moon text-slate-700" : "fas fa-sun text-amber-400";
+            /* 🔤 VALIDACIÓN ROBUSTA DE NOMBRE HUMANO REAL (FASE 3: 4 CONSONANTES Y RECHAZO DE LETRAS SUELTAS) */
+            static validarNombreEstudiante(rawVal) {
+                if (!rawVal || typeof rawVal !== 'string') {
+                    return { valido: false, error: "Ingresa un nombre real y válido" };
                 }
+
+                // 1. Eliminar espacios dobles consecutivos y aplicar trim()
+                const limpio = rawVal.replace(/\s+/g, ' ').trim();
+
+                // 2. Límites de longitud estricta: entre 3 y 50 caracteres
+                if (limpio.length < 3 || limpio.length > 50) {
+                    return { valido: false, error: "Ingresa un nombre real y válido" };
+                }
+
+                // 3. Exclusividad alfabética (incluyendo tildes, diéresis, ñ y espacios)
+                const regexAlfabetico = /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/;
+                if (!regexAlfabetico.test(limpio)) {
+                    return { valido: false, error: "Ingresa un nombre válido (solo letras)" };
+                }
+
+                // 4. Detección de patrones de teclado aleatorio y caracteres repetidos:
+                // a) 3 o más caracteres idénticos consecutivos (ej. "aaa", "zzzz")
+                if (/(.)\1{2,}/i.test(limpio)) {
+                    return { valido: false, error: "Ingresa un nombre real y válido" };
+                }
+
+                // b) Clúster de 4 o más consonantes seguidas (ej. "dsf", "dsadsdfasfdf", "penagosdsf")
+                if (/[bcdfghjklmnñpqrstvwxyzBCDFGHJKLMNÑPQRSTVWXYZ]{4,}/.test(limpio)) {
+                    return { valido: false, error: "Ingresa un nombre real y válido" };
+                }
+
+                // c) 4 o más vocales consecutivas (ej. "aeiou")
+                if (/[aeiouáéíóúüAEIOUÁÉÍÓÚÜ]{4,}/.test(limpio)) {
+                    return { valido: false, error: "Ingresa un nombre real y válido" };
+                }
+
+                // 5. Análisis token por token (cada palabra del nombre)
+                const tokens = limpio.split(' ');
+                for (let i = 0; i < tokens.length; i++) {
+                    const t = tokens[i];
+                    
+                    // Rechazar palabras individuales de 1 sola letra suelta (como esa "f" aislada),
+                    // excepto conectores válidos en español como 'y' o 'e' (ej. "María y José")
+                    if (t.length === 1 && !/^[yeYE]$/.test(t)) {
+                        return { valido: false, error: "Ingresa un nombre real y válido" };
+                    }
+
+                    if (t.length > 20) {
+                        return { valido: false, error: "Ingresa un nombre real y válido" };
+                    }
+
+                    // Cada palabra de 2 o más letras debe tener al menos una vocal
+                    if (t.length >= 2 && !/[aeiouáéíóúüAEIOUÁÉÍÓÚÜ]/i.test(t)) {
+                        return { valido: false, error: "Ingresa un nombre real y válido" };
+                    }
+
+                    // Palabras que terminan en clústeres no naturales de consonantes (ej. '...sdf', '...fdf')
+                    if (/[bcdfghjklmnñpqrstvwxyzBCDFGHJKLMNÑPQRSTVWXYZ]{3,}$/i.test(t)) {
+                        return { valido: false, error: "Ingresa un nombre real y válido" };
+                    }
+                }
+
+                // 6. Bloqueo de frases comodín o patrones basura comunes (ej. "sin nombre", "asdf")
+                const lower = limpio.toLowerCase();
+                const patronesBasura = [
+                    "sin nombre", "no name", "prueba", "test", "asdf", "qwerty", "zxcv", "fulano", "mengano", "desconocido", "anonimo", "anónimo"
+                ];
+                if (patronesBasura.some(p => lower.includes(p))) {
+                    return { valido: false, error: "Ingresa un nombre real y válido" };
+                }
+
+                return { valido: true, limpio };
             }
 
-            static seleccionarRol(rol) {
-                SelectedRoleTarget = rol;
-                const cardEst = document.getElementById("cardRoleEstudiante");
-                const cardProf = document.getElementById("cardRoleProfesor");
-                const cardRec = document.getElementById("cardRoleRector");
+            /* 🔤 VALIDACIÓN EN TIEMPO REAL DE NOMBRE */
+            static onNameInput(inputEl) {
+                let originalVal = inputEl.value;
+                const regexInvalidChars = /[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]/g;
+                const lblFeedback = document.getElementById("lblNameFeedback");
+                const iconState = document.getElementById("iconNameState");
 
-                [cardEst, cardProf, cardRec].forEach(btn => {
-                    if (btn) {
-                        btn.classList.remove("active");
-                        btn.setAttribute("aria-selected", "false");
+                // Filtrar en vivo números o caracteres especiales no permitidos
+                if (regexInvalidChars.test(originalVal)) {
+                    inputEl.value = originalVal.replace(regexInvalidChars, '');
+                }
+
+                // Colapsar espacios múltiples continuos
+                if (/\s{2,}/.test(inputEl.value)) {
+                    inputEl.value = inputEl.value.replace(/\s{2,}/g, ' ');
+                }
+
+                // Forzar límite visual de 50 caracteres
+                if (inputEl.value.length > 50) {
+                    inputEl.value = inputEl.value.slice(0, 50);
+                }
+
+                const currentVal = inputEl.value;
+                const cleanTrimmed = currentVal.trim();
+
+                if (cleanTrimmed.length === 0) {
+                    inputEl.classList.remove("input-valid", "input-invalid");
+                    if (iconState) iconState.innerHTML = `<i class="fa-solid fa-user text-slate-500"></i>`;
+                    if (lblFeedback) lblFeedback.classList.add("hidden");
+                } else if (cleanTrimmed.length >= 3) {
+                    const check = this.validarNombreEstudiante(currentVal);
+                    if (check.valido) {
+                        inputEl.classList.add("input-valid");
+                        inputEl.classList.remove("input-invalid");
+                        if (iconState) iconState.innerHTML = `<i class="fa-solid fa-circle-check text-cyan-400"></i>`;
+                        if (lblFeedback) lblFeedback.classList.add("hidden");
+                    } else {
+                        const hasGarbagePattern = /(.)\1{2,}/i.test(currentVal) || 
+                            /[bcdfghjklmnñpqrstvwxyzBCDFGHJKLMNÑPQRSTVWXYZ]{4,}/.test(currentVal) || 
+                            currentVal.toLowerCase().includes("sin nombre");
+
+                        if (hasGarbagePattern) {
+                            inputEl.classList.add("input-invalid");
+                            inputEl.classList.remove("input-valid");
+                            if (iconState) iconState.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-400"></i>`;
+                            if (lblFeedback) {
+                                lblFeedback.innerText = check.error;
+                                lblFeedback.className = "text-[10px] font-mono text-red-400 block transition-all";
+                            }
+                        } else {
+                            inputEl.classList.remove("input-valid", "input-invalid");
+                            if (lblFeedback) lblFeedback.classList.add("hidden");
+                        }
+                    }
+                } else {
+                    inputEl.classList.remove("input-valid", "input-invalid");
+                    if (iconState) iconState.innerHTML = `<i class="fa-solid fa-user text-slate-500"></i>`;
+                    if (lblFeedback) lblFeedback.classList.add("hidden");
+                }
+
+                this.validarFormularioEnVivo();
+            }
+
+            static onNameBlur(inputEl) {
+                // Trim estricto y colapso de espacios al salir del campo
+                inputEl.value = inputEl.value.replace(/\s+/g, ' ').trim();
+                const val = inputEl.value;
+                const lblFeedback = document.getElementById("lblNameFeedback");
+                const iconState = document.getElementById("iconNameState");
+
+                if (val.length === 0) {
+                    inputEl.classList.remove("input-valid", "input-invalid");
+                    if (lblFeedback) lblFeedback.classList.add("hidden");
+                    if (iconState) iconState.innerHTML = `<i class="fa-solid fa-user text-slate-500"></i>`;
+                } else {
+                    const check = this.validarNombreEstudiante(val);
+                    if (!check.valido) {
+                        inputEl.classList.add("input-invalid");
+                        inputEl.classList.remove("input-valid");
+                        if (iconState) iconState.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-400"></i>`;
+                        if (lblFeedback) {
+                            lblFeedback.innerText = check.error;
+                            lblFeedback.className = "text-[10px] font-mono text-red-400 block transition-all";
+                        }
+                    } else {
+                        inputEl.classList.add("input-valid");
+                        inputEl.classList.remove("input-invalid");
+                        if (iconState) iconState.innerHTML = `<i class="fa-solid fa-circle-check text-cyan-400"></i>`;
+                        if (lblFeedback) lblFeedback.classList.add("hidden");
+                    }
+                }
+
+                this.validarFormularioEnVivo();
+            }
+
+            /* NORMALIZACIÓN Y VALIDACIÓN EN TIEMPO REAL DE CORREO (FASE 3: SUPRESIÓN NATIVA) */
+            static onEmailInput(inputEl) {
+                let val = inputEl.value;
+                const cleanVal = val.trim().toLowerCase();
+                if (val !== cleanVal) {
+                    inputEl.value = cleanVal;
+                }
+
+                const regexEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                const esValido = regexEmail.test(cleanVal);
+                const lblFb = document.getElementById("lblEmailFeedback");
+                const iconState = document.getElementById("iconEmailState");
+
+                if (cleanVal.length > 0) {
+                    if (esValido) {
+                        inputEl.classList.add("input-valid");
+                        inputEl.classList.remove("input-invalid");
+                        if (iconState) iconState.innerHTML = `<i class="fa-solid fa-circle-check text-cyan-400"></i>`;
+                        if (lblFb) { 
+                            lblFb.innerText = "✓ Formato de correo válido"; 
+                            lblFb.className = "text-[10px] font-mono text-cyan-400 block transition-all"; 
+                        }
+                    } else {
+                        inputEl.classList.add("input-invalid");
+                        inputEl.classList.remove("input-valid");
+                        if (iconState) iconState.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-400"></i>`;
+                        if (lblFb) { 
+                            lblFb.innerText = "Formato de correo inválido"; 
+                            lblFb.className = "text-[10px] font-mono text-red-400 block transition-all"; 
+                        }
+                    }
+                } else {
+                    inputEl.classList.remove("input-valid", "input-invalid");
+                    if (iconState) iconState.innerHTML = `<i class="fa-solid fa-envelope text-slate-500"></i>`;
+                    if (lblFb) lblFb.classList.add("hidden");
+                }
+
+                this.validarFormularioEnVivo();
+            }
+
+            /* EVALUACIÓN EN TIEMPO REAL DE LA CONTRASEÑA (LÓGICA INQUEBRANTABLE) */
+            static onPasswordInput(inputEl) {
+                const val = inputEl.value;
+                const lblCount = document.getElementById("lblCharCount");
+                const lblStrText = document.getElementById("lblStrengthText");
+                const lblPrefix = document.getElementById("lblStrengthPrefix");
+
+                // LÓGICA DE RECOMPENSA COGNITIVA: < 8 muestra x/8; >= 8 muestra "Seguridad: Óptima ✓" en verde
+                if (lblCount) {
+                    if (val.length < 8) {
+                        lblCount.className = "text-slate-500 font-mono text-[10px]";
+                        lblCount.innerText = `${val.length}/8`;
+                        if (lblPrefix) lblPrefix.innerHTML = `Requisito: <strong id="lblStrengthText" class="text-slate-300">Mínimo 8 caracteres</strong>`;
+                    } else {
+                        lblCount.className = "text-emerald-400 font-bold font-mono text-[10px]";
+                        lblCount.innerText = "Seguridad: Óptima ✓";
+                        if (lblPrefix) lblPrefix.innerHTML = `Requisito: <strong id="lblStrengthText" class="text-emerald-400 font-bold">Cumplido</strong>`;
+                    }
+                }
+
+                let score = 0;
+                if (val.length >= 8) score++;
+                if (/[A-Z]/.test(val) || /[0-9]/.test(val)) score++;
+                if (/[^A-Za-z0-9]/.test(val)) score++;
+                if (val.length >= 12) score++;
+
+                const bars = [
+                    document.getElementById("strBar1"),
+                    document.getElementById("strBar2"),
+                    document.getElementById("strBar3"),
+                    document.getElementById("strBar4")
+                ];
+
+                bars.forEach((bar, idx) => {
+                    if (!bar) return;
+                    if (val.length === 0) {
+                        bar.className = "h-full flex-1 bg-slate-800 transition-all";
+                    } else if (idx < score) {
+                        if (score <= 1) bar.className = "h-full flex-1 bg-amber-500 transition-all";
+                        else if (score <= 2) bar.className = "h-full flex-1 bg-yellow-400 transition-all";
+                        else bar.className = "h-full flex-1 bg-emerald-400 transition-all";
+                    } else {
+                        bar.className = "h-full flex-1 bg-slate-800 transition-all";
                     }
                 });
 
-                const activeMap = {
-                    estudiante: cardEst,
-                    profesor: cardProf,
-                    rector: cardRec
-                };
-
-                const targetBtn = activeMap[rol] || cardEst;
-                if (targetBtn) {
-                    targetBtn.classList.add("active");
-                    targetBtn.setAttribute("aria-selected", "true");
+                const dynamicStrText = document.getElementById("lblStrengthText");
+                if (dynamicStrText) {
+                    if (val.length === 0) {
+                        dynamicStrText.innerText = "Mínimo 8 caracteres";
+                        dynamicStrText.className = "text-slate-400";
+                    } else if (val.length < 8) {
+                        dynamicStrText.innerText = "Incompleta (< 8 caracteres)";
+                        dynamicStrText.className = "text-amber-400 font-bold";
+                    } else if (score <= 1) {
+                        dynamicStrText.innerText = "Aceptable";
+                        dynamicStrText.className = "text-amber-300 font-bold";
+                    } else if (score <= 2) {
+                        dynamicStrText.innerText = "Buena";
+                        dynamicStrText.className = "text-yellow-300 font-bold";
+                    } else {
+                        dynamicStrText.innerText = "Excelente";
+                        dynamicStrText.className = "text-emerald-400 font-bold";
+                    }
                 }
 
-                const sub = document.getElementById("uiSubtitulo");
-                if (sub) sub.innerText = SUBTITULOS_ROL[rol] || SUBTITULOS_ROL.estudiante;
-
-                const btnDemoText = document.getElementById("txtBtnDemo");
-                if (btnDemoText) {
-                    const rolNombre = rol === "estudiante" ? "Alumno" : (rol === "profesor" ? "Docente" : "Rector");
-                    btnDemoText.innerText = `⚡ Acceso Demo ${rolNombre} (1-Clic)`;
+                if (val.length >= 8) {
+                    inputEl.classList.add("input-valid");
+                    inputEl.classList.remove("input-invalid");
+                } else if (val.length > 0) {
+                    inputEl.classList.add("input-invalid");
+                    inputEl.classList.remove("input-valid");
+                } else {
+                    inputEl.classList.remove("input-valid", "input-invalid");
                 }
 
-                this.cargarCredencialesDemo(rol, false);
+                this.validarFormularioEnVivo();
             }
 
-            static cargarCredencialesDemo(rol, force = false) {
-                const cred = DEMO_CREDS[rol] || DEMO_CREDS.estudiante;
-                const txtInst = document.getElementById("txtInstitutionId");
+            /* VALIDACIÓN CONTINUA QUE HABILITA O DESHABILITA EL BOTÓN DE ENVÍO */
+            static validarFormularioEnVivo() {
                 const txtEmail = document.getElementById("txtEmail");
                 const txtPwd = document.getElementById("txtPassword");
+                const txtName = document.getElementById("txtFullName");
+                const chkTerms = document.getElementById("chkTerms");
+                const btnValidar = document.getElementById("btnValidar");
 
-                if (txtInst && !txtInst.value) txtInst.value = "colegio_sandbox_default";
+                if (!btnValidar) return;
 
-                if (txtEmail) {
-                    const current = txtEmail.value.trim();
-                    const isKnownDemo = ["demostrativo@dante.edu.com", "profesor@sandbox.edu.co", "rector@sandbox.edu.co", "demostrativo@dante.edu.co"].includes(current);
-                    if (force || !current || isKnownDemo) {
-                        txtEmail.value = cred.email;
-                        if (txtPwd) txtPwd.value = cred.pass;
+                const email = txtEmail ? txtEmail.value.trim().toLowerCase() : "";
+                const pwd = txtPwd ? txtPwd.value : "";
+                const emailOk = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
+                const pwdOk = pwd.length >= 8;
+
+                if (CurrentAuthMode === "register") {
+                    const rawName = txtName ? txtName.value : "";
+                    const nameCheck = this.validarNombreEstudiante(rawName);
+                    const nameOk = nameCheck.valido;
+                    const termsOk = chkTerms ? chkTerms.checked : false;
+
+                    if (emailOk && pwdOk && nameOk && termsOk) {
+                        btnValidar.disabled = false;
+                    } else {
+                        btnValidar.disabled = true;
+                    }
+                } else {
+                    if (emailOk && pwdOk) {
+                        btnValidar.disabled = false;
+                    } else {
+                        btnValidar.disabled = true;
                     }
                 }
             }
 
-            static ingresoRapidoDirecto() {
-                this.cargarCredencialesDemo(SelectedRoleTarget, true);
-                const chkHabeas = document.getElementById("chkHabeasData");
-                if (chkHabeas) chkHabeas.checked = true;
-
-                setTimeout(() => {
-                    this.ejecutarLoginPerimetral();
-                }, 100);
-            }
-
-            static autocompletarDominio(dominio) {
-                const inputEmail = document.getElementById("txtEmail");
-                if (!inputEmail) return;
-                let val = inputEmail.value.trim();
-                if (val.includes("@")) {
-                    val = val.split("@")[0];
+            static toggleMostrarPassword(event) {
+                if (event) event.preventDefault();
+                const pwdInput = document.getElementById("txtPassword");
+                const eyeIcon = document.getElementById("eyeIconPwd");
+                if (pwdInput && eyeIcon) {
+                    if (pwdInput.type === "password") {
+                        pwdInput.type = "text";
+                        eyeIcon.className = "fa-solid fa-eye-slash text-xs";
+                    } else {
+                        pwdInput.type = "password";
+                        eyeIcon.className = "fa-solid fa-eye text-xs";
+                    }
                 }
-                inputEmail.value = (val.length > 0 ? val : "usuario") + dominio;
             }
 
-            static solicitarRecuperacion() {
-                const emailInput = document.getElementById("txtEmail");
-                const email = emailInput ? emailInput.value.trim() : "";
-                if (!email) {
-                    alert("💡 Ingresa tu correo electrónico institucional para enviarte las instrucciones de recuperación.");
+            /* 🧠 MITIGACIÓN INTELIGENTE DE COLISIÓN DE CORREO */
+            static activarColisionInteligente(emailConflictivo) {
+                const alertBanner = document.getElementById("alertCollisionBanner");
+                const lblMsg = document.getElementById("lblCollisionMsg");
+
+                this.cambiarModoAuth("login");
+
+                const txtEmail = document.getElementById("txtEmail");
+                if (txtEmail) {
+                    txtEmail.value = emailConflictivo.trim().toLowerCase();
+                    this.onEmailInput(txtEmail);
+                }
+
+                const txtPwd = document.getElementById("txtPassword");
+                if (txtPwd) {
+                    txtPwd.focus();
+                }
+
+                if (alertBanner) {
+                    alertBanner.classList.remove("hidden");
+                    if (lblMsg) {
+                        lblMsg.innerText = `El correo "${emailConflictivo}" ya está registrado en Dante. Ingresa tu contraseña para continuar a tu sesión.`;
+                    }
+                }
+            }
+
+            /* PROCESAR AUTENTICACIÓN / REGISTRO */
+            static async procesarFormularioAuth(event) {
+                if (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+
+                if (CurrentAuthMode === "register") {
+                    await this.ejecutarRegistro();
+                } else {
+                    await this.ejecutarLogin();
+                }
+            }
+
+            /* REGISTRO SEGURO CON CAPTURA DE COLISIONES Y VERIFICACIÓN EN BASE DE DATOS */
+            static async ejecutarRegistro() {
+                const txtName = document.getElementById("txtFullName");
+                const rawName = txtName ? txtName.value : "";
+                const valNombre = this.validarNombreEstudiante(rawName);
+
+                if (!valNombre.valido) {
+                    if (txtName) {
+                        txtName.focus();
+                        txtName.classList.add("input-invalid");
+                    }
+                    const lblFeedback = document.getElementById("lblNameFeedback");
+                    if (lblFeedback) {
+                        lblFeedback.innerText = valNombre.error;
+                        lblFeedback.className = "text-[10px] font-mono text-red-400 block transition-all";
+                    }
+                    PortalAuth.mostrarFeedbackAuth(valNombre.error, "warning");
                     return;
                 }
-                alert(`📧 SOLICITUD ENVIADA:\n\nSe han enviado las instrucciones de restablecimiento de contraseña al correo [${email}].`);
-            }
 
-            static iniciarGoogleSSO() {
-                const modal = document.getElementById("modalGoogleSSO");
-                if (modal) modal.style.display = "flex";
-            }
+                const fullName = valNombre.limpio;
+                const rawEmail = document.getElementById("txtEmail")?.value.trim().toLowerCase();
+                const password = document.getElementById("txtPassword")?.value;
 
-            static abrirModalPTDP() {
-                const modal = document.getElementById("modalPTDP");
-                if (modal) modal.style.display = "flex";
-            }
+                if (!rawEmail || !password || password.length < 8) {
+                    PortalAuth.mostrarFeedbackAuth("Ingrese un correo válido y una contraseña de mínimo 8 caracteres.", "warning");
+                    return;
+                }
 
-            static abrirModalARCO() {
-                const modal = document.getElementById("modalARCO");
-                if (modal) modal.style.display = "flex";
-            }
-
-            static async ejecutarLoginPerimetral(event) {
-                if (event && typeof event.preventDefault === 'function') event.preventDefault();
-                if (event && typeof event.stopPropagation === 'function') event.stopPropagation();
-
-                let rawIdentifier = "demostrativo@dante.edu.com";
-                let institutionId = "colegio_sandbox_default";
                 const btn = document.getElementById("btnValidar");
                 const btnText = document.getElementById("btnValidarText");
                 const btnIcon = document.getElementById("btnValidarIcon");
 
+                if (btnText) btnText.innerText = "Creando la cuenta…";
+                if (btnIcon) btnIcon.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin text-slate-950"></i>`;
+                if (btn) btn.disabled = true;
+
+                const studentIdClean = rawEmail.split('@')[0].replace(/[^a-z0-9_]/g, '');
+
                 try {
-                    institutionId = document.getElementById("txtInstitutionId")?.value.trim() || "colegio_sandbox_default";
-                    rawIdentifier = document.getElementById("txtEmail")?.value.trim() || "demostrativo@dante.edu.com";
-                    const password = document.getElementById("txtPassword")?.value || "DemoR2026#";
-
-                    const chkRecordar = document.getElementById("chkRecordarCredenciales");
-                    if (chkRecordar && chkRecordar.checked) {
-                        localStorage.setItem("dante_remembered_credentials", JSON.stringify({
-                            email: rawIdentifier,
-                            institution_id: institutionId,
-                            role: SelectedRoleTarget
-                        }));
-                    }
-
-                    if (btnText) btnText.innerText = "Iniciando sesión...";
-                    if (btnIcon) btnIcon.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
-                    if (btn) btn.disabled = true;
-
-                    const response = await fetch(`${HOST_URL}/api/auth/login-perimetral`, {
+                    const resp = await fetch(`${HOST_URL}/api/auth/register-secure-user`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         credentials: 'include',
                         body: JSON.stringify({
-                            identity: rawIdentifier,
-                            email: rawIdentifier,
+                            nombre: fullName,
+                            email: rawEmail,
                             password: password,
-                            institution_id: institutionId,
-                            role_target: SelectedRoleTarget
+                            rol: 'estudiante',
+                            institution_id: 'colegio_sandbox_default'
                         })
                     });
 
-                    const json = await response.json();
+                    const resData = await resp.json().catch(() => ({}));
 
-                    if (json && json.success) {
-                        const userObj = json.user || {};
-                        const studentIdClean = String(userObj.estudiante || userObj.email || rawIdentifier).split('@')[0].toLowerCase().trim();
-                        
-                        localStorage.removeItem("dante_active_student");
-                        localStorage.removeItem("dante_onboarding_completed");
-                        localStorage.removeItem("dante_onboarding_profile");
-                        localStorage.removeItem("dante_user_arquetipo");
-                        localStorage.removeItem("dante_token");
-
-                        const activeToken = json.token || `dante_jwt_token_${Date.now()}`;
-                        localStorage.setItem("dante_token", activeToken);
-
-                        const onboardingCompletado = userObj.onboarding_completed === true || Boolean(userObj.arquetipo) || Boolean(userObj.perfil && userObj.perfil.arquetipo);
-
-                        localStorage.setItem("dante_active_student", studentIdClean);
-                        
-                        if (onboardingCompletado) {
-                            localStorage.setItem("dante_onboarding_completed", "true");
-                            if (userObj.arquetipo) {
-                                localStorage.setItem("dante_user_arquetipo", userObj.arquetipo);
-                            }
+                    if (!resp.ok || resData.error || !resData.success) {
+                        const errMsg = String(resData.error || "").toLowerCase();
+                        if (resp.status === 409 || errMsg.includes("duplicate") || errMsg.includes("already") || errMsg.includes("registrado") || errMsg.includes("unique")) {
+                            if (btnText) btnText.innerText = "Cuenta ya registrada";
+                            this.activarColisionInteligente(rawEmail);
+                            return;
                         }
-
-                        localStorage.setItem("dante_user", JSON.stringify({
-                            ...userObj,
-                            email: userObj.email || (rawIdentifier.includes('@') ? rawIdentifier : `${rawIdentifier}@danteos.edu.co`),
-                            document_id: userObj.document_id || (rawIdentifier.includes('@') ? null : rawIdentifier),
-                            institution_id: institutionId,
-                            role: SelectedRoleTarget,
-                            estudiante: studentIdClean,
-                            onboarding_completed: onboardingCompletado,
-                            arquetipo: userObj.arquetipo || null
-                        }));
-
-                        if (btnText) btnText.innerText = "¡Acceso concedido!";
-                        if (btnIcon) btnIcon.innerHTML = `<i class="fas fa-check-circle text-emerald-400"></i>`;
-
-                        const esEstudiante = (SelectedRoleTarget === "estudiante" || userObj.role === "estudiante");
-
-                        setTimeout(() => {
-                            if (esEstudiante && !onboardingCompletado) {
-                                window.location.href = "onboarding.html";
-                            } else {
-                                window.location.href = json.redireccion || RUTAS_POR_ROL[SelectedRoleTarget] || "index.html";
-                            }
-                        }, 400);
-
-                    } else if (response.status === 401 || response.status === 400) {
-                        if (btnText) btnText.innerText = "Ingresar al Portal";
-                        if (btnIcon) btnIcon.innerHTML = `<i class="fas fa-arrow-right-to-bracket"></i>`;
-                        if (btn) btn.disabled = false;
-                        alert(`⚠️ ${json?.error || "Credenciales no coinciden. Revisa usuario y clave."}`);
-                        return;
-                    } else {
-                        throw new Error(json?.error || "Error de conexión al servidor de autenticación");
+                        throw new Error(resData.error || "Falla en la transacción de registro en la base de datos.");
                     }
-                } catch (err) {
-                    console.info("Acceso directo local/offline activado:", err.message);
-                    
-                    const studentIdClean = String(rawIdentifier).split('@')[0].toLowerCase().trim();
 
-                    const previousProfile = localStorage.getItem("dante_onboarding_profile");
-                    const previousCompleted = localStorage.getItem("dante_onboarding_completed") === "true";
-                    const previousArquetipo = localStorage.getItem("dante_user_arquetipo") || "Estratega Reflexivo S2";
+                    // ✅ Muestra log en consola y alerta visual solo cuando la base de datos confirma la transacción
+                    console.info("✅ Transacción confirmada en la base de datos (PostgreSQL/Supabase):", {
+                        tabla: "usuarios y progreso_estudiantes",
+                        estudiante: fullName,
+                        email: rawEmail,
+                        status: resData.account_status || "confirmed"
+                    });
 
-                    const userLocal = {
-                        email: rawIdentifier.includes('@') ? rawIdentifier : `${rawIdentifier}@danteos.edu.co`,
-                        document_id: rawIdentifier.includes('@') ? null : rawIdentifier,
-                        institution_id: institutionId,
-                        role: SelectedRoleTarget,
+                    PortalAuth.mostrarFeedbackAuth(`Cuenta lista. Hola, ${fullName}.`, "success");
+
+                    await ejecutarPurgaAtomicMemoria();
+
+                    const newStudentObj = {
+                        nombre: fullName,
+                        email: rawEmail,
+                        institution_id: "colegio_sandbox_default",
+                        role: "estudiante",
                         estudiante: studentIdClean,
-                        onboarding_completed: previousCompleted,
-                        arquetipo: previousCompleted ? previousArquetipo : "Estratega Reflexivo S2"
+                        onboarding_completed: false,
+                        plan: "EXPLORADOR"
                     };
 
-                    localStorage.setItem("dante_active_student", studentIdClean);
-                    localStorage.setItem("dante_user", JSON.stringify(userLocal));
-                    localStorage.setItem("dante_token", `dante_jwt_token_local_${Date.now()}`);
-                    if (previousCompleted) {
-                        localStorage.setItem("dante_onboarding_completed", "true");
-                        localStorage.setItem("dante_user_arquetipo", previousArquetipo);
-                        if (previousProfile) localStorage.setItem("dante_onboarding_profile", previousProfile);
-                    }
+                    guardarSesionDante(resData.token || "", newStudentObj, false);
 
-                    if (btnText) btnText.innerText = "¡Bienvenido!";
-                    if (btnIcon) btnIcon.innerHTML = `<i class="fas fa-check-circle text-emerald-400"></i>`;
+                    if (btnText) btnText.innerText = "Listo";
+                    if (btnIcon) btnIcon.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-950"></i>`;
 
                     setTimeout(() => {
-                        if (SelectedRoleTarget === "estudiante" && !previousCompleted) {
-                            window.location.href = "onboarding.html";
+                        window.location.href = "onboarding.html?entrada=1";
+                    }, 800);
+
+                } catch (err) {
+                    console.error("🚨 Error en transacción de registro:", err);
+                    if (btn) btn.disabled = false;
+                    if (btnText) btnText.innerText = "Crear cuenta";
+                    if (btnIcon) btnIcon.innerHTML = `<i class="fa-solid fa-paper-plane text-slate-950"></i>`;
+                    PortalAuth.mostrarFeedbackAuth(err.message || "Error de conexión con el servidor. Intenta de nuevo.", "error");
+                }
+            }
+
+            /* LOGIN PERIMETRAL SEGURO */
+            static async ejecutarLogin() {
+                const rawEmail = document.getElementById("txtEmail")?.value.trim().toLowerCase();
+                const password = document.getElementById("txtPassword")?.value;
+
+                if (!rawEmail || !password) {
+                    PortalAuth.mostrarFeedbackAuth("Ingrese su correo y contraseña.", "warning");
+                    return;
+                }
+
+                const btn = document.getElementById("btnValidar");
+                const btnText = document.getElementById("btnValidarText");
+                const btnIcon = document.getElementById("btnValidarIcon");
+
+                if (btnText) btnText.innerText = "Entrando…";
+                if (btnIcon) btnIcon.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin text-slate-950"></i>`;
+                if (btn) btn.disabled = true;
+
+                const studentIdClean = rawEmail.split('@')[0].replace(/[^a-z0-9_]/g, '');
+
+                try {
+                    const resp = await fetch(`${HOST_URL}/api/auth/login-perimetral`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({
+                            identifier: rawEmail,
+                            password: password
+                        })
+                    });
+
+                    const resData = await resp.json().catch(() => ({}));
+
+                    if (!resp.ok && resData.error) {
+                        PortalAuth.mostrarFeedbackAuth(resData.error || "Credenciales incorrectas", "error");
+                        if (btnText) btnText.innerText = "Entrar";
+                        if (btnIcon) btnIcon.innerHTML = `<i class="fa-solid fa-paper-plane text-slate-950"></i>`;
+                        if (btn) btn.disabled = false;
+                        return;
+                    }
+
+                    await ejecutarPurgaAtomicMemoria();
+
+                    const isCompleted = Boolean(resData.user?.onboarding_completed);
+
+                    const userObj = {
+                        nombre: resData.user?.nombre || studentIdClean,
+                        email: rawEmail,
+                        institution_id: resData.user?.institution_id || "colegio_sandbox_default",
+                        role: resData.user?.rol || "estudiante",
+                        estudiante: studentIdClean,
+                        onboarding_completed: isCompleted,
+                        plan: resData.user?.plan || "EXPLORADOR"
+                    };
+
+                    guardarSesionDante(resData.token || "", userObj, isCompleted);
+                    if (resData.diagnostico_completado) {
+                        localStorage.setItem("dante_diagnostico_completado", "true");
+                        localStorage.setItem("dante_diagnostic_completed", "true");
+                        localStorage.setItem("dante_calibracion_tactica_inicial_done", "true");
+                    }
+
+                    if (btnText) btnText.innerText = "Listo";
+
+                    setTimeout(() => {
+                        if (!isCompleted) {
+                            window.location.href = "onboarding.html?entrada=1";
                         } else {
-                            window.location.href = RUTAS_POR_ROL[SelectedRoleTarget] || "index.html";
+                            window.location.href = "index.html";
                         }
                     }, 400);
+
+                } catch (err) {
+                    console.info("⚡ Fallback local de autenticación:", err.message);
+
+                    await ejecutarPurgaAtomicMemoria();
+
+                    const userObj = {
+                        nombre: studentIdClean,
+                        email: rawEmail,
+                        institution_id: "colegio_sandbox_default",
+                        role: "estudiante",
+                        estudiante: studentIdClean,
+                        onboarding_completed: false,
+                        plan: "EXPLORADOR"
+                    };
+
+                    guardarSesionDante("", userObj, false);
+
+                    setTimeout(() => {
+                        window.location.href = "onboarding.html?entrada=1";
+                    }, 400);
+                }
+            }
+
+            /* MOSTRAR BANNER DE MENSAJE INLINE EN LA TARJETA */
+            static mostrarFeedbackAuth(mensaje, tipo = "info") {
+                let box = document.getElementById("authFeedbackBox");
+                if (!box) {
+                    box = document.createElement("div");
+                    box.id = "authFeedbackBox";
+                    box.className = "p-3 rounded-xl text-xs font-sans mb-3 transition-all flex items-center gap-2";
+                    const card = document.querySelector(".auth-card");
+                    if (card && card.firstElementChild) {
+                        card.insertBefore(box, card.firstElementChild.nextSibling);
+                    }
+                }
+                box.classList.remove("hidden", "bg-red-500/10", "border-red-500/30", "text-red-300", "bg-cyan-500/10", "border-cyan-500/30", "text-cyan-300", "bg-amber-500/10", "border-amber-500/30", "text-amber-300");
+                
+                if (tipo === "error") {
+                    box.className = "p-3 rounded-xl text-xs font-sans mb-3 border bg-red-500/10 border-red-500/30 text-red-300 flex items-center gap-2";
+                    box.innerHTML = `<i class="fa-solid fa-circle-exclamation text-red-400"></i> <span>${mensaje}</span>`;
+                } else if (tipo === "warning") {
+                    box.className = "p-3 rounded-xl text-xs font-sans mb-3 border bg-amber-500/10 border-amber-500/30 text-amber-300 flex items-center gap-2";
+                    box.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-400"></i> <span>${mensaje}</span>`;
+                } else {
+                    box.className = "p-3 rounded-xl text-xs font-sans mb-3 border bg-cyan-500/10 border-cyan-500/30 text-cyan-300 flex items-center gap-2";
+                    box.innerHTML = `<i class="fa-solid fa-circle-info text-cyan-400"></i> <span>${mensaje}</span>`;
+                }
+            }
+
+            /* GOOGLE OAUTH REAL SOBERANO (FLUJO DIRECTO Y DIAGNÓSTICO PROFUNDO) */
+            static async ejecutarGoogleOAuth() {
+                const btnGoogle = document.getElementById("btnGoogleAuth");
+                const originalHtml = btnGoogle ? btnGoogle.innerHTML : "";
+
+                try {
+                    if (btnGoogle) {
+                        btnGoogle.disabled = true;
+                        btnGoogle.classList.add("opacity-70", "cursor-wait");
+                        btnGoogle.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin text-cyan-400 mr-2"></i> <span>Conectando con Google...</span>`;
+                    }
+
+                    if (!window.supabaseClient) {
+                        const configResp = await fetch("/api/v1/auth/config").catch(() => null);
+                        if (configResp && configResp.ok) {
+                            const configData = await configResp.json();
+                            if (configData.hasSupabase && configData.supabaseUrl && configData.supabaseKey && window.supabase) {
+                                window.supabaseClient = window.supabase.createClient(configData.supabaseUrl, configData.supabaseKey);
+                            }
+                        }
+                    }
+
+                    if (!window.supabaseClient) {
+                        const errNoClient = new Error("Servicio de autenticación no inicializado.");
+                        console.error("Detalle del error Supabase:", errNoClient);
+                        throw errNoClient;
+                    }
+
+                    const callbackUrl = window.location.origin + '/onboarding.html';
+                    console.info("🔗 Iniciando signInWithOAuth con callback directo a onboarding:", callbackUrl);
+
+                    const { data, error } = await window.supabaseClient.auth.signInWithOAuth({
+                        provider: 'google',
+                        options: {
+                            redirectTo: callbackUrl,
+                            skipBrowserRedirect: true
+                        }
+                    });
+
+                    if (error) {
+                        console.error("Detalle del error Supabase:", error);
+                        if (error.message && (error.message.includes("provider is not enabled") || error.message.includes("Unsupported provider"))) {
+                            PortalAuth.mostrarFeedbackAuth("El acceso con Google requiere activar el proveedor en Supabase (Auth -> Providers -> Google).", "warning");
+                            return;
+                        }
+                        throw error;
+                    }
+
+                    if (!data || !data.url) {
+                        const errNoUrl = new Error("No se obtuvo URL de redirección.");
+                        console.error("Detalle del error Supabase:", errNoUrl);
+                        throw errNoUrl;
+                    }
+
+                    console.info(" Redireccionando directamente a OAuth URL:", data.url);
+                    window.location.href = data.url;
+
+                } catch (e) {
+                    console.error("Error en Google OAuth:", e);
+                    PortalAuth.mostrarFeedbackAuth("Error de conexión con el servidor. Intenta de nuevo.", "error");
+                } finally {
+                    if (btnGoogle) {
+                        btnGoogle.disabled = false;
+                        btnGoogle.classList.remove("opacity-70", "cursor-wait");
+                        btnGoogle.innerHTML = originalHtml;
+                    }
+                }
+            }
+
+            /* RECEPTOR DE RETORNO OAUTH REAL CON PROTECCIÓN DE HASH */
+            static async verificarCapturaOAuth() {
+                const hasOAuthTokens = window.location.hash.includes("access_token=") || 
+                                       window.location.hash.includes("refresh_token=") || 
+                                       window.location.search.includes("code=");
+
+                if (hasOAuthTokens) {
+                    console.info("🔗 Retorno OAuth detectado en URL. Esperando procesamiento del token...");
+                    try {
+                        if (window.supabaseClient) {
+                            const { data: { session }, error } = await window.supabaseClient.auth.getSession();
+                            if (error) {
+                                console.warn("Aviso al recuperar sesión OAuth:", error.message);
+                            }
+                            if (session?.user) {
+                                const cleanEst = (session.user.email || "estudiante").split('@')[0].replace(/[^a-z0-9_]/g, '');
+                                const userObj = {
+                                    nombre: session.user.user_metadata?.full_name || cleanEst,
+                                    email: session.user.email,
+                                    institution_id: "colegio_sandbox_default",
+                                    role: "estudiante",
+                                    estudiante: cleanEst,
+                                    onboarding_completed: false,
+                                    plan: "EXPLORADOR"
+                                };
+                                guardarSesionDante(session.access_token, userObj, false);
+                                
+                                // Limpiar el hash sólo después de haber guardado la sesión de forma segura
+                                if (window.history && window.history.replaceState) {
+                                    window.history.replaceState({}, document.title, window.location.pathname);
+                                }
+                                
+                                setTimeout(() => {
+                                    window.location.href = "onboarding.html";
+                                }, 500);
+                                return;
+                            }
+                        }
+                    } catch (e) {
+                        console.error("Error al procesar sesión OAuth:", e);
+                    }
+                    // Si falló la captura inmediata, no borramos el hash abruptamente para permitir que onAuthStateChange lo procese
+                }
+            }
+
+            /* ====================================================================
+               🔑 FLUJO DE RECUPERACIÓN DE CLAVE ("¿OLVIDASTE TU CLAVE?")
+               ==================================================================== */
+            static mostrarRecuperarClave(event) {
+                if (event) event.preventDefault();
+                const viewForgot = document.getElementById("viewForgotPassword");
+                const mainFields = document.getElementById("mainAuthFields");
+                const txtResetEmail = document.getElementById("txtResetEmail");
+                const txtEmail = document.getElementById("txtEmail");
+
+                if (mainFields) mainFields.classList.add("hidden");
+                if (viewForgot) {
+                    viewForgot.classList.remove("hidden");
+                    viewForgot.classList.add("animate-fade-in");
+                }
+
+                // Prellenar con el email actual si el usuario ya lo escribió
+                if (txtResetEmail) {
+                    if (txtEmail && txtEmail.value) {
+                        txtResetEmail.value = txtEmail.value.trim().toLowerCase();
+                        this.onResetEmailInput(txtResetEmail);
+                    } else {
+                        txtResetEmail.value = "";
+                    }
+                    setTimeout(() => txtResetEmail.focus(), 100);
+                }
+            }
+
+            static ocultarRecuperarClave(event) {
+                if (event) event.preventDefault();
+                const viewForgot = document.getElementById("viewForgotPassword");
+                const mainFields = document.getElementById("mainAuthFields");
+
+                if (viewForgot) viewForgot.classList.add("hidden");
+                if (mainFields) {
+                    mainFields.classList.remove("hidden");
+                    mainFields.classList.add("animate-fade-in");
+                }
+            }
+
+            static onResetEmailInput(inputEl) {
+                let val = inputEl.value;
+                const cleanVal = val.trim().toLowerCase();
+                if (val !== cleanVal) inputEl.value = cleanVal;
+
+                const regexEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                const esValido = regexEmail.test(cleanVal);
+                const lblFb = document.getElementById("lblResetEmailFeedback");
+                const iconState = document.getElementById("iconResetEmailState");
+                const btnReset = document.getElementById("btnSendResetEmail");
+
+                if (cleanVal.length > 0) {
+                    if (esValido) {
+                        inputEl.classList.add("input-valid");
+                        inputEl.classList.remove("input-invalid");
+                        if (iconState) iconState.innerHTML = `<i class="fa-solid fa-circle-check text-cyan-400"></i>`;
+                        if (lblFb) lblFb.classList.add("hidden");
+                        if (btnReset) btnReset.disabled = false;
+                    } else {
+                        inputEl.classList.add("input-invalid");
+                        inputEl.classList.remove("input-valid");
+                        if (iconState) iconState.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-400"></i>`;
+                        if (lblFb) {
+                            lblFb.innerText = "Formato de correo inválido";
+                            lblFb.className = "text-[10px] font-mono text-red-400 block transition-all";
+                        }
+                        if (btnReset) btnReset.disabled = true;
+                    }
+                } else {
+                    inputEl.classList.remove("input-valid", "input-invalid");
+                    if (iconState) iconState.innerHTML = `<i class="fa-solid fa-envelope text-slate-500"></i>`;
+                    if (lblFb) lblFb.classList.add("hidden");
+                    if (btnReset) btnReset.disabled = true;
+                }
+            }
+
+            static async enviarEnlaceRecuperacion(event) {
+                if (event) event.preventDefault();
+                const txtReset = document.getElementById("txtResetEmail");
+                const email = txtReset ? txtReset.value.trim().toLowerCase() : "";
+                const regexEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+                if (!email || !regexEmail.test(email)) {
+                    PortalAuth.mostrarFeedbackAuth("Ingresa un correo electrónico válido.", "warning");
+                    if (txtReset) txtReset.focus();
+                    return;
+                }
+
+                const btn = document.getElementById("btnSendResetEmail");
+                const btnText = document.getElementById("btnResetText");
+                const btnIcon = document.getElementById("btnResetIcon");
+
+                try {
+                    if (btn) btn.disabled = true;
+                    if (btnText) btnText.innerText = "Enviando enlace...";
+                    if (btnIcon) btnIcon.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin text-slate-950"></i>`;
+
+                    // Asegurar cliente de Supabase
+                    if (!window.supabaseClient) {
+                        const configResp = await fetch("/api/v1/auth/config").catch(() => null);
+                        if (configResp && configResp.ok) {
+                            const configData = await configResp.json();
+                            if (configData.hasSupabase && configData.supabaseUrl && configData.supabaseKey && window.supabase) {
+                                window.supabaseClient = window.supabase.createClient(configData.supabaseUrl, configData.supabaseKey);
+                            }
+                        }
+                    }
+
+                    if (window.supabaseClient && window.supabaseClient.auth?.resetPasswordForEmail) {
+                        const redirectTo = window.location.origin + '/login.html#type=recovery';
+                        const { error } = await window.supabaseClient.auth.resetPasswordForEmail(email, {
+                            redirectTo: redirectTo
+                        });
+                        if (error) {
+                            console.warn("⚠️ Aviso de Supabase en resetPasswordForEmail:", error.message);
+                        }
+                    }
+
+                    // Mensaje seguro de éxito unificado (no divulga si el usuario existe o no)
+                    PortalAuth.mostrarFeedbackAuth("Si el correo existe, ya enviamos el enlace.", "success");
+
+                    setTimeout(() => {
+                        PortalAuth.ocultarRecuperarClave();
+                    }, 1200);
+
+                } catch (err) {
+                    console.error("Error al procesar recuperación:", err);
+                    // Por seguridad de enumeración y UX uniforme, mostramos la notificación requerida
+                    PortalAuth.mostrarFeedbackAuth("Si el correo existe, ya enviamos el enlace.", "success");
+                    setTimeout(() => {
+                        PortalAuth.ocultarRecuperarClave();
+                    }, 1200);
+                } finally {
+                    if (btn) btn.disabled = false;
+                    if (btnText) btnText.innerText = "Enviar el enlace";
+                    if (btnIcon) btnIcon.innerHTML = `<i class="fa-solid fa-paper-plane text-slate-950"></i>`;
                 }
             }
         }
 
-        // Export explicitly to window object for global inline access
-        window.PortalAuth = PortalAuth;
-        window.toggleMostrarPassword = PortalAuth.toggleMostrarPassword;
-        window.seleccionarRol = PortalAuth.seleccionarRol;
-        window.toggleContraste = PortalAuth.toggleContraste;
-
-        // DOM Event Listeners Initialization
-        document.addEventListener('DOMContentLoaded', () => {
-            const savedTheme = localStorage.getItem("dante_theme");
-            if (savedTheme === "light") {
-                document.body.classList.add("light-mode");
-                const icon = document.getElementById("iconContrast");
-                if (icon) icon.className = "fas fa-moon text-slate-700";
+        // INICIALIZACIÓN Y GUARDIÁN DE RUTA
+        document.addEventListener("DOMContentLoaded", async () => {
+            const vieneDeReset = sessionStorage.getItem('dante_reset_listo') === '1';
+            if (vieneDeReset) sessionStorage.removeItem('dante_reset_listo');
+            skipSpiralIntro();
+            initDanteSpiral();
+            const notaAcceso = document.getElementById("notaAcceso");
+            const instalada = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+            if (notaAcceso) {
+                notaAcceso.textContent = instalada
+                    ? "Estás en la app. Con este correo también entras en www.danteos.com."
+                    : "Estás en www.danteos.com. Si descargaste la app en la tienda, entra con el mismo correo.";
             }
 
-            const urlParams = new URLSearchParams(window.location.search);
-            const tenantParam = urlParams.get('tenant') || urlParams.get('institution_id');
-            if (tenantParam) {
-                const tenantInput = document.getElementById("txtInstitutionId");
-                if (tenantInput) tenantInput.value = tenantParam.toLowerCase().trim();
+            // Función centralizada de enrutamiento post-autenticación
+            const enrutarSesionActiva = (user, accessToken) => {
+                const sesionGuardada = obtenerSesionDante();
+                const yaCompletoOnboarding = sesionGuardada?.pacto_accepted || 
+                                             sesionGuardada?.onboarding_completed || 
+                                             localStorage.getItem("dante_onboarding_completed") === "true";
+
+                // Si viene de OAuth o login activo, asegurar guardar sesión local si no existe
+                if (user && (!sesionGuardada || !sesionGuardada.token)) {
+                    const studentIdClean = (user.email || "estudiante").split('@')[0].replace(/[^a-z0-9_]/g, '');
+                    const userObj = {
+                        nombre: user.user_metadata?.full_name || user.email?.split('@')[0] || "Estudiante",
+                        email: user.email,
+                        institution_id: "colegio_sandbox_default",
+                        role: "estudiante",
+                        estudiante: studentIdClean,
+                        onboarding_completed: yaCompletoOnboarding,
+                        plan: "EXPLORADOR"
+                    };
+                    guardarSesionDante(accessToken || user.id || "token_oauth", userObj, yaCompletoOnboarding);
+                }
+
+                // Enrutamiento: si ya completó calibración va al Dashboard (index.html), si es nuevo va a onboarding.html
+                const destino = yaCompletoOnboarding ? "index.html" : "onboarding.html?entrada=1";
+                console.info(`⚡ Redireccionando de forma segura a ${destino}...`);
+                
+                setTimeout(() => {
+                    window.location.href = destino;
+                }, 500);
+            };
+
+            const paramsLogin = new URLSearchParams(window.location.search);
+            const limpio = paramsLogin.get('limpio') === '1' || vieneDeReset;
+            if (limpio) {
+                PortalAuth.mostrarFeedbackAuth('Este aparato quedó limpio. Entra o crea tu cuenta.', 'success');
+                if (window.history && window.history.replaceState) {
+                    window.history.replaceState({}, document.title, 'login.html');
+                }
             }
 
+            // Inicialización de cliente Supabase y Observador Reactivo onAuthStateChange
             try {
-                const savedCreds = localStorage.getItem("dante_remembered_credentials");
-                if (savedCreds) {
-                    const parsed = JSON.parse(savedCreds);
-                    if (parsed.email) {
-                        const emailInput = document.getElementById("txtEmail");
-                        if (emailInput) emailInput.value = parsed.email;
+                const configResp = await fetch("/api/v1/auth/config").catch(() => null);
+                if (configResp && configResp.ok) {
+                    const configData = await configResp.json();
+                    if (configData.hasSupabase && configData.supabaseUrl && configData.supabaseKey && window.supabase) {
+                        window.supabaseClient = window.supabase.createClient(configData.supabaseUrl, configData.supabaseKey);
+
+                        // ⚡ OBSERVADOR REACTIVO DE SESIÓN (OAUTH & TOKENS)
+                        window.supabaseClient.auth.onAuthStateChange(async (event, session) => {
+                            console.info("⚡ Supabase onAuthStateChange evento:", event, session?.user?.email);
+                            if (!limpio && (event === "SIGNED_IN" || event === "USER_UPDATED") && session?.user) {
+                                enrutarSesionActiva(session.user, session.access_token);
+                            }
+                        });
+
+                        // Verificación directa de sesión actual en cliente Supabase
+                        const { data: { session: existingSession } } = await window.supabaseClient.auth.getSession().catch(() => ({ data: {} }));
+                        if (!limpio && existingSession?.user) {
+                            enrutarSesionActiva(existingSession.user, existingSession.access_token);
+                            return;
+                        }
                     }
-                    if (parsed.institution_id) {
-                        const tenantInput = document.getElementById("txtInstitutionId");
-                        if (tenantInput) tenantInput.value = parsed.institution_id;
-                    }
-                    if (parsed.role) {
-                        PortalAuth.seleccionarRol(parsed.role);
-                    } else {
-                        PortalAuth.seleccionarRol("estudiante");
-                    }
-                } else {
-                    PortalAuth.seleccionarRol("estudiante");
                 }
             } catch (e) {
-                PortalAuth.seleccionarRol("estudiante");
+                console.warn("ℹ️ Configuración pública de Auth no disponible:", e);
             }
 
-            const btnEye = document.getElementById("btnToggleEye");
-            if (btnEye) {
-                btnEye.addEventListener("click", function(e) {
-                    PortalAuth.toggleMostrarPassword(e);
-                });
+            // Si la URL contiene tokens OAuth, verificarCapturaOAuth se encargará de enrutar
+            const hasOAuthHash = window.location.hash.includes("access_token=") || 
+                                 window.location.hash.includes("refresh_token=") || 
+                                 window.location.search.includes("code=");
+            if (hasOAuthHash) {
+                await PortalAuth.verificarCapturaOAuth();
+                return;
             }
 
-            const btnEst = document.getElementById("cardRoleEstudiante");
-            if (btnEst) btnEst.addEventListener("click", () => PortalAuth.seleccionarRol("estudiante"));
-            const btnProf = document.getElementById("cardRoleProfesor");
-            if (btnProf) btnProf.addEventListener("click", () => PortalAuth.seleccionarRol("profesor"));
-            const btnRec = document.getElementById("cardRoleRector");
-            if (btnRec) btnRec.addEventListener("click", () => PortalAuth.seleccionarRol("rector"));
-
-            if ('serviceWorker' in navigator) {
-                const SW_VERSION = "v21.2.2-ENTERPRISE_GOLD";
-                navigator.serviceWorker.register(`/service-worker.js?v=${SW_VERSION}`).catch(() => {});
+            // GUARDIÁN DE RUTA PASIVO PARA SESIONES LOCALES PREVIAS
+            let sesionActiva = obtenerSesionDante();
+            if (!sesionActiva && typeof DanteStorage !== 'undefined' && typeof DanteStorage.recuperarSesion === 'function') {
+                sesionActiva = await DanteStorage.recuperarSesion();
             }
+            if (!limpio && sesionActiva && (sesionActiva.token || sesionActiva.user?.estudiante || sesionActiva.user?.email)) {
+                if (sesionActiva.pacto_accepted || localStorage.getItem("dante_onboarding_completed") === "true") {
+                    window.location.replace("index.html");
+                    return;
+                } else {
+                    window.location.replace("onboarding.html?entrada=1");
+                    return;
+                }
+            }
+
+            PortalAuth.validarFormularioEnVivo();
         });
     </script>
 </body>

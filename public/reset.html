@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dante // Reset de este aparato</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body { background: #070a12; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-md w-full bg-slate-900/90 border border-slate-800 rounded-3xl p-6 shadow-2xl text-center space-y-5">
+        <div class="w-16 h-16 mx-auto rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 text-2xl">
+            <i class="fa-solid fa-broom"></i>
+        </div>
+
+        <div>
+            <h1 class="text-xl font-black text-white tracking-tight">Borrar datos de este aparato</h1>
+            <p class="text-xs text-slate-400 mt-2 leading-relaxed">
+                Solo se borra cuando tocas el botón. Cierra la sesión en el servidor, espera la confirmación y después limpia la memoria de este celular o navegador.
+            </p>
+        </div>
+
+        <div id="statusBox" class="p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300 font-mono text-left space-y-1">
+            <div id="stepEspera" class="flex items-center gap-2 text-slate-400"><i class="fa-regular fa-circle"></i> <span>Listo para limpiar cuando lo digas.</span></div>
+            <div id="stepBackend" class="flex items-center gap-2 text-slate-500"><i class="fa-regular fa-circle"></i> <span>Cerrar sesión en el servidor…</span></div>
+            <div id="stepStorage" class="flex items-center gap-2 text-slate-500"><i class="fa-regular fa-circle"></i> <span>Vaciar memoria local…</span></div>
+        </div>
+
+        <div class="space-y-2 pt-2">
+            <button id="btnEjecutarReset" type="button" class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-400 hover:to-yellow-500 text-slate-950 font-black text-xs uppercase tracking-wider transition-all shadow-lg active:scale-95 cursor-pointer">
+                <i class="fa-solid fa-rotate-left mr-1.5"></i> Limpiar todo y volver a entrar
+            </button>
+            <a href="login.html" id="lnkVolverLogin" class="block w-full py-2.5 text-xs text-slate-400 hover:text-white font-mono">
+                Volver a iniciar sesión sin borrar
+            </a>
+        </div>
+    </div>
+
+    <script>
+        let resetEnCurso = false;
+        let resetAbortado = false;
+        let generacion = 0;
+
+        function marcarPaso(id, ok, texto) {
+            const nodo = document.getElementById(id);
+            if (!nodo) return;
+            nodo.innerHTML = ok
+                ? '<i class="fa-solid fa-check text-emerald-400"></i> <span class="text-emerald-300">' + texto + '</span>'
+                : '<i class="fa-solid fa-circle-notch animate-spin text-amber-400"></i> <span>' + texto + '</span>';
+        }
+
+        async function cerrarSesionServidor(tokenViejo, signal) {
+            try {
+                const configResp = await fetch('/api/v1/auth/config', { signal }).catch(() => null);
+                if (configResp && configResp.ok) {
+                    const configData = await configResp.json();
+                    if (configData.hasSupabase && configData.supabaseUrl && configData.supabaseKey && window.supabase) {
+                        const client = window.supabase.createClient(configData.supabaseUrl, configData.supabaseKey);
+                        await client.auth.signOut({ scope: 'global' }).catch(() => {});
+                    }
+                }
+            } catch (e) {}
+            try {
+                await fetch('/api/auth/logout', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: { 'Content-Type': 'application/json' },
+                    signal,
+                    body: JSON.stringify({ token: tokenViejo || '' })
+                });
+            } catch (e) {}
+        }
+
+        function vaciarMemoriaLocal() {
+            try { localStorage.clear(); } catch (e) {}
+            try { sessionStorage.clear(); } catch (e) {}
+            try {
+                document.cookie.split(';').forEach((c) => {
+                    document.cookie = c.replace(/^ +/, '').replace(/=.*/, '=;expires=' + new Date(0).toUTCString() + ';path=/');
+                });
+            } catch (e) {}
+            try {
+                if ('caches' in window) {
+                    caches.keys().then((names) => names.forEach((name) => caches.delete(name))).catch(() => {});
+                }
+            } catch (e) {}
+            try {
+                if (window.indexedDB && window.indexedDB.databases) {
+                    window.indexedDB.databases().then((dbs) => {
+                        if (dbs) dbs.forEach((db) => { if (db.name) window.indexedDB.deleteDatabase(db.name); });
+                    }).catch(() => {});
+                }
+            } catch (e) {}
+            try { sessionStorage.setItem('dante_reset_listo', '1'); } catch (e) {}
+        }
+
+        async function ejecutarResetTotal() {
+            if (resetEnCurso) return;
+            resetEnCurso = true;
+            resetAbortado = false;
+            const mia = ++generacion;
+            const btn = document.getElementById('btnEjecutarReset');
+            const link = document.getElementById('lnkVolverLogin');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-circle-notch animate-spin mr-1.5"></i> Limpiando…';
+            }
+            if (link) link.style.pointerEvents = 'none';
+
+            const tokenViejo = localStorage.getItem('dante_token') || localStorage.getItem('dante_jwt') || '';
+            const corte = new AbortController();
+
+            marcarPaso('stepEspera', false, 'Empezó el borrado…');
+            marcarPaso('stepBackend', false, 'Cerrando sesión en el servidor…');
+
+            await Promise.race([
+                cerrarSesionServidor(tokenViejo, corte.signal),
+                new Promise((resolver) => setTimeout(resolver, 5000))
+            ]);
+            corte.abort();
+
+            if (resetAbortado || mia !== generacion || document.visibilityState === 'hidden') {
+                resetEnCurso = false;
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-rotate-left mr-1.5"></i> Limpiar todo y volver a entrar';
+                }
+                if (link) link.style.pointerEvents = '';
+                marcarPaso('stepEspera', false, 'Se canceló porque saliste de esta página. Nada más se borró.');
+                return;
+            }
+
+            marcarPaso('stepBackend', true, 'Sesión del servidor cerrada.');
+            marcarPaso('stepStorage', false, 'Vaciando memoria local…');
+            vaciarMemoriaLocal();
+
+            if (resetAbortado || mia !== generacion) {
+                resetEnCurso = false;
+                return;
+            }
+
+            marcarPaso('stepStorage', true, 'Memoria local vaciada.');
+            marcarPaso('stepEspera', true, 'Listo. Entrando al login…');
+            window.location.replace('login.html?limpio=1');
+        }
+
+        window.addEventListener('pagehide', () => {
+            resetAbortado = true;
+            generacion += 1;
+        });
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden' && resetEnCurso) {
+                resetAbortado = true;
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const btn = document.getElementById('btnEjecutarReset');
+            if (btn) btn.addEventListener('click', () => { ejecutarResetTotal(); });
+        });
+    </script>
+</body>
+</html>

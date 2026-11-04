@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Dante OS // Registro y Acceso</title>
+    <script>
+        (function() {
+            // 🛡️ GUARDIÁN ANTI-FUGA: Redirección inmediata si hay sesión o prueba en curso
+            const isAlreadyCompleted = localStorage.getItem('dante_onboarding_completed') === 'true';
+            const hasExamInProgress = sessionStorage.getItem('dante_is_diagnostic') === 'true' ||
+                                     sessionStorage.getItem('dante_exam_progress') !== null ||
+                                     (isAlreadyCompleted && localStorage.getItem('dante_calibracion_tactica_inicial_done') !== 'true');
+
+            let sessionUser = null;
+            try {
+                const s = localStorage.getItem('dante_session') || localStorage.getItem('dante_user');
+                sessionUser = s ? JSON.parse(s) : null;
+                if (sessionUser && sessionUser.user) sessionUser = sessionUser.user;
+            } catch(e) {}
+
+            if (hasExamInProgress || isAlreadyCompleted || (sessionUser && sessionUser.onboarding_completed === true)) {
+                console.info("⚡ [Dante Register Guard]: Prueba en progreso o sesión activa detectada. Redirigiendo a index.html...");
+                window.location.replace("index.html");
+                return;
+            }
+            if (sessionUser && sessionUser.email) {
+                window.location.replace("onboarding.html");
+                return;
+            }
+            window.location.replace("login.html");
+        })();
+    </script>
+</head>
+<body style="background:#08090c;color:#f0f1f5;font-family:sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;">
+    <p>Redirigiendo a Dante OS...</p>
+</body>
+</html>

@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#ffffff">
-    <title>DANTE OS // Informe Ejecutivo C-Suite & Expediente de ADN Cognitivo</title>
+    <title>Dante OS · Informe de Saber 11°</title>
 
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;500;700;900&family=Cinzel:wght@700;900&family=Oswald:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/design-tokens.css">
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="theme.css">
 
     <style>
         :root {
@@ -268,16 +268,16 @@
     <!-- BARRA DE CONTROL PANTALLA -->
     <div class="no-print-toolbar">
         <div>
-            <span class="text-xs font-mono text-slate-400 block mb-1">MANTENER VISTA DE ROL AUDITOR:</span>
+            <span class="text-xs font-mono text-slate-400 block mb-1">Informe para imprimir</span>
             <div class="flex gap-1.5">
-                <button class="btn-role-tab" id="tabEstudiante" onclick="ReporteEngine.setRol('estudiante')">🧠 Estudiante</button>
-                <button class="btn-role-tab" id="tabProfesor" onclick="ReporteEngine.setRol('profesor')">👨‍🏫 Docente</button>
-                <button class="btn-role-tab" id="tabRector" onclick="ReporteEngine.setRol('rector')">🏛️ Rector (C-Suite)</button>
+                <button class="btn-role-tab" id="tabEstudiante" onclick="ReporteEngine.setRol('estudiante')">Estudiante</button>
+                <button class="btn-role-tab hidden" id="tabProfesor" hidden onclick="ReporteEngine.setRol('profesor')">Docente</button>
+                <button class="btn-role-tab hidden" id="tabRector" hidden onclick="ReporteEngine.setRol('rector')">Rector (C-Suite)</button>
             </div>
         </div>
 
         <button class="btn-print" onclick="window.print()">
-            <i class="fas fa-file-pdf"></i> DESCARGAR INFORME EN PDF
+            <svg class="w-4 h-4 inline-block mr-1 text-slate-800" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> DESCARGAR INFORME EN PDF
         </button>
     </div>
 
@@ -287,13 +287,13 @@
         <!-- CABECERA -->
         <header class="cert-header">
             <div>
-                <h1 class="brand-title">DANTE ANALYTICS OS</h1>
-                <p class="brand-sub" id="lblDocSubtipo">INFORME EJECUTIVO C-SUITE & EXPEDIENTE DE ADN COGNITIVO</p>
+                <h1 class="brand-title">DANTE OS</h1>
+                <p class="brand-sub" id="lblDocSubtipo">Informe de la práctica de Saber 11°</p>
             </div>
             <div class="watermark-seal">
-                <span class="block font-mono text-[9px] font-bold text-slate-500 uppercase">CÓDIGO DE INTEGRIDAD</span>
+                <span class="block font-mono text-[9px] font-bold text-slate-500 uppercase">Referencia</span>
                 <span class="block font-mono text-xs font-extrabold text-sky-700" id="lblHashCert">DNT-9823-2026-X</span>
-                <span class="block font-mono text-[8px] text-emerald-600 font-semibold mt-0.5">✓ CERTIFICADO CON SUPABASE</span>
+                <span class="block font-mono text-[8px] text-emerald-600 font-semibold mt-0.5">Práctica, no es el puntaje oficial</span>
             </div>
         </header>
 
@@ -320,26 +320,29 @@
 
         <!-- RESPALDO DE EVIDENCIA CIENTÍFICA VISIBLE -->
         <div class="citation-box">
-            <div class="citation-title">🔬 MARCO TEÓRICO Y FUENTES CIENTÍFICAS VALIDANTE:</div>
-            <ul class="list-disc pl-4 space-y-1">
+            <div class="citation-title">Esta proyección sale de las respuestas de la app. No reemplaza el resultado oficial del ICFES.</div>
+            <details class="mt-2">
+            <summary class="cursor-pointer text-slate-500">De dónde sale el cálculo</summary>
+            <ul class="list-disc pl-4 space-y-1 mt-2">
                 <li><strong>IRT 3PL Model:</strong> Lord, F. M. & Novick, M. R. (1968). <em>Statistical Theories of Mental Test Scores</em>. Addison-Wesley. (Estimación probabilística de habilidad $\theta$, dificultad $a$, discriminación $b$ y adivinación $c$).</li>
                 <li><strong>Dual-Process Cognitive Theory:</strong> Kahneman, D. (2011). <em>Thinking, Fast and Slow</em>. Farrar, Straus and Giroux. (Sistema 1 Impulsivo vs. Sistema 2 Analítico).</li>
                 <li><strong>Cognitive Load Theory (CLT):</strong> Sweller, J. (1988). <em>Cognitive Load During Problem Solving</em>. Cognitive Science, 12(2), 257-285.</li>
                 <li><strong>Pre-Commitment Strategies:</strong> Schelling, T. C. (1984). <em>Self-Command in Practice, Policy, and in a Theory of Rational Choice</em>. American Economic Review. (Pacto de Odiseo).</li>
             </ul>
+            </details>
         </div>
 
         <!-- FIRMAS DE CERTIFICACIÓN -->
         <footer class="signatures-grid">
             <div class="signature-box">
                 <div class="signature-line"></div>
-                <div class="signature-name" id="valNombreFirma1">DANTE OS ENGINE v21.3.0</div>
-                <div class="signature-role">Firma Digital & Calibración IRT 3PL</div>
+                <div class="signature-name" id="valNombreFirma1">Dante OS</div>
+                <div class="signature-role">Informe de práctica</div>
             </div>
             <div class="signature-box">
                 <div class="signature-line"></div>
-                <div class="signature-name" id="valNombreFirma2">DIRECCIÓN PEDAGÓGICA C-SUITE</div>
-                <div class="signature-role">Validación Psicométrica & Metacognitiva</div>
+                <div class="signature-name" id="valNombreFirma2">Para la casa</div>
+                <div class="signature-role">Un bloque al día y mirar el error de esa sesión</div>
             </div>
         </footer>
 
@@ -418,7 +421,7 @@
 
         <!-- FOOTER LEGAL -->
         <footer style="margin-top: 2rem; padding: 1rem; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: #64748b; border-top: 1px solid #e2e8f0;">
-            <div>DANTE OS ENTERPRISE EDITION // INFRAESTRUCTURA PSICOMÉTRICA ADAPTATIVA MULTI-TENANT</div>
+            <div>Dante OS · Práctica de Saber 11°. Este informe no es el resultado oficial del ICFES.</div>
             <div style="margin-top: 0.3rem; display: flex; justify-content: center; gap: 0.8rem;">
                 <button type="button" onclick="document.getElementById('modalPTDP').style.display='flex'" style="color: #0284c7; background: transparent; border: 0; cursor: pointer; text-decoration: underline;">
                     📜 Política de Protección de Datos (PTDP)
@@ -432,11 +435,12 @@
 
     </div>
 
+    <script src="js/danteSemana.js?v=c-1.2.85"></script>
     <script>
         const HOST_URL = window.location.origin;
         const urlParams = new URLSearchParams(window.location.search);
         
-        let CURRENT_ROL = urlParams.get('rol') || 'rector';
+        let CURRENT_ROL = urlParams.get('rol') || 'estudiante';
         
         const rawUser = localStorage.getItem("dante_user");
         const userObj = rawUser ? JSON.parse(rawUser) : {};
@@ -564,125 +568,84 @@
                 const pctS1 = 100 - pctS2;
 
                 if (CURRENT_ROL === 'estudiante') {
-                    subTitle.innerText = "EXPEDIENTE OFICIAL DE DIAGNÓSTICO COGNITIVO // INFORME COMPLETO PARA PADRES Y ALUMNOS";
-                    campo1Lbl.innerText = "Estudiante Evaluado";
+                    subTitle.innerText = "Informe de la práctica de Saber 11°";
+                    campo1Lbl.innerText = "Estudiante";
                     campo1Val.innerText = STUDENT_ID.toUpperCase();
-                    campo2Lbl.innerText = "Institución Cobertura";
-                    campo2Val.innerText = INSTITUTION_ID.toUpperCase();
+                    campo2Lbl.innerText = "Fecha";
+                    campo2Val.innerText = document.getElementById('valMetaFecha')?.innerText || '';
+
+                    const guardado = parseInt(localStorage.getItem('dante_score_proyectado') || '', 10);
+                    const hayPuntaje = Number.isFinite(guardado) && guardado > 0;
+                    const sem = parseFloat(localStorage.getItem('dante_sem_estimado') || '');
+                    const margen = Number.isFinite(sem) ? Math.max(8, Math.round(sem * 70)) : null;
+                    const nombres = [
+                        ['matematicas', 'Matemáticas'],
+                        ['lectura_critica', 'Lectura crítica'],
+                        ['ciencias_naturales', 'Ciencias naturales'],
+                        ['sociales_ciudadanas', 'Sociales y ciudadanas'],
+                        ['ingles', 'Inglés']
+                    ];
+                    let mapa = {};
+                    try {
+                        const rawConteo = localStorage.getItem('dante_area_conteo');
+                        if (rawConteo) {
+                            const conteo = JSON.parse(rawConteo) || {};
+                            Object.entries(conteo).forEach(([k, v]) => {
+                                if (v && v.total) mapa[k] = Math.round(100 * v.aciertos / v.total);
+                            });
+                        }
+                        if (!Object.keys(mapa).length) {
+                            const raw = localStorage.getItem('dante_precision_por_area');
+                            if (raw) mapa = JSON.parse(raw) || {};
+                        }
+                    } catch (e) {}
+                    const areasHtml = nombres.map(([key, name]) => {
+                        const crudo = mapa[key];
+                        const hay = crudo !== undefined && crudo !== null && !Number.isNaN(Number(crudo));
+                        const pct = hay ? Math.max(0, Math.min(100, Math.round(Number(crudo)))) : null;
+                        const etiqueta = pct == null ? 'Sin evidencia' : (pct >= 70 ? 'Va bien' : pct >= 45 ? 'En el medio' : 'Para repasar');
+                        return '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:0.85rem;">' +
+                            '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.35rem;">' +
+                            '<strong style="font-size:0.85rem;color:#0f172a;">' + name + '</strong>' +
+                            '<span style="font-family:JetBrains Mono,monospace;font-weight:800;color:#0f172a;font-size:0.85rem;">' + (pct == null ? '—' : pct + '%') + '</span></div>' +
+                            '<div style="background:#e2e8f0;height:6px;border-radius:3px;overflow:hidden;margin-bottom:0.4rem;">' +
+                            '<div style="background:#b45309;width:' + (pct == null ? 0 : pct) + '%;height:100%;"></div></div>' +
+                            '<span style="font-size:0.72rem;color:#475569;font-weight:700;">' + etiqueta + '</span></div>';
+                    }).join('');
 
                     area.innerHTML = `
-                        <!-- 1. RESUMEN EJECUTIVO Y PROYECCIÓN DE RESULTADOS -->
                         <div class="report-section">
-                            <div class="section-header"><i class="fas fa-trophy"></i> 1. Proyección Global Saber 11 (Escala Oficial 1 - 500)</div>
-                            
+                            <div class="section-header">1. Tu proyección</div>
                             <div class="kpi-row">
                                 <div class="kpi-doc-card" style="border-left: 4px solid #b45309;">
-                                    <span class="meta-label">Puntaje Proyectado</span>
-                                    <div class="kpi-doc-val" style="color: #b45309;">${promSaber500} / 500 pts</div>
-                                    <span class="text-[10px] text-slate-500 font-mono block mt-1">Percentil estimado: Top 15% - 20%</span>
-                                </div>
-                                <div class="kpi-doc-card" style="border-left: 4px solid #16a34a;">
-                                    <span class="meta-label">Probabilidad de Meta</span>
-                                    <div class="kpi-doc-val" style="color: #16a34a;">84%</div>
-                                    <span class="text-[10px] text-slate-500 font-mono block mt-1">Cumplimiento de ingreso universitario</span>
+                                    <span class="meta-label">Proyección de esta medición</span>
+                                    <div class="kpi-doc-val" style="color: #b45309;">${hayPuntaje ? guardado + ' / 500' : 'Sin medición'}</div>
+                                    <span class="text-[10px] text-slate-500 font-mono block mt-1">${margen ? 'Margen aproximado ±' + margen : 'Todavía no hay una sesión terminada'}</span>
                                 </div>
                                 <div class="kpi-doc-card" style="border-left: 4px solid #0284c7;">
-                                    <span class="meta-label">Eficiencia Cognitiva (CEI)</span>
-                                    <div class="kpi-doc-val" style="color: #0284c7;">${promCEI}</div>
-                                    <span class="text-[10px] text-slate-500 font-mono block mt-1">Precisión / log10(Tiempo)</span>
+                                    <span class="meta-label">Qué significa</span>
+                                    <div class="kpi-doc-val" style="color: #0284c7; font-size: 1.1rem;">0 a 500</div>
+                                    <span class="text-[10px] text-slate-500 font-mono block mt-1">Cerca de 250 es la media. No es el resultado oficial.</span>
                                 </div>
                             </div>
-
                             <div class="narrative-card-doc">
-                                <strong style="color: #0369a1; font-size: 0.95rem;">📖 Diagnóstico Narrativo para el Estudiante:</strong><br>
-                                "Se observa un avance sostenido en las pruebas adaptativas IRT 3PL. Demuestra un razonamiento cuantitativo sólido en Matemáticas y Ciencias Naturales. Se recomienda controlar la velocidad de respuesta inicial para evitar trampas en opciones con distractores lineales."
+                                La proyección junta las respuestas que ya diste. Si todavía no hay una prueba terminada, el informe lo dice. No inventa un puntaje.
+                            </div>
+                            <button type="button" onclick="if(window.DanteSemana){DanteSemana.descargar();}" style="margin-top:0.9rem;background:#1c1917;color:#faf8f5;border:0;border-radius:999px;padding:0.7rem 1rem;cursor:pointer;font-family:Georgia,serif;">Descargar el informe de la semana</button>
+                        </div>
+                        <div class="report-section">
+                            <div class="section-header">2. Las cinco áreas</div>
+                            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0.8rem;margin-bottom:1.2rem;">
+                                ${areasHtml}
                             </div>
                         </div>
-
-                        <!-- 2. DESGLOSE DIAGNÓSTICO POR LAS 5 ÁREAS ICFES -->
                         <div class="report-section">
-                            <div class="section-header"><i class="fas fa-layer-group"></i> 2. Desglose Diagnóstico por Áreas Evaluadas (Escala 1 - 100)</div>
-                            
-                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 0.8rem; margin-bottom: 1.2rem;">
-                                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem;">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
-                                        <strong style="font-size: 0.85rem; color: #0f172a;">📐 Matemáticas</strong>
-                                        <span style="font-family: 'JetBrains Mono'; font-weight: 800; color: #16a34a; font-size: 0.85rem;">74 / 100</span>
-                                    </div>
-                                    <div style="background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden; margin-bottom: 0.4rem;">
-                                        <div style="background: #16a34a; width: 74%; height: 100%;"></div>
-                                    </div>
-                                    <span style="font-size: 0.72rem; color: #16a34a; font-weight: 700; text-transform: uppercase;">✓ Fortalecido (Dominio cuantitativo)</span>
-                                </div>
-
-                                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem;">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
-                                        <strong style="font-size: 0.85rem; color: #0f172a;">📖 Lectura Crítica</strong>
-                                        <span style="font-family: 'JetBrains Mono'; font-weight: 800; color: #b45309; font-size: 0.85rem;">68 / 100</span>
-                                    </div>
-                                    <div style="background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden; margin-bottom: 0.4rem;">
-                                        <div style="background: #b45309; width: 68%; height: 100%;"></div>
-                                    </div>
-                                    <span style="font-size: 0.72rem; color: #b45309; font-weight: 700; text-transform: uppercase;">⚡ En Desarrollo (Premisas implícitas)</span>
-                                </div>
-
-                                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem;">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
-                                        <strong style="font-size: 0.85rem; color: #0f172a;">🧪 Ciencias Naturales</strong>
-                                        <span style="font-family: 'JetBrains Mono'; font-weight: 800; color: #16a34a; font-size: 0.85rem;">71 / 100</span>
-                                    </div>
-                                    <div style="background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden; margin-bottom: 0.4rem;">
-                                        <div style="background: #16a34a; width: 71%; height: 100%;"></div>
-                                    </div>
-                                    <span style="font-size: 0.72rem; color: #16a34a; font-weight: 700; text-transform: uppercase;">✓ Fortalecido (Modelado de fenómenos)</span>
-                                </div>
-
-                                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem;">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
-                                        <strong style="font-size: 0.85rem; color: #0f172a;">🏛️ Sociales y Ciudadanas</strong>
-                                        <span style="font-family: 'JetBrains Mono'; font-weight: 800; color: #0284c7; font-size: 0.85rem;">66 / 100</span>
-                                    </div>
-                                    <div style="background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden; margin-bottom: 0.4rem;">
-                                        <div style="background: #0284c7; width: 66%; height: 100%;"></div>
-                                    </div>
-                                    <span style="font-size: 0.72rem; color: #0284c7; font-weight: 700; text-transform: uppercase;">⚡ En Desarrollo (Análisis de actores)</span>
-                                </div>
-
-                                <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 0.85rem;">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.3rem;">
-                                        <strong style="font-size: 0.85rem; color: #0f172a;">🇬🇧 Inglés (MCER B1)</strong>
-                                        <span style="font-family: 'JetBrains Mono'; font-weight: 800; color: #16a34a; font-size: 0.85rem;">76 / 100</span>
-                                    </div>
-                                    <div style="background: #e2e8f0; height: 6px; border-radius: 3px; overflow: hidden; margin-bottom: 0.4rem;">
-                                        <div style="background: #16a34a; width: 76%; height: 100%;"></div>
-                                    </div>
-                                    <span style="font-size: 0.72rem; color: #16a34a; font-weight: 700; text-transform: uppercase;">✓ Nivel B1 Acreditado</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- 3. GUÍA DE ACOMPAÑAMIENTO FAMILIAR PARA PADRES -->
-                        <div class="report-section">
-                            <div class="section-header" style="color: #b45309; border-bottom-color: #fde68a;"><i class="fas fa-heart"></i> 3. Guía Orientadora para Padres de Familia ("¿Cómo apoyar en casa?")</div>
-                            
-                            <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; padding: 1.2rem; margin-bottom: 1rem;">
-                                <p style="font-size: 0.85rem; color: #78350f; font-weight: 600; margin-bottom: 0.8rem; line-height: 1.5;">
-                                    Estimados padres o acudientes: El éxito en la prueba Saber 11 no depende únicamente del estudio memorístico, sino del entrenamiento constante de la concentración y el hábito de estudio reflexivo. Recomendamos 3 acciones en el hogar:
-                                </p>
-
-                                <ul style="margin: 0; padding-left: 1.2rem; font-size: 0.83rem; color: #1e293b; line-height: 1.7; display: grid; gap: 0.6rem;">
-                                    <li>
-                                        <strong>🏡 1. Bloques de Estudio Sostenido (40 min):</strong>
-                                        Acompañe a su hijo(a) a establecer bloques diarios de 40 a 50 minutos sin distracciones de celular.
-                                    </li>
-                                    <li>
-                                        <strong>🧠 2. Transición del Sistema 1 (Impulsivo) al Sistema 2 (Analítico):</strong>
-                                        Motívelo a leer el enunciado completo y pausar 3 segundos antes de responder.
-                                    </li>
-                                    <li>
-                                        <strong>💬 3. Firmar el Pacto de Odiseo:</strong>
-                                        Incentive el cumplimiento de sus propias metas semanales de estudio previo al examen.
-                                    </li>
+                            <div class="section-header">3. En la casa</div>
+                            <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:1.2rem;">
+                                <ul style="margin:0;padding-left:1.2rem;font-size:0.83rem;color:#1e293b;line-height:1.7;display:grid;gap:0.6rem;">
+                                    <li><strong>Un bloque al día.</strong> El de la app, y después el descanso.</li>
+                                    <li><strong>Mirar el error.</strong> La tarea al cerrar una prueba sale de lo que falló en esa sesión.</li>
+                                    <li><strong>El plan de pago.</strong> $9.000 al mes, o $38.000 por seis meses. Solo quita los anuncios: las ayudas ya son iguales para todos.</li>
                                 </ul>
                             </div>
                         </div>
@@ -697,7 +660,7 @@
 
                     area.innerHTML = `
                         <div class="report-section">
-                            <div class="section-header"><i class="fas fa-chalkboard-teacher"></i> 1. Consolidado de Aula & Telemetría Cognitiva</div>
+                            <div class="section-header"><svg class="w-4 h-4 inline-block mr-1 text-slate-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h20v14H2z"/><path d="M8 21h8"/><path d="M12 17v4"/></svg> 1. Consolidado de Aula & Telemetría Cognitiva</div>
                             
                             <div class="kpi-row">
                                 <div class="kpi-doc-card">
@@ -725,7 +688,7 @@
                         </div>
 
                         <div class="report-section">
-                            <div class="section-header"><i class="fas fa-users"></i> 2. Muestra de Fichas de Tutoría Individuales</div>
+                            <div class="section-header"><svg class="w-4 h-4 inline-block mr-1 text-slate-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> 2. Muestra de Fichas de Tutoría Individuales</div>
                             
                             <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem; text-align: left;">
                                 <thead>
@@ -783,13 +746,13 @@
 
                     area.innerHTML = `
                         <div class="report-section">
-                            <div class="section-header"><i class="fas fa-building"></i> 1. Indicadores Macro Institucionales (C-Suite Dashboard)</div>
+                            <div class="section-header"><svg class="w-4 h-4 inline-block mr-1 text-slate-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18"/><path d="M9 8h1"/><path d="M9 12h1"/><path d="M9 16h1"/><path d="M14 8h1"/><path d="M14 12h1"/><path d="M14 16h1"/><path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"/></svg> 1. Indicadores Macro Institucionales (C-Suite Dashboard)</div>
                             
                             <div class="kpi-row">
                                 <div class="kpi-doc-card" style="border-left: 4px solid #b45309;">
                                     <span class="meta-label">Promedio Institucional Saber 11</span>
                                     <div class="kpi-doc-val" style="color: #b45309;">${promSaber500} / 500</div>
-                                    <span class="text-[10px] text-slate-500 font-mono block mt-1">Meta Institucional: 320 pts</span>
+                                    <span class="text-[10px] text-slate-500 font-mono block mt-1">Meta Institucional: 380 pts</span>
                                 </div>
                                 <div class="kpi-doc-card" style="border-left: 4px solid #0284c7;">
                                     <span class="meta-label">Índice CEI Colectivo</span>
@@ -815,7 +778,7 @@
                         </div>
 
                         <div class="report-section">
-                            <div class="section-header"><i class="fas fa-chart-bar"></i> 2. Matriz Comparativa por Asignaturas ICFES</div>
+                            <div class="section-header"><svg class="w-4 h-4 inline-block mr-1 text-slate-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> 2. Matriz Comparativa por Asignaturas ICFES</div>
                             
                             <table style="width: 100%; border-collapse: collapse; font-size: 0.8rem; text-align: left;">
                                 <thead>
