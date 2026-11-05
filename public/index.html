@@ -9,7 +9,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="assets/icons/icon-192.svg">
     <link rel="apple-touch-icon" href="assets/icons/icon-192.svg">
-    <title>Dante OS c-1.3.7</title>
+    <title>Dante OS c-1.3.8</title>
     <script>
         try { sessionStorage.setItem('dante_entrada_viva', String(Date.now())); } catch (e) {}
     </script>
@@ -80,7 +80,8 @@
 
     <!-- ⚡ PRECARGA PRIORITARIA DE HOJAS DE ESTILO CRÍTICAS Y FUENTES DEL SISTEMA -->
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style">
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=JetBrains+Mono:ital,wght@0,300..800;1,300..800&family=Oswald:wght@700;900&family=Outfit:wght@400;600;800&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap" as="style">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=JetBrains+Mono:ital,wght@0,300..800;1,300..800&family=Oswald:wght@700;900&family=Outfit:wght@400;600;800&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap" as="style">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=JetBrains+Mono:ital,wght@0,300..800;1,300..800&family=Oswald:wght@700;900&family=Outfit:wght@400;600;800&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap">
     <link rel="preload" href="css/design-tokens.css" as="style">
     <link rel="preload" href="css/theme.css" as="style">
 
@@ -109,26 +110,26 @@
     <script src="js/highlighterIRD.js?v=c-1.2.85"></script>
     <script src="js/danteAds.js?v=c-1.2.85"></script>
     <script src="js/dantePlanSala.js?v=c-1.2.85"></script>
-    <script src="js/danteRecorrido.js?v=c-1.2.85"></script>
+    <script src="js/danteRecorrido.js?v=c-1.3.8"></script>
     <script src="js/ojoBionico3D.js?v=c-1.2.85"></script>
     <script src="js/modoSniper.js?v=c-1.2.85"></script>
     <script src="js/danteNube.js?v=c-1.2.85"></script>
-    <script src="js/danteRegistro.js?v=c-1.3.7"></script>
+    <script src="js/danteRegistro.js?v=c-1.3.8"></script>
     <script src="js/danteAbility.js?v=c-1.2.85"></script>
     <script src="js/rutaSimulacroEngine.js?v=c-1.2.85"></script>
     <script src="js/danteTutorEngine.js?v=c-1.2.85"></script>
-    <script src="js/danteSpiralEntity.js?v=c-1.3.7"></script>
-    <script src="js/hackeaSyncIntro.js?v=c-1.3.7"></script>
-    <script src="js/hackeaUmbralVault.js?v=c-1.3.7"></script>
-    <script src="js/hackeaUmbralPicker.js?v=c-1.3.7"></script>
-    <script src="js/hackeaPulsoBank.js?v=c-1.3.7"></script>
-    <script src="js/hackeaPulsoVault.js?v=c-1.3.7"></script>
-    <script src="js/hackeaCampaign.js?v=c-1.3.7"></script>
-    <script src="js/hackeaArc.js?v=c-1.3.7"></script>
-    <script src="js/hackeaPulso.js?v=c-1.3.7"></script>
-    <script src="js/hackeaMente.js?v=c-1.3.7"></script>
-    <script src="js/danteHubEngine.js?v=c-1.3.7"></script>
-    <script src="js/danteExamWorkspace.js?v=c-1.3.7"></script>
+    <script src="js/danteSpiralEntity.js?v=c-1.3.8"></script>
+    <script src="js/hackeaSyncIntro.js?v=c-1.3.8"></script>
+    <script src="js/hackeaUmbralVault.js?v=c-1.3.8"></script>
+    <script src="js/hackeaUmbralPicker.js?v=c-1.3.8"></script>
+    <script src="js/hackeaPulsoBank.js?v=c-1.3.8"></script>
+    <script src="js/hackeaPulsoVault.js?v=c-1.3.8"></script>
+    <script src="js/hackeaCampaign.js?v=c-1.3.8"></script>
+    <script src="js/hackeaArc.js?v=c-1.3.8"></script>
+    <script src="js/hackeaPulso.js?v=c-1.3.8"></script>
+    <script src="js/hackeaMente.js?v=c-1.3.8"></script>
+    <script src="js/danteHubEngine.js?v=c-1.3.8"></script>
+    <script src="js/danteExamWorkspace.js?v=c-1.3.8"></script>
     <script src="js/danteSemana.js?v=c-1.2.85"></script>
     <script src="js/danteSimulacro.js?v=c-1.2.85"></script>
     <script src="js/danteRadarEngine.js?v=c-1.2.85"></script>
@@ -490,8 +491,12 @@
         #medallaFin.medalla-lista { color: #fde68a; border-color: rgba(251, 191, 36, 0.8); background: rgba(120, 80, 10, 0.35); }
         .medalla-trazo { width: 2.5rem; height: 2px; border-radius: 999px; background: rgba(255,255,255,0.08); overflow: hidden; }
         #lblNivelMedalla { color: #a8a29e !important; font-size: 10px !important; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600 !important; }
-        #tarjetaTareaSala { width: 100%; text-align: left; padding: 0.7rem 0.8rem; border-radius: 0.9rem; background: rgba(251, 191, 36, 0.08); }
+        #tarjetaTareaSala { width: 100%; text-align: left; padding: 0; border-radius: 999px; background: transparent; }
+        /* Sala: dock visible solo en gateway (maquillage mock) */
         #bottomNav { display: none !important; }
+        body:has(#viewGateway.active) #bottomNav {
+            display: flex !important;
+        }
         #headerWorkspaceNavControls { display: none !important; }
         #filaNavExamen { display: none !important; }
         #hdrExamenPrincipal .examen-solo { display: none; }
@@ -608,38 +613,45 @@
         }
         .optica-workspace-container { padding: 0.4rem 0.7rem !important; margin-top: 0.45rem !important; border-radius: 12px !important; }
         #btnIniciarMisionUnificado {
-            background: #e7d7c3 !important;
-            border: 0 !important;
-            color: #1c1917 !important;
-            box-shadow: none !important;
+            background: rgba(0, 18, 24, 0.72) !important;
+            border: 1.5px solid rgba(34, 211, 238, 0.78) !important;
+            color: #f8fafc !important;
+            box-shadow:
+                0 0 0 1px rgba(34, 211, 238, 0.12),
+                0 0 22px rgba(34, 211, 238, 0.28),
+                inset 0 0 18px rgba(34, 211, 238, 0.06) !important;
             animation: none !important;
-            min-height: 3.35rem;
+            min-height: 3.15rem;
             border-radius: 999px !important;
             touch-action: none;
             -webkit-user-select: none;
             user-select: none;
+            padding: 0.7rem 1.05rem !important;
         }
         #btnIniciarMisionUnificado #txtScanPrompt {
-            color: #1c1917 !important;
+            color: #f8fafc !important;
             font-family: 'Plus Jakarta Sans', sans-serif !important;
-            font-size: 0.95rem !important;
+            font-size: 0.92rem !important;
             font-weight: 600 !important;
             letter-spacing: 0 !important;
+            line-height: 1.2 !important;
         }
         #btnIniciarMisionUnificado #txtScanSubprompt {
-            color: #57534e !important;
-            letter-spacing: 0 !important;
+            color: rgba(103, 232, 249, 0.72) !important;
+            letter-spacing: 0.02em !important;
+            font-size: 0.68rem !important;
         }
         #btnHoldProgressFill {
             top: auto !important;
             height: 3px !important;
-            background: #1c1917 !important;
+            background: rgba(34, 211, 238, 0.95) !important;
             border-radius: 0 0 999px 999px;
+            box-shadow: 0 0 10px rgba(34, 211, 238, 0.65);
         }
         #btnIniciarMisionUnificado.btn-espera {
-            background: transparent !important;
-            border: 1px solid rgba(231, 215, 195, 0.35) !important;
-            box-shadow: none !important;
+            background: rgba(8, 12, 16, 0.55) !important;
+            border: 1.5px solid rgba(34, 211, 238, 0.28) !important;
+            box-shadow: 0 0 14px rgba(34, 211, 238, 0.1) !important;
             cursor: pointer;
         }
         #notaEspera[hidden] { display: none !important; }
@@ -694,24 +706,28 @@
             font-weight: 650;
             cursor: pointer;
         }
-        #btnIniciarMisionUnificado.btn-espera #txtScanPrompt,
+        #btnIniciarMisionUnificado.btn-espera #txtScanPrompt {
+            color: #cbd5e1 !important;
+        }
         #btnIniciarMisionUnificado.btn-espera #txtScanSubprompt {
-            color: #a8a29e !important;
+            color: rgba(103, 232, 249, 0.55) !important;
         }
         #reflejoSala {
             position: absolute;
             left: 50%;
-            top: -2.2rem;
+            top: -1.4rem;
             width: min(1100px, 190vw);
             height: min(820px, 96vh);
             transform: translateX(-50%);
             pointer-events: none;
             z-index: 1;
             border-radius: 50%;
-            filter: blur(56px);
+            filter: blur(52px);
             mix-blend-mode: screen;
-            opacity: 0.72;
-            background: radial-gradient(ellipse at 50% 20%, rgba(0, 242, 254, 0.28) 0%, rgba(0, 242, 254, 0.12) 32%, rgba(0, 242, 254, 0.04) 56%, transparent 78%);
+            opacity: 0.88;
+            background:
+                radial-gradient(ellipse at 32% 22%, rgba(0, 242, 254, 0.34) 0%, rgba(0, 242, 254, 0.1) 34%, transparent 62%),
+                radial-gradient(ellipse at 68% 26%, rgba(251, 146, 60, 0.28) 0%, rgba(245, 158, 11, 0.1) 36%, transparent 64%);
         }
         #hdrExamenPrincipal {
             background-color: #010103 !important;
@@ -793,17 +809,26 @@
             50% { box-shadow: 0 10px 28px rgba(245, 158, 11, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.65); }
         }
         #contenedorOrbeDante {
-            width: 148px;
-            height: 148px;
-            min-width: 148px;
-            min-height: 148px;
-            flex: 0 0 148px;
+            width: min(58vw, 248px);
+            height: min(58vw, 248px);
+            min-width: 200px;
+            min-height: 200px;
+            max-width: 248px;
+            max-height: 248px;
+            flex: 0 0 auto;
+            aspect-ratio: 1;
             position: relative;
             z-index: 5;
-            margin: 0.35rem auto 0.15rem;
+            margin: 0.55rem auto 0.05rem;
             overflow: visible;
             cursor: pointer;
             -webkit-tap-highlight-color: transparent;
+            filter: drop-shadow(0 0 28px rgba(0, 242, 254, 0.28)) drop-shadow(0 0 36px rgba(251, 146, 60, 0.18));
+        }
+        #contenedorOrbeDante #danteSpiralCanvas {
+            width: 100% !important;
+            height: 100% !important;
+            display: block;
         }
         #contenedorOrbeDante:focus-visible {
             outline: 1px solid rgba(231, 215, 195, 0.55);
@@ -826,25 +851,28 @@
             -webkit-user-select: none;
         }
         #hackeaPortalCaption {
-            margin: 0 auto 0.15rem;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 9px;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            color: rgba(231, 215, 195, 0.72);
+            margin: 0.15rem auto 0.55rem;
+            font-family: 'Cinzel', 'Times New Roman', serif;
+            font-size: 0.95rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: none;
+            color: rgba(248, 250, 252, 0.88);
             text-align: center;
             pointer-events: none;
             position: relative;
             z-index: 6;
-            line-height: 1.45;
+            line-height: 1.35;
         }
         #hackeaPortalCaption .hackea-hold-hint {
             display: block;
-            margin-top: 0.2rem;
-            font-size: 8px;
-            letter-spacing: 0.16em;
-            color: rgba(168, 162, 158, 0.7);
+            margin-top: 0.28rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.62rem;
+            letter-spacing: 0.14em;
+            color: rgba(148, 163, 184, 0.65);
             text-transform: uppercase;
+            font-weight: 500;
         }
         #contenedorOrbeDante.hackea-holding + #hackeaPortalCaption .hackea-hold-hint,
         #hackeaPortalCaption.hackea-breach-cap .hackea-hold-hint {
@@ -1814,29 +1842,255 @@
             padding: 0 !important;
         }
         #lblPasoDescripcion {
-            color: #f5f5f4 !important;
-            font-size: 15px !important;
-            line-height: 1.45 !important;
-            min-height: 6.2rem !important;
-            max-width: 22rem !important;
+            display: none !important;
         }
         #containerMisionPlanCapsule { display: none !important; }
-        #cardExpedienteStatus,
-        #puertaRutaVocacional {
-            background: #14120f !important;
-            box-shadow: none !important;
-            border-radius: 18px !important;
+        /* —— Sala maquillage mock: acciones + puertas —— */
+        #viewGateway .sala-acciones {
+            margin-top: 0.15rem !important;
+            display: flex;
+            flex-direction: column;
+            gap: 0.55rem;
         }
-        #cardExpedienteStatus { border-color: rgba(231, 215, 195, 0.22) !important; }
+        #viewGateway #tarjetaTareaSala:not([hidden]) {
+            order: 2;
+            margin-top: 0.55rem;
+            padding: 0;
+            background: transparent;
+            border: 0;
+        }
+        #viewGateway #tarjetaTareaSala:not([hidden]) > p {
+            display: none !important;
+        }
+        #viewGateway #btnAbrirRefuerzo {
+            width: 100%;
+            min-height: 3.15rem;
+            margin: 0 !important;
+            padding: 0.7rem 1.05rem !important;
+            border-radius: 999px !important;
+            background: rgba(28, 14, 4, 0.72) !important;
+            border: 1.5px solid rgba(251, 146, 60, 0.82) !important;
+            color: #fff7ed !important;
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+            font-size: 0.92rem !important;
+            font-weight: 600 !important;
+            box-shadow:
+                0 0 0 1px rgba(251, 146, 60, 0.12),
+                0 0 22px rgba(251, 146, 60, 0.26),
+                inset 0 0 18px rgba(251, 146, 60, 0.05) !important;
+            cursor: pointer;
+            display: flex !important;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.55rem;
+            text-align: left;
+        }
+        #viewGateway #btnAbrirRefuerzo .sala-cta-ico {
+            color: #fb923c;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        #viewGateway #btnAbrirRefuerzo .sala-refuerzo-meta {
+            color: #fdba74;
+            font-size: 0.72rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        #viewGateway #btnAbrirRefuerzo:disabled {
+            opacity: 0.72;
+            cursor: wait;
+        }
+        #viewGateway .sala-cta-wrap {
+            order: 1;
+            padding-top: 0.15rem !important;
+        }
+        #viewGateway .sala-puertas-grid {
+            display: grid !important;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.55rem;
+            align-items: stretch;
+            width: 100%;
+            max-width: 22.5rem;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 1rem !important;
+            padding-bottom: 4.25rem !important;
+        }
+        #viewGateway .sala-puertas-grid > .flex.items-center.justify-center {
+            grid-column: 1 / -1;
+            order: 10;
+            opacity: 0.45;
+            padding-top: 0.15rem !important;
+        }
+        #puertaSimulacro { order: 1; }
+        #cardExpedienteStatus { order: 2; }
+        #puertaRutaVocacional { order: 3; }
+        #cardExpedienteStatus,
+        #puertaSimulacro,
+        #puertaRutaVocacional {
+            background: rgba(10, 12, 16, 0.88) !important;
+            box-shadow: none !important;
+            border-radius: 16px !important;
+            border: 1px solid rgba(148, 163, 184, 0.22) !important;
+            padding: 0.75rem 0.65rem 0.7rem !important;
+            min-height: 7.6rem;
+            display: flex !important;
+            flex-direction: column;
+            justify-content: flex-start;
+            gap: 0.35rem;
+            text-decoration: none !important;
+        }
+        #cardExpedienteStatus { border-color: rgba(34, 211, 238, 0.28) !important; }
+        #puertaSimulacro { border-color: rgba(34, 211, 238, 0.32) !important; }
+        #puertaRutaVocacional { border-color: rgba(251, 146, 60, 0.38) !important; padding: 0.75rem 0.65rem 0.7rem !important; }
         #cardExpedienteStatus #lblProyeccionEtiqueta,
+        #lblSimulacroTitulo,
+        #lblRutaVocacionalTitulo {
+            color: #94a3b8 !important;
+            font-family: 'Cinzel', 'Times New Roman', serif !important;
+            font-size: 0.68rem !important;
+            letter-spacing: 0.04em !important;
+            text-transform: none !important;
+            font-weight: 600 !important;
+            line-height: 1.25 !important;
+        }
+        #lblRutaVocacionalTitulo { color: #fdba74 !important; }
+        #lblSimulacroTitulo { color: #67e8f9 !important; }
+        #cardExpedienteStatus #lblProyeccionEtiqueta { color: #67e8f9 !important; }
         #cardExpedienteStatus #lblProyeccionEscala,
-        #cardExpedienteStatus #lblProyeccionMargen,
-        #cardExpedienteStatus .ver-informe { color: #a8a29e !important; }
-        #cardExpedienteStatus #lblProyeccionPuntos { color: #fafaf9 !important; }
-        #cardExpedienteStatus #lblEstadoCalibracionSub { color: #d6d3d1 !important; }
-        #cardExpedienteStatus .riel-proyeccion { background: rgba(255,255,255,0.08) !important; border-color: transparent !important; }
-        #barraProyeccion { background: #e7d7c3 !important; }
-        #puertaRutaVocacional { border-color: rgba(120, 113, 108, 0.35) !important; padding: 0.7rem 0.9rem !important; }
+        #cardExpedienteStatus #lblProyeccionMargen { color: #64748b !important; font-size: 0.72rem !important; }
+        #cardExpedienteStatus .ver-informe,
+        #cardExpedienteStatus #barraMedallaSala,
+        #cardExpedienteStatus .riel-proyeccion,
+        #cardExpedienteStatus #lblEstadoCalibracionSub { display: none !important; }
+        #cardExpedienteStatus #lblProyeccionPuntos {
+            color: #f8fafc !important;
+            font-size: 1.55rem !important;
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+            font-weight: 650 !important;
+        }
+        #cardExpedienteStatus > .flex.items-start { align-items: flex-start !important; }
+        #lblSimulacroDetalle,
+        #lblRutaVocacionalDetalle {
+            color: #e2e8f0 !important;
+            font-size: 0.78rem !important;
+            line-height: 1.3 !important;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        #barraProyeccion { background: #22d3ee !important; }
+        /* Dock limpio Sala / Progreso / Simulacro */
+        body:has(#viewGateway.active) .bottom-nav {
+            bottom: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100% !important;
+            max-width: none !important;
+            transform: none !important;
+            border-radius: 0 !important;
+            border: 0 !important;
+            border-top: 1px solid rgba(148, 163, 184, 0.14) !important;
+            background: rgba(0, 0, 0, 0.92) !important;
+            backdrop-filter: blur(16px);
+            padding: 0.55rem 1.25rem calc(0.55rem + env(safe-area-inset-bottom, 0px)) !important;
+            box-shadow: none !important;
+            justify-content: space-around !important;
+        }
+        body:has(#viewGateway.active) .bottom-nav .nav-item {
+            min-width: 0;
+            gap: 0.2rem;
+            text-decoration: none !important;
+        }
+        body:has(#viewGateway.active) .bottom-nav .icon-circle {
+            width: auto;
+            height: auto;
+            background: transparent !important;
+            border: 0 !important;
+            margin-bottom: 0;
+            border-radius: 0;
+        }
+        body:has(#viewGateway.active) .bottom-nav .nav-text {
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+            font-size: 0.68rem !important;
+            font-weight: 600 !important;
+            letter-spacing: 0.02em !important;
+            text-transform: none !important;
+        }
+        body:has(#viewGateway.active) .bottom-nav .nav-item.is-sala-active .nav-text {
+            color: #22d3ee !important;
+        }
+        body:has(#viewGateway.active) .bottom-nav .nav-item.is-sala-active .icon-circle {
+            position: relative;
+        }
+        body:has(#viewGateway.active) .bottom-nav .nav-item.is-sala-active .icon-circle::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: -0.35rem;
+            width: 1.15rem;
+            height: 2px;
+            transform: translateX(-50%);
+            background: #22d3ee;
+            border-radius: 999px;
+            box-shadow: 0 0 8px rgba(34, 211, 238, 0.7);
+        }
+        body:has(#viewGateway.active) .bottom-nav .nav-item:not(.is-sala-active) .nav-text,
+        body:has(#viewGateway.active) .bottom-nav .nav-item:not(.is-sala-active) i {
+            color: #64748b !important;
+        }
+        /* Header sala más cercano al mock */
+        #hdrExamenPrincipal:not(.modo-examen) {
+            background: #000 !important;
+            border-bottom-color: transparent !important;
+            height: 3.15rem !important;
+        }
+        #hdrExamenPrincipal:not(.modo-examen) #badgeDanteVersion,
+        #hdrExamenPrincipal:not(.modo-examen) #containerTrackHeaderPill,
+        #hdrExamenPrincipal:not(.modo-examen) #btnAjustesHdr {
+            display: none !important;
+        }
+        #hdrExamenPrincipal:not(.modo-examen) #lblHeaderNombreUsuario {
+            display: inline !important;
+            color: #e2e8f0;
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+            font-size: 0.78rem;
+            font-weight: 500;
+            margin-right: 0.15rem;
+        }
+        #hdrExamenPrincipal:not(.modo-examen) #lblHeaderNombreUsuario::before {
+            content: 'Hola, ';
+            color: #94a3b8;
+            font-weight: 400;
+        }
+        #hdrExamenPrincipal:not(.modo-examen) #btnPerfilHdr {
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: 0;
+            color: #22d3ee;
+            cursor: pointer;
+            padding: 0.25rem;
+        }
+        #hdrExamenPrincipal:not(.modo-examen) #btnPerfilHdr i {
+            color: #22d3ee !important;
+            font-size: 1rem !important;
+        }
+        #hdrExamenPrincipal:not(.modo-examen) a.sala-solo span.font-mono {
+            font-family: 'Cinzel', 'Times New Roman', serif !important;
+            font-weight: 700 !important;
+            font-size: 1.05rem !important;
+            letter-spacing: 0.02em !important;
+            text-transform: none !important;
+        }
+        #viewGateway {
+            padding-bottom: 4.5rem !important;
+            max-height: none !important;
+            height: auto !important;
+            min-height: calc(100dvh - 48px) !important;
+        }
         .ruta-hoja { width: min(100%, 24rem); max-height: 92vh; overflow: auto; background: #14120f; color: #f5f5f4; border: 1px solid rgba(231, 215, 195, 0.22); border-radius: 18px; padding: 1.35rem 1.15rem 1.15rem; position: relative; text-align: left; }
         .cierre-hoja { background: #14120f; color: #f5f5f4; border: 1px solid rgba(231, 215, 195, 0.22); border-radius: 18px; padding: 1rem 1rem 0.9rem; text-align: left; }
         .cierre-kicker { margin: 0; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: #a8a29e; }
@@ -1867,8 +2121,8 @@
         .ruta-seguir { width: 100%; min-height: 48px; border: 0; border-radius: 16px; background: linear-gradient(180deg, #fcd34d 0%, #f59e0b 58%, #d97706 100%); color: #1c1408; font-weight: 800; cursor: pointer; }
         .ruta-carrera-nombre { display: block; color: #fafaf9; font-weight: 650; }
         .ruta-carrera-porque { display: block; margin-top: 0.2rem; color: #a8a29e; font-size: 0.86rem; line-height: 1.35; }
-        #lblRutaVocacionalTitulo { color: #a8a29e !important; letter-spacing: 0.08em !important; }
-        #lblRutaVocacionalDetalle { color: #d6d3d1 !important; }
+        #lblRutaVocacionalTitulo { color: #fdba74 !important; letter-spacing: 0.04em !important; }
+        #lblRutaVocacionalDetalle { color: #e2e8f0 !important; }
         #barraMedallaSala { background: transparent !important; height: auto !important; }
         #modalRespiracionInicio.dante-respiro,
         #modalModuladorVagal.dante-respiro {
@@ -2321,8 +2575,13 @@
         .icon-circle { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); margin-bottom: 2px; }
         .nav-text { font-size: 8.5px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
         
-        #dante-anchor { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--gold-satin); background: #000; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(212,175,55,0.3); }
-        #dante-anchor i { font-size: 18px; color: var(--gold-satin); }
+        #dante-anchor:not(.nav-item) { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--gold-satin); background: #000; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(212,175,55,0.3); }
+        #dante-anchor:not(.nav-item) i { font-size: 18px; color: var(--gold-satin); }
+        body:has(#viewGateway.active) #dante-anchor.nav-item {
+            width: auto; height: auto; border: 0; background: transparent; box-shadow: none; border-radius: 0;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        body:has(#viewGateway.active) #dante-anchor.nav-item i { font-size: 0.9rem; color: #64748b; }
 
         /* TUTORIAL Y MODALES OVERLAYS */
         .modal-overlay {
@@ -4243,7 +4502,6 @@
     <header id="hdrExamenPrincipal" class="fixed top-0 left-0 right-0 w-full h-12 border-b border-slate-800 bg-[#010103] z-40 shrink-0 select-none flex items-center justify-center px-2 sm:px-4">
         <div class="relative w-full max-w-5xl flex items-center justify-between gap-1.5 sm:gap-2">
             <span id="lblHeaderStudentName" class="hidden">Estudiante</span>
-            <span id="lblHeaderNombreUsuario" class="hidden">Estudiante</span>
             
             <!-- Izquierda: Logo Oficial con Nombre ('Dante OS') junto al Indicador de Competencia/Convocatoria -->
             <div class="flex items-center gap-1.5 sm:gap-2 shrink min-w-0">
@@ -4251,7 +4509,7 @@
                     <img src="assets/icons/dante-logo-icon.svg" alt="Dante OS Logo" class="w-6 h-6 rounded-md shadow-[0_0_12px_rgba(56,189,248,0.45)] border border-cyan-500/30 shrink-0 object-contain" />
                     <span class="font-mono font-bold text-xs tracking-wider text-white select-none whitespace-nowrap flex items-center gap-1.5">
                         Dante OS
-                        <span id="badgeDanteVersion" class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">c-1.3.7</span>
+                        <span id="badgeDanteVersion" class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">c-1.3.8</span>
                     </span>
                 </a>
 
@@ -4270,6 +4528,8 @@
 
             <!-- Derecha: Racha, Plan, Ajustes, Perfil -->
             <div class="flex items-center gap-1 sm:gap-2 font-mono text-xs shrink-0">
+                <span id="lblHeaderNombreUsuario" class="sala-solo">Estudiante</span>
+                <button type="button" id="btnPerfilHdr" class="sala-solo" onclick="window.abrirPerfilEstudiante(event)" title="Mi Expediente"><i class="fa-regular fa-circle-user text-cyan-400 text-sm"></i></button>
                 <!-- 🔥 BOTÓN / BADGE RACHA REAL DE DÍAS (SIN BORDES NI CONTENEDOR CIRCULAR, SÓLO FLAMA Y NÚMERO) -->
                 <button type="button" id="badgeRacha" onclick="StreakManager.abrirModalRacha()" class="sala-solo flex items-center gap-1 sm:gap-1.5 cursor-pointer bg-transparent border-0 p-1 text-amber-400 font-mono text-xs font-black transition-transform hover:scale-105 active:scale-95 shrink-0 select-none min-h-[32px] min-w-[28px]" title="Ver Racha Real de Días">
                     <svg class="flama-respirando w-4 h-4 text-amber-400 shrink-0" viewBox="0 0 24 24" fill="currentColor">
@@ -4284,7 +4544,6 @@
                 <span id="lblCronometroWorkspace" class="examen-solo font-mono text-[11px] text-slate-300 tabular-nums shrink-0">00:00</span>
                 <button type="button" id="btnPausaCabecera" class="examen-solo bg-transparent border-0 px-1 py-1 text-cyan-300 font-mono text-[12px] font-bold shrink-0" onclick="window.abrirPausaExamen(event)">Pausa</button>
                 <button type="button" id="btnAjustesHdr" data-alias="btnOpenAjustes" onclick="window.abrirAjustesEntorno(event)" class="p-1.5 sm:p-2 text-slate-300 hover:text-white text-sm leading-none cursor-pointer flex items-center justify-center shrink-0 min-h-[36px] min-w-[36px] rounded-lg hover:bg-slate-900 transition-colors" title="Ajustes"><i class="fa-solid fa-gear text-slate-300 text-xs sm:text-sm"></i></button>
-                <button type="button" id="btnPerfilHdr" class="hidden" hidden onclick="window.abrirPerfilEstudiante(event)" title="Mi Expediente"><i class="fa-solid fa-user text-slate-300 text-xs sm:text-sm"></i></button>
             </div>
         </div>
     </header>
@@ -4312,10 +4571,10 @@
         <div id="contenedorOrbeDante" role="button" tabindex="0" aria-label="Hackea tu mente — presiona la espiral y mantén unos segundos" title="Presiona la espiral y mantén unos segundos">
             <canvas id="danteSpiralCanvas" width="480" height="480"></canvas>
         </div>
-        <div id="hackeaPortalCaption">Hackea tu mente<span class="hackea-hold-hint">Presiona la espiral</span></div>
+        <div id="hackeaPortalCaption">— Hackea tu mente —<span class="hackea-hold-hint">Presiona la espiral</span></div>
 
         <!-- B. DIÁLOGO CONVERSACIONAL SOCRÁTICO INSTANTÁNEO -->
-        <div class="w-full max-w-xs sm:max-w-sm md:max-w-md mx-auto space-y-2 text-center relative z-10 mt-1">
+        <div class="sala-acciones w-full max-w-xs sm:max-w-sm md:max-w-md mx-auto space-y-2 text-center relative z-10 mt-1">
             <!-- MICRO-CÁPSULA TÉCNICA UNIFICADA DE LA MISIÓN (GLASSMORPHISM LIGERO SIN EFECTO PARCHE) -->
             <div id="containerMisionPlanCapsule" class="inline-flex items-center justify-center">
                 <div id="badgeTurnoMision" class="inline-flex items-center justify-center gap-2 px-3 py-0.5 rounded-full bg-slate-950/40 border border-amber-500/20 backdrop-blur-md text-center select-none shadow-none">
@@ -4349,19 +4608,22 @@
             <div id="tarjetaTareaSala" hidden></div>
 
             <!-- C. ÚNICO GATILLO DE ACCIÓN: BOTÓN UNIFICADO CON ESCANEO HÁPTICO Y LUZ RESPIRATORIA -->
-            <div class="w-full max-w-xs sm:max-w-sm mx-auto pt-1">
+            <div class="sala-cta-wrap w-full max-w-xs sm:max-w-sm mx-auto pt-1">
                 <button id="btnIniciarMisionUnificado" data-alias="btnSintonizar" type="button" class="w-full py-3 px-4 text-center select-none cursor-pointer relative overflow-hidden">
                     <div id="btnHoldProgressFill" class="absolute left-0 bottom-0 pointer-events-none" style="width: 0%;"></div>
-                    <span class="relative z-10 flex flex-col items-center justify-center gap-0.5" id="btnSintonizar">
-                        <span id="txtScanPrompt" data-reposo="Entrenamiento de hoy · 10 preguntas">Entrenamiento de hoy · 10 preguntas</span>
-                        <span id="txtScanSubprompt" data-reposo="Mantén presionado" class="text-[11px]">Mantén presionado</span>
+                    <span class="relative z-10 flex flex-row items-center justify-between gap-2 w-full" id="btnSintonizar">
+                        <span class="sala-cta-ico text-cyan-300 text-sm shrink-0" aria-hidden="true"><i class="fa-solid fa-bullseye"></i></span>
+                        <span class="flex flex-col items-start justify-center gap-0.5 min-w-0 flex-1 text-left">
+                            <span id="txtScanPrompt" data-reposo="Entrenamiento de hoy · 10 preguntas">Entrenamiento de hoy · 10 preguntas</span>
+                            <span id="txtScanSubprompt" data-reposo="Mantén presionado" class="text-[11px]">Mantén presionado</span>
+                        </span>
                     </span>
                 </button>
             </div>
         </div>
 
         <!-- C. BLOQUE INFERIOR UNIFICADO DE EXPEDIENTE Y LEGALES (AL PIE DE LA CABINA 100DVH FIX) -->
-        <div class="w-full max-w-xs mx-auto flex flex-col items-center gap-2 pb-2 select-none shrink-0 mt-3 z-20">
+        <div class="sala-puertas-grid w-full max-w-xs mx-auto flex flex-col items-center gap-2 pb-2 select-none shrink-0 mt-3 z-20">
             <!-- Tarjeta de Expediente Bloqueado / Calibrado (Acceso al Radar y Gamificación) -->
             <a id="cardExpedienteStatus" href="/perfil.html" class="block w-full px-3.5 py-3 rounded-2xl bg-[#14120f] border border-stone-600/30 text-left cursor-pointer transition-all active:scale-[0.99] no-underline">
                 <div class="flex items-start justify-between gap-3">
@@ -4391,13 +4653,13 @@
             </a>
 
             <button type="button" id="puertaSimulacro" onclick="if(window.DanteSimulacro){DanteSimulacro.abrir();}" class="block w-full px-3.5 py-2.5 rounded-2xl bg-[#14120f] border border-[#e7d7c3]/40 text-left cursor-pointer">
-                <div id="lblSimulacroTitulo" class="text-[10px] font-mono uppercase tracking-[0.16em] text-[#e7d7c3]">Simulacro</div>
+                <div id="lblSimulacroTitulo" class="text-[10px] font-mono uppercase tracking-[0.16em] text-[#e7d7c3]">Simulacro Completo</div>
                 <div id="lblSimulacroDetalle" class="mt-0.5 text-[12px] text-slate-100 font-sans leading-snug">Prueba larga de 254 preguntas. Dos sesiones de 4 h 30 min. El puntaje sale al terminar las cinco áreas.</div>
             </button>
 
             <button type="button" id="puertaRutaVocacional" onclick="if(window.DanteHubEngine){DanteHubEngine.abrirPuertaRuta();}" class="block w-full px-3.5 py-2.5 rounded-2xl bg-slate-950 border border-purple-400/40 text-left cursor-pointer">
-                <div id="lblRutaVocacionalTitulo" class="text-[10px] font-mono uppercase tracking-[0.16em] text-purple-300">Tu ruta vocacional</div>
-                <div id="lblRutaVocacionalDetalle" class="mt-0.5 text-[12px] text-slate-100 font-sans leading-snug">Un dilema al día, seis días. Al cerrar cada bloque también eliges uno. Al sexto sale el informe.</div>
+                <div id="lblRutaVocacionalTitulo" class="text-[10px] font-mono uppercase tracking-[0.16em] text-purple-300">Ruta Vocacional</div>
+                <div id="lblRutaVocacionalDetalle" class="mt-0.5 text-[12px] text-slate-100 font-sans leading-snug">Explora tu mejor camino. Un dilema al día, seis días. Al sexto sale el informe.</div>
             </button>
 
             <!-- Bloque Legal Compacto Obligatorio -->
@@ -5007,17 +5269,18 @@
 
     <!-- DOCK FLOTANTE INFERIOR HOMOLOGADO CON PERFIL.HTML -->
     <nav class="bottom-nav" id="bottomNav">
-        <a href="/index.html" class="nav-item" style="text-decoration: none;">
-            <div class="icon-circle"><i class="fas fa-layer-group text-[var(--primary)] text-sm"></i></div>
-            <span class="nav-text" style="color: var(--primary)">SALA / HOY</span>
+        <a href="/index.html" class="nav-item is-sala-active" style="text-decoration: none;">
+            <div class="icon-circle"><i class="fas fa-house text-cyan-400 text-sm"></i></div>
+            <span class="nav-text" style="color: #22d3ee">Sala</span>
         </a>
-        <div id="dante-anchor" onclick="iniciarEntrenamientoHoy()" title="Iniciar Dosis Diaria">
-            <i class="fas fa-brain text-amber-400"></i>
-        </div>
-        <a href="/perfil.html" class="nav-item" style="text-decoration: none;">
-            <div class="icon-circle" style="border-color: rgba(212,175,55,0.3)"><i class="fas fa-user-astronaut text-[var(--gold-satin)] text-sm"></i></div>
-            <span class="nav-text" style="color: var(--gold-satin)">EXPEDIENTE</span>
+        <a href="/perfil.html" id="dante-anchor" class="nav-item" style="text-decoration: none;" title="Progreso">
+            <div class="icon-circle"><i class="fas fa-chart-line text-slate-500 text-sm"></i></div>
+            <span class="nav-text" style="color: #64748b">Progreso</span>
         </a>
+        <button type="button" class="nav-item bg-transparent border-0 p-0" style="text-decoration: none;" onclick="if(window.DanteSimulacro){DanteSimulacro.abrir();}" title="Simulacro">
+            <div class="icon-circle"><i class="fas fa-file-lines text-slate-500 text-sm"></i></div>
+            <span class="nav-text" style="color: #64748b">Simulacro</span>
+        </button>
     </nav>
     <script>
         window.cerrarSesionCabina = function() {

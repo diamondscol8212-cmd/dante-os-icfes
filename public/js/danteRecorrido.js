@@ -203,9 +203,8 @@
         if (tarjeta.dataset.firma !== firma && tarjeta.dataset.firma !== 'abriendo') {
           tarjeta.dataset.firma = firma;
           const esperaTxt = faltaTarjeta > 0
-            ? '<p class="mt-1 text-[12px] leading-snug text-slate-400">Descansa 15 minutos entre un bloque y otro.</p>'
-              + '<button type="button" id="btnAbrirRefuerzo" class="mt-2 w-full py-2 rounded-xl bg-transparent text-stone-300 text-sm border border-stone-500/40 cursor-pointer">Abre a las ' + reloj(faltaTarjeta) + '</button>'
-            : '<button type="button" id="btnAbrirRefuerzo" class="mt-2 w-full py-2 rounded-xl bg-amber-400 text-slate-950 text-sm font-semibold">Hacer el refuerzo</button>';
+            ? '<button type="button" id="btnAbrirRefuerzo" class="sala-refuerzo-btn mt-0 w-full">Abre a las ' + reloj(faltaTarjeta) + '</button>'
+            : '<button type="button" id="btnAbrirRefuerzo" class="sala-refuerzo-btn mt-0 w-full"><span class="sala-cta-ico" aria-hidden="true"><i class="fa-solid fa-arrow-trend-up"></i></span><span>Refuerzo</span><span class="sala-refuerzo-meta">• 5 preguntas</span></button>';
           tarjeta.innerHTML = '<p class="text-[11px] text-slate-400">Tu refuerzo</p>'
             + '<p class="text-sm text-white font-semibold">' + estado.tarea.nombre + ' · 5 preguntas</p>'
             + esperaTxt;

@@ -290,10 +290,16 @@
               color = `rgba(16, 185, 129, ${alpha * 0.9})`;
             }
           } else {
+            // Idle sala: cian a la izquierda / ámbar a la derecha (mock Dante OS)
+            const side = (x / Math.max(24, Math.abs(x) + Math.abs(y) * 0.35));
             if (currentPlanTier === 'PRO') {
-              color = ratio < 0.5 ? `rgba(245, 158, 11, ${alpha})` : `rgba(251, 191, 36, ${alpha * 0.85})`;
+              color = side < 0
+                ? `rgba(0, 242, 254, ${alpha * 0.95})`
+                : `rgba(251, 146, 60, ${alpha * 0.92})`;
             } else {
-              color = `rgba(0, 242, 254, ${alpha * 0.9})`;
+              color = side < 0
+                ? `rgba(0, 242, 254, ${alpha * 0.95})`
+                : `rgba(245, 158, 11, ${alpha * 0.88})`;
             }
           }
         }
