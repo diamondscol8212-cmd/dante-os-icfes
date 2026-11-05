@@ -2910,13 +2910,26 @@
       }
     }
 
+    _textoPromptConfirmar(forzarSeleccionado) {
+      const isLastItem = (this.indexReactivoActivo === (this.misionData?.reactivos?.length || 1) - 1);
+      const marcada = forzarSeleccionado === true
+        || (forzarSeleccionado !== false && Boolean(this.opcionSeleccionadaTemp));
+      if (marcada) {
+        return isLastItem
+          ? '¡Presiona el botón! Mantén 2 segundos para terminar'
+          : '¡Presiona el botón! Mantén 2 segundos';
+      }
+      return isLastItem
+        ? 'Mantén 2 segundos para terminar'
+        : 'Mantén 2 segundos para confirmar';
+    }
+
     _restaurarPromptConfirmar() {
       const fillBar = document.getElementById('btnCommitProgressFill');
       if (fillBar) fillBar.style.width = '0%';
       const txtPrompt = document.getElementById('txtCommitPrompt');
       if (!txtPrompt) return;
-      const isLastItem = (this.indexReactivoActivo === (this.misionData?.reactivos?.length || 1) - 1);
-      txtPrompt.innerText = isLastItem ? 'Mantén 3 segundos para terminar' : 'Mantén 3 segundos para confirmar';
+      txtPrompt.innerText = this._textoPromptConfirmar();
     }
 
     _parametrosItem(item) {
@@ -3242,17 +3255,9 @@
       this._avisoLetraTimer = setTimeout(() => { aviso.style.display = 'none'; }, 3400);
     }
 
-    /** Hold de confirmación: si Modo Dante está calibrado, usa policy.holdMs. */
+    /** Hold de confirmación fijo en 2s (texto del botón alineado). */
     _holdMsConfirmacion() {
-      try {
-        if (typeof window.danteMindPolicy === 'function') {
-          const p = window.danteMindPolicy();
-          if (p && p.calibrated && p.holdMs) {
-            return Math.max(1200, Math.min(4200, Number(p.holdMs) || 1500));
-          }
-        }
-      } catch (_) { /* ignore */ }
-      return 1500;
+      return 2000;
     }
 
     bindHoldToCommit(btnConf) {
@@ -3274,12 +3279,7 @@
         if (fillBar) fillBar.style.width = '0%';
 
         const txtPrompt = document.getElementById('txtCommitPrompt');
-        if (txtPrompt) {
-          const isLastItem = (this.indexReactivoActivo === (this.misionData?.reactivos?.length || 1) - 1);
-          txtPrompt.innerText = isLastItem
-            ? 'Mantén 3 segundos para terminar'
-            : 'Mantén 3 segundos para confirmar';
-        }
+        if (txtPrompt) txtPrompt.innerText = this._textoPromptConfirmar();
       };
 
       const ejecutarConfirmacionInmediata = () => {
@@ -3386,12 +3386,7 @@
       if (btnConf) {
         btnConf.style.display = 'block';
         const txtPrompt = document.getElementById('txtCommitPrompt');
-        if (txtPrompt) {
-          const isLastItem = (this.indexReactivoActivo === this.misionData.reactivos.length - 1);
-          txtPrompt.innerText = isLastItem
-            ? 'Mantén 3 segundos para terminar'
-            : 'Mantén 3 segundos para confirmar';
-        }
+        if (txtPrompt) txtPrompt.innerText = this._textoPromptConfirmar();
         this.bindHoldToCommit(btnConf);
         this.actualizarEstadoBotonConfirmar();
       }
@@ -3402,16 +3397,20 @@
      */
     actualizarEstadoBotonConfirmar() {
       const btnConf = document.getElementById('btnConfirmarSeleccion');
+      const txtPrompt = document.getElementById('txtCommitPrompt');
+      if (txtPrompt && !this.isSubmittingRespuesta) {
+        txtPrompt.innerText = this._textoPromptConfirmar();
+      }
       if (btnConf) {
         if (this.opcionSeleccionadaTemp) {
           btnConf.disabled = false;
           btnConf.classList.remove('opacity-50', 'opacity-85', 'cursor-not-allowed');
-          btnConf.classList.add('opacity-100');
+          btnConf.classList.add('opacity-100', 'confirm-opcion-lista');
           btnConf.classList.remove('btn-pulse-glow');
         } else {
           btnConf.disabled = false;
           btnConf.classList.add('cursor-pointer');
-          btnConf.classList.remove('btn-pulse-glow', 'opacity-50', 'cursor-not-allowed');
+          btnConf.classList.remove('btn-pulse-glow', 'opacity-50', 'cursor-not-allowed', 'confirm-opcion-lista');
           btnConf.classList.add('opacity-85');
         }
       }
