@@ -9,7 +9,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="assets/icons/icon-192.svg">
     <link rel="apple-touch-icon" href="assets/icons/icon-192.svg">
-    <title>Dante OS c-1.3.10</title>
+    <title>Dante OS c-1.3.11</title>
     <script>
         try { sessionStorage.setItem('dante_entrada_viva', String(Date.now())); } catch (e) {}
     </script>
@@ -110,28 +110,28 @@
     <script src="js/highlighterIRD.js?v=c-1.2.85"></script>
     <script src="js/danteAds.js?v=c-1.2.85"></script>
     <script src="js/dantePlanSala.js?v=c-1.2.85"></script>
-    <script src="js/danteRecorrido.js?v=c-1.3.10"></script>
+    <script src="js/danteRecorrido.js?v=c-1.3.11"></script>
     <script src="js/ojoBionico3D.js?v=c-1.2.85"></script>
     <script src="js/modoSniper.js?v=c-1.2.85"></script>
     <script src="js/danteNube.js?v=c-1.2.85"></script>
-    <script src="js/danteRegistro.js?v=c-1.3.10"></script>
+    <script src="js/danteRegistro.js?v=c-1.3.11"></script>
     <script src="js/danteAbility.js?v=c-1.2.85"></script>
     <script src="js/rutaSimulacroEngine.js?v=c-1.2.85"></script>
     <script src="js/danteTutorEngine.js?v=c-1.2.85"></script>
-    <script src="js/danteSpiralEntity.js?v=c-1.3.10"></script>
-    <script src="js/hackeaSyncIntro.js?v=c-1.3.10"></script>
-    <script src="js/hackeaUmbralVault.js?v=c-1.3.10"></script>
-    <script src="js/hackeaUmbralPicker.js?v=c-1.3.10"></script>
-    <script src="js/hackeaPulsoBank.js?v=c-1.3.10"></script>
-    <script src="js/hackeaPulsoVault.js?v=c-1.3.10"></script>
-    <script src="js/hackeaCampaign.js?v=c-1.3.10"></script>
-    <script src="js/hackeaArc.js?v=c-1.3.10"></script>
-    <script src="js/hackeaPulso.js?v=c-1.3.10"></script>
-    <script src="js/hackeaMente.js?v=c-1.3.10"></script>
-    <script src="js/danteHubEngine.js?v=c-1.3.10"></script>
-    <script src="js/danteExamWorkspace.js?v=c-1.3.10"></script>
+    <script src="js/danteSpiralEntity.js?v=c-1.3.11"></script>
+    <script src="js/hackeaSyncIntro.js?v=c-1.3.11"></script>
+    <script src="js/hackeaUmbralVault.js?v=c-1.3.11"></script>
+    <script src="js/hackeaUmbralPicker.js?v=c-1.3.11"></script>
+    <script src="js/hackeaPulsoBank.js?v=c-1.3.11"></script>
+    <script src="js/hackeaPulsoVault.js?v=c-1.3.11"></script>
+    <script src="js/hackeaCampaign.js?v=c-1.3.11"></script>
+    <script src="js/hackeaArc.js?v=c-1.3.11"></script>
+    <script src="js/hackeaPulso.js?v=c-1.3.11"></script>
+    <script src="js/hackeaMente.js?v=c-1.3.11"></script>
+    <script src="js/danteHubEngine.js?v=c-1.3.11"></script>
+    <script src="js/danteExamWorkspace.js?v=c-1.3.11"></script>
     <script src="js/danteSemana.js?v=c-1.2.85"></script>
-    <script src="js/danteSimulacro.js?v=c-1.3.10"></script>
+    <script src="js/danteSimulacro.js?v=c-1.3.11"></script>
     <script src="js/danteRadarEngine.js?v=c-1.2.85"></script>
 
     <!-- 📡 OBSERVABILIDAD SENTRY BROWSER SDK (SCRUBBING LEY 1581) -->
@@ -2191,9 +2191,15 @@
             height: 3.15rem !important;
         }
         #hdrExamenPrincipal:not(.modo-examen) #badgeDanteVersion,
-        #hdrExamenPrincipal:not(.modo-examen) #containerTrackHeaderPill,
-        #hdrExamenPrincipal:not(.modo-examen) #btnAjustesHdr {
+        #hdrExamenPrincipal:not(.modo-examen) #containerTrackHeaderPill {
             display: none !important;
+        }
+        #hdrExamenPrincipal:not(.modo-examen) #btnAjustesHdr {
+            display: inline-flex !important;
+            color: #94a3b8;
+        }
+        #hdrExamenPrincipal:not(.modo-examen) #btnAjustesHdr i {
+            color: #94a3b8 !important;
         }
         #hdrExamenPrincipal:not(.modo-examen) #lblHeaderNombreUsuario {
             display: inline !important;
@@ -2270,8 +2276,18 @@
         #barraMedallaSala { background: transparent !important; height: auto !important; }
         #modalRespiracionInicio.dante-respiro,
         #modalModuladorVagal.dante-respiro {
-            background: radial-gradient(ellipse at 50% 38%, #12312a 0%, #07080c 62%) !important;
+            background: #000 !important;
             backdrop-filter: none !important;
+        }
+        #modalRespiracionInicio.dante-respiro::before {
+            content: '';
+            position: absolute;
+            inset: 18% 8% 28%;
+            pointer-events: none;
+            background:
+                radial-gradient(ellipse at 32% 48%, rgba(0, 242, 254, 0.16) 0%, transparent 58%),
+                radial-gradient(ellipse at 70% 48%, rgba(251, 146, 60, 0.14) 0%, transparent 58%);
+            filter: blur(18px);
         }
         .dante-respiro-escena {
             width: min(100%, 24rem);
@@ -2282,8 +2298,24 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 4.2rem 1.25rem 1.6rem;
+            padding: 3.2rem 1.25rem 1.8rem;
             position: relative;
+            z-index: 1;
+        }
+        .dante-respiro-brand {
+            margin: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+            color: #f8fafc;
+        }
+        .dante-respiro-rule {
+            width: min(12rem, 52%);
+            height: 1px;
+            margin: 0.7rem 0 0.55rem;
+            background: rgba(148, 163, 184, 0.28);
         }
         .dante-respiro-cerrar {
             position: absolute;
@@ -2300,49 +2332,72 @@
             cursor: pointer;
         }
         .dante-respiro-kicker {
-            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-            font-size: 11px;
-            letter-spacing: 0.16em;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.68rem;
+            letter-spacing: 0.22em;
             text-transform: uppercase;
-            color: #99f6e4;
-            margin: 0;
+            color: #94a3b8;
+            margin: 0 0 0.35rem;
+        }
+        .dante-respiro-foot-title {
+            margin: 0.85rem 0 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.68rem;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: #fbbf24;
+            font-weight: 650;
         }
         .dante-respiro-fase {
-            margin: 0.35rem 0 0;
-            font-size: 2.15rem;
-            font-weight: 650;
-            letter-spacing: -0.03em;
-            color: #fafaf9;
+            margin: 0;
+            font-family: 'Cinzel', 'Times New Roman', serif;
+            font-size: 1.35rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            color: #f5f5f4;
+            line-height: 1.1;
         }
         .dante-respiro-ayuda {
-            margin: 0.35rem 0 0;
-            max-width: 16rem;
+            margin: 0.45rem 0 0;
+            max-width: 17rem;
             color: #a8a29e;
-            font-size: 0.95rem;
-            line-height: 1.4;
+            font-size: 0.88rem;
+            line-height: 1.45;
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
         .dante-respiro-orbe {
             position: relative;
-            width: 240px;
-            height: 240px;
-            margin: 0.85rem 0 0.15rem;
+            width: min(72vw, 280px);
+            height: min(72vw, 280px);
+            margin: 1.1rem 0 0.2rem;
+            filter: drop-shadow(0 0 28px rgba(0, 242, 254, 0.28)) drop-shadow(0 0 34px rgba(251, 146, 60, 0.22));
         }
         .dante-respiro-orbe canvas {
             width: 100%;
             height: 100%;
             display: block;
         }
-        .dante-respiro-cuenta {
+        .dante-respiro-cuenta-wrap {
             position: absolute;
             inset: 0;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-            font-size: 2.6rem;
+            gap: 0.15rem;
+            pointer-events: none;
+            z-index: 2;
+        }
+        .dante-respiro-cuenta {
+            font-family: 'Cinzel', 'Times New Roman', serif;
+            font-size: 3.4rem;
             font-weight: 700;
             color: #fafaf9;
-            pointer-events: none;
+            line-height: 1;
+            text-shadow: 0 0 18px rgba(0,0,0,0.55);
+        }
+        #modalRespiracionInicio .dante-respiro-puntos {
+            display: none !important;
         }
         .dante-respiro-puntos {
             display: flex;
@@ -2361,33 +2416,42 @@
             background: #5eead4;
             border-color: transparent;
         }
+        .dante-respiro-dot {
+            display: block;
+            width: 0.35rem;
+            height: 0.35rem;
+            margin-top: 0.85rem;
+            border-radius: 999px;
+            background: #f59e0b;
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.75);
+        }
         #btnRespiracionEmpezar,
         #btnRespiracionVolver {
-            width: min(100%, 18rem);
+            width: min(100%, 16rem);
             min-height: 48px;
-            border: 0;
-            border-radius: 16px;
-            background: #292524;
-            color: #a8a29e;
-            font-weight: 800;
-            letter-spacing: 0.03em;
+            margin-top: 1.1rem;
+            border: 1.5px solid rgba(248, 250, 252, 0.55);
+            border-radius: 999px;
+            background: transparent;
+            color: #e2e8f0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 650;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            font-size: 0.78rem;
             cursor: default;
+            opacity: 0.45;
         }
         #btnRespiracionEmpezar:not(:disabled),
         #btnRespiracionVolver {
-            background: linear-gradient(180deg, #fcd34d 0%, #f59e0b 58%, #d97706 100%);
-            color: #1c1408;
+            background: transparent;
+            color: #f8fafc;
             cursor: pointer;
-            box-shadow: 0 8px 22px rgba(245, 158, 11, 0.28);
+            opacity: 1;
+            box-shadow: 0 0 18px rgba(255,255,255,0.08);
         }
         #btnRespiracionEntrarYa {
-            margin-top: 0.75rem;
-            background: transparent;
-            border: 0;
-            color: #78716c;
-            font-size: 12px;
-            text-decoration: underline;
-            cursor: pointer;
+            display: none !important;
         }
         #danteSpiralCanvas {
             position: absolute;
@@ -4554,23 +4618,29 @@
         </div>
     </div>
 
-    <!-- RESPIRACIÓN DE ENTRADA: la espiral acompaña un ciclo -->
+    <!-- RESPIRACIÓN DE ENTRADA: espiral Dante, ciclo obligatorio -->
     <div id="modalRespiracionInicio" class="dante-respiro fixed inset-0 z-[10050] hidden items-center justify-center">
         <div class="dante-respiro-escena">
-            <p class="dante-respiro-kicker">Antes de la primera pregunta</p>
-            <h3 id="respiracionInicioFase" class="dante-respiro-fase">Respira primero</h3>
-            <p id="respiracionInicioAyuda" class="dante-respiro-ayuda">Luego inhala, sostén y suelta.</p>
+            <p class="dante-respiro-brand">DANTE OS</p>
+            <div class="dante-respiro-rule" aria-hidden="true"></div>
+            <p class="dante-respiro-kicker">ANTES DE COMENZAR</p>
             <div class="dante-respiro-orbe" id="respiracionInicioCirculo">
                 <canvas id="respiracionInicioCanvas" width="480" height="480"></canvas>
-                <span id="respiracionInicioCuenta" class="dante-respiro-cuenta">4</span>
+                <div class="dante-respiro-cuenta-wrap">
+                    <span id="respiracionInicioFase" class="dante-respiro-fase">Inhala</span>
+                    <span id="respiracionInicioCuenta" class="dante-respiro-cuenta">4</span>
+                </div>
             </div>
-            <div class="dante-respiro-puntos" id="respiracionInicioPuntos">
+            <p class="dante-respiro-foot-title">RESPIRA PRIMERO</p>
+            <p id="respiracionInicioAyuda" class="dante-respiro-ayuda">Para comenzar, toma una respiración consciente y relaja tu mente.</p>
+            <div class="dante-respiro-puntos" id="respiracionInicioPuntos" hidden>
                 <span data-fase="inhala">Inhala</span>
                 <span data-fase="sosten">Sostén</span>
                 <span data-fase="suelta">Suelta</span>
             </div>
-            <button type="button" id="btnRespiracionEmpezar" disabled>Respira primero</button>
-            <button type="button" id="btnRespiracionEntrarYa">Entrar ya</button>
+            <button type="button" id="btnRespiracionEmpezar" disabled>CONTINUAR →</button>
+            <button type="button" id="btnRespiracionEntrarYa" hidden aria-hidden="true" tabindex="-1">Entrar ya</button>
+            <span class="dante-respiro-dot" aria-hidden="true"></span>
         </div>
     </div>
 
@@ -4657,7 +4727,7 @@
                     <img src="assets/icons/dante-logo-icon.svg" alt="Dante OS Logo" class="w-6 h-6 rounded-md shadow-[0_0_12px_rgba(56,189,248,0.45)] border border-cyan-500/30 shrink-0 object-contain" />
                     <span class="font-mono font-bold text-xs tracking-wider text-white select-none whitespace-nowrap flex items-center gap-1.5">
                         Dante OS
-                        <span id="badgeDanteVersion" class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">c-1.3.10</span>
+                        <span id="badgeDanteVersion" class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">c-1.3.11</span>
                     </span>
                 </a>
 
@@ -5440,9 +5510,9 @@
             <div class="icon-circle"><i class="fas fa-chart-line text-slate-500 text-sm"></i></div>
             <span class="nav-text" style="color: #64748b">Progreso</span>
         </a>
-        <button type="button" class="nav-item bg-transparent border-0 p-0" style="text-decoration: none;" onclick="if(window.DanteSimulacro){DanteSimulacro.abrir();}" title="Simulacro">
-            <div class="icon-circle"><i class="fas fa-file-lines text-slate-500 text-sm"></i></div>
-            <span class="nav-text" style="color: #64748b">Simulacro</span>
+        <button type="button" class="nav-item bg-transparent border-0 p-0" style="text-decoration: none;" onclick="window.abrirHackeaDesdeDock&&window.abrirHackeaDesdeDock()" title="Hackea tu mente">
+            <div class="icon-circle"><i class="fas fa-brain text-slate-500 text-sm"></i></div>
+            <span class="nav-text" style="color: #64748b">Hackea</span>
         </button>
     </nav>
     <script>
@@ -5457,6 +5527,14 @@
             if (window.DanteHubEngine && typeof window.DanteHubEngine.iniciarMision === 'function') {
                 window.DanteHubEngine.iniciarMision();
             }
+        };
+        window.abrirHackeaDesdeDock = function() {
+            if (window.hackeaRitual && typeof window.hackeaRitual.open === 'function') {
+                window.hackeaRitual.open();
+                return;
+            }
+            const orb = document.getElementById('contenedorOrbeDante');
+            if (orb) orb.focus();
         };
         window.salaAyudaTarjeta = function(ev, clave) {
             const tip = document.getElementById('salaAyudaTip');
@@ -5714,43 +5792,47 @@
                 const cx = w / 2;
                 const cy = h / 2;
                 const aliento = estado.aliento;
-                const rgb = estado.rgb;
-                const luz = ctx.createRadialGradient(cx, cy, 10, cx, cy, w * (0.22 + aliento * 0.3));
-                luz.addColorStop(0, 'rgba(' + rgb + ',' + (0.22 + aliento * 0.28) + ')');
-                luz.addColorStop(1, 'rgba(0,0,0,0)');
-                ctx.fillStyle = luz;
+                // Aura dual: cian izquierda / ámbar derecha (mock respiración)
+                const auraL = ctx.createRadialGradient(cx - w * 0.18, cy, 8, cx - w * 0.12, cy, w * (0.42 + aliento * 0.12));
+                auraL.addColorStop(0, 'rgba(0, 242, 254,' + (0.28 + aliento * 0.22) + ')');
+                auraL.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = auraL;
                 ctx.beginPath();
-                ctx.arc(cx, cy, w * 0.48, 0, Math.PI * 2);
+                ctx.arc(cx - w * 0.08, cy, w * 0.46, 0, Math.PI * 2);
+                ctx.fill();
+                const auraR = ctx.createRadialGradient(cx + w * 0.18, cy, 8, cx + w * 0.12, cy, w * (0.42 + aliento * 0.12));
+                auraR.addColorStop(0, 'rgba(251, 146, 60,' + (0.26 + aliento * 0.2) + ')');
+                auraR.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = auraR;
+                ctx.beginPath();
+                ctx.arc(cx + w * 0.08, cy, w * 0.46, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.beginPath();
                 ctx.arc(cx, cy, w * 0.455, 0, Math.PI * 2);
-                ctx.strokeStyle = 'rgba(255,255,255,0.1)';
-                ctx.lineWidth = 2.5;
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.arc(cx, cy, w * 0.455, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * (0.08 + estado.aliento * 0.92));
-                ctx.strokeStyle = 'rgba(' + rgb + ',0.95)';
-                ctx.lineWidth = 3;
-                ctx.lineCap = 'round';
+                ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+                ctx.lineWidth = 2;
                 ctx.stroke();
                 ctx.save();
                 ctx.translate(cx, cy);
                 ctx.rotate(estado.giro);
-                const escala = 0.4 + aliento * 0.72;
+                const escala = 0.48 + aliento * 0.62;
                 ctx.scale(escala, escala);
-                const n = 380;
+                const n = 420;
                 const ang = 137.508 * Math.PI / 180;
-                const maxR = Math.min(w, h) * 0.36;
+                const maxR = Math.min(w, h) * 0.38;
                 const paso = maxR / Math.sqrt(n);
-                ctx.font = "6.5px ui-monospace, SFMono-Regular, Menlo, monospace";
+                ctx.font = "7px ui-monospace, SFMono-Regular, Menlo, monospace";
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 for (let i = 8; i < n; i++) {
                     const r = paso * Math.sqrt(i);
                     const t = i * ang;
-                    const alpha = (0.18 + (1 - i / n) * 0.82) * (0.45 + aliento * 0.55);
+                    const x = r * Math.cos(t);
+                    const alpha = (0.2 + (1 - i / n) * 0.8) * (0.5 + aliento * 0.5);
+                    const side = x < 0;
+                    const rgb = side ? '0,242,254' : '251,146,60';
                     ctx.save();
-                    ctx.translate(r * Math.cos(t), r * Math.sin(t));
+                    ctx.translate(x, r * Math.sin(t));
                     ctx.rotate(t);
                     ctx.fillStyle = 'rgba(' + rgb + ',' + alpha + ')';
                     ctx.fillText(letras[i % letras.length], 0, 0);
@@ -5758,8 +5840,8 @@
                 }
                 ctx.restore();
                 ctx.beginPath();
-                ctx.arc(cx, cy, 34, 0, Math.PI * 2);
-                ctx.fillStyle = 'rgba(7,8,12,0.62)';
+                ctx.arc(cx, cy, 48, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(0,0,0,0.55)';
                 ctx.fill();
             }
             function parar(nombre) {
@@ -5838,14 +5920,14 @@
         })();
         window.DanteAlientoPasos = {
             entrada: [
-                { id: 'inhala', texto: 'Inhala', ayuda: 'Se abre.', segundos: 4, desde: 0.16, hasta: 1, rgb: '94,220,176' },
-                { id: 'sosten', texto: 'Sostén', ayuda: 'Se queda abierta.', segundos: 4, desde: 1, hasta: 1, rgb: '125,211,252' },
-                { id: 'suelta', texto: 'Suelta', ayuda: 'Se recoge.', segundos: 6, desde: 1, hasta: 0.16, rgb: '214,196,160' }
+                { id: 'inhala', texto: 'Inhala', ayuda: 'Para comenzar, toma una respiración consciente y relaja tu mente.', segundos: 4, desde: 0.16, hasta: 1, rgb: '0,242,254' },
+                { id: 'sosten', texto: 'Sostén', ayuda: 'Para comenzar, toma una respiración consciente y relaja tu mente.', segundos: 4, desde: 1, hasta: 1, rgb: '125,211,252' },
+                { id: 'suelta', texto: 'Suelta', ayuda: 'Para comenzar, toma una respiración consciente y relaja tu mente.', segundos: 6, desde: 1, hasta: 0.16, rgb: '251,146,60' }
             ],
             pausa: [
-                { id: 'inhala', texto: 'Inhala', ayuda: 'Se abre.', segundos: 4, desde: 0.16, hasta: 1, rgb: '94,220,176' },
+                { id: 'inhala', texto: 'Inhala', ayuda: 'Se abre.', segundos: 4, desde: 0.16, hasta: 1, rgb: '0,242,254' },
                 { id: 'sosten', texto: 'Sostén', ayuda: 'Se queda abierta.', segundos: 7, desde: 1, hasta: 1, rgb: '125,211,252' },
-                { id: 'suelta', texto: 'Suelta', ayuda: 'Se recoge.', segundos: 8, desde: 1, hasta: 0.16, rgb: '214,196,160' }
+                { id: 'suelta', texto: 'Suelta', ayuda: 'Se recoge.', segundos: 8, desde: 1, hasta: 0.16, rgb: '251,146,60' }
             ]
         };
         window.marcarFaseRespiro = function(contenedorId, faseId) {

@@ -498,17 +498,14 @@
       const yaEmpezo = Boolean(savedProgress) && Number(this.indexReactivoActivo) > 0;
       const esRefuerzoEntrada = Boolean(this.misionData && this.misionData.esRefuerzo);
       const seguir = () => this._continuarEntradaEvaluacion();
+      // Respiración obligatoria antes de la primera pregunta (entrenamiento, refuerzo, guía).
       const entrar = () => {
         if (yaEmpezo) seguir();
-        else if (this._debeMostrarGuia()) seguir();
-        else this._abrirRespiracionDeEntrada(seguir);
+        else this._abrirRespiracionDeEntrada(seguir, false);
       };
       if (esRefuerzoEntrada) {
         if (!yaEmpezo && window.DantePlanSala) DantePlanSala.reiniciarAyudaSesion();
-        seguir();
-      } else if (!yaEmpezo && this._debeMostrarGuia()) {
-        if (window.DantePlanSala) DantePlanSala.reiniciarAyudaSesion();
-        seguir();
+        entrar();
       } else if (!yaEmpezo && window.DantePlanSala) {
         DantePlanSala.reiniciarAyudaSesion();
         DantePlanSala.antesDelBloque(entrar);
@@ -531,25 +528,29 @@
       const entrarYa = document.getElementById('btnRespiracionEntrarYa');
       const canvas = document.getElementById('respiracionInicioCanvas');
       const kicker = modal.querySelector('.dante-respiro-kicker');
-      const cerrar = () => this._cerrarRespiracionDeEntrada(continuar);
-      if (kicker) {
-        if (this.misionData && this.misionData.esSimulacro) kicker.textContent = 'Antes del simulacro Saber 11°';
-        else kicker.textContent = esDiagnostico ? 'Antes del diagnóstico' : 'Antes de la primera pregunta';
-      }
-      if (fase) fase.textContent = 'Respira primero';
+      const cerrar = () => {
+        if (btn && btn.disabled) return; // no saltar: solo tras completar el ciclo
+        this._cerrarRespiracionDeEntrada(continuar);
+      };
+      if (kicker) kicker.textContent = 'ANTES DE COMENZAR';
+      if (fase) fase.textContent = 'Inhala';
       if (ayuda) {
-        ayuda.textContent = esDiagnostico
-          ? 'Respira. Después empiezan las 10 preguntas del diagnóstico.'
-          : 'Luego inhala, sostén y suelta.';
+        ayuda.textContent = 'Para comenzar, toma una respiración consciente y relaja tu mente.';
       }
-      if (cuenta) cuenta.textContent = '';
-      if (window.marcarFaseRespiro) window.marcarFaseRespiro('respiracionInicioPuntos', '');
+      if (cuenta) {
+        cuenta.textContent = '4';
+        cuenta.style.transform = '';
+      }
+      if (window.marcarFaseRespiro) window.marcarFaseRespiro('respiracionInicioPuntos', 'inhala');
       if (btn) {
         btn.disabled = true;
-        btn.textContent = 'Respira primero';
+        btn.textContent = 'CONTINUAR →';
         btn.onclick = cerrar;
       }
-      if (entrarYa) entrarYa.onclick = cerrar;
+      if (entrarYa) {
+        entrarYa.onclick = null;
+        entrarYa.hidden = true;
+      }
       modal.classList.remove('hidden');
       modal.style.display = 'flex';
       if (this._respiracionTimer) clearInterval(this._respiracionTimer);
@@ -563,27 +564,34 @@
           bucle: false,
           pasos: window.DanteAlientoPasos.entrada,
           alPulso: (aliento) => {
-            if (cuenta) cuenta.style.transform = 'scale(' + (0.78 + aliento * 0.28).toFixed(3) + ')';
+            if (cuenta) cuenta.style.transform = 'scale(' + (0.86 + aliento * 0.18).toFixed(3) + ')';
           },
           alPaso: (paso, compas) => {
             if (fase) fase.textContent = paso.texto;
-            if (ayuda) ayuda.textContent = paso.ayuda;
+            if (ayuda) ayuda.textContent = 'Para comenzar, toma una respiración consciente y relaja tu mente.';
             if (cuenta) cuenta.textContent = String(compas);
             if (window.marcarFaseRespiro) window.marcarFaseRespiro('respiracionInicioPuntos', paso.id);
           },
           alTerminar: () => {
             if (fase) fase.textContent = 'Listo';
-            if (ayuda) ayuda.textContent = esDiagnostico ? 'Listo. Ahora sí, el diagnóstico.' : 'Entra con calma.';
-            if (cuenta) cuenta.textContent = '';
+            if (ayuda) ayuda.textContent = esDiagnostico
+              ? 'Ahora sí: el diagnóstico.'
+              : 'Entra con calma a la primera pregunta.';
+            if (cuenta) cuenta.textContent = '✓';
             if (window.marcarFaseRespiro) window.marcarFaseRespiro('respiracionInicioPuntos', '');
             if (btn) {
               btn.disabled = false;
-              btn.textContent = esDiagnostico ? 'Empezar el diagnóstico' : 'Empezar';
+              btn.textContent = 'CONTINUAR →';
             }
           }
         });
-        }, 1600);
+        }, 400);
         return;
+      }
+      // Fallback: sin canvas, habilita continuar tras un ciclo corto
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = 'CONTINUAR →';
       }
     }
 

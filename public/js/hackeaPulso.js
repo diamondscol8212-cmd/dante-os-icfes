@@ -63,6 +63,15 @@
      * @param {{ blockIndex?: number, campaignDay?: number, focusArea?: string, focusMode?: string }} opts
      */
     start(mind, ritual, opts) {
+      opts = opts || {};
+      // Respiración obligatoria antes del primer ensayo del pulso
+      if (!opts._yaRespiro && window.DanteExamWorkspace && typeof window.DanteExamWorkspace._abrirRespiracionDeEntrada === 'function') {
+        const self = this;
+        window.DanteExamWorkspace._abrirRespiracionDeEntrada(function () {
+          self.start(mind, ritual, Object.assign({}, opts, { _yaRespiro: true }));
+        }, false);
+        return;
+      }
       this.mind = mind;
       this.ritual = ritual;
       this.blockIndex = (opts && opts.blockIndex) || 1;
