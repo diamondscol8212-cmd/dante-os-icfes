@@ -2411,9 +2411,10 @@
       if (uiHojaOptica) uiHojaOptica.style.display = 'none';
       this.actualizarHojaOptica();
 
-      // 7. Configurar Botón de Confirmación con Hold-to-Commit 1.5s
+      // 7. Configurar Botón de Confirmación con Hold-to-Commit 2s
       this.renderizarBotonConfirmacion();
       this._avisoDiagnosticoSilencio();
+      this._asegurarInteraccionReactivo();
 
       // Transición suave de entrada (asegurando opacidad 1 siempre)
       const containerCore = document.getElementById('uiContenedorPreguntaCore');
@@ -2421,6 +2422,12 @@
         containerCore.style.display = 'block';
         containerCore.style.opacity = '1';
         containerCore.style.transform = 'none';
+        containerCore.style.pointerEvents = 'auto';
+      }
+      const gridOpciones = document.getElementById('uiOpcionesGrid');
+      if (gridOpciones) {
+        gridOpciones.style.pointerEvents = 'auto';
+        gridOpciones.classList.remove('opciones-bloqueadas');
       }
     }
 
@@ -2643,12 +2650,14 @@
     _opcionesBloqueadas() {
       if (this.reactivoConfirmado || this.isSubmittingRespuesta) return true;
       const feedback = document.getElementById('uiFeedbackTrainingImmediate');
-      if (!feedback || feedback.hidden || feedback.classList.contains('hidden')) return false;
+      if (!feedback) return false;
+      if (feedback.hidden || feedback.classList.contains('hidden')) return false;
+      if (String(feedback.style.display || '').toLowerCase() === 'none') return false;
       try {
         const estilo = window.getComputedStyle(feedback);
-        return estilo.display !== 'none' && estilo.visibility !== 'hidden';
+        return estilo.display !== 'none' && estilo.visibility !== 'hidden' && estilo.opacity !== '0';
       } catch (e) {
-        return feedback.style.display !== 'none';
+        return false;
       }
     }
 
@@ -2687,11 +2696,37 @@
           try { navigator.vibrate(12); } catch (e) {}
         }
       };
+      burbuja.addEventListener('pointerdown', marcar);
+      burbuja.addEventListener('click', marcar);
       burbuja.addEventListener('pointerup', marcar);
       burbuja.addEventListener('pointerenter', (ev) => {
         const viene = (card && card.dataset.arrastrando === '1') || (ev.buttons & 1);
         if (viene) marcar(ev);
       });
+    }
+
+    /** Quita capas residuales (guía/foco) que bloquean tocar las letras en diagnóstico. */
+    _asegurarInteraccionReactivo() {
+      if (this.guiaPaso) return;
+      try {
+        document.documentElement.classList.remove('guia-en-curso');
+        this._cerrarFocoGuia();
+        const bandeja = document.getElementById('guiaBandeja');
+        if (bandeja) bandeja.hidden = true;
+        const feedback = document.getElementById('uiFeedbackTrainingImmediate');
+        if (feedback && !this.reactivoConfirmado) {
+          feedback.style.display = 'none';
+          feedback.classList.add('hidden');
+          feedback.hidden = true;
+        }
+        this.reactivoConfirmado = false;
+        this.isSubmittingRespuesta = false;
+        this._bloquearOpcionesTrasConfirmar(false);
+        document.querySelectorAll('#uiOpcionesGrid .badge-opcion-letra, #uiOpcionesGrid .opcion-card-workspace').forEach((nodo) => {
+          nodo.style.pointerEvents = 'auto';
+          nodo.removeAttribute('aria-disabled');
+        });
+      } catch (e) { /* ignore */ }
     }
 
     /**
@@ -4914,8 +4949,11 @@
      */
     _mostrarPistaTexto(texto) {
       let out = texto || '';
+      const sinAyudaModo = Boolean(
+        this.misionData && (this.misionData.isDiagnostic || this.misionData.esSimulacro)
+      );
       // Hackea: misma pista, puerta distinta (sin tipología al alumno)
-      if (!this.guiaPaso && window.mindProfile && typeof window.mindProfile.shapeScaffolding === 'function') {
+      if (!this.guiaPaso && !sinAyudaModo && window.mindProfile && typeof window.mindProfile.shapeScaffolding === 'function') {
         try { out = window.mindProfile.shapeScaffolding(out); } catch (_) {}
       }
       if (this.guiaPaso) {
@@ -4934,13 +4972,18 @@
       const panel = document.getElementById('uiIntervencionDanteLive');
       if (panel) panel.classList.add('hidden');
       const burbuja = document.getElementById('burbujaConsejoDante');
-      if (burbuja) burbuja.classList.remove('hidden');
+      if (burbuja) {
+        burbuja.classList.remove('hidden');
+        burbuja.classList.toggle('pista-bloqueada-modo', sinAyudaModo);
+        burbuja.style.display = 'block';
+        burbuja.hidden = false;
+        burbuja.removeAttribute('hidden');
+      }
       const txt = document.getElementById('txtFraseDanteSocratica');
       if (txt) txt.textContent = out;
     }
 
     async solicitarPistaSocratica() {
-      if (this.misionData && this.misionData.esSimulacro) return;
       if (this.guiaPaso === 2) {
         this.guiaAyudaVista = true;
         this._mostrarPistaTexto('Busca la parte de la célula que guarda las instrucciones. No está fuera de ella.');
@@ -4951,7 +4994,18 @@
         this._medirBandejaGuia();
         return;
       }
-      if (this.misionData && this.misionData.isDiagnostic) return;
+      if (this.misionData && this.misionData.isDiagnostic) {
+        this._mostrarPistaTexto(
+          'En el diagnóstico no hay pistas ni ayudas. Es una prueba de diagnóstico: responde solo con lo que sabes. Las ayudas se abren en el entrenamiento diario.'
+        );
+        return;
+      }
+      if (this.misionData && this.misionData.esSimulacro) {
+        this._mostrarPistaTexto(
+          'En el simulacro no hay pistas ni ayudas. Es como el examen real: responde sin ayuda.'
+        );
+        return;
+      }
       if (window.DantePlanSala && !DantePlanSala.puedePedirAyuda()) {
         const aviso = typeof DantePlanSala.avisoSinAyuda === 'function'
           ? DantePlanSala.avisoSinAyuda()
