@@ -9,7 +9,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="assets/icons/icon-192.svg">
     <link rel="apple-touch-icon" href="assets/icons/icon-192.svg">
-    <title>Dante OS · Tu informe c-1.3.16</title>
+    <title>Dante OS · Tu informe c-1.3.17</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
 
@@ -20,18 +20,18 @@
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="theme.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/danteCacheVersion.js?v=c-1.3.16"></script>
-    <script src="js/danteNube.js?v=c-1.3.16"></script>
-    <script src="js/danteRegistro.js?v=c-1.3.16"></script>
+    <script src="js/danteCacheVersion.js?v=c-1.3.17"></script>
+    <script src="js/danteNube.js?v=c-1.3.17"></script>
+    <script src="js/danteRegistro.js?v=c-1.3.17"></script>
     <script src="js/danteVectorIcons.js"></script>
     <script src="js/danteStorage.js"></script>
     <script src="js/streakManager.js?v=23.1.2"></script>
     <script src="js/rutaSimulacroEngine.js"></script>
     <script src="js/danteRadarEngine.js"></script>
-    <script src="js/danteTutorEngine.js?v=c-1.3.16"></script>
+    <script src="js/danteTutorEngine.js?v=c-1.3.17"></script>
 
     <style>
-        #bentoContainer { display: flex; flex-direction: column; gap: 0.9rem; }
+        #bentoContainer { display: flex; flex-direction: column; gap: 1.05rem; }
         #bloqueProyeccion { order: 1; }
         #bloqueAreas { order: 2; }
         #bloqueCasa { order: 3; }
@@ -665,8 +665,11 @@
         }
         #bloqueCasa .perfil-duo-card {
             border-radius: 1rem !important;
-            padding: 0.95rem 0.9rem !important;
+            padding: 1rem 0.95rem !important;
             min-height: 100%;
+            background: rgba(22, 26, 36, 0.92) !important;
+            border: 1px solid rgba(148, 163, 184, 0.22) !important;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35) !important;
         }
         #bloqueCasa .perfil-vidas-hidden { display: none !important; }
         .perfil-id-row {
@@ -771,48 +774,71 @@
             margin-bottom: 0.45rem;
         }
         #cajaRadarAreas .w-full.h-\[280px\] {
-            height: 180px !important;
+            height: 200px !important;
         }
         #chartRadarGemelo {
-            max-width: 180px !important;
-            height: 180px !important;
+            max-width: 200px !important;
+            height: 200px !important;
         }
         #contenedorSemaforoCompetencias {
             font-family: 'Plus Jakarta Sans', sans-serif !important;
+            display: flex;
+            flex-direction: column;
+            gap: 0.55rem;
         }
-        #contenedorSemaforoCompetencias button,
-        #contenedorSemaforoCompetencias > div {
-            border-bottom-color: rgba(148, 163, 184, 0.1) !important;
-            padding: 0.55rem 0 !important;
+        #contenedorSemaforoCompetencias button.perfil-area-row,
+        #contenedorSemaforoCompetencias .perfil-area-row {
+            display: block !important;
+            width: 100%;
+            background: transparent !important;
+            border: 0 !important;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1) !important;
+            border-radius: 0 !important;
+            padding: 0.45rem 0 0.55rem !important;
+            box-shadow: none !important;
+            text-align: left !important;
+            cursor: pointer;
         }
-        #contenedorSemaforoCompetencias .rounded-full.border,
-        #contenedorSemaforoCompetencias span[class*="rounded-full"] {
+        #contenedorSemaforoCompetencias .perfil-area-badge {
             display: none !important;
         }
-        #contenedorSemaforoCompetencias .font-bold.text-slate-200,
-        #contenedorSemaforoCompetencias .font-bold {
+        #contenedorSemaforoCompetencias .perfil-area-head {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 0.5rem;
+            margin-bottom: 0.35rem;
+        }
+        #contenedorSemaforoCompetencias .perfil-area-name {
             font-weight: 550 !important;
             color: #cbd5e1 !important;
             font-size: 0.72rem !important;
+            line-height: 1.2;
         }
-        #contenedorSemaforoCompetencias .bg-slate-950,
-        #contenedorSemaforoCompetencias [class*="bg-slate-950"] {
-            background: rgba(30, 41, 59, 0.55) !important;
-            border-color: transparent !important;
-            height: 0.4rem !important;
-        }
-        #contenedorSemaforoCompetencias .bg-emerald-400,
-        #contenedorSemaforoCompetencias .bg-emerald-500,
-        #contenedorSemaforoCompetencias .bg-amber-400,
-        #contenedorSemaforoCompetencias .bg-rose-400,
-        #contenedorSemaforoCompetencias .bg-rose-500 {
-            background: #64748b !important;
-        }
-        #contenedorSemaforoCompetencias .font-black,
-        #contenedorSemaforoCompetencias .font-bold.shrink-0 {
+        #contenedorSemaforoCompetencias .perfil-area-pct {
             color: #94a3b8 !important;
             font-size: 0.7rem !important;
-            font-weight: 600 !important;
+            font-weight: 650 !important;
+            flex-shrink: 0;
+        }
+        #contenedorSemaforoCompetencias .perfil-area-track {
+            display: block !important;
+            width: 100%;
+            height: 0.42rem !important;
+            border-radius: 999px !important;
+            background: rgba(30, 41, 59, 0.85) !important;
+            border: 0 !important;
+            overflow: hidden;
+        }
+        #contenedorSemaforoCompetencias .perfil-area-fill {
+            display: block !important;
+            height: 100% !important;
+            border-radius: 999px !important;
+            background: #7b8ea3 !important;
+            min-width: 0.35rem;
+        }
+        #contenedorSemaforoCompetencias > div.perfil-area-row .perfil-area-track {
+            opacity: 0.35;
         }
         .perfil-areas-head { display: none !important; }
         .btn-fallaste {
@@ -834,26 +860,31 @@
         }
         .btn-fallaste svg { color: #94a3b8; width: 1rem; height: 1rem; }
         .perfil-duo-kicker {
-            display: flex; align-items: center; gap: 0.4rem;
-            font-size: 0.68rem; color: #94a3b8; font-weight: 600;
+            display: flex; align-items: center; gap: 0.45rem;
+            font-size: 0.7rem; color: #a8b3c4; font-weight: 650;
         }
-        .perfil-duo-kicker svg { width: 0.9rem; height: 0.9rem; color: var(--perfil-amber); }
+        .perfil-duo-kicker svg {
+            width: 1rem; height: 1rem; color: #d4a574;
+            filter: drop-shadow(0 0 6px rgba(212, 165, 116, 0.35));
+        }
         .perfil-duo-value {
-            margin-top: 0.35rem;
-            font-size: 1.15rem; font-weight: 700; color: #f8fafc;
+            margin-top: 0.4rem;
+            font-size: 1.22rem; font-weight: 700; color: #f8fafc;
             letter-spacing: -0.03em;
         }
         .perfil-duo-sub {
-            margin-top: 0.2rem;
+            margin-top: 0.22rem;
             font-size: 0.72rem; color: #94a3b8;
         }
         .perfil-racha-track {
-            margin-top: 0.7rem; height: 0.28rem; border-radius: 999px;
-            background: rgba(51, 65, 85, 0.55); overflow: hidden;
+            margin-top: 0.85rem; height: 0.34rem; border-radius: 999px;
+            background: rgba(51, 65, 85, 0.7); overflow: hidden;
+            border: 1px solid rgba(148, 163, 184, 0.12);
         }
         .perfil-racha-track > i {
             display: block; height: 100%; border-radius: 999px;
-            background: linear-gradient(90deg, #a8895c, #c4a574);
+            background: linear-gradient(90deg, #b8894a, #e0b87a);
+            box-shadow: 0 0 8px rgba(212, 165, 116, 0.35);
         }
         #celdaPlanPerfil {
             text-decoration: none; color: inherit;
@@ -877,16 +908,25 @@
             flex-direction: column !important;
             align-items: flex-start !important;
             gap: 0.55rem !important;
-            padding: 0.85rem 0.7rem !important;
+            padding: 0.9rem 0.75rem !important;
             border-radius: 0.95rem !important;
-            min-height: 7.4rem;
+            min-height: 7.5rem;
+            background: rgba(18, 22, 32, 0.92) !important;
+            border: 1px solid rgba(148, 163, 184, 0.2) !important;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28) !important;
         }
         .puerta-marca {
-            width: 1.85rem; height: 1.85rem; border-radius: 0.55rem;
-            background: rgba(30, 41, 59, 0.55) !important;
-            border-color: rgba(148, 163, 184, 0.18) !important;
-            color: var(--perfil-cyan) !important;
+            width: 2.15rem; height: 2.15rem; border-radius: 0.7rem;
+            background: linear-gradient(160deg, rgba(56, 78, 98, 0.75), rgba(22, 30, 42, 0.95)) !important;
+            border: 1px solid rgba(126, 184, 196, 0.32) !important;
+            color: #9fd0db !important;
             flex: 0 0 auto;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 0 12px rgba(126, 184, 196, 0.12);
+        }
+        .puerta-marca svg {
+            width: 1.05rem; height: 1.05rem;
+            stroke-width: 2.1;
+            filter: drop-shadow(0 0 4px rgba(159, 208, 219, 0.35));
         }
         .puerta-informe strong {
             font-size: 0.78rem !important;
@@ -1024,7 +1064,7 @@
         </div>
         <div class="perfil-hdr-tag-wrap">
             <span class="perfil-hdr-tag" id="lblHdrProyeccionTag">PROYECCIÓN 2026</span>
-            <span id="badgeDanteVersion" class="perfil-hdr-ver">c-1.3.16</span>
+            <span id="badgeDanteVersion" class="perfil-hdr-ver">c-1.3.17</span>
         </div>
         <div class="relative flex items-center gap-2.5 shrink-0">
             <button type="button" id="badgeRacha" onclick="if(window.StreakManager) StreakManager.abrirModalRacha()" class="flex items-center gap-1.5 cursor-pointer bg-transparent border-0 p-0 text-amber-400 font-mono text-xs font-black transition-transform hover:scale-105 active:scale-95 shrink-0 select-none" title="Ver Racha Real de Días">
@@ -3550,9 +3590,12 @@
                     if (pct === null || Number.isNaN(pct)) {
                         scoreMap[m.key] = null;
                         semHtml += `
-                        <div class="py-3 border-b border-slate-800/70 flex items-center justify-between gap-3">
-                            <span class="font-bold text-slate-200">${m.name}</span>
-                            <span class="shrink-0 text-slate-500 text-[11px]">Sin evidencia</span>
+                        <div class="perfil-area-row">
+                            <span class="perfil-area-head">
+                                <span class="perfil-area-name">${m.name}</span>
+                                <span class="perfil-area-pct">Sin evidencia</span>
+                            </span>
+                            <span class="perfil-area-track"><span class="perfil-area-fill" style="width: 0%"></span></span>
                         </div>`;
                         return;
                     }
@@ -3561,29 +3604,24 @@
 
                     let badgeClass = "bg-emerald-500/20 text-emerald-300 border-emerald-500/40";
                     let badgeText = "Va bien";
-                    let barColor = "bg-emerald-400";
                     if (pct < 40) {
                         badgeClass = "bg-rose-500/20 text-rose-300 border-rose-500/40";
                         badgeText = "Para repasar";
-                        barColor = "bg-rose-500";
                     } else if (pct < 70) {
                         badgeClass = "bg-amber-500/20 text-amber-300 border-amber-500/40";
                         badgeText = "En el medio";
-                        barColor = "bg-amber-400";
                     }
 
                     semHtml += `
-                        <button type="button" onclick="PerfilEstudiante.abrirEnsenanza('${m.key}')" class="w-full py-3 border-b border-slate-800/70 text-left cursor-pointer space-y-2">
-                            <span class="flex items-center justify-between gap-2">
-                                <span class="font-bold text-slate-200">${m.name}</span>
-                                <span class="text-[9.5px] px-2 py-0.5 rounded-full border font-bold ${badgeClass} shrink-0">${badgeText}</span>
+                        <button type="button" onclick="PerfilEstudiante.abrirEnsenanza('${m.key}')" class="perfil-area-row w-full text-left cursor-pointer">
+                            <span class="perfil-area-head">
+                                <span class="perfil-area-name">${m.name}</span>
+                                <span class="perfil-area-pct">${pct}%</span>
                             </span>
-                            <span class="flex items-center gap-3">
-                                <span class="flex-1 bg-slate-950 h-2.5 rounded-full border border-slate-800 overflow-hidden">
-                                    <span class="block h-full ${barColor} rounded-full" style="width: ${Math.max(5, pct)}%"></span>
-                                </span>
-                                <span class="font-black text-slate-100 shrink-0">${pct}%</span>
+                            <span class="perfil-area-track">
+                                <span class="perfil-area-fill" style="width: ${Math.max(5, pct)}%"></span>
                             </span>
+                            <span class="perfil-area-badge text-[9.5px] px-2 py-0.5 rounded-full border font-bold ${badgeClass}">${badgeText}</span>
                         </button>
                     `;
                 });
@@ -3666,12 +3704,12 @@
                 if (!ctx) return;
                 const centerX = width / 2;
                 const centerY = height / 2;
-                const radius = Math.min(centerX, centerY) - 36;
+                const radius = Math.min(centerX, centerY) - 40;
                 const numPoints = 5;
                 ctx.clearRect(0, 0, width, height);
                 ctx.save();
-                ctx.strokeStyle = 'rgba(231, 215, 195, 0.16)';
-                ctx.lineWidth = 1;
+                ctx.strokeStyle = 'rgba(148, 163, 184, 0.38)';
+                ctx.lineWidth = 1.15;
                 for (let l = 1; l <= 4; l++) {
                     const r = (radius / 4) * l;
                     ctx.beginPath();
@@ -3685,8 +3723,10 @@
                     ctx.closePath();
                     ctx.stroke();
                 }
-                ctx.font = "12px 'Plus Jakarta Sans', sans-serif";
-                ctx.fillStyle = '#d6d3d1';
+                ctx.strokeStyle = 'rgba(148, 163, 184, 0.32)';
+                ctx.lineWidth = 1;
+                ctx.font = "600 10px 'Plus Jakarta Sans', sans-serif";
+                ctx.fillStyle = '#cbd5e1';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 for (let i = 0; i < numPoints; i++) {
@@ -3695,9 +3735,11 @@
                     ctx.moveTo(centerX, centerY);
                     ctx.lineTo(centerX + radius * Math.cos(angle), centerY + radius * Math.sin(angle));
                     ctx.stroke();
-                    const lx = centerX + (radius + 18) * Math.cos(angle);
-                    const ly = centerY + (radius + 18) * Math.sin(angle);
-                    ctx.fillText(labels[i], lx, ly);
+                    const lx = centerX + (radius + 20) * Math.cos(angle);
+                    const ly = centerY + (radius + 20) * Math.sin(angle);
+                    const val = values[i];
+                    const label = (val === null || val === undefined) ? labels[i] : (labels[i] + ' ' + Math.round(val) + '%');
+                    ctx.fillText(label, lx, ly);
                 }
                 const puntos = [];
                 values.forEach((val, i) => {
@@ -3716,16 +3758,19 @@
                         else ctx.lineTo(pt.x, pt.y);
                     });
                     if (puntos.length >= 3) ctx.closePath();
-                    ctx.fillStyle = 'rgba(231, 215, 195, 0.22)';
-                    ctx.strokeStyle = 'rgba(231, 215, 195, 0.92)';
-                    ctx.lineWidth = 2;
+                    ctx.fillStyle = 'rgba(232, 152, 74, 0.28)';
+                    ctx.strokeStyle = 'rgba(245, 168, 88, 0.95)';
+                    ctx.lineWidth = 2.25;
                     if (puntos.length >= 3) ctx.fill();
                     ctx.stroke();
                     puntos.forEach((pt) => {
                         ctx.beginPath();
-                        ctx.arc(pt.x, pt.y, 3.5, 0, Math.PI * 2);
-                        ctx.fillStyle = '#fafaf9';
+                        ctx.arc(pt.x, pt.y, 4.2, 0, Math.PI * 2);
+                        ctx.fillStyle = '#f8fafc';
                         ctx.fill();
+                        ctx.strokeStyle = 'rgba(245, 168, 88, 0.95)';
+                        ctx.lineWidth = 1.5;
+                        ctx.stroke();
                     });
                 }
                 ctx.restore();
@@ -4674,7 +4719,7 @@
             VocacionalManager.init();
         };
         if ('serviceWorker' in navigator) {
-            const SW_VERSION = 'v23.1.71-SABER';
+            const SW_VERSION = 'v23.1.72-SABER';
             navigator.serviceWorker.register('/service-worker.js?v=' + SW_VERSION).catch(function () {});
         }
     </script>
