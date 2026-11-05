@@ -2227,10 +2227,10 @@
         if (uiEnunciados) {
           uiEnunciados.style.display = 'block';
           const numeroEnElTexto = !(textoPregunta && !esMismoQueEnunciado && !esTextoRelleno);
+          // Figura va en uiRecursoVisualPreguntaCore (después de la pregunta) para no perderse en el layout papel.
           uiEnunciados.innerHTML = `
             <div class="icfes-cartilla-card text-slate-900 font-serif">
               <div id="txtEnunciadoCuerpo" class="cartilla-legible font-serif text-slate-900 font-normal">${numeroEnElTexto ? `<span class="font-bold mr-2">${this.indexReactivoActivo + 1}.</span>` : ''}${this.sanitizarHtmlText(rawEnunciado)}</div>
-              ${figuraHtml}
             </div>
           `;
           this.renderizarMathSiExiste(uiEnunciados);
@@ -2283,17 +2283,25 @@
                 <div id="txtEnunciadoCuerpo" class="font-sans text-slate-100 text-sm sm:text-base leading-relaxed flex-1">${this.sanitizarHtmlText(rawEnunciado)}</div>
               </div>
               ${stemAdicionalHtml}
-              ${figuraHtml}
             </div>
           `;
           this.renderizarMathSiExiste(uiPregunta);
         }
       }
 
+      // Gráfica / figura siempre después del texto de la pregunta y antes de las opciones.
       const uiRecursoVisual = document.getElementById('uiRecursoVisualPreguntaCore');
       if (uiRecursoVisual) {
-        uiRecursoVisual.style.display = 'none';
-        uiRecursoVisual.innerHTML = '';
+        if (figuraHtml) {
+          uiRecursoVisual.innerHTML = figuraHtml;
+          uiRecursoVisual.style.display = 'block';
+          uiRecursoVisual.hidden = false;
+          uiRecursoVisual.removeAttribute('hidden');
+          this.renderizarMathSiExiste(uiRecursoVisual);
+        } else {
+          uiRecursoVisual.innerHTML = '';
+          uiRecursoVisual.style.display = 'none';
+        }
       }
 
       // 5. Renderizar Grid de Opciones (A, B, C, D) con Descarte y Formato Compacto Ergonómico Móvil
@@ -3048,15 +3056,13 @@
     _htmlFigura(src, cartilla) {
       if (!src || typeof src !== 'string') return '';
       const limpio = src.trim();
-      const marco = cartilla
-        ? 'bg-transparent border-0 text-slate-900'
-        : 'bg-transparent border-0 text-slate-900';
+      const marco = 'fig-pregunta-papel bg-transparent border-0 text-slate-900';
       const pie = `<figcaption class="mt-2 text-[10px] font-mono tracking-wide text-slate-600">Figura de la pregunta</figcaption>`;
       if (limpio.startsWith('<div class="fig-examen"') || limpio.startsWith('<svg')) {
         const cuerpo = limpio.startsWith('<svg')
           ? `<div class="fig-examen">${limpio.replace('<svg ', '<svg style="width:100%;height:auto;max-height:300px;display:block;margin:0 auto;background:#ffffff;" ')}</div>`
           : limpio;
-        return `<figure class="my-3 p-1 ${marco} overflow-x-auto">${cuerpo}${pie}</figure>`;
+        return `<figure class="my-3 p-1 ${marco} overflow-x-auto" data-figura="1">${cuerpo}${pie}</figure>`;
       }
       let srcSegura = limpio;
       if (limpio.includes('<svg') || limpio.startsWith('data:image/svg+xml')) {
@@ -3065,8 +3071,13 @@
         else if (rawXml.startsWith('data:image/svg+xml;')) rawXml = rawXml.substring(rawXml.indexOf(',') + 1);
         try { rawXml = decodeURIComponent(rawXml); } catch (e) {}
         rawXml = rawXml.replace(/%23/g, '#');
-        if (!rawXml.includes('background:')) {
-          rawXml = rawXml.replace('<svg ', '<svg style="background:#faf8f5;border-radius:12px;" ');
+        // En cuadernillo papel: fondo claro para que la gráfica se lea.
+        if (/background\s*:\s*#0/i.test(rawXml) || /background\s*:\s*%230/i.test(rawXml)) {
+          rawXml = rawXml.replace(/background\s*:\s*#0[0-9a-fA-F]{5}/gi, 'background:#ffffff');
+          rawXml = rawXml.replace(/background\s*:\s*%230[0-9a-fA-F]{5}/gi, 'background:#ffffff');
+        }
+        if (!/background\s*:/i.test(rawXml)) {
+          rawXml = rawXml.replace('<svg ', '<svg style="background:#ffffff;" ');
         }
         try {
           srcSegura = `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(rawXml)))}`;
@@ -3075,8 +3086,8 @@
         }
       }
       return `
-        <figure class="my-3 p-1 ${marco} overflow-x-auto text-center">
-          <img src="${srcSegura}" alt="Gráfico de la pregunta" style="width:100%;max-height:300px;height:auto;object-fit:contain;background:#ffffff;" />
+        <figure class="my-3 p-1 ${marco} overflow-x-auto text-center" data-figura="1">
+          <img src="${srcSegura}" alt="Gráfico de la pregunta" style="width:100%;max-height:300px;height:auto;object-fit:contain;background:#ffffff;display:block;margin:0 auto;" />
           ${pie}
         </figure>`;
     }
