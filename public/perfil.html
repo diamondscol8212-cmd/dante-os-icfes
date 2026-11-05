@@ -9,7 +9,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="assets/icons/icon-192.svg">
     <link rel="apple-touch-icon" href="assets/icons/icon-192.svg">
-    <title>Dante OS · Tu informe c-1.2.85</title>
+    <title>Dante OS · Tu informe c-1.3.14</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
 
@@ -20,34 +20,39 @@
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="theme.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/danteCacheVersion.js?v=c-1.2.85"></script>
-    <script src="js/danteNube.js?v=c-1.2.85"></script>
-    <script src="js/danteRegistro.js?v=c-1.2.85"></script>
+    <script src="js/danteCacheVersion.js?v=c-1.3.14"></script>
+    <script src="js/danteNube.js?v=c-1.3.14"></script>
+    <script src="js/danteRegistro.js?v=c-1.3.14"></script>
     <script src="js/danteVectorIcons.js"></script>
     <script src="js/danteStorage.js"></script>
     <script src="js/streakManager.js?v=23.1.2"></script>
     <script src="js/rutaSimulacroEngine.js"></script>
     <script src="js/danteRadarEngine.js"></script>
-    <script src="js/danteTutorEngine.js?v=c-1.2.85"></script>
+    <script src="js/danteTutorEngine.js?v=c-1.3.14"></script>
 
     <style>
-        #bentoContainer { display: flex; flex-direction: column; gap: 1rem; }
+        #bentoContainer { display: flex; flex-direction: column; gap: 0.9rem; }
         #bloqueProyeccion { order: 1; }
         #bloqueAreas { order: 2; }
-        #bloquePruebas { order: 3; }
-        #bloqueCasa { order: 4; }
-        #bloqueModulos { order: 5; }
-        #panelRutaEnPalabras { order: 6; }
+        #bloqueCasa { order: 3; }
+        #bloqueModulos { order: 4; }
+        #panelRutaEnPalabras { order: 5; }
+        #bloquePruebas { order: 6; }
+        #tarjetaPadresInforme { order: 7; }
         #panelEnfoque_preu, #panelEnfoque_vocacional { display: none !important; }
         :root {
-            --primary: #51e2f5; 
-            --gold: #D4AF37;
+            --primary: #7eb8c4;
+            --gold: #c4a574;
             --alert: #e74c3c;
-            --bg: #010103; 
-            --card-bg: rgba(12, 14, 22, 0.88);
-            --border-graphite: rgba(255, 255, 255, 0.08);
+            --bg: #000000;
+            --card-bg: rgba(14, 16, 22, 0.72);
+            --border-graphite: rgba(255, 255, 255, 0.1);
             --emerald: #2ecc71;
             --purple-core: #a855f7;
+            --perfil-cyan: #7eb8c4;
+            --perfil-amber: #c4a574;
+            --perfil-glass: rgba(16, 18, 26, 0.78);
+            --perfil-line: rgba(148, 163, 184, 0.16);
         }
 
 
@@ -149,16 +154,24 @@
             border-radius: 16px;
         }
 
-        .bottom-nav { 
-            position: fixed; bottom: max(16px, env(safe-area-inset-bottom)); width: 92%; max-width: 480px; left: 50%; transform: translateX(-50%); z-index: 1000;
-            display: none; justify-content: space-evenly; align-items: center;
-            background: rgba(5, 5, 8, 0.92); backdrop-filter: blur(20px);
-            padding: 8px 12px; border-radius: 60px; border: 1px solid rgba(255, 255, 255, 0.12);
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0; width: 100%; max-width: none; transform: none; z-index: 1000;
+            display: flex; justify-content: space-around; align-items: center;
+            background: rgba(0, 0, 0, 0.94); backdrop-filter: blur(16px);
+            padding: 0.55rem 1.25rem calc(0.55rem + env(safe-area-inset-bottom, 0px));
+            border: 0; border-top: 1px solid rgba(148, 163, 184, 0.14); border-radius: 0; box-shadow: none;
         }
-        .nav-item { display: flex; flex-direction: column; align-items: center; min-width: 60px; cursor: pointer; }
-        .icon-circle { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); margin-bottom: 2px; }
-        .nav-text { font-size: 8.5px; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; }
-        #dante-anchor { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--gold); background: #000; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; min-width: 0; gap: 0.2rem; cursor: pointer; text-decoration: none !important; background: transparent; border: 0; padding: 0; }
+        .icon-circle { width: auto; height: auto; border-radius: 0; display: flex; align-items: center; justify-content: center; background: transparent; border: 0; margin-bottom: 0; position: relative; }
+        .nav-text { font-family: 'Plus Jakarta Sans', sans-serif !important; font-size: 0.68rem !important; font-weight: 600 !important; letter-spacing: 0.02em !important; text-transform: none !important; color: #64748b; }
+        .nav-item.is-progreso-active .nav-text { color: #f8fafc !important; }
+        .nav-item.is-progreso-active .icon-circle::after {
+            content: ''; position: absolute; left: 50%; bottom: -0.35rem; width: 1.15rem; height: 2px;
+            transform: translateX(-50%); background: #f8fafc; border-radius: 999px;
+        }
+        .nav-item:not(.is-progreso-active) .nav-text,
+        .nav-item:not(.is-progreso-active) i { color: #64748b !important; }
+        #dante-anchor.nav-item { width: auto; height: auto; border: 0; background: transparent; box-shadow: none; border-radius: 0; }
 
         .modal-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.88); backdrop-filter: blur(14px);
@@ -547,6 +560,415 @@
             font-weight: 650 !important;
             cursor: pointer;
         }
+
+        /* —— Perfil mock: cristal / negro profundo / acentos suaves —— */
+        body, html { background: #000 !important; color: #f1f5f9; }
+        #hdrPerfil {
+            height: 3.25rem !important;
+            background: rgba(0, 0, 0, 0.92) !important;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1) !important;
+            backdrop-filter: blur(14px);
+            padding: 0 1rem !important;
+            gap: 0.75rem;
+        }
+        #btnVolverSalaInforme {
+            position: absolute !important;
+            width: 1px !important; height: 1px !important;
+            padding: 0 !important; margin: -1px !important;
+            overflow: hidden !important; clip: rect(0, 0, 0, 0) !important;
+            border: 0 !important;
+        }
+        .perfil-hdr-brand {
+            display: inline-flex; align-items: center; gap: 0.55rem;
+            text-decoration: none; color: #f8fafc;
+        }
+        .perfil-hdr-brand span {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.92rem; font-weight: 650; letter-spacing: -0.02em;
+        }
+        .perfil-hdr-tag {
+            flex: 1; text-align: center;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.62rem; font-weight: 650;
+            letter-spacing: 0.14em; text-transform: uppercase;
+            color: #94a3b8;
+        }
+        #badgeRacha { color: var(--perfil-amber) !important; }
+        #badgeRacha svg, #lblHeaderRachaCount { color: var(--perfil-amber) !important; }
+        #btnMenuHdr {
+            background: transparent !important;
+            border: 0 !important;
+            color: #cbd5e1 !important;
+            padding: 0.4rem !important;
+            font-size: 1.15rem;
+            box-shadow: none !important;
+        }
+        #adnViewport {
+            max-width: 28rem !important;
+            margin-left: auto; margin-right: auto;
+            padding-bottom: 6.5rem !important;
+        }
+        #bloqueProyeccion, #bloqueAreas, #bloqueCasa .perfil-duo-card,
+        #bloquePruebas, #tarjetaPadresInforme, #bloqueModulos .puerta-informe,
+        #panelRutaEnPalabras {
+            background: var(--perfil-glass) !important;
+            border: 1px solid var(--perfil-line) !important;
+            backdrop-filter: blur(18px);
+            box-shadow: none !important;
+        }
+        #bloqueProyeccion {
+            border-radius: 1.15rem 1.15rem 0 0 !important;
+            border-bottom-color: transparent !important;
+            padding: 1.15rem 1.1rem 0.85rem !important;
+            margin-bottom: 0 !important;
+        }
+        #bloqueAreas {
+            border-radius: 0 0 1.15rem 1.15rem !important;
+            border-top: 1px solid rgba(148, 163, 184, 0.1) !important;
+            margin-top: 0 !important;
+            padding: 0.85rem 1.1rem 1.15rem !important;
+        }
+        #bloqueCasa {
+            background: transparent !important;
+            border: 0 !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+        }
+        #bloqueCasa .perfil-duo-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.7rem;
+        }
+        #bloqueCasa .perfil-duo-card {
+            border-radius: 1rem !important;
+            padding: 0.95rem 0.9rem !important;
+            min-height: 100%;
+        }
+        #bloqueCasa .perfil-vidas-hidden { display: none !important; }
+        .perfil-id-row {
+            display: flex; align-items: center; gap: 0.85rem;
+            border-bottom: 0 !important; padding-bottom: 0.85rem !important;
+        }
+        .perfil-avatar {
+            width: 2.75rem; height: 2.75rem; border-radius: 999px;
+            background: rgba(20, 24, 34, 0.95);
+            border: 1px solid rgba(126, 184, 196, 0.35);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--perfil-cyan); flex-shrink: 0;
+            box-shadow: none !important;
+        }
+        #ui-alias-box {
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+            font-size: 1rem !important; font-weight: 650 !important;
+            letter-spacing: -0.02em !important; text-transform: none !important;
+            color: #f8fafc !important; line-height: 1.2;
+        }
+        .perfil-id-sub {
+            margin-top: 0.2rem;
+            font-size: 0.72rem !important;
+            color: #94a3b8 !important;
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+        }
+        .perfil-id-sub .dot { color: #64748b; margin: 0 0.25rem; }
+        #ui-alias-box + span { display: none !important; }
+        #panelBrechaBox {
+            display: flex !important;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 0.75rem;
+            background: transparent !important;
+            border: 0 !important;
+            border-radius: 0 !important;
+            padding: 0.35rem 0 0.55rem !important;
+            text-align: left !important;
+            grid-template-columns: none !important;
+        }
+        .perfil-score-main {
+            display: flex; align-items: baseline; gap: 0.35rem; flex-wrap: wrap;
+        }
+        #lblPuntajeGlobal500 {
+            font-size: 1.85rem !important; font-weight: 700 !important;
+            color: #f8fafc !important; letter-spacing: -0.04em !important;
+            line-height: 1;
+        }
+        .perfil-score-unit {
+            font-size: 0.95rem; color: #94a3b8; font-weight: 550;
+        }
+        .perfil-score-side {
+            display: flex; flex-direction: column; align-items: flex-end; gap: 0.35rem;
+            text-align: right;
+        }
+        .perfil-score-side .meta-line,
+        .perfil-score-side .faltan-line {
+            display: flex; align-items: baseline; gap: 0.4rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .perfil-score-side .k {
+            font-size: 0.62rem; text-transform: lowercase; color: #94a3b8; letter-spacing: 0.04em;
+        }
+        .perfil-score-side .faltan-line .k {
+            text-transform: uppercase; letter-spacing: 0.08em; color: #a8a29e;
+        }
+        #lblPuntajeMetaBento { font-size: 0.92rem !important; color: #e2e8f0 !important; font-weight: 650 !important; letter-spacing: 0 !important; }
+        #lblBrechaCalculadaBento {
+            font-size: 0.92rem !important;
+            color: #d4a574 !important;
+            font-weight: 650 !important;
+            letter-spacing: 0 !important;
+            line-height: 1.2 !important;
+        }
+        #lblRachaDias { color: #f8fafc !important; font-size: 1.15rem !important; letter-spacing: -0.03em !important; }
+        #lblMetaCarreraBento, #lblPorcentajeMetaBento, #lblBrechaSubtextBento,
+        #lblPerfilMargen, .perfil-scale-row { display: none !important; }
+        #bloqueProyeccion .escala-fila + div { display: none !important; }
+        .perfil-domains-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.65rem;
+            align-items: stretch;
+        }
+        @media (max-width: 380px) {
+            .perfil-domains-grid { grid-template-columns: 1fr; }
+        }
+        #cajaRadarAreas {
+            background: transparent !important;
+            border: 0 !important;
+            padding: 0 !important;
+            min-height: 0 !important;
+        }
+        #cajaRadarAreas .perfil-domain-label,
+        .perfil-domain-label {
+            display: block;
+            font-size: 0.58rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #94a3b8 !important;
+            margin-bottom: 0.45rem;
+        }
+        #cajaRadarAreas .w-full.h-\[280px\] {
+            height: 180px !important;
+        }
+        #chartRadarGemelo {
+            max-width: 180px !important;
+            height: 180px !important;
+        }
+        #contenedorSemaforoCompetencias {
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+        }
+        #contenedorSemaforoCompetencias button,
+        #contenedorSemaforoCompetencias > div {
+            border-bottom-color: rgba(148, 163, 184, 0.1) !important;
+            padding: 0.55rem 0 !important;
+        }
+        #contenedorSemaforoCompetencias .rounded-full.border,
+        #contenedorSemaforoCompetencias span[class*="rounded-full"] {
+            display: none !important;
+        }
+        #contenedorSemaforoCompetencias .font-bold.text-slate-200,
+        #contenedorSemaforoCompetencias .font-bold {
+            font-weight: 550 !important;
+            color: #cbd5e1 !important;
+            font-size: 0.72rem !important;
+        }
+        #contenedorSemaforoCompetencias .bg-slate-950,
+        #contenedorSemaforoCompetencias [class*="bg-slate-950"] {
+            background: rgba(30, 41, 59, 0.55) !important;
+            border-color: transparent !important;
+            height: 0.4rem !important;
+        }
+        #contenedorSemaforoCompetencias .bg-emerald-400,
+        #contenedorSemaforoCompetencias .bg-emerald-500,
+        #contenedorSemaforoCompetencias .bg-amber-400,
+        #contenedorSemaforoCompetencias .bg-rose-400,
+        #contenedorSemaforoCompetencias .bg-rose-500 {
+            background: #64748b !important;
+        }
+        #contenedorSemaforoCompetencias .font-black,
+        #contenedorSemaforoCompetencias .font-bold.shrink-0 {
+            color: #94a3b8 !important;
+            font-size: 0.7rem !important;
+            font-weight: 600 !important;
+        }
+        .perfil-areas-head { display: none !important; }
+        .btn-fallaste {
+            display: flex !important;
+            width: 100%;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 0.85rem;
+            padding: 0.85rem 1rem !important;
+            border-radius: 0.85rem !important;
+            background: rgba(8, 10, 16, 0.88) !important;
+            border: 1px solid rgba(148, 163, 184, 0.18) !important;
+            color: #e2e8f0 !important;
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+            font-size: 0.88rem !important;
+            font-weight: 600 !important;
+            box-shadow: none !important;
+            cursor: pointer;
+        }
+        .btn-fallaste svg { color: #94a3b8; width: 1rem; height: 1rem; }
+        .perfil-duo-kicker {
+            display: flex; align-items: center; gap: 0.4rem;
+            font-size: 0.68rem; color: #94a3b8; font-weight: 600;
+        }
+        .perfil-duo-kicker svg { width: 0.9rem; height: 0.9rem; color: var(--perfil-amber); }
+        .perfil-duo-value {
+            margin-top: 0.35rem;
+            font-size: 1.15rem; font-weight: 700; color: #f8fafc;
+            letter-spacing: -0.03em;
+        }
+        .perfil-duo-sub {
+            margin-top: 0.2rem;
+            font-size: 0.72rem; color: #94a3b8;
+        }
+        .perfil-racha-track {
+            margin-top: 0.7rem; height: 0.28rem; border-radius: 999px;
+            background: rgba(51, 65, 85, 0.55); overflow: hidden;
+        }
+        .perfil-racha-track > i {
+            display: block; height: 100%; border-radius: 999px;
+            background: linear-gradient(90deg, #a8895c, #c4a574);
+        }
+        #celdaPlanPerfil {
+            text-decoration: none; color: inherit;
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+        #celdaPlanPerfil .perfil-plan-row {
+            display: flex; align-items: flex-start; justify-content: space-between; gap: 0.4rem;
+        }
+        #lblPerfilPlanNombre { color: #f8fafc !important; font-size: 1.05rem !important; }
+        #celdaPlanPerfil .chev { color: #64748b; font-size: 1rem; line-height: 1; }
+        #celdaPlanPerfil a.perfil-plan-upgrade { display: none !important; }
+        #bloqueModulos {
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.55rem !important;
+            background: transparent !important;
+            border: 0 !important;
+            padding: 0 !important;
+        }
+        #bloqueModulos .puerta-informe {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 0.55rem !important;
+            padding: 0.85rem 0.7rem !important;
+            border-radius: 0.95rem !important;
+            min-height: 7.4rem;
+        }
+        .puerta-marca {
+            width: 1.85rem; height: 1.85rem; border-radius: 0.55rem;
+            background: rgba(30, 41, 59, 0.55) !important;
+            border-color: rgba(148, 163, 184, 0.18) !important;
+            color: var(--perfil-cyan) !important;
+            flex: 0 0 auto;
+        }
+        .puerta-informe strong {
+            font-size: 0.78rem !important;
+            line-height: 1.25;
+        }
+        .puerta-informe strong + span {
+            font-size: 0.65rem !important;
+            line-height: 1.35;
+            color: #94a3b8 !important;
+            margin-top: 0.15rem;
+        }
+        #bloquePruebas {
+            border-radius: 1.1rem !important;
+            padding: 1rem 1.05rem 0.85rem !important;
+        }
+        #bloquePruebas .perfil-pruebas-head {
+            display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 0 !important; padding-bottom: 0.55rem;
+        }
+        #bloquePruebas .perfil-pruebas-head h3 {
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+            font-size: 0.95rem !important; font-weight: 650 !important;
+            color: #f1f5f9 !important; text-transform: none !important;
+            letter-spacing: -0.02em !important;
+        }
+        #btnVerTodasPruebas {
+            background: transparent; border: 0; cursor: pointer;
+            color: #94a3b8; font-size: 0.72rem; font-weight: 600;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            padding: 0;
+        }
+        #bloquePruebas thead { display: none; }
+        #bloquePruebas table { width: 100%; border-collapse: collapse; }
+        #tblExamenesBody tr {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 0.15rem 0.75rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+        }
+        #tblExamenesBody tr:last-child { border-bottom: 0; }
+        #tblExamenesBody td {
+            padding: 0 !important;
+            border: 0 !important;
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+        }
+        #tblExamenesBody td:nth-child(1) {
+            grid-column: 1; grid-row: 2;
+            font-size: 0.68rem; color: #94a3b8 !important;
+        }
+        #tblExamenesBody td:nth-child(2) {
+            grid-column: 1; grid-row: 1;
+            font-size: 0.88rem; font-weight: 650; color: #f1f5f9 !important;
+            text-transform: none !important;
+        }
+        #tblExamenesBody td:nth-child(3) {
+            grid-column: 2; grid-row: 1 / span 2;
+            align-self: center;
+            font-size: 0.85rem; font-weight: 650; color: #e2e8f0 !important;
+            white-space: nowrap;
+        }
+        #tblExamenesBody td:nth-child(4),
+        #tblExamenesBody td:nth-child(5) { display: none !important; }
+        #piePruebas { display: none; }
+        #tarjetaPadresInforme {
+            border-radius: 1.1rem !important;
+            padding: 1.05rem 1.05rem 1.1rem !important;
+        }
+        #tarjetaPadresInforme h4 {
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+            font-size: 0.95rem !important; font-weight: 650 !important;
+            color: #f1f5f9 !important; text-transform: none !important;
+            letter-spacing: -0.02em !important;
+        }
+        #tarjetaPadresInforme > div:first-child {
+            border-bottom: 0 !important; padding-bottom: 0.35rem !important;
+        }
+        #tarjetaPadresInforme .w-7.h-7 {
+            background: rgba(30, 41, 59, 0.55) !important;
+            border-color: rgba(148, 163, 184, 0.2) !important;
+            color: var(--perfil-cyan) !important;
+        }
+        #btnCompartirWhatsApp {
+            background: transparent !important;
+            border: 1px solid rgba(52, 211, 153, 0.45) !important;
+            color: #6ee7b7 !important;
+            border-radius: 0.85rem !important;
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+        }
+        #tarjetaPadresInforme button:last-of-type {
+            background: transparent !important;
+            border: 1px solid rgba(148, 163, 184, 0.28) !important;
+            color: #cbd5e1 !important;
+            border-radius: 0.85rem !important;
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+        }
+        #panelRutaEnPalabras {
+            border-radius: 1.1rem !important;
+            padding: 1rem !important;
+            border-color: rgba(126, 184, 196, 0.28) !important;
+        }
+        #panelEnfoque_conducta:not(.hidden) {
+            margin: 0.9rem auto 0;
+            max-width: 28rem;
+            padding: 0 1rem 1rem;
+        }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -555,15 +977,15 @@
     <canvas id="dante-fractal-bg"></canvas>
 
     <header id="hdrPerfil" class="fixed top-0 left-0 right-0 h-16 bg-[#0B0F17]/95 backdrop-blur-md border-b border-slate-800/80 z-50 flex items-center justify-between px-4">
-        <div class="flex items-center gap-3">
-            <a id="btnVolverSalaInforme" href="index.html?sala=1" class="px-3 py-1.5 rounded-lg bg-amber-500/15 border border-amber-400/60 text-amber-100 font-mono text-[11px] font-black tracking-wide shrink-0" title="Volver a la sala">SALA</a>
-            <a href="index.html?sala=1" class="flex items-center gap-2 hover:opacity-90 transition-opacity" title="Volver a la sala">
-                <img src="assets/icons/dante-logo-icon.svg" alt="Dante OS" class="w-7 h-7 shrink-0 rounded-lg shadow-sm" />
-                <span class="text-xs font-mono font-bold tracking-wider text-slate-200 hidden sm:inline">Dante OS</span>
+        <div class="flex items-center gap-3 shrink-0">
+            <a id="btnVolverSalaInforme" href="index.html?sala=1" title="Volver a la sala">SALA</a>
+            <a href="index.html?sala=1" class="perfil-hdr-brand" title="Volver a la sala">
+                <img src="assets/icons/dante-logo-icon.svg" alt="Dante OS" class="w-7 h-7 shrink-0 rounded-lg" />
+                <span>Dante OS</span>
             </a>
         </div>
-        <div class="relative flex items-center gap-2 shrink-0">
-            <!-- 🔥 BOTÓN / BADGE RACHA REAL DE DÍAS (SIN BORDES NI CONTENEDOR CIRCULAR, SÓLO FLAMA Y NÚMERO) -->
+        <span class="perfil-hdr-tag" id="lblHdrProyeccionTag">PROYECCIÓN 2026</span>
+        <div class="relative flex items-center gap-2.5 shrink-0">
             <button type="button" id="badgeRacha" onclick="if(window.StreakManager) StreakManager.abrirModalRacha()" class="flex items-center gap-1.5 cursor-pointer bg-transparent border-0 p-0 text-amber-400 font-mono text-xs font-black transition-transform hover:scale-105 active:scale-95 shrink-0 select-none" title="Ver Racha Real de Días">
                 <svg class="flama-respirando w-4 h-4 text-amber-400 shrink-0" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 23c6.075 0 8-4.5 8-9.5 0-4.5-3-7.5-5-10.5-.3-.45-.9-.45-1.2 0-1.5 2.25-3.5 5.5-3.5 8 0 1.5.5 2.8 1.2 3.8-3.2-1.5-4.5-4.8-3.9-8.3.1-.5-.5-.8-.8-.5C4.5 9 3 12.5 3 15.5 3 20 5.5 23 12 23z"/>
@@ -610,79 +1032,52 @@
         <!-- ==================================================================== -->
         <div id="bentoContainer">
 
-            <!-- 1. Proyección -->
+            <!-- 1. Proyección + identidad -->
             <div id="bloqueProyeccion" class="bg-[#111827]/75 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-4 sm:p-5 shadow-2xl space-y-3.5 sm:space-y-4">
-                <!-- Fila 1: Identidad y Switch de Escala -->
-                <div class="flex items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
+                <div class="perfil-id-row flex items-center justify-between gap-2">
                     <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                        <!-- Avatar circular con reborde cian fino y SVG táctico -->
-                        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-slate-950 border border-cyan-400/50 p-0.5 flex items-center justify-center shadow-[0_0_12px_rgba(6,182,212,0.25)] shrink-0">
-                            <div class="w-full h-full rounded-full bg-gradient-to-tr from-cyan-950 to-slate-900 flex items-center justify-center">
-                                <svg class="w-4 h-4 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
-                                    <circle cx="12" cy="7" r="4"></circle>
-                                </svg>
-                            </div>
+                        <div class="perfil-avatar">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
                         </div>
                         <div class="min-w-0">
-                            <h2 class="text-sm font-mono font-black text-white tracking-wider uppercase leading-tight" id="ui-alias-box">DIAMONDS8212</h2>
+                            <h2 id="ui-alias-box">Estudiante</h2>
                             <span class="inline-block mt-1 text-[8.5px] font-mono px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-500/30 uppercase font-black tracking-wider">Saber 11°</span>
-                            <p class="text-[9.5px] sm:text-[10px] font-mono text-slate-400 flex items-center gap-1.5 mt-1" id="ui-institution-box">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>
-                                <span>La proyección sale de tus respuestas</span>
-                            </p>
+                            <p class="perfil-id-sub" id="ui-institution-box">Saber 11°</p>
                         </div>
                     </div>
-
-                    <!-- Switch compacto [ Saber 11° ] / [ UNAL ] -->
                     <div id="switchModoExamen" class="hidden flex rounded-xl bg-slate-950 p-1 border border-slate-800 font-mono text-[9.5px] sm:text-[10.5px] shrink-0" hidden>
-                        <button type="button" id="btnEscalaSaber" onclick="PerfilEstudiante.toggleEscalaPuntaje('saber')" class="px-2 sm:px-2.5 py-1 rounded-lg font-bold text-amber-300 bg-amber-500/20 border border-amber-500/40 transition">
-                            Saber 11°
-                        </button>
-                        <button type="button" id="btnEscalaUnal" onclick="PerfilEstudiante.toggleEscalaPuntaje('unal')" class="px-2 sm:px-2.5 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition">
-                            UNAL
-                        </button>
+                        <button type="button" id="btnEscalaSaber" onclick="PerfilEstudiante.toggleEscalaPuntaje('saber')" class="px-2 sm:px-2.5 py-1 rounded-lg font-bold text-amber-300 bg-amber-500/20 border border-amber-500/40 transition">Saber 11°</button>
+                        <button type="button" id="btnEscalaUnal" onclick="PerfilEstudiante.toggleEscalaPuntaje('unal')" class="px-2 sm:px-2.5 py-1 rounded-lg font-bold text-slate-400 hover:text-white transition">UNAL</button>
                     </div>
                 </div>
 
-                <!-- Fila 2: Grid Horizontal de 3 Columnas Blindado (Nunca se rompe en vertical) -->
-                <div class="grid grid-cols-3 gap-2 py-3 px-2 sm:px-3 rounded-xl bg-slate-950 border border-slate-800 font-mono text-center" id="panelBrechaBox">
-                    <div class="px-1.5 py-1 flex flex-col items-center justify-between min-w-0">
-                        <span class="text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-400 font-bold">Proyección</span>
-                        <div class="text-xl sm:text-3xl font-black text-[#7dd3fc] tracking-tight leading-none my-1">
-                            <span id="lblPuntajeGlobal500">—</span>
-                        </div>
-                        <span class="text-[11px] text-emerald-200/90 leading-tight">
-                            <span id="lblPerfilMargen"></span>
-                            <span id="lblEscalaUnidad" class="text-slate-400">/ 500</span>
+                <div id="panelBrechaBox" class="perfil-score-row">
+                    <div class="perfil-score-main">
+                        <span id="lblPuntajeGlobal500">—</span>
+                        <span class="perfil-score-unit">
+                            <span id="lblPerfilMargen"></span><span id="lblEscalaUnidad"> / 500 pts</span>
                         </span>
-                        <span class="text-[9px] text-slate-500 mt-0.5">de esta sesión</span>
                     </div>
-
-                    <div class="px-1.5 py-1 flex flex-col items-center justify-between min-w-0">
-                        <span class="text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-400 font-bold">Meta</span>
-                        <div class="text-xl sm:text-3xl font-black text-[#FBBF24] tracking-tight leading-none my-1">
-                            <span id="lblPuntajeMetaBento">380</span>
+                    <div class="perfil-score-side">
+                        <div class="meta-line">
+                            <span class="k">meta</span>
+                            <span><span id="lblPuntajeMetaBento">380</span> pts</span>
                         </div>
-                        <span class="text-[11px] text-slate-400 leading-tight">pts</span>
                         <button type="button" id="lblMetaCarreraBento" onclick="PerfilEstudiante.abrirMetaReal()">Elegir la meta</button>
-                    </div>
-
-                    <div class="px-1.5 py-1 flex flex-col items-center justify-between min-w-0">
-                        <span class="text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-400 font-bold">Brecha</span>
-                        <div class="text-xl sm:text-3xl font-black text-[#F87171] tracking-tight leading-none my-1" id="lblBrechaCalculadaBento">
-                            —
+                        <div class="faltan-line">
+                            <span class="k">FALTAN</span>
+                            <span id="lblBrechaCalculadaBento">—</span>
                         </div>
-                        <span class="text-[11px] text-slate-400 leading-tight">hacia la meta</span>
-                        <span class="text-[9px] text-rose-300/80 mt-0.5 truncate max-w-full" id="lblBrechaSubtextBento">Falta una sesión</span>
+                        <span id="lblBrechaSubtextBento">Falta una sesión</span>
                     </div>
                 </div>
 
-                <!-- Fila 3: Barra de Progreso Hacia la Meta Integrada -->
-                <div class="space-y-1.5 font-mono pt-0.5">
+                <div class="space-y-1.5 font-mono pt-0.5 perfil-scale-row">
                     <div class="escala-fila text-[10px] sm:text-[11px] text-slate-300">
                         <span class="flex items-center gap-1.5 min-w-0">
-                            <!-- SVG mira de precisión -->
                             <svg class="w-3 h-3 text-cyan-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="12" cy="12" r="9"></circle>
                                 <line x1="12" y1="3" x2="12" y2="7"></line>
@@ -702,146 +1097,111 @@
             </div>
 
             <div id="bloqueAreas" class="bg-slate-950/90 border border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xl space-y-4">
-                <div class="flex flex-wrap justify-between items-center border-b border-slate-800 pb-3 gap-2">
-                    <div class="flex items-center gap-2">
-                        <svg class="w-4 h-4 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-                            <polyline points="2 17 12 22 22 17"></polyline>
-                            <polyline points="2 12 12 17 22 12"></polyline>
-                        </svg>
-                        <h3 class="text-xs font-mono font-bold text-white uppercase tracking-wider">
-                            Tus cinco áreas
-                        </h3>
-                    </div>
-                    <button type="button" onclick="PerfilEstudiante.abrirRadiografiaError()" class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-cyan-950 to-slate-900 hover:from-cyan-900 hover:to-slate-800 border border-cyan-500/50 text-cyan-300 text-xs font-mono font-bold transition hover:scale-102 flex items-center gap-1.5 shadow-lg cursor-pointer">
-                        <svg class="w-3.5 h-3.5 text-cyan-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                        <span>Ver en qué fallaste</span>
-                    </button>
+                <div class="perfil-areas-head flex flex-wrap justify-between items-center border-b border-slate-800 pb-3 gap-2">
+                    <h3 class="text-xs font-mono font-bold text-white uppercase tracking-wider">Tus cinco áreas</h3>
                 </div>
 
-                <!-- Grid de 2 columnas: Radar IRT a la izquierda, Semáforo clínico a la derecha -->
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
-                    <!-- Polígono de Radar IRT 3PL -->
-                    <div id="cajaRadarAreas" class="lg:col-span-5 bg-slate-900/60 border border-slate-800/80 rounded-xl p-3 flex flex-col items-center justify-center relative min-h-[260px]">
-                        <div class="w-full flex justify-between items-center mb-1 px-1">
-                            <span class="text-[10px] font-mono text-cyan-400 font-bold uppercase tracking-wider">Cómo vas en cada área</span>
-                        </div>
+                <div class="perfil-domains-grid">
+                    <div id="cajaRadarAreas" class="flex flex-col items-center justify-center relative">
+                        <span class="perfil-domain-label">Áreas ICFES</span>
                         <div class="w-full h-[280px] relative flex items-center justify-center">
                             <canvas id="chartRadarGemelo" width="320" height="280" style="width: 100%; max-width: 320px; height: 280px; margin: 0 auto; display: block;" class="z-10 relative"></canvas>
                         </div>
                     </div>
-
-                    <!-- Lista de 5 áreas con precisión % real y semáforo clínico -->
-                    <div class="lg:col-span-7 space-y-2.5 font-mono text-xs" id="contenedorSemaforoCompetencias">
-                        <!-- Inyectado dinámicamente con porcentajes reales -->
+                    <div class="space-y-1 font-mono text-xs">
+                        <span class="perfil-domain-label">Fortaleza por área</span>
+                        <div id="contenedorSemaforoCompetencias"></div>
                     </div>
                 </div>
+
+                <button type="button" onclick="PerfilEstudiante.abrirRadiografiaError()" class="btn-fallaste">
+                    <span>Ver en qué fallaste</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
             </div>
 
             <div id="bloqueCasa" class="bg-slate-950/90 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-xl font-mono text-xs space-y-4">
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5 items-center">
-                    <!-- Racha de consistencia -->
-                    <div class="flex items-center gap-3 p-3 caja-plana">
-                        <div class="w-10 h-10 rounded-xl bg-orange-950/60 border border-orange-500/40 flex items-center justify-center shrink-0 text-orange-400">
-                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path>
-                            </svg>
+                <div class="perfil-duo-grid">
+                    <div class="perfil-duo-card caja-plana">
+                        <div class="perfil-duo-kicker">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 23c6.075 0 8-4.5 8-9.5 0-4.5-3-7.5-5-10.5-.3-.45-.9-.45-1.2 0-1.5 2.25-3.5 5.5-3.5 8 0 1.5.5 2.8 1.2 3.8-3.2-1.5-4.5-4.8-3.9-8.3.1-.5-.5-.8-.8-.5C4.5 9 3 12.5 3 15.5 3 20 5.5 23 12 23z"/></svg>
+                            <span>Racha actual</span>
                         </div>
-                        <div>
-                            <span class="text-[10px] text-slate-400 uppercase block font-bold">Racha Activa</span>
-                            <div class="flex items-center gap-1.5 text-sm font-black text-white mt-0.5">
-                                <span id="lblRachaDias" class="text-orange-400">1 Día</span>
-                                <span class="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-bold uppercase">Activo</span>
-                            </div>
-                        </div>
+                        <div class="perfil-duo-value" id="lblRachaDias">1 Día</div>
+                        <div class="perfil-duo-sub">¡Sigue así!</div>
+                        <div class="perfil-racha-track"><i id="barRachaFill" style="width: 14%"></i></div>
                     </div>
 
-                    <!-- Dosis diaria prescrita -->
-                    <div class="flex items-center gap-3 p-3 caja-plana">
+                    <div class="perfil-vidas-hidden flex items-center gap-3 p-3 caja-plana">
                         <div class="w-10 h-10 rounded-xl bg-cyan-950/60 border border-cyan-500/40 flex items-center justify-center shrink-0 text-cyan-400">
-                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <polyline points="12 6 12 12 16 14"></polyline>
-                            </svg>
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                         </div>
                         <div>
                             <span class="text-[10px] text-slate-400 uppercase block font-bold">Bloque del día</span>
-                            <div class="text-xs font-bold text-cyan-300 mt-0.5" id="uiPerfilVidasDisplay">
-                                10 preguntas
+                            <div class="text-xs font-bold text-cyan-300 mt-0.5" id="uiPerfilVidasDisplay">10 preguntas</div>
+                        </div>
+                    </div>
+
+                    <a href="/paywall.html" id="celdaPlanPerfil" class="perfil-duo-card">
+                        <div class="perfil-plan-row">
+                            <div>
+                                <div class="perfil-duo-kicker">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"></path><path d="M7 14l4-4 3 3 5-6"></path></svg>
+                                    <span>Tu plan actual</span>
+                                </div>
+                                <div class="perfil-duo-value" id="lblPerfilPlanNombre">Gratis</div>
+                                <div class="perfil-duo-sub">Plan Activo</div>
                             </div>
+                            <span class="chev" aria-hidden="true">›</span>
                         </div>
-                    </div>
-
-                    <!-- Estado del Plan con enlace secundario estilizado al Upgrade Pro -->
-                    <div id="celdaPlanPerfil" class="flex items-center justify-between gap-3 p-3">
-                        <div>
-                            <span class="text-[10px] text-amber-200/80 uppercase block font-bold">Plan</span>
-                            <span class="text-sm font-bold text-amber-100" id="lblPerfilPlanNombre">Gratis</span>
-                        </div>
-                        <a href="/paywall.html" class="shrink-0 px-3 py-1.5 rounded-full bg-amber-400 text-slate-950 text-[11px] font-bold">Ver planes</a>
-                    </div>
-                </div>
-
-                <!-- SUB-TARJETA FAMILIAR CON TRACKING REAL (ALIANZA PARENTAL & MOTOR DE CONVERSIÓN) -->
-                <div id="tarjetaPadresInforme" class="tarjeta-padres space-y-3.5">
-                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-emerald-500/20 pb-2.5">
-                        <div class="flex items-center gap-2.5">
-                            <!-- SVG alianza relacional / red de padres -->
-                            <div class="w-7 h-7 rounded-lg bg-emerald-950/80 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shrink-0">
-                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                    <circle cx="9" cy="7" r="4"></circle>
-                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                                </svg>
-                            </div>
-                            <h4 class="text-xs font-mono font-black text-emerald-300 uppercase tracking-wider">
-                                Para tus padres
-                            </h4>
-                        </div>
-                        <span class="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 font-bold">
-                            Para tus padres
-                        </span>
-                    </div>
-
-                    <p class="text-xs text-slate-300 font-sans leading-relaxed">
-                        El boletín lleva la proyección de esta medición y las áreas que ya tienen respuestas.
-                    </p>
-
-                    <!-- Acciones directas: WhatsApp y Copiar enlace -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
-                        <button type="button" id="btnCompartirWhatsApp" onclick="PerfilEstudiante.compartirBoletinWhatsApp()" class="w-full py-2.5 px-4 rounded-xl text-xs flex items-center justify-center gap-2 transition hover:scale-[1.01] cursor-pointer">
-                            <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.969.541 1.831.819 2.796.819 3.18 0 5.767-2.587 5.767-5.766.001-3.181-2.585-5.766-5.767-5.766zm6.634 5.766c-.001 3.659-2.977 6.635-6.635 6.635-1.127 0-2.226-.291-3.197-.842l-3.533.927.943-3.447c-.613-1.026-.948-2.208-.947-3.273.001-3.658 2.977-6.635 6.634-6.635 3.657 0 6.635 2.977 6.635 6.635zm-2.73 1.897c-.151-.076-.893-.441-1.032-.491-.138-.05-.239-.075-.339.076-.1.151-.389.491-.477.592-.088.101-.176.113-.327.038-.151-.076-.639-.235-1.217-.751-.45-.401-.754-.897-.842-1.048-.088-.151-.009-.233.067-.308.068-.068.151-.176.226-.264.076-.088.101-.151.151-.252.05-.101.025-.189-.013-.264-.038-.076-.339-.817-.465-1.12-.123-.294-.248-.254-.339-.258-.088-.004-.189-.005-.289-.005-.101 0-.264.038-.402.189-.138.151-.528.516-.528 1.258 0 .742.541 1.458.616 1.559.076.101 1.065 1.625 2.58 2.278.36.155.641.248.86.318.362.115.691.099.951.06.29-.044.893-.365 1.019-.717.126-.352.126-.654.088-.717-.038-.063-.138-.101-.289-.176z"/></svg>
-                            <span>Compartir por WhatsApp</span>
-                        </button>
-
-                        <button type="button" onclick="PerfilEstudiante.copiarEnlaceBoletin()" class="w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 font-mono font-bold text-xs flex items-center justify-center gap-2 transition hover:scale-[1.01] cursor-pointer">
-                            <svg class="w-4 h-4 text-cyan-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>
-                            <span id="lblBtnCopiarBoletin">Copiar el enlace</span>
-                        </button>
-                    </div>
-
-                    <!-- Mini-tarjeta visual informativa y Botón Comercial Familiar -->
-                    <p class="text-[11px] text-slate-400 font-sans leading-snug">
-                        El boletín no incluye un puntaje inventado. Si un área no tiene respuestas, dice «Sin evidencia».
-                    </p>
+                        <span class="perfil-plan-upgrade">Ver planes</span>
+                    </a>
                 </div>
             </div>
 
-            <div id="bloquePruebas" class="bg-slate-950/90 border border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xl space-y-3 font-mono text-xs">
-                <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-                    <div class="flex items-center gap-2">
-                        <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
-                        </svg>
-                        <h3 class="text-xs font-bold text-amber-300 uppercase tracking-wider">
-                            Pruebas que has hecho
-                        </h3>
-                    </div>
-                    <span class="text-[10px] text-slate-400">Cada sesión terminada</span>
-                </div>
+            <div id="bloqueModulos">
+                <a id="btnSimulacroPerfil" class="puerta-informe" href="index.html?sala=1">
+                    <span class="puerta-marca" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"></rect><path d="M8 8h8M8 12h8M8 16h5"></path></svg>
+                    </span>
+                    <span>
+                        <strong>Simulacro</strong>
+                        <span id="txtSimulacroPerfil">Practicar como el examen real</span>
+                    </span>
+                </a>
+                <button type="button" id="btnRutaInforme" class="puerta-informe" onclick="PerfilEstudiante.toggleModuloExtra('vocacional')">
+                    <span class="puerta-marca" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+                    </span>
+                    <span>
+                        <strong>Ruta Vocacional</strong>
+                        <span>Explora opciones y fortalezas</span>
+                    </span>
+                </button>
+                <button type="button" id="btnComoRespondes" class="puerta-informe" onclick="PerfilEstudiante.toggleModuloExtra('gemelo')">
+                    <span class="puerta-marca" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"></path><circle cx="9" cy="11" r="0.8" fill="currentColor"></circle><circle cx="12" cy="11" r="0.8" fill="currentColor"></circle><circle cx="15" cy="11" r="0.8" fill="currentColor"></circle></svg>
+                    </span>
+                    <span>
+                        <strong>Cómo respondes</strong>
+                        <span>Estrategias y tips por pregunta</span>
+                    </span>
+                </button>
+            </div>
 
+            <div id="panelRutaEnPalabras" class="hidden bg-slate-950/90 border border-indigo-500/40 rounded-2xl p-5 space-y-3">
+                <h3 class="text-sm font-mono font-black text-indigo-300">Tu ruta vocacional</h3>
+                <p id="txtRutaPerfil" class="text-sm text-slate-100 font-sans leading-relaxed">Seis días. Un dilema por día. Al sexto se entrega el informe.</p>
+                <p id="txtRutaCarrera" class="text-xs text-slate-400 font-sans leading-relaxed"></p>
+                <p id="txtRutaInforme" class="text-sm text-slate-200 font-sans leading-relaxed"></p>
+                <a href="/index.html?ruta=1" class="inline-flex text-xs font-mono text-indigo-300 underline">Abrir la ruta en la sala</a>
+            </div>
+
+            <div id="bloquePruebas" class="bg-slate-950/90 border border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xl space-y-3 font-mono text-xs">
+                <div class="perfil-pruebas-head">
+                    <h3>Pruebas que has hecho</h3>
+                    <button type="button" id="btnVerTodasPruebas" onclick="PerfilEstudiante._verTodasLasPruebas = !PerfilEstudiante._verTodasLasPruebas; PerfilEstudiante.renderTabla();">Ver todas ›</button>
+                </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
@@ -853,49 +1213,41 @@
                                 <th class="p-2.5">Acción</th>
                             </tr>
                         </thead>
-                        <tbody id="tblExamenesBody" class="divide-y divide-slate-800/60 text-slate-200">
-                        </tbody>
+                        <tbody id="tblExamenesBody" class="divide-y divide-slate-800/60 text-slate-200"></tbody>
                     </table>
                 </div>
                 <div id="piePruebas"></div>
             </div>
 
-            <div id="panelRutaEnPalabras" class="hidden bg-slate-950/90 border border-indigo-500/40 rounded-2xl p-5 space-y-3">
-                <h3 class="text-sm font-mono font-black text-indigo-300">Tu ruta vocacional</h3>
-                <p id="txtRutaPerfil" class="text-sm text-slate-100 font-sans leading-relaxed">Seis días. Un dilema por día. Al sexto se entrega el informe.</p>
-                <p id="txtRutaCarrera" class="text-xs text-slate-400 font-sans leading-relaxed"></p>
-                <p id="txtRutaInforme" class="text-sm text-slate-200 font-sans leading-relaxed"></p>
-                <a href="/index.html?ruta=1" class="inline-flex text-xs font-mono text-indigo-300 underline">Abrir la ruta en la sala</a>
-            </div>
-
-            <div id="bloqueModulos">
-                <a id="btnSimulacroPerfil" class="puerta-informe" href="index.html?sala=1">
-                    <span class="puerta-marca" aria-hidden="true">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"></rect><path d="M8 8h8M8 12h8M8 16h5"></path></svg>
-                    </span>
-                    <span>
-                        <strong>Simulacro</strong>
-                        <span id="txtSimulacroPerfil">Todavía no lo empiezas.</span>
-                    </span>
-                </a>
-                <button type="button" id="btnRutaInforme" class="puerta-informe" onclick="PerfilEstudiante.toggleModuloExtra('vocacional')">
-                    <span class="puerta-marca" aria-hidden="true">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-                    </span>
-                    <span>
-                        <strong>Ruta vocacional</strong>
-                        <span>Seis días, un dilema por día. Al sexto se entrega el informe.</span>
-                    </span>
-                </button>
-                <button type="button" id="btnComoRespondes" class="puerta-informe" onclick="PerfilEstudiante.toggleModuloExtra('gemelo')">
-                    <span class="puerta-marca" aria-hidden="true">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
-                    </span>
-                    <span>
-                        <strong>Cómo respondes</strong>
-                        <span>El ritmo y la certeza de las preguntas que ya hiciste.</span>
-                    </span>
-                </button>
+            <div id="tarjetaPadresInforme" class="tarjeta-padres space-y-3.5">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-emerald-500/20 pb-2.5">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-7 h-7 rounded-lg bg-emerald-950/80 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shrink-0">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                            </svg>
+                        </div>
+                        <h4>Boletín para padres</h4>
+                    </div>
+                    <span class="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 font-bold">Para tus padres</span>
+                </div>
+                <p class="text-xs text-slate-300 font-sans leading-relaxed">
+                    El boletín lleva la proyección de esta medición y las áreas que ya tienen respuestas.
+                </p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                    <button type="button" id="btnCompartirWhatsApp" onclick="PerfilEstudiante.compartirBoletinWhatsApp()" class="w-full py-2.5 px-4 rounded-xl text-xs flex items-center justify-center gap-2 transition hover:scale-[1.01] cursor-pointer">
+                        <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.969.541 1.831.819 2.796.819 3.18 0 5.767-2.587 5.767-5.766.001-3.181-2.585-5.766-5.767-5.766zm6.634 5.766c-.001 3.659-2.977 6.635-6.635 6.635-1.127 0-2.226-.291-3.197-.842l-3.533.927.943-3.447c-.613-1.026-.948-2.208-.947-3.273.001-3.658 2.977-6.635 6.634-6.635 3.657 0 6.635 2.977 6.635 6.635zm-2.73 1.897c-.151-.076-.893-.441-1.032-.491-.138-.05-.239-.075-.339.076-.1.151-.389.491-.477.592-.088.101-.176.113-.327.038-.151-.076-.639-.235-1.217-.751-.45-.401-.754-.897-.842-1.048-.088-.151-.009-.233.067-.308.068-.068.151-.176.226-.264.076-.088.101-.151.151-.252.05-.101.025-.189-.013-.264-.038-.076-.339-.817-.465-1.12-.123-.294-.248-.254-.339-.258-.088-.004-.189-.005-.289-.005-.101 0-.264.038-.402.189-.138.151-.528.516-.528 1.258 0 .742.541 1.458.616 1.559.076.101 1.065 1.625 2.58 2.278.36.155.641.248.86.318.362.115.691.099.951.06.29-.044.893-.365 1.019-.717.126-.352.126-.654.088-.717-.038-.063-.138-.101-.289-.176z"/></svg>
+                        <span>Compartir por WhatsApp</span>
+                    </button>
+                    <button type="button" onclick="PerfilEstudiante.copiarEnlaceBoletin()" class="w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 font-mono font-bold text-xs flex items-center justify-center gap-2 transition hover:scale-[1.01] cursor-pointer">
+                        <svg class="w-4 h-4 text-cyan-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>
+                        <span id="lblBtnCopiarBoletin">Copiar el enlace</span>
+                    </button>
+                </div>
+                <p class="text-[11px] text-slate-400 font-sans leading-snug">
+                    El boletín no incluye un puntaje inventado. Si un área no tiene respuestas, dice «Sin evidencia».
+                </p>
             </div>
 
         </div>
@@ -1675,18 +2027,19 @@
         </div>
     </div>
 
-    <!-- DOCK FLOTANTE INFERIOR HOMOLOGADO -->
+    <!-- DOCK: Sala · Progreso · Hackea -->
     <nav class="bottom-nav" id="bottomNav">
-        <a href="/index.html?sala=1" class="nav-item" style="text-decoration: none;">
-            <div class="icon-circle"><i class="fas fa-layer-group text-[var(--primary)] text-sm"></i></div>
-            <span class="nav-text" style="color: var(--primary)">SALA / HOY</span>
+        <a href="/index.html?sala=1" class="nav-item" title="Sala">
+            <div class="icon-circle"><i class="fas fa-users text-sm"></i></div>
+            <span class="nav-text">Sala</span>
         </a>
-        <div id="dante-anchor" onclick="iniciarEntrenamientoHoy()" title="Iniciar Dosis Diaria">
-            <i class="fas fa-brain text-amber-400"></i>
-        </div>
-        <a href="/perfil.html" class="nav-item" style="text-decoration: none;">
-            <div class="icon-circle" style="border-color: rgba(212,175,55,0.3)"><i class="fas fa-user-astronaut text-[var(--gold)] text-sm"></i></div>
-            <span class="nav-text" style="color: var(--gold)">EXPEDIENTE</span>
+        <a href="/perfil.html" id="dante-anchor" class="nav-item is-progreso-active" title="Progreso">
+            <div class="icon-circle"><i class="fas fa-chart-bar text-sm"></i></div>
+            <span class="nav-text">Progreso</span>
+        </a>
+        <a href="/index.html?hackea=1" class="nav-item" title="Hackea">
+            <div class="icon-circle"><i class="fas fa-brain text-sm"></i></div>
+            <span class="nav-text">Hackea</span>
         </a>
     </nav>
     <script>
@@ -2344,7 +2697,23 @@
 
             static async initProfile() {
                 const elAlias = document.getElementById('ui-alias-box');
-                if (elAlias) elAlias.innerText = STUDENT_ID.toUpperCase();
+                const idTxt = String(STUDENT_ID || '');
+                const nombreReal = ['dante_nombre', 'dante_student_name', 'dante_user_name']
+                    .map((clave) => (localStorage.getItem(clave) || '').replace(/\s+/g, ' ').trim())
+                    .find((texto) => texto && texto.toLowerCase() !== idTxt.toLowerCase() && !/^\d+$/.test(texto) && !texto.includes('@'));
+                if (elAlias) elAlias.innerText = nombreReal || idTxt.toUpperCase() || 'Estudiante';
+
+                const instBox = document.getElementById('ui-institution-box');
+                if (instBox) {
+                    let colegio = '';
+                    try {
+                        const userObj = JSON.parse(localStorage.getItem('dante_user') || '{}') || {};
+                        colegio = (userObj.institution_name || userObj.colegio || userObj.nombre_colegio || '').trim();
+                        const iid = String(userObj.institution_id || '');
+                        if (!colegio && iid && iid !== 'colegio_sandbox_default') colegio = iid.replace(/_/g, ' ');
+                    } catch (e) {}
+                    instBox.textContent = colegio ? ('Saber 11° · ' + colegio) : 'Saber 11°';
+                }
 
                 const secMenuB2B = document.getElementById('seccionMenuB2BInstitucional');
                 if (secMenuB2B) secMenuB2B.classList.add('hidden');
@@ -2357,6 +2726,13 @@
                 SelloMetasService.init();
                 this.renderizarEstadoComercial();
                 this.iniciarCountdownMidnight();
+                try {
+                    const rachaCount = (window.StreakManager && StreakManager.getStreakData)
+                        ? (StreakManager.getStreakData().count || 1)
+                        : 1;
+                    const barRacha = document.getElementById('barRachaFill');
+                    if (barRacha) barRacha.style.width = Math.min(100, Math.round((rachaCount / 7) * 100)) + '%';
+                } catch (e) {}
 
                 // Auto-detectar pestaña inicial activa
                 let initialTab = 'icfes';
@@ -3494,6 +3870,15 @@
                             : `<button type="button" class="text-[12px] text-amber-200 underline bg-transparent border-0 cursor-pointer py-2" onclick="PerfilEstudiante._verTodasLasPruebas=true; PerfilEstudiante.renderTabla();">Ver las otras ${resto}</button>`;
                     } else {
                         pie.innerHTML = '';
+                    }
+                }
+                const btnTodas = document.getElementById('btnVerTodasPruebas');
+                if (btnTodas) {
+                    if (items.length <= 3) {
+                        btnTodas.style.visibility = 'hidden';
+                    } else {
+                        btnTodas.style.visibility = 'visible';
+                        btnTodas.textContent = mostrarTodas ? 'Ver menos ›' : 'Ver todas ›';
                     }
                 }
             }
