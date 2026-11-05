@@ -4427,35 +4427,37 @@
 
           let areaRowsHtml = '';
           const areaKeys = Object.keys(areaBreakdown);
+          const colorBarraArea = (key) => {
+            const k = String(key || '').toLowerCase();
+            if (k.includes('lect')) return '#7c3aed';
+            if (k.includes('mate') || k.includes('razon')) return '#2563eb';
+            if (k.includes('cien') || k.includes('natur')) return '#16a34a';
+            if (k.includes('social')) return '#ea580c';
+            if (k.includes('ingl')) return '#64748b';
+            return '#334155';
+          };
           if (areaKeys.length > 0) {
             areaKeys.forEach(aKey => {
               const pct = Number(areaBreakdown[aKey]) || 0;
               const nombreDisplay = NOMBRES_AREAS[aKey] || aKey.replace(/_/g, ' ').toUpperCase();
-              let badgeText = '<span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1"></span>Fortaleza';
-              let badgeClass = 'text-emerald-300 bg-emerald-950/40 border-emerald-500/40';
-              let barColor = 'bg-emerald-400';
+              let badgeText = 'Fortaleza';
+              let badgeClass = 'ok';
               if (pct < 40) {
-                badgeText = '<span class="inline-block w-1.5 h-1.5 rounded-full bg-rose-400 mr-1"></span>Refuerzo Táctico';
-                badgeClass = 'text-rose-300 bg-rose-950/40 border-rose-500/40';
-                barColor = 'bg-rose-400';
+                badgeText = 'Refuerzo Táctico';
+                badgeClass = 'low';
               } else if (pct < 70) {
-                badgeText = '<span class="inline-block w-1.5 h-1.5 rounded-full bg-amber-400 mr-1"></span>En Calibración';
-                badgeClass = 'text-amber-300 bg-amber-950/40 border-amber-500/40';
-                barColor = 'bg-amber-400';
+                badgeText = 'En Calibración';
+                badgeClass = 'mid';
               }
-
+              const barColor = colorBarraArea(aKey);
               areaRowsHtml += `
-                <div class="py-2 flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 first:pt-0 last:pb-0">
-                  <div class="flex items-center justify-between sm:justify-start gap-2 min-w-0 sm:w-2/5">
-                    <span class="text-xs font-semibold text-slate-200 font-mono tracking-tight truncate">${nombreDisplay}</span>
-                    <span class="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded border ${badgeClass} shrink-0 flex items-center">${badgeText}</span>
+                <div class="rp-area-row">
+                  <div class="rp-area-top">
+                    <span class="rp-area-name">${nombreDisplay}</span>
+                    <span class="rp-badge ${badgeClass}">${badgeText}</span>
                   </div>
-                  <div class="flex items-center gap-3 sm:w-3/5">
-                    <div class="flex-1 bg-slate-900 h-2 rounded-full overflow-hidden border border-white/5">
-                      <div class="h-full ${barColor} rounded-full transition-all duration-500" style="width: ${Math.max(5, pct)}%"></div>
-                    </div>
-                    <span class="text-xs font-mono font-bold text-white shrink-0 w-11 text-right">${pct}%</span>
-                  </div>
+                  <div class="rp-bar"><span style="width:${Math.max(4, Math.min(100, pct))}%;background:${barColor};"></span></div>
+                  <div class="rp-area-meta">${pct}%</div>
                 </div>
               `;
             });
@@ -4486,13 +4488,13 @@
 
           const cortePreu = localStorage.getItem('dante_preu_corte') || '';
           const escalaCorte = localStorage.getItem('dante_preu_escala') || '';
-          const tituloPuntaje = esMisionPreun ? 'Habilidad Pre-U' : 'Puntaje Proyectado';
+          const tituloPuntaje = esMisionPreun ? 'Habilidad Pre-U' : 'Puntaje proyectado';
           const numeroPuntaje = esMisionPreun ? (ptsPreuSala > 0 ? ptsPreuSala : '—') : scoreProyectado;
-          const tituloMeta = esMisionPreun ? 'Corte de la carrera' : 'Meta Requerida';
+          const tituloMeta = esMisionPreun ? 'Corte de la carrera' : 'Meta requerida';
           const numeroMeta = esMisionPreun ? (cortePreu || '—') : (hayMeta ? metaPuntaje : '—');
-          const sufijoMeta = esMisionPreun ? (escalaCorte ? '/ ' + escalaCorte : '') : (hayMeta ? '/ 500' : '');
-          const tituloBrecha = esMisionPreun ? 'Escalas' : 'Brecha Táctica';
-          const numeroBrecha = esMisionPreun ? 'aparte' : (brechaPuntos == null ? '—' : '-' + brechaPuntos + ' Pts');
+          const sufijoMeta = esMisionPreun ? (escalaCorte ? '/ ' + escalaCorte : '') : (hayMeta ? 'sobre 500' : 'sobre 500');
+          const tituloBrecha = esMisionPreun ? 'Escalas' : 'Brecha';
+          const numeroBrecha = esMisionPreun ? 'aparte' : (brechaPuntos == null ? '—' : '-' + brechaPuntos + ' pts');
           const tituloCercania = esMisionPreun ? 'Dos mediciones distintas' : ('Proximidad al Estándar de Corte (' + proximidadPct + '%)');
           const textoCercania = esMisionPreun
             ? 'Esta habilidad va de 0 a 500. El corte se lee en la escala de la convocatoria.'
@@ -4505,139 +4507,117 @@
             ? 'Profesor Dante dejó tu habilidad Pre-U con las preguntas de admisión.'
             : ('Profesor Dante dejó tu proyección en <strong class="text-slate-100 font-semibold">' + nombreExamen + '</strong>' + (carreraClean ? ' frente a <strong class="text-cyan-300 font-bold">' + carreraClean + '</strong>' : '') + '.');
 
+          const tituloProyeccion = carreraClean
+            ? ('Proyección para ' + carreraClean)
+            : ('Proyección · ' + nombreExamen);
+          const textoBrechaCap = (brechaPuntos == null)
+            ? (esMisionPreun ? 'Escalas distintas' : 'Elige carrera para ver la brecha')
+            : ('Te faltan ' + brechaPuntos + ' puntos para alcanzar la meta');
+          const textoCorte = esMisionPreun
+            ? textoCercania
+            : (hayMeta
+              ? ('Cercanía al corte: A ' + brechaPuntos + ' puntos del puntaje mínimo estimado.')
+              : textoCercania);
+          const pctFirmezaAnillo = firmezaScore == null ? 0 : firmezaScore;
+          const textoFirmezaPct = firmezaScore == null ? '—' : (firmezaScore + '%');
+
+          document.body.classList.add('reporte-final-activo');
+
           containerResumen.innerHTML = `
-            <div class="p-4 sm:p-5 pt-5 sm:pt-6 pb-5 sm:pb-6 rounded-2xl bg-slate-900/95 border border-cyan-500/40 text-center font-mono space-y-3 sm:space-y-3.5 shadow-[0_20px_50px_-15px_rgba(6,182,212,0.25)] max-w-2xl mx-auto my-2 animate-fade-in backdrop-blur-xl">
-              <!-- CABECERA COMPACTA SIN ESPACIO MUERTO -->
-              <div class="space-y-1">
-                <span class="inline-flex items-center gap-1.5 text-[9.5px] font-bold px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 uppercase tracking-widest">
-                  <i class="fa-solid fa-chart-line text-cyan-400"></i> CALIBRACIÓN DIAGNÓSTICA CONCLUIDA
-                </span>
-                <h3 class="text-lg sm:text-xl font-black text-white uppercase tracking-wider">
-                  TU DIAGNÓSTICO EN FRÍO: 10 REACTIVOS
-                </h3>
-                <p class="text-xs text-slate-300 font-sans leading-snug max-w-xl mx-auto">
-                  ${fraseProyeccion}
-                </p>
+            <article class="reporte-papel" id="reporteFinalPapel">
+              <div class="rp-brand">
+                <span class="rp-brand-mark">ICFES</span>
+                <span class="rp-brand-sep" aria-hidden="true"></span>
+                <span class="rp-brand-sub">Reporte personalizado</span>
               </div>
+              <h2 class="rp-title">Diagnóstico inicial terminado</h2>
+              <p class="rp-lead">Gracias por completar tu diagnóstico. Aquí está tu análisis inicial.</p>
 
-              <!-- PANEL SUPERIOR UNIFICADO: PUNTAJE, META Y BRECHA CON BARRA VISUAL DE PROXIMIDAD -->
-              <div class="p-3.5 sm:p-4 rounded-xl bg-slate-950/80 border border-slate-800 text-left space-y-2.5">
-                <div class="grid grid-cols-3 gap-2 text-center sm:text-left">
-                  <div>
-                    <span class="text-[9.5px] sm:text-[10px] text-slate-400 uppercase font-bold block">${tituloPuntaje}</span>
-                    <span class="text-base sm:text-lg font-black text-cyan-300 font-mono">${numeroPuntaje} <span class="text-[10px] font-normal text-slate-400">/ ${escalaTotal}</span></span>
+              <section class="rp-sec">
+                <h3 class="rp-sec-h"><i class="fa-regular fa-snowflake" aria-hidden="true"></i> Tu resultado en frío: ${total} preguntas</h3>
+                <div class="rp-card rp-frio">
+                  <span class="rp-frio-ico" aria-hidden="true"><i class="fa-solid fa-brain"></i></span>
+                  <p>Este es tu punto de partida. <strong>Respuestas correctas: ${aciertos}/${total}</strong>. ${fraseProyeccion}</p>
+                </div>
+              </section>
+
+              <section class="rp-sec">
+                <h3 class="rp-sec-h"><i class="fa-solid fa-graduation-cap" aria-hidden="true"></i> ${tituloProyeccion}</h3>
+                <div class="rp-card">
+                  <div class="rp-metrics">
+                    <div>
+                      <span class="rp-metric-lbl">${tituloPuntaje}</span>
+                      <span class="rp-metric-val ok">${numeroPuntaje}</span>
+                      <span class="rp-metric-sub">sobre ${escalaTotal}</span>
+                    </div>
+                    <div>
+                      <span class="rp-metric-lbl">${tituloMeta}</span>
+                      <span class="rp-metric-val">${numeroMeta}</span>
+                      <span class="rp-metric-sub">${sufijoMeta || ('sobre ' + escalaTotal)}</span>
+                    </div>
+                    <div>
+                      <span class="rp-metric-lbl">${tituloBrecha}</span>
+                      <span class="rp-metric-val gap">${numeroBrecha}</span>
+                      <span class="rp-metric-sub">${textoBrechaCap}</span>
+                    </div>
                   </div>
-                  <div>
-                    <span class="text-[9.5px] sm:text-[10px] text-slate-400 uppercase font-bold block">${tituloMeta}</span>
-                    <span class="text-base sm:text-lg font-black text-amber-300 font-mono">${numeroMeta} <span class="text-[10px] font-normal text-slate-400">${sufijoMeta}</span></span>
-                  </div>
-                  <div class="text-right sm:text-left">
-                    <span class="text-[9.5px] sm:text-[10px] text-rose-300 uppercase font-bold block">${tituloBrecha}</span>
-                    <span class="text-base sm:text-lg font-black text-rose-400 font-mono">${numeroBrecha}</span>
+                  <div class="rp-corte" role="status">
+                    <i class="fa-solid fa-bullseye" aria-hidden="true"></i>
+                    <span>${textoCorte}</span>
                   </div>
                 </div>
+              </section>
 
-                <!-- BARRA VISUAL DE PROXIMIDAD A LA META -->
-                <div>
-                  <div class="flex items-center justify-between text-[10px] font-mono text-slate-400 mb-1">
-                    <span>${tituloCercania}</span>
-                    <span class="text-cyan-400 font-semibold">${textoCercania}</span>
-                  </div>
-                  <div class="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden border border-white/5">
-                    <div class="h-full bg-gradient-to-r from-cyan-500 via-sky-400 to-amber-400 rounded-full transition-all duration-700" style="width: ${anchoBarra}%"></div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- PANEL CONSOLIDADO DE COMPETENCIAS (UN SOLO CONTENEDOR CON DIVISORES SUTILES) -->
               ${areaRowsHtml ? `
-                <div class="p-3.5 sm:p-4 rounded-xl bg-slate-950/80 border border-slate-800 text-left space-y-2">
-                  <div class="flex items-center justify-between text-xs font-mono font-bold text-slate-300 uppercase tracking-wider pb-1.5 border-b border-slate-800/80">
-                    <span class="flex items-center gap-1.5 text-cyan-300">
-                      <i class="fa-solid fa-shapes"></i> Desglose de Competencias (10 Reactivos)
-                    </span>
-                    <span class="text-[10px] text-slate-400 font-normal">Semáforo de Rendimiento</span>
-                  </div>
-                  <div class="divide-y divide-slate-800/60">
-                    ${areaRowsHtml}
-                  </div>
-                </div>
+              <section class="rp-sec">
+                <h3 class="rp-sec-h"><i class="fa-solid fa-chart-simple" aria-hidden="true"></i> Resultados por área</h3>
+                <div class="rp-card rp-area">${areaRowsHtml}</div>
+              </section>
               ` : ''}
 
-              <!-- 🎯 RADIOGRAFÍA DEL ERROR: PATRÓN COGNITIVO DETECTADO (ACOMPAÑAMIENTO PEDAGÓGICO) -->
-              <div class="p-3.5 sm:p-4 rounded-xl bg-gradient-to-br from-rose-950/30 via-slate-950 to-slate-900 border border-rose-500/40 text-left font-sans space-y-2 shadow-[0_0_20px_rgba(244,63,94,0.15)]">
-                <div class="flex items-center justify-between gap-2 flex-wrap">
-                  <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-bullseye text-rose-400 text-sm"></i>
-                    <h4 class="text-xs font-mono font-bold text-rose-300 uppercase tracking-wider">
-                      RADIOGRAFÍA DEL ERROR: ${radiografiaData.materiaVulnerable}
-                    </h4>
-                  </div>
-                  <span class="text-[9px] font-mono font-bold px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 uppercase">
-                    Patrón Cognitivo Detectado
-                  </span>
+              <section class="rp-sec">
+                <h3 class="rp-sec-h"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> Dónde fallaste</h3>
+                <div class="rp-fallo">
+                  <strong>${radiografiaData.materiaVulnerable || 'Área a reforzar'}:</strong>
+                  ${radiografiaData.patronDetectado || ''}
                 </div>
-                <p class="text-xs text-slate-200 leading-relaxed font-sans">
-                  Detectamos que en <strong class="text-amber-300 font-semibold">${radiografiaData.materiaVulnerable}</strong> caíste en <span class="text-rose-200 font-medium">${radiografiaData.patronDetectado}</span>.
-                </p>
-                <div class="p-2.5 rounded-lg bg-slate-900/90 border border-cyan-500/30 flex items-start gap-2.5">
-                  <i class="fa-solid fa-graduation-cap text-cyan-400 text-xs mt-0.5 shrink-0"></i>
-                  <p class="text-[11px] text-cyan-200 font-sans leading-snug">
-                    ${radiografiaData.prescripcion}
-                  </p>
-                </div>
-              </div>
+              </section>
 
-              <!-- INDICADOR DE FIRMEZA METACOGNITIVA (IRD COMPACTO) -->
-              <div class="p-3 rounded-xl border ${firmezaColor} text-left font-sans flex items-center gap-3 bg-slate-950/40">
-                <div class="w-8 h-8 rounded-lg bg-slate-950/80 border border-white/10 flex items-center justify-center shrink-0 text-sm">
-                  <i class="${firmezaIcon}"></i>
-                </div>
-                <div class="flex-1 min-w-0">
-                  <div class="flex items-center justify-between gap-1 flex-wrap">
-                    <span class="text-xs font-mono font-black uppercase tracking-wider text-white">
-                      ${firmezaScore == null ? 'Sin medición' : firmezaScore + '%'} Firmeza Metacognitiva
-                    </span>
-                    <span class="text-[9.5px] font-mono font-bold px-2 py-0.5 rounded border ${firmezaColor}">
-                      ${firmezaBadge}
-                    </span>
+              <section class="rp-sec">
+                <h3 class="rp-sec-h"><i class="fa-solid fa-sun" aria-hidden="true"></i> Mañana empezamos por</h3>
+                <div class="rp-card rp-manana">
+                  <p class="rp-manana-txt">${radiografiaData.prescripcion}</p>
+                  <div class="rp-anillo" style="--pct:${pctFirmezaAnillo};" title="${firmezaBadge}">
+                    <div>
+                      <strong>${textoFirmezaPct}</strong>
+                      <small>Confianza en tus respuestas</small>
+                    </div>
                   </div>
-                  <p class="text-[11px] text-slate-300 mt-0.5 leading-tight">
-                    ${firmezaDesc}
-                  </p>
                 </div>
-              </div>
+                <p class="rp-metric-sub" style="margin-top:0.45rem;">${firmezaDesc}</p>
+              </section>
 
-              <!-- COMPARATIVA COMERCIAL COMPACTA Y JERARQUIZADA (PLAN ÉLITE PRO RECOMENDADO) -->
-              <div class="p-3.5 sm:p-4 rounded-xl bg-slate-950/80 border border-slate-800 text-left font-sans space-y-2.5">
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-bolt text-amber-400 text-xs"></i>
-                    <h4 class="text-xs font-mono font-bold text-slate-200 uppercase tracking-wider">
-                      ${tituloPlan}
-                    </h4>
-                  </div>
-                  <span class="text-[10px] font-mono text-slate-400 hidden sm:inline">Meta: ${carreraClean}</span>
+              <section class="rp-sec">
+                <h3 class="rp-sec-h"><i class="fa-solid fa-list-check" aria-hidden="true"></i> Qué hacer ahora</h3>
+                <div class="rp-card rp-tareas">
+                  <p class="rp-metric-sub" style="margin-bottom:0.35rem;">${tituloPlan}${carreraClean ? ' · ' + carreraClean : ''}</p>
+                  <div id="danteTareaEstudioDiag"></div>
                 </div>
-                
-                <div id="danteTareaEstudioDiag" class="text-xs"></div>
-              </div>
+              </section>
 
-              <!-- Tras diagnóstico: primero Hackea tu mente (espiral) -->
-              <div class="space-y-1.5 pt-1">
-                <button type="button" onclick="DanteExamWorkspace.irAHackeaObligatorio()" class="w-full py-3.5 px-4 rounded-xl bg-[#e7d7c3] text-[#1c1917] font-mono font-black text-xs uppercase tracking-wider active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-2 shadow-[0_0_24px_rgba(231,215,195,0.35)]">
-                  <span>Continuar · Hackea tu mente</span>
+              <div class="rp-actions">
+                <button type="button" class="rp-btn-primary" onclick="DanteExamWorkspace.irAlPerfil()">
+                  Ver expediente completo <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
                 </button>
-                <p class="text-[11px] text-stone-400 font-sans leading-snug px-1">
-                  En la sala: <strong class="text-stone-200">presiona la espiral y mantén</strong> unos segundos. Ahí aprendes el método Hackea.
-                </p>
-                <button type="button" onclick="DanteExamWorkspace.irAlPerfil()" class="w-full py-2.5 px-3 text-center text-[11px] font-mono font-semibold text-slate-400 hover:text-cyan-300 rounded-lg cursor-pointer bg-transparent border border-slate-700/50 transition-all">
-                  Ver expediente después
+                <button type="button" class="rp-btn-secondary" onclick="DanteExamWorkspace.regresarAlHub()">
+                  Ir a la sala <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
                 </button>
               </div>
-            </div>
+            </article>
           `;
           if (window.DantePlanSala) DantePlanSala.pintarTarea(containerResumen, this.respuestasSesionActiva);
+          const tituloSaber = document.getElementById('uiTituloSaberPapel');
+          if (tituloSaber) tituloSaber.style.display = 'none';
           return;
         }
 
@@ -4679,43 +4659,229 @@
           this._publicarEnNube('MISION_DIARIA');
         }
 
+        const esRefuerzoFin = Boolean(this.misionData && (this.misionData.esRefuerzo || this.misionData.repasoArea));
+        const esSimFin = Boolean(this.misionData && this.misionData.esSimulacro);
+        let tituloBloque = 'Entrenamiento terminado';
+        let leadBloque = 'Gracias por completar tu bloque. Aquí está tu análisis de la sesión.';
+        if (esRefuerzoFin) {
+          tituloBloque = 'Refuerzo terminado';
+          leadBloque = 'Completaste el refuerzo. Estos son los datos de la sesión.';
+        } else if (esSimFin) {
+          tituloBloque = 'Simulacro terminado';
+          leadBloque = 'Completaste el simulacro. Estos son los datos medidos.';
+        } else if (esMisionPreun) {
+          tituloBloque = 'Bloque Pre-U terminado';
+          leadBloque = 'Quedó registrada la habilidad de esta sesión Pre-U.';
+        }
+
+        const carreraSalaRaw = localStorage.getItem('dante_carrera_objetivo') || localStorage.getItem('dante_preu_carrera') || '';
+        const carreraSala = carreraSalaRaw ? (carreraSalaRaw.split('/')[0].trim() || carreraSalaRaw) : '';
+        const tituloProySala = carreraSala
+          ? ('Proyección para ' + carreraSala)
+          : (esMisionPreun ? 'Proyección Pre-U' : 'Proyección Saber 11°');
+        const corteSala = parseInt(localStorage.getItem('dante_corte_objetivo') || '0', 10);
+        const metaSala = (!esMisionPreun && corteSala > 0 && corteSala <= 500) ? corteSala : 0;
+        const hayMetaSala = metaSala > 0;
+        const scoreNumSala = (!esMisionPreun && proyeccionSala > 0) ? proyeccionSala : null;
+        const brechaSala = (hayMetaSala && scoreNumSala != null) ? Math.max(0, metaSala - scoreNumSala) : null;
+        const textoBrechaSala = brechaSala == null
+          ? (esMisionPreun ? 'Escalas distintas' : 'Elige carrera para ver la brecha')
+          : ('Te faltan ' + brechaSala + ' puntos para alcanzar la meta');
+        const textoCorteSala = esMisionPreun
+          ? 'Esta habilidad va de 0 a 500. El corte se lee en la escala de la convocatoria.'
+          : (hayMetaSala && brechaSala != null
+            ? ('Cercanía al corte: A ' + brechaSala + ' puntos del puntaje mínimo estimado.')
+            : (hayMetaSala ? ('Meta registrada: ' + metaSala + ' pts') : 'Elige carrera para ver la brecha'));
+        const numeroPuntajeSala = esMisionPreun
+          ? (parseInt(localStorage.getItem('dante_preu_puntos') || '0', 10) || '—')
+          : (scoreNumSala != null ? scoreNumSala : '—');
+        const numeroMetaSala = esMisionPreun
+          ? (localStorage.getItem('dante_preu_corte') || '—')
+          : (hayMetaSala ? metaSala : '—');
+        const numeroBrechaSala = esMisionPreun
+          ? 'aparte'
+          : (brechaSala == null ? '—' : ('-' + brechaSala + ' Pts'));
+
+        const nombresSala = {
+          matematicas: 'MATEMÁTICAS',
+          lectura_critica: 'LECTURA CRÍTICA',
+          ciencias_naturales: 'CIENCIAS NATURALES',
+          sociales_ciudadanas: 'SOCIALES Y CIUDADANAS',
+          ingles: 'INGLÉS'
+        };
+        const colorBarraSala = (key) => {
+          const k = String(key || '').toLowerCase();
+          if (k.includes('lect')) return '#7c3aed';
+          if (k.includes('mate') || k.includes('razon')) return '#2563eb';
+          if (k.includes('cien') || k.includes('natur')) return '#16a34a';
+          if (k.includes('social')) return '#ea580c';
+          if (k.includes('ingl')) return '#64748b';
+          return '#334155';
+        };
+
+        let areaRowsSala = '';
+        let vulnerableNombreSala = '';
+        let vulnerablePctSala = null;
+        try {
+          const statsSala = {};
+          Object.values(this.respuestasSesionActiva || {}).forEach((r) => {
+            if (!r || typeof r.correcto !== 'boolean') return;
+            const a = String(r.materia || r.area || 'general').toLowerCase();
+            if (!statsSala[a]) statsSala[a] = { total: 0, aciertos: 0 };
+            statsSala[a].total += 1;
+            if (r.correcto) statsSala[a].aciertos += 1;
+          });
+          let menorPctSala = 101;
+          Object.keys(statsSala).forEach((k) => {
+            const st = statsSala[k];
+            const pct = Math.round((st.aciertos / (st.total || 1)) * 100);
+            if (pct < menorPctSala) {
+              menorPctSala = pct;
+              vulnerableNombreSala = nombresSala[k] || k.replace(/_/g, ' ').toUpperCase();
+              vulnerablePctSala = pct;
+            }
+            let badgeText = 'Fortaleza';
+            let badgeClass = 'ok';
+            if (pct < 40) { badgeText = 'Refuerzo Táctico'; badgeClass = 'low'; }
+            else if (pct < 70) { badgeText = 'En Calibración'; badgeClass = 'mid'; }
+            const nombre = nombresSala[k] || k.replace(/_/g, ' ').toUpperCase();
+            areaRowsSala += `
+              <div class="rp-area-row">
+                <div class="rp-area-top">
+                  <span class="rp-area-name">${nombre}</span>
+                  <span class="rp-badge ${badgeClass}">${badgeText}</span>
+                </div>
+                <div class="rp-bar"><span style="width:${Math.max(4, pct)}%;background:${colorBarraSala(k)};"></span></div>
+                <div class="rp-area-meta">${st.aciertos}/${st.total} · ${pct}%</div>
+              </div>`;
+          });
+        } catch (e) { areaRowsSala = ''; }
+
+        let radioTxtSala = '';
+        try {
+          const radioCache = JSON.parse(localStorage.getItem('dante_radiografia_error') || 'null');
+          if (radioCache && (radioCache.patronDetectado || radioCache.materiaVulnerable)) {
+            vulnerableNombreSala = radioCache.materiaVulnerable || vulnerableNombreSala;
+            radioTxtSala = radioCache.patronDetectado || '';
+          }
+        } catch (e) {}
+        if (!radioTxtSala && vulnerablePctSala != null) {
+          radioTxtSala = 'ahí tu precisión fue del ' + vulnerablePctSala + '%';
+        }
+        const prescripcionSala = vulnerableNombreSala
+          ? ('Mañana el entrenamiento empieza por ' + vulnerableNombreSala + '.')
+          : 'Mañana el entrenamiento sigue con las preguntas que fallaste.';
+
+        const irdCrudoSala = summary && (summary.irdPorcentaje !== undefined ? summary.irdPorcentaje : (summary.resumenSesion && summary.resumenSesion.irdPorcentaje));
+        const irdValSala = irdCrudoSala === undefined || irdCrudoSala === null || irdCrudoSala === '' ? null : Number(irdCrudoSala);
+        const firmezaSala = irdValSala == null ? null : Math.max(0, Math.min(100, Math.round(100 - (irdValSala * 1.4))));
+        const pctFirmezaSala = firmezaSala == null ? 0 : firmezaSala;
+        const textoFirmezaSala = firmezaSala == null ? '—' : (firmezaSala + '%');
+        let firmezaDescSala = 'Esta sesión no contó los cambios de opción.';
+        if (firmezaSala != null && firmezaSala < 60) firmezaDescSala = 'Se detectaron cambios reiterados de opción y vacilación en reactivos clave.';
+        else if (firmezaSala != null && firmezaSala < 80) firmezaDescSala = 'Seguridad adecuada con ligera vacilación en reactivos de dificultad media-alta.';
+        else if (firmezaSala != null) firmezaDescSala = 'Decisiones tácticas sólidas con bajo titubeo o descarte innecesario.';
+
+        document.body.classList.add('reporte-final-activo');
+
         containerResumen.innerHTML = `
-          <div class="p-6 sm:p-8 rounded-3xl bg-slate-900 border border-emerald-500/50 text-center font-mono space-y-6 shadow-2xl max-w-2xl mx-auto my-4 animate-fade-in">
-            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 border border-emerald-400/50 flex items-center justify-center text-emerald-400 text-3xl mx-auto shadow-inner">
-              <i class="fa-solid fa-trophy"></i>
+          <article class="reporte-papel" id="reporteFinalPapel">
+            <div class="rp-brand">
+              <span class="rp-brand-mark">ICFES</span>
+              <span class="rp-brand-sep" aria-hidden="true"></span>
+              <span class="rp-brand-sub">Reporte personalizado</span>
             </div>
+            <h2 class="rp-title">${tituloBloque}</h2>
+            <p class="rp-lead">${leadBloque}</p>
 
-            <div>
-              <h3 class="text-xl sm:text-2xl font-black text-white uppercase tracking-wider">¡MISIÓN DIARIA COMPLETADA CON ÉXITO!</h3>
-              <p class="text-xs text-emerald-300 font-sans mt-1">La habilidad de esta sesión quedó estimada con tus respuestas.</p>
-            </div>
-
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-left">
-              <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800">
-                <span class="text-[10px] text-slate-400 uppercase font-bold block">Aciertos IRT</span>
-                <span class="text-lg font-black text-emerald-400">${aciertos} / ${total}</span>
+            <section class="rp-sec">
+              <h3 class="rp-sec-h"><i class="fa-regular fa-snowflake" aria-hidden="true"></i> Tu resultado en frío: ${total} preguntas</h3>
+              <div class="rp-card rp-frio">
+                <span class="rp-frio-ico" aria-hidden="true"><i class="fa-solid fa-brain"></i></span>
+                <p>Sesión medida. <strong>Respuestas correctas: ${aciertos}/${total}</strong>.</p>
               </div>
-              <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800">
-                <span class="text-[10px] text-slate-400 uppercase font-bold block">${etiquetaScore}</span>
-                <span class="text-lg font-black text-cyan-300">${valorScore}</span>
-              </div>
-              <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800 col-span-2 sm:col-span-1">
-                <span class="text-[10px] text-slate-400 uppercase font-bold block">Racha Activa</span>
-                <span class="text-lg font-black text-amber-400 flex items-center gap-1.5"><i class="fa-solid fa-fire text-amber-500"></i> ${racha} Días</span>
-              </div>
-            </div>
+            </section>
 
-            <div class="p-4 rounded-xl bg-indigo-950/60 border border-indigo-500/40 text-left font-sans">
-              <span class="text-xs font-bold text-indigo-300 font-mono flex items-center gap-1.5 mb-1"><i class="fa-solid fa-compass text-indigo-400"></i> ${esMisionPreun ? 'Ruta de admisión' : 'Perfil vocacional'}</span>
-              <p class="text-sm text-white font-semibold">${notaRuta}</p>
-            </div>
+            <section class="rp-sec">
+              <h3 class="rp-sec-h"><i class="fa-solid fa-graduation-cap" aria-hidden="true"></i> ${tituloProySala}</h3>
+              <div class="rp-card">
+                <div class="rp-metrics">
+                  <div>
+                    <span class="rp-metric-lbl">${esMisionPreun ? 'Habilidad Pre-U' : 'Puntaje proyectado'}</span>
+                    <span class="rp-metric-val ok">${numeroPuntajeSala}</span>
+                    <span class="rp-metric-sub">sobre 500</span>
+                  </div>
+                  <div>
+                    <span class="rp-metric-lbl">${esMisionPreun ? 'Corte de la carrera' : 'Meta requerida'}</span>
+                    <span class="rp-metric-val">${numeroMetaSala}</span>
+                    <span class="rp-metric-sub">sobre 500</span>
+                  </div>
+                  <div>
+                    <span class="rp-metric-lbl">${esMisionPreun ? 'Escalas' : 'Brecha'}</span>
+                    <span class="rp-metric-val gap">${numeroBrechaSala}</span>
+                    <span class="rp-metric-sub">${textoBrechaSala}</span>
+                  </div>
+                </div>
+                <div class="rp-corte" role="status">
+                  <i class="fa-solid fa-bullseye" aria-hidden="true"></i>
+                  <span>${textoCorteSala}</span>
+                </div>
+              </div>
+            </section>
 
-            <button type="button" onclick="DanteExamWorkspace.regresarAlHub()" class="w-full py-4 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-600 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-mono font-black text-sm uppercase tracking-wider shadow-[0_0_25px_rgba(16,185,129,0.5)] active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2">
-              <i class="fa-solid fa-house"></i>
-              <span>REGRESAR AL HUB PRINCIPAL DANTE OS</span>
-            </button>
-          </div>
+            ${areaRowsSala ? `
+            <section class="rp-sec">
+              <h3 class="rp-sec-h"><i class="fa-solid fa-chart-simple" aria-hidden="true"></i> Resultados por área</h3>
+              <div class="rp-card rp-area">${areaRowsSala}</div>
+            </section>
+            ` : ''}
+
+            ${vulnerableNombreSala ? `
+            <section class="rp-sec">
+              <h3 class="rp-sec-h"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> Dónde fallaste</h3>
+              <div class="rp-fallo">
+                <strong>${vulnerableNombreSala}:</strong>
+                ${radioTxtSala}
+              </div>
+            </section>
+            ` : ''}
+
+            <section class="rp-sec">
+              <h3 class="rp-sec-h"><i class="fa-solid fa-sun" aria-hidden="true"></i> Mañana empezamos por</h3>
+              <div class="rp-card rp-manana">
+                <p class="rp-manana-txt">${prescripcionSala}</p>
+                <div class="rp-anillo" style="--pct:${pctFirmezaSala};">
+                  <div>
+                    <strong>${textoFirmezaSala}</strong>
+                    <small>Confianza en tus respuestas</small>
+                  </div>
+                </div>
+              </div>
+              <p class="rp-metric-sub" style="margin-top:0.45rem;">${firmezaDescSala}</p>
+            </section>
+
+            <section class="rp-sec">
+              <h3 class="rp-sec-h"><i class="fa-solid fa-compass" aria-hidden="true"></i> ${esMisionPreun ? 'Ruta de admisión' : 'Perfil vocacional'}</h3>
+              <div class="rp-card"><p class="rp-manana-txt">${notaRuta}</p></div>
+            </section>
+
+            <section class="rp-sec">
+              <h3 class="rp-sec-h"><i class="fa-solid fa-list-check" aria-hidden="true"></i> Qué hacer ahora</h3>
+              <div class="rp-card rp-tareas"><div id="danteTareaEstudioDiag"></div></div>
+            </section>
+
+            <div class="rp-actions">
+              <button type="button" class="rp-btn-primary" onclick="DanteExamWorkspace.irAlPerfil()">
+                Ver expediente completo <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+              </button>
+              <button type="button" class="rp-btn-secondary" onclick="DanteExamWorkspace.regresarAlHub()">
+                Ir a la sala <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+              </button>
+            </div>
+          </article>
         `;
+        const tituloSaber2 = document.getElementById('uiTituloSaberPapel');
+        if (tituloSaber2) tituloSaber2.style.display = 'none';
       }
       try {
         localStorage.removeItem('dante_sesion_pausada');
@@ -4753,6 +4919,7 @@
       const uiHeaderExamen = document.getElementById('uiHeaderExamen') || document.querySelector('#viewWorkspace header');
       if (uiHeaderExamen) uiHeaderExamen.style.display = '';
 
+      document.body.classList.remove('reporte-final-activo');
       document.documentElement.classList.remove('dante-diagnostic-direct');
       sessionStorage.removeItem('dante_is_diagnostic');
       localStorage.removeItem('dante_is_diagnostic');
@@ -4769,6 +4936,7 @@
       const uiHeaderExamen = document.getElementById('uiHeaderExamen') || document.querySelector('#viewWorkspace header');
       if (uiHeaderExamen) uiHeaderExamen.style.display = '';
 
+      document.body.classList.remove('reporte-final-activo');
       document.documentElement.classList.remove('dante-diagnostic-direct');
       sessionStorage.removeItem('dante_is_diagnostic');
       localStorage.removeItem('dante_is_diagnostic');
