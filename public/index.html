@@ -9,7 +9,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="assets/icons/icon-192.svg">
     <link rel="apple-touch-icon" href="assets/icons/icon-192.svg">
-    <title>Dante OS c-1.3.11</title>
+    <title>Dante OS c-1.3.12</title>
     <script>
         try { sessionStorage.setItem('dante_entrada_viva', String(Date.now())); } catch (e) {}
     </script>
@@ -110,28 +110,28 @@
     <script src="js/highlighterIRD.js?v=c-1.2.85"></script>
     <script src="js/danteAds.js?v=c-1.2.85"></script>
     <script src="js/dantePlanSala.js?v=c-1.2.85"></script>
-    <script src="js/danteRecorrido.js?v=c-1.3.11"></script>
+    <script src="js/danteRecorrido.js?v=c-1.3.12"></script>
     <script src="js/ojoBionico3D.js?v=c-1.2.85"></script>
     <script src="js/modoSniper.js?v=c-1.2.85"></script>
     <script src="js/danteNube.js?v=c-1.2.85"></script>
-    <script src="js/danteRegistro.js?v=c-1.3.11"></script>
+    <script src="js/danteRegistro.js?v=c-1.3.12"></script>
     <script src="js/danteAbility.js?v=c-1.2.85"></script>
     <script src="js/rutaSimulacroEngine.js?v=c-1.2.85"></script>
     <script src="js/danteTutorEngine.js?v=c-1.2.85"></script>
-    <script src="js/danteSpiralEntity.js?v=c-1.3.11"></script>
-    <script src="js/hackeaSyncIntro.js?v=c-1.3.11"></script>
-    <script src="js/hackeaUmbralVault.js?v=c-1.3.11"></script>
-    <script src="js/hackeaUmbralPicker.js?v=c-1.3.11"></script>
-    <script src="js/hackeaPulsoBank.js?v=c-1.3.11"></script>
-    <script src="js/hackeaPulsoVault.js?v=c-1.3.11"></script>
-    <script src="js/hackeaCampaign.js?v=c-1.3.11"></script>
-    <script src="js/hackeaArc.js?v=c-1.3.11"></script>
-    <script src="js/hackeaPulso.js?v=c-1.3.11"></script>
-    <script src="js/hackeaMente.js?v=c-1.3.11"></script>
-    <script src="js/danteHubEngine.js?v=c-1.3.11"></script>
-    <script src="js/danteExamWorkspace.js?v=c-1.3.11"></script>
+    <script src="js/danteSpiralEntity.js?v=c-1.3.12"></script>
+    <script src="js/hackeaSyncIntro.js?v=c-1.3.12"></script>
+    <script src="js/hackeaUmbralVault.js?v=c-1.3.12"></script>
+    <script src="js/hackeaUmbralPicker.js?v=c-1.3.12"></script>
+    <script src="js/hackeaPulsoBank.js?v=c-1.3.12"></script>
+    <script src="js/hackeaPulsoVault.js?v=c-1.3.12"></script>
+    <script src="js/hackeaCampaign.js?v=c-1.3.12"></script>
+    <script src="js/hackeaArc.js?v=c-1.3.12"></script>
+    <script src="js/hackeaPulso.js?v=c-1.3.12"></script>
+    <script src="js/hackeaMente.js?v=c-1.3.12"></script>
+    <script src="js/danteHubEngine.js?v=c-1.3.12"></script>
+    <script src="js/danteExamWorkspace.js?v=c-1.3.12"></script>
     <script src="js/danteSemana.js?v=c-1.2.85"></script>
-    <script src="js/danteSimulacro.js?v=c-1.3.11"></script>
+    <script src="js/danteSimulacro.js?v=c-1.3.12"></script>
     <script src="js/danteRadarEngine.js?v=c-1.2.85"></script>
 
     <!-- 📡 OBSERVABILIDAD SENTRY BROWSER SDK (SCRUBBING LEY 1581) -->
@@ -2015,39 +2015,46 @@
         #puertaRutaVocacional { order: 3; }
         #viewGateway .sala-glass-card {
             position: relative;
-            background: linear-gradient(180deg, rgba(255,255,255,0.045) 0%, rgba(8,10,14,0.55) 100%) !important;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.06) !important;
-            border-radius: 18px !important;
-            border: 1px solid rgba(148, 163, 184, 0.18) !important;
-            padding: 0.8rem 0.65rem 0.7rem !important;
-            min-height: 8.4rem;
+            background: linear-gradient(165deg, rgba(255,255,255,0.055) 0%, rgba(10,12,16,0.42) 48%, rgba(6,8,12,0.62) 100%) !important;
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.08),
+                0 0 0 0.5px rgba(255,255,255,0.06) !important;
+            border-radius: 16px !important;
+            border: 1px solid rgba(226, 232, 240, 0.14) !important;
+            padding: 0.85rem 0.7rem 0.75rem !important;
+            min-height: 9.1rem;
             display: flex !important;
             flex-direction: column;
             justify-content: flex-start;
-            gap: 0.45rem;
+            align-items: flex-start;
+            gap: 0.55rem;
             text-decoration: none !important;
             overflow: hidden;
         }
-        #puertaSimulacro.sala-glass-card { border-color: rgba(34, 211, 238, 0.22) !important; }
-        #cardExpedienteStatus.sala-glass-card { border-color: rgba(34, 211, 238, 0.2) !important; }
-        #puertaRutaVocacional.sala-glass-card { border-color: rgba(251, 146, 60, 0.28) !important; }
+        #puertaSimulacro.sala-glass-card,
+        #cardExpedienteStatus.sala-glass-card {
+            border-color: rgba(103, 232, 249, 0.18) !important;
+        }
+        #puertaRutaVocacional.sala-glass-card {
+            border-color: rgba(251, 191, 36, 0.22) !important;
+        }
         #viewGateway .sala-card-help {
             position: absolute;
-            top: 0.45rem;
-            right: 0.45rem;
+            top: 0.42rem;
+            right: 0.42rem;
             z-index: 3;
-            width: 1.15rem;
-            height: 1.15rem;
+            width: 1.05rem;
+            height: 1.05rem;
             border-radius: 999px;
-            border: 1px solid rgba(148, 163, 184, 0.35);
+            border: 1px solid rgba(148, 163, 184, 0.28);
             color: #94a3b8;
-            font-size: 0.62rem;
+            font-size: 0.58rem;
             font-weight: 700;
-            line-height: 1.15rem;
+            line-height: 1.05rem;
             text-align: center;
-            background: rgba(0,0,0,0.35);
+            background: rgba(0,0,0,0.28);
             cursor: pointer;
             user-select: none;
         }
@@ -2055,34 +2062,51 @@
         #lblSimulacroTitulo,
         #lblRutaVocacionalTitulo,
         #lblProyeccionEtiqueta {
-            color: #e2e8f0 !important;
+            color: #f8fafc !important;
             font-family: 'Cinzel', 'Times New Roman', serif !important;
-            font-size: 0.72rem !important;
+            font-size: 0.78rem !important;
             letter-spacing: 0.01em !important;
             text-transform: none !important;
             font-weight: 600 !important;
-            line-height: 1.25 !important;
-            padding-right: 1.1rem;
+            line-height: 1.2 !important;
+            padding-right: 1.05rem;
+            max-width: 100%;
+        }
+        #viewGateway .sala-card-ico {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #67e8f9;
+            font-size: 0.85rem;
+            line-height: 1;
+            filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.35));
+        }
+        #puertaRutaVocacional .sala-card-ico {
+            color: #fb923c;
+            filter: drop-shadow(0 0 8px rgba(251, 146, 60, 0.4));
         }
         #viewGateway .sala-card-metric {
             display: flex;
-            align-items: center;
-            gap: 0.35rem;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.4rem;
             color: #f8fafc;
             font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 0.78rem;
-            font-weight: 600;
-            line-height: 1.25;
-            min-height: 1.2rem;
+            width: 100%;
+            min-height: 0;
         }
-        #viewGateway .sala-card-metric i { color: #67e8f9; font-size: 0.72rem; }
-        #puertaRutaVocacional .sala-card-metric i { color: #fb923c; }
+        #viewGateway .sala-card-metric-row {
+            display: flex;
+            align-items: baseline;
+            gap: 0.2rem;
+            width: 100%;
+        }
         #lblSimulacroDetalle,
         #lblRutaVocacionalDetalle,
         #lblProyeccionPuntos,
         #lblProyeccionEscala {
-            color: #f8fafc !important;
-            font-size: 0.78rem !important;
+            color: #e2e8f0 !important;
+            font-size: 0.8rem !important;
             font-weight: 600 !important;
             line-height: 1.25 !important;
             display: -webkit-box;
@@ -2090,21 +2114,50 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
             margin: 0 !important;
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
         }
-        #lblProyeccionEscala { color: #64748b !important; font-weight: 500 !important; -webkit-line-clamp: 1; }
+        #lblProyeccionPuntos {
+            font-size: 1.05rem !important;
+            font-weight: 650 !important;
+            color: #f8fafc !important;
+        }
+        #lblProyeccionEscala {
+            color: #94a3b8 !important;
+            font-weight: 500 !important;
+            font-size: 0.78rem !important;
+            -webkit-line-clamp: 1;
+        }
+        #lblRutaVocacionalDetalle {
+            color: #cbd5e1 !important;
+            font-weight: 500 !important;
+            font-size: 0.72rem !important;
+        }
         #viewGateway .sala-card-art {
             margin-top: auto;
-            opacity: 0.9;
+            align-self: flex-start;
+            opacity: 0.95;
             line-height: 1;
+            pointer-events: none;
         }
-        #viewGateway .sala-card-art-brain { color: #22d3ee; font-size: 1.55rem; text-shadow: 0 0 14px rgba(34,211,238,0.45); }
+        #viewGateway .sala-card-art-clock {
+            color: #22d3ee;
+            font-size: 1.7rem;
+            text-shadow: 0 0 16px rgba(34,211,238,0.5);
+        }
         #viewGateway .sala-card-art-chart { color: #22d3ee; width: 100%; }
-        #viewGateway .sala-card-art-chart svg { width: 100%; height: 1.6rem; display: block; }
+        #viewGateway .sala-card-art-chart svg {
+            width: 100%;
+            height: 1.75rem;
+            display: block;
+            filter: drop-shadow(0 0 6px rgba(34,211,238,0.45));
+        }
         #viewGateway .sala-card-art-star {
             color: #fb923c;
-            font-size: 1.55rem;
-            text-shadow: 0 0 16px rgba(251,146,60,0.5);
+            width: 1.85rem;
+            height: 1.85rem;
+            filter: drop-shadow(0 0 12px rgba(251,146,60,0.55));
         }
+        #viewGateway .sala-card-art-star svg { width: 100%; height: 100%; display: block; }
         #salaAyudaTip {
             position: fixed;
             z-index: 12050;
@@ -4727,7 +4780,7 @@
                     <img src="assets/icons/dante-logo-icon.svg" alt="Dante OS Logo" class="w-6 h-6 rounded-md shadow-[0_0_12px_rgba(56,189,248,0.45)] border border-cyan-500/30 shrink-0 object-contain" />
                     <span class="font-mono font-bold text-xs tracking-wider text-white select-none whitespace-nowrap flex items-center gap-1.5">
                         Dante OS
-                        <span id="badgeDanteVersion" class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">c-1.3.11</span>
+                        <span id="badgeDanteVersion" class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">c-1.3.12</span>
                     </span>
                 </a>
 
@@ -4861,13 +4914,15 @@
                 <span class="sala-card-help" role="button" tabindex="0" title="Qué es" aria-label="Qué es Tu Proyección" onclick="event.preventDefault();event.stopPropagation();window.salaAyudaTarjeta&&salaAyudaTarjeta(event,'proyeccion');">?</span>
                 <div id="lblProyeccionEtiqueta" class="sala-card-title">Tu Proyección</div>
                 <div class="sala-card-metric">
-                    <i class="fa-solid fa-bullseye" aria-hidden="true"></i>
-                    <span id="lblProyeccionPuntos">—</span>
-                    <span id="lblProyeccionEscala">/ 500</span>
-                    <span id="lblProyeccionMargen" class="hidden"></span>
+                    <span class="sala-card-ico" aria-hidden="true"><i class="fa-solid fa-bullseye"></i></span>
+                    <div class="sala-card-metric-row">
+                        <span id="lblProyeccionPuntos">—</span>
+                        <span id="lblProyeccionEscala">/ 500</span>
+                        <span id="lblProyeccionMargen" class="hidden"></span>
+                    </div>
                 </div>
                 <div class="sala-card-art sala-card-art-chart" aria-hidden="true">
-                    <svg viewBox="0 0 64 28" fill="none"><path d="M2 22 L14 18 L26 20 L38 10 L50 12 L62 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="2 3"/><circle cx="62" cy="4" r="2.5" fill="currentColor"/></svg>
+                    <svg viewBox="0 0 64 28" fill="none"><path d="M2 22 L14 18 L26 20 L38 10 L50 12 L62 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="2.5 3.5"/><circle cx="62" cy="4" r="2.8" fill="currentColor"/></svg>
                 </div>
                 <div class="riel-proyeccion hidden"><div id="barraProyeccion" style="width:0%"></div></div>
                 <p id="lblEstadoCalibracionSub" class="hidden">Tu proyección aparece al terminar el diagnóstico.</p>
@@ -4879,20 +4934,22 @@
                 <span class="sala-card-help" role="button" tabindex="0" title="Qué es" aria-label="Qué es Simulacro Completo" onclick="event.preventDefault();event.stopPropagation();window.salaAyudaTarjeta&&salaAyudaTarjeta(event,'simulacro');">?</span>
                 <div id="lblSimulacroTitulo" class="sala-card-title">Simulacro Completo</div>
                 <div class="sala-card-metric">
-                    <i class="fa-regular fa-clock" aria-hidden="true"></i>
+                    <span class="sala-card-ico" aria-hidden="true"><i class="fa-regular fa-clock"></i></span>
                     <span id="lblSimulacroDetalle">2 h 30 min</span>
                 </div>
-                <div class="sala-card-art sala-card-art-brain" aria-hidden="true"><i class="fa-solid fa-brain"></i></div>
+                <div class="sala-card-art sala-card-art-clock" aria-hidden="true"><i class="fa-regular fa-clock"></i></div>
             </button>
 
             <button type="button" id="puertaRutaVocacional" onclick="if(window.DanteHubEngine){DanteHubEngine.abrirPuertaRuta();}" class="sala-glass-card block w-full text-left cursor-pointer">
                 <span class="sala-card-help" role="button" tabindex="0" title="Qué es" aria-label="Qué es Ruta Vocacional" onclick="event.preventDefault();event.stopPropagation();window.salaAyudaTarjeta&&salaAyudaTarjeta(event,'ruta');">?</span>
                 <div id="lblRutaVocacionalTitulo" class="sala-card-title">Ruta Vocacional</div>
                 <div class="sala-card-metric sala-card-metric-ruta">
-                    <i class="fa-regular fa-compass" aria-hidden="true"></i>
+                    <span class="sala-card-ico" aria-hidden="true"><i class="fa-regular fa-compass"></i></span>
                     <span id="lblRutaVocacionalDetalle">Explora tu mejor camino</span>
                 </div>
-                <div class="sala-card-art sala-card-art-star" aria-hidden="true">✦</div>
+                <div class="sala-card-art sala-card-art-star" aria-hidden="true">
+                    <svg viewBox="0 0 32 32" fill="currentColor"><path d="M16 2.2l1.1 8.1 5.7-5.8-5.1 6.4 8.1.4-7.7 2.6 7.1 4.1-8-.9 3.5 7.4-5.7-5.7-1.9 7.9-1.9-7.9-5.7 5.7 3.5-7.4-8 .9 7.1-4.1-7.7-2.6 8.1-.4-5.1-6.4 5.7 5.8z"/></svg>
+                </div>
             </button>
 
             <!-- Bloque Legal Compacto Obligatorio -->
