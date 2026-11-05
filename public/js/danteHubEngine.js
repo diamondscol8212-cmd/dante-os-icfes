@@ -1171,7 +1171,7 @@
       const escalaEl = document.getElementById('lblProyeccionEscala');
       const barra = document.getElementById('barraProyeccion');
       const sub = document.getElementById('lblEstadoCalibracionSub');
-      if (etiqueta) etiqueta.textContent = esPreuSala ? 'Tu habilidad Pre-U' : 'Tu proyección';
+      if (etiqueta) etiqueta.textContent = esPreuSala ? 'Tu habilidad Pre-U' : 'Tu Proyección';
       if (escalaEl) escalaEl.textContent = '/ ' + maxEscala;
       if (puntosEl) puntosEl.textContent = ptsMostrar > 0 ? String(ptsMostrar) : '—';
       const margenEl = document.getElementById('lblProyeccionMargen');
@@ -1497,21 +1497,19 @@
       const hechas = ruta.elecciones.length;
       const cierres = Array.isArray(ruta.cierres) ? ruta.cierres.length : 0;
       titulo.textContent = hechas > 0
-        ? ('Ruta ' + Math.min(6, hechas) + '/6' + (cierres ? (' · ' + cierres + (cierres === 1 ? ' cierre' : ' cierres')) : ''))
-        : 'Tu ruta vocacional';
+        ? ('Ruta Vocacional')
+        : 'Ruta Vocacional';
       if (hechas >= 6) {
-        detalle.textContent = 'Ya tienes los seis dilemas del día. Confirma el perfil para ver el informe.';
+        detalle.textContent = 'Confirma el perfil · informe listo';
         return;
       }
       if (hechas > 0 && ruta.dia === this._hoyRuta()) {
-        detalle.textContent = 'Hoy ya respondiste el dilema del día. Mañana sigue el ' + (hechas + 1) + ' de 6.'
-          + (cierres ? (' Llevas ' + cierres + ' del cierre de bloque.') : '');
+        detalle.textContent = 'Dilema ' + Math.min(6, hechas) + '/6 · vuelve mañana';
         return;
       }
       detalle.textContent = hechas === 0
-        ? 'Un dilema al día durante seis días. Al cerrar cada bloque también eliges uno: eso también construye tu perfil. Al sexto día sale el informe.'
-        : ('Hoy es el dilema ' + (hechas + 1) + ' de 6.'
-          + (cierres ? (' Además llevas ' + cierres + ' del cierre de bloque.') : ' Al cerrar un bloque también sumas uno.'));
+        ? 'Explora tu mejor camino'
+        : ('Dilema ' + (hechas + 1) + ' de 6');
     },
 
     abrirPuertaRuta() {

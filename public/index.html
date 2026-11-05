@@ -9,7 +9,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="assets/icons/icon-192.svg">
     <link rel="apple-touch-icon" href="assets/icons/icon-192.svg">
-    <title>Dante OS c-1.3.8</title>
+    <title>Dante OS c-1.3.9</title>
     <script>
         try { sessionStorage.setItem('dante_entrada_viva', String(Date.now())); } catch (e) {}
     </script>
@@ -110,28 +110,28 @@
     <script src="js/highlighterIRD.js?v=c-1.2.85"></script>
     <script src="js/danteAds.js?v=c-1.2.85"></script>
     <script src="js/dantePlanSala.js?v=c-1.2.85"></script>
-    <script src="js/danteRecorrido.js?v=c-1.3.8"></script>
+    <script src="js/danteRecorrido.js?v=c-1.3.9"></script>
     <script src="js/ojoBionico3D.js?v=c-1.2.85"></script>
     <script src="js/modoSniper.js?v=c-1.2.85"></script>
     <script src="js/danteNube.js?v=c-1.2.85"></script>
-    <script src="js/danteRegistro.js?v=c-1.3.8"></script>
+    <script src="js/danteRegistro.js?v=c-1.3.9"></script>
     <script src="js/danteAbility.js?v=c-1.2.85"></script>
     <script src="js/rutaSimulacroEngine.js?v=c-1.2.85"></script>
     <script src="js/danteTutorEngine.js?v=c-1.2.85"></script>
-    <script src="js/danteSpiralEntity.js?v=c-1.3.8"></script>
-    <script src="js/hackeaSyncIntro.js?v=c-1.3.8"></script>
-    <script src="js/hackeaUmbralVault.js?v=c-1.3.8"></script>
-    <script src="js/hackeaUmbralPicker.js?v=c-1.3.8"></script>
-    <script src="js/hackeaPulsoBank.js?v=c-1.3.8"></script>
-    <script src="js/hackeaPulsoVault.js?v=c-1.3.8"></script>
-    <script src="js/hackeaCampaign.js?v=c-1.3.8"></script>
-    <script src="js/hackeaArc.js?v=c-1.3.8"></script>
-    <script src="js/hackeaPulso.js?v=c-1.3.8"></script>
-    <script src="js/hackeaMente.js?v=c-1.3.8"></script>
-    <script src="js/danteHubEngine.js?v=c-1.3.8"></script>
-    <script src="js/danteExamWorkspace.js?v=c-1.3.8"></script>
+    <script src="js/danteSpiralEntity.js?v=c-1.3.9"></script>
+    <script src="js/hackeaSyncIntro.js?v=c-1.3.9"></script>
+    <script src="js/hackeaUmbralVault.js?v=c-1.3.9"></script>
+    <script src="js/hackeaUmbralPicker.js?v=c-1.3.9"></script>
+    <script src="js/hackeaPulsoBank.js?v=c-1.3.9"></script>
+    <script src="js/hackeaPulsoVault.js?v=c-1.3.9"></script>
+    <script src="js/hackeaCampaign.js?v=c-1.3.9"></script>
+    <script src="js/hackeaArc.js?v=c-1.3.9"></script>
+    <script src="js/hackeaPulso.js?v=c-1.3.9"></script>
+    <script src="js/hackeaMente.js?v=c-1.3.9"></script>
+    <script src="js/danteHubEngine.js?v=c-1.3.9"></script>
+    <script src="js/danteExamWorkspace.js?v=c-1.3.9"></script>
     <script src="js/danteSemana.js?v=c-1.2.85"></script>
-    <script src="js/danteSimulacro.js?v=c-1.2.85"></script>
+    <script src="js/danteSimulacro.js?v=c-1.3.9"></script>
     <script src="js/danteRadarEngine.js?v=c-1.2.85"></script>
 
     <!-- 📡 OBSERVABILIDAD SENTRY BROWSER SDK (SCRUBBING LEY 1581) -->
@@ -649,68 +649,97 @@
             box-shadow: 0 0 10px rgba(34, 211, 238, 0.65);
         }
         #btnIniciarMisionUnificado.btn-espera {
-            background: rgba(8, 12, 16, 0.55) !important;
-            border: 1.5px solid rgba(34, 211, 238, 0.28) !important;
-            box-shadow: 0 0 14px rgba(34, 211, 238, 0.1) !important;
+            background: rgba(6, 16, 22, 0.78) !important;
+            border: 1.5px solid rgba(34, 211, 238, 0.38) !important;
+            box-shadow: 0 0 18px rgba(34, 211, 238, 0.14), inset 0 0 20px rgba(34, 211, 238, 0.05) !important;
             cursor: pointer;
         }
-        #notaEspera[hidden] { display: none !important; }
-        #notaEspera { position: fixed; inset: 0; z-index: 200; }
-        .nota-espera-velo { position: absolute; inset: 0; background: rgba(6, 5, 4, 0.72); border: 0; width: 100%; cursor: pointer; }
-        .nota-espera-velo { background: rgba(6, 5, 4, 0.78); }
-        .nota-espera-hoja {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            width: min(22.5rem, calc(100% - 2rem));
-            background: #161310;
-            color: #f5f5f4;
-            border: 1px solid rgba(231, 215, 195, 0.34);
-            border-radius: 22px;
-            padding: 1.35rem 1.3rem 1.15rem;
-            text-align: left;
-            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+        #btnIniciarMisionUnificado.btn-espera .sala-cta-ico {
+            color: #67e8f9 !important;
         }
-        .nota-espera-hoja .nota-espera-kicker {
-            margin: 0;
+        #notaEspera[hidden] { display: none !important; }
+        #notaEspera { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+        .nota-espera-velo { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.72); border: 0; width: 100%; cursor: pointer; backdrop-filter: blur(6px); }
+        .nota-espera-hoja {
+            position: relative;
+            width: min(22rem, calc(100% - 1.5rem));
+            background: linear-gradient(180deg, rgba(18, 24, 32, 0.98) 0%, rgba(8, 10, 14, 0.98) 100%);
+            color: #f5f5f4;
+            border: 1px solid rgba(34, 211, 238, 0.28);
+            border-radius: 22px;
+            padding: 1.35rem 1.2rem 1.15rem;
+            text-align: center;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5), 0 0 28px rgba(34, 211, 238, 0.12);
+        }
+        .nota-espera-reloj {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            min-width: 7.5rem;
+            margin: 0 auto;
+            padding: 0.55rem 0.95rem;
+            border-radius: 999px;
+            border: 1px solid rgba(34, 211, 238, 0.35);
+            background: rgba(8, 30, 38, 0.65);
+            box-shadow: 0 0 18px rgba(34, 211, 238, 0.18);
+            color: #67e8f9;
             font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 0.84rem;
-            font-weight: 650;
-            letter-spacing: 0.01em;
-            color: #e7d7c3;
+            font-size: 1.35rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            tabular-nums: true;
+            font-variant-numeric: tabular-nums;
+        }
+        .nota-espera-reloj i { font-size: 0.95rem; opacity: 0.9; }
+        .nota-espera-hoja .nota-espera-kicker {
+            margin: 0.85rem 0 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: #67e8f9;
         }
         #notaEsperaTitulo {
-            margin: 0.45rem 0 0;
-            padding-bottom: 0.85rem;
-            border-bottom: 1px solid rgba(231, 215, 195, 0.18);
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 1.28rem;
+            margin: 0.35rem 0 0;
+            padding-bottom: 0;
+            border-bottom: 0;
+            font-family: 'Cinzel', 'Times New Roman', serif;
+            font-size: 1.15rem;
             font-weight: 650;
-            letter-spacing: -0.03em;
-            line-height: 1.2;
+            letter-spacing: 0;
+            line-height: 1.25;
             color: #fafaf9;
         }
-        .nota-espera-hoja p { margin: 0.85rem 0 0; font-size: 0.98rem; line-height: 1.5; color: #e7e5e4; }
+        .nota-espera-hoja p { margin: 0.7rem 0 0; font-size: 0.9rem; line-height: 1.5; color: #cbd5e1; text-align: left; }
         #btnCerrarNotaEspera {
             display: block;
             width: 100%;
             margin-top: 1.15rem;
-            background: #e7d7c3;
-            color: #1c1917;
-            border: 0;
+            background: transparent;
+            color: #ecfeff;
+            border: 1.5px solid rgba(34, 211, 238, 0.55);
             border-radius: 999px;
             padding: 0.72rem 1rem;
             font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: 0.95rem;
             font-weight: 650;
             cursor: pointer;
+            box-shadow: 0 0 16px rgba(34, 211, 238, 0.18);
         }
         #btnIniciarMisionUnificado.btn-espera #txtScanPrompt {
-            color: #cbd5e1 !important;
+            color: #e2e8f0 !important;
         }
         #btnIniciarMisionUnificado.btn-espera #txtScanSubprompt {
-            color: rgba(103, 232, 249, 0.55) !important;
+            color: #67e8f9 !important;
+            font-variant-numeric: tabular-nums;
+        }
+        #viewGateway #btnAbrirRefuerzo.en-espera,
+        #viewGateway #btnAbrirRefuerzo.btn-espera {
+            border-color: rgba(251, 146, 60, 0.45) !important;
+            box-shadow: 0 0 16px rgba(251, 146, 60, 0.16) !important;
+            color: #ffedd5 !important;
         }
         #reflejoSala {
             position: absolute;
@@ -823,7 +852,7 @@
             overflow: visible;
             cursor: pointer;
             -webkit-tap-highlight-color: transparent;
-            filter: drop-shadow(0 0 28px rgba(0, 242, 254, 0.28)) drop-shadow(0 0 36px rgba(251, 146, 60, 0.18));
+            filter: drop-shadow(0 0 34px rgba(0, 242, 254, 0.42)) drop-shadow(0 0 42px rgba(251, 146, 60, 0.28));
         }
         #contenedorOrbeDante #danteSpiralCanvas {
             width: 100% !important;
@@ -851,13 +880,14 @@
             -webkit-user-select: none;
         }
         #hackeaPortalCaption {
-            margin: 0.15rem auto 0.55rem;
+            margin: 0.2rem auto 0.7rem;
             font-family: 'Cinzel', 'Times New Roman', serif;
-            font-size: 0.95rem;
+            font-size: 1rem;
             font-weight: 500;
-            letter-spacing: 0.08em;
+            font-style: italic;
+            letter-spacing: 0.06em;
             text-transform: none;
-            color: rgba(248, 250, 252, 0.88);
+            color: rgba(248, 250, 252, 0.9);
             text-align: center;
             pointer-events: none;
             position: relative;
@@ -1845,12 +1875,66 @@
             display: none !important;
         }
         #containerMisionPlanCapsule { display: none !important; }
-        /* —— Sala maquillage mock: acciones + puertas —— */
+        /* —— Sala maquillage mock cristal: stats + acciones + puertas —— */
+        #viewGateway .sala-stats {
+            position: relative;
+            z-index: 8;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 0.7rem;
+            width: 100%;
+            max-width: 22.5rem;
+            margin: 0.15rem auto 0.35rem;
+            padding: 0 0.15rem;
+        }
+        #viewGateway .sala-stats-racha,
+        #viewGateway .sala-stats-nivel {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            color: #f8fafc;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        #viewGateway .sala-stats-num,
+        #viewGateway #lblNivelMedalla {
+            font-size: 0.82rem !important;
+            font-weight: 700 !important;
+            color: #f8fafc !important;
+            letter-spacing: 0 !important;
+            text-transform: none !important;
+        }
+        #viewGateway .sala-stats-lbl {
+            font-size: 0.62rem;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+        #viewGateway .sala-stats-sep {
+            width: 1px;
+            height: 1.05rem;
+            background: rgba(148, 163, 184, 0.28);
+        }
+        #viewGateway #barraMedallaSala {
+            flex-direction: row !important;
+            align-items: center !important;
+            gap: 0.35rem !important;
+        }
+        #viewGateway #medallaFin {
+            color: #67e8f9 !important;
+            border: 0 !important;
+            background: transparent !important;
+            font-size: 0.78rem !important;
+            width: auto !important;
+            height: auto !important;
+            line-height: 1 !important;
+            box-shadow: none !important;
+        }
+        #viewGateway .medalla-trazo { display: none !important; }
         #viewGateway .sala-acciones {
-            margin-top: 0.15rem !important;
+            margin-top: 0.35rem !important;
             display: flex;
             flex-direction: column;
-            gap: 0.55rem;
+            gap: 0.7rem;
         }
         #viewGateway #tarjetaTareaSala:not([hidden]) {
             order: 2;
@@ -1907,79 +1991,135 @@
         #viewGateway .sala-puertas-grid {
             display: grid !important;
             grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 0.55rem;
+            gap: 0.65rem;
             align-items: stretch;
             width: 100%;
             max-width: 22.5rem;
             margin-left: auto;
             margin-right: auto;
-            margin-top: 1rem !important;
-            padding-bottom: 4.25rem !important;
+            margin-top: 1.15rem !important;
+            padding-bottom: 4.5rem !important;
         }
         #viewGateway .sala-puertas-grid > .flex.items-center.justify-center {
             grid-column: 1 / -1;
             order: 10;
-            opacity: 0.45;
-            padding-top: 0.15rem !important;
+            opacity: 0.4;
+            padding-top: 0.25rem !important;
         }
         #puertaSimulacro { order: 1; }
         #cardExpedienteStatus { order: 2; }
         #puertaRutaVocacional { order: 3; }
-        #cardExpedienteStatus,
-        #puertaSimulacro,
-        #puertaRutaVocacional {
-            background: rgba(10, 12, 16, 0.88) !important;
-            box-shadow: none !important;
-            border-radius: 16px !important;
-            border: 1px solid rgba(148, 163, 184, 0.22) !important;
-            padding: 0.75rem 0.65rem 0.7rem !important;
-            min-height: 7.6rem;
+        #viewGateway .sala-glass-card {
+            position: relative;
+            background: linear-gradient(180deg, rgba(255,255,255,0.045) 0%, rgba(8,10,14,0.55) 100%) !important;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.06) !important;
+            border-radius: 18px !important;
+            border: 1px solid rgba(148, 163, 184, 0.18) !important;
+            padding: 0.8rem 0.65rem 0.7rem !important;
+            min-height: 8.4rem;
             display: flex !important;
             flex-direction: column;
             justify-content: flex-start;
-            gap: 0.35rem;
+            gap: 0.45rem;
             text-decoration: none !important;
+            overflow: hidden;
         }
-        #cardExpedienteStatus { border-color: rgba(34, 211, 238, 0.28) !important; }
-        #puertaSimulacro { border-color: rgba(34, 211, 238, 0.32) !important; }
-        #puertaRutaVocacional { border-color: rgba(251, 146, 60, 0.38) !important; padding: 0.75rem 0.65rem 0.7rem !important; }
-        #cardExpedienteStatus #lblProyeccionEtiqueta,
+        #puertaSimulacro.sala-glass-card { border-color: rgba(34, 211, 238, 0.22) !important; }
+        #cardExpedienteStatus.sala-glass-card { border-color: rgba(34, 211, 238, 0.2) !important; }
+        #puertaRutaVocacional.sala-glass-card { border-color: rgba(251, 146, 60, 0.28) !important; }
+        #viewGateway .sala-card-help {
+            position: absolute;
+            top: 0.45rem;
+            right: 0.45rem;
+            z-index: 3;
+            width: 1.15rem;
+            height: 1.15rem;
+            border-radius: 999px;
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            color: #94a3b8;
+            font-size: 0.62rem;
+            font-weight: 700;
+            line-height: 1.15rem;
+            text-align: center;
+            background: rgba(0,0,0,0.35);
+            cursor: pointer;
+            user-select: none;
+        }
+        #viewGateway .sala-card-title,
         #lblSimulacroTitulo,
-        #lblRutaVocacionalTitulo {
-            color: #94a3b8 !important;
+        #lblRutaVocacionalTitulo,
+        #lblProyeccionEtiqueta {
+            color: #e2e8f0 !important;
             font-family: 'Cinzel', 'Times New Roman', serif !important;
-            font-size: 0.68rem !important;
-            letter-spacing: 0.04em !important;
+            font-size: 0.72rem !important;
+            letter-spacing: 0.01em !important;
             text-transform: none !important;
             font-weight: 600 !important;
             line-height: 1.25 !important;
+            padding-right: 1.1rem;
         }
-        #lblRutaVocacionalTitulo { color: #fdba74 !important; }
-        #lblSimulacroTitulo { color: #67e8f9 !important; }
-        #cardExpedienteStatus #lblProyeccionEtiqueta { color: #67e8f9 !important; }
-        #cardExpedienteStatus #lblProyeccionEscala,
-        #cardExpedienteStatus #lblProyeccionMargen { color: #64748b !important; font-size: 0.72rem !important; }
-        #cardExpedienteStatus .ver-informe,
-        #cardExpedienteStatus #barraMedallaSala,
-        #cardExpedienteStatus .riel-proyeccion,
-        #cardExpedienteStatus #lblEstadoCalibracionSub { display: none !important; }
-        #cardExpedienteStatus #lblProyeccionPuntos {
-            color: #f8fafc !important;
-            font-size: 1.55rem !important;
-            font-family: 'Plus Jakarta Sans', sans-serif !important;
-            font-weight: 650 !important;
+        #viewGateway .sala-card-metric {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            color: #f8fafc;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 600;
+            line-height: 1.25;
+            min-height: 1.2rem;
         }
-        #cardExpedienteStatus > .flex.items-start { align-items: flex-start !important; }
+        #viewGateway .sala-card-metric i { color: #67e8f9; font-size: 0.72rem; }
+        #puertaRutaVocacional .sala-card-metric i { color: #fb923c; }
         #lblSimulacroDetalle,
-        #lblRutaVocacionalDetalle {
-            color: #e2e8f0 !important;
+        #lblRutaVocacionalDetalle,
+        #lblProyeccionPuntos,
+        #lblProyeccionEscala {
+            color: #f8fafc !important;
             font-size: 0.78rem !important;
-            line-height: 1.3 !important;
+            font-weight: 600 !important;
+            line-height: 1.25 !important;
             display: -webkit-box;
-            -webkit-line-clamp: 3;
+            -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            margin: 0 !important;
         }
+        #lblProyeccionEscala { color: #64748b !important; font-weight: 500 !important; -webkit-line-clamp: 1; }
+        #viewGateway .sala-card-art {
+            margin-top: auto;
+            opacity: 0.9;
+            line-height: 1;
+        }
+        #viewGateway .sala-card-art-brain { color: #22d3ee; font-size: 1.55rem; text-shadow: 0 0 14px rgba(34,211,238,0.45); }
+        #viewGateway .sala-card-art-chart { color: #22d3ee; width: 100%; }
+        #viewGateway .sala-card-art-chart svg { width: 100%; height: 1.6rem; display: block; }
+        #viewGateway .sala-card-art-star {
+            color: #fb923c;
+            font-size: 1.55rem;
+            text-shadow: 0 0 16px rgba(251,146,60,0.5);
+        }
+        #salaAyudaTip {
+            position: fixed;
+            z-index: 12050;
+            max-width: min(16.5rem, calc(100vw - 2rem));
+            padding: 0.7rem 0.8rem;
+            border-radius: 12px;
+            background: rgba(8, 10, 14, 0.96);
+            border: 1px solid rgba(34, 211, 238, 0.28);
+            color: #e2e8f0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.78rem;
+            line-height: 1.4;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.45), 0 0 18px rgba(34,211,238,0.12);
+            pointer-events: none;
+            opacity: 0;
+            transform: translateY(4px);
+            transition: opacity 0.16s ease, transform 0.16s ease;
+        }
+        #salaAyudaTip.is-on { opacity: 1; transform: translateY(0); }
         #barraProyeccion { background: #22d3ee !important; }
         /* Dock limpio Sala / Progreso / Simulacro */
         body:has(#viewGateway.active) .bottom-nav {
@@ -2121,8 +2261,8 @@
         .ruta-seguir { width: 100%; min-height: 48px; border: 0; border-radius: 16px; background: linear-gradient(180deg, #fcd34d 0%, #f59e0b 58%, #d97706 100%); color: #1c1408; font-weight: 800; cursor: pointer; }
         .ruta-carrera-nombre { display: block; color: #fafaf9; font-weight: 650; }
         .ruta-carrera-porque { display: block; margin-top: 0.2rem; color: #a8a29e; font-size: 0.86rem; line-height: 1.35; }
-        #lblRutaVocacionalTitulo { color: #fdba74 !important; letter-spacing: 0.04em !important; }
-        #lblRutaVocacionalDetalle { color: #e2e8f0 !important; }
+        #lblRutaVocacionalTitulo { color: #e2e8f0 !important; letter-spacing: 0.01em !important; }
+        #lblRutaVocacionalDetalle { color: #f8fafc !important; }
         #barraMedallaSala { background: transparent !important; height: auto !important; }
         #modalRespiracionInicio.dante-respiro,
         #modalModuladorVagal.dante-respiro {
@@ -2687,14 +2827,18 @@
     <div id="notaEspera" hidden>
         <button type="button" class="nota-espera-velo" onclick="DanteRecorrido.cerrarEspera()" aria-label="Cerrar"></button>
         <div class="nota-espera-hoja" role="dialog" aria-labelledby="notaEsperaTitulo">
-            <p class="nota-espera-kicker">Faltan <span id="txtNotaEsperaReloj">15:00</span></p>
+            <div class="nota-espera-reloj" aria-live="polite">
+                <i class="fa-regular fa-clock" aria-hidden="true"></i>
+                <span id="txtNotaEsperaReloj">15:00</span>
+            </div>
+            <p class="nota-espera-kicker">Descanso activo</p>
             <h3 id="notaEsperaTitulo">Este descanso también entrena</h3>
             <p>Entre una sesión y la siguiente hay quince minutos. El entrenamiento y el refuerzo esperan juntos.</p>
-            <p>El Saber 11 pide sostener la atención. Este hueco deja que lo que acabas de practicar se quede, en vez de encimar otra prueba encima.</p>
             <p>Cuando el reloj llegue a cero, puedes abrir cualquiera de las dos.</p>
             <button type="button" id="btnCerrarNotaEspera" onclick="DanteRecorrido.cerrarEspera()">Seguir en la sala</button>
         </div>
     </div>
+    <div id="salaAyudaTip" role="status" aria-live="polite" hidden></div>
 
     <script>
         // 🛡️ GUARDIÁN ANTI-FUGA (ANTI-HISTORY-LEAK) // DANTE OS ENTERPRISE
@@ -4509,7 +4653,7 @@
                     <img src="assets/icons/dante-logo-icon.svg" alt="Dante OS Logo" class="w-6 h-6 rounded-md shadow-[0_0_12px_rgba(56,189,248,0.45)] border border-cyan-500/30 shrink-0 object-contain" />
                     <span class="font-mono font-bold text-xs tracking-wider text-white select-none whitespace-nowrap flex items-center gap-1.5">
                         Dante OS
-                        <span id="badgeDanteVersion" class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">c-1.3.8</span>
+                        <span id="badgeDanteVersion" class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">c-1.3.9</span>
                     </span>
                 </a>
 
@@ -4526,17 +4670,10 @@
                 <span id="lblProgresoReactivo" class="shrink-0 text-slate-400 font-mono text-[11px]">1/10</span>
             </div>
 
-            <!-- Derecha: Racha, Plan, Ajustes, Perfil -->
+            <!-- Derecha: saludo, Plan, Ajustes, Perfil -->
             <div class="flex items-center gap-1 sm:gap-2 font-mono text-xs shrink-0">
                 <span id="lblHeaderNombreUsuario" class="sala-solo">Estudiante</span>
                 <button type="button" id="btnPerfilHdr" class="sala-solo" onclick="window.abrirPerfilEstudiante(event)" title="Mi Expediente"><i class="fa-regular fa-circle-user text-cyan-400 text-sm"></i></button>
-                <!-- 🔥 BOTÓN / BADGE RACHA REAL DE DÍAS (SIN BORDES NI CONTENEDOR CIRCULAR, SÓLO FLAMA Y NÚMERO) -->
-                <button type="button" id="badgeRacha" onclick="StreakManager.abrirModalRacha()" class="sala-solo flex items-center gap-1 sm:gap-1.5 cursor-pointer bg-transparent border-0 p-1 text-amber-400 font-mono text-xs font-black transition-transform hover:scale-105 active:scale-95 shrink-0 select-none min-h-[32px] min-w-[28px]" title="Ver Racha Real de Días">
-                    <svg class="flama-respirando w-4 h-4 text-amber-400 shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 23c6.075 0 8-4.5 8-9.5 0-4.5-3-7.5-5-10.5-.3-.45-.9-.45-1.2 0-1.5 2.25-3.5 5.5-3.5 8 0 1.5.5 2.8 1.2 3.8-3.2-1.5-4.5-4.8-3.9-8.3.1-.5-.5-.8-.8-.5C4.5 9 3 12.5 3 15.5 3 20 5.5 23 12 23z"/>
-                    </svg>
-                    <span id="lblHeaderRachaCount" class="font-mono font-black text-amber-300 text-xs">1</span>
-                </button>
 
                 <span id="badgeHeaderPlan" class="hidden" hidden onclick="PaywallManager.abrirModalContextual('PLAN_PRO')" title="Plan de Acceso">
                     <span id="lblHeaderCapacidadStatus" class="flex items-center gap-1"><i class="fa-solid fa-seedling text-cyan-400 text-[10px]"></i>FREE</span>
@@ -4568,6 +4705,23 @@
     <!-- VISTA 1: GATEWAY DE ENTRADA CON CONTROL DE MANDO EN MODO FOCO ZEN (100DVH FIX) -->
     <main id="viewGateway" class="app-view active w-full min-h-[calc(100dvh-48px)] flex flex-col justify-between items-center px-3 sm:px-6 py-2 pb-4 overflow-y-auto max-w-md md:max-w-3xl lg:max-w-4xl mx-auto relative select-none">
         <div id="reflejoSala" aria-hidden="true"></div>
+        <div class="sala-stats" aria-label="Racha y nivel">
+            <button type="button" id="badgeRacha" onclick="StreakManager.abrirModalRacha()" class="sala-stats-racha cursor-pointer bg-transparent border-0 p-0 text-left" title="Ver Racha Real de Días">
+                <svg class="flama-respirando w-3.5 h-3.5 text-amber-400 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M12 23c6.075 0 8-4.5 8-9.5 0-4.5-3-7.5-5-10.5-.3-.45-.9-.45-1.2 0-1.5 2.25-3.5 5.5-3.5 8 0 1.5.5 2.8 1.2 3.8-3.2-1.5-4.5-4.8-3.9-8.3.1-.5-.5-.8-.8-.5C4.5 9 3 12.5 3 15.5 3 20 5.5 23 12 23z"/>
+                </svg>
+                <span id="lblHeaderRachaCount" class="sala-stats-num">1</span>
+                <span class="sala-stats-lbl">Días de racha</span>
+            </button>
+            <span class="sala-stats-sep" aria-hidden="true"></span>
+            <div id="barraMedallaSala" class="sala-stats-nivel" aria-label="Nivel">
+                <span id="medallaFin" title="Medalla">✦</span>
+                <span id="lblNivelMedalla">Nivel 1</span>
+                <span class="sala-stats-lbl sala-stats-nivel-sub">ICFES</span>
+                <div class="medalla-trazo"><div id="fillMedalla"></div></div>
+                <span id="avisoMedalla" class="sr-only"></span>
+            </div>
+        </div>
         <div id="contenedorOrbeDante" role="button" tabindex="0" aria-label="Hackea tu mente — presiona la espiral y mantén unos segundos" title="Presiona la espiral y mantén unos segundos">
             <canvas id="danteSpiralCanvas" width="480" height="480"></canvas>
         </div>
@@ -4624,42 +4778,42 @@
 
         <!-- C. BLOQUE INFERIOR UNIFICADO DE EXPEDIENTE Y LEGALES (AL PIE DE LA CABINA 100DVH FIX) -->
         <div class="sala-puertas-grid w-full max-w-xs mx-auto flex flex-col items-center gap-2 pb-2 select-none shrink-0 mt-3 z-20">
-            <!-- Tarjeta de Expediente Bloqueado / Calibrado (Acceso al Radar y Gamificación) -->
-            <a id="cardExpedienteStatus" href="/perfil.html" class="block w-full px-3.5 py-3 rounded-2xl bg-[#14120f] border border-stone-600/30 text-left cursor-pointer transition-all active:scale-[0.99] no-underline">
-                <div class="flex items-start justify-between gap-3">
-                    <div>
-                        <div id="lblProyeccionEtiqueta" class="text-[10px] font-mono uppercase tracking-[0.16em] text-stone-400">Tu proyección</div>
-                        <div class="flex items-baseline gap-1.5 mt-0.5">
-                            <span id="lblProyeccionPuntos" class="text-[2.35rem] font-semibold text-stone-50 leading-none tracking-tight">—</span>
-                            <span id="lblProyeccionEscala" class="text-sm font-mono text-stone-400">/ 500</span>
-                            <span id="lblProyeccionMargen" class="text-[11px] font-mono text-stone-500 ml-1"></span>
-                        </div>
-                    </div>
-                    <div id="barraMedallaSala" aria-label="Nivel">
-                        <span id="medallaFin" title="Medalla">★</span>
-                        <span id="lblNivelMedalla">Nivel 1</span>
-                        <div class="medalla-trazo"><div id="fillMedalla"></div></div>
-                        <span id="avisoMedalla" class="sr-only"></span>
-                    </div>
+            <a id="cardExpedienteStatus" href="/perfil.html" class="sala-glass-card block w-full text-left cursor-pointer transition-all active:scale-[0.99] no-underline">
+                <span class="sala-card-help" role="button" tabindex="0" title="Qué es" aria-label="Qué es Tu Proyección" onclick="event.preventDefault();event.stopPropagation();window.salaAyudaTarjeta&&salaAyudaTarjeta(event,'proyeccion');">?</span>
+                <div id="lblProyeccionEtiqueta" class="sala-card-title">Tu Proyección</div>
+                <div class="sala-card-metric">
+                    <i class="fa-solid fa-bullseye" aria-hidden="true"></i>
+                    <span id="lblProyeccionPuntos">—</span>
+                    <span id="lblProyeccionEscala">/ 500</span>
+                    <span id="lblProyeccionMargen" class="hidden"></span>
                 </div>
-                <div class="riel-proyeccion mt-2.5 h-1 w-full rounded-full bg-white/10 overflow-hidden">
-                    <div id="barraProyeccion" class="h-full rounded-full" style="width:0%"></div>
+                <div class="sala-card-art sala-card-art-chart" aria-hidden="true">
+                    <svg viewBox="0 0 64 28" fill="none"><path d="M2 22 L14 18 L26 20 L38 10 L50 12 L62 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="2 3"/><circle cx="62" cy="4" r="2.5" fill="currentColor"/></svg>
                 </div>
-                <div class="mt-2 flex items-end justify-between gap-3">
-                <p id="lblEstadoCalibracionSub" class="min-w-0 flex-1 text-[12px] text-stone-300 font-sans leading-snug">Tu proyección aparece al terminar el diagnóstico.</p>
-                <span class="ver-informe text-[10px] font-mono text-stone-400 shrink-0 pb-0.5">Ver informe</span>
-                </div>
+                <div class="riel-proyeccion hidden"><div id="barraProyeccion" style="width:0%"></div></div>
+                <p id="lblEstadoCalibracionSub" class="hidden">Tu proyección aparece al terminar el diagnóstico.</p>
+                <span class="ver-informe hidden">Ver informe</span>
                 <span id="lblEstadoCalibracion" class="hidden"></span>
             </a>
 
-            <button type="button" id="puertaSimulacro" onclick="if(window.DanteSimulacro){DanteSimulacro.abrir();}" class="block w-full px-3.5 py-2.5 rounded-2xl bg-[#14120f] border border-[#e7d7c3]/40 text-left cursor-pointer">
-                <div id="lblSimulacroTitulo" class="text-[10px] font-mono uppercase tracking-[0.16em] text-[#e7d7c3]">Simulacro Completo</div>
-                <div id="lblSimulacroDetalle" class="mt-0.5 text-[12px] text-slate-100 font-sans leading-snug">Prueba larga de 254 preguntas. Dos sesiones de 4 h 30 min. El puntaje sale al terminar las cinco áreas.</div>
+            <button type="button" id="puertaSimulacro" onclick="if(window.DanteSimulacro){DanteSimulacro.abrir();}" class="sala-glass-card block w-full text-left cursor-pointer">
+                <span class="sala-card-help" role="button" tabindex="0" title="Qué es" aria-label="Qué es Simulacro Completo" onclick="event.preventDefault();event.stopPropagation();window.salaAyudaTarjeta&&salaAyudaTarjeta(event,'simulacro');">?</span>
+                <div id="lblSimulacroTitulo" class="sala-card-title">Simulacro Completo</div>
+                <div class="sala-card-metric">
+                    <i class="fa-regular fa-clock" aria-hidden="true"></i>
+                    <span id="lblSimulacroDetalle">2 h 30 min</span>
+                </div>
+                <div class="sala-card-art sala-card-art-brain" aria-hidden="true"><i class="fa-solid fa-brain"></i></div>
             </button>
 
-            <button type="button" id="puertaRutaVocacional" onclick="if(window.DanteHubEngine){DanteHubEngine.abrirPuertaRuta();}" class="block w-full px-3.5 py-2.5 rounded-2xl bg-slate-950 border border-purple-400/40 text-left cursor-pointer">
-                <div id="lblRutaVocacionalTitulo" class="text-[10px] font-mono uppercase tracking-[0.16em] text-purple-300">Ruta Vocacional</div>
-                <div id="lblRutaVocacionalDetalle" class="mt-0.5 text-[12px] text-slate-100 font-sans leading-snug">Explora tu mejor camino. Un dilema al día, seis días. Al sexto sale el informe.</div>
+            <button type="button" id="puertaRutaVocacional" onclick="if(window.DanteHubEngine){DanteHubEngine.abrirPuertaRuta();}" class="sala-glass-card block w-full text-left cursor-pointer">
+                <span class="sala-card-help" role="button" tabindex="0" title="Qué es" aria-label="Qué es Ruta Vocacional" onclick="event.preventDefault();event.stopPropagation();window.salaAyudaTarjeta&&salaAyudaTarjeta(event,'ruta');">?</span>
+                <div id="lblRutaVocacionalTitulo" class="sala-card-title">Ruta Vocacional</div>
+                <div class="sala-card-metric sala-card-metric-ruta">
+                    <i class="fa-regular fa-compass" aria-hidden="true"></i>
+                    <span id="lblRutaVocacionalDetalle">Explora tu mejor camino</span>
+                </div>
+                <div class="sala-card-art sala-card-art-star" aria-hidden="true">✦</div>
             </button>
 
             <!-- Bloque Legal Compacto Obligatorio -->
@@ -5294,6 +5448,29 @@
             if (window.DanteHubEngine && typeof window.DanteHubEngine.iniciarMision === 'function') {
                 window.DanteHubEngine.iniciarMision();
             }
+        };
+        window.salaAyudaTarjeta = function(ev, clave) {
+            const tip = document.getElementById('salaAyudaTip');
+            if (!tip) return;
+            const textos = {
+                simulacro: 'Simulacro Completo: prueba larga tipo Saber 11°. Cronometrada en sesiones. Al terminar ves el puntaje por áreas.',
+                proyeccion: 'Tu Proyección: estimación de puntaje / 500 según lo que respondes. Se afina con el diagnóstico y cada bloque.',
+                ruta: 'Ruta Vocacional: dilemas cortos que revelan tu perfil y caminos de carrera. Un paso al día hasta el informe.'
+            };
+            const msg = textos[clave] || '';
+            if (!msg) return;
+            tip.hidden = false;
+            tip.textContent = msg;
+            tip.classList.add('is-on');
+            const x = Math.min(window.innerWidth - 18, Math.max(18, (ev && ev.clientX) || window.innerWidth / 2));
+            const y = Math.min(window.innerHeight - 18, Math.max(18, ((ev && ev.clientY) || 120) + 14));
+            tip.style.left = Math.min(x, window.innerWidth - tip.offsetWidth - 12) + 'px';
+            tip.style.top = y + 'px';
+            clearTimeout(window.__salaAyudaTimer);
+            window.__salaAyudaTimer = setTimeout(function() {
+                tip.classList.remove('is-on');
+                tip.hidden = true;
+            }, 4200);
         };
         (function() {
             const HOLD_MS = 2000;

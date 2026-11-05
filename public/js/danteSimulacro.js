@@ -202,27 +202,26 @@
     const dato = leer();
     const informe = leerInforme();
     if (titulo) {
-      if (dato && dato.estado === 'abierto') titulo.textContent = 'Simulacro · En curso';
-      else if ((dato && dato.estado === 'listo' && dato.resultado) || informe) titulo.textContent = 'Simulacro · Informe listo';
-      else titulo.textContent = 'Simulacro';
+      if (dato && dato.estado === 'abierto') titulo.textContent = 'Simulacro Completo';
+      else if ((dato && dato.estado === 'listo' && dato.resultado) || informe) titulo.textContent = 'Simulacro Completo';
+      else titulo.textContent = 'Simulacro Completo';
     }
     if (detalle) {
       if (dato && dato.estado === 'abierto') {
-        const hechas = Array.isArray(dato.respuestas) ? dato.respuestas.length : 0;
         const actual = Math.min(TOTAL, (dato.indice || 0) + 1);
         const sesion = dato.sesion === 2 ? 2 : 1;
-        detalle.textContent = 'Sesión ' + sesion + ' · pregunta ' + actual + ' / ' + TOTAL + ' · ' + hechas + ' marcadas · reloj ' + reloj(dato.restanteMs || 0) + ' (se pausa en la sala). Tócalo para seguir.';
+        detalle.textContent = 'Sesión ' + sesion + ' · ' + actual + '/' + TOTAL;
       } else if (dato && dato.estado === 'listo' && dato.resultado) {
         if (dato.resultado.global != null) {
-          detalle.textContent = 'Resultado ' + dato.resultado.global + ' / 500. Tócalo para ver la hoja estilo ICFES o empezar otro.';
+          detalle.textContent = dato.resultado.global + ' / 500';
         } else {
-          detalle.textContent = 'Simulacro cerrado sin global completo. Tócalo para ver el desglose o empezar otro.';
+          detalle.textContent = 'Informe listo';
         }
       } else if (informe && informe.resultado) {
         const g = informe.resultado.global;
-        detalle.textContent = (g != null ? ('Último resultado ' + g + ' / 500. ') : '') + 'Tócalo para ver la hoja estilo ICFES o empezar otro.';
+        detalle.textContent = g != null ? (g + ' / 500') : 'Informe listo';
       } else {
-        detalle.textContent = '254 preguntas · 2 sesiones de 4 h 30 min. El reloj solo corre dentro. Al terminar, la hoja de resultados queda siempre aquí.';
+        detalle.textContent = '2 h 30 min';
       }
     }
     if (dato && dato.estado === 'abierto') pintarDialogoSala(dato);

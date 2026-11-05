@@ -203,8 +203,8 @@
         if (tarjeta.dataset.firma !== firma && tarjeta.dataset.firma !== 'abriendo') {
           tarjeta.dataset.firma = firma;
           const esperaTxt = faltaTarjeta > 0
-            ? '<button type="button" id="btnAbrirRefuerzo" class="sala-refuerzo-btn mt-0 w-full">Abre a las ' + reloj(faltaTarjeta) + '</button>'
-            : '<button type="button" id="btnAbrirRefuerzo" class="sala-refuerzo-btn mt-0 w-full"><span class="sala-cta-ico" aria-hidden="true"><i class="fa-solid fa-arrow-trend-up"></i></span><span>Refuerzo</span><span class="sala-refuerzo-meta">• 5 preguntas</span></button>';
+            ? '<button type="button" id="btnAbrirRefuerzo" class="sala-refuerzo-btn en-espera mt-0 w-full"><span class="sala-cta-ico" aria-hidden="true"><i class="fa-regular fa-clock"></i></span><span>Refuerzo en espera</span><span class="sala-refuerzo-meta">Abre a las ' + reloj(faltaTarjeta) + '</span></button>'
+            : '<button type="button" id="btnAbrirRefuerzo" class="sala-refuerzo-btn mt-0 w-full"><span class="sala-cta-ico" aria-hidden="true"><i class="fa-solid fa-arrow-trend-up"></i></span><span>Refuerzo · 5 preguntas</span></button>';
           tarjeta.innerHTML = '<p class="text-[11px] text-slate-400">Tu refuerzo</p>'
             + '<p class="text-sm text-white font-semibold">' + estado.tarea.nombre + ' · 5 preguntas</p>'
             + esperaTxt;
@@ -212,7 +212,9 @@
           if (btn) btn.onclick = faltaTarjeta > 0 ? decirEspera : abrirRefuerzo;
         } else if (faltaTarjeta > 0) {
           const btn = document.getElementById('btnAbrirRefuerzo');
-          if (btn) btn.textContent = 'Abre a las ' + reloj(faltaTarjeta);
+          const meta = btn && btn.querySelector('.sala-refuerzo-meta');
+          if (meta) meta.textContent = 'Abre a las ' + reloj(faltaTarjeta);
+          else if (btn) btn.textContent = 'Abre a las ' + reloj(faltaTarjeta);
         }
       } else {
         tarjeta.hidden = true;
