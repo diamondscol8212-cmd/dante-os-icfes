@@ -2606,7 +2606,7 @@
           }
         } else if (isStruck) {
           if (isCartilla) {
-            card.className = 'opcion-card-workspace flex items-center gap-3 cursor-default text-slate-600';
+            card.className = 'opcion-card-workspace opcion-tachada flex items-center gap-3 cursor-default text-slate-600';
             if (badge) {
               badge.className = 'burbuja-grafito badge-opcion-letra w-10 h-10 rounded-full bg-white border-2 border-slate-400 flex items-center justify-center shrink-0';
               badge.textContent = '';
@@ -2618,7 +2618,7 @@
               btnTachar.className = 'btn-tachar-opcion w-6 h-6 rounded-md bg-amber-200 hover:bg-amber-300 border border-amber-400 text-amber-900 transition-all shrink-0 flex items-center justify-center cursor-pointer shadow-sm';
             }
           } else {
-            card.className = 'opcion-card-workspace p-3 flex items-center gap-3 cursor-pointer select-none opacity-35 grayscale line-through bg-slate-950/90 text-slate-500 transition-colors';
+            card.className = 'opcion-card-workspace opcion-tachada p-3 flex items-center gap-3 cursor-pointer select-none opacity-35 grayscale line-through bg-slate-950/90 text-slate-500 transition-colors';
             if (badge) badge.className = 'burbuja-grafito badge-opcion-letra w-8 h-8 rounded-full bg-slate-900 border-2 border-slate-700 text-slate-600 text-xs font-mono font-bold flex items-center justify-center shrink-0';
             if (txtBody) txtBody.className = 'text-xs sm:text-sm text-slate-500 font-sans leading-relaxed flex-1 txt-opcion-body line-through';
             if (btnTachar) {
