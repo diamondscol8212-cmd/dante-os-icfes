@@ -4587,20 +4587,19 @@
                 <h3 class="rp-sec-h"><i class="fa-solid fa-sun" aria-hidden="true"></i> Mañana empezamos por</h3>
                 <div class="rp-card rp-manana">
                   <p class="rp-manana-txt">${radiografiaData.prescripcion}</p>
-                  <div class="rp-anillo" style="--pct:${pctFirmezaAnillo};" title="${firmezaBadge}">
-                    <div>
+                  <div class="rp-manana-meta">
+                    <div class="rp-anillo" style="--pct:${pctFirmezaAnillo};" title="${firmezaBadge}">
                       <strong>${textoFirmezaPct}</strong>
-                      <small>Confianza en tus respuestas</small>
                     </div>
+                    <p class="rp-confianza-lbl">Confianza en tus respuestas</p>
                   </div>
                 </div>
-                <p class="rp-metric-sub" style="margin-top:0.45rem;">${firmezaDesc}</p>
+                <p class="rp-metric-sub" style="margin-top:0.55rem;">${firmezaDesc}</p>
               </section>
 
               <section class="rp-sec">
                 <h3 class="rp-sec-h"><i class="fa-solid fa-list-check" aria-hidden="true"></i> Qué hacer ahora</h3>
                 <div class="rp-card rp-tareas">
-                  <p class="rp-metric-sub" style="margin-bottom:0.35rem;">${tituloPlan}${carreraClean ? ' · ' + carreraClean : ''}</p>
                   <div id="danteTareaEstudioDiag"></div>
                 </div>
               </section>
@@ -4850,14 +4849,14 @@
               <h3 class="rp-sec-h"><i class="fa-solid fa-sun" aria-hidden="true"></i> Mañana empezamos por</h3>
               <div class="rp-card rp-manana">
                 <p class="rp-manana-txt">${prescripcionSala}</p>
-                <div class="rp-anillo" style="--pct:${pctFirmezaSala};">
-                  <div>
+                <div class="rp-manana-meta">
+                  <div class="rp-anillo" style="--pct:${pctFirmezaSala};">
                     <strong>${textoFirmezaSala}</strong>
-                    <small>Confianza en tus respuestas</small>
                   </div>
+                  <p class="rp-confianza-lbl">Confianza en tus respuestas</p>
                 </div>
               </div>
-              <p class="rp-metric-sub" style="margin-top:0.45rem;">${firmezaDescSala}</p>
+              <p class="rp-metric-sub" style="margin-top:0.55rem;">${firmezaDescSala}</p>
             </section>
 
             <section class="rp-sec">
