@@ -9,7 +9,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="assets/icons/icon-192.svg">
     <link rel="apple-touch-icon" href="assets/icons/icon-192.svg">
-            <title>Dante OS c-1.3.25</title>
+            <title>Dante OS c-1.3.26</title>
     <script>
         try { sessionStorage.setItem('dante_entrada_viva', String(Date.now())); } catch (e) {}
     </script>
@@ -99,7 +99,7 @@
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" defer></script>
 
     <!-- Motores del Ecosistema Dante OS (Cargados en orden estricto de dependencias) -->
-    <script src="js/danteCacheVersion.js?v=c-1.3.25"></script>
+    <script src="js/danteCacheVersion.js?v=c-1.3.26"></script>
     <script src="js/danteSecurityGuard.js?v=c-1.2.85"></script>
     <script src="js/danteSecurityDRM.js?v=c-1.2.85"></script>
     <script src="js/danteStorage.js?v=c-1.2.85"></script>
@@ -129,7 +129,7 @@
     <script src="js/hackeaPulso.js?v=c-1.3.19"></script>
     <script src="js/hackeaMente.js?v=c-1.3.19"></script>
     <script src="js/danteHubEngine.js?v=c-1.3.19"></script>
-    <script src="js/danteExamWorkspace.js?v=c-1.3.25"></script>
+    <script src="js/danteExamWorkspace.js?v=c-1.3.26"></script>
     <script src="js/danteSemana.js?v=c-1.2.85"></script>
     <script src="js/danteSimulacro.js?v=c-1.3.19"></script>
     <script src="js/danteRadarEngine.js?v=c-1.2.85"></script>
@@ -567,24 +567,35 @@
             background: transparent !important;
             border-left: 0 !important;
         }
-        body:has(#hdrExamenPrincipal.modo-examen) #uiOpcionesGrid .badge-opcion-letra {
-            width: 2rem !important;
-            height: 2rem !important;
-            min-width: 2rem !important;
-            min-height: 2rem !important;
-            border-radius: 999px !important;
+        body:has(#hdrExamenPrincipal.modo-examen) #uiOpcionesGrid .badge-opcion-letra,
+        body:has(#hdrExamenPrincipal.modo-examen) #uiOpcionesGrid .burbuja-grafito.badge-opcion-letra {
+            box-sizing: border-box !important;
+            width: 1.75rem !important;
+            height: 1.75rem !important;
+            min-width: 1.75rem !important;
+            min-height: 1.75rem !important;
+            max-width: 1.75rem !important;
+            max-height: 1.75rem !important;
+            aspect-ratio: 1 / 1 !important;
+            border-radius: 50% !important;
             background: #fff !important;
             border: 2px solid #555 !important;
             color: transparent !important;
             font-size: 0 !important;
+            line-height: 0 !important;
             box-shadow: none !important;
             padding: 0 !important;
+            margin: 0 !important;
             position: relative;
             z-index: 3;
             pointer-events: auto !important;
             touch-action: manipulation;
             cursor: pointer;
-            flex-shrink: 0;
+            flex: 0 0 1.75rem !important;
+            flex-shrink: 0 !important;
+            align-self: center !important;
+            overflow: hidden !important;
+            transform: none !important;
         }
         body:has(#hdrExamenPrincipal.modo-examen) #uiOpcionesGrid {
             pointer-events: auto !important;
@@ -593,14 +604,25 @@
         }
         body:has(#hdrExamenPrincipal.modo-examen) #uiOpcionesGrid .opcion-card-workspace.selected .badge-opcion-letra,
         body:has(#hdrExamenPrincipal.modo-examen) #uiOpcionesGrid .badge-opcion-letra.marcada,
-        body:has(#hdrExamenPrincipal.modo-examen) #uiOpcionesGrid .badge-opcion-letra.grafito-filled {
-            border: 2.5px solid #111 !important;
+        body:has(#hdrExamenPrincipal.modo-examen) #uiOpcionesGrid .badge-opcion-letra.grafito-filled,
+        body:has(#hdrExamenPrincipal.modo-examen) #uiOpcionesGrid .burbuja-grafito.marcada.badge-opcion-letra,
+        body:has(#hdrExamenPrincipal.modo-examen) #uiOpcionesGrid .burbuja-grafito.llenando.badge-opcion-letra {
+            border: 2px solid #111 !important;
             background: #111 !important;
+            background-image: none !important;
+            box-shadow: none !important;
+            color: transparent !important;
+            border-radius: 50% !important;
+            width: 1.75rem !important;
+            height: 1.75rem !important;
+            aspect-ratio: 1 / 1 !important;
+            transform: none !important;
         }
         body:has(#hdrExamenPrincipal.modo-examen) #uiOpcionesGrid .opcion-card-workspace.selected .badge-opcion-letra::after,
         body:has(#hdrExamenPrincipal.modo-examen) #uiOpcionesGrid .badge-opcion-letra.marcada::after,
         body:has(#hdrExamenPrincipal.modo-examen) #uiOpcionesGrid .badge-opcion-letra.grafito-filled::after {
             display: none !important;
+            content: none !important;
         }
         /* Fila de opción clickeable (además del círculo) */
         body:has(#hdrExamenPrincipal.modo-examen) #uiOpcionesGrid .txt-opcion-body,
@@ -1539,16 +1561,26 @@
         }
         #uiOpcionesGrid .badge-opcion-letra {
             box-sizing: border-box !important;
-            width: 44px !important;
-            height: 44px !important;
-            min-width: 44px !important;
-            min-height: 44px !important;
-            max-width: 44px !important;
-            max-height: 44px !important;
+            width: 28px !important;
+            height: 28px !important;
+            min-width: 28px !important;
+            min-height: 28px !important;
+            max-width: 28px !important;
+            max-height: 28px !important;
+            aspect-ratio: 1 / 1 !important;
             padding: 0 !important;
-            line-height: 1 !important;
+            line-height: 0 !important;
             border-radius: 50% !important;
-            flex: 0 0 44px !important;
+            flex: 0 0 28px !important;
+            overflow: hidden !important;
+        }
+        body:has(#hdrExamenPrincipal.modo-examen) #uiOpcionesGrid .burbuja-grafito.marcada,
+        body:has(#hdrExamenPrincipal.modo-examen) #uiOpcionesGrid .burbuja-grafito.llenando {
+            background: #111 !important;
+            background-image: none !important;
+            border-radius: 50% !important;
+            box-shadow: none !important;
+            transform: none !important;
         }
         #uiOpcionesGrid .badge-opcion-letra.guia-señal {
             outline: 3px solid #d97706;
@@ -5545,7 +5577,7 @@
                     <img src="assets/icons/dante-logo-icon.svg" alt="Dante OS Logo" class="w-6 h-6 rounded-md shadow-[0_0_12px_rgba(56,189,248,0.45)] border border-cyan-500/30 shrink-0 object-contain" />
                     <span class="font-mono font-bold text-xs tracking-wider text-white select-none whitespace-nowrap flex items-center gap-1.5">
                         Dante OS
-                        <span id="badgeDanteVersion" class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">c-1.3.25</span>
+                        <span id="badgeDanteVersion" class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">c-1.3.26</span>
                     </span>
                 </a>
 
