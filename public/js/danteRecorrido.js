@@ -196,30 +196,36 @@
       bloqueAMedias = Boolean(pausa && pausa.misionData);
     } catch (e) { bloqueAMedias = false; }
     if (tarjeta) {
-      if (estado.tarea && estado.tarea.nombre && !bloqueAMedias) {
-        const faltaTarjeta = segundos();
-        const firma = estado.tarea.nombre + '|' + (faltaTarjeta > 0 ? 'espera' : 'libre');
-        tarjeta.hidden = false;
-        if (tarjeta.dataset.firma !== firma && tarjeta.dataset.firma !== 'abriendo') {
-          tarjeta.dataset.firma = firma;
-          const esperaTxt = faltaTarjeta > 0
-            ? '<button type="button" id="btnAbrirRefuerzo" class="sala-refuerzo-btn en-espera mt-0 w-full"><span class="sala-cta-ico" aria-hidden="true"><i class="fa-regular fa-clock"></i></span><span>Refuerzo en espera</span><span class="sala-refuerzo-meta">Abre a las ' + reloj(faltaTarjeta) + '</span></button>'
-            : '<button type="button" id="btnAbrirRefuerzo" class="sala-refuerzo-btn mt-0 w-full"><span class="sala-cta-ico" aria-hidden="true"><i class="fa-solid fa-arrow-trend-up"></i></span><span>Refuerzo · 5 preguntas</span></button>';
-          tarjeta.innerHTML = '<p class="text-[11px] text-slate-400">Tu refuerzo</p>'
-            + '<p class="text-sm text-white font-semibold">' + estado.tarea.nombre + ' · 5 preguntas</p>'
-            + esperaTxt;
-          const btn = document.getElementById('btnAbrirRefuerzo');
-          if (btn) btn.onclick = faltaTarjeta > 0 ? decirEspera : abrirRefuerzo;
+      // Siempre visible (mock): ámbar · 5 preguntas. Solo abre si hay tarea asignada.
+      tarjeta.hidden = false;
+      const faltaTarjeta = segundos();
+      const tieneTarea = Boolean(estado.tarea && estado.tarea.nombre && !bloqueAMedias);
+      const firma = bloqueAMedias
+        ? 'pausa'
+        : (tieneTarea
+          ? (estado.tarea.nombre + '|' + (faltaTarjeta > 0 ? 'espera' : 'libre'))
+          : 'sin-tarea');
+      if (tarjeta.dataset.firma !== firma && tarjeta.dataset.firma !== 'abriendo') {
+        tarjeta.dataset.firma = firma;
+        let htmlBtn;
+        if (!tieneTarea) {
+          htmlBtn = '<button type="button" id="btnAbrirRefuerzo" class="sala-refuerzo-btn sin-tarea mt-0 w-full"><span class="sala-cta-ico" aria-hidden="true"><i class="fa-solid fa-arrow-trend-up"></i></span><span>Refuerzo · 5 preguntas</span></button>';
         } else if (faltaTarjeta > 0) {
-          const btn = document.getElementById('btnAbrirRefuerzo');
-          const meta = btn && btn.querySelector('.sala-refuerzo-meta');
-          if (meta) meta.textContent = 'Abre a las ' + reloj(faltaTarjeta);
-          else if (btn) btn.textContent = 'Abre a las ' + reloj(faltaTarjeta);
+          htmlBtn = '<button type="button" id="btnAbrirRefuerzo" class="sala-refuerzo-btn en-espera mt-0 w-full"><span class="sala-cta-ico" aria-hidden="true"><i class="fa-regular fa-clock"></i></span><span>Refuerzo · 5 preguntas</span><span class="sala-refuerzo-meta">Abre a las ' + reloj(faltaTarjeta) + '</span></button>';
+        } else {
+          htmlBtn = '<button type="button" id="btnAbrirRefuerzo" class="sala-refuerzo-btn mt-0 w-full"><span class="sala-cta-ico" aria-hidden="true"><i class="fa-solid fa-arrow-trend-up"></i></span><span>Refuerzo · 5 preguntas</span><span class="sala-refuerzo-meta">' + (estado.tarea.nombre || '') + '</span></button>';
         }
-      } else {
-        tarjeta.hidden = true;
-        tarjeta.innerHTML = '';
-        tarjeta.dataset.firma = '';
+        tarjeta.innerHTML = htmlBtn;
+        const btn = document.getElementById('btnAbrirRefuerzo');
+        if (btn) {
+          if (!tieneTarea) btn.onclick = decirSinTarea;
+          else if (faltaTarjeta > 0) btn.onclick = decirEspera;
+          else btn.onclick = abrirRefuerzo;
+        }
+      } else if (tieneTarea && faltaTarjeta > 0) {
+        const btn = document.getElementById('btnAbrirRefuerzo');
+        const meta = btn && btn.querySelector('.sala-refuerzo-meta');
+        if (meta) meta.textContent = 'Abre a las ' + reloj(faltaTarjeta);
       }
     }
 
@@ -249,6 +255,12 @@
     if (!nota) return;
     if (relojNota) relojNota.textContent = reloj(segundos());
     nota.hidden = false;
+  }
+
+  function decirSinTarea() {
+    const msg = 'El refuerzo de 5 se abre cuando terminas un bloque y hay algo por reforzar.';
+    if (typeof window.showToast === 'function') window.showToast(msg, 'info');
+    else if (typeof window.mostrarNotificacionPWA === 'function') window.mostrarNotificacionPWA(msg, 'info');
   }
 
   function cerrarEspera() {
