@@ -1201,7 +1201,7 @@
     }
 
     _señalGuia() {
-      const honey = document.getElementById('guiaBandejaBtnPista') || document.getElementById('btnAbrirDanteSocratico');
+      const honey = document.getElementById('guiaBandejaBtnPista') || document.getElementById('btnAbrirDanteSocraticoPapel') || document.getElementById('btnAbrirDanteSocratico');
       document.querySelectorAll('#uiOpcionesGrid .opcion-card-workspace').forEach((card) => card.classList.remove('guia-señal'));
       if (honey) honey.classList.remove('guia-señal');
       const marcar = (letra) => {
@@ -2228,9 +2228,8 @@
           uiEnunciados.style.display = 'block';
           const numeroEnElTexto = !(textoPregunta && !esMismoQueEnunciado && !esTextoRelleno);
           uiEnunciados.innerHTML = `
-            <div class="icfes-cartilla-card bg-[#faf8f5] text-slate-900 border border-slate-400/80 rounded-2xl p-4 sm:p-6 mb-3 font-serif">
-              <p class="text-[11px] font-mono font-bold text-slate-500 uppercase tracking-wider mb-3">Saber 11°</p>
-              <div id="txtEnunciadoCuerpo" class="cartilla-legible font-serif text-slate-900 font-normal">${numeroEnElTexto ? `<span class="font-mono font-bold mr-2">${this.indexReactivoActivo + 1}.</span>` : ''}${this.sanitizarHtmlText(rawEnunciado)}</div>
+            <div class="icfes-cartilla-card text-slate-900 font-serif">
+              <div id="txtEnunciadoCuerpo" class="cartilla-legible font-serif text-slate-900 font-normal">${numeroEnElTexto ? `<span class="font-bold mr-2">${this.indexReactivoActivo + 1}.</span>` : ''}${this.sanitizarHtmlText(rawEnunciado)}</div>
               ${figuraHtml}
             </div>
           `;
@@ -2242,8 +2241,8 @@
           if (textoPregunta && !esMismoQueEnunciado && !esTextoRelleno) {
             uiPregunta.style.display = 'block';
             uiPregunta.innerHTML = `
-              <div class="bg-[#faf8f5] text-slate-900 border border-slate-400/80 rounded-2xl p-4 sm:p-5 mb-3 font-serif">
-                <span class="font-mono font-bold text-lg mr-2">${this.indexReactivoActivo + 1}.</span>
+              <div class="text-slate-900 font-serif mb-2">
+                <span class="font-bold mr-2">${this.indexReactivoActivo + 1}.</span>
                 <span class="cartilla-legible text-slate-900 font-serif">${this.sanitizarHtmlText(textoPregunta)}</span>
               </div>
             `;
@@ -2329,11 +2328,10 @@
           card.id = `opcion_card_${letra}`;
           
           if (isCartilla) {
-            card.className = `opcion-card-workspace flex items-center gap-3 cursor-pointer text-slate-900`;
+            card.className = `opcion-card-workspace flex items-center gap-3 cursor-default text-slate-900`;
             card.innerHTML = `
-              <button type="button" class="burbuja-grafito badge-opcion-letra w-10 h-10 rounded-full bg-white border-2 border-slate-700 text-slate-900 text-sm font-mono font-bold flex items-center justify-center shrink-0" data-letra="${letra}" aria-label="Marcar opción ${letra}">
-                ${letra}
-              </button>
+              <button type="button" class="burbuja-grafito badge-opcion-letra w-10 h-10 rounded-full bg-white border-2 border-slate-700 flex items-center justify-center shrink-0" data-letra="${letra}" aria-label="Marcar opción ${letra}"></button>
+              <span class="opcion-letra-label" aria-hidden="true">${letra}</span>
               <div class="cartilla-legible text-slate-900 font-serif flex-1 txt-opcion-body">
                 ${this.sanitizarHtmlText(textoOp)}
               </div>
@@ -2562,9 +2560,12 @@
 
         if (isSelected) {
           if (isCartilla) {
-            card.className = 'opcion-card-workspace selected flex items-center gap-3 cursor-pointer bg-amber-50 border border-amber-700 text-slate-950';
-            if (badge) badge.className = 'burbuja-grafito marcada badge-opcion-letra w-10 h-10 rounded-full text-sm font-mono font-bold flex items-center justify-center shrink-0';
-            if (txtBody) txtBody.className = 'cartilla-legible text-slate-950 font-serif font-semibold flex-1 txt-opcion-body';
+            card.className = 'opcion-card-workspace selected flex items-center gap-3 cursor-default text-slate-950';
+            if (badge) {
+              badge.className = 'burbuja-grafito marcada badge-opcion-letra w-10 h-10 rounded-full bg-white border-2 border-slate-900 flex items-center justify-center shrink-0';
+              badge.textContent = '';
+            }
+            if (txtBody) txtBody.className = 'cartilla-legible text-slate-950 font-serif flex-1 txt-opcion-body';
             if (btnTachar) {
               btnTachar.innerHTML = '<i class="fa-solid fa-eye-slash text-[10px]"></i>';
               btnTachar.title = 'Descartar opción';
@@ -2583,8 +2584,11 @@
           }
         } else if (isStruck) {
           if (isCartilla) {
-            card.className = 'opcion-card-workspace flex items-center gap-3 cursor-pointer bg-stone-100 text-slate-600';
-            if (badge) badge.className = 'burbuja-grafito badge-opcion-letra w-10 h-10 rounded-full bg-stone-200 border-2 border-slate-400 text-slate-600 text-sm font-mono font-bold flex items-center justify-center shrink-0';
+            card.className = 'opcion-card-workspace flex items-center gap-3 cursor-default text-slate-600';
+            if (badge) {
+              badge.className = 'burbuja-grafito badge-opcion-letra w-10 h-10 rounded-full bg-white border-2 border-slate-400 flex items-center justify-center shrink-0';
+              badge.textContent = '';
+            }
             if (txtBody) txtBody.className = 'cartilla-legible text-slate-600 font-serif flex-1 txt-opcion-body line-through decoration-slate-400';
             if (btnTachar) {
               btnTachar.innerHTML = '<i class="fa-solid fa-rotate-left text-[10px]"></i>';
@@ -2603,8 +2607,11 @@
           }
         } else {
           if (isCartilla) {
-            card.className = 'opcion-card-workspace flex items-center gap-3 cursor-pointer text-slate-900';
-            if (badge) badge.className = 'burbuja-grafito badge-opcion-letra w-10 h-10 rounded-full bg-white border-2 border-slate-700 text-slate-900 text-sm font-mono font-bold flex items-center justify-center shrink-0';
+            card.className = 'opcion-card-workspace flex items-center gap-3 cursor-default text-slate-900';
+            if (badge) {
+              badge.className = 'burbuja-grafito badge-opcion-letra w-10 h-10 rounded-full bg-white border-2 border-slate-700 flex items-center justify-center shrink-0';
+              badge.textContent = '';
+            }
             if (txtBody) txtBody.className = 'cartilla-legible text-slate-900 font-serif flex-1 txt-opcion-body';
             if (btnTachar) {
               btnTachar.innerHTML = '<i class="fa-solid fa-eye-slash text-[10px]"></i>';
@@ -2901,7 +2908,7 @@
       const txtPrompt = document.getElementById('txtCommitPrompt');
       if (!txtPrompt) return;
       const isLastItem = (this.indexReactivoActivo === (this.misionData?.reactivos?.length || 1) - 1);
-      txtPrompt.innerText = isLastItem ? 'Mantén para terminar' : 'Mantén para confirmar';
+      txtPrompt.innerText = isLastItem ? 'Mantén 3 segundos para terminar' : 'Mantén 3 segundos para confirmar';
     }
 
     _parametrosItem(item) {
@@ -3042,14 +3049,14 @@
       if (!src || typeof src !== 'string') return '';
       const limpio = src.trim();
       const marco = cartilla
-        ? 'bg-[#faf8f5] border border-slate-500 text-slate-900'
-        : 'bg-[#faf8f5] border border-slate-500 text-slate-900';
+        ? 'bg-transparent border-0 text-slate-900'
+        : 'bg-transparent border-0 text-slate-900';
       const pie = `<figcaption class="mt-2 text-[10px] font-mono tracking-wide text-slate-600">Figura de la pregunta</figcaption>`;
       if (limpio.startsWith('<div class="fig-examen"') || limpio.startsWith('<svg')) {
         const cuerpo = limpio.startsWith('<svg')
-          ? `<div class="fig-examen">${limpio.replace('<svg ', '<svg style="width:100%;height:auto;max-height:300px;display:block;margin:0 auto;background:#faf8f5;" ')}</div>`
+          ? `<div class="fig-examen">${limpio.replace('<svg ', '<svg style="width:100%;height:auto;max-height:300px;display:block;margin:0 auto;background:#ffffff;" ')}</div>`
           : limpio;
-        return `<figure class="my-3 p-3 ${marco} rounded-xl overflow-x-auto">${cuerpo}${pie}</figure>`;
+        return `<figure class="my-3 p-1 ${marco} overflow-x-auto">${cuerpo}${pie}</figure>`;
       }
       let srcSegura = limpio;
       if (limpio.includes('<svg') || limpio.startsWith('data:image/svg+xml')) {
@@ -3068,8 +3075,8 @@
         }
       }
       return `
-        <figure class="my-3 p-3 ${marco} rounded-xl overflow-x-auto text-center">
-          <img src="${srcSegura}" alt="Gráfico de la pregunta" style="width:100%;max-height:300px;height:auto;object-fit:contain;background:#faf8f5;" />
+        <figure class="my-3 p-1 ${marco} overflow-x-auto text-center">
+          <img src="${srcSegura}" alt="Gráfico de la pregunta" style="width:100%;max-height:300px;height:auto;object-fit:contain;background:#ffffff;" />
           ${pie}
         </figure>`;
     }
@@ -3259,8 +3266,8 @@
         if (txtPrompt) {
           const isLastItem = (this.indexReactivoActivo === (this.misionData?.reactivos?.length || 1) - 1);
           txtPrompt.innerText = isLastItem
-            ? 'Mantén para terminar'
-            : 'Mantén para confirmar';
+            ? 'Mantén 3 segundos para terminar'
+            : 'Mantén 3 segundos para confirmar';
         }
       };
 
@@ -3371,8 +3378,8 @@
         if (txtPrompt) {
           const isLastItem = (this.indexReactivoActivo === this.misionData.reactivos.length - 1);
           txtPrompt.innerText = isLastItem
-            ? 'Mantén para terminar'
-            : 'Mantén para confirmar';
+            ? 'Mantén 3 segundos para terminar'
+            : 'Mantén 3 segundos para confirmar';
         }
         this.bindHoldToCommit(btnConf);
         this.actualizarEstadoBotonConfirmar();
@@ -3692,7 +3699,19 @@
         if (repasoSirve) frase += ' ' + repaso + '.';
       }
       this._señalarLetraClave(claveFeedback);
-      if (badgeOpcion) badgeOpcion.textContent = esCorrecta ? 'Bien' : 'Esta no era';
+      if (badgeOpcion) {
+        const letraOk = String(claveFeedback || '').replace(/[^A-D]/gi, '').toUpperCase();
+        const letraMarcada = String(elegidaFeedback || '').replace(/[^A-D]/gi, '').toUpperCase();
+        if (esCorrecta) {
+          badgeOpcion.innerHTML = letraMarcada
+            ? ('Marcaste <span class="fb-marca-ok">' + letraMarcada + '</span>.')
+            : 'Correcto.';
+        } else if (letraMarcada && letraOk) {
+          badgeOpcion.innerHTML = 'Marcaste <span class="fb-marca-mal">' + letraMarcada + '</span>. La respuesta correcta es <span class="fb-marca-ok">' + letraOk + '</span>.';
+        } else {
+          badgeOpcion.textContent = 'Esta no era';
+        }
+      }
       uiFeedbackTraining.classList.toggle('feedback-bien', esCorrecta);
       uiFeedbackTraining.classList.toggle('feedback-mal', !esCorrecta);
       // Puente Modo Dante: tras fallo, reentrada por canal Eco (sin tipología).
