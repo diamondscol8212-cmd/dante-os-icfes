@@ -548,8 +548,17 @@
         btn.onclick = cerrar;
       }
       if (entrarYa) {
-        entrarYa.onclick = null;
-        entrarYa.hidden = true;
+        entrarYa.hidden = false;
+        entrarYa.removeAttribute('hidden');
+        entrarYa.setAttribute('aria-hidden', 'false');
+        entrarYa.tabIndex = 0;
+        entrarYa.onclick = (e) => {
+          if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+          this._cerrarRespiracionDeEntrada(continuar);
+        };
       }
       modal.classList.remove('hidden');
       modal.style.display = 'flex';
@@ -623,6 +632,12 @@
       // 🔓 Liberación de Capas y Pointer-Events en Cabecera (#hdrExamenPrincipal / #uiHeaderExamen / #hdrGlobal)
       this.liberarCapasCabecera();
 
+      // Overlay de guía desactivado (bloqueaba clics). Limpiar residuos si quedaron.
+      try { localStorage.setItem('dante_guia_respuesta', 'lista'); } catch (e) {}
+      document.documentElement.classList.remove('guia-en-curso');
+      this.guiaPaso = 0;
+      this._cerrarFocoGuia();
+      this._desmontarBandejaGuia();
       // 🎯 Briefings de Inducción (Diagnóstico Inicial vs Entrenamiento Diario)
       if (this._debeMostrarGuia()) {
         this.iniciarGuiaRespuesta();
@@ -729,14 +744,9 @@
      * Muestra la tarjeta modal de bienvenida al diagnóstico (Briefing 1)
      */
     _debeMostrarGuia() {
-      if (!this.misionData) return false;
-      if (this.misionData.esSimulacro) return false;
-      if (this.misionData.esRefuerzo || this.misionData.repasoArea) return false;
-      try {
-        if (localStorage.getItem('dante_guia_respuesta') === 'lista') return false;
-      } catch (e) {}
-      if ((this.indexReactivoActivo || 0) > 0) return false;
-      return true;
+      // Overlay “Así se responde / Esta es la pregunta. Tócala” desactivado:
+      // bloqueaba clics en Pausa, Pista y opciones del cuadernillo.
+      return false;
     }
 
     _nombreArea(item) {
@@ -2362,32 +2372,29 @@
             `;
           }
 
-          // Event Listeners
-          card.addEventListener('click', (e) => {
+          // Event Listeners: fila o círculo marcan; tachar solo en su icono
+          const marcarFila = (e) => {
             if (this._opcionesBloqueadas()) {
-              e.preventDefault();
-              e.stopPropagation();
+              if (e) { e.preventDefault(); e.stopPropagation(); }
               return;
             }
-            if (e.target.closest('.btn-tachar-opcion')) {
+            if (e && e.target && e.target.closest('.btn-tachar-opcion')) {
               e.stopPropagation();
               this.tacharOpcion(letra);
+              return;
             }
+            this.seleccionarOpcion(letra);
+          };
+          card.addEventListener('click', marcarFila);
+          card.addEventListener('pointerup', (e) => {
+            card.dataset.arrastrando = '';
+            if (e && e.target && e.target.closest('.burbuja-grafito')) return;
+            marcarFila(e);
           });
           card.addEventListener('pointerdown', (e) => {
             if (this._opcionesBloqueadas()) return;
             if (e.target.closest('.btn-tachar-opcion') || e.target.closest('.burbuja-grafito')) return;
             card.dataset.arrastrando = '1';
-          });
-          card.addEventListener('pointerup', (e) => {
-            card.dataset.arrastrando = '';
-            if (this._opcionesBloqueadas()) return;
-            if (e.target.closest('.burbuja-grafito') || e.target.closest('.btn-tachar-opcion')) return;
-            if (this.guiaPaso) {
-              this.seleccionarOpcion(letra);
-              return;
-            }
-            this._avisarEligeLetra();
           });
           card.addEventListener('pointercancel', () => { card.dataset.arrastrando = ''; });
 
@@ -2705,23 +2712,39 @@
       });
     }
 
-    /** Quita capas residuales (guía/foco) que bloquean tocar las letras en diagnóstico. */
+    /** Quita capas residuales (guía/foco) que bloquean tocar letras, Pausa y Pista. */
     _asegurarInteraccionReactivo() {
-      if (this.guiaPaso) return;
       try {
-        document.documentElement.classList.remove('guia-en-curso');
-        this._cerrarFocoGuia();
-        const bandeja = document.getElementById('guiaBandeja');
-        if (bandeja) bandeja.hidden = true;
+        // Si la guía quedó a medias, forzar cierre en flujo de preguntas real.
+        if (!this.guiaPaso) {
+          document.documentElement.classList.remove('guia-en-curso');
+          this._cerrarFocoGuia();
+          const bandeja = document.getElementById('guiaBandeja');
+          if (bandeja) bandeja.hidden = true;
+          const notaGuia = document.getElementById('notaGuia');
+          if (notaGuia) notaGuia.remove();
+        }
         const feedback = document.getElementById('uiFeedbackTrainingImmediate');
         if (feedback && !this.reactivoConfirmado) {
           feedback.style.display = 'none';
           feedback.classList.add('hidden');
           feedback.hidden = true;
         }
-        this.reactivoConfirmado = false;
-        this.isSubmittingRespuesta = false;
-        this._bloquearOpcionesTrasConfirmar(false);
+        if (!this.guiaPaso) {
+          this.reactivoConfirmado = false;
+          this.isSubmittingRespuesta = false;
+          this._bloquearOpcionesTrasConfirmar(false);
+        }
+        const pausa = document.getElementById('btnPausaCabecera');
+        if (pausa) {
+          pausa.style.pointerEvents = 'auto';
+          pausa.style.zIndex = '60';
+        }
+        const pista = document.getElementById('btnAbrirDanteSocraticoPapel');
+        if (pista) {
+          pista.style.pointerEvents = 'auto';
+          pista.disabled = false;
+        }
         document.querySelectorAll('#uiOpcionesGrid .badge-opcion-letra, #uiOpcionesGrid .opcion-card-workspace').forEach((nodo) => {
           nodo.style.pointerEvents = 'auto';
           nodo.removeAttribute('aria-disabled');
