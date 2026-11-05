@@ -840,7 +840,7 @@
         }
         #lblPerfilPlanNombre { color: #f8fafc !important; font-size: 1.05rem !important; }
         #celdaPlanPerfil .chev { color: #64748b; font-size: 1rem; line-height: 1; }
-        #celdaPlanPerfil a.perfil-plan-upgrade { display: none !important; }
+        #celdaPlanPerfil .perfil-plan-upgrade { display: none !important; }
         #bloqueModulos {
             display: grid !important;
             grid-template-columns: repeat(3, 1fr);
@@ -868,11 +868,25 @@
             font-size: 0.78rem !important;
             line-height: 1.25;
         }
-        .puerta-informe strong + span {
+        .puerta-informe strong + span,
+        .puerta-informe .puerta-sub-fija {
+            display: block;
             font-size: 0.65rem !important;
             line-height: 1.35;
             color: #94a3b8 !important;
             margin-top: 0.15rem;
+        }
+        #txtSimulacroPerfil.sr-only {
+            position: absolute !important;
+            width: 1px !important; height: 1px !important;
+            padding: 0 !important; margin: -1px !important;
+            overflow: hidden !important; clip: rect(0,0,0,0) !important;
+            border: 0 !important;
+        }
+        /* Sin evidencia de áreas: una sola columna */
+        #cajaRadarAreas.hidden ~ .space-y-1,
+        .perfil-domains-grid:has(#cajaRadarAreas.hidden) {
+            grid-template-columns: 1fr;
         }
         #bloquePruebas {
             border-radius: 1.1rem !important;
@@ -1166,7 +1180,8 @@
                     </span>
                     <span>
                         <strong>Simulacro</strong>
-                        <span id="txtSimulacroPerfil">Practicar como el examen real</span>
+                        <span class="puerta-sub-fija">Practicar como el examen real</span>
+                        <span id="txtSimulacroPerfil" class="sr-only" aria-hidden="true">Todavía no lo empiezas.</span>
                     </span>
                 </a>
                 <button type="button" id="btnRutaInforme" class="puerta-informe" onclick="PerfilEstudiante.toggleModuloExtra('vocacional')">
