@@ -9,7 +9,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="assets/icons/icon-192.svg">
     <link rel="apple-touch-icon" href="assets/icons/icon-192.svg">
-    <title>Dante OS · Tu informe c-1.3.45</title>
+    <title>Dante OS · Tu informe c-1.3.46</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Serif+4:wght@600;700;800&display=swap">
 
@@ -20,15 +20,15 @@
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="theme.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/danteCacheVersion.js?v=c-1.3.45"></script>
-    <script src="js/danteNube.js?v=c-1.3.45"></script>
-    <script src="js/danteRegistro.js?v=c-1.3.45"></script>
+    <script src="js/danteCacheVersion.js?v=c-1.3.46"></script>
+    <script src="js/danteNube.js?v=c-1.3.46"></script>
+    <script src="js/danteRegistro.js?v=c-1.3.46"></script>
     <script src="js/danteVectorIcons.js"></script>
     <script src="js/danteStorage.js"></script>
     <script src="js/streakManager.js?v=23.1.2"></script>
     <script src="js/rutaSimulacroEngine.js"></script>
     <script src="js/danteRadarEngine.js"></script>
-    <script src="js/danteTutorEngine.js?v=c-1.3.45"></script>
+    <script src="js/danteTutorEngine.js?v=c-1.3.46"></script>
 
     <style>
         #bentoContainer { display: flex; flex-direction: column; gap: 0.95rem; }
@@ -1384,7 +1384,7 @@
         </div>
         <div class="perfil-hdr-tag-wrap">
             <span class="perfil-hdr-tag" id="lblHdrProyeccionTag">PROYECCIÓN 2026</span>
-            <span id="badgeDanteVersion" class="perfil-hdr-ver">c-1.3.45</span>
+            <span id="badgeDanteVersion" class="perfil-hdr-ver">c-1.3.46</span>
         </div>
         <div class="relative flex items-center gap-2.5 shrink-0">
             <button type="button" id="badgeRacha" onclick="if(window.StreakManager) StreakManager.abrirModalRacha()" class="flex items-center gap-1.5 cursor-pointer bg-transparent border-0 p-0 text-amber-400 font-mono text-xs font-black transition-transform hover:scale-105 active:scale-95 shrink-0 select-none" title="Ver Racha Real de Días">
@@ -2028,18 +2028,18 @@
             </div>
             <div class="cr-kpi">
                 <div>
-                    <span>Puntaje</span>
+                    <span>Preguntas</span>
                     <strong id="crPuntaje">—</strong>
                 </div>
                 <div>
-                    <span>Aciertos</span>
+                    <span>Precisión</span>
                     <strong id="crAciertos">—</strong>
                 </div>
             </div>
             <div class="cr-insight">
-                <p id="crInsight">Cuando termines una prueba, aquí verás en qué área necesitas más práctica mañana.</p>
+                <p id="crInsight">Aún no hay suficiente información para mostrar tus patrones de respuesta.</p>
             </div>
-            <p class="cr-sec-h">Tus áreas</p>
+            <p class="cr-sec-h">Tus áreas (acumulado)</p>
             <div id="crAreas" class="cr-areas"></div>
             <button type="button" class="cr-btn" onclick="PerfilEstudiante.cerrarComoRespondes()">Cerrar</button>
         </div>
@@ -2941,26 +2941,32 @@
                     .replace(/"/g, '&quot;');
             }
 
-            static _obtenerPrecisionAreas() {
-                let precMap = {};
+            static _obtenerConteoAreasAcumulado() {
+                const out = {};
                 try {
-                    const rawC = localStorage.getItem('dante_area_conteo');
-                    if (rawC) {
-                        const conteo = JSON.parse(rawC) || {};
-                        Object.entries(conteo).forEach(([k, v]) => {
-                            if (v && v.total) precMap[k] = Math.round((100 * v.aciertos) / v.total);
-                        });
-                    }
-                    if (Object.keys(precMap).length === 0) {
-                        const rawP = localStorage.getItem('dante_precision_por_area');
-                        if (rawP) precMap = JSON.parse(rawP) || {};
-                    }
+                    const conteo = JSON.parse(localStorage.getItem('dante_area_conteo') || '{}') || {};
+                    Object.entries(conteo).forEach(([k, v]) => {
+                        const total = Number(v && v.total) || 0;
+                        const aciertos = Number(v && v.aciertos) || 0;
+                        if (total > 0) {
+                            out[String(k).toLowerCase().replace(/\s+/g, '_')] = {
+                                aciertos,
+                                total,
+                                pct: Math.round((100 * aciertos) / total)
+                            };
+                        }
+                    });
                 } catch (e) {}
-                if (Object.keys(precMap).length === 0 && Array.isArray(cacheHistorialCompleto)) {
-                    const diag = cacheHistorialCompleto.find(x => x.precisionPorArea || (x.items_respondidos && x.items_respondidos.precisionPorArea));
-                    if (diag) precMap = diag.precisionPorArea || diag.items_respondidos?.precisionPorArea || {};
-                }
-                return precMap || {};
+                return out;
+            }
+
+            static _obtenerPrecisionAreas() {
+                const conteo = this._obtenerConteoAreasAcumulado();
+                const precMap = {};
+                Object.entries(conteo).forEach(([k, v]) => {
+                    if (v && Number.isFinite(v.pct)) precMap[k] = v.pct;
+                });
+                return precMap;
             }
 
             static _ultimaPrueba() {
@@ -2990,72 +2996,41 @@
                     { key: 'ingles', name: 'Inglés' }
                 ];
 
-                const reg = this._ultimaPrueba();
-                const scoreProy = parseInt(localStorage.getItem('dante_score_proyectado') || localStorage.getItem('dante_puntaje_global') || '0', 10);
-                let pts = null;
-                if (reg && reg.puntaje_escalonado !== undefined && reg.puntaje_escalonado !== null && reg.puntaje_escalonado !== '') {
-                    pts = Number(reg.puntaje_escalonado);
-                } else if (scoreProy > 0) {
-                    pts = scoreProy;
-                }
-                const maxPts = (reg && String(reg.materia || '').toUpperCase().includes('UNAL')) ? 1000 : 500;
-                if (elPts) elPts.textContent = (pts != null && Number.isFinite(pts)) ? `${Math.round(pts)} / ${maxPts}` : '—';
+                // Solo acumulado real (dante_area_conteo). No mezclar con la última prueba.
+                const conteo = this._obtenerConteoAreasAcumulado();
+                let totalA = 0;
+                let totalT = 0;
+                Object.values(conteo).forEach((fila) => {
+                    totalA += Number(fila.aciertos) || 0;
+                    totalT += Number(fila.total) || 0;
+                });
+                const precisionGeneral = totalT > 0 ? Math.round((100 * totalA) / totalT) : null;
 
-                let aciertosTxt = '—';
-                if (reg && typeof reg.aciertos === 'number' && typeof reg.total === 'number' && reg.total > 0) {
-                    aciertosTxt = `${reg.aciertos} de ${reg.total}`;
-                } else {
-                    try {
-                        const conteo = JSON.parse(localStorage.getItem('dante_area_conteo') || '{}') || {};
-                        let a = 0, t = 0;
-                        Object.values(conteo).forEach((fila) => {
-                            if (fila && fila.total) {
-                                a += Number(fila.aciertos) || 0;
-                                t += Number(fila.total) || 0;
-                            }
-                        });
-                        if (t > 0) aciertosTxt = `${a} de ${t}`;
-                    } catch (e) {}
-                }
-                if (elAci) elAci.textContent = aciertosTxt;
+                if (elPts) elPts.textContent = totalT > 0 ? String(totalT) : '—';
+                if (elAci) elAci.textContent = precisionGeneral != null ? (precisionGeneral + '%') : '—';
 
-                const precMap = this._obtenerPrecisionAreas();
-                let radio = (reg && (reg.radiografia || (reg.items_respondidos && reg.items_respondidos.radiografia_error))) || null;
-                if (!radio) {
-                    try {
-                        const rawR = localStorage.getItem('dante_radiografia_error');
-                        if (rawR) radio = JSON.parse(rawR);
-                    } catch (e) {}
-                }
-
-                let insightHtml = 'Cuando termines una prueba, aquí verás en qué área necesitas más práctica mañana.';
                 const presentes = materias
-                    .map((m) => ({ ...m, pct: precMap[m.key] !== undefined && precMap[m.key] !== null ? Number(precMap[m.key]) : null }))
+                    .map((m) => {
+                        const fila = conteo[m.key];
+                        if (!fila || !(fila.total > 0)) return { ...m, pct: null, total: 0, aciertos: 0 };
+                        return { ...m, pct: fila.pct, total: fila.total, aciertos: fila.aciertos };
+                    })
                     .filter((m) => m.pct !== null && Number.isFinite(m.pct));
 
-                if (radio && radio.materiaVulnerable) {
-                    const matNom = this._escTexto(radio.materiaVulnerable);
-                    const pctVuln = presentes.find((m) => m.name.toLowerCase() === String(radio.materiaVulnerable).toLowerCase()
-                        || m.key === String(radio.materiaVulnerable || '').toLowerCase().replace(/\s+/g, '_'));
-                    const pctTxt = pctVuln != null ? Math.round(pctVuln.pct) : (typeof radio.precision === 'number' ? Math.round(radio.precision) : null);
-                    if (pctTxt != null) {
-                        insightHtml = `Detectamos que en <strong>${matNom}</strong> tu precisión fue del <strong>${pctTxt}%</strong>. Mañana el entrenamiento empieza por ${matNom}.`;
-                    } else {
-                        insightHtml = `Detectamos que en <strong>${matNom}</strong> necesitas más práctica. Mañana el entrenamiento empieza por esa área.`;
-                    }
-                } else if (presentes.length) {
+                let insightHtml = 'Aún no hay suficiente información para mostrar tus patrones de respuesta.';
+                if (presentes.length) {
                     presentes.sort((a, b) => a.pct - b.pct);
                     const peor = presentes[0];
-                    insightHtml = `Detectamos que en <strong>${this._escTexto(peor.name)}</strong> tu precisión fue del <strong>${Math.round(peor.pct)}%</strong>. Mañana el entrenamiento empieza por ${this._escTexto(peor.name)}.`;
+                    insightHtml = `Tu precisión acumulada más baja está en <strong>${this._escTexto(peor.name)}</strong> (${Math.round(peor.pct)}%). Conviene reforzarla.`;
                 }
                 if (elIns) elIns.innerHTML = insightHtml;
 
                 if (!elAreas) return;
                 let html = '';
                 materias.forEach((m) => {
-                    const raw = precMap[m.key];
-                    const has = raw !== undefined && raw !== null && !Number.isNaN(Number(raw));
-                    const pct = has ? Math.max(0, Math.min(100, Math.round(Number(raw)))) : 0;
+                    const fila = conteo[m.key];
+                    const has = !!(fila && fila.total > 0 && Number.isFinite(fila.pct));
+                    const pct = has ? Math.max(0, Math.min(100, Math.round(Number(fila.pct)))) : 0;
                     let badge = 'empty';
                     let badgeTxt = 'Sin datos';
                     let barCls = 'empty';
@@ -3064,6 +3039,7 @@
                         else if (pct >= 40) { badge = 'mid'; badgeTxt = 'En calibración'; barCls = 'mid'; }
                         else { badge = 'low'; badgeTxt = 'Para reforzar'; barCls = 'low'; }
                     }
+                    const detalle = has ? `${fila.aciertos}/${fila.total}` : '';
                     html += `
                         <div class="cr-area-row">
                             <span class="cr-area-name">${this._escTexto(m.name)}</span>
@@ -3072,6 +3048,7 @@
                                 <span class="cr-badge ${badge}">${badgeTxt}</span>
                             </span>
                             <div class="cr-bar"><i class="${barCls}" style="width:${has ? Math.max(4, pct) : 0}%"></i></div>
+                            ${detalle ? `<span style="grid-column:1/-1;font-size:0.68rem;color:#64748b">${detalle} preguntas acumuladas</span>` : ''}
                         </div>`;
                 });
                 elAreas.innerHTML = html;
