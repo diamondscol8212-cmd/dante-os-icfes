@@ -74,17 +74,23 @@
             color: #fff;
         }
         .titulo {
-            margin: 0;
+            margin: 0 auto;
+            max-width: 21rem;
             font-family: "Source Serif 4", Georgia, serif;
             font-weight: 600;
-            font-size: clamp(2.05rem, 8vw, 2.45rem);
-            line-height: 1.08;
+            font-size: clamp(1.7rem, 7vw, 2.15rem);
+            line-height: 1.18;
             letter-spacing: -0.02em;
+            color: #fafaf9;
         }
-        .titulo .linea-blanca { color: #fafaf9; display: block; }
+        .titulo em {
+            font-style: italic;
+            font-weight: 500;
+            color: var(--pw-gold);
+        }
+        .titulo .linea-blanca { color: #fafaf9; }
         .titulo .linea-oro {
             color: var(--pw-gold);
-            display: block;
             font-style: italic;
             font-weight: 500;
         }
@@ -286,14 +292,11 @@
             <span>DANTE OS</span>
         </a>
 
-        <h1 class="titulo">
-            <span class="linea-blanca">Saber 11°</span>
-            <span class="linea-oro">sin anuncios.</span>
-        </h1>
+        <h1 class="titulo">Tu plan ayuda a que más <em>estudiantes</em> se preparen.</h1>
         <span class="diamante" aria-hidden="true"></span>
 
-        <p class="lead">Quita las <em>interrupciones</em> entre bloques y entrena con flujo continuo.</p>
-        <p class="sublead">Entrenamiento, ayudas, simulacro y ruta vocacional son iguales para todos.</p>
+        <p class="lead">Al quitar la publicidad, mantienes la app libre para todos los que quieren estudiar.</p>
+        <p class="sublead">El contenido y las herramientas son las mismas para todos. Tú decides si quieres quitar la publicidad.</p>
 
         <div class="precios" role="group" aria-label="Planes">
             <button type="button" id="btnCicloMensual" class="precio" onclick="cambiarCiclo('MENSUAL')">
