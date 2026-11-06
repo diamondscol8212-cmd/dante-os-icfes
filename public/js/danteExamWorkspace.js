@@ -4472,20 +4472,20 @@
           const firmezaScore = irdVal == null ? null : Math.max(0, Math.min(100, Math.round(100 - (irdVal * 1.4))));
           let firmezaColor = 'border-emerald-500/40 text-emerald-300 bg-emerald-950/20';
           let firmezaIcon = 'fa-solid fa-shield-halved text-emerald-400';
-          let firmezaBadge = '<span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1"></span>Firmeza Táctica Alta';
+          let firmezaTitle = 'Firmeza táctica alta';
           let firmezaDesc = 'Decisiones tácticas sólidas con bajo titubeo o descarte innecesario.';
           if (firmezaScore == null) {
-            firmezaBadge = 'Sin medición';
+            firmezaTitle = 'Sin medición';
             firmezaDesc = 'Esta sesión no contó los cambios de opción.';
           } else if (firmezaScore < 60) {
             firmezaColor = 'border-rose-500/40 text-rose-300 bg-rose-950/20';
             firmezaIcon = 'fa-solid fa-triangle-exclamation text-rose-400';
-            firmezaBadge = '<span class="inline-block w-1.5 h-1.5 rounded-full bg-rose-400 mr-1"></span>Riesgo por Duda y Vacilación';
+            firmezaTitle = 'Riesgo por duda y vacilación';
             firmezaDesc = 'Se detectaron cambios reiterados de opción y vacilación en reactivos clave.';
           } else if (firmezaScore < 80) {
             firmezaColor = 'border-amber-500/40 text-amber-300 bg-amber-950/20';
             firmezaIcon = 'fa-solid fa-scale-balanced text-amber-400';
-            firmezaBadge = '<span class="inline-block w-1.5 h-1.5 rounded-full bg-amber-400 mr-1"></span>Firmeza Moderada en Calibración';
+            firmezaTitle = 'Firmeza moderada en calibración';
             firmezaDesc = 'Seguridad adecuada con ligera vacilación en reactivos de dificultad media-alta.';
           }
 
@@ -4591,13 +4591,15 @@
                 <div class="rp-card rp-manana">
                   <p class="rp-manana-txt">${radiografiaData.prescripcion}</p>
                   <div class="rp-manana-meta">
-                    <div class="rp-anillo" style="--pct:${pctFirmezaAnillo};" title="${firmezaBadge}">
+                    <div class="rp-anillo" style="--pct:${pctFirmezaAnillo};" title="${firmezaTitle}" aria-label="${firmezaTitle}: ${textoFirmezaPct}">
                       <strong>${textoFirmezaPct}</strong>
                     </div>
-                    <p class="rp-confianza-lbl">Confianza en tus respuestas</p>
+                    <div class="rp-confianza-copy">
+                      <p class="rp-confianza-lbl">Confianza en tus respuestas</p>
+                      <p class="rp-confianza-desc">${firmezaDesc}</p>
+                    </div>
                   </div>
                 </div>
-                <p class="rp-metric-sub" style="margin-top:0.55rem;">${firmezaDesc}</p>
               </section>
 
               <section class="rp-sec">
@@ -4853,13 +4855,15 @@
               <div class="rp-card rp-manana">
                 <p class="rp-manana-txt">${prescripcionSala}</p>
                 <div class="rp-manana-meta">
-                  <div class="rp-anillo" style="--pct:${pctFirmezaSala};">
+                  <div class="rp-anillo" style="--pct:${pctFirmezaSala};" aria-label="Confianza: ${textoFirmezaSala}">
                     <strong>${textoFirmezaSala}</strong>
                   </div>
-                  <p class="rp-confianza-lbl">Confianza en tus respuestas</p>
+                  <div class="rp-confianza-copy">
+                    <p class="rp-confianza-lbl">Confianza en tus respuestas</p>
+                    <p class="rp-confianza-desc">${firmezaDescSala}</p>
+                  </div>
                 </div>
               </div>
-              <p class="rp-metric-sub" style="margin-top:0.55rem;">${firmezaDescSala}</p>
             </section>
 
             <section class="rp-sec">

@@ -9,7 +9,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="assets/icons/icon-192.svg">
     <link rel="apple-touch-icon" href="assets/icons/icon-192.svg">
-            <title>Dante OS c-1.3.35</title>
+            <title>Dante OS c-1.3.36</title>
     <script>
         try { sessionStorage.setItem('dante_entrada_viva', String(Date.now())); } catch (e) {}
     </script>
@@ -99,7 +99,7 @@
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" defer></script>
 
     <!-- Motores del Ecosistema Dante OS (Cargados en orden estricto de dependencias) -->
-    <script src="js/danteCacheVersion.js?v=c-1.3.35"></script>
+    <script src="js/danteCacheVersion.js?v=c-1.3.36"></script>
     <script src="js/danteSecurityGuard.js?v=c-1.2.85"></script>
     <script src="js/danteSecurityDRM.js?v=c-1.2.85"></script>
     <script src="js/danteStorage.js?v=c-1.2.85"></script>
@@ -129,7 +129,7 @@
     <script src="js/hackeaPulso.js?v=c-1.3.19"></script>
     <script src="js/hackeaMente.js?v=c-1.3.34"></script>
     <script src="js/danteHubEngine.js?v=c-1.3.19"></script>
-    <script src="js/danteExamWorkspace.js?v=c-1.3.32"></script>
+    <script src="js/danteExamWorkspace.js?v=c-1.3.36"></script>
     <script src="js/danteSemana.js?v=c-1.2.85"></script>
     <script src="js/danteSimulacro.js?v=c-1.3.19"></script>
     <script src="js/danteRadarEngine.js?v=c-1.2.85"></script>
@@ -440,32 +440,45 @@
             display: block; max-height: none;
         }
         .reporte-papel .rp-manana {
-            display: flex; flex-direction: column; gap: 0.85rem; align-items: stretch;
+            display: flex; flex-direction: column; gap: 0.95rem; align-items: stretch;
+            overflow: visible !important;
         }
         .reporte-papel .rp-manana-txt {
-            font-size: 0.86rem; line-height: 1.45; color: #334155; margin: 0;
+            font-size: 0.9rem; line-height: 1.5; color: #1e293b; margin: 0;
             white-space: normal; overflow: visible; word-break: break-word; min-width: 0;
+            font-weight: 550;
         }
         .reporte-papel .rp-manana-meta {
-            display: flex; align-items: center; gap: 0.75rem; min-width: 0;
+            display: flex; align-items: center; gap: 0.85rem; min-width: 0;
+            width: 100%;
         }
         .reporte-papel .rp-anillo {
-            width: 3.6rem; height: 3.6rem; border-radius: 999px; flex-shrink: 0;
+            width: 3.75rem; height: 3.75rem; border-radius: 999px; flex: 0 0 3.75rem;
             display: grid; place-items: center; text-align: center;
             background: conic-gradient(var(--rp-accent) calc(var(--pct, 0) * 1%), #e2e8f0 0);
             position: relative;
+            isolation: isolate;
+            overflow: hidden;
         }
         .reporte-papel .rp-anillo::after {
-            content: ''; position: absolute; inset: 0.4rem; border-radius: 999px; background: #fff;
+            content: ''; position: absolute; inset: 0.42rem; border-radius: 999px; background: #fff;
+            z-index: 0;
         }
         .reporte-papel .rp-anillo strong {
-            position: relative; z-index: 1; font-size: 0.92rem; font-weight: 800; color: var(--rp-blue);
-            line-height: 1;
+            position: relative; z-index: 2; font-size: 0.88rem; font-weight: 800; color: var(--rp-blue);
+            line-height: 1; letter-spacing: -0.02em;
         }
         .reporte-papel .rp-anillo small { display: none; }
+        .reporte-papel .rp-confianza-copy {
+            flex: 1 1 auto; min-width: 0; display: grid; gap: 0.2rem;
+        }
         .reporte-papel .rp-confianza-lbl {
-            font-size: 0.78rem; line-height: 1.35; color: var(--rp-muted); margin: 0; min-width: 0;
-            white-space: normal;
+            font-size: 0.82rem; line-height: 1.35; color: #0f172a; margin: 0;
+            white-space: normal; font-weight: 650;
+        }
+        .reporte-papel .rp-confianza-desc {
+            font-size: 0.76rem; line-height: 1.4; color: #64748b; margin: 0;
+            white-space: normal; overflow: visible; word-break: break-word;
         }
         .reporte-papel .rp-tareas { display: grid; gap: 0.55rem; overflow: visible; }
         .reporte-papel .rp-tareas > .rp-metric-sub { display: none !important; }
@@ -4102,7 +4115,8 @@
             background: #0f172a !important;
         }
 
-        #tutorSala { position: fixed; inset: 0; z-index: 90; }
+        /* Guía/tutorial de sala desactivada */
+        #tutorSala { display: none !important; }
         #tutorSala[hidden] { display: none !important; }
         #tutorSalaVelo { position: absolute; inset: 0; background: transparent; }
         #tutorSalaVelo.tutor-lleno { background: rgba(6, 5, 4, 0.72); }
@@ -5908,7 +5922,7 @@
                 <div id="drawerArquetipo" hidden></div>
             </div>
 
-            <button type="button" onclick="if(window.DanteTutorSala)DanteTutorSala.repetir()" class="w-full text-left rounded-2xl bg-white/[0.04] border border-white/10 p-4 mb-3 cursor-pointer">
+            <button type="button" hidden aria-hidden="true" onclick="if(window.DanteTutorSala)DanteTutorSala.repetir()" class="w-full text-left rounded-2xl bg-white/[0.04] border border-white/10 p-4 mb-3 cursor-pointer" style="display:none!important">
                 <p class="text-sm font-medium text-white">Cómo funciona la sala</p>
                 <p class="text-xs text-slate-400 mt-1 leading-relaxed">La misma guía de la primera vez.</p>
             </button>
@@ -5953,7 +5967,7 @@
                     <img src="assets/icons/dante-logo-icon.svg" alt="Dante OS Logo" class="w-6 h-6 rounded-md shadow-[0_0_12px_rgba(56,189,248,0.45)] border border-cyan-500/30 shrink-0 object-contain" />
                     <span class="font-mono font-bold text-xs tracking-wider text-white select-none whitespace-nowrap flex items-center gap-1.5">
                         DANTE OS
-                        <span id="badgeDanteVersion" class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">c-1.3.35</span>
+                        <span id="badgeDanteVersion" class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">c-1.3.36</span>
                     </span>
                 </a>
 
@@ -6234,27 +6248,18 @@
                 return true;
             },
             ofrecer: function () {
-                if (this.visto() || this.abierto) return;
-                var self = this;
-                window.setTimeout(function () {
-                    if (!self.visto() && self.salaLibre()) self.empezar(false);
-                }, 900);
+                // Tutorial de sala desactivado: solo queda el paso obligatorio de la espiral.
+                this.marcar();
             },
             repetir: function () {
                 var drawer = document.getElementById('drawerAjustes');
                 if (drawer) drawer.style.display = 'none';
-                this.empezar(true);
+                // No reabrir guía automática.
+                this.marcar();
             },
-            empezar: function (forzar) {
-                if (!forzar && this.visto()) return;
-                if (!this.salaLibre()) return;
-                this.abierto = true;
-                this.paso = 0;
-                var capa = document.getElementById('tutorSala');
-                if (capa) capa.hidden = false;
-                this.pintar();
-                var self = this;
-                window.addEventListener('resize', this._alinear = function () { self.alinear(); });
+            empezar: function () {
+                this.marcar();
+                this.cerrar();
             },
             pintar: function () {
                 var item = this.pasos[this.paso];
