@@ -9,9 +9,9 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="assets/icons/icon-192.svg">
     <link rel="apple-touch-icon" href="assets/icons/icon-192.svg">
-    <title>Dante OS · Tu informe c-1.3.41</title>
+    <title>Dante OS · Tu informe c-1.3.42</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Serif+4:wght@600;700;800&display=swap">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -20,15 +20,15 @@
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="theme.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/danteCacheVersion.js?v=c-1.3.41"></script>
-    <script src="js/danteNube.js?v=c-1.3.41"></script>
-    <script src="js/danteRegistro.js?v=c-1.3.41"></script>
+    <script src="js/danteCacheVersion.js?v=c-1.3.42"></script>
+    <script src="js/danteNube.js?v=c-1.3.42"></script>
+    <script src="js/danteRegistro.js?v=c-1.3.42"></script>
     <script src="js/danteVectorIcons.js"></script>
     <script src="js/danteStorage.js"></script>
     <script src="js/streakManager.js?v=23.1.2"></script>
     <script src="js/rutaSimulacroEngine.js"></script>
     <script src="js/danteRadarEngine.js"></script>
-    <script src="js/danteTutorEngine.js?v=c-1.3.41"></script>
+    <script src="js/danteTutorEngine.js?v=c-1.3.42"></script>
 
     <style>
         #bentoContainer { display: flex; flex-direction: column; gap: 1.05rem; }
@@ -1183,6 +1183,154 @@
             font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
             font-weight: 750; font-size: 0.92rem;
         }
+        #modalBoletinSesion {
+            align-items: flex-start; justify-content: center;
+            padding: 1rem 0.75rem 1.5rem; overflow-y: auto;
+        }
+        #modalBoletinSesion .boletin-shell {
+            width: min(100%, 28.5rem); position: relative; margin: 0.5rem auto 1rem;
+        }
+        #modalBoletinSesion .boletin-close {
+            position: sticky; top: 0.35rem; z-index: 3; margin-left: auto;
+            display: flex; width: 2.25rem; height: 2.25rem; align-items: center; justify-content: center;
+            border: 0; border-radius: 999px; background: rgba(15, 17, 21, 0.88);
+            color: #e2e8f0; font-size: 1.2rem; cursor: pointer; margin-bottom: 0.45rem;
+        }
+        #modalBoletinSesion .reporte-papel {
+            --rp-ink: #0f172a; --rp-muted: #64748b; --rp-line: #e2e8f0; --rp-card: #ffffff;
+            --rp-bg: #f1f5f9; --rp-blue: #1e3a5f; --rp-accent: #1d4ed8; --rp-green: #15803d;
+            --rp-orange: #c2410c; --rp-rose: #be123c;
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+            color: var(--rp-ink); background: var(--rp-bg); border: 1px solid var(--rp-line);
+            border-radius: 1rem; padding: 1.15rem 1rem 1.35rem; margin: 0; max-width: none;
+            text-align: left; box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+        }
+        #modalBoletinSesion .reporte-papel .rp-brand {
+            display: flex; align-items: center; gap: 0.55rem;
+            font-size: 0.68rem; font-weight: 750; letter-spacing: 0.08em;
+            text-transform: uppercase; color: var(--rp-blue);
+        }
+        #modalBoletinSesion .reporte-papel .rp-brand-mark {
+            font-family: 'Source Serif 4', 'Times New Roman', serif;
+            font-weight: 800; font-size: 0.95rem; letter-spacing: 0.04em;
+        }
+        #modalBoletinSesion .reporte-papel .rp-brand-sep {
+            width: 1px; height: 0.85rem; background: #cbd5e1;
+        }
+        #modalBoletinSesion .reporte-papel .rp-brand-sub { color: #94a3b8; font-weight: 650; }
+        #modalBoletinSesion .reporte-papel .rp-title {
+            margin: 0.85rem 0 0.35rem; font-family: 'Source Serif 4', 'Times New Roman', serif;
+            font-size: 1.45rem; font-weight: 700; line-height: 1.2; color: var(--rp-blue);
+        }
+        #modalBoletinSesion .reporte-papel .rp-lead {
+            margin: 0 0 1rem; font-size: 0.86rem; line-height: 1.45; color: var(--rp-muted);
+        }
+        #modalBoletinSesion .reporte-papel .rp-sec {
+            margin-top: 1.15rem; padding-top: 1rem; border-top: 1px solid var(--rp-line);
+        }
+        #modalBoletinSesion .reporte-papel .rp-sec-h {
+            display: flex; align-items: center; gap: 0.4rem;
+            margin: 0 0 0.75rem; font-size: 0.92rem; font-weight: 750; color: var(--rp-ink);
+        }
+        #modalBoletinSesion .reporte-papel .rp-sec-h i { color: var(--rp-accent); font-size: 0.85rem; }
+        #modalBoletinSesion .reporte-papel .rp-card {
+            background: var(--rp-card); border: 1px solid var(--rp-line);
+            border-radius: 0.85rem; padding: 0.85rem 0.9rem;
+        }
+        #modalBoletinSesion .reporte-papel .rp-frio { display: flex; gap: 0.75rem; align-items: flex-start; }
+        #modalBoletinSesion .reporte-papel .rp-frio-ico {
+            width: 2.4rem; height: 2.4rem; border-radius: 999px; background: #eff6ff; color: var(--rp-accent);
+            display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        #modalBoletinSesion .reporte-papel .rp-frio p {
+            margin: 0; font-size: 0.84rem; line-height: 1.45; color: #334155;
+        }
+        #modalBoletinSesion .reporte-papel .rp-metrics {
+            display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.45rem; text-align: center;
+        }
+        #modalBoletinSesion .reporte-papel .rp-metric-lbl {
+            display: block; font-size: 0.65rem; font-weight: 700; color: var(--rp-muted);
+            text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 0.2rem;
+        }
+        #modalBoletinSesion .reporte-papel .rp-metric-val {
+            display: block; font-family: 'Source Serif 4', Georgia, serif;
+            font-size: 1.25rem; font-weight: 700; line-height: 1.1; color: var(--rp-blue);
+        }
+        #modalBoletinSesion .reporte-papel .rp-metric-val.ok { color: var(--rp-green); }
+        #modalBoletinSesion .reporte-papel .rp-metric-val.gap { color: var(--rp-orange); }
+        #modalBoletinSesion .reporte-papel .rp-metric-sub {
+            display: block; margin-top: 0.15rem; font-size: 0.68rem; color: #94a3b8;
+        }
+        #modalBoletinSesion .reporte-papel .rp-corte {
+            margin-top: 0.65rem; padding: 0.55rem 0.7rem; border-radius: 0.55rem;
+            background: #fff1f2; border: 1px solid #fecdd3; color: #9f1239;
+            font-size: 0.78rem; line-height: 1.35; display: flex; gap: 0.4rem; align-items: flex-start;
+        }
+        #modalBoletinSesion .reporte-papel .rp-area { display: grid; gap: 0.55rem; }
+        #modalBoletinSesion .reporte-papel .rp-area-row { display: grid; gap: 0.25rem; }
+        #modalBoletinSesion .reporte-papel .rp-area-top {
+            display: flex; justify-content: space-between; align-items: center; gap: 0.4rem;
+        }
+        #modalBoletinSesion .reporte-papel .rp-area-name {
+            font-size: 0.8rem; font-weight: 700; color: #1e293b;
+        }
+        #modalBoletinSesion .reporte-papel .rp-area-meta {
+            font-size: 0.68rem; font-weight: 650; color: var(--rp-muted); white-space: nowrap;
+        }
+        #modalBoletinSesion .reporte-papel .rp-bar {
+            height: 0.55rem; border-radius: 999px; background: #e2e8f0; overflow: hidden;
+        }
+        #modalBoletinSesion .reporte-papel .rp-bar > span {
+            display: block; height: 100%; border-radius: 999px;
+        }
+        #modalBoletinSesion .reporte-papel .rp-badge {
+            font-size: 0.62rem; font-weight: 700; padding: 0.12rem 0.4rem;
+            border-radius: 999px; border: 1px solid transparent;
+        }
+        #modalBoletinSesion .reporte-papel .rp-badge.ok { color: #166534; background: #dcfce7; border-color: #bbf7d0; }
+        #modalBoletinSesion .reporte-papel .rp-badge.mid { color: #92400e; background: #ffedd5; border-color: #fed7aa; }
+        #modalBoletinSesion .reporte-papel .rp-badge.low { color: #9f1239; background: #ffe4e6; border-color: #fecdd3; }
+        #modalBoletinSesion .reporte-papel .rp-fallo {
+            background: #fff1f2; border: 1px solid #fecdd3; border-radius: 0.75rem;
+            padding: 0.8rem 0.9rem; font-size: 0.84rem; line-height: 1.5; color: #881337;
+        }
+        #modalBoletinSesion .reporte-papel .rp-manana-txt {
+            font-size: 0.9rem; line-height: 1.5; color: #1e293b; margin: 0; font-weight: 550;
+        }
+        #modalBoletinSesion .reporte-papel .rp-fallidas { display: grid; gap: 0.75rem; }
+        #modalBoletinSesion .reporte-papel .rp-fallida {
+            border: 1px solid #e2e8f0; border-radius: 0.75rem; padding: 0.75rem 0.8rem; background: #fff;
+        }
+        #modalBoletinSesion .reporte-papel .rp-fallida-area {
+            margin: 0 0 0.3rem; font-size: 0.68rem; font-weight: 700;
+            letter-spacing: 0.04em; text-transform: uppercase; color: #64748b;
+        }
+        #modalBoletinSesion .reporte-papel .rp-fallida-q {
+            margin: 0 0 0.45rem; font-size: 0.86rem; line-height: 1.45; color: #0f172a;
+        }
+        #modalBoletinSesion .reporte-papel .rp-fallida-meta {
+            margin: 0 0 0.55rem; font-size: 0.78rem; line-height: 1.4; color: #475569;
+        }
+        #modalBoletinSesion .reporte-papel .rp-ayuda-btn {
+            border: 1px solid #cbd5e1; background: #f8fafc; color: #1e3a5f;
+            border-radius: 0.55rem; padding: 0.45rem 0.7rem; font-size: 0.78rem;
+            font-weight: 700; cursor: pointer;
+        }
+        #modalBoletinSesion .reporte-papel .rp-ayuda-box {
+            margin-top: 0.55rem; padding: 0.7rem 0.75rem; border-radius: 0.6rem;
+            background: #eff6ff; border: 1px solid #bfdbfe; color: #1e3a5f;
+            font-size: 0.82rem; line-height: 1.45;
+        }
+        #modalBoletinSesion .reporte-papel .rp-ayuda-vacio { margin: 0; font-size: 0.76rem; color: #94a3b8; }
+        #modalBoletinSesion .reporte-papel .rp-actions { display: grid; gap: 0.55rem; margin-top: 1.2rem; }
+        #modalBoletinSesion .reporte-papel .rp-btn-primary {
+            display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+            min-height: 2.85rem; border: 0; border-radius: 0.7rem;
+            background: var(--rp-blue); color: #fff; font-weight: 700; font-size: 0.84rem; cursor: pointer;
+        }
+        @media (max-width: 380px) {
+            #modalBoletinSesion .reporte-papel .rp-metrics { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body oncontextmenu="return false;">
@@ -1200,7 +1348,7 @@
         </div>
         <div class="perfil-hdr-tag-wrap">
             <span class="perfil-hdr-tag" id="lblHdrProyeccionTag">PROYECCIÓN 2026</span>
-            <span id="badgeDanteVersion" class="perfil-hdr-ver">c-1.3.41</span>
+            <span id="badgeDanteVersion" class="perfil-hdr-ver">c-1.3.42</span>
         </div>
         <div class="relative flex items-center gap-2.5 shrink-0">
             <button type="button" id="badgeRacha" onclick="if(window.StreakManager) StreakManager.abrirModalRacha()" class="flex items-center gap-1.5 cursor-pointer bg-transparent border-0 p-0 text-amber-400 font-mono text-xs font-black transition-transform hover:scale-105 active:scale-95 shrink-0 select-none" title="Ver Racha Real de Días">
@@ -1854,22 +2002,17 @@
         </div>
     </div>
 
-    <!-- MODAL DETALLE DE PRUEBA -->
-    <div id="modalForense" class="modal-overlay">
-        <div class="adn-card max-w-lg w-full text-left p-5 shadow-2xl relative" style="background:#0f1115;border:1px solid rgba(148,163,184,0.16);border-radius:1.25rem;">
-            <div class="flex justify-between items-center pb-3 mb-3">
-                <h3 class="text-base font-semibold text-slate-100" id="lblModalForenseTitulo" style="font-family:'Plus Jakarta Sans',sans-serif">
-                    Detalle de la prueba
-                </h3>
-                <button type="button" onclick="document.getElementById('modalForense').style.display='none'" class="text-slate-400 hover:text-white text-xl font-bold cursor-pointer leading-none">&times;</button>
-            </div>
-            <div id="lblModalForenseCuerpo" class="text-sm text-slate-200 space-y-3 max-h-[70vh] overflow-y-auto pr-1" style="font-family:'Plus Jakarta Sans',sans-serif">
-                Cargando…
-            </div>
-            <button type="button" class="w-full mt-4 py-2.5 bg-[#e7d7c3] text-slate-950 font-bold text-sm rounded-xl cursor-pointer" style="font-family:'Plus Jakarta Sans',sans-serif" onclick="document.getElementById('modalForense').style.display='none'">
-                Cerrar
-            </button>
+    <!-- MODAL BOLETÍN COMPLETO DE UNA PRUEBA -->
+    <div id="modalBoletinSesion" class="modal-overlay" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="lblBoletinSesionTitulo">
+        <div class="boletin-shell">
+            <button type="button" class="boletin-close" onclick="PerfilEstudiante.cerrarBoletinSesion()" aria-label="Cerrar">&times;</button>
+            <div id="boletinSesionCuerpo">Cargando…</div>
         </div>
+    </div>
+    <!-- Compat: ids antiguos apuntan al nuevo modal -->
+    <div id="modalForense" style="display:none" aria-hidden="true">
+        <h3 id="lblModalForenseTitulo" hidden>Detalle</h3>
+        <div id="lblModalForenseCuerpo" hidden></div>
     </div>
 
     <!-- MODALS LEY 1581 (PTDP Y ARCO) -->
@@ -4225,145 +4368,272 @@
                 }
             }
 
-            static abrirInspeccionForense(regIndex) {
-                const modal = document.getElementById('modalForense');
-                const titulo = document.getElementById('lblModalForenseTitulo');
-                const cuerpo = document.getElementById('lblModalForenseCuerpo');
+            static cerrarBoletinSesion() {
+                const modal = document.getElementById('modalBoletinSesion');
+                if (modal) modal.style.display = 'none';
+            }
 
+            static _htmlFallidasBoletin(fallidas) {
+                if (window.DanteExamWorkspace && typeof DanteExamWorkspace.htmlPreguntasFalladas === 'function') {
+                    return DanteExamWorkspace.htmlPreguntasFalladas(fallidas);
+                }
+                const lista = Array.isArray(fallidas) ? fallidas : [];
+                if (!lista.length) {
+                    return `<section class="rp-sec"><h3 class="rp-sec-h">Preguntas en las que te equivocaste</h3><div class="rp-card"><p class="rp-manana-txt">En esta sesión no fallaste ninguna pregunta, o aún no se guardó el detalle.</p></div></section>`;
+                }
+                const filas = lista.map((f, i) => {
+                    const area = this._escTexto(String((f && (f.materia || f.area)) || 'Área').replace(/_/g, ' '));
+                    const enunciado = this._escTexto(String((f && f.enunciado) || 'Pregunta sin enunciado guardado.').slice(0, 320));
+                    const marcada = this._escTexto(String((f && (f.opcionSeleccionada || f.letra)) || '—').toUpperCase());
+                    const correcta = this._escTexto(String((f && f.correcta) || '').toUpperCase());
+                    const ayuda = this._escTexto(String((f && (f.ayuda || f.explicacion || f.repaso)) || '').trim());
+                    const idBtn = 'perfilAyuda_' + i;
+                    const meta = correcta
+                        ? (`Marcaste <strong>${marcada}</strong>. La respuesta correcta es <strong>${correcta}</strong>.`)
+                        : (`Marcaste <strong>${marcada}</strong>.`);
+                    const bloqueAyuda = ayuda
+                        ? `<button type="button" class="rp-ayuda-btn" data-rp-ayuda="${idBtn}" aria-expanded="false">Ver explicación</button><div id="${idBtn}" class="rp-ayuda-box" hidden>${ayuda}</div>`
+                        : `<p class="rp-ayuda-vacio">Aún no hay explicación guardada para esta pregunta.</p>`;
+                    return `<article class="rp-fallida"><p class="rp-fallida-area">${area}</p><p class="rp-fallida-q">${enunciado}</p><p class="rp-fallida-meta">${meta}</p>${bloqueAyuda}</article>`;
+                }).join('');
+                return `<section class="rp-sec"><h3 class="rp-sec-h">Preguntas en las que te equivocaste</h3><div class="rp-card rp-fallidas">${filas}</div></section>`;
+            }
+
+            static _enlazarAyudasBoletin(raiz) {
+                if (window.DanteExamWorkspace && typeof DanteExamWorkspace.enlazarAyudasFallidas === 'function') {
+                    DanteExamWorkspace.enlazarAyudasFallidas(raiz);
+                    return;
+                }
+                if (!raiz) return;
+                raiz.querySelectorAll('[data-rp-ayuda]').forEach((btn) => {
+                    btn.addEventListener('click', () => {
+                        const id = btn.getAttribute('data-rp-ayuda');
+                        const box = id ? document.getElementById(id) : null;
+                        if (!box) return;
+                        const abierto = !box.hidden;
+                        box.hidden = abierto;
+                        btn.setAttribute('aria-expanded', abierto ? 'false' : 'true');
+                        btn.textContent = abierto ? 'Ver explicación' : 'Ocultar explicación';
+                    });
+                });
+            }
+
+            static abrirInspeccionForense(regIndex) {
+                this.abrirBoletinSesion(regIndex);
+            }
+
+            static abrirBoletinSesion(regIndex) {
+                const modal = document.getElementById('modalBoletinSesion');
+                const cuerpo = document.getElementById('boletinSesionCuerpo');
                 let items = (cacheHistorialCompleto && cacheHistorialCompleto.length > 0) ? cacheHistorialCompleto : [];
                 if (items.length === 0) {
                     try {
                         const raw = localStorage.getItem('dante_history_cache');
                         if (raw) items = JSON.parse(raw) || [];
-                    } catch(e) {}
+                    } catch (e) {}
                 }
 
                 const reg = (this._pruebasOrdenadas && this._pruebasOrdenadas[regIndex]) || (items && items[regIndex]) || items[0] || {};
-                const materiaRaw = (reg.materia || 'Diagnóstico inicial').replace(/_/g, ' ');
+                const materiaRaw = String(reg.materia || 'Sesión de entrenamiento').replace(/_/g, ' ');
                 const materia = materiaRaw.charAt(0).toUpperCase() + materiaRaw.slice(1);
-                const maxPts = String(materiaRaw).toUpperCase().includes('UNAL') ? 1000 : 500;
+                const tipo = String(reg.tipo || '').toUpperCase();
+                let tituloBloque = 'Sesión terminada';
+                let leadBloque = 'Este es el informe de esa prueba.';
+                if (tipo.includes('DIAG')) {
+                    tituloBloque = 'Diagnóstico terminado';
+                    leadBloque = 'Gracias por completar tu diagnóstico. Aquí está tu análisis.';
+                } else if (tipo.includes('REFUERZO') || /refuerzo/i.test(materia)) {
+                    tituloBloque = 'Refuerzo terminado';
+                    leadBloque = 'Completaste el refuerzo. Estos son los datos de la sesión.';
+                } else if (tipo.includes('SIMUL') || /simulacro/i.test(materia)) {
+                    tituloBloque = 'Simulacro terminado';
+                    leadBloque = 'Completaste el simulacro. Estos son los datos medidos.';
+                } else if (/pre-?u/i.test(materia)) {
+                    tituloBloque = 'Bloque Pre-U terminado';
+                    leadBloque = 'Quedó registrada la habilidad de esta sesión Pre-U.';
+                } else if (tipo.includes('MISION') || /entren/i.test(materia)) {
+                    tituloBloque = 'Entrenamiento terminado';
+                    leadBloque = 'Gracias por completar tu bloque. Aquí está tu análisis de la sesión.';
+                }
+
+                const maxPts = /UNAL/i.test(materiaRaw) ? 1000 : 500;
                 const ptsNum = (reg.puntaje_escalonado !== undefined && reg.puntaje_escalonado !== null && reg.puntaje_escalonado !== '')
                     ? Number(reg.puntaje_escalonado) : null;
-                const ptsTxt = (ptsNum != null && Number.isFinite(ptsNum)) ? `${Math.round(ptsNum)} / ${maxPts}` : '—';
-                const aciertosTxt = (typeof reg.aciertos === 'number' && typeof reg.total === 'number')
-                    ? `${reg.aciertos} de ${reg.total}`
-                    : '—';
+                const ptsTxt = (ptsNum != null && Number.isFinite(ptsNum)) ? String(Math.round(ptsNum)) : '—';
+                const aciertos = (typeof reg.aciertos === 'number') ? reg.aciertos : null;
+                const total = (typeof reg.total === 'number') ? reg.total : null;
+                const aciertosTxt = (aciertos != null && total != null) ? `${aciertos}/${total}` : '—';
 
-                if (titulo) titulo.innerText = 'Cómo respondes';
+                let precMap = reg.precisionPorArea || {};
+                if ((!precMap || !Object.keys(precMap).length) && reg.items_respondidos && Array.isArray(reg.items_respondidos)) {
+                    const stats = {};
+                    reg.items_respondidos.forEach((it) => {
+                        if (!it || typeof it.correcto !== 'boolean') return;
+                        const k = String(it.materia || it.area || 'general').toLowerCase().replace(/\s+/g, '_');
+                        if (!stats[k]) stats[k] = { t: 0, a: 0 };
+                        stats[k].t += 1;
+                        if (it.correcto) stats[k].a += 1;
+                    });
+                    precMap = {};
+                    Object.entries(stats).forEach(([k, v]) => { precMap[k] = Math.round((100 * v.a) / (v.t || 1)); });
+                }
 
-                let radio = reg.radiografia || (reg.items_respondidos && reg.items_respondidos.radiografia_error) || null;
+                const NOMBRES = {
+                    matematicas: 'MATEMÁTICAS',
+                    lectura_critica: 'LECTURA CRÍTICA',
+                    ciencias_naturales: 'CIENCIAS NATURALES',
+                    sociales_ciudadanas: 'SOCIALES Y CIUDADANAS',
+                    ingles: 'INGLÉS'
+                };
+                const colorBarra = (key) => {
+                    const k = String(key || '').toLowerCase();
+                    if (k.includes('lect')) return '#7c3aed';
+                    if (k.includes('mate') || k.includes('razon')) return '#2563eb';
+                    if (k.includes('cien') || k.includes('natur')) return '#16a34a';
+                    if (k.includes('social')) return '#ea580c';
+                    if (k.includes('ingl')) return '#64748b';
+                    return '#334155';
+                };
+
+                let areaRows = '';
+                Object.keys(precMap || {}).forEach((k) => {
+                    const pct = Math.max(0, Math.min(100, Math.round(Number(precMap[k]) || 0)));
+                    let badgeText = 'Fortaleza';
+                    let badgeClass = 'ok';
+                    if (pct < 40) { badgeText = 'Para reforzar'; badgeClass = 'low'; }
+                    else if (pct < 70) { badgeText = 'En calibración'; badgeClass = 'mid'; }
+                    areaRows += `
+                        <div class="rp-area-row">
+                            <div class="rp-area-top">
+                                <span class="rp-area-name">${NOMBRES[k] || k.replace(/_/g, ' ').toUpperCase()}</span>
+                                <span class="rp-badge ${badgeClass}">${badgeText}</span>
+                            </div>
+                            <div class="rp-bar"><span style="width:${Math.max(4, pct)}%;background:${colorBarra(k)};"></span></div>
+                            <div class="rp-area-meta">${pct}%</div>
+                        </div>`;
+                });
+
+                let radio = reg.radiografia || null;
                 if (!radio) {
                     try {
                         const rawR = localStorage.getItem('dante_radiografia_error');
                         if (rawR) radio = JSON.parse(rawR);
-                    } catch(e) {}
+                    } catch (e) {}
+                }
+                const presentes = Object.entries(precMap || {})
+                    .map(([k, v]) => ({ key: k, name: NOMBRES[k] || k.replace(/_/g, ' '), pct: Number(v) }))
+                    .filter((x) => Number.isFinite(x.pct))
+                    .sort((a, b) => a.pct - b.pct);
+                let matVulnerable = (radio && radio.materiaVulnerable) || (presentes[0] && presentes[0].name) || '';
+                let pctVulnerable = (radio && radio.pctPrecision != null) ? Number(radio.pctPrecision) : (presentes[0] ? presentes[0].pct : null);
+                const patron = (radio && radio.patronDetectado)
+                    || (pctVulnerable != null ? ('ahí tu precisión fue del ' + Math.round(pctVulnerable) + '%') : '');
+                const prescripcion = (radio && radio.prescripcion)
+                    || (matVulnerable ? ('Mañana el entrenamiento empieza por ' + matVulnerable + '.') : 'Mañana el entrenamiento sigue con las preguntas que fallaste.');
+
+                const carrera = localStorage.getItem('dante_carrera_objetivo') || '';
+                const carreraClean = carrera ? (carrera.split('/')[0].trim() || carrera) : '';
+                const corte = parseInt(localStorage.getItem('dante_corte_objetivo') || '0', 10);
+                const hayMeta = corte > 0 && corte <= 500 && ptsNum != null && Number.isFinite(ptsNum);
+                const brecha = hayMeta ? Math.max(0, corte - Math.round(ptsNum)) : null;
+                const tituloProy = carreraClean ? ('Proyección para ' + this._escTexto(carreraClean)) : 'Proyección Saber 11°';
+
+                let fallidas = Array.isArray(reg.preguntas_falladas) ? reg.preguntas_falladas : [];
+                if (!fallidas.length && Array.isArray(reg.items_respondidos)) {
+                    fallidas = reg.items_respondidos.filter((it) => it && it.correcto === false);
                 }
 
-                let precMap = reg.precisionPorArea || {};
-                if (Object.keys(precMap).length === 0) {
+                const fechaTxt = (() => {
                     try {
-                        const rawP = localStorage.getItem('dante_precision_por_area');
-                        if (rawP) precMap = JSON.parse(rawP) || {};
-                    } catch(e) {}
-                }
-                if (Object.keys(precMap).length === 0) {
-                    precMap = this._obtenerPrecisionAreas();
-                }
-
-                const NOMBRES = {
-                    matematicas: 'Matemáticas',
-                    lectura_critica: 'Lectura Crítica',
-                    ciencias_naturales: 'Ciencias Naturales',
-                    sociales_ciudadanas: 'Sociales y Ciudadanas',
-                    ingles: 'Inglés'
-                };
-
-                const presentes = Object.entries(precMap)
-                    .map(([k, v]) => ({ key: k, name: NOMBRES[k] || k, pct: Number(v) }))
-                    .filter((x) => Number.isFinite(x.pct));
-                presentes.sort((a, b) => a.pct - b.pct);
-
-                let matVulnerable = radio?.materiaVulnerable || (presentes[0] && presentes[0].name) || '';
-                let pctVulnerable = null;
-                if (presentes.length) {
-                    const match = presentes.find((p) => p.name.toLowerCase() === String(matVulnerable).toLowerCase()
-                        || p.key === String(matVulnerable || '').toLowerCase().replace(/\s+/g, '_'));
-                    pctVulnerable = match ? Math.round(match.pct) : Math.round(presentes[0].pct);
-                    if (!radio?.materiaVulnerable) matVulnerable = presentes[0].name;
-                } else if (typeof radio?.precision === 'number') {
-                    pctVulnerable = Math.round(radio.precision);
-                }
-
-                let insightHtml = 'Cuando termines una prueba, aquí verás en qué área necesitas más práctica mañana.';
-                if (matVulnerable) {
-                    const matEsc = this._escTexto(matVulnerable);
-                    insightHtml = (pctVulnerable != null)
-                        ? `Detectamos que en <strong style="color:#fbbf24">${matEsc}</strong> tu precisión fue del <strong style="color:#fbbf24">${pctVulnerable}%</strong>. Mañana el entrenamiento empieza por ${matEsc}.`
-                        : `Detectamos que en <strong style="color:#fbbf24">${matEsc}</strong> necesitas más práctica. Mañana el entrenamiento empieza por esa área.`;
-                }
-
-                let semaforoHtml = '';
-                const orden = ['matematicas', 'lectura_critica', 'ciencias_naturales', 'sociales_ciudadanas', 'ingles'];
-                orden.forEach((k) => {
-                    const has = precMap[k] !== undefined && precMap[k] !== null && !Number.isNaN(Number(precMap[k]));
-                    const val = has ? Math.max(0, Math.min(100, Math.round(Number(precMap[k])))) : 0;
-                    let badge = 'Sin datos';
-                    let badgeStyle = 'background:rgba(148,163,184,0.1);color:#94a3b8;border:1px solid rgba(148,163,184,0.2)';
-                    let barColor = '#38bdf8';
-                    if (has) {
-                        if (val >= 70) {
-                            badge = 'Fortaleza';
-                            badgeStyle = 'background:rgba(16,185,129,0.15);color:#6ee7b7;border:1px solid rgba(16,185,129,0.3)';
-                            barColor = '#34d399';
-                        } else if (val >= 40) {
-                            badge = 'En calibración';
-                            badgeStyle = 'background:rgba(245,158,11,0.14);color:#fcd34d;border:1px solid rgba(245,158,11,0.3)';
-                            barColor = '#fbbf24';
-                        } else {
-                            badge = 'Para reforzar';
-                            badgeStyle = 'background:rgba(244,63,94,0.14);color:#fda4af;border:1px solid rgba(244,63,94,0.3)';
-                            barColor = '#fb7185';
-                        }
-                    }
-                    semaforoHtml += `
-                        <div style="display:grid;grid-template-columns:1fr auto;gap:0.35rem 0.6rem;align-items:center;padding:0.35rem 0;border-bottom:1px solid rgba(148,163,184,0.1)">
-                            <span style="font-size:0.84rem;color:#e2e8f0;font-weight:600">${NOMBRES[k]}</span>
-                            <span style="display:flex;align-items:center;gap:0.4rem;justify-content:flex-end">
-                                <span style="font-size:0.8rem;font-weight:700;color:#f8fafc;min-width:2.2rem;text-align:right">${has ? val + '%' : '—'}</span>
-                                <span style="font-size:0.62rem;font-weight:700;padding:0.18rem 0.45rem;border-radius:999px;${badgeStyle}">${badge}</span>
-                            </span>
-                            <div style="grid-column:1/-1;height:0.45rem;border-radius:999px;background:#1e2430;overflow:hidden">
-                                <div style="height:100%;width:${has ? Math.max(4, val) : 0}%;border-radius:999px;background:${barColor}"></div>
-                            </div>
-                        </div>
-                    `;
-                });
+                        const d = new Date(reg.created_at || Date.now());
+                        if (Number.isNaN(d.getTime())) return '';
+                        return d.toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' });
+                    } catch (e) { return ''; }
+                })();
 
                 if (cuerpo) {
                     cuerpo.innerHTML = `
-                        <p style="margin:0 0 0.75rem;font-size:0.78rem;color:#94a3b8">${this._escTexto(materia)}</p>
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.65rem;margin-bottom:0.85rem">
-                            <div style="background:#161a22;border:1px solid rgba(148,163,184,0.12);border-radius:0.95rem;padding:0.85rem 0.8rem;text-align:center">
-                                <span style="display:block;font-size:0.68rem;color:#94a3b8;letter-spacing:0.04em;text-transform:uppercase;font-weight:650">Puntaje</span>
-                                <strong style="display:block;margin-top:0.35rem;font-size:1.15rem;font-weight:750;color:#f8fafc">${ptsTxt}</strong>
+                        <article class="reporte-papel" id="reporteHistorialPapel">
+                            <div class="rp-brand">
+                                <span class="rp-brand-mark">ICFES</span>
+                                <span class="rp-brand-sep" aria-hidden="true"></span>
+                                <span class="rp-brand-sub">Reporte personalizado${fechaTxt ? ' · ' + fechaTxt : ''}</span>
                             </div>
-                            <div style="background:#161a22;border:1px solid rgba(148,163,184,0.12);border-radius:0.95rem;padding:0.85rem 0.8rem;text-align:center">
-                                <span style="display:block;font-size:0.68rem;color:#94a3b8;letter-spacing:0.04em;text-transform:uppercase;font-weight:650">Aciertos</span>
-                                <strong style="display:block;margin-top:0.35rem;font-size:1.15rem;font-weight:750;color:#f8fafc">${this._escTexto(aciertosTxt)}</strong>
+                            <h2 class="rp-title" id="lblBoletinSesionTitulo">${this._escTexto(tituloBloque)}</h2>
+                            <p class="rp-lead">${this._escTexto(leadBloque)} <span style="color:#94a3b8">${this._escTexto(materia)}</span></p>
+
+                            <section class="rp-sec">
+                                <h3 class="rp-sec-h"><i class="fa-regular fa-snowflake" aria-hidden="true"></i> Tu resultado en frío${total != null ? ': ' + total + ' preguntas' : ''}</h3>
+                                <div class="rp-card rp-frio">
+                                    <span class="rp-frio-ico" aria-hidden="true"><i class="fa-solid fa-brain"></i></span>
+                                    <p>Sesión medida. <strong>Respuestas correctas: ${this._escTexto(aciertosTxt)}</strong>.</p>
+                                </div>
+                            </section>
+
+                            <section class="rp-sec">
+                                <h3 class="rp-sec-h"><i class="fa-solid fa-graduation-cap" aria-hidden="true"></i> ${tituloProy}</h3>
+                                <div class="rp-card">
+                                    <div class="rp-metrics">
+                                        <div>
+                                            <span class="rp-metric-lbl">Puntaje proyectado</span>
+                                            <span class="rp-metric-val ok">${this._escTexto(ptsTxt)}</span>
+                                            <span class="rp-metric-sub">sobre ${maxPts}</span>
+                                        </div>
+                                        <div>
+                                            <span class="rp-metric-lbl">Meta requerida</span>
+                                            <span class="rp-metric-val">${hayMeta ? corte : '—'}</span>
+                                            <span class="rp-metric-sub">sobre ${maxPts}</span>
+                                        </div>
+                                        <div>
+                                            <span class="rp-metric-lbl">Brecha</span>
+                                            <span class="rp-metric-val gap">${brecha == null ? '—' : ('-' + brecha + ' pts')}</span>
+                                            <span class="rp-metric-sub">${brecha == null ? 'Elige carrera para ver la brecha' : ('Te faltan ' + brecha + ' puntos')}</span>
+                                        </div>
+                                    </div>
+                                    <div class="rp-corte" role="status">
+                                        <i class="fa-solid fa-bullseye" aria-hidden="true"></i>
+                                        <span>${brecha == null ? 'Elige carrera para ver la brecha' : ('Cercanía al corte: A ' + brecha + ' puntos del puntaje mínimo estimado.')}</span>
+                                    </div>
+                                </div>
+                            </section>
+
+                            ${areaRows ? `
+                            <section class="rp-sec">
+                                <h3 class="rp-sec-h"><i class="fa-solid fa-chart-simple" aria-hidden="true"></i> Resultados por área</h3>
+                                <div class="rp-card rp-area">${areaRows}</div>
+                            </section>` : ''}
+
+                            ${matVulnerable ? `
+                            <section class="rp-sec">
+                                <h3 class="rp-sec-h"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i> Dónde fallaste</h3>
+                                <div class="rp-fallo">
+                                    <strong>${this._escTexto(matVulnerable)}:</strong>
+                                    ${this._escTexto(patron)}
+                                </div>
+                            </section>` : ''}
+
+                            ${this._htmlFallidasBoletin(fallidas)}
+
+                            <section class="rp-sec">
+                                <h3 class="rp-sec-h"><i class="fa-solid fa-sun" aria-hidden="true"></i> Mañana empezamos por</h3>
+                                <div class="rp-card"><p class="rp-manana-txt">${this._escTexto(prescripcion)}</p></div>
+                            </section>
+
+                            <div class="rp-actions">
+                                <button type="button" class="rp-btn-primary" onclick="PerfilEstudiante.cerrarBoletinSesion()">Cerrar</button>
                             </div>
-                        </div>
-                        <div style="background:linear-gradient(160deg,rgba(127,29,29,0.28),rgba(15,17,21,0.95));border:1px solid rgba(251,113,133,0.35);border-radius:0.95rem;padding:0.95rem;margin-bottom:1rem">
-                            <p style="margin:0;color:#e2e8f0;font-size:0.88rem;line-height:1.45">${insightHtml}</p>
-                        </div>
-                        <p style="margin:0 0 0.65rem;font-size:0.78rem;font-weight:700;color:#cbd5e1">Tus áreas</p>
-                        <div style="display:grid;gap:0.55rem;margin-bottom:0.25rem">${semaforoHtml}</div>
+                        </article>
                     `;
+                    this._enlazarAyudasBoletin(cuerpo);
                 }
-                if (modal) modal.style.display = 'flex';
+                if (modal) {
+                    modal.style.display = 'flex';
+                    try { modal.scrollTop = 0; } catch (e) {}
+                }
             }
 
             static abrirRadiografiaError() {
-                this.abrirInspeccionForense(0);
+                this.abrirBoletinSesion(0);
             }
         }
 

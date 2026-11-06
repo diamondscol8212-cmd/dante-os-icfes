@@ -3100,10 +3100,149 @@
       };
     }
 
+    _textoAyudaItem(item, elegida) {
+      const letra = String(elegida || '').trim().toUpperCase();
+      const razon = this._textoLimpio(item && item.justificacion_opciones && item.justificacion_opciones[letra]);
+      const repaso = this._textoLimpio(item && item.repaso);
+      const atajo = this._textoLimpio(item && (item.atajo_tactico || item.atajoTactico));
+      const partes = [];
+      if (razon) partes.push(razon);
+      if (repaso) partes.push(repaso);
+      if (atajo) partes.push(atajo);
+      return partes.join(' ').replace(/\s+/g, ' ').trim().slice(0, 520);
+    }
+
+    _enriquecerRecordRespuesta(record, item, elegida) {
+      if (!record || !item) return record;
+      const enunciado = String(
+        item.enunciado || item.pregunta_texto || item.texto || item.stem || item.pregunta || ''
+      ).replace(/\s+/g, ' ').trim();
+      record.enunciado = enunciado.slice(0, 320);
+      record.tema = String(item.tema || item.competencia || item.componente || '').slice(0, 80);
+      const correcta = String(item.correcta || item.respuesta_correcta || item.ok || item.clave || '').trim().toUpperCase().slice(0, 1);
+      if (correcta) record.correcta = correcta;
+      record.ayuda = this._textoAyudaItem(item, elegida || record.opcionSeleccionada);
+      return record;
+    }
+
+    _serializarItemsSesion() {
+      const items = [];
+      const fallidas = [];
+      Object.values(this.respuestasSesionActiva || {}).forEach((r) => {
+        if (!r || typeof r.correcto !== 'boolean') return;
+        const fila = {
+          id: String(r.id || r.itemId || ''),
+          materia: String(r.materia || r.area || 'general'),
+          correcto: r.correcto === true,
+          opcionSeleccionada: String(r.opcionSeleccionada || r.letra || '').toUpperCase().slice(0, 1),
+          correcta: String(r.correcta || '').toUpperCase().slice(0, 1),
+          enunciado: String(r.enunciado || '').slice(0, 320),
+          tema: String(r.tema || '').slice(0, 80),
+          ayuda: String(r.ayuda || '').slice(0, 520)
+        };
+        items.push(fila);
+        if (!fila.correcto) fallidas.push(fila);
+      });
+      return { items_respondidos: items, preguntas_falladas: fallidas };
+    }
+
+    _radiografiaDesdeSesion(precisionSesion) {
+      const NOMBRES = {
+        matematicas: 'Matemáticas',
+        lectura_critica: 'Lectura Crítica',
+        ciencias_naturales: 'Ciencias Naturales',
+        sociales_ciudadanas: 'Sociales y Ciudadanas',
+        ingles: 'Inglés'
+      };
+      let menor = 101;
+      let key = '';
+      Object.entries(precisionSesion || {}).forEach(([k, v]) => {
+        const n = Number(v);
+        if (!Number.isFinite(n)) return;
+        if (n < menor) {
+          menor = n;
+          key = k;
+        }
+      });
+      if (!key) {
+        return {
+          materiaVulnerable: '',
+          materiaKey: '',
+          pctPrecision: null,
+          patronDetectado: '',
+          prescripcion: 'Mañana el entrenamiento sigue con las preguntas que fallaste.'
+        };
+      }
+      const nombre = NOMBRES[key] || key.replace(/_/g, ' ');
+      return {
+        materiaVulnerable: nombre,
+        materiaKey: key,
+        pctPrecision: menor,
+        patronDetectado: 'ahí tu precisión fue del ' + menor + '%',
+        prescripcion: 'Mañana el entrenamiento empieza por ' + nombre + '.'
+      };
+    }
+
+    static htmlPreguntasFalladas(fallidas) {
+      const lista = Array.isArray(fallidas) ? fallidas : [];
+      if (!lista.length) {
+        return `
+          <section class="rp-sec">
+            <h3 class="rp-sec-h"><i class="fa-solid fa-circle-check" aria-hidden="true"></i> Preguntas en las que te equivocaste</h3>
+            <div class="rp-card"><p class="rp-manana-txt">En esta sesión no fallaste ninguna pregunta.</p></div>
+          </section>`;
+      }
+      const filas = lista.map((f, i) => {
+        const area = String((f && (f.materia || f.area)) || 'Área').replace(/_/g, ' ');
+        const enunciado = String((f && f.enunciado) || 'Pregunta sin enunciado guardado.').slice(0, 320);
+        const marcada = String((f && (f.opcionSeleccionada || f.letra)) || '—').toUpperCase();
+        const correcta = String((f && f.correcta) || '').toUpperCase();
+        const ayuda = String((f && (f.ayuda || f.explicacion || f.repaso)) || '').trim();
+        const idBtn = 'rpAyuda_' + i + '_' + String((f && f.id) || i).replace(/[^a-zA-Z0-9_-]/g, '');
+        const meta = correcta
+          ? ('Marcaste <strong>' + marcada + '</strong>. La respuesta correcta es <strong>' + correcta + '</strong>.')
+          : ('Marcaste <strong>' + marcada + '</strong>.');
+        const bloqueAyuda = ayuda
+          ? `<button type="button" class="rp-ayuda-btn" data-rp-ayuda="${idBtn}" aria-expanded="false">Ver explicación</button>
+             <div id="${idBtn}" class="rp-ayuda-box" hidden>${ayuda.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>`
+          : `<p class="rp-ayuda-vacio">Aún no hay explicación guardada para esta pregunta.</p>`;
+        return `
+          <article class="rp-fallida">
+            <p class="rp-fallida-area">${area}</p>
+            <p class="rp-fallida-q">${enunciado.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
+            <p class="rp-fallida-meta">${meta}</p>
+            ${bloqueAyuda}
+          </article>`;
+      }).join('');
+      return `
+        <section class="rp-sec">
+          <h3 class="rp-sec-h"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Preguntas en las que te equivocaste</h3>
+          <div class="rp-card rp-fallidas">${filas}</div>
+        </section>`;
+    }
+
+    static enlazarAyudasFallidas(raiz) {
+      if (!raiz) return;
+      raiz.querySelectorAll('[data-rp-ayuda]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-rp-ayuda');
+          const box = id ? document.getElementById(id) : null;
+          if (!box) return;
+          const abierto = !box.hidden;
+          box.hidden = abierto;
+          btn.setAttribute('aria-expanded', abierto ? 'false' : 'true');
+          btn.textContent = abierto ? 'Ver explicación' : 'Ocultar explicación';
+        });
+      });
+    }
+
     _registrarSesionExpediente(tipo, materia, puntaje, theta) {
       const suma = this._sumarConteoAreas();
       const aciertos = Object.values(suma.stats).reduce((s, v) => s + v.aciertos, 0);
       const total = Object.values(suma.stats).reduce((s, v) => s + v.total, 0);
+      const detalle = this._serializarItemsSesion();
+      const radiografia = this._radiografiaDesdeSesion(suma.precisionSesion);
+      try { localStorage.setItem('dante_radiografia_error', JSON.stringify(radiografia)); } catch (e) {}
       const registro = {
         id: `eval_${tipo}_${Date.now()}`,
         created_at: new Date().toISOString(),
@@ -3114,7 +3253,11 @@
         sem: this.semEstimado,
         aciertos: aciertos,
         total: total,
-        precisionPorArea: suma.precisionSesion
+        precision: total ? Math.round((100 * aciertos) / total) : null,
+        precisionPorArea: suma.precisionSesion,
+        radiografia: radiografia,
+        items_respondidos: detalle.items_respondidos,
+        preguntas_falladas: detalle.preguntas_falladas
       };
       let hist = [];
       try {
@@ -3612,6 +3755,7 @@
       recordRespuesta.a = paramsItem.a;
       recordRespuesta.b = paramsItem.b;
       recordRespuesta.c = paramsItem.c;
+      this._enriquecerRecordRespuesta(recordRespuesta, item, elegida);
 
       this.respuestasSesionActiva[this.indexReactivoActivo] = recordRespuesta;
       let estGuardado = null;
@@ -4394,6 +4538,7 @@
 
           // 💾 PERSISTENCIA HÍBRIDA INMEDIATA EN CLIENTE (SSOT para perfil.html)
           const ptsPreuSala = parseInt(localStorage.getItem('dante_preu_puntos') || '0', 10);
+          const detalleDiag = this._serializarItemsSesion();
           try {
             if (!esMisionPreun && estSesion && estSesion.puntos != null) {
               localStorage.setItem('dante_score_proyectado', String(scoreProyectado));
@@ -4423,7 +4568,9 @@
               precision: Math.round((aciertos / (total || 1)) * 100),
               precisionPorArea: areaBreakdown,
               irdPorcentaje: (summary && summary.irdPorcentaje !== undefined && summary.irdPorcentaje !== null) ? summary.irdPorcentaje : null,
-              radiografia: radiografiaData
+              radiografia: radiografiaData,
+              items_respondidos: detalleDiag.items_respondidos,
+              preguntas_falladas: detalleDiag.preguntas_falladas
             };
 
             let histPrevio = [];
@@ -4598,6 +4745,8 @@
                 </div>
               </section>
 
+              ${DanteExamWorkspaceEngine.htmlPreguntasFalladas(detalleDiag.preguntas_falladas)}
+
               <section class="rp-sec">
                 <h3 class="rp-sec-h"><i class="fa-solid fa-sun" aria-hidden="true"></i> Mañana empezamos por</h3>
                 <div class="rp-card rp-manana">
@@ -4631,6 +4780,7 @@
               </div>
             </article>
           `;
+          DanteExamWorkspaceEngine.enlazarAyudasFallidas(containerResumen);
           if (window.DantePlanSala) DantePlanSala.pintarTarea(containerResumen, this.respuestasSesionActiva);
           const tituloSaber = document.getElementById('uiTituloSaberPapel');
           if (tituloSaber) tituloSaber.style.display = 'none';
@@ -4862,6 +5012,8 @@
             </section>
             ` : ''}
 
+            ${DanteExamWorkspaceEngine.htmlPreguntasFalladas((this._serializarItemsSesion() || {}).preguntas_falladas)}
+
             <section class="rp-sec">
               <h3 class="rp-sec-h"><i class="fa-solid fa-sun" aria-hidden="true"></i> Mañana empezamos por</h3>
               <div class="rp-card rp-manana">
@@ -4898,6 +5050,7 @@
             </div>
           </article>
         `;
+        DanteExamWorkspaceEngine.enlazarAyudasFallidas(containerResumen);
         const tituloSaber2 = document.getElementById('uiTituloSaberPapel');
         if (tituloSaber2) tituloSaber2.style.display = 'none';
       }
@@ -5335,6 +5488,8 @@
 
   // Instanciar y exponer en el ámbito global window
   const engine = new DanteExamWorkspaceEngine();
+  engine.htmlPreguntasFalladas = DanteExamWorkspaceEngine.htmlPreguntasFalladas.bind(DanteExamWorkspaceEngine);
+  engine.enlazarAyudasFallidas = DanteExamWorkspaceEngine.enlazarAyudasFallidas.bind(DanteExamWorkspaceEngine);
   window.DanteExamWorkspace = engine;
 
   console.log('⚡ [DANTE EXAM WORKSPACE Engine v23.1.0-ENTERPRISE] cargado e inicializado.');
