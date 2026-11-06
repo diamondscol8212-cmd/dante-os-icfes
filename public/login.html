@@ -29,6 +29,7 @@
     <script src="https://browser.sentry-cdn.com/7.x/bundle.min.js" crossorigin="anonymous"></script>
     <script src="js/danteVectorIcons.js"></script>
     <script src="js/danteStorage.js"></script>
+    <script src="js/danteSpiralEntity.js"></script>
 
     <style>
         :root {
@@ -66,44 +67,40 @@
             padding-bottom: env(safe-area-inset-bottom, 0px);
         }
 
-        #danteSpiralCanvas {
+        /* Espiral oficial Dante OS (misma entidad de la sala), solo decorativa */
+        #loginSpiralBackdrop {
             position: fixed;
-            inset: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 1;
-            pointer-events: none;
-            display: block !important;
-            opacity: 0.34;
-            mask-image: linear-gradient(to bottom, #000 0%, #000 42%, transparent 72%);
-            -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 42%, transparent 72%);
-        }
-
-        #loginSpiralAccent {
-            position: fixed;
-            top: -2.5rem;
+            top: max(0.25rem, env(safe-area-inset-top, 0px));
             left: 50%;
             transform: translateX(-50%);
-            width: min(26rem, 118vw);
-            height: min(26rem, 118vw);
-            z-index: 2;
+            width: min(62vw, 268px);
+            height: min(62vw, 268px);
+            min-width: 210px;
+            min-height: 210px;
+            max-width: 268px;
+            max-height: 268px;
+            z-index: 1;
             pointer-events: none;
-            opacity: 0.55;
+            opacity: 0.26;
+            filter: drop-shadow(0 0 18px rgba(0, 200, 210, 0.12)) drop-shadow(0 0 22px rgba(180, 110, 40, 0.08));
         }
-        #loginSpiralAccent svg {
-            width: 100%;
-            height: 100%;
-            display: block;
+        #loginSpiralBackdrop #danteSpiralCanvas {
+            width: 100% !important;
+            height: 100% !important;
+            display: block !important;
+            pointer-events: none !important;
+            background: transparent !important;
         }
 
         #haloLogin {
-            top: 12% !important;
-            opacity: 0.55 !important;
-            width: 280px !important;
-            height: 280px !important;
-            filter: blur(80px);
-            background: radial-gradient(circle, rgba(34, 211, 238, 0.22), rgba(245, 158, 11, 0.12), transparent 72%) !important;
-            z-index: 1 !important;
+            top: 9% !important;
+            opacity: 0.28 !important;
+            width: 240px !important;
+            height: 240px !important;
+            filter: blur(78px);
+            background: radial-gradient(circle, rgba(0, 200, 210, 0.14), rgba(180, 110, 40, 0.08), transparent 72%) !important;
+            z-index: 0 !important;
+            pointer-events: none;
         }
 
         #spiralIntroOverlay { display: none !important; }
@@ -196,11 +193,18 @@
             pointer-events: auto;
         }
 
+        #authCardElement > .login-auth-heading,
         #authCardElement > .text-center {
-            margin-bottom: 0.35rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            width: 100%;
+            margin: 0 auto 0.2rem;
+            gap: 0.55rem;
         }
         #authCardElement > .login-tabs {
-            margin-top: 1.15rem;
+            margin-top: 1.2rem;
         }
         #authCardElement > div:has(#btnGoogleAuth) {
             margin-top: 1.15rem;
@@ -219,33 +223,36 @@
 
         #lblAuthTitle {
             font-family: var(--font-display) !important;
-            font-size: clamp(1.6rem, 5.2vw, 1.95rem) !important;
+            font-size: clamp(1.55rem, 5vw, 1.9rem) !important;
             font-weight: 600 !important;
             letter-spacing: -0.02em !important;
             color: #f5f0e8 !important;
-            line-height: 1.2 !important;
-            margin-bottom: 0.45rem !important;
+            line-height: 1.22 !important;
+            margin: 0 !important;
+            width: 100%;
+            text-align: center !important;
         }
         #lblAuthSubtitle {
             font-family: var(--font-main) !important;
-            font-size: 0.86rem !important;
+            font-size: 0.84rem !important;
             font-weight: 450 !important;
             color: #94a3b8 !important;
             line-height: 1.5 !important;
-            max-width: 22rem;
-            margin-left: auto;
-            margin-right: auto;
+            max-width: 20.5rem;
+            margin: 0 auto !important;
+            width: 100%;
+            text-align: center !important;
         }
         #notaAcceso { display: none !important; }
 
         .login-tabs {
             display: flex;
             align-items: center;
-            gap: 0.15rem;
-            padding: 0.18rem;
+            gap: 0.12rem;
+            padding: 0.14rem;
             border-radius: 999px;
-            background: rgba(2, 6, 8, 0.55) !important;
-            border: 1px solid rgba(148, 163, 184, 0.1) !important;
+            background: rgba(2, 6, 8, 0.42) !important;
+            border: 1px solid rgba(148, 163, 184, 0.08) !important;
         }
         #tabModoLogin,
         #tabModoRegister {
@@ -253,11 +260,11 @@
             border-radius: 999px !important;
             box-shadow: none !important;
             font-family: var(--font-main) !important;
-            font-size: 0.74rem !important;
+            font-size: 0.72rem !important;
             font-weight: 600 !important;
-            min-height: 2.2rem;
-            padding-top: 0.45rem !important;
-            padding-bottom: 0.45rem !important;
+            min-height: 2.05rem;
+            padding-top: 0.4rem !important;
+            padding-bottom: 0.4rem !important;
             gap: 0.3rem !important;
         }
         #tabModoLogin i,
@@ -399,15 +406,16 @@
         }
         #groupTermsLegal a,
         #groupTermsLegal .login-consent-link {
-            color: #f3ead8 !important;
+            color: #f6ecd8 !important;
             text-decoration: underline !important;
-            text-underline-offset: 2px !important;
-            text-decoration-thickness: 1px !important;
-            font-weight: 600 !important;
+            text-underline-offset: 2.5px !important;
+            text-decoration-thickness: from-font !important;
+            text-decoration-skip-ink: auto !important;
+            font-weight: 650 !important;
         }
         #groupTermsLegal a:hover,
         #groupTermsLegal .login-consent-link:hover {
-            color: #fff7ed !important;
+            color: #fffaf0 !important;
         }
         /* Aire extra entre medidor de contraseña y consentimiento */
         #groupStrength:not(.hidden) {
@@ -479,17 +487,17 @@
         }
         .login-footer-help a:hover { color: #e2e8f0; }
         .login-footer-reset {
-            margin-top: 1.85rem;
-            padding-top: 0.35rem;
-            font-size: 0.7rem;
+            margin-top: 2.1rem;
+            padding-top: 0.4rem;
+            font-size: 0.74rem;
             opacity: 1;
         }
         .login-footer-reset a {
-            color: #8b97a8;
+            color: #a8b4c4;
             text-decoration: none;
         }
         .login-footer-reset a:hover {
-            color: #cbd5e1;
+            color: #e2e8f0;
             text-decoration: underline;
             text-underline-offset: 2px;
         }
@@ -503,51 +511,32 @@
 </head>
 <body class="selection:bg-cyan-500 selection:text-slate-950">
 
-    <!-- CANVAS INTERACTIVO "ESPIRAL DE DANTE" -->
-    <canvas id="danteSpiralCanvas"></canvas>
+    <!-- Espiral oficial Dante OS (misma de la sala), fondo sutil -->
+    <div id="loginSpiralBackdrop" aria-hidden="true">
+        <canvas id="danteSpiralCanvas" width="480" height="480"></canvas>
+    </div>
 
-    <!-- PROYECCIÓN INICIAL CON LA ESPIRAL Y PARTÍCULAS (INTRO MIGRATION) -->
+    <!-- PROYECCIÓN INICIAL (desactivada; IDs conservados) -->
     <div id="spiralIntroOverlay" onclick="skipSpiralIntro()" title="Toca para continuar">
         <div class="relative flex flex-col items-center justify-center text-center p-6 space-y-6">
-            <!-- EMBLEMA CENTRAL CON RESPLANDOR -->
             <div class="relative w-24 h-24 flex items-center justify-center">
                 <div class="absolute inset-0 rounded-full bg-[#e7d7c3] blur-xl opacity-30 pulse-ring"></div>
                 <div class="relative w-20 h-20 rounded-2xl bg-[#161310] border border-[rgba(231,215,195,0.4)] flex items-center justify-center overflow-hidden p-2">
-                    <img src="assets/icons/dante-logo-icon.svg" alt="Dante Logo" class="w-full h-full object-contain" />
+                    <img src="assets/icons/dante-logo-mark-light.svg" alt="Dante Logo" class="w-full h-full object-contain" />
                 </div>
             </div>
-
             <div class="space-y-2">
                 <h2 class="text-xl sm:text-2xl font-black tracking-tight text-white">Dante OS</h2>
                 <p class="text-xs text-slate-300 font-medium">Práctica de Saber 11°</p>
             </div>
-
             <p class="text-[11px] text-slate-400 font-mono animate-pulse pt-4">
                 Toca la pantalla o espera un momento...
             </p>
         </div>
     </div>
 
-    <!-- GLOWS AMBIENTALES DE FONDO -->
-    <div id="haloLogin" class="fixed left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none" style="top:12%; background: rgba(34, 211, 238, 0.14);"></div>
-
-    <!-- Espiral sutil superior (cian → ámbar), detrás de marca/tarjeta -->
-    <div id="loginSpiralAccent" aria-hidden="true">
-        <svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-                <linearGradient id="loginSpiralGrad" x1="40" y1="200" x2="360" y2="200" gradientUnits="userSpaceOnUse">
-                    <stop offset="0%" stop-color="#22d3ee" stop-opacity="0.55"/>
-                    <stop offset="55%" stop-color="#67e8f9" stop-opacity="0.28"/>
-                    <stop offset="100%" stop-color="#f59e0b" stop-opacity="0.5"/>
-                </linearGradient>
-            </defs>
-            <circle cx="200" cy="200" r="58" stroke="url(#loginSpiralGrad)" stroke-width="1.1" stroke-dasharray="2.2 7.5" opacity="0.55"/>
-            <circle cx="200" cy="200" r="88" stroke="url(#loginSpiralGrad)" stroke-width="1.15" stroke-dasharray="2.4 8.2" opacity="0.5"/>
-            <circle cx="200" cy="200" r="118" stroke="url(#loginSpiralGrad)" stroke-width="1.2" stroke-dasharray="2.6 9" opacity="0.42"/>
-            <circle cx="200" cy="200" r="148" stroke="url(#loginSpiralGrad)" stroke-width="1.2" stroke-dasharray="2.8 9.8" opacity="0.34"/>
-            <circle cx="200" cy="200" r="178" stroke="url(#loginSpiralGrad)" stroke-width="1.15" stroke-dasharray="3 10.5" opacity="0.26"/>
-        </svg>
-    </div>
+    <!-- Glow ambiental suave (misma familia de la sala) -->
+    <div id="haloLogin" class="fixed left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none" style="top:9%;"></div>
 
     <!-- HEADER (oculto visualmente; IDs conservados) -->
     <header id="hdrLogin" class="w-full max-w-md mx-auto px-4 py-3 sm:py-4 flex items-center justify-between relative z-10 box-border" aria-hidden="true">
@@ -586,7 +575,7 @@
             </div>
 
             <!-- ENCABEZADO Y TÍTULO -->
-            <div class="text-center">
+            <div class="login-auth-heading text-center">
                 <h2 id="lblAuthTitle" class="tracking-tight">
                     Entra a tu práctica
                 </h2>
@@ -778,75 +767,14 @@
     <script>
         const HOST_URL = window.location.origin;
         let CurrentAuthMode = "login"; // 'login' | 'register'
-        let spiralAnimationId = null;
 
-        /* 🌀 ANIMACIÓN CANVAS DE LA ESPIRAL DE DANTE Y PARTÍCULAS COATED */
+        /* Fondo: misma espiral oficial de la sala (danteSpiralEntity), baja opacidad */
         function initDanteSpiral() {
-            const canvas = document.getElementById('danteSpiralCanvas');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-
-            function resize() {
-                const ancho = Math.max(window.innerWidth, 320);
-                const alto = Math.max(window.innerHeight, 480);
-                if (canvas.width !== ancho) canvas.width = ancho;
-                if (canvas.height !== alto) canvas.height = alto;
+            if (!window.DanteSpiral || typeof window.DanteSpiral.init !== 'function') return;
+            window.DanteSpiral.init('danteSpiralCanvas');
+            if (typeof window.DanteSpiral.setMode === 'function') {
+                window.DanteSpiral.setMode('idle');
             }
-            resize();
-            window.addEventListener('resize', resize);
-
-            // Acento visual cian → ámbar (solo login; no toca auth)
-            const gamas = [[34,211,238],[103,232,249],[125,211,252],[251,191,36],[245,158,11],[34,211,238]];
-            let fase = 0;
-            let ultimo = 0;
-            function colorEn(x) {
-                const i = Math.floor(x) % gamas.length;
-                const j = (i + 1) % gamas.length;
-                const t = x - Math.floor(x);
-                const a = gamas[i];
-                const b = gamas[j];
-                return [
-                    Math.round(a[0] + (b[0] - a[0]) * t),
-                    Math.round(a[1] + (b[1] - a[1]) * t),
-                    Math.round(a[2] + (b[2] - a[2]) * t)
-                ];
-            }
-
-            function render(ahora) {
-                resize();
-                const dt = (!ultimo || ahora - ultimo > 50) ? 16 : (ahora - ultimo);
-                ultimo = ahora;
-                fase = (fase + dt * 0.00028) % gamas.length;
-                const [r, g, b] = colorEn(fase);
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                const centerX = canvas.width / 2;
-                const centerY = Math.min(168, canvas.height * 0.18);
-                const halo = document.getElementById('haloLogin');
-                if (halo) halo.style.background = `rgba(${r}, ${g}, ${b}, 0.16)`;
-
-                ctx.save();
-                ctx.translate(centerX, centerY);
-                ctx.rotate(fase * 0.28);
-                ctx.beginPath();
-                const a0 = 2.05;
-                const b0 = 0.195;
-                for (let theta = 0; theta < Math.PI * 7.2; theta += 0.05) {
-                    const radio = a0 * Math.exp(b0 * theta);
-                    const x = radio * Math.cos(theta);
-                    const y = radio * Math.sin(theta);
-                    if (theta === 0) ctx.moveTo(x, y);
-                    else ctx.lineTo(x, y);
-                }
-                ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, 0.42)`;
-                ctx.lineWidth = 1.25;
-                ctx.shadowBlur = 10;
-                ctx.shadowColor = `rgba(${r}, ${g}, ${b}, 0.3)`;
-                ctx.stroke();
-                ctx.restore();
-                spiralAnimationId = requestAnimationFrame(render);
-            }
-
-            render();
         }
 
         /* 🚀 FUNCIÓN PARA SALTAR O FINALIZAR LA INTRO MIGRATIVA DE LA ESPIRAL */
