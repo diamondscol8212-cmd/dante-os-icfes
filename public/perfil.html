@@ -9,7 +9,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="assets/icons/icon-192.svg">
     <link rel="apple-touch-icon" href="assets/icons/icon-192.svg">
-    <title>Dante OS · Tu informe c-1.3.43</title>
+    <title>Dante OS · Tu informe c-1.3.44</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Serif+4:wght@600;700;800&display=swap">
 
@@ -20,15 +20,15 @@
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="theme.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/danteCacheVersion.js?v=c-1.3.43"></script>
-    <script src="js/danteNube.js?v=c-1.3.43"></script>
-    <script src="js/danteRegistro.js?v=c-1.3.43"></script>
+    <script src="js/danteCacheVersion.js?v=c-1.3.44"></script>
+    <script src="js/danteNube.js?v=c-1.3.44"></script>
+    <script src="js/danteRegistro.js?v=c-1.3.44"></script>
     <script src="js/danteVectorIcons.js"></script>
     <script src="js/danteStorage.js"></script>
     <script src="js/streakManager.js?v=23.1.2"></script>
     <script src="js/rutaSimulacroEngine.js"></script>
     <script src="js/danteRadarEngine.js"></script>
-    <script src="js/danteTutorEngine.js?v=c-1.3.43"></script>
+    <script src="js/danteTutorEngine.js?v=c-1.3.44"></script>
 
     <style>
         #bentoContainer { display: flex; flex-direction: column; gap: 1.05rem; }
@@ -1348,7 +1348,7 @@
         </div>
         <div class="perfil-hdr-tag-wrap">
             <span class="perfil-hdr-tag" id="lblHdrProyeccionTag">PROYECCIÓN 2026</span>
-            <span id="badgeDanteVersion" class="perfil-hdr-ver">c-1.3.43</span>
+            <span id="badgeDanteVersion" class="perfil-hdr-ver">c-1.3.44</span>
         </div>
         <div class="relative flex items-center gap-2.5 shrink-0">
             <button type="button" id="badgeRacha" onclick="if(window.StreakManager) StreakManager.abrirModalRacha()" class="flex items-center gap-1.5 cursor-pointer bg-transparent border-0 p-0 text-amber-400 font-mono text-xs font-black transition-transform hover:scale-105 active:scale-95 shrink-0 select-none" title="Ver Racha Real de Días">
@@ -4660,24 +4660,53 @@
 
             static _leerHackeaReal() {
                 const sk = this._claveEstudianteLocal();
+                const claves = [sk];
+                if (STUDENT_ID && String(STUDENT_ID).toLowerCase() !== sk) {
+                    claves.push(String(STUDENT_ID).split('@')[0].toLowerCase());
+                }
                 let profile = null;
                 let arc = null;
-                try { profile = JSON.parse(localStorage.getItem('dante_mind_profile_' + sk) || 'null'); } catch (e) { profile = null; }
-                try { arc = JSON.parse(localStorage.getItem('dante_mind_arc_v1:' + sk) || 'null'); } catch (e) { arc = null; }
+                claves.forEach((clave) => {
+                    if (!profile) {
+                        try { profile = JSON.parse(localStorage.getItem('dante_mind_profile_' + clave) || 'null'); } catch (e) { profile = null; }
+                    }
+                    if (!arc) {
+                        try { arc = JSON.parse(localStorage.getItem('dante_mind_arc_v1:' + clave) || 'null'); } catch (e) { arc = null; }
+                    }
+                });
+                if (!profile) {
+                    try {
+                        for (let i = 0; i < localStorage.length; i++) {
+                            const k = localStorage.key(i) || '';
+                            if (k.indexOf('dante_mind_profile_') === 0) {
+                                const parsed = JSON.parse(localStorage.getItem(k) || 'null');
+                                if (parsed && (parsed.calibratedAt || Number(parsed.sessions) > 0)) {
+                                    profile = parsed;
+                                    break;
+                                }
+                            }
+                        }
+                    } catch (e) {}
+                }
                 const sessions = (profile && Number(profile.sessions) > 0) ? Math.round(Number(profile.sessions)) : 0;
-                const calibrated = !!(profile && profile.calibratedAt);
+                const calibrated = !!(profile && profile.calibratedAt) || localStorage.getItem('dante_mind_active') === '1';
                 const blocks = (arc && Array.isArray(arc.blocks)) ? arc.blocks.length : 0;
-                const day = (arc && Number(arc.campaign_day) > 0) ? Math.min(15, Math.round(Number(arc.campaign_day))) : 0;
-                const nextDay = (arc && Number(arc.next_campaign_day) > 0) ? Math.min(15, Math.round(Number(arc.next_campaign_day))) : (day ? Math.min(15, day + 1) : 1);
-                const veces = Math.max(sessions, blocks, calibrated ? 1 : 0);
-                return { calibrated, sessions: veces, day, nextDay, blocks };
+                const lastBlock = (arc && Number(arc.last_block) > 0) ? Math.round(Number(arc.last_block)) : blocks;
+                const day = (arc && Number(arc.campaign_day) > 0)
+                    ? Math.min(15, Math.round(Number(arc.campaign_day)))
+                    : (lastBlock > 0 ? Math.min(15, lastBlock) : 0);
+                const nextDay = (arc && Number(arc.next_campaign_day) > 0)
+                    ? Math.min(15, Math.round(Number(arc.next_campaign_day)))
+                    : (day ? Math.min(15, day + 1) : 1);
+                const veces = Math.max(sessions, blocks, lastBlock, calibrated ? 1 : 0);
+                return { calibrated, sessions: veces, day, nextDay, blocks, lastBlock };
             }
 
             static _leerSimulacroReal() {
                 let dato = null;
                 try { dato = JSON.parse(localStorage.getItem('dante_simulacro_largo') || 'null'); } catch (e) { dato = null; }
                 const histSim = (Array.isArray(cacheHistorialCompleto) ? cacheHistorialCompleto : [])
-                    .find((x) => String(x && x.tipo || '').toUpperCase().includes('SIMUL') || /simulacro/i.test(String(x && x.materia || '')));
+                    .find((x) => String((x && x.tipo) || '').toUpperCase().includes('SIMUL') || /simulacro/i.test(String((x && x.materia) || '')));
                 if ((!dato || (dato.estado !== 'listo' && dato.estado !== 'abierto')) && histSim) {
                     dato = {
                         estado: 'listo',
@@ -4691,11 +4720,72 @@
                 return dato;
             }
 
+            static _normalizarAreasPct(raw) {
+                const NOMBRES = {
+                    matematicas: 'Matemáticas',
+                    lectura_critica: 'Lectura Crítica',
+                    ciencias_naturales: 'Ciencias Naturales',
+                    sociales_ciudadanas: 'Sociales y Ciudadanas',
+                    ingles: 'Inglés'
+                };
+                const presentes = [];
+                Object.entries(raw || {}).forEach(([k, v]) => {
+                    let pct = null;
+                    if (typeof v === 'number' && Number.isFinite(v)) pct = v;
+                    else if (v && typeof v === 'object') {
+                        if (Number.isFinite(Number(v.pct))) pct = Number(v.pct);
+                        else if (Number.isFinite(Number(v.puntaje))) pct = Number(v.puntaje);
+                        else if (Number.isFinite(Number(v.score))) pct = Number(v.score);
+                    }
+                    if (pct == null || !Number.isFinite(pct)) return;
+                    if (pct > 0 && pct <= 1) pct = pct * 100;
+                    pct = Math.max(0, Math.min(100, Math.round(pct)));
+                    const key = String(k || '').toLowerCase().replace(/\s+/g, '_');
+                    presentes.push({ key, name: NOMBRES[key] || key.replace(/_/g, ' '), pct });
+                });
+                presentes.sort((a, b) => b.pct - a.pct);
+                return presentes;
+            }
+
+            static _htmlBarrasAreasInforme(areas) {
+                const lista = Array.isArray(areas) ? areas : [];
+                if (!lista.length) return '';
+                return lista.map((a) => {
+                    const pct = Math.max(0, Math.min(100, Math.round(a.pct)));
+                    let badgeText = 'Fortaleza';
+                    let badgeClass = 'ok';
+                    if (pct < 40) { badgeText = 'Para reforzar'; badgeClass = 'low'; }
+                    else if (pct < 70) { badgeText = 'En progreso'; badgeClass = 'mid'; }
+                    const k = String(a.key || '').toLowerCase();
+                    let color = '#334155';
+                    if (k.includes('lect')) color = '#7c3aed';
+                    else if (k.includes('mate')) color = '#2563eb';
+                    else if (k.includes('cien') || k.includes('natur')) color = '#16a34a';
+                    else if (k.includes('social')) color = '#ea580c';
+                    else if (k.includes('ingl')) color = '#64748b';
+                    return `
+                        <div class="rp-area-row">
+                            <div class="rp-area-top">
+                                <span class="rp-area-name">${this._escTexto(a.name)}</span>
+                                <span class="rp-badge ${badgeClass}">${badgeText}</span>
+                            </div>
+                            <div class="rp-bar"><span style="width:${Math.max(4, pct)}%;background:${color};"></span></div>
+                            <div class="rp-area-meta">${pct}%</div>
+                        </div>`;
+                }).join('');
+            }
+
             static _leerEntrenamientoReal() {
-                const hist = Array.isArray(cacheHistorialCompleto) ? cacheHistorialCompleto : [];
+                let hist = Array.isArray(cacheHistorialCompleto) ? cacheHistorialCompleto : [];
+                if (!hist.length) {
+                    try {
+                        const raw = localStorage.getItem('dante_history_cache');
+                        if (raw) hist = JSON.parse(raw) || [];
+                    } catch (e) { hist = []; }
+                }
                 const sesionOk = (reg) => {
-                    const tipo = String(reg && reg.tipo || '').toUpperCase();
-                    const mat = String(reg && reg.materia || '');
+                    const tipo = String((reg && reg.tipo) || '').toUpperCase();
+                    const mat = String((reg && reg.materia) || '');
                     if (tipo === 'NUBE') return false;
                     if (tipo.includes('SIMUL')) return false;
                     if (/proyecci[oó]n guardada/i.test(mat)) return false;
@@ -4713,39 +4803,37 @@
                     else diarios += 1;
                 });
 
-                const NOMBRES = {
-                    matematicas: 'Matemáticas',
-                    lectura_critica: 'Lectura Crítica',
-                    ciencias_naturales: 'Ciencias Naturales',
-                    sociales_ciudadanas: 'Sociales y Ciudadanas',
-                    ingles: 'Inglés'
-                };
                 let precMap = this._obtenerPrecisionAreas();
-                const presentes = Object.entries(precMap || {})
-                    .map(([k, v]) => ({ key: k, name: NOMBRES[k] || k.replace(/_/g, ' '), pct: Number(v) }))
-                    .filter((x) => Number.isFinite(x.pct));
-                presentes.sort((a, b) => b.pct - a.pct);
+                const presentes = this._normalizarAreasPct(precMap);
                 let precisionGeneral = null;
+                let totalRespuestas = 0;
+                let totalAciertos = 0;
                 try {
                     const conteo = JSON.parse(localStorage.getItem('dante_area_conteo') || '{}') || {};
-                    let a = 0, t = 0;
                     Object.values(conteo).forEach((fila) => {
                         if (fila && fila.total) {
-                            a += Number(fila.aciertos) || 0;
-                            t += Number(fila.total) || 0;
+                            totalAciertos += Number(fila.aciertos) || 0;
+                            totalRespuestas += Number(fila.total) || 0;
                         }
                     });
-                    if (t > 0) precisionGeneral = Math.round((100 * a) / t);
+                    if (totalRespuestas > 0) precisionGeneral = Math.round((100 * totalAciertos) / totalRespuestas);
                 } catch (e) {}
                 if (precisionGeneral == null && presentes.length) {
                     precisionGeneral = Math.round(presentes.reduce((s, x) => s + x.pct, 0) / presentes.length);
                 }
+                const diagHecho = diags > 0
+                    || localStorage.getItem('dante_diagnostico_completado') === 'true'
+                    || localStorage.getItem('dante_diagnostic_completed') === 'true'
+                    || localStorage.getItem('dante_calibracion_tactica_inicial_done') === 'true';
                 return {
                     totalSesiones: sesiones.length,
                     diarios,
                     refuerzos,
                     diags,
+                    diagHecho,
                     precisionGeneral,
+                    totalRespuestas,
+                    totalAciertos,
                     fuerte: presentes[0] || null,
                     debil: presentes.length ? presentes[presentes.length - 1] : null,
                     areas: presentes
@@ -4762,49 +4850,122 @@
                 const informe = localStorage.getItem('dante_informe_vocacional') || '';
                 let afines = [];
                 try { afines = JSON.parse(localStorage.getItem('dante_carreras_afines') || '[]'); } catch (e) { afines = []; }
+                const otras = (Array.isArray(afines) ? afines : [])
+                    .map((c) => (typeof c === 'string' ? c : (c && c.nombre) || ''))
+                    .filter((n) => n && n !== carrera)
+                    .slice(0, 3);
                 const dia = Math.min(6, Math.max(lista ? 6 : 1, elecciones + (lista ? 0 : 1)));
                 const letras = { R: 'práctico', I: 'investigativo', A: 'creativo', S: 'social', E: 'emprendedor', C: 'organizado' };
                 const palabras = String(codigo).split('').map((l) => letras[l]).filter(Boolean);
-                return { elecciones, lista, codigo, carrera, informe, afines, dia, palabras };
+                const listaCompleta = lista && (Boolean(informe) || Boolean(carrera) || palabras.length >= 2 || elecciones >= 6);
+                return { elecciones, lista, listaCompleta, codigo, carrera, informe, otras, dia, palabras };
             }
 
-            static abrirInformeGeneral() {
-                this.cerrarComoRespondes();
-                const modal = document.getElementById('modalBoletinSesion');
-                const cuerpo = document.getElementById('boletinSesionCuerpo');
-                if (!cuerpo) return;
-
-                const hackea = this._leerHackeaReal();
-                const sim = this._leerSimulacroReal();
-                const train = this._leerEntrenamientoReal();
-                const ruta = this._leerRutaVocacionalReal();
-
-                const score = parseInt(localStorage.getItem('dante_score_proyectado') || localStorage.getItem('dante_puntaje_global') || '0', 10);
+            static _leerProyeccionReal() {
+                let score = parseInt(localStorage.getItem('dante_score_proyectado') || localStorage.getItem('dante_puntaje_global') || '0', 10);
+                if (!(score > 0) && Array.isArray(cacheHistorialCompleto)) {
+                    const conPts = cacheHistorialCompleto.find((x) => Number(x && x.puntaje_escalonado) > 0);
+                    if (conPts) score = Math.round(Number(conPts.puntaje_escalonado));
+                }
                 const scoreTxt = (Number.isFinite(score) && score > 0) ? String(score) : null;
                 const corte = parseInt(localStorage.getItem('dante_corte_objetivo') || '0', 10);
                 const pacto = localStorage.getItem('dante_pacto_meta') || '';
                 let meta = (corte > 0 && corte <= 500) ? corte : null;
                 if (meta == null && pacto === '300_BASE') meta = 300;
                 if (meta == null && pacto === '380_ELITE') meta = 380;
+                try {
+                    const sello = JSON.parse(localStorage.getItem(`dante_sello_metas_${STUDENT_ID}`) || 'null');
+                    if (sello && Number(sello.pts) > 0 && Number(sello.pts) <= 500) meta = Math.round(Number(sello.pts));
+                } catch (e) {}
                 const carrera = localStorage.getItem('dante_carrera_objetivo') || '';
                 const carreraClean = carrera ? (carrera.split('/')[0].trim() || carrera) : '';
                 const brecha = (scoreTxt && meta != null) ? Math.max(0, meta - Number(scoreTxt)) : null;
+                let racha = 0;
+                try {
+                    if (window.StreakManager && typeof StreakManager.getStreakData === 'function') {
+                        const d = StreakManager.getStreakData();
+                        racha = Number((d && (d.count || d.currentStreak || d.streak || d.dias)) || 0) || 0;
+                    }
+                } catch (e) { racha = 0; }
+                if (!(racha > 0)) {
+                    racha = parseInt(localStorage.getItem('dante_racha_dias') || localStorage.getItem('dante_streak_count') || localStorage.getItem('dante_streak') || '0', 10) || 0;
+                }
+                return { scoreTxt, meta, carreraClean, brecha, racha };
+            }
 
-                // Hackea
+            static async _enriquecerInformeGeneralDesdeServidor() {
+                try {
+                    let dato = null;
+                    try { dato = JSON.parse(localStorage.getItem('dante_simulacro_largo') || 'null'); } catch (e) { dato = null; }
+                    await this._traerSimulacroServidor(null, dato);
+                } catch (e) {}
+                try {
+                    if (typeof this.cargarPerfilVocacionalServidor === 'function') {
+                        await this.cargarPerfilVocacionalServidor();
+                    }
+                } catch (e) {}
+                try {
+                    if ((!cacheHistorialCompleto || !cacheHistorialCompleto.length) && typeof this.cruzarNube === 'function') {
+                        await this.cruzarNube();
+                    }
+                } catch (e) {}
+            }
+
+            static async abrirInformeGeneral() {
+                this.cerrarComoRespondes();
+                const modal = document.getElementById('modalBoletinSesion');
+                const cuerpo = document.getElementById('boletinSesionCuerpo');
+                if (!cuerpo) return;
+
+                if (modal) {
+                    modal.style.display = 'flex';
+                    try { modal.scrollTop = 0; } catch (e) {}
+                }
+                cuerpo.innerHTML = `
+                    <article class="reporte-papel">
+                        <div class="rp-brand">
+                            <span class="rp-brand-mark">ICFES</span>
+                            <span class="rp-brand-sep" aria-hidden="true"></span>
+                            <span class="rp-brand-sub">Informe general</span>
+                        </div>
+                        <h2 class="rp-title">Tu informe general</h2>
+                        <p class="rp-lead">Estamos reuniendo tu avance real…</p>
+                    </article>`;
+
+                await this._enriquecerInformeGeneralDesdeServidor();
+                this._pintarInformeGeneral();
+            }
+
+            static _pintarInformeGeneral() {
+                const cuerpo = document.getElementById('boletinSesionCuerpo');
+                const modal = document.getElementById('modalBoletinSesion');
+                if (!cuerpo) return;
+
+                const hackea = this._leerHackeaReal();
+                const sim = this._leerSimulacroReal();
+                const train = this._leerEntrenamientoReal();
+                const ruta = this._leerRutaVocacionalReal();
+                const proy = this._leerProyeccionReal();
+                const scoreTxt = proy.scoreTxt;
+                const meta = proy.meta;
+                const carreraClean = proy.carreraClean;
+                const brecha = proy.brecha;
+                const racha = proy.racha;
+
                 let hackeaHtml = '';
                 if (!hackea.calibrated && hackea.sessions <= 0) {
-                    hackeaHtml = `<p class="rp-manana-txt">Aún no has hecho <strong>Hackea tu mente</strong>. Está en la sala: es el ritual que ayuda a personalizar cómo te enseña Dante.</p>`;
+                    hackeaHtml = `<p class="rp-manana-txt">Aún no has hecho <strong>Hackea tu mente</strong>. Está en la sala: es el ejercicio que ayuda a personalizar cómo te enseña Dante.</p>`;
                 } else {
                     const vecesTxt = hackea.sessions === 1 ? '1 vez' : (hackea.sessions + ' veces');
                     let punto = '';
-                    if (hackea.day >= 15) punto = 'Ya completaste la campaña de 15 días.';
-                    else if (hackea.day > 0) punto = 'Vas en el día ' + hackea.day + ' de 15. El siguiente paso es el día ' + hackea.nextDay + '.';
+                    if (hackea.day >= 15) punto = 'Ya completaste los 15 días de la campaña.';
+                    else if (hackea.day > 0) punto = `Vas en el día <strong>${hackea.day} de 15</strong>. El siguiente paso es el día ${hackea.nextDay}.`;
                     else punto = 'Ya lo empezaste. Sigue desde la sala para avanzar.';
                     hackeaHtml = `<p class="rp-manana-txt">Ya realizaste Hackea tu mente <strong>${vecesTxt}</strong>. ${punto}</p>`;
                 }
 
-                // Simulacro
                 let simHtml = '';
+                let simAreasHtml = '';
                 if (!sim || (sim.estado !== 'abierto' && sim.estado !== 'listo')) {
                     simHtml = `<p class="rp-manana-txt">Aún no has hecho el <strong>simulacro completo</strong>. Cuando lo termines, aquí verás tu resultado principal.</p>`;
                 } else if (sim.estado === 'abierto') {
@@ -4819,17 +4980,30 @@
                     } else {
                         simHtml = `<p class="rp-manana-txt">Ya hiciste el simulacro completo. Tu resultado principal fue <strong>${global} / 500</strong>.</p>`;
                     }
+                    const simAreas = this._normalizarAreasPct(resultado.areas || {});
+                    if (simAreas.length) {
+                        simAreasHtml = `<div class="rp-card rp-area" style="margin-top:0.65rem">${this._htmlBarrasAreasInforme(simAreas)}</div>`;
+                    }
                 }
 
-                // Entrenamiento
                 let trainHtml = '';
-                if (train.totalSesiones <= 0) {
+                if (train.totalSesiones <= 0 && !train.diagHecho && train.totalRespuestas <= 0) {
                     trainHtml = `<p class="rp-manana-txt">Aún no hay sesiones de entrenamiento o refuerzo registradas. Cuando completes un bloque, aquí verás cuántos llevas y cómo vas por área.</p>`;
                 } else {
                     const partes = [];
-                    partes.push(`Has completado <strong>${train.totalSesiones}</strong> sesión${train.totalSesiones === 1 ? '' : 'es'} (entrenamiento, refuerzo o diagnóstico).`);
+                    if (train.totalSesiones > 0) {
+                        partes.push(`Has completado <strong>${train.totalSesiones}</strong> sesión${train.totalSesiones === 1 ? '' : 'es'} registrada${train.totalSesiones === 1 ? '' : 's'}.`);
+                    }
+                    if (train.diags || train.diagHecho) {
+                        partes.push(train.diags > 0
+                            ? `${train.diags} de diagnóstico inicial.`
+                            : 'Ya completaste el diagnóstico inicial.');
+                    }
                     if (train.diarios) partes.push(`${train.diarios} de entrenamiento diario.`);
                     if (train.refuerzos) partes.push(`${train.refuerzos} de refuerzo.`);
+                    if (train.totalRespuestas > 0) {
+                        partes.push(`Llevas <strong>${train.totalAciertos} aciertos</strong> en ${train.totalRespuestas} preguntas guardadas.`);
+                    }
                     if (train.precisionGeneral != null) {
                         partes.push(`Tu precisión general acumulada es del <strong>${train.precisionGeneral}%</strong>.`);
                     } else {
@@ -4843,49 +5017,26 @@
                     trainHtml = `<p class="rp-manana-txt">${partes.join(' ')}</p>`;
                 }
 
-                let areaRows = '';
-                (train.areas || []).forEach((a) => {
-                    const pct = Math.max(0, Math.min(100, Math.round(a.pct)));
-                    let badgeText = 'Fortaleza';
-                    let badgeClass = 'ok';
-                    if (pct < 40) { badgeText = 'Para reforzar'; badgeClass = 'low'; }
-                    else if (pct < 70) { badgeText = 'En calibración'; badgeClass = 'mid'; }
-                    const color = (() => {
-                        const k = String(a.key || '').toLowerCase();
-                        if (k.includes('lect')) return '#7c3aed';
-                        if (k.includes('mate')) return '#2563eb';
-                        if (k.includes('cien') || k.includes('natur')) return '#16a34a';
-                        if (k.includes('social')) return '#ea580c';
-                        if (k.includes('ingl')) return '#64748b';
-                        return '#334155';
-                    })();
-                    areaRows += `
-                        <div class="rp-area-row">
-                            <div class="rp-area-top">
-                                <span class="rp-area-name">${this._escTexto(a.name)}</span>
-                                <span class="rp-badge ${badgeClass}">${badgeText}</span>
-                            </div>
-                            <div class="rp-bar"><span style="width:${Math.max(4, pct)}%;background:${color};"></span></div>
-                            <div class="rp-area-meta">${pct}%</div>
-                        </div>`;
-                });
+                const areaRows = this._htmlBarrasAreasInforme(train.areas);
+                const areasBloque = areaRows
+                    ? `<div class="rp-card rp-area" style="margin-top:0.65rem">${areaRows}</div>`
+                    : `<div class="rp-card" style="margin-top:0.65rem"><p class="rp-manana-txt">Aún no hay suficiente información por área para mostrar barras de progreso.</p></div>`;
 
-                // Ruta vocacional
                 let rutaHtml = '';
-                if (ruta.lista && (ruta.informe || ruta.carrera || ruta.palabras.length)) {
+                if (ruta.listaCompleta) {
                     const bits = [];
                     bits.push('Ya tienes orientación vocacional suficiente para verla.');
                     if (ruta.palabras.length) bits.push('Tu perfil se parece más a alguien ' + ruta.palabras.join(', ') + '.');
                     if (ruta.carrera) bits.push('La carrera que estás explorando es <strong>' + this._escTexto(ruta.carrera) + '</strong>.');
+                    if (ruta.otras.length) bits.push('También se parecen: ' + ruta.otras.map((n) => this._escTexto(n)).join(', ') + '.');
                     if (ruta.informe) bits.push(this._escTexto(String(ruta.informe).slice(0, 420)));
                     rutaHtml = `<p class="rp-manana-txt">${bits.join(' ')}</p>`;
-                } else if (ruta.elecciones > 0 || ruta.carrera) {
+                } else if (ruta.elecciones > 0 || ruta.carrera || ruta.lista) {
                     rutaHtml = `<p class="rp-manana-txt">Tu ruta vocacional <strong>aún está en construcción</strong>. Vas en el día ${ruta.dia} de 6.${ruta.carrera ? ' Ya marcaste interés en <strong>' + this._escTexto(ruta.carrera) + '</strong>.' : ''} Completa los dilemas en la sala para recibir la orientación completa.</p>`;
                 } else {
                     rutaHtml = `<p class="rp-manana-txt">Aún no hay suficiente información para mostrar la ruta vocacional. Empieza los dilemas desde la sala; son seis días.</p>`;
                 }
 
-                // Resumen / proyección
                 const resumenPartes = [];
                 if (scoreTxt) {
                     resumenPartes.push(`Tu proyección actual es de <strong>${scoreTxt} / 500</strong>.`);
@@ -4898,13 +5049,25 @@
                 } else {
                     resumenPartes.push('Todavía no hay una proyección de puntaje. Termina al menos una sesión medida para verla aquí.');
                 }
-                if (train.totalSesiones > 0 && train.debil) {
-                    resumenPartes.push(`El siguiente paso con más valor es reforzar ${this._escTexto(train.debil.name)}.`);
-                } else if (!hackea.calibrated) {
-                    resumenPartes.push('Un buen siguiente paso es hacer Hackea tu mente en la sala.');
-                } else if (!sim || sim.estado !== 'listo') {
-                    resumenPartes.push('Cuando quieras medir el examen completo, abre el simulacro desde la sala.');
+                if (racha > 0) {
+                    resumenPartes.push(`Tu racha actual es de <strong>${racha} día${racha === 1 ? '' : 's'}</strong> seguidos.`);
+                } else {
+                    resumenPartes.push('Todavía no tienes una racha activa: empieza hoy un bloque para encenderla.');
                 }
+
+                let siguiente = '';
+                if (train.totalSesiones > 0 && train.debil) {
+                    siguiente = `Mañana conviene empezar por <strong>${this._escTexto(train.debil.name)}</strong>, que es tu área más débil ahora.`;
+                } else if (!hackea.calibrated) {
+                    siguiente = 'Un buen siguiente paso es hacer <strong>Hackea tu mente</strong> en la sala.';
+                } else if (!ruta.listaCompleta) {
+                    siguiente = 'Sigue la <strong>ruta vocacional</strong> en la sala para completar tu orientación.';
+                } else if (!sim || sim.estado !== 'listo') {
+                    siguiente = 'Cuando quieras medir el examen completo, abre el <strong>simulacro</strong> desde la sala.';
+                } else {
+                    siguiente = 'Sigue con el entrenamiento diario para subir tu proyección con constancia.';
+                }
+                resumenPartes.push(siguiente);
 
                 const fechaTxt = new Date().toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' });
 
@@ -4926,12 +5089,13 @@
                         <section class="rp-sec">
                             <h3 class="rp-sec-h"><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i> Simulacro completo</h3>
                             <div class="rp-card">${simHtml}</div>
+                            ${simAreasHtml}
                         </section>
 
                         <section class="rp-sec">
                             <h3 class="rp-sec-h"><i class="fa-solid fa-dumbbell" aria-hidden="true"></i> Entrenamiento y refuerzos</h3>
                             <div class="rp-card">${trainHtml}</div>
-                            ${areaRows ? `<div class="rp-card rp-area" style="margin-top:0.65rem">${areaRows}</div>` : ''}
+                            ${areasBloque}
                         </section>
 
                         <section class="rp-sec">
@@ -4961,6 +5125,11 @@
                                 </div>
                                 <p class="rp-manana-txt" style="margin-top:0.85rem">${resumenPartes.join(' ')}</p>
                             </div>
+                        </section>
+
+                        <section class="rp-sec">
+                            <h3 class="rp-sec-h"><i class="fa-solid fa-sun" aria-hidden="true"></i> Qué hacer ahora</h3>
+                            <div class="rp-card"><p class="rp-manana-txt">${siguiente}</p></div>
                         </section>
 
                         <div class="rp-actions">
