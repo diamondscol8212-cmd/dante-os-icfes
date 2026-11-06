@@ -9,7 +9,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="assets/icons/icon-192.svg">
     <link rel="apple-touch-icon" href="assets/icons/icon-192.svg">
-    <title>Dante OS · Tu informe c-1.3.53</title>
+    <title>Dante OS · Tu informe c-1.3.54</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Serif+4:wght@600;700;800&display=swap">
 
@@ -20,15 +20,15 @@
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="theme.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/danteCacheVersion.js?v=c-1.3.53"></script>
-    <script src="js/danteNube.js?v=c-1.3.53"></script>
-    <script src="js/danteRegistro.js?v=c-1.3.53"></script>
+    <script src="js/danteCacheVersion.js?v=c-1.3.54"></script>
+    <script src="js/danteNube.js?v=c-1.3.54"></script>
+    <script src="js/danteRegistro.js?v=c-1.3.54"></script>
     <script src="js/danteVectorIcons.js"></script>
     <script src="js/danteStorage.js"></script>
     <script src="js/streakManager.js?v=23.1.2"></script>
     <script src="js/rutaSimulacroEngine.js"></script>
     <script src="js/danteRadarEngine.js"></script>
-    <script src="js/danteTutorEngine.js?v=c-1.3.53"></script>
+    <script src="js/danteTutorEngine.js?v=c-1.3.54"></script>
 
     <style>
         #bentoContainer { display: flex; flex-direction: column; gap: 0.95rem; }
@@ -893,12 +893,21 @@
         #celdaPlanPerfil {
             text-decoration: none; color: inherit;
             display: flex; flex-direction: column; justify-content: space-between;
+            border: 1px solid rgba(37, 211, 102, 0.65) !important;
+            box-shadow:
+                0 0 0 1px rgba(37, 211, 102, 0.25),
+                0 0 18px rgba(37, 211, 102, 0.28),
+                0 8px 24px rgba(0, 0, 0, 0.35) !important;
+            background:
+                radial-gradient(120% 90% at 100% 0%, rgba(37, 211, 102, 0.16), transparent 55%),
+                rgba(22, 26, 36, 0.96) !important;
         }
         #celdaPlanPerfil .perfil-plan-row {
             display: flex; align-items: flex-start; justify-content: space-between; gap: 0.4rem;
         }
         #lblPerfilPlanNombre { color: #f8fafc !important; font-size: 1.05rem !important; }
-        #celdaPlanPerfil .chev { color: #64748b; font-size: 1rem; line-height: 1; }
+        #celdaPlanPerfil .chev { color: #25D366; font-size: 1rem; line-height: 1; }
+        #celdaPlanPerfil .perfil-duo-kicker svg { color: #25D366 !important; }
         #celdaPlanPerfil .perfil-plan-upgrade { display: none !important; }
         #bentoContainer {
             gap: 1.35rem !important;
@@ -1462,7 +1471,7 @@
         </div>
         <div class="perfil-hdr-tag-wrap">
             <span class="perfil-hdr-tag" id="lblHdrProyeccionTag">PROYECCIÓN 2026</span>
-            <span id="badgeDanteVersion" class="perfil-hdr-ver">c-1.3.53</span>
+            <span id="badgeDanteVersion" class="perfil-hdr-ver">c-1.3.54</span>
         </div>
         <div class="relative flex items-center gap-2.5 shrink-0">
             <button type="button" id="badgeRacha" onclick="if(window.StreakManager) StreakManager.abrirModalRacha()" class="flex items-center gap-1.5 cursor-pointer bg-transparent border-0 p-0 text-amber-400 font-mono text-xs font-black transition-transform hover:scale-105 active:scale-95 shrink-0 select-none" title="Ver Racha Real de Días">
@@ -1474,10 +1483,10 @@
             <button type="button" id="btnMenuHdr" onclick="PerfilEstudiante.toggleMenuHeader()" class="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:text-white transition shadow cursor-pointer flex items-center justify-center shrink-0" title="Menú" aria-label="Menú">☰</button>
 
             <div id="menuHeaderPerfil" class="hidden absolute top-12 right-0 w-60 bg-slate-950 border border-slate-700/80 rounded-2xl shadow-2xl p-2 z-[80] font-mono text-xs space-y-1 backdrop-blur-xl">
-                <button type="button" onclick="PaywallManager.abrirModalContextual('EVENTO_PERFIL_MENU'); PerfilEstudiante.toggleMenuHeader();" class="w-full px-3 py-2 text-left rounded-xl hover:bg-slate-900 text-yellow-300 flex items-center gap-2 cursor-pointer">
+                <a href="/paywall.html" onclick="PerfilEstudiante.cerrarMenuHeader()" class="w-full px-3 py-2 text-left rounded-xl hover:bg-slate-900 text-yellow-300 flex items-center gap-2 block">
                     <svg class="w-4 h-4 shrink-0 text-yellow-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
                     <span>Plan de pago</span>
-                </button>
+                </a>
                 <div class="h-px bg-slate-800 my-1"></div>
                 <button type="button" onclick="document.getElementById('modalPTDP').style.display='flex'; PerfilEstudiante.cerrarMenuHeader();" class="w-full px-3 py-1.5 text-left rounded-xl hover:bg-slate-900 text-slate-500 text-[11px] cursor-pointer">Privacidad</button>
                 <button type="button" onclick="HabeasDataService.exportarDatosJSON(); PerfilEstudiante.cerrarMenuHeader();" class="w-full px-3 py-1.5 text-left rounded-xl hover:bg-slate-900 text-slate-500 text-[11px] cursor-pointer">Descargar mis datos</button>
