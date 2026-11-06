@@ -17,6 +17,7 @@ import recorridoRouter from './src/routes/recorridoRoutes.js';
 import dailyRouter from './src/routes/dailyRoutes.js';
 import mindRouter from './src/routes/mindRoutes.js';
 import { cmmiGovernanceEngine } from './src/security/cmmiGovernance.js';
+import { guardarInformeCompartido, leerInformeCompartido } from './src/services/informeCompartidoStore.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -214,6 +215,37 @@ app.post(['/api/v1/telemetry/reporte-padres', '/api/telemetry/reporte-padres'], 
     });
 });
 
+// ENLACES CORTOS DEL INFORME GENERAL (compartir con padres)
+app.post(['/api/informe-general/corto', '/api/v1/informe-general/corto'], (req, res) => {
+    try {
+        const snap = (req.body && (req.body.snap || req.body.informe || req.body)) || null;
+        const payload = (snap && snap.v === 2) ? snap : (snap && snap.snap ? snap.snap : null);
+        if (!payload || payload.v !== 2) {
+            return res.status(400).json({ success: false, error: 'Snapshot inválido' });
+        }
+        const saved = guardarInformeCompartido(payload);
+        return res.status(200).json({
+            success: true,
+            id: saved.id,
+            url: `/i/${saved.id}`,
+            expiresAt: saved.expiresAt
+        });
+    } catch (err) {
+        return res.status(err.status || 500).json({
+            success: false,
+            error: err.message || 'No se pudo crear el enlace corto'
+        });
+    }
+});
+
+app.get(['/api/informe-general/corto/:id', '/api/v1/informe-general/corto/:id'], (req, res) => {
+    const snap = leerInformeCompartido(req.params.id);
+    if (!snap) {
+        return res.status(404).json({ success: false, error: 'Informe no encontrado o expirado' });
+    }
+    return res.status(200).json({ success: true, snap });
+});
+
 // ENDPOINT DE MONITOREO DE SALUD DEL CLÚSTER (HEALTHCHECK)
 app.get(['/api/health', '/api/v1/health'], (req, res) => {
     return res.status(200).json({ success: true, status: "HEALTHY", version: SERVER_VERSION, timestamp: new Date().toISOString() });
@@ -236,6 +268,12 @@ app.get('/', (req, res) => {
 
 app.get('/informe-general', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'informe-general.html'));
+});
+
+app.get('/i/:id', (req, res) => {
+    const id = String(req.params.id || '').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 24);
+    if (!id) return res.redirect(302, '/informe-general');
+    return res.redirect(302, '/informe-general?id=' + encodeURIComponent(id));
 });
 
 app.get('/boletin', (req, res) => {
