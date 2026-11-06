@@ -9,7 +9,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="assets/icons/icon-192.svg">
     <link rel="apple-touch-icon" href="assets/icons/icon-192.svg">
-            <title>Dante OS c-1.3.29</title>
+            <title>Dante OS c-1.3.30</title>
     <script>
         try { sessionStorage.setItem('dante_entrada_viva', String(Date.now())); } catch (e) {}
     </script>
@@ -99,7 +99,7 @@
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" defer></script>
 
     <!-- Motores del Ecosistema Dante OS (Cargados en orden estricto de dependencias) -->
-    <script src="js/danteCacheVersion.js?v=c-1.3.29"></script>
+    <script src="js/danteCacheVersion.js?v=c-1.3.30"></script>
     <script src="js/danteSecurityGuard.js?v=c-1.2.85"></script>
     <script src="js/danteSecurityDRM.js?v=c-1.2.85"></script>
     <script src="js/danteStorage.js?v=c-1.2.85"></script>
@@ -118,7 +118,7 @@
     <script src="js/danteAbility.js?v=c-1.2.85"></script>
     <script src="js/rutaSimulacroEngine.js?v=c-1.2.85"></script>
     <script src="js/danteTutorEngine.js?v=c-1.2.85"></script>
-    <script src="js/danteSpiralEntity.js?v=c-1.3.19"></script>
+    <script src="js/danteSpiralEntity.js?v=c-1.3.30"></script>
     <script src="js/hackeaSyncIntro.js?v=c-1.3.19"></script>
     <script src="js/hackeaUmbralVault.js?v=c-1.3.19"></script>
     <script src="js/hackeaUmbralPicker.js?v=c-1.3.19"></script>
@@ -129,7 +129,7 @@
     <script src="js/hackeaPulso.js?v=c-1.3.19"></script>
     <script src="js/hackeaMente.js?v=c-1.3.19"></script>
     <script src="js/danteHubEngine.js?v=c-1.3.19"></script>
-    <script src="js/danteExamWorkspace.js?v=c-1.3.29"></script>
+    <script src="js/danteExamWorkspace.js?v=c-1.3.30"></script>
     <script src="js/danteSemana.js?v=c-1.2.85"></script>
     <script src="js/danteSimulacro.js?v=c-1.3.19"></script>
     <script src="js/danteRadarEngine.js?v=c-1.2.85"></script>
@@ -1223,7 +1223,10 @@
 
         /* CANVASES Y EFECTOS COGNITIVOS CON ACELERACIÓN HARDWARE GPU */
         #dante-fractal-bg, .ambient-mesh, .scanline { display: none !important; }
-        #viewGateway { background: #000 !important; }
+        #viewGateway { background: #050a0a !important; }
+        body:has(#viewGateway.active) {
+            background: #050a0a !important;
+        }
         .scanline { position: fixed; inset: 0; background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.5) 51%); background-size: 100% 4px; z-index: 1; pointer-events: none; opacity: 0.12; }
         #fx-flash { position: fixed; inset: 0; z-index: 999999; background: var(--crimson); opacity: 0; pointer-events: none; transition: opacity 0.3s; mix-blend-mode: screen; }
 
@@ -1625,49 +1628,69 @@
         }
         .optica-workspace-container { padding: 0.4rem 0.7rem !important; margin-top: 0.45rem !important; border-radius: 12px !important; }
         #btnIniciarMisionUnificado {
-            background: rgba(0, 18, 24, 0.72) !important;
-            border: 1.5px solid rgba(34, 211, 238, 0.78) !important;
-            color: #f8fafc !important;
-            box-shadow:
-                0 0 0 1px rgba(34, 211, 238, 0.12),
-                0 0 22px rgba(34, 211, 238, 0.28),
-                inset 0 0 18px rgba(34, 211, 238, 0.06) !important;
+            background: rgba(18, 22, 26, 0.92) !important;
+            border: 1px solid rgba(148, 163, 184, 0.22) !important;
+            color: #f1f5f9 !important;
+            box-shadow: none !important;
             animation: none !important;
-            min-height: 3.15rem;
-            border-radius: 999px !important;
+            min-height: 3.35rem;
+            border-radius: 14px !important;
             touch-action: none;
             -webkit-user-select: none;
             user-select: none;
-            padding: 0.7rem 1.05rem !important;
+            padding: 0.78rem 1rem !important;
+            transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+        }
+        #btnIniciarMisionUnificado:active:not(.btn-espera),
+        #btnIniciarMisionUnificado.holding-active:not(.btn-espera) {
+            border-color: rgba(34, 211, 238, 0.72) !important;
+            background: rgba(10, 28, 34, 0.96) !important;
+            box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.18), 0 0 18px rgba(34, 211, 238, 0.16) !important;
         }
         #btnIniciarMisionUnificado #txtScanPrompt {
             color: #f8fafc !important;
             font-family: 'Plus Jakarta Sans', sans-serif !important;
-            font-size: 0.92rem !important;
-            font-weight: 600 !important;
+            font-size: 0.9rem !important;
+            font-weight: 550 !important;
             letter-spacing: 0 !important;
-            line-height: 1.2 !important;
+            line-height: 1.25 !important;
+            white-space: normal !important;
+            overflow: visible !important;
         }
         #btnIniciarMisionUnificado #txtScanSubprompt {
-            color: rgba(103, 232, 249, 0.72) !important;
-            letter-spacing: 0.02em !important;
+            color: rgba(148, 163, 184, 0.85) !important;
+            letter-spacing: 0.01em !important;
             font-size: 0.68rem !important;
+            white-space: normal !important;
+            overflow: visible !important;
+            font-variant-numeric: tabular-nums;
+        }
+        #btnIniciarMisionUnificado .sala-cta-dot {
+            width: 0.45rem; height: 0.45rem; border-radius: 999px;
+            background: #22d3ee; flex-shrink: 0;
+            box-shadow: 0 0 8px rgba(34, 211, 238, 0.45);
+        }
+        #btnIniciarMisionUnificado .sala-cta-arrow {
+            color: #94a3b8; font-size: 0.85rem; flex-shrink: 0; margin-left: auto;
         }
         #btnHoldProgressFill {
             top: auto !important;
-            height: 3px !important;
-            background: rgba(34, 211, 238, 0.95) !important;
-            border-radius: 0 0 999px 999px;
-            box-shadow: 0 0 10px rgba(34, 211, 238, 0.65);
+            height: 2px !important;
+            background: rgba(34, 211, 238, 0.85) !important;
+            border-radius: 0 0 14px 14px;
+            box-shadow: none;
         }
         #btnIniciarMisionUnificado.btn-espera {
-            background: rgba(6, 16, 22, 0.78) !important;
-            border: 1.5px solid rgba(34, 211, 238, 0.38) !important;
-            box-shadow: 0 0 18px rgba(34, 211, 238, 0.14), inset 0 0 20px rgba(34, 211, 238, 0.05) !important;
+            background: rgba(18, 22, 26, 0.92) !important;
+            border: 1px solid rgba(34, 211, 238, 0.28) !important;
+            box-shadow: none !important;
             cursor: pointer;
+            overflow: visible !important;
         }
-        #btnIniciarMisionUnificado.btn-espera .sala-cta-ico {
+        #btnIniciarMisionUnificado.btn-espera .sala-cta-ico,
+        #btnIniciarMisionUnificado.btn-espera .sala-cta-dot {
             color: #67e8f9 !important;
+            background: #67e8f9;
         }
         #notaEspera[hidden] { display: none !important; }
         #notaEspera { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; padding: 1rem; }
@@ -1756,19 +1779,19 @@
         #reflejoSala {
             position: absolute;
             left: 50%;
-            top: -1.4rem;
-            width: min(1100px, 190vw);
-            height: min(820px, 96vh);
+            top: 0.2rem;
+            width: min(720px, 140vw);
+            height: min(520px, 62vh);
             transform: translateX(-50%);
             pointer-events: none;
             z-index: 1;
             border-radius: 50%;
-            filter: blur(52px);
-            mix-blend-mode: screen;
-            opacity: 0.88;
+            filter: blur(64px);
+            mix-blend-mode: normal;
+            opacity: 0.34;
             background:
-                radial-gradient(ellipse at 32% 22%, rgba(0, 242, 254, 0.34) 0%, rgba(0, 242, 254, 0.1) 34%, transparent 62%),
-                radial-gradient(ellipse at 68% 26%, rgba(251, 146, 60, 0.28) 0%, rgba(245, 158, 11, 0.1) 36%, transparent 64%);
+                radial-gradient(ellipse at 50% 42%, rgba(0, 180, 190, 0.18) 0%, rgba(0, 120, 130, 0.06) 38%, transparent 68%),
+                radial-gradient(ellipse at 58% 48%, rgba(180, 110, 40, 0.1) 0%, transparent 55%);
         }
         #hdrExamenPrincipal {
             background-color: #010103 !important;
@@ -1860,21 +1883,22 @@
             50% { box-shadow: 0 10px 28px rgba(245, 158, 11, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.65); }
         }
         #contenedorOrbeDante {
-            width: min(58vw, 248px);
-            height: min(58vw, 248px);
-            min-width: 200px;
-            min-height: 200px;
-            max-width: 248px;
-            max-height: 248px;
+            width: min(62vw, 268px);
+            height: min(62vw, 268px);
+            min-width: 210px;
+            min-height: 210px;
+            max-width: 268px;
+            max-height: 268px;
             flex: 0 0 auto;
             aspect-ratio: 1;
             position: relative;
             z-index: 5;
-            margin: 0.55rem auto 0.05rem;
+            margin: 1.15rem auto 0.15rem;
             overflow: visible;
             cursor: pointer;
             -webkit-tap-highlight-color: transparent;
-            filter: drop-shadow(0 0 34px rgba(0, 242, 254, 0.42)) drop-shadow(0 0 42px rgba(251, 146, 60, 0.28));
+            filter: drop-shadow(0 0 18px rgba(0, 200, 210, 0.22)) drop-shadow(0 0 26px rgba(180, 110, 40, 0.14));
+            transition: filter 0.2s ease;
         }
         #contenedorOrbeDante #danteSpiralCanvas {
             width: 100% !important;
@@ -1882,49 +1906,75 @@
             display: block;
         }
         #contenedorOrbeDante:focus-visible {
-            outline: 1px solid rgba(231, 215, 195, 0.55);
-            outline-offset: 6px;
+            outline: 1px solid rgba(34, 211, 238, 0.45);
+            outline-offset: 8px;
             border-radius: 50%;
         }
         #contenedorOrbeDante.hackea-calibrada {
-            filter: drop-shadow(0 0 18px rgba(231, 215, 195, 0.35));
+            filter: drop-shadow(0 0 16px rgba(0, 200, 210, 0.2));
         }
         #contenedorOrbeDante.hackea-pulsado {
-            filter: drop-shadow(0 0 22px rgba(231, 215, 195, 0.48));
+            filter: drop-shadow(0 0 20px rgba(0, 200, 210, 0.28));
         }
         body.dante-mind-active #hackeaPortalCaption {
-            color: rgba(251, 191, 36, 0.82);
+            color: rgba(226, 232, 240, 0.92);
         }
         /* La explosión la marca la presión (~3.4s); sin keyframes fijos que peleen con el dedo */
         #contenedorOrbeDante.hackea-holding {
             will-change: transform, filter;
             user-select: none;
             -webkit-user-select: none;
+            filter: drop-shadow(0 0 22px rgba(34, 211, 238, 0.42)) drop-shadow(0 0 28px rgba(34, 211, 238, 0.18));
         }
-        #hackeaPortalCaption {
-            margin: 0.2rem auto 0.7rem;
+        .sala-titulo-hackea {
+            margin: 1.2rem auto 0.2rem;
             font-family: 'Cinzel', 'Times New Roman', serif;
-            font-size: 1rem;
-            font-weight: 500;
-            font-style: italic;
-            letter-spacing: 0.06em;
-            text-transform: none;
-            color: rgba(248, 250, 252, 0.9);
+            font-size: 1.05rem;
+            font-weight: 400;
+            font-style: normal;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: rgba(248, 250, 252, 0.92);
             text-align: center;
             pointer-events: none;
             position: relative;
             z-index: 6;
             line-height: 1.35;
+            padding-bottom: 0.75rem;
         }
-        #hackeaPortalCaption .hackea-hold-hint {
+        .sala-titulo-hackea::after {
+            content: '';
             display: block;
-            margin-top: 0.28rem;
+            width: 2.4rem;
+            height: 1px;
+            margin: 0.7rem auto 0;
+            background: rgba(34, 211, 238, 0.55);
+        }
+        #hackeaPortalCaption {
+            margin: 0.15rem auto 0.55rem;
             font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 0.62rem;
-            letter-spacing: 0.14em;
-            color: rgba(148, 163, 184, 0.65);
-            text-transform: uppercase;
+            font-size: 0.72rem;
             font-weight: 500;
+            font-style: normal;
+            letter-spacing: 0.04em;
+            text-transform: none;
+            color: rgba(148, 163, 184, 0.75);
+            text-align: center;
+            pointer-events: none;
+            position: relative;
+            z-index: 6;
+            line-height: 1.35;
+            padding-bottom: 0;
+            min-height: 0;
+        }
+        #hackeaPortalCaption::after { display: none !important; }
+        #hackeaPortalCaption .hackea-hold-hint {
+            display: none !important;
+        }
+        /* Si el caption sigue siendo el título base, no lo duplicamos */
+        #hackeaPortalCaption:not(.hackea-breach-cap):empty,
+        #hackeaPortalCaption.sala-caption-base {
+            display: none !important;
         }
         #contenedorOrbeDante.hackea-holding + #hackeaPortalCaption .hackea-hold-hint,
         #hackeaPortalCaption.hackea-breach-cap .hackea-hold-hint {
@@ -2904,11 +2954,12 @@
             display: flex;
             align-items: center;
             justify-content: flex-end;
-            gap: 0.7rem;
+            gap: 0.55rem;
             width: 100%;
             max-width: 22.5rem;
-            margin: 0.15rem auto 0.35rem;
+            margin: 0.1rem auto 0.15rem;
             padding: 0 0.15rem;
+            opacity: 0.72;
         }
         #viewGateway .sala-stats-racha,
         #viewGateway .sala-stats-nivel {
@@ -2953,14 +3004,15 @@
         }
         #viewGateway .medalla-trazo { display: none !important; }
         #viewGateway .sala-acciones {
-            margin-top: 0.35rem !important;
+            margin-top: 1.05rem !important;
             display: flex;
             flex-direction: column;
-            gap: 0.7rem;
+            gap: 0.65rem;
+            max-width: 22.5rem !important;
         }
         #viewGateway #tarjetaTareaSala {
             order: 2;
-            margin-top: 0.15rem;
+            margin-top: 0;
             padding: 0;
             background: transparent;
             border: 0;
@@ -2970,61 +3022,80 @@
             display: none !important;
         }
         #viewGateway #btnAbrirRefuerzo.sin-tarea {
-            opacity: 0.88;
+            opacity: 0.92;
         }
         #viewGateway #btnAbrirRefuerzo {
             width: 100%;
-            min-height: 3.15rem;
+            min-height: 3.2rem;
             margin: 0 !important;
-            padding: 0.7rem 1.05rem !important;
-            border-radius: 999px !important;
-            background: rgba(28, 14, 4, 0.72) !important;
-            border: 1.5px solid rgba(251, 146, 60, 0.82) !important;
-            color: #fff7ed !important;
+            padding: 0.78rem 1rem !important;
+            border-radius: 14px !important;
+            background: rgba(18, 22, 26, 0.92) !important;
+            border: 1px solid rgba(148, 163, 184, 0.22) !important;
+            color: #f1f5f9 !important;
             font-family: 'Plus Jakarta Sans', sans-serif !important;
-            font-size: 0.92rem !important;
-            font-weight: 600 !important;
-            box-shadow:
-                0 0 0 1px rgba(251, 146, 60, 0.12),
-                0 0 22px rgba(251, 146, 60, 0.26),
-                inset 0 0 18px rgba(251, 146, 60, 0.05) !important;
+            font-size: 0.9rem !important;
+            font-weight: 550 !important;
+            box-shadow: none !important;
             cursor: pointer;
             display: flex !important;
             align-items: center;
             justify-content: space-between;
             gap: 0.55rem;
             text-align: left;
+            overflow: visible !important;
+            transition: border-color 0.18s ease, background 0.18s ease;
+        }
+        #viewGateway #btnAbrirRefuerzo:active {
+            border-color: rgba(251, 146, 60, 0.55) !important;
+            background: rgba(28, 20, 12, 0.96) !important;
         }
         #viewGateway #btnAbrirRefuerzo .sala-cta-ico {
-            color: #fb923c;
-            font-size: 0.9rem;
-            flex-shrink: 0;
+            display: none !important;
+        }
+        #viewGateway #btnAbrirRefuerzo .sala-cta-dot {
+            width: 0.45rem; height: 0.45rem; border-radius: 999px;
+            background: #fb923c; flex-shrink: 0;
+            box-shadow: 0 0 8px rgba(251, 146, 60, 0.4);
+        }
+        #viewGateway #btnAbrirRefuerzo .sala-cta-arrow {
+            color: #94a3b8; font-size: 0.85rem; flex-shrink: 0; margin-left: auto;
         }
         #viewGateway #btnAbrirRefuerzo .sala-refuerzo-meta {
-            color: #fdba74;
+            color: #cbd5e1;
             font-size: 0.72rem;
             font-weight: 500;
-            white-space: nowrap;
+            white-space: normal;
+            overflow: visible;
+            font-variant-numeric: tabular-nums;
+            max-width: 100%;
         }
         #viewGateway #btnAbrirRefuerzo:disabled {
             opacity: 0.72;
             cursor: wait;
         }
+        #viewGateway #btnAbrirRefuerzo.en-espera,
+        #viewGateway #btnAbrirRefuerzo.btn-espera {
+            border-color: rgba(251, 146, 60, 0.35) !important;
+            box-shadow: none !important;
+            color: #ffedd5 !important;
+            overflow: visible !important;
+        }
         #viewGateway .sala-cta-wrap {
             order: 1;
-            padding-top: 0.15rem !important;
+            padding-top: 0.35rem !important;
         }
         #viewGateway .sala-puertas-grid {
             display: grid !important;
             grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 0.55rem !important;
+            gap: 0.6rem !important;
             align-items: stretch;
             width: 100%;
             max-width: 23.5rem !important;
             margin-left: auto;
             margin-right: auto;
-            margin-top: 1.15rem !important;
-            padding-bottom: 4.5rem !important;
+            margin-top: 1.55rem !important;
+            padding-bottom: 5rem !important;
         }
         #viewGateway .sala-puertas-grid > .flex.items-center.justify-center {
             grid-column: 1 / -1;
@@ -3037,29 +3108,33 @@
         #puertaRutaVocacional { order: 3; }
         #viewGateway .sala-glass-card {
             position: relative;
-            background: rgba(12, 14, 18, 0.55) !important;
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.07) !important;
+            background: rgba(14, 18, 22, 0.88) !important;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            box-shadow: none !important;
             border-radius: 14px !important;
-            border: 1px solid rgba(226, 232, 240, 0.16) !important;
-            padding: 0.95rem 0.55rem 0.85rem !important;
-            min-height: 9.6rem;
+            border: 1px solid rgba(148, 163, 184, 0.18) !important;
+            padding: 0.85rem 0.55rem 0.75rem !important;
+            min-height: 8.6rem;
+            height: 100%;
             display: flex !important;
             flex-direction: column;
             justify-content: flex-start;
-            align-items: center;
-            gap: 0.48rem;
-            text-align: center;
+            align-items: flex-start;
+            gap: 0.4rem;
+            text-align: left;
             text-decoration: none !important;
             overflow: hidden;
+            transition: border-color 0.18s ease, background 0.18s ease;
+        }
+        #viewGateway .sala-glass-card:active {
+            border-color: rgba(34, 211, 238, 0.35) !important;
+            background: rgba(16, 22, 28, 0.96) !important;
         }
         #puertaSimulacro.sala-glass-card,
-        #cardExpedienteStatus.sala-glass-card {
-            border-color: rgba(148, 163, 184, 0.2) !important;
-        }
+        #cardExpedienteStatus.sala-glass-card,
         #puertaRutaVocacional.sala-glass-card {
-            border-color: rgba(148, 163, 184, 0.2) !important;
+            border-color: rgba(148, 163, 184, 0.18) !important;
         }
         #viewGateway .sala-card-help {
             position: absolute;
@@ -3069,13 +3144,13 @@
             width: 1rem;
             height: 1rem;
             border-radius: 999px;
-            border: 1px solid rgba(148, 163, 184, 0.3);
-            color: #94a3b8;
+            border: 1px solid rgba(148, 163, 184, 0.22);
+            color: #64748b;
             font-size: 0.55rem;
             font-weight: 700;
             line-height: 1rem;
             text-align: center;
-            background: rgba(0,0,0,0.25);
+            background: transparent;
             cursor: pointer;
             user-select: none;
         }
@@ -3083,46 +3158,50 @@
         #lblSimulacroTitulo,
         #lblRutaVocacionalTitulo,
         #lblProyeccionEtiqueta {
-            color: #ffffff !important;
-            font-family: 'Cinzel', 'Times New Roman', serif !important;
-            font-size: 0.8rem !important;
-            letter-spacing: 0 !important;
-            text-transform: none !important;
-            font-weight: 600 !important;
-            line-height: 1.15 !important;
-            padding: 0 0.85rem 0 0.15rem;
+            color: #f8fafc !important;
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+            font-size: 0.62rem !important;
+            letter-spacing: 0.06em !important;
+            text-transform: uppercase !important;
+            font-weight: 650 !important;
+            line-height: 1.2 !important;
+            padding: 0 1rem 0 0;
             max-width: 100%;
-            text-align: center !important;
+            text-align: left !important;
             width: 100%;
+            order: 2;
         }
         #viewGateway .sala-card-ico {
             display: inline-flex;
             align-items: center;
             justify-content: center;
             color: #67e8f9;
-            font-size: 0.92rem;
+            font-size: 0.85rem;
             line-height: 1;
-            margin-top: 0.15rem;
-            filter: drop-shadow(0 0 7px rgba(34, 211, 238, 0.4));
+            margin-top: 0.05rem;
+            filter: none;
+            order: 1;
         }
         #puertaRutaVocacional .sala-card-ico {
             color: #fbbf24;
-            filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.45));
+            filter: none;
         }
         #viewGateway .sala-card-metric {
             display: flex;
             flex-direction: column;
-            align-items: center;
-            gap: 0.42rem;
-            color: #f8fafc;
+            align-items: flex-start;
+            gap: 0.28rem;
+            color: #94a3b8;
             font-family: 'Plus Jakarta Sans', sans-serif;
             width: 100%;
             min-height: 0;
+            order: 3;
+            margin-top: 0.1rem;
         }
         #viewGateway .sala-card-metric-row {
             display: flex;
             align-items: baseline;
-            justify-content: center;
+            justify-content: flex-start;
             gap: 0.2rem;
             width: 100%;
         }
@@ -3130,67 +3209,59 @@
         #lblRutaVocacionalDetalle,
         #lblProyeccionPuntos,
         #lblProyeccionEscala {
-            color: #e8eef7 !important;
-            font-size: 0.78rem !important;
-            font-weight: 500 !important;
-            line-height: 1.25 !important;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+            color: #94a3b8 !important;
+            font-size: 0.68rem !important;
+            font-weight: 450 !important;
+            line-height: 1.35 !important;
+            display: block;
+            overflow: visible;
             margin: 0 !important;
             font-family: 'Plus Jakarta Sans', sans-serif !important;
-            text-align: center !important;
+            text-align: left !important;
+            white-space: normal !important;
+            max-height: none !important;
+            -webkit-line-clamp: unset !important;
         }
         #lblProyeccionPuntos {
-            font-size: 0.95rem !important;
-            font-weight: 550 !important;
-            color: #f8fafc !important;
+            font-size: 0.82rem !important;
+            font-weight: 600 !important;
+            color: #e2e8f0 !important;
         }
         #lblProyeccionEscala {
-            color: #cbd5e1 !important;
-            font-weight: 450 !important;
-            font-size: 0.78rem !important;
-            -webkit-line-clamp: 1;
-        }
-        #lblRutaVocacionalDetalle {
-            color: #d6d3d1 !important;
+            color: #64748b !important;
             font-weight: 450 !important;
             font-size: 0.68rem !important;
-            max-width: 6.4rem;
-            margin-left: auto !important;
-            margin-right: auto !important;
+        }
+        #lblRutaVocacionalDetalle {
+            color: #94a3b8 !important;
+            font-weight: 450 !important;
+            font-size: 0.68rem !important;
+            max-width: 100%;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
         }
         #viewGateway .sala-card-art {
-            margin-top: auto;
-            align-self: center;
-            opacity: 0.95;
-            line-height: 1;
+            display: none !important;
+        }
+        #viewGateway .sala-card-arrow {
+            position: absolute;
+            right: 0.55rem;
+            bottom: 0.5rem;
+            color: #64748b;
+            font-size: 0.72rem;
             pointer-events: none;
         }
-        #viewGateway .sala-card-art-clock {
-            color: #22d3ee;
-            font-size: 2rem;
-            text-shadow: 0 0 18px rgba(34,211,238,0.55);
-        }
-        #viewGateway .sala-card-art-chart {
-            color: #22d3ee;
-            width: 78%;
-            max-width: 4.6rem;
-        }
-        #viewGateway .sala-card-art-chart svg {
-            width: 100%;
-            height: 1.85rem;
+        #viewGateway .sala-card-subcopy {
             display: block;
-            filter: drop-shadow(0 0 7px rgba(34,211,238,0.5));
+            color: #94a3b8 !important;
+            font-size: 0.68rem !important;
+            font-weight: 450 !important;
+            line-height: 1.35 !important;
+            margin: 0;
         }
-        #viewGateway .sala-card-art-star {
-            color: #fbbf24;
-            width: 2.15rem;
-            height: 2.15rem;
-            filter: drop-shadow(0 0 14px rgba(251,191,36,0.55));
+        #viewGateway #containerPildorasMetricas {
+            display: none !important;
         }
-        #viewGateway .sala-card-art-star svg { width: 100%; height: 100%; display: block; }
         #salaAyudaTip {
             position: fixed;
             z-index: 12050;
@@ -3221,9 +3292,9 @@
             transform: none !important;
             border-radius: 0 !important;
             border: 0 !important;
-            border-top: 1px solid rgba(148, 163, 184, 0.14) !important;
-            background: rgba(0, 0, 0, 0.92) !important;
-            backdrop-filter: blur(16px);
+            border-top: 1px solid rgba(148, 163, 184, 0.1) !important;
+            background: rgba(5, 10, 10, 0.96) !important;
+            backdrop-filter: blur(14px);
             padding: 0.55rem 1.25rem calc(0.55rem + env(safe-area-inset-bottom, 0px)) !important;
             box-shadow: none !important;
             justify-content: space-around !important;
@@ -3272,70 +3343,104 @@
         }
         /* Header sala más cercano al mock */
         #hdrExamenPrincipal:not(.modo-examen) {
-            background: #000 !important;
+            background: #050a0a !important;
             border-bottom-color: transparent !important;
-            height: 3.15rem !important;
+            height: 3.35rem !important;
         }
         #hdrExamenPrincipal:not(.modo-examen) #containerTrackHeaderPill {
             display: none !important;
         }
         #hdrExamenPrincipal:not(.modo-examen) #badgeDanteVersion {
-            display: inline-flex !important;
-            align-items: center;
-            font-size: 0.62rem !important;
-            font-weight: 700 !important;
-            color: #6ee7b7 !important;
-            background: rgba(16, 185, 129, 0.14) !important;
-            border: 1px solid rgba(52, 211, 153, 0.35) !important;
-            border-radius: 999px !important;
-            padding: 0.12rem 0.45rem !important;
+            display: none !important;
         }
         #hdrExamenPrincipal:not(.modo-examen) #btnAjustesHdr {
             display: inline-flex !important;
-            color: #94a3b8;
+            color: #64748b;
+            min-height: 32px;
+            min-width: 32px;
+            border-radius: 999px;
+            background: transparent !important;
+        }
+        #hdrExamenPrincipal:not(.modo-examen) #btnAjustesHdr:active {
+            background: rgba(148, 163, 184, 0.08) !important;
         }
         #hdrExamenPrincipal:not(.modo-examen) #btnAjustesHdr i {
-            color: #94a3b8 !important;
+            color: #64748b !important;
+            font-size: 0.78rem !important;
         }
         #hdrExamenPrincipal:not(.modo-examen) #lblHeaderNombreUsuario {
-            display: inline !important;
-            color: #e2e8f0;
-            font-family: 'Plus Jakarta Sans', sans-serif !important;
-            font-size: 0.78rem;
-            font-weight: 500;
-            margin-right: 0.15rem;
-        }
-        #hdrExamenPrincipal:not(.modo-examen) #lblHeaderNombreUsuario::before {
-            content: 'Hola, ';
-            color: #94a3b8;
-            font-weight: 400;
+            display: none !important;
         }
         #hdrExamenPrincipal:not(.modo-examen) #btnPerfilHdr {
             display: inline-flex !important;
             align-items: center;
             justify-content: center;
-            background: transparent;
-            border: 0;
-            color: #22d3ee;
+            background: rgba(20, 24, 28, 0.9);
+            border: 1px solid rgba(148, 163, 184, 0.22);
+            border-radius: 999px;
+            width: 1.85rem;
+            height: 1.85rem;
+            color: #94a3b8;
             cursor: pointer;
-            padding: 0.25rem;
+            padding: 0;
+            position: relative;
+            margin-right: 0.95rem;
+        }
+        #hdrExamenPrincipal:not(.modo-examen) #btnPerfilHdr::after {
+            content: '\f078';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            font-size: 0.45rem;
+            color: #64748b;
+            margin-left: 0;
+            position: absolute;
+            right: -0.85rem;
+            top: 50%;
+            transform: translateY(-50%);
         }
         #hdrExamenPrincipal:not(.modo-examen) #btnPerfilHdr i {
-            color: #22d3ee !important;
-            font-size: 1rem !important;
+            color: #94a3b8 !important;
+            font-size: 0.95rem !important;
+        }
+        #hdrExamenPrincipal:not(.modo-examen) a.sala-solo {
+            display: inline-flex !important;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.05rem;
+            line-height: 1.1;
+        }
+        #hdrExamenPrincipal:not(.modo-examen) a.sala-solo img {
+            display: none !important;
         }
         #hdrExamenPrincipal:not(.modo-examen) a.sala-solo span.font-mono {
             font-family: 'Cinzel', 'Times New Roman', serif !important;
-            font-weight: 700 !important;
-            font-size: 1.05rem !important;
-            letter-spacing: 0.02em !important;
-            text-transform: none !important;
+            font-weight: 600 !important;
+            font-size: 1.02rem !important;
+            letter-spacing: 0.04em !important;
+            text-transform: uppercase !important;
+            color: #f8fafc !important;
+        }
+        #hdrExamenPrincipal:not(.modo-examen) a.sala-solo span.font-mono::after {
+            content: ' ✦';
+            font-size: 0.72rem;
+            color: #67e8f9;
+            letter-spacing: 0;
+        }
+        #hdrExamenPrincipal:not(.modo-examen) a.sala-solo::after {
+            content: 'Sala · Estudiante';
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.62rem;
+            font-weight: 500;
+            color: #64748b;
+            letter-spacing: 0.02em;
+            text-transform: none;
         }
         #viewGateway {
-            padding-bottom: 4.5rem !important;
+            padding-bottom: 5rem !important;
             max-height: none !important;
             height: auto !important;
             min-height: calc(100dvh - 48px) !important;
+            background: #050a0a !important;
         }
         .ruta-hoja { width: min(100%, 24rem); max-height: 92vh; overflow: auto; background: #14120f; color: #f5f5f4; border: 1px solid rgba(231, 215, 195, 0.22); border-radius: 18px; padding: 1.35rem 1.15rem 1.15rem; position: relative; text-align: left; }
         .cierre-hoja { background: #14120f; color: #f5f5f4; border: 1px solid rgba(231, 215, 195, 0.22); border-radius: 18px; padding: 1rem 1rem 0.9rem; text-align: left; }
@@ -5844,8 +5949,8 @@
                 <a href="index.html" class="sala-solo flex items-center gap-1.5 sm:gap-2 hover:opacity-90 transition-opacity shrink-0" title="Dante OS Enterprise">
                     <img src="assets/icons/dante-logo-icon.svg" alt="Dante OS Logo" class="w-6 h-6 rounded-md shadow-[0_0_12px_rgba(56,189,248,0.45)] border border-cyan-500/30 shrink-0 object-contain" />
                     <span class="font-mono font-bold text-xs tracking-wider text-white select-none whitespace-nowrap flex items-center gap-1.5">
-                        Dante OS
-                        <span id="badgeDanteVersion" class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">c-1.3.29</span>
+                        DANTE OS
+                        <span id="badgeDanteVersion" class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">c-1.3.30</span>
                     </span>
                 </a>
 
@@ -5917,7 +6022,8 @@
         <div id="contenedorOrbeDante" role="button" tabindex="0" aria-label="Hackea tu mente — presiona la espiral y mantén unos segundos" title="Presiona la espiral y mantén unos segundos">
             <canvas id="danteSpiralCanvas" width="480" height="480"></canvas>
         </div>
-        <div id="hackeaPortalCaption">— Hackea tu mente —<span class="hackea-hold-hint">Presiona la espiral</span></div>
+        <p id="salaTituloHackea" class="sala-titulo-hackea">Hackea tu mente</p>
+        <div id="hackeaPortalCaption">Hackea tu mente<span class="hackea-hold-hint">Presiona la espiral</span></div>
 
         <!-- B. DIÁLOGO CONVERSACIONAL SOCRÁTICO INSTANTÁNEO -->
         <div class="sala-acciones w-full max-w-xs sm:max-w-sm md:max-w-md mx-auto space-y-2 text-center relative z-10 mt-1">
@@ -5953,8 +6059,10 @@
 
             <div id="tarjetaTareaSala">
                 <button type="button" id="btnAbrirRefuerzo" class="sala-refuerzo-btn sin-tarea mt-0 w-full">
+                    <span class="sala-cta-dot" aria-hidden="true"></span>
                     <span class="sala-cta-ico" aria-hidden="true"><i class="fa-solid fa-arrow-trend-up"></i></span>
-                    <span>Refuerzo · 5 preguntas</span>
+                    <span class="min-w-0 flex-1 text-left">Refuerzo · 5 preguntas</span>
+                    <span class="sala-cta-arrow" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>
                 </button>
             </div>
 
@@ -5963,11 +6071,13 @@
                 <button id="btnIniciarMisionUnificado" data-alias="btnSintonizar" type="button" class="w-full py-3 px-4 text-center select-none cursor-pointer relative overflow-hidden">
                     <div id="btnHoldProgressFill" class="absolute left-0 bottom-0 pointer-events-none" style="width: 0%;"></div>
                     <span class="relative z-10 flex flex-row items-center justify-between gap-2 w-full" id="btnSintonizar">
-                        <span class="sala-cta-ico text-cyan-300 text-sm shrink-0" aria-hidden="true"><i class="fa-solid fa-bullseye"></i></span>
+                        <span class="sala-cta-dot" aria-hidden="true"></span>
+                        <span class="sala-cta-ico text-cyan-300 text-sm shrink-0" aria-hidden="true" style="display:none"><i class="fa-solid fa-bullseye"></i></span>
                         <span class="flex flex-col items-start justify-center gap-0.5 min-w-0 flex-1 text-left">
                             <span id="txtScanPrompt" data-reposo="Entrenamiento de hoy · 10 preguntas">Entrenamiento de hoy · 10 preguntas</span>
                             <span id="txtScanSubprompt" data-reposo="Mantén presionado" class="text-[11px]">Mantén presionado</span>
                         </span>
+                        <span class="sala-cta-arrow" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>
                     </span>
                 </button>
             </div>
@@ -5975,17 +6085,30 @@
 
         <!-- C. BLOQUE INFERIOR UNIFICADO DE EXPEDIENTE Y LEGALES (AL PIE DE LA CABINA 100DVH FIX) -->
         <div class="sala-puertas-grid w-full max-w-xs mx-auto flex flex-col items-center gap-2 pb-2 select-none shrink-0 mt-3 z-20">
+            <button type="button" id="puertaSimulacro" onclick="if(window.DanteSimulacro){DanteSimulacro.abrir();}" class="sala-glass-card block w-full cursor-pointer">
+                <span class="sala-card-help" role="button" tabindex="0" title="Qué es" aria-label="Qué es Simulacro Completo" onclick="event.preventDefault();event.stopPropagation();window.salaAyudaTarjeta&&salaAyudaTarjeta(event,'simulacro');">?</span>
+                <span class="sala-card-ico" aria-hidden="true"><i class="fa-solid fa-crosshairs"></i></span>
+                <div id="lblSimulacroTitulo" class="sala-card-title">Simulacro completo</div>
+                <div class="sala-card-metric">
+                    <span id="lblSimulacroDetalle">Evalúa tu progreso en condiciones reales.</span>
+                </div>
+                <span class="sala-card-arrow" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>
+                <div class="sala-card-art sala-card-art-clock" aria-hidden="true"><i class="fa-regular fa-file-lines"></i></div>
+            </button>
+
             <a id="cardExpedienteStatus" href="/perfil.html" class="sala-glass-card block w-full cursor-pointer transition-all active:scale-[0.99] no-underline">
                 <span class="sala-card-help" role="button" tabindex="0" title="Qué es" aria-label="Qué es Tu Proyección" onclick="event.preventDefault();event.stopPropagation();window.salaAyudaTarjeta&&salaAyudaTarjeta(event,'proyeccion');">?</span>
-                <div id="lblProyeccionEtiqueta" class="sala-card-title">Tu Proyección</div>
+                <span class="sala-card-ico" aria-hidden="true"><i class="fa-solid fa-chart-line"></i></span>
+                <div id="lblProyeccionEtiqueta" class="sala-card-title">Tu proyección</div>
                 <div class="sala-card-metric">
-                    <span class="sala-card-ico" aria-hidden="true"><i class="fa-solid fa-bullseye"></i></span>
                     <div class="sala-card-metric-row">
                         <span id="lblProyeccionPuntos">—</span>
                         <span id="lblProyeccionEscala">/ 500</span>
                         <span id="lblProyeccionMargen" class="hidden"></span>
                     </div>
+                    <span class="sala-card-subcopy">Visualiza tu crecimiento y potencial.</span>
                 </div>
+                <span class="sala-card-arrow" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>
                 <div class="sala-card-art sala-card-art-chart" aria-hidden="true">
                     <svg viewBox="0 0 64 28" fill="none"><path d="M2 22 C10 20, 16 16, 22 18 C30 21, 34 8, 42 10 C50 12, 54 6, 62 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="2.2 3.2"/><circle cx="62" cy="4" r="3" fill="currentColor"/></svg>
                 </div>
@@ -5995,23 +6118,14 @@
                 <span id="lblEstadoCalibracion" class="hidden"></span>
             </a>
 
-            <button type="button" id="puertaSimulacro" onclick="if(window.DanteSimulacro){DanteSimulacro.abrir();}" class="sala-glass-card block w-full cursor-pointer">
-                <span class="sala-card-help" role="button" tabindex="0" title="Qué es" aria-label="Qué es Simulacro Completo" onclick="event.preventDefault();event.stopPropagation();window.salaAyudaTarjeta&&salaAyudaTarjeta(event,'simulacro');">?</span>
-                <div id="lblSimulacroTitulo" class="sala-card-title">Simulacro Completo</div>
-                <div class="sala-card-metric">
-                    <span class="sala-card-ico" aria-hidden="true"><i class="fa-regular fa-clock"></i></span>
-                    <span id="lblSimulacroDetalle">2 h 30 min</span>
-                </div>
-                <div class="sala-card-art sala-card-art-clock" aria-hidden="true"><i class="fa-regular fa-file-lines"></i></div>
-            </button>
-
             <button type="button" id="puertaRutaVocacional" onclick="if(window.DanteHubEngine){DanteHubEngine.abrirPuertaRuta();}" class="sala-glass-card block w-full cursor-pointer">
                 <span class="sala-card-help" role="button" tabindex="0" title="Qué es" aria-label="Qué es Ruta Vocacional" onclick="event.preventDefault();event.stopPropagation();window.salaAyudaTarjeta&&salaAyudaTarjeta(event,'ruta');">?</span>
-                <div id="lblRutaVocacionalTitulo" class="sala-card-title">Ruta Vocacional</div>
+                <span class="sala-card-ico" aria-hidden="true"><i class="fa-regular fa-compass"></i></span>
+                <div id="lblRutaVocacionalTitulo" class="sala-card-title">Ruta vocacional</div>
                 <div class="sala-card-metric sala-card-metric-ruta">
-                    <span class="sala-card-ico" aria-hidden="true"><i class="fa-regular fa-compass"></i></span>
-                    <span id="lblRutaVocacionalDetalle">Explora tu mejor camino</span>
+                    <span id="lblRutaVocacionalDetalle">Explora caminos alineados contigo.</span>
                 </div>
+                <span class="sala-card-arrow" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>
                 <div class="sala-card-art sala-card-art-star" aria-hidden="true">
                     <svg viewBox="0 0 64 64" fill="currentColor">
                         <path d="M32 4 L34.2 24.8 L48 12 L38.2 28.6 L58 26 L40.4 34 L56 46 L38 38.8 L42 58 L32 42 L22 58 L26 38.8 L8 46 L23.6 34 L6 26 L25.8 28.6 L16 12 L29.8 24.8 Z"/>
@@ -6634,7 +6748,7 @@
     <!-- DOCK FLOTANTE INFERIOR HOMOLOGADO CON PERFIL.HTML -->
     <nav class="bottom-nav" id="bottomNav">
         <a href="/index.html" class="nav-item is-sala-active" style="text-decoration: none;">
-            <div class="icon-circle"><i class="fas fa-house text-cyan-400 text-sm"></i></div>
+            <div class="icon-circle"><i class="fas fa-landmark text-cyan-400 text-sm"></i></div>
             <span class="nav-text" style="color: #22d3ee">Sala</span>
         </a>
         <a href="/perfil.html" id="dante-anchor" class="nav-item" style="text-decoration: none;" title="Progreso">
@@ -6642,7 +6756,7 @@
             <span class="nav-text" style="color: #64748b">Progreso</span>
         </a>
         <button type="button" class="nav-item bg-transparent border-0 p-0" style="text-decoration: none;" onclick="window.abrirHackeaDesdeDock&&window.abrirHackeaDesdeDock()" title="Hackea tu mente">
-            <div class="icon-circle"><i class="fas fa-brain text-slate-500 text-sm"></i></div>
+            <div class="icon-circle"><i class="fas fa-cube text-slate-500 text-sm"></i></div>
             <span class="nav-text" style="color: #64748b">Hackea</span>
         </button>
     </nav>
@@ -6731,19 +6845,26 @@
                     if (ev.pointerType === 'mouse' && ev.button !== 0) return;
                     ev.preventDefault();
                     holding = true;
+                    btn.classList.add('holding-active');
                     start = performance.now();
                     try { btn.setPointerCapture(ev.pointerId); } catch (err) {}
+                    try { if (navigator.vibrate) navigator.vibrate(12); } catch (err) {}
                     pintar();
                     timer = setTimeout(function() {
                         holding = false;
+                        btn.classList.remove('holding-active');
                         const f = fill();
                         if (f) f.style.width = '100%';
                         if (navigator.vibrate) navigator.vibrate(16);
                         window.iniciarEntrenamientoHoy();
                     }, HOLD_MS);
                 });
-                btn.addEventListener('pointerup', soltar);
-                btn.addEventListener('pointercancel', soltar);
+                const soltarVisual = function(ev) {
+                    btn.classList.remove('holding-active');
+                    soltar(ev);
+                };
+                btn.addEventListener('pointerup', soltarVisual);
+                btn.addEventListener('pointercancel', soltarVisual);
                 btn.addEventListener('contextmenu', function(ev) { ev.preventDefault(); });
             }
             if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', engancharSostener);
