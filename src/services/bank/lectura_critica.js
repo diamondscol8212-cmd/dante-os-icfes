@@ -1,7 +1,7 @@
 // 📖 src/services/bank/lectura_critica.js - 50 Reactivos Calibrados ICFES Saber 11
 import { generarReactivosLecturaMasivos } from './generatorLectura.js';
 
-const generateSVG = (content) => `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" style="background:%230d0f14;font-family:sans-serif;">${content}</svg>`;
+const generateSVG = (content) => `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 220" style="background:%23ffffff;font-family:sans-serif;">${content}</svg>`;
 
 const reactivosSeed = [
     { id: 'item_lect_01', area: 'lectura_critica', sub: 'argumentacion',
@@ -54,7 +54,7 @@ const reactivosSeed = [
     },
     { id: '22222222-0000-4000-8000-000000000004', area: 'lectura_critica', sub: 'textos_discontinuos',
         texto: "Examine la siguiente ilustración satírica sobre la infraestructura pública. El propósito comunicativo dominante del caricaturista es:",
-        recurso_visual: generateSVG('<rect x="30" y="40" width="160" height="120" fill="%231a1d26" stroke="%2351e2f5" stroke-width="2"/><text x="50" y="80" fill="%23d4af37" font-size="12">BIBLIOTECA PÚBLICA</text><text x="70" y="120" fill="%23e74c3c" font-size="14">[ VACÍA ]</text><rect x="220" y="40" width="150" height="120" fill="%231a1d26" stroke="%232ecc71" stroke-width="2"/><text x="240" y="80" fill="%232ecc71" font-size="12">CASA DE APUESTAS</text><path d="M 230 130 L 260 130 M 270 130 L 300 130 M 310 130 L 340 130" stroke="%23ffffff" stroke-width="4"/><text x="240" y="150" fill="%23ffffff" font-size="10">FILA CIUDADANA</text>'),
+        recurso_visual: generateSVG('<rect x="30" y="40" width="160" height="120" fill="%231a1d26" stroke="%2351e2f5" stroke-width="2"/><text x="50" y="80" fill="%23d4af37" font-size="12">BIBLIOTECA PÚBLICA</text><text x="70" y="120" fill="%23e74c3c" font-size="14">[ VACÍA ]</text><rect x="220" y="40" width="150" height="120" fill="%231a1d26" stroke="%232ecc71" stroke-width="2"/><text x="240" y="80" fill="%232ecc71" font-size="12">CASA DE APUESTAS</text><path d="M 230 130 L 260 130 M 270 130 L 300 130 M 310 130 L 340 130" stroke="%23444444" stroke-width="4"/><text x="240" y="150" fill="%23111111" font-size="10">FILA CIUDADANA</text>'),
         opciones: ["A) Promover la asistencia masiva a las casas de apuestas comerciales.", "B) Criticar la demagogia institucional al inaugurar infraestructura sin dotación real frente a crisis sociales.", "C) Demostrar que las bibliotecas públicas ya no son útiles en la era digital.", "D) Elogiar la rápida gestión de obras públicas del gobierno local."],
         ok: "B", a: 1.35, b: -0.20, c: 0.25,
         q: { attr_heuristica_lineal: 1, attr_inversion_operacional: 0, attr_omision_conversion: 0, attr_error_geometrico: 0 },
@@ -162,7 +162,7 @@ const reactivosSeed = [
     },
     { id: '22222222-0000-4000-8000-000000000013', area: 'lectura_critica', sub: 'textos_discontinuos',
         texto: "Observe la infografía sobre los hábitos de consumo de agua en el hogar. ¿Cuál es el sector de mayor impacto sobre el cual debe centrarse una campaña de ahorro prioritario?",
-        recurso_visual: generateSVG('<rect x="50" y="30" width="300" height="30" fill="%23e74c3c"/><text x="60" y="50" fill="%23ffffff" font-size="12">Ducha y Baño (65%)</text><rect x="50" y="70" width="120" height="30" fill="%2351e2f5"/><text x="60" y="90" fill="%23ffffff" font-size="12">Cocina (20%)</text><rect x="50" y="110" width="60" height="30" fill="%232ecc71"/><text x="60" y="130" fill="%23ffffff" font-size="12">Jardín (10%)</text><rect x="50" y="150" width="30" height="30" fill="%23d4af37"/><text x="60" y="170" fill="%23ffffff" font-size="12">Otros (5%)</text>'),
+        recurso_visual: generateSVG('<rect x="50" y="30" width="300" height="30" fill="%23e74c3c"/><text x="60" y="50" fill="%23111111" font-size="12">Ducha y Baño (65%)</text><rect x="50" y="70" width="120" height="30" fill="%2351e2f5"/><text x="60" y="90" fill="%23111111" font-size="12">Cocina (20%)</text><rect x="50" y="110" width="60" height="30" fill="%232ecc71"/><text x="60" y="130" fill="%23111111" font-size="12">Jardín (10%)</text><rect x="50" y="150" width="30" height="30" fill="%23d4af37"/><text x="60" y="170" fill="%23111111" font-size="12">Otros (5%)</text>'),
         opciones: ["A) La ducha y los servicios sanitarios domésticos.", "B) El riego de jardines y zonas verdes.", "C) La preparación de alimentos en la cocina.", "D) El lavado de vehículos en garajes."],
         ok: "A", a: 1.20, b: -0.70, c: 0.25,
         q: { attr_heuristica_lineal: 1, attr_inversion_operacional: 0, attr_omision_conversion: 0, attr_error_geometrico: 0 },
@@ -234,7 +234,7 @@ const reactivosSeed = [
     },
     { id: '22222222-0000-4000-8000-000000000019', area: 'lectura_critica', sub: 'textos_discontinuos',
         texto: "Examine el siguiente esquema de flujo sobre el proceso de reciclaje de plástico. Si se omite la etapa de clasificación previa, ¿qué consecuencia lógica directa se produce en la cadena?",
-        recurso_visual: generateSVG('<rect x="20" y="80" width="80" height="40" fill="%231a1d26" stroke="%2351e2f5"/><text x="30" y="105" fill="%23ffffff" font-size="10">Recolectar</text><line x1="100" y1="100" x2="130" y2="100" stroke="%23ffffff" stroke-width="2"/><rect x="130" y="80" width="80" height="40" fill="%231a1d26" stroke="%23d4af37"/><text x="140" y="105" fill="%23d4af37" font-size="10">Clasificar</text><line x1="210" y1="100" x2="240" y2="100" stroke="%23ffffff" stroke-width="2"/><rect x="240" y="80" width="80" height="40" fill="%231a1d26" stroke="%232ecc71"/><text x="250" y="105" fill="%23ffffff" font-size="10">Triturar</text>'),
+        recurso_visual: generateSVG('<rect x="20" y="80" width="80" height="40" fill="%231a1d26" stroke="%2351e2f5"/><text x="30" y="105" fill="%23111111" font-size="10">Recolectar</text><line x1="100" y1="100" x2="130" y2="100" stroke="%23444444" stroke-width="2"/><rect x="130" y="80" width="80" height="40" fill="%231a1d26" stroke="%23d4af37"/><text x="140" y="105" fill="%23d4af37" font-size="10">Clasificar</text><line x1="210" y1="100" x2="240" y2="100" stroke="%23444444" stroke-width="2"/><rect x="240" y="80" width="80" height="40" fill="%231a1d26" stroke="%232ecc71"/><text x="250" y="105" fill="%23111111" font-size="10">Triturar</text>'),
         opciones: ["A) La contaminación del polímero resultante al procesar materiales incompatibles.", "B) Un incremento inmediato en la velocidad de recolección en las calles.", "C) La reducción a cero del consumo de energía eléctrica industrial.", "D) El aumento automático del precio de venta de los envases."],
         ok: "A", a: 1.50, b: 0.05, c: 0.25,
         q: { attr_heuristica_lineal: 1, attr_inversion_operacional: 1, attr_omision_conversion: 0, attr_error_geometrico: 0 },
@@ -306,7 +306,7 @@ const reactivosSeed = [
     },
     { id: '22222222-0000-4000-8000-000000000025', area: 'lectura_critica', sub: 'textos_discontinuos',
         texto: "Analice el siguiente diagrama sobre la estructura de la verdad en el empirismo inductivo. ¿Qué paso es imprescindible para validar una hipótesis científica antes de elevarla a ley general?",
-        recurso_visual: generateSVG('<circle cx="80" cy="100" r="35" fill="%231a1d26" stroke="%2351e2f5" stroke-width="2"/><text x="55" y="105" fill="%23ffffff" font-size="10">Observación</text><line x1="115" y1="100" x2="165" y2="100" stroke="%23ffffff" stroke-width="2"/><circle cx="200" cy="100" r="35" fill="%231a1d26" stroke="%23d4af37" stroke-width="2"/><text x="175" y="105" fill="%23d4af37" font-size="10">Experimento</text><line x1="235" y1="100" x2="285" y2="100" stroke="%23ffffff" stroke-width="2"/><circle cx="320" cy="100" r="35" fill="%231a1d26" stroke="%232ecc71" stroke-width="2"/><text x="295" y="105" fill="%23ffffff" font-size="10">Ley General</text>'),
+        recurso_visual: generateSVG('<circle cx="80" cy="100" r="35" fill="%231a1d26" stroke="%2351e2f5" stroke-width="2"/><text x="55" y="105" fill="%23111111" font-size="10">Observación</text><line x1="115" y1="100" x2="165" y2="100" stroke="%23444444" stroke-width="2"/><circle cx="200" cy="100" r="35" fill="%231a1d26" stroke="%23d4af37" stroke-width="2"/><text x="175" y="105" fill="%23d4af37" font-size="10">Experimento</text><line x1="235" y1="100" x2="285" y2="100" stroke="%23444444" stroke-width="2"/><circle cx="320" cy="100" r="35" fill="%231a1d26" stroke="%232ecc71" stroke-width="2"/><text x="295" y="105" fill="%23111111" font-size="10">Ley General</text>'),
         opciones: ["A) La contrastación experimental repetible frente a datos empíricos.", "B) La aprobación por aclamación popular en redes sociales.", "C) La publicación inmediata de opiniones personales en prensa.", "D) El respaldo presupuestal del gobierno de turno."],
         ok: "A", a: 1.35, b: -0.40, c: 0.25,
         q: { attr_heuristica_lineal: 1, attr_inversion_operacional: 0, attr_omision_conversion: 0, attr_error_geometrico: 0 },
@@ -402,7 +402,7 @@ const reactivosSeed = [
     },
     { id: '22222222-0000-4000-8000-000000000033', area: 'lectura_critica', sub: 'textos_discontinuos',
         texto: "En la siguiente caricatura de prensa sobre la adicción a las pantallas móviles, ¿cuál es el sentido implícito de la imagen?",
-        recurso_visual: generateSVG('<rect x="150" y="30" width="100" height="150" fill="%231a1d26" stroke="%2351e2f5" stroke-width="3"/><circle cx="200" cy="90" r="30" fill="%23e74c3c"/><line x1="200" y1="120" x2="200" y2="170" stroke="%23ffffff" stroke-width="3"/><text x="160" y="190" fill="%23d4af37" font-size="10">HUMANO ESCLAVIZADO</text>'),
+        recurso_visual: generateSVG('<rect x="150" y="30" width="100" height="150" fill="%231a1d26" stroke="%2351e2f5" stroke-width="3"/><circle cx="200" cy="90" r="30" fill="%23e74c3c"/><line x1="200" y1="120" x2="200" y2="170" stroke="%23444444" stroke-width="3"/><text x="160" y="190" fill="%23d4af37" font-size="10">HUMANO ESCLAVIZADO</text>'),
         opciones: ["A) La tecnología ha invertido la relación de dominio, convirtiendo al usuario en siervo del dispositivo.", "B) Los teléfonos inteligentes son herramientas indispensables para el aprendizaje escolar.", "C) Las baterías de los dispositivos electrónicos duran demasiado tiempo.", "D) La industria de telecomunicaciones debe bajar los precios de suscripción."],
         ok: "A", a: 1.40, b: -0.10, c: 0.25,
         q: { attr_heuristica_lineal: 1, attr_inversion_operacional: 0, attr_omision_conversion: 0, attr_error_geometrico: 0 },
@@ -474,7 +474,7 @@ const reactivosSeed = [
     },
     { id: '22222222-0000-4000-8000-000000000039', area: 'lectura_critica', sub: 'textos_discontinuos',
         texto: "Examine la siguiente tabla comparativa de medios de transporte urbano. ¿Cuál es la alternativa con mayor eficiencia ambiental (menor emisión de CO2 por pasajero)?",
-        recurso_visual: generateSVG('<rect x="30" y="30" width="340" height="30" fill="%231a1d26" stroke="%2351e2f5"/><text x="40" y="50" fill="%23ffffff" font-size="11">Bicicleta / Tranvía Eléctrico -> 0g CO2/km</text><rect x="30" y="70" width="340" height="30" fill="%231a1d26" stroke="%23d4af37"/><text x="40" y="90" fill="%23d4af37" font-size="11">Bus Eléctrico -> 15g CO2/km</text><rect x="30" y="110" width="340" height="30" fill="%231a1d26" stroke="%23e74c3c"/><text x="40" y="130" fill="%23e74c3c" font-size="11">Auto Particular Gasolina -> 120g CO2/km</text>'),
+        recurso_visual: generateSVG('<rect x="30" y="30" width="340" height="30" fill="%231a1d26" stroke="%2351e2f5"/><text x="40" y="50" fill="%23111111" font-size="11">Bicicleta / Tranvía Eléctrico -> 0g CO2/km</text><rect x="30" y="70" width="340" height="30" fill="%231a1d26" stroke="%23d4af37"/><text x="40" y="90" fill="%23d4af37" font-size="11">Bus Eléctrico -> 15g CO2/km</text><rect x="30" y="110" width="340" height="30" fill="%231a1d26" stroke="%23e74c3c"/><text x="40" y="130" fill="%23e74c3c" font-size="11">Auto Particular Gasolina -> 120g CO2/km</text>'),
         opciones: ["A) La bicicleta y el tranvía eléctrico urbano.", "B) El automóvil particular a gasolina.", "C) El autobús con motor diésel tradicional.", "D) La motocicleta de alta cilindrada."],
         ok: "A", a: 1.25, b: -0.65, c: 0.25,
         q: { attr_heuristica_lineal: 1, attr_inversion_operacional: 0, attr_omision_conversion: 0, attr_error_geometrico: 0 },

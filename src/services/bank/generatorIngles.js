@@ -3,7 +3,7 @@
 
 import { conAyuda } from './ponerAyuda.js';
 
-const generateSVG = (content) => `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" style="background:%230d0f14;font-family:sans-serif;">${content}</svg>`;
+const generateSVG = (content) => `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 220" style="background:%23ffffff;font-family:sans-serif;">${content}</svg>`;
 
 const CONTEXTOS_INGLES = [
     { topic: 'Environmental Conservation', location: 'National Park', sign: 'DO NOT FEED THE WILD ANIMALS' },

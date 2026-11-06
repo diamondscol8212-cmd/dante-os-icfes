@@ -1,7 +1,7 @@
 // 🧪 src/services/bank/ciencias_naturales.js - 50 Reactivos Calibrados ICFES Saber 11
 import { generarReactivosCienciasMasivos } from './generatorCiencias.js';
 
-const generateSVG = (content) => `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" style="background:%230d0f14;font-family:sans-serif;">${content}</svg>`;
+const generateSVG = (content) => `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 220" style="background:%23ffffff;font-family:sans-serif;">${content}</svg>`;
 
 const reactivosSeed = [
     { id: 'item_cn_01', area: 'ciencias_naturales', sub: 'biologia',
@@ -18,7 +18,7 @@ const reactivosSeed = [
     },
     { id: '33333333-0000-4000-8000-000000000001', area: 'ciencias_naturales', sub: 'fisica',
         texto: "Un vehículo reduce su velocidad uniformemente de 24 m/s a 0 m/s en un intervalo de 6 segundos al aproximarse a un semáforo. La magnitud de su desaceleración constante es de:",
-        recurso_visual: generateSVG('<line x1="30" y1="160" x2="370" y2="160" stroke="%23ffffff" stroke-width="2"/><rect x="50" y="110" width="80" height="40" rx="5" fill="%2351e2f5"/><text x="60" y="135" fill="%23000000" font-weight="bold" font-size="12">V1 = 24m/s</text><rect x="270" y="110" width="80" height="40" rx="5" fill="%23e74c3c"/><text x="280" y="135" fill="%23ffffff" font-weight="bold" font-size="12">V2 = 0m/s</text><text x="170" y="90" fill="%23d4af37" font-size="14">t = 6s</text>'),
+        recurso_visual: generateSVG('<line x1="30" y1="160" x2="370" y2="160" stroke="%23444444" stroke-width="2"/><rect x="50" y="110" width="80" height="40" rx="5" fill="%2351e2f5"/><text x="60" y="135" fill="%23000000" font-weight="bold" font-size="12">V1 = 24m/s</text><rect x="270" y="110" width="80" height="40" rx="5" fill="%23e74c3c"/><text x="280" y="135" fill="%23111111" font-weight="bold" font-size="12">V2 = 0m/s</text><text x="170" y="90" fill="%23d4af37" font-size="14">t = 6s</text>'),
         opciones: ["A) 4 m/s²", "B) 8 m/s²", "C) 144 m/s²", "D) 24 m/s²"],
         ok: "A", a: 1.40, b: -0.10, c: 0.25,
         q: { attr_heuristica_lineal: 1, attr_inversion_operacional: 1, attr_omision_conversion: 0, attr_error_geometrico: 0 },
@@ -54,7 +54,7 @@ const reactivosSeed = [
     },
     { id: '33333333-0000-4000-8000-000000000004', area: 'ciencias_naturales', sub: 'fisica',
         texto: "Dos bloques de masas m1 = 2 kg y m2 = 6 kg se encuentran sobre una superficie horizontal lisa sin fricción. Si se les aplica una fuerza neta idéntica de 12 N a ambos cuerpos de manera independiente, la relación entre sus aceleraciones (a1 / a2) es:",
-        recurso_visual: generateSVG('<rect x="50" y="100" width="50" height="50" fill="%2351e2f5"/><text x="65" y="130" fill="%2300" font-size="12">2kg</text><rect x="220" y="70" width="80" height="80" fill="%232ecc71"/><text x="245" y="115" fill="%2300" font-size="12">6kg</text><line x1="20" y1="150" x2="380" y2="150" stroke="%23ffffff" stroke-width="2"/>'),
+        recurso_visual: generateSVG('<rect x="50" y="100" width="50" height="50" fill="%2351e2f5"/><text x="65" y="130" fill="%2300" font-size="12">2kg</text><rect x="220" y="70" width="80" height="80" fill="%232ecc71"/><text x="245" y="115" fill="%2300" font-size="12">6kg</text><line x1="20" y1="150" x2="380" y2="150" stroke="%23444444" stroke-width="2"/>'),
         opciones: ["A) 1 : 3", "B) 3 : 1", "C) 1 : 1", "D) 4 : 1"],
         ok: "B", a: 1.60, b: 0.35, c: 0.25,
         q: { attr_heuristica_lineal: 0, attr_inversion_operacional: 1, attr_omision_conversion: 0, attr_error_geometrico: 0 },
@@ -126,7 +126,7 @@ const reactivosSeed = [
     },
     { id: '33333333-0000-4000-8000-000000000010', area: 'ciencias_naturales', sub: 'fisica',
         texto: "Una resistencia eléctrica de 10 ohmios se conecta a una fuente de corriente continua de 20 voltios. La potencia disipada en forma de calor por efecto Joule en la resistencia es de:",
-        recurso_visual: generateSVG('<rect x="100" y="50" width="200" height="100" fill="none" stroke="%2351e2f5" stroke-width="3"/><rect x="180" y="40" width="40" height="20" fill="%23d4af37"/><text x="185" y="35" fill="%23ffffff" font-size="10">R = 10 Ω</text><text x="50" y="105" fill="%232ecc71" font-size="12">V = 20V</text>'),
+        recurso_visual: generateSVG('<rect x="100" y="50" width="200" height="100" fill="none" stroke="%2351e2f5" stroke-width="3"/><rect x="180" y="40" width="40" height="20" fill="%23d4af37"/><text x="185" y="35" fill="%23111111" font-size="10">R = 10 Ω</text><text x="50" y="105" fill="%232ecc71" font-size="12">V = 20V</text>'),
         opciones: ["A) 2 vatios", "B) 40 vatios", "C) 200 vatios", "D) 10 vatios"],
         ok: "B", a: 1.50, b: 0.00, c: 0.25,
         q: { attr_heuristica_lineal: 1, attr_inversion_operacional: 1, attr_omision_conversion: 0, attr_error_geometrico: 0 },
@@ -378,7 +378,7 @@ const reactivosSeed = [
     },
     { id: '33333333-0000-4000-8000-000000000031', area: 'ciencias_naturales', sub: 'fisica',
         texto: "Un fluido incompresible circula a través de una tubería horizontal que reduce su diámetro a la mitad. De acuerdo con la ecuación de continuidad y el principio de Bernoulli, al reducirse la sección transversal de la tubería:",
-        recurso_visual: generateSVG('<path d="M 30 60 L 200 60 L 200 80 L 370 80 L 370 120 L 200 120 L 200 140 L 30 140 Z" fill="none" stroke="%2351e2f5" stroke-width="3"/><text x="80" y="105" fill="%23ffffff" font-size="12">V1 (Lento)</text><text x="250" y="105" fill="%23d4af37" font-size="12">V2 (Rápido)</text>'),
+        recurso_visual: generateSVG('<path d="M 30 60 L 200 60 L 200 80 L 370 80 L 370 120 L 200 120 L 200 140 L 30 140 Z" fill="none" stroke="%2351e2f5" stroke-width="3"/><text x="80" y="105" fill="%23111111" font-size="12">V1 (Lento)</text><text x="250" y="105" fill="%23d4af37" font-size="12">V2 (Rápido)</text>'),
         opciones: ["A) La velocidad del fluido aumenta y la presión estática disminuye.", "B) La velocidad del fluido disminuye y la presión estática aumenta.", "C) La velocidad y la presión aumentan simultáneamente.", "D) La velocidad y la presión permanecen constantes."],
         ok: "A", a: 1.85, b: 0.85, c: 0.25,
         q: { attr_heuristica_lineal: 0, attr_inversion_operacional: 1, attr_omision_conversion: 0, attr_error_geometrico: 0 },
@@ -594,7 +594,7 @@ const reactivosSeed = [
     },
     { id: '33333333-0000-4000-8000-000000000049', area: 'ciencias_naturales', sub: 'fisica',
         texto: "Un rayo de luz blanca atraviesa un prisma de cristal transparente y se descompone en un abanico de colores del espectro visible (rojo, naranja, amarillo, verde, azul y violeta). Este fenómeno se conoce como:",
-        recurso_visual: generateSVG('<polygon points="100,160 200,40 300,160" fill="none" stroke="%2351e2f5" stroke-width="3"/><line x1="30" y1="120" x2="150" y2="100" stroke="%23ffffff" stroke-width="3"/><path d="M 250 100 L 370 60 M 250 100 L 370 80 M 250 100 L 370 100 M 250 100 L 370 120" stroke="%23e74c3c" stroke-width="2"/>'),
+        recurso_visual: generateSVG('<polygon points="100,160 200,40 300,160" fill="none" stroke="%2351e2f5" stroke-width="3"/><line x1="30" y1="120" x2="150" y2="100" stroke="%23444444" stroke-width="3"/><path d="M 250 100 L 370 60 M 250 100 L 370 80 M 250 100 L 370 100 M 250 100 L 370 120" stroke="%23e74c3c" stroke-width="2"/>'),
         opciones: ["A) Dispersión refractiva de la luz", "B) Polarización magnética", "C) Difracción por rendija estrecha", "D) Reflexión total interna"],
         ok: "A", a: 1.40, b: -0.35, c: 0.25,
         q: { attr_heuristica_lineal: 1, attr_inversion_operacional: 0, attr_omision_conversion: 0, attr_error_geometrico: 0 },
@@ -666,7 +666,7 @@ const reactivosSeed = [
     },
     { id: '33333333-0000-4000-8000-000000000055', area: 'ciencias_naturales', sub: 'fisica',
         texto: "De acuerdo con el Principio de Bernoulli en mecánica de fluidos, cuando un fluido incompresible fluye a través de un estrechamiento en una tubería horizontal (efecto Venturi):",
-        recurso_visual: generateSVG('<path d="M 30 50 L 150 50 L 200 90 L 250 90 L 300 50 L 370 50" fill="none" stroke="%2351e2f5" stroke-width="3"/><path d="M 30 150 L 150 150 L 200 110 L 250 110 L 300 150 L 370 150" fill="none" stroke="%2351e2f5" stroke-width="3"/><text x="80" y="100" fill="%23ffffff" font-size="12">P1, v1</text><text x="215" y="105" fill="%23d4af37" font-size="12">P2, v2</text>'),
+        recurso_visual: generateSVG('<path d="M 30 50 L 150 50 L 200 90 L 250 90 L 300 50 L 370 50" fill="none" stroke="%2351e2f5" stroke-width="3"/><path d="M 30 150 L 150 150 L 200 110 L 250 110 L 300 150 L 370 150" fill="none" stroke="%2351e2f5" stroke-width="3"/><text x="80" y="100" fill="%23111111" font-size="12">P1, v1</text><text x="215" y="105" fill="%23d4af37" font-size="12">P2, v2</text>'),
         opciones: ["A) La velocidad del fluido aumenta ($v_2 > v_1$) y la presión estática disminuye ($P_2 < P_1$).", "B) La velocidad y la presión aumentan simultáneamente.", "C) La velocidad disminuye y la presión permanece constante.", "D) El fluido se detiene por completo debido a la fricción."],
         ok: "A", a: 1.75, b: 0.50, c: 0.25,
         q: { attr_heuristica_lineal: 0, attr_inversion_operacional: 1, attr_omision_conversion: 0, attr_error_geometrico: 0 },
@@ -810,7 +810,7 @@ const reactivosSeed = [
     },
     { id: '33333333-0000-4000-8000-000000000067', area: 'ciencias_naturales', sub: 'fisica',
         texto: "Un imán permanente se introduce y extrae repetidamente en el interior de una bobina de cobre conectada a un galvanómetro. Se observa la generación de una corriente eléctrica inducida. Este principio rige el funcionamiento de los generadores y fue descubierto por:",
-        recurso_visual: generateSVG('<path d="M 100 100 C 120 40 180 40 200 100 C 220 160 280 160 300 100" fill="none" stroke="%2351e2f5" stroke-width="3"/><rect x="180" y="80" width="80" height="40" fill="%23e74c3c"/><text x="195" y="105" fill="%23ffffff">N  S</text>'),
+        recurso_visual: generateSVG('<path d="M 100 100 C 120 40 180 40 200 100 C 220 160 280 160 300 100" fill="none" stroke="%2351e2f5" stroke-width="3"/><rect x="180" y="80" width="80" height="40" fill="%23e74c3c"/><text x="195" y="105" fill="%23111111">N  S</text>'),
         opciones: ["A) Ley de Inducción de Faraday", "B) Ley de Gravitación de Newton", "C) Efecto Fotoeléctrico de Einstein", "D) Ley de Coulomb electrostática"],
         ok: "A", a: 1.50, b: 0.00, c: 0.25,
         q: { attr_heuristica_lineal: 1, attr_inversion_operacional: 0, attr_omision_conversion: 0, attr_error_geometrico: 0 },

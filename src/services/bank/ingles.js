@@ -1,7 +1,7 @@
 // 🇬🇧 src/services/bank/ingles.js - 1,100 Reactivos Calibrados ICFES Saber 11
 import { generarReactivosInglesMasivos } from './generatorIngles.js';
 
-const generateSVG = (content) => `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" style="background:%230d0f14;font-family:sans-serif;">${content}</svg>`;
+const generateSVG = (content) => `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 220" style="background:%23ffffff;font-family:sans-serif;">${content}</svg>`;
 
 const reactivosSeed = [
     { id: 'item_ing_01', area: 'ingles', sub: 'grammar_reading',
@@ -54,7 +54,7 @@ const reactivosSeed = [
     },
     { id: '44444444-0000-4000-8000-000000000004', area: 'ingles', sub: 'reading_comprehension',
         texto: "Read the public sign shown below: 'AUTHORIZED PERSONNEL ONLY BEYOND THIS POINT'. Where would you normally see this notice and what does it imply?",
-        recurso_visual: generateSVG('<rect x="40" y="40" width="320" height="120" fill="%23e74c3c" stroke="%23ffffff" stroke-width="4"/><text x="60" y="85" fill="%23ffffff" font-weight="bold" font-size="14">AUTHORIZED PERSONNEL ONLY</text><text x="110" y="125" fill="%23ffffff" font-size="12">BEYOND THIS POINT</text>'),
+        recurso_visual: generateSVG('<rect x="40" y="40" width="320" height="120" fill="%23e74c3c" stroke="%23444444" stroke-width="4"/><text x="60" y="85" fill="%23111111" font-weight="bold" font-size="14">AUTHORIZED PERSONNEL ONLY</text><text x="110" y="125" fill="%23111111" font-size="12">BEYOND THIS POINT</text>'),
         opciones: ["A) In a public park open to all visitors.", "B) At the entrance of a restricted laboratory or staff room.", "C) Inside a supermarket checkout aisle.", "D) On a bus stop schedule board."],
         ok: "B", a: 1.15, b: -0.90, c: 0.25,
         q: { attr_heuristica_lineal: 1, attr_inversion_operacional: 0, attr_omision_conversion: 0, attr_error_geometrico: 0 },
@@ -150,7 +150,7 @@ const reactivosSeed = [
     },
     { id: '44444444-0000-4000-8000-000000000012', area: 'ingles', sub: 'reading_comprehension',
         texto: "Read the notice: 'PLEASE LEAVE YOUR KEYS AT THE RECEPTION BEFORE DEPARTING'. Where would you see this sign?",
-        recurso_visual: generateSVG('<rect x="60" y="50" width="280" height="100" fill="%231a1d26" stroke="%23d4af37" stroke-width="3"/><text x="80" y="90" fill="%2351e2f5" font-size="12">PLEASE LEAVE YOUR KEYS AT</text><text x="90" y="115" fill="%23ffffff" font-size="12">THE RECEPTION BEFORE DEPARTING</text>'),
+        recurso_visual: generateSVG('<rect x="60" y="50" width="280" height="100" fill="%231a1d26" stroke="%23d4af37" stroke-width="3"/><text x="80" y="90" fill="%2351e2f5" font-size="12">PLEASE LEAVE YOUR KEYS AT</text><text x="90" y="115" fill="%23111111" font-size="12">THE RECEPTION BEFORE DEPARTING</text>'),
         opciones: ["A) At a hotel front desk.", "B) Inside a public library.", "C) At a gas station pump.", "D) In a school gymnasium."],
         ok: "A", a: 1.10, b: -0.95, c: 0.25,
         q: { attr_heuristica_lineal: 1, attr_inversion_operacional: 0, attr_omision_conversion: 0, attr_error_geometrico: 0 },
@@ -222,7 +222,7 @@ const reactivosSeed = [
     },
     { id: '44444444-0000-4000-8000-000000000018', area: 'ingles', sub: 'reading_comprehension',
         texto: "Read the sign: 'NO SWIMMING - STRONG CURRENT HAZARD'. What is the purpose of this warning?",
-        recurso_visual: generateSVG('<rect x="50" y="40" width="300" height="110" fill="%23e74c3c" stroke="%23ffffff" stroke-width="3"/><text x="110" y="80" fill="%23ffffff" font-weight="bold" font-size="16">NO SWIMMING</text><text x="75" y="115" fill="%23d4af37" font-size="12">STRONG CURRENT HAZARD</text>'),
+        recurso_visual: generateSVG('<rect x="50" y="40" width="300" height="110" fill="%23e74c3c" stroke="%23444444" stroke-width="3"/><text x="110" y="80" fill="%23111111" font-weight="bold" font-size="16">NO SWIMMING</text><text x="75" y="115" fill="%23d4af37" font-size="12">STRONG CURRENT HAZARD</text>'),
         opciones: ["A) To prevent people from entering dangerous water currents.", "B) To invite people to take swimming lessons.", "C) To announce a water sport competition.", "D) To sell swimming equipment."],
         ok: "A", a: 1.15, b: -0.85, c: 0.25,
         q: { attr_heuristica_lineal: 1, attr_inversion_operacional: 0, attr_omision_conversion: 0, attr_error_geometrico: 0 },
@@ -414,7 +414,7 @@ const reactivosSeed = [
     },
     { id: '44444444-0000-4000-8000-000000000034', area: 'ingles', sub: 'reading_comprehension',
         texto: "Read the sign: 'SILENCE PLEASE - EXAMINATION IN PROGRESS'. Where would this sign be placed?",
-        recurso_visual: generateSVG('<rect x="60" y="50" width="280" height="100" fill="%231a1d26" stroke="%2351e2f5" stroke-width="3"/><text x="120" y="90" fill="%2351e2f5" font-weight="bold" font-size="14">SILENCE PLEASE</text><text x="80" y="115" fill="%23ffffff" font-size="12">EXAMINATION IN PROGRESS</text>'),
+        recurso_visual: generateSVG('<rect x="60" y="50" width="280" height="100" fill="%231a1d26" stroke="%2351e2f5" stroke-width="3"/><text x="120" y="90" fill="%2351e2f5" font-weight="bold" font-size="14">SILENCE PLEASE</text><text x="80" y="115" fill="%23111111" font-size="12">EXAMINATION IN PROGRESS</text>'),
         opciones: ["A) Outside a school classroom or university hall.", "B) Inside a noisy shopping mall food court.", "C) At a highway toll station.", "D) In a public swimming pool area."],
         ok: "A", a: 1.10, b: -0.95, c: 0.25,
         q: { attr_heuristica_lineal: 1, attr_inversion_operacional: 0, attr_omision_conversion: 0, attr_error_geometrico: 0 },
@@ -522,7 +522,7 @@ const reactivosSeed = [
     },
     { id: '44444444-0000-4000-8000-000000000043', area: 'ingles', sub: 'reading_comprehension',
         texto: "Read the notice: 'FASTEN SEATBELTS WHILE SEATED'. Where is this instruction routinely displayed?",
-        recurso_visual: generateSVG('<rect x="50" y="50" width="300" height="90" fill="%231a1d26" stroke="%232ecc71" stroke-width="3"/><text x="75" y="100" fill="%23ffffff" font-weight="bold" font-size="14">FASTEN SEATBELTS WHILE SEATED</text>'),
+        recurso_visual: generateSVG('<rect x="50" y="50" width="300" height="90" fill="%231a1d26" stroke="%232ecc71" stroke-width="3"/><text x="75" y="100" fill="%23111111" font-weight="bold" font-size="14">FASTEN SEATBELTS WHILE SEATED</text>'),
         opciones: ["A) Inside commercial passenger airplanes and buses.", "B) On a park bench in a residential neighborhood.", "C) At an escalator entrance in a shopping mall.", "D) Inside an elevator in an office tower."],
         ok: "A", a: 1.10, b: -0.90, c: 0.25,
         q: { attr_heuristica_lineal: 1, attr_inversion_operacional: 0, attr_omision_conversion: 0, attr_error_geometrico: 0 },
@@ -594,7 +594,7 @@ const reactivosSeed = [
     },
     { id: '44444444-0000-4000-8000-000000000049', area: 'ingles', sub: 'reading_comprehension',
         texto: "Read the sign: 'KEEP CLEAR - EMERGENCY EXIT'. What does this instruction mean?",
-        recurso_visual: generateSVG('<rect x="50" y="50" width="300" height="90" fill="%23e74c3c" stroke="%23ffffff" stroke-width="3"/><text x="80" y="90" fill="%23ffffff" font-weight="bold" font-size="14">KEEP CLEAR - EMERGENCY EXIT</text>'),
+        recurso_visual: generateSVG('<rect x="50" y="50" width="300" height="90" fill="%23e74c3c" stroke="%23444444" stroke-width="3"/><text x="80" y="90" fill="%23111111" font-weight="bold" font-size="14">KEEP CLEAR - EMERGENCY EXIT</text>'),
         opciones: ["A) Do not block this doorway so people can leave safely in an emergency.", "B) Park your vehicle in front of this door permanently.", "C) Lock this door from the outside with heavy chains.", "D) Use this exit for daily rubbish disposal only."],
         ok: "A", a: 1.15, b: -0.85, c: 0.25,
         q: { attr_heuristica_lineal: 1, attr_inversion_operacional: 0, attr_omision_conversion: 0, attr_error_geometrico: 0 },

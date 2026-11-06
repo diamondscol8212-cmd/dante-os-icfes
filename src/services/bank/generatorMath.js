@@ -3,7 +3,7 @@
 
 import { conAyuda } from './ponerAyuda.js';
 
-const generateSVG = (content) => `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" style="background:%230d0f14;font-family:sans-serif;">${content}</svg>`;
+const generateSVG = (content) => `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 220" style="background:%23ffffff;font-family:sans-serif;">${content}</svg>`;
 
 const CONTEXTOS_COLOMBIA = [
     { loc: 'Bogotá', entidad: 'TransMilenio', tema: 'tarifa de transporte' },
@@ -87,7 +87,7 @@ export function generarReactivosMatematicasMasivos(count = 1000) {
                 area: 'matematicas',
                 sub: 'geometria',
                 texto: `Un proyecto de infraestructura en ${ctx.loc} requiere un terreno rectangular con un área de ${area} m². Si el largo del terreno es exactamente el doble del ancho, ¿cuántos metros de cerramiento se requieren para cubrir todo su perímetro?`,
-                recurso_visual: generateSVG(`<rect x="60" y="50" width="280" height="100" fill="none" stroke="%2351e2f5" stroke-width="3"/><text x="170" y="40" fill="%23d4af37" font-size="14">Largo = 2x</text><text x="350" y="105" fill="%23d4af37" font-size="14">x</text><text x="150" y="110" fill="%23ffffff" font-size="16">Área = ${area} m²</text>`),
+                recurso_visual: generateSVG(`<rect x="60" y="50" width="280" height="100" fill="none" stroke="%2351e2f5" stroke-width="3"/><text x="170" y="40" fill="%23d4af37" font-size="14">Largo = 2x</text><text x="350" y="105" fill="%23d4af37" font-size="14">x</text><text x="150" y="110" fill="%23111111" font-size="16">Área = ${area} m²</text>`),
                 opciones: [
                     `A) ${perimetro / 2} metros`,
                     `B) ${perimetro} metros`,
@@ -127,7 +127,7 @@ export function generarReactivosMatematicasMasivos(count = 1000) {
                 area: 'matematicas',
                 sub: 'estadistica',
                 texto: `En una muestra estadística realizada por ${ctx.entidad} en ${ctx.loc}, de un grupo de ${totalEst} personas, ${sobreMedia} registran un nivel superior al promedio regional de COP ${media}.000. Si se selecciona a una persona al azar, ¿cuál es la probabilidad porcentual de que se encuentre en dicho grupo?`,
-                recurso_visual: generateSVG(`<rect x="50" y="140" width="60" height="40" fill="%233498db"/><rect x="130" y="80" width="60" height="100" fill="%232ecc71"/><rect x="210" y="40" width="60" height="140" fill="%23e74c3c"/><rect x="290" y="100" width="60" height="80" fill="%23f1c40f"/><text x="180" y="25" fill="%23ffffff" font-size="14">Frecuencias Muestrales</text>`),
+                recurso_visual: generateSVG(`<text x="200" y="22" text-anchor="middle" fill="%23111111" font-size="13" font-weight="700">Frecuencias muestrales</text><line x1="40" y1="40" x2="40" y2="170" stroke="%23666666"/><line x1="40" y1="170" x2="360" y2="170" stroke="%23666666"/><rect x="60" y="130" width="50" height="40" fill="%233498db"/><rect x="140" y="70" width="50" height="100" fill="%232ecc71"/><rect x="220" y="40" width="50" height="130" fill="%23e74c3c"/><rect x="300" y="90" width="50" height="80" fill="%23f1c40f"/><text x="85" y="190" text-anchor="middle" fill="%23111111" font-size="12" font-weight="700">G1</text><text x="165" y="190" text-anchor="middle" fill="%23111111" font-size="12" font-weight="700">G2</text><text x="245" y="190" text-anchor="middle" fill="%23111111" font-size="12" font-weight="700">G3</text><text x="325" y="190" text-anchor="middle" fill="%23111111" font-size="12" font-weight="700">G4</text>`),
                 opciones: [
                     `A) ${prob}%`,
                     `B) ${mitad}%`,
@@ -234,7 +234,7 @@ export function generarReactivosMatematicasMasivos(count = 1000) {
                 area: 'matematicas',
                 sub: 'trigonometria',
                 texto: `Para la instalación de una antena de telecomunicaciones de ${h} metros de altura en ${ctx.loc}, el cable de tensión forma un ángulo de elevación de 30° con el suelo horizontal. Sabiendo que tan(30°) ≈ 0.577, ¿a qué distancia aproximada de la base de la torre se debe anclar el cable en el suelo?`,
-                recurso_visual: generateSVG(`<polygon points="60,160 300,160 60,40" fill="none" stroke="%23e74c3c" stroke-width="3"/><text x="40" y="100" fill="%23ffffff" font-size="14">h = ${h}m</text><text x="180" y="180" fill="%23d4af37" font-size="14">d = ?</text><text x="240" y="150" fill="%232ecc71" font-size="12">30°</text>`),
+                recurso_visual: generateSVG(`<polygon points="60,160 300,160 60,40" fill="none" stroke="%23e74c3c" stroke-width="3"/><text x="40" y="100" fill="%23111111" font-size="14">h = ${h}m</text><text x="180" y="180" fill="%23d4af37" font-size="14">d = ?</text><text x="240" y="150" fill="%232ecc71" font-size="12">30°</text>`),
                 opciones: [
                     `A) ${dist} metros`,
                     `B) ${(h * 0.577).toFixed(1)} metros`,

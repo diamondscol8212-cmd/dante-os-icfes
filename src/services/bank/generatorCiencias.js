@@ -3,7 +3,7 @@
 
 import { conAyuda } from './ponerAyuda.js';
 
-const generateSVG = (content) => `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" style="background:%230d0f14;font-family:sans-serif;">${content}</svg>`;
+const generateSVG = (content) => `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 220" style="background:%23ffffff;font-family:sans-serif;">${content}</svg>`;
 
 const CONTEXTOS_CIENCIAS = [
     { loc: 'Parque Nacional Natural Tayrona', tema: 'ecosistema marino y barreras de coral' },
@@ -38,7 +38,7 @@ export function generarReactivosCienciasMasivos(count = 1000) {
                 area: 'ciencias_naturales',
                 sub: 'biologia',
                 texto: `Un estudio ambiental en el ${ctx.loc} analizó la dinámica poblacional del ${ctx.tema}. Se observó que al introducir una especie competidora por el mismo nicho ecológico, la densidad poblacional inicial de ${nivel} individuos/m² disminuyó en un 40%. ¿Cuál es el impacto biológico directo demostrado en este experimento?`,
-                recurso_visual: generateSVG(`<circle cx="100" cy="100" r="40" fill="%232ecc71" opacity="0.6"/><circle cx="200" cy="100" r="25" fill="%23e74c3c" opacity="0.8"/><text x="70" y="105" fill="%23ffffff" font-size="12">Población A</text><text x="175" y="105" fill="%23ffffff" font-size="12">Población B</text><text x="80" y="170" fill="%23d4af37" font-size="14">Exclusión Competitiva</text>`),
+                recurso_visual: generateSVG(`<circle cx="100" cy="100" r="40" fill="%232ecc71" opacity="0.6"/><circle cx="200" cy="100" r="25" fill="%23e74c3c" opacity="0.8"/><text x="70" y="105" fill="%23111111" font-size="12">Población A</text><text x="175" y="105" fill="%23111111" font-size="12">Población B</text><text x="80" y="170" fill="%23d4af37" font-size="14">Exclusión Competitiva</text>`),
                 opciones: [
                     `A) Ocurre un proceso de exclusión competitiva donde la presencia del competidor reduce la disponibilidad de recursos limitantes para la especie residente.`,
                     `B) La especie introducida estimula simbióticamente el crecimiento asexual de la especie residente.`,
@@ -73,7 +73,7 @@ export function generarReactivosCienciasMasivos(count = 1000) {
                 area: 'ciencias_naturales',
                 sub: 'quimica',
                 texto: `En un análisis hidroquímico de muestras del ${ctx.loc}, un químico disuelve ${sol} gramos de un soluto iónico en suficiente agua para preparar ${vol} mL de solución acuosa. ¿Cuál es la concentración de la solución expresada en g/L?`,
-                recurso_visual: generateSVG(`<rect x="150" y="50" width="100" height="110" rx="10" fill="none" stroke="%233498db" stroke-width="3"/><rect x="152" y="90" width="96" height="68" fill="%233498db" opacity="0.4"/><text x="170" y="120" fill="%23ffffff" font-size="14">${sol}g / ${vol}mL</text>`),
+                recurso_visual: generateSVG(`<rect x="150" y="50" width="100" height="110" rx="10" fill="none" stroke="%233498db" stroke-width="3"/><rect x="152" y="90" width="96" height="68" fill="%233498db" opacity="0.4"/><text x="170" y="120" fill="%23111111" font-size="14">${sol}g / ${vol}mL</text>`),
                 opciones: [
                     `A) ${conc} g/L`,
                     `B) ${(Number(conc) / 10).toFixed(1)} g/L`,
@@ -108,7 +108,7 @@ export function generarReactivosCienciasMasivos(count = 1000) {
                 area: 'ciencias_naturales',
                 sub: 'fisica',
                 texto: `Durante una prueba de resistencia de materiales cerca del ${ctx.loc}, un objeto con masa de ${m} kg es sometido a una fuerza neta constante alcanzando una aceleración de ${a_val} m/s². De acuerdo con la Segunda Ley de Newton (F = m · a), ¿cuál es la magnitud de la fuerza aplicada?`,
-                recurso_visual: generateSVG(`<rect x="140" y="80" width="80" height="60" fill="%23e74c3c"/><line x1="220" y1="110" x2="300" y2="110" stroke="%23f1c40f" stroke-width="4" marker-end="url(#arrow)"/><text x="160" y="115" fill="%23ffffff" font-size="14">${m} kg</text><text x="240" y="100" fill="%23f1c40f" font-size="14">F = ?</text>`),
+                recurso_visual: generateSVG(`<rect x="140" y="80" width="80" height="60" fill="%23e74c3c"/><line x1="220" y1="110" x2="300" y2="110" stroke="%23f1c40f" stroke-width="4" marker-end="url(#arrow)"/><text x="160" y="115" fill="%23111111" font-size="14">${m} kg</text><text x="240" y="100" fill="%23f1c40f" font-size="14">F = ?</text>`),
                 opciones: [
                     `A) ${f} Newtons`,
                     `B) ${(f + 10)} Newtons`,

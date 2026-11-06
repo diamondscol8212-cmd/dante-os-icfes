@@ -3,7 +3,7 @@
 
 import { conAyuda } from './ponerAyuda.js';
 
-const generateSVG = (content) => `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" style="background:%230d0f14;font-family:sans-serif;">${content}</svg>`;
+const generateSVG = (content) => `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 220" style="background:%23ffffff;font-family:sans-serif;">${content}</svg>`;
 
 const CONTEXTOS_SOCIALES = [
     { loc: 'Bogotá', tema: 'Mecanismos de participación ciudadana y Cabildo Abierto' },
@@ -73,7 +73,7 @@ export function generarReactivosSocialesMasivos(count = 1000) {
                 area: 'sociales_ciudadanas',
                 sub: 'interpretacion_y_analisis',
                 texto: `Un historiador compara dos fuentes sobre ${ctx.tema} en ${ctx.loc}. La Fuente X sostiene que las transformaciones económicas fueron impulsadas por actores privados. La Fuente Y afirma que las políticas públicas de inversión estatal fueron el factor determinante. ¿Qué conclusión analítica se deriva al contrastar ambas fuentes?`,
-                recurso_visual: generateSVG(`<rect x="40" y="40" width="140" height="120" fill="none" stroke="%233498db" stroke-width="2"/><text x="60" y="70" fill="%233498db" font-size="14">Fuente X</text><text x="50" y="100" fill="%23ffffff" font-size="11">Sector Privado</text><rect x="220" y="40" width="140" height="120" fill="none" stroke="%23e74c3c" stroke-width="2"/><text x="240" y="70" fill="%23e74c3c" font-size="14">Fuente Y</text><text x="230" y="100" fill="%23ffffff" font-size="11">Inversión Estatal</text>`),
+                recurso_visual: generateSVG(`<rect x="40" y="40" width="140" height="120" fill="none" stroke="%233498db" stroke-width="2"/><text x="60" y="70" fill="%233498db" font-size="14">Fuente X</text><text x="50" y="100" fill="%23111111" font-size="11">Sector Privado</text><rect x="220" y="40" width="140" height="120" fill="none" stroke="%23e74c3c" stroke-width="2"/><text x="240" y="70" fill="%23e74c3c" font-size="14">Fuente Y</text><text x="230" y="100" fill="%23111111" font-size="11">Inversión Estatal</text>`),
                 opciones: [
                     `A) Ambas fuentes ofrecen perspectivas complementarias sobre la interacción entre la iniciativa privada y la regulación estatal.`,
                     `B) Una de las fuentes debe ser falsa porque es imposible que el Estado y los privados interactúen.`,
