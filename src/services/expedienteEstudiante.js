@@ -166,3 +166,253 @@ export async function guardarSimulacroOficial(alias, payload) {
   if (ins.error) return { ok: false, error: ins.error.message };
   return { ok: true, simulacro: ins.data && ins.data.simulacro_oficial ? ins.data.simulacro_oficial : registro };
 }
+
+function numONulo(v, min, max) {
+  const n = Number(v);
+  if (!Number.isFinite(n)) return null;
+  if (min != null && n < min) return null;
+  if (max != null && n > max) return null;
+  return n;
+}
+
+function limpiarSnapshotCliente(raw) {
+  const s = raw && typeof raw === 'object' ? raw : {};
+  const history = Array.isArray(s.history) ? s.history.slice(0, 40).map((h) => {
+    if (!h || typeof h !== 'object') return null;
+    return {
+      id: String(h.id || '').slice(0, 80),
+      created_at: String(h.created_at || h.createdAt || '').slice(0, 40),
+      tipo: String(h.tipo || '').slice(0, 40),
+      materia: String(h.materia || '').slice(0, 80),
+      puntaje_escalonado: numONulo(h.puntaje_escalonado ?? h.puntaje, 0, 500),
+      theta: numONulo(h.theta, -6, 6),
+      sem: numONulo(h.sem, 0, 10),
+      aciertos: numONulo(h.aciertos, 0, 500),
+      total: numONulo(h.total, 0, 500),
+      precision: numONulo(h.precision, 0, 100),
+      precisionPorArea: h.precisionPorArea && typeof h.precisionPorArea === 'object' ? h.precisionPorArea : undefined
+    };
+  }).filter((h) => h && h.id) : [];
+
+  const areaConteo = {};
+  if (s.areaConteo && typeof s.areaConteo === 'object') {
+    Object.entries(s.areaConteo).slice(0, 40).forEach(([k, v]) => {
+      const key = String(k || '').toLowerCase().replace(/\s+/g, '_').slice(0, 60);
+      if (!key || !v || typeof v !== 'object') return;
+      const total = Math.max(0, Math.round(Number(v.total) || 0));
+      const aciertos = Math.max(0, Math.round(Number(v.aciertos) || 0));
+      if (!total) return;
+      areaConteo[key] = { total, aciertos: Math.min(aciertos, total) };
+    });
+  }
+
+  const calendario = ['CAL_A', 'CAL_B', 'CUSTOM', 'LIBRE'].includes(String(s.calendario || ''))
+    ? String(s.calendario)
+    : '';
+
+  return {
+    v: 1,
+    updatedAt: String(s.updatedAt || new Date().toISOString()).slice(0, 40),
+    score: numONulo(s.score, 0, 500),
+    racha: Math.max(0, Math.round(numONulo(s.racha, 0, 3650) || 0)),
+    meta: String(s.meta || '').slice(0, 40),
+    calendario,
+    modoLibre: Boolean(s.modoLibre) || calendario === 'LIBRE',
+    fechaTexto: String(s.fechaTexto || '').slice(0, 80),
+    theta: numONulo(s.theta, -6, 6),
+    sem: numONulo(s.sem, 0, 10),
+    preguntasLocal: Math.max(0, Math.round(numONulo(s.preguntasLocal, 0, 20000) || 0)),
+    areaConteo,
+    history
+  };
+}
+
+export function snapshotDesdeFila(fila) {
+  if (!fila) return null;
+  const mision = fila.mision_activa && typeof fila.mision_activa === 'object' ? fila.mision_activa : {};
+  const guardado = mision.dante_cliente && typeof mision.dante_cliente === 'object'
+    ? limpiarSnapshotCliente(mision.dante_cliente)
+    : null;
+  const scoreDb = numONulo(fila.baseline_proyeccion, 0, 500);
+  const rachaDb = Math.max(0, Math.round(numONulo(fila.racha_dias, 0, 3650) || 0));
+  const historyDb = Array.isArray(fila.historial_sesiones)
+    ? fila.historial_sesiones.slice(0, 40).map((ses) => ({
+      id: String((ses && ses.id) || '').slice(0, 80),
+      created_at: String((ses && ses.created_at) || '').slice(0, 40),
+      tipo: String((ses && ses.tipo) || '').slice(0, 40),
+      materia: String((ses && ses.tipo) || 'SESION').slice(0, 80),
+      puntaje_escalonado: numONulo(ses && ses.puntaje, 0, 500),
+      theta: numONulo(ses && ses.theta, -6, 6),
+      sem: numONulo(ses && ses.sem, 0, 10),
+      aciertos: numONulo(ses && ses.aciertos, 0, 500),
+      total: numONulo(ses && ses.total, 0, 500),
+      precision: numONulo(ses && ses.precisionPorcentaje, 0, 100),
+      precisionPorArea: ses && ses.precisionPorArea
+    })).filter((h) => h.id)
+    : [];
+
+  const base = guardado || {
+    v: 1,
+    updatedAt: String(fila.updated_at || fila.ultima_actualizacion || new Date().toISOString()).slice(0, 40),
+    score: null,
+    racha: 0,
+    meta: String(mision.meta || '').slice(0, 40),
+    calendario: ['CAL_A', 'CAL_B', 'CUSTOM', 'LIBRE'].includes(String(mision.calendario || ''))
+      ? String(mision.calendario)
+      : '',
+    modoLibre: String(mision.calendario || '') === 'LIBRE',
+    fechaTexto: String(mision.fecha || '').slice(0, 80),
+    theta: numONulo(fila.theta_global, -6, 6),
+    sem: numONulo(fila.sem_global, 0, 10),
+    preguntasLocal: Math.max(0, Math.round(numONulo(fila.preguntas_respondidas, 0, 20000) || 0)),
+    areaConteo: {},
+    history: []
+  };
+
+  const histMap = new Map();
+  [...historyDb, ...(base.history || [])].forEach((h) => {
+    if (!h || !h.id) return;
+    if (!histMap.has(h.id)) histMap.set(h.id, h);
+  });
+
+  return {
+    ...base,
+    score: base.score != null ? base.score : scoreDb,
+    racha: Math.max(base.racha || 0, rachaDb),
+    theta: base.theta != null ? base.theta : numONulo(fila.theta_global, -6, 6),
+    sem: base.sem != null ? base.sem : numONulo(fila.sem_global, 0, 10),
+    preguntasLocal: Math.max(base.preguntasLocal || 0, Math.round(numONulo(fila.preguntas_respondidas, 0, 20000) || 0)),
+    history: Array.from(histMap.values()).slice(0, 40),
+    updatedAt: base.updatedAt || String(fila.updated_at || new Date().toISOString()).slice(0, 40)
+  };
+}
+
+/**
+ * Dual-write del snapshot de cliente (localStorage) sin pisar misión ni borrar progreso.
+ */
+export async function guardarSnapshotCliente(alias, snapshotRaw = {}) {
+  const estudiante = aliasEstudiante(alias);
+  if (!estudiante) return { ok: false, error: 'sin_estudiante' };
+
+  const snap = limpiarSnapshotCliente(snapshotRaw);
+  const previo = await cargarProgresoSaber(estudiante);
+  if (previo.error) return { ok: false, error: previo.error.message };
+  const fila = previo.data;
+  const misionPrev = fila && fila.mision_activa && typeof fila.mision_activa === 'object'
+    ? fila.mision_activa
+    : {};
+  const prevCliente = misionPrev.dante_cliente && typeof misionPrev.dante_cliente === 'object'
+    ? limpiarSnapshotCliente(misionPrev.dante_cliente)
+    : null;
+
+  const prevTs = Date.parse((prevCliente && prevCliente.updatedAt) || '') || 0;
+  const newTs = Date.parse(snap.updatedAt) || Date.now();
+  // Si el servidor tiene un snapshot más nuevo con más evidencias, no lo pisamos.
+  if (prevCliente && prevTs > newTs + 2000) {
+    const prevN = (prevCliente.preguntasLocal || 0) + ((prevCliente.history && prevCliente.history.length) || 0);
+    const newN = (snap.preguntasLocal || 0) + ((snap.history && snap.history.length) || 0);
+    if (prevN >= newN) {
+      return { ok: true, skipped: true, snapshot: snapshotDesdeFila(fila) };
+    }
+  }
+
+  const histMap = new Map();
+  const histPrev = Array.isArray(fila && fila.historial_sesiones) ? fila.historial_sesiones : [];
+  histPrev.forEach((ses) => {
+    if (ses && ses.id) histMap.set(String(ses.id), ses);
+  });
+  (snap.history || []).forEach((h) => {
+    if (!h || !h.id || histMap.has(h.id)) return;
+    histMap.set(h.id, {
+      id: h.id,
+      tipo: h.tipo || 'SESION',
+      created_at: h.created_at || snap.updatedAt,
+      puntaje: h.puntaje_escalonado,
+      theta: h.theta,
+      sem: h.sem,
+      aciertos: h.aciertos || 0,
+      total: h.total || 0,
+      precisionPorcentaje: h.precision,
+      precisionPorArea: h.precisionPorArea || {}
+    });
+  });
+  const histSesiones = Array.from(histMap.values())
+    .sort((a, b) => String(b.created_at || '').localeCompare(String(a.created_at || '')))
+    .slice(0, 80);
+
+  const scoreDb = numONulo(fila && fila.baseline_proyeccion, 0, 500);
+  let baseline = scoreDb;
+  if (snap.score != null) {
+    if (scoreDb == null) baseline = Math.round(snap.score);
+    else if (newTs >= prevTs) baseline = Math.round(snap.score);
+  }
+
+  const rachaDb = Math.max(0, Math.round(numONulo(fila && fila.racha_dias, 0, 3650) || 0));
+  const racha = Math.max(rachaDb, snap.racha || 0);
+
+  const mision = { ...misionPrev };
+  if (snap.meta && !mision.meta) mision.meta = snap.meta;
+  if (snap.calendario && !mision.calendario) mision.calendario = snap.calendario;
+  if (snap.fechaTexto && !mision.fecha) mision.fecha = snap.fechaTexto;
+  if (snap.modoLibre && !mision.calendario) mision.calendario = 'LIBRE';
+
+  const histMerged = [];
+  const seenH = new Set();
+  [...(snap.history || []), ...((prevCliente && prevCliente.history) || [])].forEach((h) => {
+    if (!h || !h.id || seenH.has(h.id)) return;
+    seenH.add(h.id);
+    histMerged.push(h);
+  });
+
+  const areaMerged = { ...((prevCliente && prevCliente.areaConteo) || {}) };
+  Object.entries(snap.areaConteo || {}).forEach(([k, v]) => {
+    const prev = areaMerged[k];
+    if (!prev || (v.total || 0) >= (prev.total || 0)) areaMerged[k] = v;
+  });
+
+  mision.dante_cliente = {
+    ...snap,
+    score: snap.score != null ? snap.score : (prevCliente && prevCliente.score),
+    racha,
+    areaConteo: areaMerged,
+    history: histMerged.slice(0, 40),
+    updatedAt: new Date(Math.max(newTs, prevTs, Date.now())).toISOString()
+  };
+
+  const cuerpo = {
+    estudiante,
+    estudiante_id: estudiante,
+    materia: 'saber_11',
+    email: String((fila && fila.email) || `${estudiante}@danteos.edu.co`).trim().toLowerCase(),
+    mision_activa: mision,
+    baseline_proyeccion: baseline,
+    racha_dias: racha,
+    historial_sesiones: histSesiones,
+    theta_global: snap.theta != null ? snap.theta : (fila && fila.theta_global),
+    sem_global: snap.sem != null ? snap.sem : (fila && fila.sem_global),
+    updated_at: new Date().toISOString(),
+    ultima_actualizacion: new Date().toISOString(),
+    institution_id: (fila && fila.institution_id) || 'colegio_sandbox_default',
+    onboarding_completed: true
+  };
+
+  if (fila && fila.id) {
+    const up = await supabase.from('progreso_estudiantes').update(cuerpo).eq('id', fila.id);
+    if (up.error) return { ok: false, error: up.error.message };
+  } else {
+    const ins = await supabase.from('progreso_estudiantes').insert({
+      ...cuerpo,
+      id: crypto.randomUUID(),
+      preguntas_respondidas: snap.preguntasLocal || 0,
+      plan: 'EXPLORADOR',
+      items_respondidos: [],
+      historial_theta: [],
+      simulacro_oficial: null,
+      historial_simulacros: []
+    });
+    if (ins.error) return { ok: false, error: ins.error.message };
+  }
+
+  const fresco = await cargarProgresoSaber(estudiante);
+  return { ok: true, snapshot: snapshotDesdeFila(fresco.data) };
+}

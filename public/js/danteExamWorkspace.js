@@ -3054,6 +3054,9 @@
         puntos: est && est.puntos,
         respuestas: respuestas
       }).catch(function () {});
+      if (window.DanteNube && typeof window.DanteNube.subirProgresoDebounced === 'function') {
+        window.DanteNube.subirProgresoDebounced(800);
+      }
     }
 
     _sumarConteoAreas() {

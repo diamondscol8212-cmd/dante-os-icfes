@@ -138,6 +138,9 @@
           return JSON.stringify((otro.respuestas || []).map(function (r) { return r && (r.id || r.itemId); })) !== firmaOk;
         }));
         avisar('');
+        if (window.DanteNube && typeof window.DanteNube.subirProgresoDebounced === 'function') {
+          window.DanteNube.subirProgresoDebounced(1000);
+        }
         return data;
       }
       const directo = await publicarDirecto(alumno, paquete);

@@ -10,7 +10,9 @@ import { sanitizeItemsCollection } from '../security/sanitizer.js';
 import {
   estudianteDesdeRequest,
   cargarProgresoSaber,
-  guardarSimulacroOficial
+  guardarSimulacroOficial,
+  guardarSnapshotCliente,
+  snapshotDesdeFila
 } from '../services/expedienteEstudiante.js';
 import { supabase } from '../../supabaseClient.js';
 
@@ -119,7 +121,7 @@ router.get('/expediente', optionalToken, async (req, res) => {
 
     const { data, error } = await supabase
       .from('progreso_estudiantes')
-      .select('estudiante,materia,theta_global,sem_global,baseline_proyeccion,preguntas_respondidas,items_respondidos,ultima_actualizacion,historial_theta,historial_sesiones,simulacro_oficial,historial_simulacros,racha_dias')
+      .select('estudiante,materia,theta_global,sem_global,baseline_proyeccion,preguntas_respondidas,items_respondidos,ultima_actualizacion,updated_at,historial_theta,historial_sesiones,simulacro_oficial,historial_simulacros,racha_dias,mision_activa')
       .eq('estudiante', alias)
       .limit(40);
     if (error) return res.status(500).json({ ok: false, error: error.message });
@@ -158,7 +160,39 @@ router.get('/expediente', optionalToken, async (req, res) => {
       opcion_marcada: row.opcion_marcada
     }));
 
-    return res.json({ ok: true, progreso, eventos });
+    const saber = (data || []).find((row) => row && row.materia === 'saber_11') || (data || [])[0] || null;
+    const snapshot = snapshotDesdeFila(saber);
+
+    return res.json({ ok: true, progreso, eventos, snapshot });
+  } catch (err) {
+    return res.status(500).json({ ok: false, error: err.message || 'error' });
+  }
+});
+
+/** Dual-write: el cliente sube su snapshot local sin borrar el expediente. */
+router.post('/progreso/sync', optionalToken, async (req, res) => {
+  try {
+    const cuerpo = req.body || {};
+    const alias = estudianteDesdeRequest(req, cuerpo);
+    if (!alias) return res.status(400).json({ ok: false, error: 'Falta el estudiante.' });
+    const resultado = await guardarSnapshotCliente(alias, cuerpo.snapshot || cuerpo);
+    if (!resultado.ok) return res.status(500).json({ ok: false, error: resultado.error || 'sync_fail' });
+    return res.json({ ok: true, skipped: Boolean(resultado.skipped), snapshot: resultado.snapshot || null });
+  } catch (err) {
+    return res.status(500).json({ ok: false, error: err.message || 'error' });
+  }
+});
+
+router.get('/progreso/snapshot', optionalToken, async (req, res) => {
+  try {
+    const alias = estudianteDesdeRequest(req, {
+      studentId: req.query.estudiante || req.query.studentId,
+      email: req.query.email
+    });
+    if (!alias) return res.status(400).json({ ok: false, error: 'Falta el estudiante.' });
+    const { data, error } = await cargarProgresoSaber(alias);
+    if (error) return res.status(500).json({ ok: false, error: error.message });
+    return res.json({ ok: true, snapshot: snapshotDesdeFila(data) });
   } catch (err) {
     return res.status(500).json({ ok: false, error: err.message || 'error' });
   }
