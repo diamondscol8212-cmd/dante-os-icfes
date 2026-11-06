@@ -9,7 +9,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="assets/icons/icon-192.svg">
     <link rel="apple-touch-icon" href="assets/icons/icon-192.svg">
-    <title>Dante OS · Tu informe c-1.3.46</title>
+    <title>Dante OS · Tu informe c-1.3.47</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Serif+4:wght@600;700;800&display=swap">
 
@@ -20,15 +20,15 @@
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="theme.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/danteCacheVersion.js?v=c-1.3.46"></script>
-    <script src="js/danteNube.js?v=c-1.3.46"></script>
-    <script src="js/danteRegistro.js?v=c-1.3.46"></script>
+    <script src="js/danteCacheVersion.js?v=c-1.3.47"></script>
+    <script src="js/danteNube.js?v=c-1.3.47"></script>
+    <script src="js/danteRegistro.js?v=c-1.3.47"></script>
     <script src="js/danteVectorIcons.js"></script>
     <script src="js/danteStorage.js"></script>
     <script src="js/streakManager.js?v=23.1.2"></script>
     <script src="js/rutaSimulacroEngine.js"></script>
     <script src="js/danteRadarEngine.js"></script>
-    <script src="js/danteTutorEngine.js?v=c-1.3.46"></script>
+    <script src="js/danteTutorEngine.js?v=c-1.3.47"></script>
 
     <style>
         #bentoContainer { display: flex; flex-direction: column; gap: 0.95rem; }
@@ -40,8 +40,8 @@
         #bloqueProyeccion,
         #bloqueAreas,
         #panelRutaEnPalabras,
-        #btnSimulacroPerfil,
-        #btnRutaInforme { display: none !important; }
+        #btnSimulacroPerfil.puerta-actividad-oculta,
+        #btnRutaInforme.puerta-actividad-oculta { display: none !important; }
         #panelEnfoque_preu, #panelEnfoque_vocacional { display: none !important; }
         :root {
             --primary: #7eb8c4;
@@ -898,7 +898,7 @@
         #bloqueModulos {
             display: grid !important;
             grid-template-columns: 1fr;
-            gap: 0 !important;
+            gap: 0.65rem !important;
             background: transparent !important;
             border: 0 !important;
             padding: 0 !important;
@@ -915,11 +915,7 @@
             box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35) !important;
             position: relative;
         }
-        #bloqueModulos #btnInformeGeneral {
-            background: linear-gradient(165deg, rgba(28, 34, 48, 0.98), rgba(16, 20, 30, 0.98)) !important;
-            border-color: rgba(126, 184, 196, 0.38) !important;
-        }
-        #bloqueModulos #btnInformeGeneral .puerta-chev {
+        #bloqueModulos .puerta-informe .puerta-chev {
             margin-left: auto;
             color: #64748b;
             font-size: 1.15rem;
@@ -1384,7 +1380,7 @@
         </div>
         <div class="perfil-hdr-tag-wrap">
             <span class="perfil-hdr-tag" id="lblHdrProyeccionTag">PROYECCIÓN 2026</span>
-            <span id="badgeDanteVersion" class="perfil-hdr-ver">c-1.3.46</span>
+            <span id="badgeDanteVersion" class="perfil-hdr-ver">c-1.3.47</span>
         </div>
         <div class="relative flex items-center gap-2.5 shrink-0">
             <button type="button" id="badgeRacha" onclick="if(window.StreakManager) StreakManager.abrirModalRacha()" class="flex items-center gap-1.5 cursor-pointer bg-transparent border-0 p-0 text-amber-400 font-mono text-xs font-black transition-transform hover:scale-105 active:scale-95 shrink-0 select-none" title="Ver Racha Real de Días">
@@ -1547,7 +1543,7 @@
                         <div class="perfil-plan-row">
                             <div>
                                 <div class="perfil-duo-kicker">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"></path><path d="M7 14l4-4 3 3 5-6"></path></svg>
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 12v8a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-8"></path><path d="M12 22V7"></path><path d="M7.5 7H6a2 2 0 0 1 0-4c2.5 0 4.5 4 6 4s3.5-4 6-4a2 2 0 0 1 0 4h-1.5"></path><path d="M3 12h18v-1a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v1z"></path></svg>
                                     <span>Tu plan actual</span>
                                 </div>
                                 <div class="perfil-duo-value" id="lblPerfilPlanNombre">Gratis</div>
@@ -1562,7 +1558,7 @@
             <div id="bloqueModulos">
                 <button type="button" id="btnInformeGeneral" class="puerta-informe" onclick="PerfilEstudiante.abrirInformeGeneral()">
                     <span class="puerta-marca" aria-hidden="true">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><line x1="10" y1="9" x2="8" y2="9"></line></svg>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"></path><path d="M7 14l3-3 3 2 4-5"></path></svg>
                     </span>
                     <span>
                         <strong>Ver Informe General</strong>
@@ -1570,25 +1566,31 @@
                     </span>
                     <span class="puerta-chev" aria-hidden="true">›</span>
                 </button>
-                <a id="btnSimulacroPerfil" class="puerta-informe" href="index.html?sala=1" hidden aria-hidden="true">
+                <button type="button" id="btnInformeSimulacro" class="puerta-informe" onclick="PerfilEstudiante.abrirInformeSimulacro()">
                     <span class="puerta-marca" aria-hidden="true">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"></rect><path d="M8 8h8M8 12h8M8 16h5"></path></svg>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"></rect><path d="M8 8h8M8 12h8M8 16h5"></path><path d="M9 19l1.5 1.5L13 18"></path></svg>
                     </span>
                     <span>
-                        <strong>Simulacro</strong>
-                        <span class="puerta-sub-fija">Practicar como el examen real</span>
-                        <span id="txtSimulacroPerfil" class="sr-only" aria-hidden="true">Todavía no lo empiezas.</span>
+                        <strong>Informe del Simulacro</strong>
+                        <span>Resultado del último simulacro</span>
                     </span>
-                </a>
-                <button type="button" id="btnRutaInforme" class="puerta-informe" hidden aria-hidden="true" onclick="PerfilEstudiante.toggleModuloExtra('vocacional')">
+                    <span class="puerta-chev" aria-hidden="true">›</span>
+                </button>
+                <button type="button" id="btnInformeRutaVocacional" class="puerta-informe" onclick="PerfilEstudiante.abrirInformeRutaVocacional()">
                     <span class="puerta-marca" aria-hidden="true">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
                     </span>
                     <span>
-                        <strong>Ruta Vocacional</strong>
-                        <span>Explora opciones y fortalezas</span>
+                        <strong>Informe de Ruta Vocacional</strong>
+                        <span>Estado de tu orientación</span>
                     </span>
+                    <span class="puerta-chev" aria-hidden="true">›</span>
                 </button>
+                <!-- Enlaces legacy ocultos: solo para pintarSimulacro / compat -->
+                <a id="btnSimulacroPerfil" class="puerta-informe puerta-actividad-oculta" href="index.html?sala=1" hidden aria-hidden="true">
+                    <span id="txtSimulacroPerfil" class="sr-only" aria-hidden="true">Todavía no lo empiezas.</span>
+                </a>
+                <button type="button" id="btnRutaInforme" class="puerta-informe puerta-actividad-oculta" hidden aria-hidden="true" onclick="PerfilEstudiante.toggleModuloExtra('vocacional')"></button>
             </div>
 
             <div id="panelRutaEnPalabras" class="hidden bg-slate-950/90 border border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xl space-y-4" aria-hidden="true">
@@ -1641,7 +1643,7 @@
             <div id="bloqueSecundario">
                 <button type="button" id="btnComoRespondes" class="puerta-informe" onclick="PerfilEstudiante.toggleModuloExtra('gemelo')">
                     <span class="puerta-marca" aria-hidden="true">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"></path><path d="M7 14l3-3 3 2 4-5"></path></svg>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3c-2.8 2.2-4.5 5.2-4.5 8.2 0 3.3 2.2 6 4.5 7.8 2.3-1.8 4.5-4.5 4.5-7.8C16.5 8.2 14.8 5.2 12 3z"></path><path d="M9.2 13.5c.7.9 1.7 1.5 2.8 1.5s2.1-.6 2.8-1.5"></path><circle cx="9.6" cy="11" r="0.7" fill="currentColor" stroke="none"></circle><circle cx="14.4" cy="11" r="0.7" fill="currentColor" stroke="none"></circle></svg>
                     </span>
                     <span>
                         <strong>Cómo respondes</strong>
@@ -5149,6 +5151,213 @@
                     </article>
                 `;
 
+                if (modal) {
+                    modal.style.display = 'flex';
+                    try { modal.scrollTop = 0; } catch (e) {}
+                }
+            }
+
+            static _abrirBoletinCargando(titulo, lead) {
+                this.cerrarComoRespondes();
+                const modal = document.getElementById('modalBoletinSesion');
+                const cuerpo = document.getElementById('boletinSesionCuerpo');
+                if (!cuerpo) return null;
+                if (modal) {
+                    modal.style.display = 'flex';
+                    try { modal.scrollTop = 0; } catch (e) {}
+                }
+                cuerpo.innerHTML = `
+                    <article class="reporte-papel">
+                        <div class="rp-brand">
+                            <span class="rp-brand-mark">ICFES</span>
+                            <span class="rp-brand-sep" aria-hidden="true"></span>
+                            <span class="rp-brand-sub">Reporte personalizado</span>
+                        </div>
+                        <h2 class="rp-title">${this._escTexto(titulo)}</h2>
+                        <p class="rp-lead">${this._escTexto(lead || 'Cargando…')}</p>
+                    </article>`;
+                return cuerpo;
+            }
+
+            static async abrirInformeSimulacro() {
+                const cuerpo = this._abrirBoletinCargando('Informe del Simulacro', 'Estamos buscando tu resultado…');
+                if (!cuerpo) return;
+                try {
+                    let dato = null;
+                    try { dato = JSON.parse(localStorage.getItem('dante_simulacro_largo') || 'null'); } catch (e) { dato = null; }
+                    await this._traerSimulacroServidor(null, dato);
+                } catch (e) {}
+                this._pintarInformeSimulacro();
+            }
+
+            static _pintarInformeSimulacro() {
+                const cuerpo = document.getElementById('boletinSesionCuerpo');
+                const modal = document.getElementById('modalBoletinSesion');
+                if (!cuerpo) return;
+                const sim = this._leerSimulacroReal();
+                const fechaTxt = new Date().toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' });
+
+                let cuerpoHtml = '';
+                let areasHtml = '';
+                if (!sim || (sim.estado !== 'abierto' && sim.estado !== 'listo')) {
+                    cuerpoHtml = `<p class="rp-manana-txt">Aún no has realizado el simulacro completo. Cuando lo termines, aquí verás tu resultado.</p>`;
+                } else if (sim.estado === 'abierto') {
+                    const n = Math.min(254, Math.max(1, (Number(sim.indice) || 0) + 1));
+                    const marcadas = Array.isArray(sim.respuestas) ? sim.respuestas.filter((r) => r && r.id).length : 0;
+                    cuerpoHtml = `<p class="rp-manana-txt">Tu simulacro <strong>aún está en curso</strong>. Vas en la pregunta ${n} de 254 y llevas ${marcadas} marcada${marcadas === 1 ? '' : 's'}. Cuando lo cierres, aquí aparecerá el resultado completo.</p>`;
+                } else {
+                    const resultado = sim.resultado || {};
+                    const global = (typeof resultado.global === 'number' && Number.isFinite(resultado.global)) ? resultado.global : null;
+                    if (global == null) {
+                        cuerpoHtml = `<p class="rp-manana-txt">Terminaste un simulacro, pero todavía no hay un puntaje global completo para mostrar.</p>`;
+                    } else {
+                        cuerpoHtml = `<p class="rp-manana-txt">Ya completaste el simulacro. Tu resultado principal fue <strong>${global} / 500</strong>.</p>`;
+                    }
+                    const simAreas = this._normalizarAreasPct(resultado.areas || {});
+                    if (simAreas.length) {
+                        areasHtml = `
+                            <section class="rp-sec">
+                                <h3 class="rp-sec-h"><i class="fa-solid fa-chart-simple" aria-hidden="true"></i> Resultados por área</h3>
+                                <div class="rp-card rp-area">${this._htmlBarrasAreasInforme(simAreas)}</div>
+                            </section>`;
+                    } else {
+                        areasHtml = `
+                            <section class="rp-sec">
+                                <h3 class="rp-sec-h"><i class="fa-solid fa-chart-simple" aria-hidden="true"></i> Resultados por área</h3>
+                                <div class="rp-card"><p class="rp-manana-txt">Aún no hay desglose por área para este simulacro.</p></div>
+                            </section>`;
+                    }
+                }
+
+                const globalNum = sim && sim.resultado && typeof sim.resultado.global === 'number' ? sim.resultado.global : null;
+                cuerpo.innerHTML = `
+                    <article class="reporte-papel" id="reporteInformeSimulacro">
+                        <div class="rp-brand">
+                            <span class="rp-brand-mark">ICFES</span>
+                            <span class="rp-brand-sep" aria-hidden="true"></span>
+                            <span class="rp-brand-sub">Informe del simulacro · ${fechaTxt}</span>
+                        </div>
+                        <h2 class="rp-title" id="lblBoletinSesionTitulo">Informe del Simulacro</h2>
+                        <p class="rp-lead">Este es el informe de tu simulacro completo. No abre la prueba: solo muestra el resultado guardado.</p>
+
+                        <section class="rp-sec">
+                            <h3 class="rp-sec-h"><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i> Resultado</h3>
+                            <div class="rp-card">
+                                ${globalNum != null ? `
+                                <div class="rp-metrics" style="margin-bottom:0.75rem">
+                                    <div>
+                                        <span class="rp-metric-lbl">Puntaje</span>
+                                        <span class="rp-metric-val ok">${globalNum}</span>
+                                        <span class="rp-metric-sub">sobre 500</span>
+                                    </div>
+                                    <div>
+                                        <span class="rp-metric-lbl">Estado</span>
+                                        <span class="rp-metric-val">Listo</span>
+                                        <span class="rp-metric-sub">simulacro cerrado</span>
+                                    </div>
+                                    <div>
+                                        <span class="rp-metric-lbl">Preguntas</span>
+                                        <span class="rp-metric-val">254</span>
+                                        <span class="rp-metric-sub">formato completo</span>
+                                    </div>
+                                </div>` : ''}
+                                ${cuerpoHtml}
+                            </div>
+                        </section>
+                        ${areasHtml}
+                        <div class="rp-actions">
+                            <button type="button" class="rp-btn-primary" onclick="PerfilEstudiante.cerrarBoletinSesion()">Cerrar</button>
+                        </div>
+                    </article>`;
+                if (modal) {
+                    modal.style.display = 'flex';
+                    try { modal.scrollTop = 0; } catch (e) {}
+                }
+            }
+
+            static async abrirInformeRutaVocacional() {
+                const cuerpo = this._abrirBoletinCargando('Informe de Ruta Vocacional', 'Estamos buscando tu orientación…');
+                if (!cuerpo) return;
+                try {
+                    if (typeof this.cargarPerfilVocacionalServidor === 'function') {
+                        await this.cargarPerfilVocacionalServidor();
+                    }
+                } catch (e) {}
+                this._pintarInformeRutaVocacional();
+            }
+
+            static _pintarInformeRutaVocacional() {
+                const cuerpo = document.getElementById('boletinSesionCuerpo');
+                const modal = document.getElementById('modalBoletinSesion');
+                if (!cuerpo) return;
+                const ruta = this._leerRutaVocacionalReal();
+                const fechaTxt = new Date().toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' });
+
+                let estadoHtml = '';
+                let detalleHtml = '';
+                if (ruta.listaCompleta) {
+                    estadoHtml = `<p class="rp-manana-txt">Ya tienes orientación vocacional suficiente para verla.</p>`;
+                    const bits = [];
+                    if (ruta.palabras.length) bits.push(`Tu perfil se parece más a alguien <strong>${ruta.palabras.join(', ')}</strong>.`);
+                    if (ruta.carrera) bits.push(`La carrera que estás explorando es <strong>${this._escTexto(ruta.carrera)}</strong>.`);
+                    if (ruta.otras && ruta.otras.length) bits.push(`También se parecen: ${ruta.otras.map((n) => this._escTexto(n)).join(', ')}.`);
+                    if (ruta.informe) bits.push(this._escTexto(String(ruta.informe).slice(0, 520)));
+                    detalleHtml = bits.length
+                        ? `<p class="rp-manana-txt">${bits.join(' ')}</p>`
+                        : `<p class="rp-manana-txt">Tu orientación está lista. Revisa la sala si quieres ver el informe completo.</p>`;
+                } else if (ruta.elecciones > 0 || ruta.carrera || ruta.lista) {
+                    estadoHtml = `<p class="rp-manana-txt">Tu ruta vocacional <strong>aún está en construcción</strong>. Vas en el día <strong>${ruta.dia} de 6</strong>.</p>`;
+                    detalleHtml = ruta.carrera
+                        ? `<p class="rp-manana-txt">Ya marcaste interés en <strong>${this._escTexto(ruta.carrera)}</strong>. Completa los dilemas restantes para recibir la orientación completa.</p>`
+                        : `<p class="rp-manana-txt">Sigue respondiendo los dilemas en la sala. Este espacio solo muestra el estado del informe, no abre la actividad.</p>`;
+                } else {
+                    estadoHtml = `<p class="rp-manana-txt">Aún no hay suficiente información para mostrar la ruta vocacional.</p>`;
+                    detalleHtml = `<p class="rp-manana-txt">Cuando completes los dilemas de la ruta (6 días), aquí verás tu orientación. Este botón no abre la actividad: solo el informe.</p>`;
+                }
+
+                cuerpo.innerHTML = `
+                    <article class="reporte-papel" id="reporteInformeRuta">
+                        <div class="rp-brand">
+                            <span class="rp-brand-mark">ICFES</span>
+                            <span class="rp-brand-sep" aria-hidden="true"></span>
+                            <span class="rp-brand-sub">Ruta vocacional · ${fechaTxt}</span>
+                        </div>
+                        <h2 class="rp-title" id="lblBoletinSesionTitulo">Informe de Ruta Vocacional</h2>
+                        <p class="rp-lead">Resumen de tu orientación. No abre los dilemas: solo muestra lo que ya está guardado.</p>
+
+                        <section class="rp-sec">
+                            <h3 class="rp-sec-h"><i class="fa-solid fa-compass" aria-hidden="true"></i> Estado</h3>
+                            <div class="rp-card">
+                                <div class="rp-metrics" style="margin-bottom:0.75rem">
+                                    <div>
+                                        <span class="rp-metric-lbl">Día</span>
+                                        <span class="rp-metric-val">${ruta.listaCompleta ? '6' : ruta.dia}</span>
+                                        <span class="rp-metric-sub">de 6</span>
+                                    </div>
+                                    <div>
+                                        <span class="rp-metric-lbl">Estado</span>
+                                        <span class="rp-metric-val">${ruta.listaCompleta ? 'Listo' : 'En curso'}</span>
+                                        <span class="rp-metric-sub">${ruta.listaCompleta ? 'orientación lista' : 'en construcción'}</span>
+                                    </div>
+                                    <div>
+                                        <span class="rp-metric-lbl">Carrera</span>
+                                        <span class="rp-metric-val" style="font-size:1rem">${ruta.carrera ? this._escTexto(String(ruta.carrera).slice(0, 18)) : '—'}</span>
+                                        <span class="rp-metric-sub">${ruta.carrera ? 'marcada' : 'sin marcar'}</span>
+                                    </div>
+                                </div>
+                                ${estadoHtml}
+                            </div>
+                        </section>
+
+                        <section class="rp-sec">
+                            <h3 class="rp-sec-h"><i class="fa-solid fa-graduation-cap" aria-hidden="true"></i> Orientación</h3>
+                            <div class="rp-card">${detalleHtml}</div>
+                        </section>
+
+                        <div class="rp-actions">
+                            <button type="button" class="rp-btn-primary" onclick="PerfilEstudiante.cerrarBoletinSesion()">Cerrar</button>
+                        </div>
+                    </article>`;
                 if (modal) {
                     modal.style.display = 'flex';
                     try { modal.scrollTop = 0; } catch (e) {}
