@@ -9,7 +9,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="assets/icons/icon-192.svg">
     <link rel="apple-touch-icon" href="assets/icons/icon-192.svg">
-    <title>Dante OS · Tu informe c-1.3.42</title>
+    <title>Dante OS · Tu informe c-1.3.43</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Serif+4:wght@600;700;800&display=swap">
 
@@ -20,15 +20,15 @@
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="theme.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/danteCacheVersion.js?v=c-1.3.42"></script>
-    <script src="js/danteNube.js?v=c-1.3.42"></script>
-    <script src="js/danteRegistro.js?v=c-1.3.42"></script>
+    <script src="js/danteCacheVersion.js?v=c-1.3.43"></script>
+    <script src="js/danteNube.js?v=c-1.3.43"></script>
+    <script src="js/danteRegistro.js?v=c-1.3.43"></script>
     <script src="js/danteVectorIcons.js"></script>
     <script src="js/danteStorage.js"></script>
     <script src="js/streakManager.js?v=23.1.2"></script>
     <script src="js/rutaSimulacroEngine.js"></script>
     <script src="js/danteRadarEngine.js"></script>
-    <script src="js/danteTutorEngine.js?v=c-1.3.42"></script>
+    <script src="js/danteTutorEngine.js?v=c-1.3.43"></script>
 
     <style>
         #bentoContainer { display: flex; flex-direction: column; gap: 1.05rem; }
@@ -1348,7 +1348,7 @@
         </div>
         <div class="perfil-hdr-tag-wrap">
             <span class="perfil-hdr-tag" id="lblHdrProyeccionTag">PROYECCIÓN 2026</span>
-            <span id="badgeDanteVersion" class="perfil-hdr-ver">c-1.3.42</span>
+            <span id="badgeDanteVersion" class="perfil-hdr-ver">c-1.3.43</span>
         </div>
         <div class="relative flex items-center gap-2.5 shrink-0">
             <button type="button" id="badgeRacha" onclick="if(window.StreakManager) StreakManager.abrirModalRacha()" class="flex items-center gap-1.5 cursor-pointer bg-transparent border-0 p-0 text-amber-400 font-mono text-xs font-black transition-transform hover:scale-105 active:scale-95 shrink-0 select-none" title="Ver Racha Real de Días">
@@ -1524,6 +1524,15 @@
             </div>
 
             <div id="bloqueModulos">
+                <button type="button" id="btnInformeGeneral" class="puerta-informe" onclick="PerfilEstudiante.abrirInformeGeneral()">
+                    <span class="puerta-marca" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><line x1="10" y1="9" x2="8" y2="9"></line></svg>
+                    </span>
+                    <span>
+                        <strong>Ver tu informe general</strong>
+                        <span>Resumen de todo tu avance</span>
+                    </span>
+                </button>
                 <a id="btnSimulacroPerfil" class="puerta-informe" href="index.html?sala=1">
                     <span class="puerta-marca" aria-hidden="true">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"></rect><path d="M8 8h8M8 12h8M8 16h5"></path></svg>
@@ -4634,6 +4643,336 @@
 
             static abrirRadiografiaError() {
                 this.abrirBoletinSesion(0);
+            }
+
+            static _claveEstudianteLocal() {
+                try {
+                    const u = JSON.parse(localStorage.getItem('dante_user') || '{}');
+                    const id = u.document_id || u.estudiante || u.email
+                        || localStorage.getItem('dante_student_id')
+                        || localStorage.getItem('dante_active_student')
+                        || STUDENT_ID;
+                    return String(id || 'anon').split('@')[0].toLowerCase();
+                } catch (e) {
+                    return String(STUDENT_ID || 'anon').split('@')[0].toLowerCase();
+                }
+            }
+
+            static _leerHackeaReal() {
+                const sk = this._claveEstudianteLocal();
+                let profile = null;
+                let arc = null;
+                try { profile = JSON.parse(localStorage.getItem('dante_mind_profile_' + sk) || 'null'); } catch (e) { profile = null; }
+                try { arc = JSON.parse(localStorage.getItem('dante_mind_arc_v1:' + sk) || 'null'); } catch (e) { arc = null; }
+                const sessions = (profile && Number(profile.sessions) > 0) ? Math.round(Number(profile.sessions)) : 0;
+                const calibrated = !!(profile && profile.calibratedAt);
+                const blocks = (arc && Array.isArray(arc.blocks)) ? arc.blocks.length : 0;
+                const day = (arc && Number(arc.campaign_day) > 0) ? Math.min(15, Math.round(Number(arc.campaign_day))) : 0;
+                const nextDay = (arc && Number(arc.next_campaign_day) > 0) ? Math.min(15, Math.round(Number(arc.next_campaign_day))) : (day ? Math.min(15, day + 1) : 1);
+                const veces = Math.max(sessions, blocks, calibrated ? 1 : 0);
+                return { calibrated, sessions: veces, day, nextDay, blocks };
+            }
+
+            static _leerSimulacroReal() {
+                let dato = null;
+                try { dato = JSON.parse(localStorage.getItem('dante_simulacro_largo') || 'null'); } catch (e) { dato = null; }
+                const histSim = (Array.isArray(cacheHistorialCompleto) ? cacheHistorialCompleto : [])
+                    .find((x) => String(x && x.tipo || '').toUpperCase().includes('SIMUL') || /simulacro/i.test(String(x && x.materia || '')));
+                if ((!dato || (dato.estado !== 'listo' && dato.estado !== 'abierto')) && histSim) {
+                    dato = {
+                        estado: 'listo',
+                        resultado: {
+                            global: histSim.puntaje_escalonado,
+                            areas: histSim.precisionPorArea || {}
+                        },
+                        cerrado_en: histSim.created_at || null
+                    };
+                }
+                return dato;
+            }
+
+            static _leerEntrenamientoReal() {
+                const hist = Array.isArray(cacheHistorialCompleto) ? cacheHistorialCompleto : [];
+                const sesionOk = (reg) => {
+                    const tipo = String(reg && reg.tipo || '').toUpperCase();
+                    const mat = String(reg && reg.materia || '');
+                    if (tipo === 'NUBE') return false;
+                    if (tipo.includes('SIMUL')) return false;
+                    if (/proyecci[oó]n guardada/i.test(mat)) return false;
+                    return true;
+                };
+                const sesiones = hist.filter(sesionOk);
+                let diarios = 0;
+                let refuerzos = 0;
+                let diags = 0;
+                sesiones.forEach((r) => {
+                    const tipo = String(r.tipo || '').toUpperCase();
+                    const mat = String(r.materia || '');
+                    if (tipo.includes('DIAG') || /diagn[oó]stico/i.test(mat)) diags += 1;
+                    else if (tipo.includes('REFUERZO') || /refuerzo/i.test(mat)) refuerzos += 1;
+                    else diarios += 1;
+                });
+
+                const NOMBRES = {
+                    matematicas: 'Matemáticas',
+                    lectura_critica: 'Lectura Crítica',
+                    ciencias_naturales: 'Ciencias Naturales',
+                    sociales_ciudadanas: 'Sociales y Ciudadanas',
+                    ingles: 'Inglés'
+                };
+                let precMap = this._obtenerPrecisionAreas();
+                const presentes = Object.entries(precMap || {})
+                    .map(([k, v]) => ({ key: k, name: NOMBRES[k] || k.replace(/_/g, ' '), pct: Number(v) }))
+                    .filter((x) => Number.isFinite(x.pct));
+                presentes.sort((a, b) => b.pct - a.pct);
+                let precisionGeneral = null;
+                try {
+                    const conteo = JSON.parse(localStorage.getItem('dante_area_conteo') || '{}') || {};
+                    let a = 0, t = 0;
+                    Object.values(conteo).forEach((fila) => {
+                        if (fila && fila.total) {
+                            a += Number(fila.aciertos) || 0;
+                            t += Number(fila.total) || 0;
+                        }
+                    });
+                    if (t > 0) precisionGeneral = Math.round((100 * a) / t);
+                } catch (e) {}
+                if (precisionGeneral == null && presentes.length) {
+                    precisionGeneral = Math.round(presentes.reduce((s, x) => s + x.pct, 0) / presentes.length);
+                }
+                return {
+                    totalSesiones: sesiones.length,
+                    diarios,
+                    refuerzos,
+                    diags,
+                    precisionGeneral,
+                    fuerte: presentes[0] || null,
+                    debil: presentes.length ? presentes[presentes.length - 1] : null,
+                    areas: presentes
+                };
+            }
+
+            static _leerRutaVocacionalReal() {
+                let ruta = {};
+                try { ruta = JSON.parse(localStorage.getItem('dante_ruta_vocacional') || '{}'); } catch (e) { ruta = {}; }
+                const elecciones = Array.isArray(ruta.elecciones) ? ruta.elecciones.length : 0;
+                const lista = Boolean(ruta.lista) || localStorage.getItem('dante_test_vocacional_completado') === 'true';
+                const codigo = String(localStorage.getItem('dante_holland_code') || ruta.codigo || '').toUpperCase().replace(/[^RIASEC]/g, '').slice(0, 3);
+                const carrera = localStorage.getItem('dante_carrera_objetivo') || '';
+                const informe = localStorage.getItem('dante_informe_vocacional') || '';
+                let afines = [];
+                try { afines = JSON.parse(localStorage.getItem('dante_carreras_afines') || '[]'); } catch (e) { afines = []; }
+                const dia = Math.min(6, Math.max(lista ? 6 : 1, elecciones + (lista ? 0 : 1)));
+                const letras = { R: 'práctico', I: 'investigativo', A: 'creativo', S: 'social', E: 'emprendedor', C: 'organizado' };
+                const palabras = String(codigo).split('').map((l) => letras[l]).filter(Boolean);
+                return { elecciones, lista, codigo, carrera, informe, afines, dia, palabras };
+            }
+
+            static abrirInformeGeneral() {
+                this.cerrarComoRespondes();
+                const modal = document.getElementById('modalBoletinSesion');
+                const cuerpo = document.getElementById('boletinSesionCuerpo');
+                if (!cuerpo) return;
+
+                const hackea = this._leerHackeaReal();
+                const sim = this._leerSimulacroReal();
+                const train = this._leerEntrenamientoReal();
+                const ruta = this._leerRutaVocacionalReal();
+
+                const score = parseInt(localStorage.getItem('dante_score_proyectado') || localStorage.getItem('dante_puntaje_global') || '0', 10);
+                const scoreTxt = (Number.isFinite(score) && score > 0) ? String(score) : null;
+                const corte = parseInt(localStorage.getItem('dante_corte_objetivo') || '0', 10);
+                const pacto = localStorage.getItem('dante_pacto_meta') || '';
+                let meta = (corte > 0 && corte <= 500) ? corte : null;
+                if (meta == null && pacto === '300_BASE') meta = 300;
+                if (meta == null && pacto === '380_ELITE') meta = 380;
+                const carrera = localStorage.getItem('dante_carrera_objetivo') || '';
+                const carreraClean = carrera ? (carrera.split('/')[0].trim() || carrera) : '';
+                const brecha = (scoreTxt && meta != null) ? Math.max(0, meta - Number(scoreTxt)) : null;
+
+                // Hackea
+                let hackeaHtml = '';
+                if (!hackea.calibrated && hackea.sessions <= 0) {
+                    hackeaHtml = `<p class="rp-manana-txt">Aún no has hecho <strong>Hackea tu mente</strong>. Está en la sala: es el ritual que ayuda a personalizar cómo te enseña Dante.</p>`;
+                } else {
+                    const vecesTxt = hackea.sessions === 1 ? '1 vez' : (hackea.sessions + ' veces');
+                    let punto = '';
+                    if (hackea.day >= 15) punto = 'Ya completaste la campaña de 15 días.';
+                    else if (hackea.day > 0) punto = 'Vas en el día ' + hackea.day + ' de 15. El siguiente paso es el día ' + hackea.nextDay + '.';
+                    else punto = 'Ya lo empezaste. Sigue desde la sala para avanzar.';
+                    hackeaHtml = `<p class="rp-manana-txt">Ya realizaste Hackea tu mente <strong>${vecesTxt}</strong>. ${punto}</p>`;
+                }
+
+                // Simulacro
+                let simHtml = '';
+                if (!sim || (sim.estado !== 'abierto' && sim.estado !== 'listo')) {
+                    simHtml = `<p class="rp-manana-txt">Aún no has hecho el <strong>simulacro completo</strong>. Cuando lo termines, aquí verás tu resultado principal.</p>`;
+                } else if (sim.estado === 'abierto') {
+                    const n = Math.min(254, Math.max(1, (Number(sim.indice) || 0) + 1));
+                    const marcadas = Array.isArray(sim.respuestas) ? sim.respuestas.filter((r) => r && r.id).length : 0;
+                    simHtml = `<p class="rp-manana-txt">Tienes un simulacro <strong>en curso</strong>. Vas en la pregunta ${n} de 254 y llevas ${marcadas} marcada${marcadas === 1 ? '' : 's'}. Aún no hay resultado final.</p>`;
+                } else {
+                    const resultado = sim.resultado || {};
+                    const global = (typeof resultado.global === 'number' && Number.isFinite(resultado.global)) ? resultado.global : null;
+                    if (global == null) {
+                        simHtml = `<p class="rp-manana-txt">Terminaste un simulacro, pero todavía no hay un puntaje global completo para mostrar.</p>`;
+                    } else {
+                        simHtml = `<p class="rp-manana-txt">Ya hiciste el simulacro completo. Tu resultado principal fue <strong>${global} / 500</strong>.</p>`;
+                    }
+                }
+
+                // Entrenamiento
+                let trainHtml = '';
+                if (train.totalSesiones <= 0) {
+                    trainHtml = `<p class="rp-manana-txt">Aún no hay sesiones de entrenamiento o refuerzo registradas. Cuando completes un bloque, aquí verás cuántos llevas y cómo vas por área.</p>`;
+                } else {
+                    const partes = [];
+                    partes.push(`Has completado <strong>${train.totalSesiones}</strong> sesión${train.totalSesiones === 1 ? '' : 'es'} (entrenamiento, refuerzo o diagnóstico).`);
+                    if (train.diarios) partes.push(`${train.diarios} de entrenamiento diario.`);
+                    if (train.refuerzos) partes.push(`${train.refuerzos} de refuerzo.`);
+                    if (train.precisionGeneral != null) {
+                        partes.push(`Tu precisión general acumulada es del <strong>${train.precisionGeneral}%</strong>.`);
+                    } else {
+                        partes.push('Todavía no hay suficientes respuestas para calcular la precisión general.');
+                    }
+                    if (train.fuerte && train.debil && train.fuerte.key !== train.debil.key) {
+                        partes.push(`Tu área más fuerte ahora es <strong>${this._escTexto(train.fuerte.name)}</strong> (${Math.round(train.fuerte.pct)}%). La que más necesitas reforzar es <strong>${this._escTexto(train.debil.name)}</strong> (${Math.round(train.debil.pct)}%).`);
+                    } else if (train.fuerte) {
+                        partes.push(`Por ahora destaca <strong>${this._escTexto(train.fuerte.name)}</strong> (${Math.round(train.fuerte.pct)}%).`);
+                    }
+                    trainHtml = `<p class="rp-manana-txt">${partes.join(' ')}</p>`;
+                }
+
+                let areaRows = '';
+                (train.areas || []).forEach((a) => {
+                    const pct = Math.max(0, Math.min(100, Math.round(a.pct)));
+                    let badgeText = 'Fortaleza';
+                    let badgeClass = 'ok';
+                    if (pct < 40) { badgeText = 'Para reforzar'; badgeClass = 'low'; }
+                    else if (pct < 70) { badgeText = 'En calibración'; badgeClass = 'mid'; }
+                    const color = (() => {
+                        const k = String(a.key || '').toLowerCase();
+                        if (k.includes('lect')) return '#7c3aed';
+                        if (k.includes('mate')) return '#2563eb';
+                        if (k.includes('cien') || k.includes('natur')) return '#16a34a';
+                        if (k.includes('social')) return '#ea580c';
+                        if (k.includes('ingl')) return '#64748b';
+                        return '#334155';
+                    })();
+                    areaRows += `
+                        <div class="rp-area-row">
+                            <div class="rp-area-top">
+                                <span class="rp-area-name">${this._escTexto(a.name)}</span>
+                                <span class="rp-badge ${badgeClass}">${badgeText}</span>
+                            </div>
+                            <div class="rp-bar"><span style="width:${Math.max(4, pct)}%;background:${color};"></span></div>
+                            <div class="rp-area-meta">${pct}%</div>
+                        </div>`;
+                });
+
+                // Ruta vocacional
+                let rutaHtml = '';
+                if (ruta.lista && (ruta.informe || ruta.carrera || ruta.palabras.length)) {
+                    const bits = [];
+                    bits.push('Ya tienes orientación vocacional suficiente para verla.');
+                    if (ruta.palabras.length) bits.push('Tu perfil se parece más a alguien ' + ruta.palabras.join(', ') + '.');
+                    if (ruta.carrera) bits.push('La carrera que estás explorando es <strong>' + this._escTexto(ruta.carrera) + '</strong>.');
+                    if (ruta.informe) bits.push(this._escTexto(String(ruta.informe).slice(0, 420)));
+                    rutaHtml = `<p class="rp-manana-txt">${bits.join(' ')}</p>`;
+                } else if (ruta.elecciones > 0 || ruta.carrera) {
+                    rutaHtml = `<p class="rp-manana-txt">Tu ruta vocacional <strong>aún está en construcción</strong>. Vas en el día ${ruta.dia} de 6.${ruta.carrera ? ' Ya marcaste interés en <strong>' + this._escTexto(ruta.carrera) + '</strong>.' : ''} Completa los dilemas en la sala para recibir la orientación completa.</p>`;
+                } else {
+                    rutaHtml = `<p class="rp-manana-txt">Aún no hay suficiente información para mostrar la ruta vocacional. Empieza los dilemas desde la sala; son seis días.</p>`;
+                }
+
+                // Resumen / proyección
+                const resumenPartes = [];
+                if (scoreTxt) {
+                    resumenPartes.push(`Tu proyección actual es de <strong>${scoreTxt} / 500</strong>.`);
+                    if (meta != null) {
+                        if (brecha === 0) resumenPartes.push(`Ya alcanzaste la meta de ${meta} puntos${carreraClean ? ' para ' + this._escTexto(carreraClean) : ''}.`);
+                        else if (brecha != null) resumenPartes.push(`Te faltan <strong>${brecha} puntos</strong> para la meta de ${meta}${carreraClean ? ' (' + this._escTexto(carreraClean) + ')' : ''}.`);
+                    } else {
+                        resumenPartes.push('Cuando elijas una carrera y una meta en la sala, aquí verás la brecha con claridad.');
+                    }
+                } else {
+                    resumenPartes.push('Todavía no hay una proyección de puntaje. Termina al menos una sesión medida para verla aquí.');
+                }
+                if (train.totalSesiones > 0 && train.debil) {
+                    resumenPartes.push(`El siguiente paso con más valor es reforzar ${this._escTexto(train.debil.name)}.`);
+                } else if (!hackea.calibrated) {
+                    resumenPartes.push('Un buen siguiente paso es hacer Hackea tu mente en la sala.');
+                } else if (!sim || sim.estado !== 'listo') {
+                    resumenPartes.push('Cuando quieras medir el examen completo, abre el simulacro desde la sala.');
+                }
+
+                const fechaTxt = new Date().toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' });
+
+                cuerpo.innerHTML = `
+                    <article class="reporte-papel" id="reporteInformeGeneral">
+                        <div class="rp-brand">
+                            <span class="rp-brand-mark">ICFES</span>
+                            <span class="rp-brand-sep" aria-hidden="true"></span>
+                            <span class="rp-brand-sub">Informe general · ${fechaTxt}</span>
+                        </div>
+                        <h2 class="rp-title" id="lblBoletinSesionTitulo">Tu informe general</h2>
+                        <p class="rp-lead">Aquí está el resumen de tu avance real con todo lo que ya has hecho en Dante OS.</p>
+
+                        <section class="rp-sec">
+                            <h3 class="rp-sec-h"><i class="fa-solid fa-brain" aria-hidden="true"></i> Hackea tu mente</h3>
+                            <div class="rp-card">${hackeaHtml}</div>
+                        </section>
+
+                        <section class="rp-sec">
+                            <h3 class="rp-sec-h"><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i> Simulacro completo</h3>
+                            <div class="rp-card">${simHtml}</div>
+                        </section>
+
+                        <section class="rp-sec">
+                            <h3 class="rp-sec-h"><i class="fa-solid fa-dumbbell" aria-hidden="true"></i> Entrenamiento y refuerzos</h3>
+                            <div class="rp-card">${trainHtml}</div>
+                            ${areaRows ? `<div class="rp-card rp-area" style="margin-top:0.65rem">${areaRows}</div>` : ''}
+                        </section>
+
+                        <section class="rp-sec">
+                            <h3 class="rp-sec-h"><i class="fa-solid fa-compass" aria-hidden="true"></i> Ruta vocacional</h3>
+                            <div class="rp-card">${rutaHtml}</div>
+                        </section>
+
+                        <section class="rp-sec">
+                            <h3 class="rp-sec-h"><i class="fa-solid fa-graduation-cap" aria-hidden="true"></i> Proyección y resumen</h3>
+                            <div class="rp-card">
+                                <div class="rp-metrics">
+                                    <div>
+                                        <span class="rp-metric-lbl">Proyección</span>
+                                        <span class="rp-metric-val ok">${scoreTxt || '—'}</span>
+                                        <span class="rp-metric-sub">sobre 500</span>
+                                    </div>
+                                    <div>
+                                        <span class="rp-metric-lbl">Meta</span>
+                                        <span class="rp-metric-val">${meta != null ? meta : '—'}</span>
+                                        <span class="rp-metric-sub">sobre 500</span>
+                                    </div>
+                                    <div>
+                                        <span class="rp-metric-lbl">Brecha</span>
+                                        <span class="rp-metric-val gap">${brecha == null ? '—' : ('-' + brecha + ' pts')}</span>
+                                        <span class="rp-metric-sub">${brecha == null ? 'Elige meta para verla' : ('Te faltan ' + brecha + ' puntos')}</span>
+                                    </div>
+                                </div>
+                                <p class="rp-manana-txt" style="margin-top:0.85rem">${resumenPartes.join(' ')}</p>
+                            </div>
+                        </section>
+
+                        <div class="rp-actions">
+                            <button type="button" class="rp-btn-primary" onclick="PerfilEstudiante.cerrarBoletinSesion()">Cerrar</button>
+                        </div>
+                    </article>
+                `;
+
+                if (modal) {
+                    modal.style.display = 'flex';
+                    try { modal.scrollTop = 0; } catch (e) {}
+                }
             }
         }
 
