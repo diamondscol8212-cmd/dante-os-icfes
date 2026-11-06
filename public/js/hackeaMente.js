@@ -1330,48 +1330,9 @@
   }
 
   const HackeaCoach = {
+    // Guía/ayudante post-diagnóstico desactivado. El paso obligatorio sigue siendo sostener la espiral.
     showObligatorio: function () {
-      const calibrated = mindProfile && mindProfile.isCalibrated && mindProfile.isCalibrated();
-      let flag = false;
-      try { flag = localStorage.getItem('dante_hackea_obligatorio') === '1'; } catch (_) {}
-      if (!flag || calibrated) {
-        this.hide();
-        return;
-      }
-      // Sin modal bloqueante: la espiral debe poder sostenerse
-      const viejo = document.getElementById('hackeaCoachObligatorio');
-      if (viejo) {
-        viejo.classList.remove('is-on');
-        try { viejo.remove(); } catch (_) { viejo.style.display = 'none'; }
-      }
-      document.body.classList.remove('hackea-coach-on');
-      document.body.classList.add('hackea-cue-espiral');
-
-      const titulo = document.getElementById('salaTituloHackea');
-      if (titulo) titulo.textContent = 'Siguiente paso';
-
-      const cap = document.getElementById('hackeaPortalCaption');
-      if (cap) {
-        cap.classList.remove('sala-caption-base');
-        cap.innerHTML = 'Mantén presionada la espiral<span class="hackea-hold-hint">Así entra Hackea tu mente</span>';
-      }
-
-      let tip = document.getElementById('hackeaCueEspiral');
-      if (!tip) {
-        tip = document.createElement('div');
-        tip.id = 'hackeaCueEspiral';
-        tip.setAttribute('aria-live', 'polite');
-        tip.innerHTML = '<p class="hackea-cue-kicker">Método obligatorio</p><p class="hackea-cue-txt">Presiona la espiral y <strong>mantén</strong> unos segundos.</p>';
-        const ancla = document.getElementById('hackeaPortalCaption')
-          || document.getElementById('salaTituloHackea')
-          || document.getElementById('contenedorOrbeDante');
-        if (ancla && ancla.parentNode) {
-          ancla.parentNode.insertBefore(tip, ancla.nextSibling);
-        } else {
-          document.body.appendChild(tip);
-        }
-      }
-      tip.hidden = false;
+      this.hide();
     },
     hide: function () {
       const root = document.getElementById('hackeaCoachObligatorio');
@@ -1380,7 +1341,10 @@
         try { root.remove(); } catch (_) { root.style.display = 'none'; }
       }
       const tip = document.getElementById('hackeaCueEspiral');
-      if (tip) tip.hidden = true;
+      if (tip) {
+        tip.hidden = true;
+        try { tip.remove(); } catch (_) { tip.style.display = 'none'; }
+      }
       document.body.classList.remove('hackea-coach-on', 'hackea-cue-espiral');
       const titulo = document.getElementById('salaTituloHackea');
       if (titulo && /siguiente paso/i.test(titulo.textContent || '')) {
@@ -1388,9 +1352,7 @@
       }
     },
     maybeShow: function () {
-      try {
-        if (localStorage.getItem('dante_hackea_obligatorio') === '1') this.showObligatorio();
-      } catch (_) { /* ignore */ }
+      this.hide();
     }
   };
   global.HackeaCoach = HackeaCoach;
