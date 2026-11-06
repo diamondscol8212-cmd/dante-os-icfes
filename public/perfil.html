@@ -9,7 +9,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="assets/icons/icon-192.svg">
     <link rel="apple-touch-icon" href="assets/icons/icon-192.svg">
-    <title>Dante OS · Tu informe c-1.3.44</title>
+    <title>Dante OS · Tu informe c-1.3.45</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Serif+4:wght@600;700;800&display=swap">
 
@@ -20,25 +20,28 @@
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="theme.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/danteCacheVersion.js?v=c-1.3.44"></script>
-    <script src="js/danteNube.js?v=c-1.3.44"></script>
-    <script src="js/danteRegistro.js?v=c-1.3.44"></script>
+    <script src="js/danteCacheVersion.js?v=c-1.3.45"></script>
+    <script src="js/danteNube.js?v=c-1.3.45"></script>
+    <script src="js/danteRegistro.js?v=c-1.3.45"></script>
     <script src="js/danteVectorIcons.js"></script>
     <script src="js/danteStorage.js"></script>
     <script src="js/streakManager.js?v=23.1.2"></script>
     <script src="js/rutaSimulacroEngine.js"></script>
     <script src="js/danteRadarEngine.js"></script>
-    <script src="js/danteTutorEngine.js?v=c-1.3.44"></script>
+    <script src="js/danteTutorEngine.js?v=c-1.3.45"></script>
 
     <style>
-        #bentoContainer { display: flex; flex-direction: column; gap: 1.05rem; }
-        #bloqueProyeccion { order: 1; }
-        #bloqueAreas { order: 2; }
-        #bloqueCasa { order: 3; }
-        #bloqueModulos { order: 4; }
-        #panelRutaEnPalabras { order: 5; }
-        #bloquePruebas { order: 6; }
-        #tarjetaPadresInforme { order: 7; }
+        #bentoContainer { display: flex; flex-direction: column; gap: 0.95rem; }
+        #bloqueCasa { order: 1; }
+        #bloqueModulos { order: 2; }
+        #bloquePruebas { order: 3; }
+        #bloqueSecundario { order: 4; }
+        #tarjetaPadresInforme { order: 5; }
+        #bloqueProyeccion,
+        #bloqueAreas,
+        #panelRutaEnPalabras,
+        #btnSimulacroPerfil,
+        #btnRutaInforme { display: none !important; }
         #panelEnfoque_preu, #panelEnfoque_vocacional { display: none !important; }
         :root {
             --primary: #7eb8c4;
@@ -339,12 +342,8 @@
         }
         #tarjetaPadresInforme #btnCompartirWhatsApp svg { color: #06281a !important; }
         #tarjetaPadresInforme #btnCompartirWhatsApp:hover { background: #1ebe57 !important; }
-        #btnRutaInforme, #bloqueModulos button {
-            background: transparent !important;
-            color: #e7d7c3 !important;
-            border: 1px solid rgba(231, 215, 195, 0.35) !important;
-            border-radius: 999px !important;
-            font-family: ui-sans-serif, system-ui, sans-serif !important;
+        #btnRutaInforme {
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
             text-transform: none !important;
         }
         #tblExamenesBody, #bloquePruebas, #bloqueCasa, #bloqueAreas, #bloqueProyeccion,
@@ -898,22 +897,55 @@
         #celdaPlanPerfil .perfil-plan-upgrade { display: none !important; }
         #bloqueModulos {
             display: grid !important;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0.55rem !important;
+            grid-template-columns: 1fr;
+            gap: 0 !important;
             background: transparent !important;
             border: 0 !important;
             padding: 0 !important;
         }
         #bloqueModulos .puerta-informe {
-            flex-direction: column !important;
-            align-items: flex-start !important;
-            gap: 0.55rem !important;
-            padding: 0.9rem 0.75rem !important;
-            border-radius: 0.95rem !important;
-            min-height: 7.5rem;
+            flex-direction: row !important;
+            align-items: center !important;
+            gap: 0.85rem !important;
+            padding: 1rem 1rem !important;
+            border-radius: 1rem !important;
+            min-height: 0;
+            background: rgba(22, 26, 36, 0.96) !important;
+            border: 1px solid rgba(148, 163, 184, 0.22) !important;
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35) !important;
+            position: relative;
+        }
+        #bloqueModulos #btnInformeGeneral {
+            background: linear-gradient(165deg, rgba(28, 34, 48, 0.98), rgba(16, 20, 30, 0.98)) !important;
+            border-color: rgba(126, 184, 196, 0.38) !important;
+        }
+        #bloqueModulos #btnInformeGeneral .puerta-chev {
+            margin-left: auto;
+            color: #64748b;
+            font-size: 1.15rem;
+            line-height: 1;
+        }
+        #bloqueSecundario {
+            display: grid;
+            gap: 0.7rem;
+        }
+        #bloqueSecundario .puerta-informe {
+            flex-direction: row !important;
+            align-items: center !important;
+            gap: 0.85rem !important;
+            padding: 0.95rem 1rem !important;
+            border-radius: 1rem !important;
+            min-height: 0;
             background: rgba(18, 22, 32, 0.92) !important;
-            border: 1px solid rgba(148, 163, 184, 0.2) !important;
+            border: 1px solid rgba(148, 163, 184, 0.18) !important;
             box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28) !important;
+            width: 100%;
+            text-align: left;
+        }
+        #bloqueSecundario .puerta-informe .puerta-chev {
+            margin-left: auto;
+            color: #64748b;
+            font-size: 1.1rem;
         }
         .puerta-marca {
             width: 2.15rem; height: 2.15rem; border-radius: 0.7rem;
@@ -929,17 +961,21 @@
             filter: drop-shadow(0 0 4px rgba(159, 208, 219, 0.35));
         }
         .puerta-informe strong {
-            font-size: 0.78rem !important;
+            font-size: 0.92rem !important;
             line-height: 1.25;
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
         }
         .puerta-informe strong + span,
         .puerta-informe .puerta-sub-fija {
             display: block;
-            font-size: 0.65rem !important;
+            font-size: 0.74rem !important;
             line-height: 1.35;
             color: #94a3b8 !important;
-            margin-top: 0.15rem;
+            margin-top: 0.18rem;
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
         }
+        #bloqueSecundario .puerta-informe strong { font-size: 0.88rem !important; }
+        #bloqueSecundario .puerta-informe strong + span { font-size: 0.7rem !important; }
         #txtSimulacroPerfil.sr-only {
             position: absolute !important;
             width: 1px !important; height: 1px !important;
@@ -1348,7 +1384,7 @@
         </div>
         <div class="perfil-hdr-tag-wrap">
             <span class="perfil-hdr-tag" id="lblHdrProyeccionTag">PROYECCIÓN 2026</span>
-            <span id="badgeDanteVersion" class="perfil-hdr-ver">c-1.3.44</span>
+            <span id="badgeDanteVersion" class="perfil-hdr-ver">c-1.3.45</span>
         </div>
         <div class="relative flex items-center gap-2.5 shrink-0">
             <button type="button" id="badgeRacha" onclick="if(window.StreakManager) StreakManager.abrirModalRacha()" class="flex items-center gap-1.5 cursor-pointer bg-transparent border-0 p-0 text-amber-400 font-mono text-xs font-black transition-transform hover:scale-105 active:scale-95 shrink-0 select-none" title="Ver Racha Real de Días">
@@ -1397,8 +1433,8 @@
         <!-- ==================================================================== -->
         <div id="bentoContainer">
 
-            <!-- 1. Proyección + identidad -->
-            <div id="bloqueProyeccion" class="bg-[#111827]/75 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-4 sm:p-5 shadow-2xl space-y-3.5 sm:space-y-4">
+            <!-- Proyección + áreas: ocultos en la vista principal (viven en el Informe General) -->
+            <div id="bloqueProyeccion" class="bg-[#111827]/75 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-4 sm:p-5 shadow-2xl space-y-3.5 sm:space-y-4" aria-hidden="true">
                 <div class="perfil-id-row flex items-center justify-between gap-2">
                     <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
                         <div class="perfil-avatar">
@@ -1461,7 +1497,7 @@
                 </div>
             </div>
 
-            <div id="bloqueAreas" class="bg-slate-950/90 border border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xl space-y-4">
+            <div id="bloqueAreas" class="bg-slate-950/90 border border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xl space-y-4" aria-hidden="true">
                 <div class="perfil-areas-head flex flex-wrap justify-between items-center border-b border-slate-800 pb-3 gap-2">
                     <h3 class="text-xs font-mono font-bold text-white uppercase tracking-wider">Tus cinco áreas</h3>
                 </div>
@@ -1479,7 +1515,7 @@
                     </div>
                 </div>
 
-                <button type="button" onclick="PerfilEstudiante.abrirRadiografiaError()" class="btn-fallaste">
+                <button type="button" onclick="PerfilEstudiante.abrirRadiografiaError()" class="btn-fallaste" hidden>
                     <span>Ver en qué fallaste</span>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
                 </button>
@@ -1529,11 +1565,12 @@
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><line x1="10" y1="9" x2="8" y2="9"></line></svg>
                     </span>
                     <span>
-                        <strong>Ver tu informe general</strong>
+                        <strong>Ver Informe General</strong>
                         <span>Resumen de todo tu avance</span>
                     </span>
+                    <span class="puerta-chev" aria-hidden="true">›</span>
                 </button>
-                <a id="btnSimulacroPerfil" class="puerta-informe" href="index.html?sala=1">
+                <a id="btnSimulacroPerfil" class="puerta-informe" href="index.html?sala=1" hidden aria-hidden="true">
                     <span class="puerta-marca" aria-hidden="true">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"></rect><path d="M8 8h8M8 12h8M8 16h5"></path></svg>
                     </span>
@@ -1543,7 +1580,7 @@
                         <span id="txtSimulacroPerfil" class="sr-only" aria-hidden="true">Todavía no lo empiezas.</span>
                     </span>
                 </a>
-                <button type="button" id="btnRutaInforme" class="puerta-informe" onclick="PerfilEstudiante.toggleModuloExtra('vocacional')">
+                <button type="button" id="btnRutaInforme" class="puerta-informe" hidden aria-hidden="true" onclick="PerfilEstudiante.toggleModuloExtra('vocacional')">
                     <span class="puerta-marca" aria-hidden="true">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
                     </span>
@@ -1552,18 +1589,9 @@
                         <span>Explora opciones y fortalezas</span>
                     </span>
                 </button>
-                <button type="button" id="btnComoRespondes" class="puerta-informe" onclick="PerfilEstudiante.toggleModuloExtra('gemelo')">
-                    <span class="puerta-marca" aria-hidden="true">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"></path><circle cx="9" cy="11" r="0.8" fill="currentColor"></circle><circle cx="12" cy="11" r="0.8" fill="currentColor"></circle><circle cx="15" cy="11" r="0.8" fill="currentColor"></circle></svg>
-                    </span>
-                    <span>
-                        <strong>Cómo respondes</strong>
-                        <span>Estrategias y tips por pregunta</span>
-                    </span>
-                </button>
             </div>
 
-            <div id="panelRutaEnPalabras" class="hidden bg-slate-950/90 border border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xl space-y-4">
+            <div id="panelRutaEnPalabras" class="hidden bg-slate-950/90 border border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xl space-y-4" aria-hidden="true">
                 <div class="flex items-start justify-between gap-3 border-b border-slate-800/80 pb-3">
                     <div>
                         <h3 class="text-[0.95rem] font-semibold text-slate-100 tracking-tight" style="font-family:'Plus Jakarta Sans',sans-serif">Tu ruta vocacional</h3>
@@ -1610,35 +1638,41 @@
                 <div id="piePruebas"></div>
             </div>
 
+            <div id="bloqueSecundario">
+                <button type="button" id="btnComoRespondes" class="puerta-informe" onclick="PerfilEstudiante.toggleModuloExtra('gemelo')">
+                    <span class="puerta-marca" aria-hidden="true">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"></path><path d="M7 14l3-3 3 2 4-5"></path></svg>
+                    </span>
+                    <span>
+                        <strong>Cómo respondes</strong>
+                        <span>Patrones de respuesta y fortalezas</span>
+                    </span>
+                    <span class="puerta-chev" aria-hidden="true">›</span>
+                </button>
+            </div>
+
             <div id="tarjetaPadresInforme" class="tarjeta-padres space-y-3.5">
                 <div class="flex flex-wrap items-center justify-between gap-2 border-b border-emerald-500/20 pb-2.5">
                     <div class="flex items-center gap-2.5">
                         <div class="w-7 h-7 rounded-lg bg-emerald-950/80 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shrink-0">
-                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                <polyline points="14 2 14 8 20 8"></polyline>
-                            </svg>
+                            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.969.541 1.831.819 2.796.819 3.18 0 5.767-2.587 5.767-5.766.001-3.181-2.585-5.766-5.767-5.766zm6.634 5.766c-.001 3.659-2.977 6.635-6.635 6.635-1.127 0-2.226-.291-3.197-.842l-3.533.927.943-3.447c-.613-1.026-.948-2.208-.947-3.273.001-3.658 2.977-6.635 6.634-6.635 3.657 0 6.635 2.977 6.635 6.635zm-2.73 1.897c-.151-.076-.893-.441-1.032-.491-.138-.05-.239-.075-.339.076-.1.151-.389.491-.477.592-.088.101-.176.113-.327.038-.151-.076-.639-.235-1.217-.751-.45-.401-.754-.897-.842-1.048-.088-.151-.009-.233.067-.308.068-.068.151-.176.226-.264.076-.088.101-.151.151-.252.05-.101.025-.189-.013-.264-.038-.076-.339-.817-.465-1.12-.123-.294-.248-.254-.339-.258-.088-.004-.189-.005-.289-.005-.101 0-.264.038-.402.189-.138.151-.528.516-.528 1.258 0 .742.541 1.458.616 1.559.076.101 1.065 1.625 2.58 2.278.36.155.641.248.86.318.362.115.691.099.951.06.29-.044.893-.365 1.019-.717.126-.352.126-.654.088-.717-.038-.063-.138-.101-.289-.176z"/></svg>
                         </div>
                         <h4>Boletín para padres</h4>
                     </div>
-                    <span class="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 font-bold">Para tus padres</span>
                 </div>
                 <p class="text-xs text-slate-300 font-sans leading-relaxed">
-                    El boletín lleva la proyección de esta medición y las áreas que ya tienen respuestas.
+                    Recibe resúmenes y consejos personalizados. Comparte avances clave por WhatsApp.
                 </p>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
                     <button type="button" id="btnCompartirWhatsApp" onclick="PerfilEstudiante.compartirBoletinWhatsApp()" class="w-full py-2.5 px-4 rounded-xl text-xs flex items-center justify-center gap-2 transition hover:scale-[1.01] cursor-pointer">
                         <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.969.541 1.831.819 2.796.819 3.18 0 5.767-2.587 5.767-5.766.001-3.181-2.585-5.766-5.767-5.766zm6.634 5.766c-.001 3.659-2.977 6.635-6.635 6.635-1.127 0-2.226-.291-3.197-.842l-3.533.927.943-3.447c-.613-1.026-.948-2.208-.947-3.273.001-3.658 2.977-6.635 6.634-6.635 3.657 0 6.635 2.977 6.635 6.635zm-2.73 1.897c-.151-.076-.893-.441-1.032-.491-.138-.05-.239-.075-.339.076-.1.151-.389.491-.477.592-.088.101-.176.113-.327.038-.151-.076-.639-.235-1.217-.751-.45-.401-.754-.897-.842-1.048-.088-.151-.009-.233.067-.308.068-.068.151-.176.226-.264.076-.088.101-.151.151-.252.05-.101.025-.189-.013-.264-.038-.076-.339-.817-.465-1.12-.123-.294-.248-.254-.339-.258-.088-.004-.189-.005-.289-.005-.101 0-.264.038-.402.189-.138.151-.528.516-.528 1.258 0 .742.541 1.458.616 1.559.076.101 1.065 1.625 2.58 2.278.36.155.641.248.86.318.362.115.691.099.951.06.29-.044.893-.365 1.019-.717.126-.352.126-.654.088-.717-.038-.063-.138-.101-.289-.176z"/></svg>
-                        <span>Compartir por WhatsApp</span>
+                        <span>Enviar por WhatsApp</span>
                     </button>
                     <button type="button" onclick="PerfilEstudiante.copiarEnlaceBoletin()" class="w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 font-mono font-bold text-xs flex items-center justify-center gap-2 transition hover:scale-[1.01] cursor-pointer">
                         <svg class="w-4 h-4 text-cyan-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>
-                        <span id="lblBtnCopiarBoletin">Copiar el enlace</span>
+                        <span id="lblBtnCopiarBoletin">Copiar enlace</span>
                     </button>
                 </div>
-                <p class="text-[11px] text-slate-400 font-sans leading-snug">
-                    El boletín no incluye un puntaje inventado. Si un área no tiene respuestas, dice «Sin evidencia».
-                </p>
             </div>
 
         </div>
@@ -2354,11 +2388,11 @@
             paso: 0,
             abierto: false,
             pasos: [
-                { sel: '#panelBrechaBox', titulo: 'Tu proyección', texto: 'El número sale de lo que respondiste. La meta es la que elegiste. La brecha es la diferencia.' },
-                { sel: '#cajaRadarAreas', titulo: 'Las cinco áreas', texto: 'El dibujo sale de tus respuestas. Donde no hay, dice Sin evidencia. Un área con respuestas abre un repaso de 5.' },
-                { sel: '#bloquePruebas', titulo: 'Las pruebas hechas', texto: 'Cada fila es una sesión que terminaste. Aquí no se inventa un puntaje.' },
-                { sel: '#tarjetaPadresInforme', titulo: 'Para tus padres', texto: 'El boletín lleva esta proyección y las áreas con respuestas. Se manda por WhatsApp o con el enlace.' },
-                { sel: '#btnRutaInforme', titulo: 'La ruta vocacional', texto: 'Seis días, un dilema por día. Al sexto se entrega el informe. Este botón lo abre aquí.' },
+                { sel: '#bloqueCasa', titulo: 'Racha y plan', texto: 'Arriba ves tu racha de días y el plan que tienes activo.' },
+                { sel: '#btnInformeGeneral', titulo: 'Informe general', texto: 'Aquí abres el resumen completo de tu avance: Hackea, simulacro, entrenamiento y ruta.' },
+                { sel: '#bloquePruebas', titulo: 'Las pruebas hechas', texto: 'Cada fila es una sesión que terminaste. Tócala para ver el boletín completo.' },
+                { sel: '#btnComoRespondes', titulo: 'Cómo respondes', texto: 'Abre un resumen claro de tu precisión y las áreas a reforzar.' },
+                { sel: '#tarjetaPadresInforme', titulo: 'Para tus padres', texto: 'Puedes compartir el boletín por WhatsApp o copiar el enlace.' },
                 { sel: '#btnVolverSalaInforme', titulo: 'Volver a entrenar', texto: 'SALA te regresa al bloque. El informe se queda guardado.' }
             ],
             visto: function () {
