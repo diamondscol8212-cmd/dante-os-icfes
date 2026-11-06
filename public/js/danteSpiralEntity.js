@@ -191,6 +191,7 @@
         rotationSpeed = 0.8 + chargeProgress * 1.5;
         baseScale = 1 - chargeProgress * 0.35 + Math.sin(time * 12) * 0.03;
         alphaMultiplier = 1;
+      }
       let breachFrame = null;
       if (mode === 'breach') {
         breachFrame = breachMotion(breachProgress);
@@ -367,18 +368,18 @@
     if (window.DanteNucleo && window.DanteNucleo.listo) return;
     const reflejo = document.getElementById('reflejoSala');
     if (!reflejo) return;
-    // Fondo más contenido: la espiral manda, el reflejo solo acompaña
+    // Fondo mate: la espiral manda; el reflejo solo acompaña sin glare
     let pulse;
     if (mode === 'breach') {
-      pulse = 0.22 + Math.sin(Math.PI * breachProgress) * 0.16 + Math.sin(time * 1.1) * 0.03;
+      pulse = 0.14 + Math.sin(Math.PI * breachProgress) * 0.1 + Math.sin(time * 1.1) * 0.02;
     } else if (mode === 'charging') {
-      pulse = 0.38 + chargeProgress * 0.18;
+      pulse = 0.22 + chargeProgress * 0.12;
     } else {
-      pulse = 0.26 + Math.sin(time * 1.15) * 0.06;
+      pulse = 0.16 + Math.sin(time * 1.15) * 0.04;
     }
-    const core = (pulse * 0.72).toFixed(3);
-    const medio = (pulse * 0.28).toFixed(3);
-    const lejos = (pulse * 0.09).toFixed(3);
+    const core = (pulse * 0.55).toFixed(3);
+    const medio = (pulse * 0.2).toFixed(3);
+    const lejos = (pulse * 0.06).toFixed(3);
     reflejo.style.background = 'radial-gradient(ellipse at 50% 16%, rgba(' + rgb + ', ' + core + ') 0%, rgba(' + rgb + ', ' + medio + ') 26%, rgba(' + rgb + ', ' + lejos + ') 50%, transparent 74%)';
   }
 
