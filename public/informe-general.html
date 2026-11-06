@@ -155,12 +155,36 @@
 
         function decodificarToken(raw) {
             if (!raw) return null;
+            let token = String(raw).trim();
+            try { token = decodeURIComponent(token); } catch (e) {}
+            token = token.replace(/ /g, '+').replace(/-/g, '+').replace(/_/g, '/');
+            while (token.length % 4) token += '=';
+
+            const fromBase64 = (b64) => {
+                const bin = atob(b64);
+                if (typeof TextDecoder !== 'undefined') {
+                    const bytes = new Uint8Array(bin.length);
+                    for (let i = 0; i < bin.length; i += 1) bytes[i] = bin.charCodeAt(i);
+                    return new TextDecoder('utf-8').decode(bytes);
+                }
+                try { return decodeURIComponent(escape(bin)); } catch (e) { return bin; }
+            };
+
+            const intentos = [token];
+            // Compatibilidad con tokens viejos (base64 estándar / URI-encoded)
             try {
-                const json = decodeURIComponent(escape(atob(raw)));
-                return JSON.parse(json);
-            } catch (e1) {
-                try { return JSON.parse(decodeURIComponent(atob(raw))); } catch (e2) { return null; }
+                const alt = String(raw).trim();
+                if (alt !== token) intentos.push(alt);
+            } catch (e) {}
+
+            for (let i = 0; i < intentos.length; i += 1) {
+                try {
+                    const json = fromBase64(intentos[i]);
+                    const snap = JSON.parse(json);
+                    if (snap && typeof snap === 'object') return snap;
+                } catch (e) {}
             }
+            return null;
         }
 
         function barrasAreas(areas) {
@@ -191,7 +215,11 @@
 
         function pintar(snap) {
             const raiz = document.getElementById('raizInforme');
-            if (!snap || snap.v !== 2) {
+            // Acepta v:2 (nuevo) y, por compatibilidad, snapshots con proy/hackea aunque falte v.
+            const pareceInforme = snap && typeof snap === 'object' && (
+                snap.v === 2 || snap.proy || snap.hackea || snap.train || snap.sim || snap.ruta
+            );
+            if (!pareceInforme) {
                 raiz.innerHTML = '<div class="vacio"><h1>Informe no disponible</h1><p>Este enlace no trae un informe general válido. Pide que lo vuelvan a compartir desde el perfil.</p></div>';
                 return;
             }
