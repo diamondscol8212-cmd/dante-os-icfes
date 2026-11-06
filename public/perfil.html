@@ -9,7 +9,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="assets/icons/icon-192.svg">
     <link rel="apple-touch-icon" href="assets/icons/icon-192.svg">
-    <title>Dante OS · Tu informe c-1.3.52</title>
+    <title>Dante OS · Tu informe c-1.3.53</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Serif+4:wght@600;700;800&display=swap">
 
@@ -20,15 +20,15 @@
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="theme.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/danteCacheVersion.js?v=c-1.3.52"></script>
-    <script src="js/danteNube.js?v=c-1.3.52"></script>
-    <script src="js/danteRegistro.js?v=c-1.3.52"></script>
+    <script src="js/danteCacheVersion.js?v=c-1.3.53"></script>
+    <script src="js/danteNube.js?v=c-1.3.53"></script>
+    <script src="js/danteRegistro.js?v=c-1.3.53"></script>
     <script src="js/danteVectorIcons.js"></script>
     <script src="js/danteStorage.js"></script>
     <script src="js/streakManager.js?v=23.1.2"></script>
     <script src="js/rutaSimulacroEngine.js"></script>
     <script src="js/danteRadarEngine.js"></script>
-    <script src="js/danteTutorEngine.js?v=c-1.3.52"></script>
+    <script src="js/danteTutorEngine.js?v=c-1.3.53"></script>
 
     <style>
         #bentoContainer { display: flex; flex-direction: column; gap: 0.95rem; }
@@ -1410,13 +1410,40 @@
         }
         #modalBoletinSesion .reporte-papel .rp-ayuda-vacio { margin: 0; font-size: 0.76rem; color: #94a3b8; }
         #modalBoletinSesion .reporte-papel .rp-actions { display: grid; gap: 0.55rem; margin-top: 1.2rem; }
+        #modalBoletinSesion .reporte-papel .rp-actions-row {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 0.55rem;
+        }
         #modalBoletinSesion .reporte-papel .rp-btn-primary {
             display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
             min-height: 2.85rem; border: 0; border-radius: 0.7rem;
             background: var(--rp-blue); color: #fff; font-weight: 700; font-size: 0.84rem; cursor: pointer;
         }
+        #modalBoletinSesion .reporte-papel .rp-btn-wa {
+            display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+            min-height: 2.85rem; border: 0; border-radius: 0.7rem;
+            background: #25D366; color: #06281a; font-weight: 700; font-size: 0.82rem; cursor: pointer;
+        }
+        #modalBoletinSesion .reporte-papel .rp-btn-secondary {
+            display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+            min-height: 2.85rem; border: 1px solid #cbd5e1; border-radius: 0.7rem;
+            background: #fff; color: #1e3a5f; font-weight: 700; font-size: 0.82rem; cursor: pointer;
+        }
         @media (max-width: 380px) {
-            #modalBoletinSesion .reporte-papel .rp-metrics { grid-template-columns: 1fr; }
+            #modalBoletinSesion .reporte-papel .rp-metrics,
+            #modalBoletinSesion .reporte-papel .rp-actions-row { grid-template-columns: 1fr; }
+        }
+        @media print {
+            body > *:not(#modalBoletinSesion) { display: none !important; }
+            #modalBoletinSesion {
+                display: block !important; position: static !important;
+                background: #fff !important; padding: 0 !important; overflow: visible !important;
+            }
+            #modalBoletinSesion .boletin-close,
+            #modalBoletinSesion .rp-actions { display: none !important; }
+            #modalBoletinSesion .boletin-shell { width: 100% !important; margin: 0 !important; }
+            #modalBoletinSesion .reporte-papel {
+                box-shadow: none !important; border: 0 !important; max-width: none !important;
+            }
         }
     </style>
 </head>
@@ -1435,7 +1462,7 @@
         </div>
         <div class="perfil-hdr-tag-wrap">
             <span class="perfil-hdr-tag" id="lblHdrProyeccionTag">PROYECCIÓN 2026</span>
-            <span id="badgeDanteVersion" class="perfil-hdr-ver">c-1.3.52</span>
+            <span id="badgeDanteVersion" class="perfil-hdr-ver">c-1.3.53</span>
         </div>
         <div class="relative flex items-center gap-2.5 shrink-0">
             <button type="button" id="badgeRacha" onclick="if(window.StreakManager) StreakManager.abrirModalRacha()" class="flex items-center gap-1.5 cursor-pointer bg-transparent border-0 p-0 text-amber-400 font-mono text-xs font-black transition-transform hover:scale-105 active:scale-95 shrink-0 select-none" title="Ver Racha Real de Días">
@@ -1447,32 +1474,14 @@
             <button type="button" id="btnMenuHdr" onclick="PerfilEstudiante.toggleMenuHeader()" class="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:text-white transition shadow cursor-pointer flex items-center justify-center shrink-0" title="Menú" aria-label="Menú">☰</button>
 
             <div id="menuHeaderPerfil" class="hidden absolute top-12 right-0 w-60 bg-slate-950 border border-slate-700/80 rounded-2xl shadow-2xl p-2 z-[80] font-mono text-xs space-y-1 backdrop-blur-xl">
-                <button type="button" onclick="PerfilEstudiante.cerrarMenuHeader(); if(window.DanteTutorInforme) DanteTutorInforme.repetir();" class="w-full px-3 py-2 text-left rounded-xl hover:bg-slate-900 text-stone-200 flex items-center gap-2 cursor-pointer">Cómo funciona el informe</button>
-                <button type="button" onclick="PerfilEstudiante.compartirBoletinWhatsApp(); PerfilEstudiante.toggleMenuHeader();" class="w-full px-3 py-2 text-left rounded-xl hover:bg-slate-900 text-emerald-300 flex items-center gap-2 cursor-pointer">
-                    <svg class="w-4 h-4 shrink-0 text-emerald-400 fill-current" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.969.541 1.831.819 2.796.819 3.18 0 5.767-2.587 5.767-5.766.001-3.181-2.585-5.766-5.767-5.766zm6.634 5.766c-.001 3.659-2.977 6.635-6.635 6.635-1.127 0-2.226-.291-3.197-.842l-3.533.927.943-3.447c-.613-1.026-.948-2.208-.947-3.273.001-3.658 2.977-6.635 6.634-6.635 3.657 0 6.635 2.977 6.635 6.635zm-2.73 1.897c-.151-.076-.893-.441-1.032-.491-.138-.05-.239-.075-.339.076-.1.151-.389.491-.477.592-.088.101-.176.113-.327.038-.151-.076-.639-.235-1.217-.751-.45-.401-.754-.897-.842-1.048-.088-.151-.009-.233.067-.308.068-.068.151-.176.226-.264.076-.088.101-.151.151-.252.05-.101.025-.189-.013-.264-.038-.076-.339-.817-.465-1.12-.123-.294-.248-.254-.339-.258-.088-.004-.189-.005-.289-.005-.101 0-.264.038-.402.189-.138.151-.528.516-.528 1.258 0 .742.541 1.458.616 1.559.076.101 1.065 1.625 2.58 2.278.36.155.641.248.86.318.362.115.691.099.951.06.29-.044.893-.365 1.019-.717.126-.352.126-.654.088-.717-.038-.063-.138-.101-.289-.176z"/></svg>
-                    <span>Compartir con tus padres</span>
-                </button>
-                <a href="/informe-general" target="_blank" onclick="PerfilEstudiante.toggleMenuHeader()" class="w-full px-3 py-2 text-left rounded-xl hover:bg-slate-900 text-cyan-300 flex items-center gap-2 block">
-                    <svg class="w-4 h-4 shrink-0 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M7 12h10"></path><path d="M12 7v10"></path></svg>
-                    <span>Ver el boletín</span>
-                </a>
-                <button type="button" onclick="PerfilEstudiante.abrirMetaReal();" class="w-full px-3 py-2 text-left rounded-xl hover:bg-slate-900 text-amber-300 flex items-center gap-2 cursor-pointer">
-                    <svg class="w-4 h-4 shrink-0 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
-                    <span>Elegir una meta</span>
-                </button>
                 <button type="button" onclick="PaywallManager.abrirModalContextual('EVENTO_PERFIL_MENU'); PerfilEstudiante.toggleMenuHeader();" class="w-full px-3 py-2 text-left rounded-xl hover:bg-slate-900 text-yellow-300 flex items-center gap-2 cursor-pointer">
                     <svg class="w-4 h-4 shrink-0 text-yellow-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
                     <span>Plan de pago</span>
                 </button>
-                <a href="/reporte.html?rol=estudiante" target="_blank" onclick="PerfilEstudiante.toggleMenuHeader()" class="w-full px-3 py-2 text-left rounded-xl hover:bg-slate-900 text-slate-300 flex items-center gap-2 block">
-                    <svg class="w-4 h-4 shrink-0 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
-                    <span>Imprimir el informe</span>
-                </a>
                 <div class="h-px bg-slate-800 my-1"></div>
                 <button type="button" onclick="document.getElementById('modalPTDP').style.display='flex'; PerfilEstudiante.cerrarMenuHeader();" class="w-full px-3 py-1.5 text-left rounded-xl hover:bg-slate-900 text-slate-500 text-[11px] cursor-pointer">Privacidad</button>
                 <button type="button" onclick="HabeasDataService.exportarDatosJSON(); PerfilEstudiante.cerrarMenuHeader();" class="w-full px-3 py-1.5 text-left rounded-xl hover:bg-slate-900 text-slate-500 text-[11px] cursor-pointer">Descargar mis datos</button>
                 <button type="button" onclick="document.getElementById('modalARCO').style.display='flex'; PerfilEstudiante.cerrarMenuHeader();" class="w-full px-3 py-1.5 text-left rounded-xl hover:bg-slate-900 text-slate-500 text-[11px] cursor-pointer">Pedir que borren mis datos</button>
-
             </div>
         </div>
     </header>
@@ -5349,6 +5358,10 @@
                         </section>
 
                         <div class="rp-actions">
+                            <div class="rp-actions-row">
+                                <button type="button" class="rp-btn-wa" onclick="PerfilEstudiante.compartirInformeGeneralWhatsApp()">Compartir por WhatsApp</button>
+                                <button type="button" class="rp-btn-secondary" onclick="PerfilEstudiante.imprimirInformeGeneral()">Imprimir</button>
+                            </div>
                             <button type="button" class="rp-btn-primary" onclick="PerfilEstudiante.cerrarBoletinSesion()">Cerrar</button>
                         </div>
                     </article>
@@ -5357,6 +5370,29 @@
                 if (modal) {
                     modal.style.display = 'flex';
                     try { modal.scrollTop = 0; } catch (e) {}
+                }
+            }
+
+            static async compartirInformeGeneralWhatsApp() {
+                return this.compartirBoletinWhatsApp();
+            }
+
+            static imprimirInformeGeneral() {
+                const reporte = document.getElementById('reporteInformeGeneral')
+                    || document.querySelector('#modalBoletinSesion .reporte-papel');
+                if (!reporte) {
+                    try { window.print(); } catch (e) {}
+                    return;
+                }
+                try {
+                    document.body.classList.add('imprimiendo-informe-general');
+                    window.print();
+                } catch (e) {
+                    try { window.print(); } catch (e2) {}
+                } finally {
+                    setTimeout(() => {
+                        try { document.body.classList.remove('imprimiendo-informe-general'); } catch (e3) {}
+                    }, 400);
                 }
             }
 
