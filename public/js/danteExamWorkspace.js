@@ -2389,6 +2389,8 @@
           card.addEventListener('pointerup', (e) => {
             card.dataset.arrastrando = '';
             if (e && e.target && e.target.closest('.burbuja-grafito')) return;
+            // Evitar doble toggle: el click ya tacha; pointerup no debe repetirlo
+            if (e && e.target && e.target.closest('.btn-tachar-opcion')) return;
             marcarFila(e);
           });
           card.addEventListener('pointerdown', (e) => {
@@ -2401,6 +2403,7 @@
           // Prevent default contextmenu and perform strike toggle
           card.addEventListener('contextmenu', (e) => {
             e.preventDefault();
+            if (this._opcionesBloqueadas()) return;
             this.tacharOpcion(letra);
           });
 

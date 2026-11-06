@@ -9,7 +9,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="assets/icons/icon-192.svg">
     <link rel="apple-touch-icon" href="assets/icons/icon-192.svg">
-            <title>Dante OS c-1.3.31</title>
+            <title>Dante OS c-1.3.32</title>
     <script>
         try { sessionStorage.setItem('dante_entrada_viva', String(Date.now())); } catch (e) {}
     </script>
@@ -99,7 +99,7 @@
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" defer></script>
 
     <!-- Motores del Ecosistema Dante OS (Cargados en orden estricto de dependencias) -->
-    <script src="js/danteCacheVersion.js?v=c-1.3.31"></script>
+    <script src="js/danteCacheVersion.js?v=c-1.3.32"></script>
     <script src="js/danteSecurityGuard.js?v=c-1.2.85"></script>
     <script src="js/danteSecurityDRM.js?v=c-1.2.85"></script>
     <script src="js/danteStorage.js?v=c-1.2.85"></script>
@@ -118,7 +118,7 @@
     <script src="js/danteAbility.js?v=c-1.2.85"></script>
     <script src="js/rutaSimulacroEngine.js?v=c-1.2.85"></script>
     <script src="js/danteTutorEngine.js?v=c-1.2.85"></script>
-    <script src="js/danteSpiralEntity.js?v=c-1.3.31"></script>
+    <script src="js/danteSpiralEntity.js?v=c-1.3.32"></script>
     <script src="js/hackeaSyncIntro.js?v=c-1.3.19"></script>
     <script src="js/hackeaUmbralVault.js?v=c-1.3.19"></script>
     <script src="js/hackeaUmbralPicker.js?v=c-1.3.19"></script>
@@ -129,7 +129,7 @@
     <script src="js/hackeaPulso.js?v=c-1.3.19"></script>
     <script src="js/hackeaMente.js?v=c-1.3.19"></script>
     <script src="js/danteHubEngine.js?v=c-1.3.19"></script>
-    <script src="js/danteExamWorkspace.js?v=c-1.3.31"></script>
+    <script src="js/danteExamWorkspace.js?v=c-1.3.32"></script>
     <script src="js/danteSemana.js?v=c-1.2.85"></script>
     <script src="js/danteSimulacro.js?v=c-1.3.19"></script>
     <script src="js/danteRadarEngine.js?v=c-1.2.85"></script>
@@ -562,8 +562,7 @@
         #hdrExamenPrincipal.modo-examen #btnAjustesHdr,
         #hdrExamenPrincipal.modo-examen #btnPerfilHdr,
         #hdrExamenPrincipal.modo-examen #badgeHeaderPlan,
-        #hdrExamenPrincipal.modo-examen #lblHeaderNombreUsuario,
-        #hdrExamenPrincipal.modo-examen > div > div:first-child > button.examen-solo {
+        #hdrExamenPrincipal.modo-examen #lblHeaderNombreUsuario {
             display: none !important;
         }
         #hdrExamenPrincipal.modo-examen > div.relative {
@@ -575,10 +574,10 @@
             align-items: baseline;
             gap: 0.3rem;
             position: absolute !important;
-            left: 0.85rem !important;
+            left: 5.4rem !important;
             top: 50% !important;
             transform: translateY(-50%) !important;
-            max-width: 42% !important;
+            max-width: 40% !important;
             pointer-events: none;
         }
         #hdrExamenPrincipal.modo-examen #lblMateriaExamen {
@@ -717,23 +716,24 @@
         body:has(#hdrExamenPrincipal.modo-examen) #uiOpcionesGrid .opcion-card-workspace.opacity-35,
         body:has(#hdrExamenPrincipal.modo-examen) #uiOpcionesGrid .opcion-card-workspace.line-through,
         body:has(#hdrExamenPrincipal.modo-examen) #uiOpcionesGrid .opcion-card-workspace.opcion-tachada {
-            opacity: 0.55 !important;
+            opacity: 0.72 !important;
             color: #6b7280 !important;
             position: relative;
         }
         body:has(#hdrExamenPrincipal.modo-examen) #uiOpcionesGrid .opcion-tachada .txt-opcion-body,
         body:has(#hdrExamenPrincipal.modo-examen) #uiOpcionesGrid .opcion-tachada .opcion-letra-label,
         body:has(#hdrExamenPrincipal.modo-examen) #uiOpcionesGrid .opcion-tachada .cartilla-legible {
-            color: #9ca3af !important;
+            color: #6b7280 !important;
             text-decoration: line-through !important;
-            text-decoration-color: #b91c1c !important;
-            text-decoration-thickness: 2px !important;
+            text-decoration-color: #dc2626 !important;
+            text-decoration-thickness: 2.5px !important;
             text-decoration-skip-ink: none !important;
         }
         body:has(#hdrExamenPrincipal.modo-examen) #uiOpcionesGrid .opcion-tachada .badge-opcion-letra {
             border-color: #9ca3af !important;
             background: #f3f4f6 !important;
-            opacity: 0.85;
+            opacity: 0.9;
+            overflow: visible !important;
         }
         body:has(#hdrExamenPrincipal.modo-examen) #uiOpcionesGrid .opcion-tachada .badge-opcion-letra::before {
             content: '' !important;
@@ -741,21 +741,32 @@
             position: absolute !important;
             left: 50% !important;
             top: 50% !important;
-            width: 120% !important;
-            height: 2px !important;
-            background: #b91c1c !important;
-            transform: translate(-50%, -50%) rotate(-45deg) !important;
+            width: 130% !important;
+            height: 2.5px !important;
+            background: #dc2626 !important;
+            transform: translate(-50%, -50%) rotate(-38deg) !important;
             border-radius: 1px !important;
             z-index: 4 !important;
             pointer-events: none !important;
         }
         body:has(#hdrExamenPrincipal.modo-examen) #uiOpcionesGrid .opcion-tachada .opcion-letra-label {
             position: relative;
+            text-decoration: line-through !important;
+            text-decoration-color: #dc2626 !important;
+            text-decoration-thickness: 2.5px !important;
         }
         body:has(#hdrExamenPrincipal.modo-examen) #uiOpcionesGrid .opcion-tachada .btn-tachar-opcion {
             background: #fef3c7 !important;
             border-color: #f59e0b !important;
             color: #92400e !important;
+        }
+        /* Refuerzo: el color general del papel no debe anular el tachado */
+        body:has(#hdrExamenPrincipal.modo-examen) #uiOpcionesGrid .opcion-tachada .txt-opcion-body.cartilla-legible,
+        body:has(#hdrExamenPrincipal.modo-examen) #uiOpcionesGrid .opcion-tachada .txt-opcion-body {
+            color: #6b7280 !important;
+            text-decoration: line-through !important;
+            text-decoration-color: #dc2626 !important;
+            text-decoration-thickness: 2.5px !important;
         }
         #uiTituloSaberPapel {
             display: none;
@@ -1375,16 +1386,29 @@
         #hdrExamenPrincipal.modo-examen ~ #viewWorkspace,
         body:has(#hdrExamenPrincipal.modo-examen) #viewWorkspace { padding-bottom: 6.5rem !important; }
         #hdrExamenPrincipal.modo-examen .examen-solo { display: inline-flex; align-items: center; align-self: center; height: auto; }
-        #hdrExamenPrincipal.modo-examen > div > div:first-child > button.examen-solo,
-        #hdrExamenPrincipal.modo-examen button.examen-solo:not(#btnPausaCabecera) {
-            display: none !important;
-            visibility: hidden !important;
-            width: 0 !important;
-            height: 0 !important;
-            overflow: hidden !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            border: 0 !important;
+        /* En diagnóstico / entrenamiento / refuerzo: siempre se puede volver a la sala */
+        #hdrExamenPrincipal.modo-examen #btnVolverSalaExamen {
+            display: inline-flex !important;
+            visibility: visible !important;
+            align-items: center;
+            gap: 0.3rem;
+            width: auto !important;
+            height: auto !important;
+            overflow: visible !important;
+            border: 1px solid #d0d0d0 !important;
+            border-radius: 0.65rem !important;
+            padding: 0.38rem 0.7rem !important;
+            margin: 0 0.35rem 0 0 !important;
+            color: #111 !important;
+            background: #f5f5f5 !important;
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif !important;
+            font-size: 0.78rem !important;
+            font-weight: 650 !important;
+            cursor: pointer;
+            position: relative;
+            z-index: 60;
+            pointer-events: auto !important;
+            flex-shrink: 0;
         }
         #hdrExamenPrincipal.modo-examen #btnPausaCabecera.examen-solo {
             display: inline-flex !important;
@@ -1396,14 +1420,22 @@
         #hdrExamenPrincipal.modo-examen .centro-examen {
             display: inline-flex !important;
             position: absolute !important;
-            left: 0.85rem !important;
+            left: 5.4rem !important;
             top: 50% !important;
             transform: translateY(-50%) !important;
-            max-width: 46% !important;
+            max-width: 40% !important;
             align-items: baseline;
             justify-content: flex-start;
             gap: 0.35rem;
             pointer-events: none;
+        }
+        #hdrExamenPrincipal.modo-examen #btnVolverSalaExamen {
+            position: absolute !important;
+            left: 0.45rem !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            z-index: 70 !important;
+            margin: 0 !important;
         }
         body:has(#hdrExamenPrincipal.modo-examen) .content-layout.cartilla-mode {
             grid-template-columns: 1fr !important;
@@ -5950,11 +5982,11 @@
                     <img src="assets/icons/dante-logo-icon.svg" alt="Dante OS Logo" class="w-6 h-6 rounded-md shadow-[0_0_12px_rgba(56,189,248,0.45)] border border-cyan-500/30 shrink-0 object-contain" />
                     <span class="font-mono font-bold text-xs tracking-wider text-white select-none whitespace-nowrap flex items-center gap-1.5">
                         DANTE OS
-                        <span id="badgeDanteVersion" class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">c-1.3.31</span>
+                        <span id="badgeDanteVersion" class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">c-1.3.32</span>
                     </span>
                 </a>
 
-                <button type="button" class="examen-solo bg-transparent border-0 px-1 py-1 text-amber-300 font-mono text-[12px] font-bold shrink-0" onclick="if(window.AppController&&AppController.regresarASala){AppController.regresarASala();}else if(window.regresarASala){window.regresarASala();}">← Sala</button>
+                <button type="button" id="btnVolverSalaExamen" class="examen-solo bg-transparent border-0 px-1 py-1 text-amber-300 font-mono text-[12px] font-bold shrink-0" onclick="if(window.AppController&&AppController.regresarASala){AppController.regresarASala();}else if(window.regresarASala){window.regresarASala();}" title="Volver a la sala">← Sala</button>
                 <div id="containerTrackHeaderPill" class="sala-solo inline-flex items-center text-[12px] font-mono shrink-0 my-auto" title="Meta del estudiante">
                     <span id="lblPillSingleTrack" class="inline-flex items-center text-emerald-300 font-bold">
                         <span>Saber 11°</span>
@@ -14548,7 +14580,7 @@
                     return;
                 }
 
-                const targetSalir = e.target.closest('#btnSalaReturn, #btnSalir, #btnSalirExamen, #btnVolverSalaHeader, [data-action="sala"], [data-action="salir"], .btn-salir-examen');
+                const targetSalir = e.target.closest('#btnSalaReturn, #btnSalir, #btnSalirExamen, #btnVolverSalaHeader, #btnVolverSalaExamen, [data-action="sala"], [data-action="salir"], .btn-salir-examen');
                 if (targetSalir) {
                     e.preventDefault();
                     e.stopPropagation();
