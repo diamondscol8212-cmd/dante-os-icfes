@@ -578,11 +578,11 @@ class ShareCardEngine {
     static datosActuales = null;
 
     static abrirModal(datos = {}) {
-        const est = datos.estudiante || localStorage.getItem('dante_student_name') || (window.AppState ? window.AppState.estudiante : 'Aspirante Élite') || 'Aspirante Élite';
-        const score = datos.puntajeGlobal || localStorage.getItem('dante_score_global') || '348';
-        const percentil = datos.percentil || localStorage.getItem('dante_percentil') || '92';
-        const racha = localStorage.getItem('dante_racha_dias') || '5';
-        const arquetipo = datos.arquetipo || '🧠 Estratega Veloz (ICFES Rango 4)';
+        const est = datos.estudiante || localStorage.getItem('dante_student_name') || (window.AppState ? window.AppState.estudiante : 'Estudiante') || 'Estudiante';
+        const score = datos.puntajeGlobal || localStorage.getItem('dante_score_proyectado') || localStorage.getItem('dante_score_global') || '—';
+        const percentil = datos.percentil || localStorage.getItem('dante_percentil') || '—';
+        const racha = localStorage.getItem('dante_racha_dias') || localStorage.getItem('dante_streak_count') || '0';
+        const arquetipo = datos.arquetipo || localStorage.getItem('dante_arquetipo') || 'Sin arquetipo aún';
         const targetExam = (window.AppState ? window.AppState.targetExam : 'ICFES SABER 11°') || 'ICFES SABER 11°';
 
         this.datosActuales = { est, score, percentil, racha, arquetipo, targetExam };

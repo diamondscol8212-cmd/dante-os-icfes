@@ -10,12 +10,12 @@ class StreakManager {
     static getStreakData() {
         const hoy = StreakManager.getFechaActualColombia();
         const defaultData = {
-            count: 1,
-            lastActiveDate: hoy,
-            maxStreak: 1,
-            history: [hoy],
-            escudoActivo: true,
-            velocidadCalibracion: '1.45x (Acelerada)'
+            count: 0,
+            lastActiveDate: '',
+            maxStreak: 0,
+            history: [],
+            escudoActivo: false,
+            velocidadCalibracion: '—'
         };
 
         try {

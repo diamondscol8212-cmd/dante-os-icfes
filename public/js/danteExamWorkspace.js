@@ -3699,7 +3699,7 @@
                     <i class="fa-solid fa-arrows-rotate fa-spin"></i>
                   </div>
                   <h4 class="text-sm sm:text-base font-black text-white uppercase tracking-wider">
-                    <i class="fa-solid fa-arrows-rotate fa-spin mr-2 text-cyan-400"></i> SINCRONIZANDO EXPEDIENTE Y CALIBRANDO RESULTADOS...
+                    <i class="fa-solid fa-arrows-rotate fa-spin mr-2 text-cyan-400"></i> Calculando tu resultado…
                   </h4>
                   <p class="text-xs text-slate-300 font-sans leading-relaxed">
                     Profesor Dante estimó tu habilidad con las respuestas de esta sesión y la guardó en tu expediente.

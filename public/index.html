@@ -9,7 +9,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="assets/icons/icon-192.svg">
     <link rel="apple-touch-icon" href="assets/icons/icon-192.svg">
-            <title>Dante OS c-1.3.39</title>
+            <title>Dante OS c-1.3.40</title>
     <script>
         try { sessionStorage.setItem('dante_entrada_viva', String(Date.now())); } catch (e) {}
     </script>
@@ -99,7 +99,7 @@
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" defer></script>
 
     <!-- Motores del Ecosistema Dante OS (Cargados en orden estricto de dependencias) -->
-    <script src="js/danteCacheVersion.js?v=c-1.3.39"></script>
+    <script src="js/danteCacheVersion.js?v=c-1.3.40"></script>
     <script src="js/danteSecurityGuard.js?v=c-1.2.85"></script>
     <script src="js/danteSecurityDRM.js?v=c-1.2.85"></script>
     <script src="js/danteStorage.js?v=c-1.2.85"></script>
@@ -129,7 +129,7 @@
     <script src="js/hackeaPulso.js?v=c-1.3.19"></script>
     <script src="js/hackeaMente.js?v=c-1.3.34"></script>
     <script src="js/danteHubEngine.js?v=c-1.3.19"></script>
-    <script src="js/danteExamWorkspace.js?v=c-1.3.39"></script>
+    <script src="js/danteExamWorkspace.js?v=c-1.3.40"></script>
     <script src="js/danteSemana.js?v=c-1.2.85"></script>
     <script src="js/danteSimulacro.js?v=c-1.3.19"></script>
     <script src="js/danteRadarEngine.js?v=c-1.2.85"></script>
@@ -4460,7 +4460,7 @@
                     </div>
                     <div>
                         <span class="text-[9.5px] text-slate-400 uppercase block font-bold">Racha Activa</span>
-                        <span id="lblModalDashboardRacha" class="text-sm sm:text-base font-black text-orange-300">1 Día Consecutivo</span>
+                        <span id="lblModalDashboardRacha" class="text-sm sm:text-base font-black text-orange-300">0 días</span>
                     </div>
                 </div>
 
@@ -4470,7 +4470,7 @@
                     </div>
                     <div>
                         <span class="text-[9.5px] text-slate-400 uppercase block font-bold">Misión Diaria</span>
-                        <span id="lblModalDashboardMision" class="text-sm sm:text-base font-black text-emerald-300">10 / 10 Reactivos</span>
+                        <span id="lblModalDashboardMision" class="text-sm sm:text-base font-black text-emerald-300">Sin bloque hoy</span>
                     </div>
                 </div>
             </div>
@@ -4497,7 +4497,7 @@
                     <div class="p-3 rounded-2xl bg-slate-950 border border-emerald-500/40 text-center space-y-1">
                         <span class="text-[10px] text-emerald-400 font-bold block uppercase">ICFES Saber 11°</span>
                         <strong class="text-base text-white block" id="lblDashS11Score">Sin medición</strong>
-                        <span class="text-[9.5px] text-slate-400 block" id="lblDashS11Pct">Percentil: ~88%</span>
+                        <span class="text-[9.5px] text-slate-400 block" id="lblDashS11Pct">Sin percentil medido</span>
                     </div>
                     <div class="hidden p-3 rounded-2xl bg-slate-950 border border-cyan-500/40 text-center space-y-1" hidden>
                         <span class="text-[10px] text-cyan-400 font-bold block uppercase">Admisión UNAL</span>
@@ -4914,7 +4914,7 @@
                 <span class="px-3 py-1 rounded-full text-[10px] font-bold bg-orange-500/20 text-orange-400 border border-orange-500/40 uppercase tracking-widest">
                     RETENCIÓN COGNITIVA DIARIA
                 </span>
-                <h3 class="text-xl font-bold text-white mt-2" id="lblStreakModalCount">1 Día Consecutivo</h3>
+                <h3 class="text-xl font-bold text-white mt-2" id="lblStreakModalCount">0 días de racha</h3>
                 <p class="text-xs text-slate-400 mt-1">Entrenar todos los días consolida la memoria de largo plazo y reduce la curva del olvido de Ebbinghaus.</p>
             </div>
 
@@ -5107,14 +5107,14 @@
             <div class="grid grid-cols-2 gap-3 p-4 bg-slate-900/90 border border-slate-800 rounded-2xl text-center">
                 <div class="space-y-0.5">
                     <span class="text-[10px] text-slate-400 font-bold uppercase block">PUNTAJE PONDERADO PROYECTADO</span>
-                    <span id="preunLblPuntajeActual" class="text-2xl font-black text-amber-400">526 Pts</span>
+                    <span id="preunLblPuntajeActual" class="text-2xl font-black text-amber-400">—</span>
                 </div>
                 <div class="space-y-0.5 border-l border-slate-800">
                     <span class="text-[10px] text-slate-400 font-bold uppercase block">CORTE HISTÓRICO SNIES</span>
-                    <span id="preunLblCorteSNIES" class="text-2xl font-black text-emerald-400">735 Pts</span>
+                    <span id="preunLblCorteSNIES" class="text-2xl font-black text-emerald-400">—</span>
                 </div>
                 <div class="col-span-2 pt-2 border-t border-slate-800/80 text-center">
-                    <span id="preunLblBrecha" class="text-rose-400 font-black text-lg">FALTAN 209 PUNTOS UNAL</span>
+                    <span id="preunLblBrecha" class="text-slate-400 font-black text-lg">Sin medición aún</span>
                 </div>
             </div>
 
@@ -5808,7 +5808,7 @@
                     <div class="space-y-3 text-xs sm:text-sm text-slate-200 leading-relaxed">
                         <p class="font-sans flex items-center gap-2.5 bg-slate-900/80 p-3 rounded-xl border border-slate-800">
                             <i class="fa-solid fa-user-check text-cyan-400 text-lg shrink-0"></i>
-                            <span>Yo, <strong class="text-cyan-300 text-sm font-black" id="lblFirmaNombre">Mateo</strong>, asumo libremente el compromiso de preparación de Élite bajo la guía del <strong>Profesor Dante</strong>.</span>
+                            <span>Yo, <strong class="text-cyan-300 text-sm font-black" id="lblFirmaNombre">Estudiante</strong>, asumo el compromiso de preparar el Saber 11° con la guía de <strong>Profesor Dante</strong>.</span>
                         </p>
 
                         <div class="p-4 bg-slate-900/90 rounded-2xl space-y-2.5 text-xs sm:text-sm border border-slate-800 shadow-inner">
@@ -5877,7 +5877,7 @@
                             ¡Pacto Sellado con Éxito!
                         </h3>
                         <p class="text-xs sm:text-sm text-cyan-200 font-sans max-w-md mx-auto leading-relaxed" id="lblExitoMensajeDante">
-                            ¡Bienvenido, Mateo! Quedaron tu nombre, la meta, la fecha y el ritmo de la sala: bloques de 10, con 15 minutos entre uno y otro.
+                            ¡Bienvenido! Quedaron tu nombre, la meta y el ritmo de la sala: bloques de 10 preguntas.
                         </p>
                     </div>
 
@@ -6061,7 +6061,7 @@
                     <img src="assets/icons/dante-logo-icon.svg" alt="Dante OS Logo" class="w-6 h-6 rounded-md shadow-[0_0_12px_rgba(56,189,248,0.45)] border border-cyan-500/30 shrink-0 object-contain" />
                     <span class="font-mono font-bold text-xs tracking-wider text-white select-none whitespace-nowrap flex items-center gap-1.5">
                         DANTE OS
-                        <span id="badgeDanteVersion" class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">c-1.3.39</span>
+                        <span id="badgeDanteVersion" class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">c-1.3.40</span>
                     </span>
                 </a>
 
@@ -6118,7 +6118,7 @@
                 <svg class="flama-respirando w-3.5 h-3.5 text-amber-400 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                     <path d="M12 23c6.075 0 8-4.5 8-9.5 0-4.5-3-7.5-5-10.5-.3-.45-.9-.45-1.2 0-1.5 2.25-3.5 5.5-3.5 8 0 1.5.5 2.8 1.2 3.8-3.2-1.5-4.5-4.8-3.9-8.3.1-.5-.5-.8-.8-.5C4.5 9 3 12.5 3 15.5 3 20 5.5 23 12 23z"/>
                 </svg>
-                <span id="lblHeaderRachaCount" class="sala-stats-num">1</span>
+                <span id="lblHeaderRachaCount" class="sala-stats-num">0</span>
                 <span class="sala-stats-lbl">Días de racha</span>
             </button>
             <span class="sala-stats-sep" aria-hidden="true"></span>
@@ -6161,7 +6161,7 @@
                     <i class="fa-solid fa-bolt text-cyan-400 text-[9px]"></i> 10 preguntas
                 </span>
                 <button type="button" onclick="StreakManager.abrirModalRacha()" class="px-2 py-0.5 rounded-lg bg-orange-950/80 border border-orange-500/50 hover:border-orange-400 text-[10px] font-mono text-orange-300 shrink-0 flex items-center gap-1 cursor-pointer transition-all shadow-sm active:scale-95" title="Detalle de Racha">
-                    <i class="fa-solid fa-fire text-orange-400 text-[9px] animate-pulse"></i> Racha: <span id="lblGatewayRachaCount" class="font-extrabold text-white">1</span>
+                    <i class="fa-solid fa-fire text-orange-400 text-[9px] animate-pulse"></i> Racha: <span id="lblGatewayRachaCount" class="font-extrabold text-white">0</span>
                 </button>
                 <span class="px-2 py-0.5 rounded-lg bg-slate-900/90 border border-slate-800 text-[10px] font-mono text-amber-300 shrink-0 flex items-center gap-1">
                     <i class="fa-regular fa-clock text-amber-400 text-[9px]"></i> ~25 min
@@ -8331,9 +8331,9 @@
          */
         class SocialShareManager {
             static abrirModalCompartir() {
-                const puntaje500 = document.getElementById('lblHudPuntaje500')?.innerText || '328 / 500 pts';
-                const arquetipo = localStorage.getItem('dante_arquetipo') || 'Estratega Cognitivo';
-                const estudiante = localStorage.getItem('dante_student_id') || 'Estudiante Dante OS';
+                const puntaje500 = document.getElementById('lblHudPuntaje500')?.innerText || 'Sin medición';
+                const arquetipo = localStorage.getItem('dante_arquetipo') || 'Sin arquetipo aún';
+                const estudiante = localStorage.getItem('dante_student_name') || localStorage.getItem('dante_student_id') || 'Estudiante';
 
                 const modal = document.getElementById('modalShareCard');
                 if (modal) {
@@ -8356,7 +8356,7 @@
 
             static copiarEnlace() {
                 const url = window.location.origin;
-                const text = `🔥 Mi proyección en Dante OS es ${document.getElementById('lblHudPuntaje500')?.innerText || '328 pts'}. ¡Ponte a prueba tú también! ${url}`;
+                const text = `Mi proyección en Dante OS es ${document.getElementById('lblHudPuntaje500')?.innerText || 'aún sin medición'}. Entrénala tú también: ${url}`;
                 if (navigator.clipboard) {
                     navigator.clipboard.writeText(text);
                     alert("📋 ¡Enlace copiado al portapapeles! Compártelo en WhatsApp, TikTok o Instagram Stories.");
@@ -10447,22 +10447,17 @@
                     } else if (savedScore) {
                         pct = Math.min(95, Math.max(15, parseInt(savedScore, 10)));
                     } else {
-                        // Estado inicial por defecto de demostración equilibrada
-                        if (key === 'matematicas') pct = 51;
-                        else if (key === 'lectura_critica') pct = 65;
-                        else if (key === 'sociales_ciudadanas') pct = 45;
-                        else if (key === 'ciencias_naturales') pct = 58;
-                        else if (key === 'ingles') pct = 70;
+                        pct = 0;
                     }
 
                     semaforoData.push({ key, name: m.name, desc: m.desc, pct });
-                    totalScoreSum += pct; // Cada materia aporta 0-100 puntos en escala ICFES oficial (Suma = 0-500)
+                    totalScoreSum += pct;
 
                     const pctEl = document.getElementById(`pct_${key}`);
-                    if (pctEl) pctEl.innerText = `${pct}%`;
+                    if (pctEl) pctEl.innerText = pct > 0 ? `${pct}%` : '—';
 
                     const txtCompEl = document.getElementById(`txtCompletista_${key}`);
-                    if (txtCompEl) txtCompEl.innerText = `${pct} / 100% Dominado`;
+                    if (txtCompEl) txtCompEl.innerText = pct > 0 ? `${pct} / 100%` : 'Sin medición aún';
 
                     const barEl = document.getElementById(`bar_${key}`);
                     if (barEl) {
@@ -10470,30 +10465,31 @@
                         barEl.style.width = `${pct}%`;
                     }
 
-                    this.actualizarRangoUI(key, 1, true);
+                    this.actualizarRangoUI(key, 1, pct > 0);
                     this.actualizarRangoUI(key, 2, pct >= 26);
                     this.actualizarRangoUI(key, 3, pct >= 51);
                     this.actualizarRangoUI(key, 4, pct >= 76);
                 });
 
-                // Calcular Puntaje Estimado Global (Escala Oficial ICFES 0-500: Suma directa de las 5 materias)
-                const streakDays = parseInt(localStorage.getItem('dante_streak_count') || '1', 10);
-                const bonoConfianza = Math.min(15, Math.round(streakDays * 0.8)); // Ajuste de muestra por consistencia
-                const baseCalculada = Math.min(500, Math.max(100, Math.round(totalScoreSum + bonoConfianza)));
-                let rangoNombre = 'Estratega Bronce';
-                if (baseCalculada >= 420) rangoNombre = 'Estratega Diamante';
-                else if (baseCalculada >= 360) rangoNombre = 'Estratega Oro';
-                else if (baseCalculada >= 310) rangoNombre = 'Estratega Plata';
+                const scoreReal = parseInt(localStorage.getItem('dante_score_proyectado') || localStorage.getItem('dante_puntaje_global') || '0', 10);
+                const hayMedicion = Number.isFinite(scoreReal) && scoreReal > 0;
+                const baseCalculada = hayMedicion
+                    ? Math.min(500, Math.max(0, Math.round(scoreReal)))
+                    : (totalScoreSum > 0 ? Math.min(500, Math.round(totalScoreSum)) : 0);
+                let rangoNombre = hayMedicion || totalScoreSum > 0 ? 'En calibración' : 'Sin medición';
+                if (baseCalculada >= 420) rangoNombre = 'Rango alto';
+                else if (baseCalculada >= 360) rangoNombre = 'Rango sólido';
+                else if (baseCalculada >= 310) rangoNombre = 'Rango medio';
+                else if (baseCalculada > 0) rangoNombre = 'En calibración';
 
-                // Guardar globalmente para consumo unificado en RutaAprendizajeEngine y widgets
                 window.danteGlobalScoreCalculated = baseCalculada;
 
-                // Actualizar labels de puntaje global en todas las ubicaciones UI
+                const scoreTxt = baseCalculada > 0 ? `${baseCalculada} / 500 Pts` : '— / 500 Pts';
                 const scoreGlobalEl = document.getElementById('lblPuntajeGlobal');
-                if (scoreGlobalEl) scoreGlobalEl.innerText = `${baseCalculada} / 500 Pts`;
+                if (scoreGlobalEl) scoreGlobalEl.innerText = scoreTxt;
 
-                document.querySelectorAll('#lblTermometroPuntaje340').forEach(el => el.innerText = `${baseCalculada} / 500 Pts`);
-                document.querySelectorAll('#lblHudPuntaje500').forEach(el => el.innerText = `${baseCalculada} / 500 Pts`);
+                document.querySelectorAll('#lblTermometroPuntaje340').forEach(el => el.innerText = scoreTxt);
+                document.querySelectorAll('#lblHudPuntaje500').forEach(el => el.innerText = scoreTxt);
 
                 const termometroRangoEl = document.getElementById('lblTermometroRangoRango');
                 if (termometroRangoEl) termometroRangoEl.innerText = rangoNombre;
@@ -10505,18 +10501,23 @@
                 else if (pactoMeta === '300_BASE') targetScore = 320;
 
                 const gap = targetScore - baseCalculada;
-                const pctProgress = Math.min(100, Math.max(0, Math.round((baseCalculada / targetScore) * 100)));
+                const pctProgress = baseCalculada > 0
+                    ? Math.min(100, Math.max(0, Math.round((baseCalculada / targetScore) * 100)))
+                    : 0;
 
                 const elMetaTitle = document.getElementById('lblMetaTitle');
                 if (elMetaTitle) elMetaTitle.innerText = `PROGRESO A META (${targetScore} PTS)`;
 
                 const elMetaGap = document.getElementById('lblMetaGapText');
                 if (elMetaGap) {
-                    if (gap > 0) {
+                    if (baseCalculada <= 0) {
+                        elMetaGap.innerText = 'Sin medición aún';
+                        elMetaGap.className = 'text-slate-400 font-bold';
+                    } else if (gap > 0) {
                         elMetaGap.innerText = `Faltan ${gap} Pts`;
                         elMetaGap.className = 'text-amber-300 font-bold';
                     } else {
-                        elMetaGap.innerText = `¡Meta Superada (+${Math.abs(gap)} Pts)!`;
+                        elMetaGap.innerText = `Meta alcanzada (+${Math.abs(gap)} Pts)`;
                         elMetaGap.className = 'text-emerald-400 font-bold';
                     }
                 }
@@ -10526,7 +10527,9 @@
 
                 const elSubtext = document.getElementById('lblProyeccionPotencialSubtext');
                 if (elSubtext) {
-                    elSubtext.innerHTML = 'Dosis del día: <strong class="text-emerald-300">5 bloques · 25 ítems</strong> para todos. Tutor y pistas con tope pedagógico (5/día). El plan solo quita anuncios.';
+                    elSubtext.textContent = baseCalculada > 0
+                        ? 'Tu proyección sale de las pruebas que ya terminaste.'
+                        : 'Termina tu primer bloque para ver la proyección.';
                 }
 
                 // Impacto Social Dinámico por Usuario
@@ -10747,42 +10750,73 @@
                 const lblProyeccionPotencialSubtext = document.getElementById('lblProyeccionPotencialSubtext');
                 const barMetaProgress = document.getElementById('barMetaProgress');
 
+                const scoreReal = parseInt(localStorage.getItem('dante_score_proyectado') || localStorage.getItem('dante_puntaje_global') || '0', 10);
+                const scoreOk = Number.isFinite(scoreReal) && scoreReal > 0;
+                const metaPacto = localStorage.getItem('dante_pacto_meta') || '380_ELITE';
+                let metaPts = 380;
+                if (metaPacto === 'PREUNIVESITARIO') metaPts = 420;
+                else if (metaPacto === '300_BASE') metaPts = 320;
+                const preuPts = parseInt(localStorage.getItem('dante_preu_puntos') || '0', 10);
+                const preuCorte = parseInt(localStorage.getItem('dante_preu_corte') || '0', 10);
+
                 if (modoKey === 'preuniversitario') {
                     if (lblObjetivo && window.DanteVectorIcons) {
                         lblObjetivo.innerText = 'ADMISIÓN UNAL / UdeA';
                         if (iconContainer) iconContainer.innerHTML = window.DanteVectorIcons.logoUNAL({ size: 22 });
                     }
-                    if (lblDockProyeccionTitle) lblDockProyeccionTitle.innerText = 'PROYECCIÓN ADMISIÓN UNAL';
-                    if (lblHudPuntaje500) lblHudPuntaje500.innerText = '675 / 1000';
-                    if (lblMetaTitle) lblMetaTitle.innerText = 'PROGRESO A CORTE (735 PTS)';
-                    if (lblMetaGapText) lblMetaGapText.innerText = 'Faltan 60 Pts';
-                    if (lblProyeccionPotencialSubtext) lblProyeccionPotencialSubtext.innerText = 'Puntaje estimado en T-Score para ingreso a Universidad Nacional.';
-                    if (barMetaProgress) barMetaProgress.style.width = '68%';
-                    document.querySelectorAll('#lblTermometroPuntaje340').forEach(el => el.innerText = '675 / 1000 Pts');
+                    if (lblDockProyeccionTitle) lblDockProyeccionTitle.innerText = 'PROYECCIÓN ADMISIÓN';
+                    const preuTxt = preuPts > 0 ? `${preuPts} / 1000` : '— / 1000';
+                    if (lblHudPuntaje500) lblHudPuntaje500.innerText = preuTxt;
+                    if (lblMetaTitle) lblMetaTitle.innerText = preuCorte > 0 ? `PROGRESO A CORTE (${preuCorte} PTS)` : 'PROGRESO A CORTE';
+                    if (lblMetaGapText) {
+                        lblMetaGapText.innerText = (preuPts > 0 && preuCorte > 0)
+                            ? (preuCorte - preuPts > 0 ? `Faltan ${preuCorte - preuPts} Pts` : 'Corte alcanzado')
+                            : 'Sin medición aún';
+                    }
+                    if (lblProyeccionPotencialSubtext) lblProyeccionPotencialSubtext.innerText = 'Tu proyección Pre-U sale de las preguntas de admisión que ya respondiste.';
+                    if (barMetaProgress) barMetaProgress.style.width = (preuPts > 0 && preuCorte > 0) ? `${Math.min(100, Math.round((preuPts / preuCorte) * 100))}%` : '0%';
+                    document.querySelectorAll('#lblTermometroPuntaje340').forEach(el => el.innerText = preuTxt);
                 } else if (modoKey === 'preicfes') {
                     if (lblObjetivo && window.DanteVectorIcons) {
                         lblObjetivo.innerText = 'ICFES SABER 11°';
                         if (iconContainer) iconContainer.innerHTML = window.DanteVectorIcons.logoICFES({ size: 22 });
                     }
                     if (lblDockProyeccionTitle) lblDockProyeccionTitle.innerText = 'PROYECCIÓN SABER 11°';
-                    if (lblHudPuntaje500) lblHudPuntaje500.innerText = '348 / 500';
-                    if (lblMetaTitle) lblMetaTitle.innerText = 'PROGRESO A META (380 PTS)';
-                    if (lblMetaGapText) lblMetaGapText.innerText = 'Faltan 32 Pts';
-                    if (lblProyeccionPotencialSubtext) lblProyeccionPotencialSubtext.innerText = 'Aumenta tu puntaje completando la dosis adaptativa diaria.';
-                    if (barMetaProgress) barMetaProgress.style.width = '72%';
-                    document.querySelectorAll('#lblTermometroPuntaje340').forEach(el => el.innerText = '348 / 500 Pts');
+                    const s11Txt = scoreOk ? `${scoreReal} / 500` : '— / 500';
+                    if (lblHudPuntaje500) lblHudPuntaje500.innerText = s11Txt;
+                    if (lblMetaTitle) lblMetaTitle.innerText = `PROGRESO A META (${metaPts} PTS)`;
+                    if (lblMetaGapText) {
+                        lblMetaGapText.innerText = scoreOk
+                            ? (metaPts - scoreReal > 0 ? `Faltan ${metaPts - scoreReal} Pts` : 'Meta alcanzada')
+                            : 'Sin medición aún';
+                    }
+                    if (lblProyeccionPotencialSubtext) lblProyeccionPotencialSubtext.innerText = 'Completa tu entrenamiento diario para calibrar la proyección.';
+                    if (barMetaProgress) barMetaProgress.style.width = scoreOk ? `${Math.min(100, Math.round((scoreReal / metaPts) * 100))}%` : '0%';
+                    document.querySelectorAll('#lblTermometroPuntaje340').forEach(el => el.innerText = scoreOk ? `${scoreReal} / 500 Pts` : '— / 500 Pts');
                 } else if (modoKey === 'vocacional') {
                     if (lblObjetivo && window.DanteVectorIcons) {
                         lblObjetivo.innerText = 'ORIENTACIÓN VOCACIONAL';
                         if (iconContainer) iconContainer.innerHTML = window.DanteVectorIcons.diagnostico({ size: 22 });
                     }
-                    if (lblDockProyeccionTitle) lblDockProyeccionTitle.innerText = 'AFINIDAD VOCACIONAL';
-                    if (lblHudPuntaje500) lblHudPuntaje500.innerText = '94% Matriz';
-                    if (lblMetaTitle) lblMetaTitle.innerText = 'COMPATIBILIDAD CARRERA';
-                    if (lblMetaGapText) lblMetaGapText.innerText = 'Perfil Élite';
-                    if (lblProyeccionPotencialSubtext) lblProyeccionPotencialSubtext.innerText = 'Basado en el test Holland de inteligencia múltiple y competencias.';
-                    if (barMetaProgress) barMetaProgress.style.width = '94%';
-                    document.querySelectorAll('#lblTermometroPuntaje340').forEach(el => el.innerText = '94% Afinidad');
+                    if (lblDockProyeccionTitle) lblDockProyeccionTitle.innerText = 'RUTA VOCACIONAL';
+                    let rutaDone = false;
+                    try {
+                        const ruta = JSON.parse(localStorage.getItem('dante_ruta_vocacional') || '{}');
+                        rutaDone = Boolean(ruta && ruta.lista);
+                    } catch (e) { rutaDone = localStorage.getItem('dante_test_vocacional_completado') === 'true'; }
+                    if (lblHudPuntaje500) lblHudPuntaje500.innerText = rutaDone ? 'Informe listo' : 'En curso';
+                    if (lblMetaTitle) lblMetaTitle.innerText = 'SEIS DÍAS · UN DILEMA';
+                    if (lblMetaGapText) lblMetaGapText.innerText = rutaDone ? 'Informe entregado' : 'Sigue en la sala';
+                    if (lblProyeccionPotencialSubtext) lblProyeccionPotencialSubtext.innerText = 'Al sexto día se entrega tu informe vocacional.';
+                    if (barMetaProgress) {
+                        let n = 0;
+                        try {
+                            const ruta = JSON.parse(localStorage.getItem('dante_ruta_vocacional') || '{}');
+                            n = Array.isArray(ruta.elecciones) ? ruta.elecciones.length : 0;
+                        } catch (e) {}
+                        barMetaProgress.style.width = `${Math.min(100, Math.round((n / 6) * 100))}%`;
+                    }
+                    document.querySelectorAll('#lblTermometroPuntaje340').forEach(el => el.innerText = rutaDone ? 'Informe listo' : 'Ruta en curso');
                 }
 
                 // Recalcular banner hero principal con el color del modo actual
@@ -11385,7 +11419,7 @@
 
                 const btn = document.getElementById("btnIngresar");
                 if (btn) {
-                    btn.innerText = "Sincronizando trayectoria cognitiva..."; 
+                    btn.innerText = "Preparando tu sesión…"; 
                     btn.disabled = true;
                 }
 
@@ -12551,16 +12585,33 @@
                 modal.style.display = 'flex';
 
                 // Racha
-                let racha = 1;
+                let racha = 0;
                 try {
                     if (window.StreakManager && typeof StreakManager.obtenerRachaActual === 'function') {
                         racha = StreakManager.obtenerRachaActual();
                     } else {
-                        racha = parseInt(localStorage.getItem('dante_racha_dias') || '1', 10);
+                        racha = parseInt(localStorage.getItem('dante_racha_dias') || localStorage.getItem('dante_streak_count') || '0', 10);
                     }
                 } catch(e) {}
+                if (!Number.isFinite(racha) || racha < 0) racha = 0;
                 const lblRacha = document.getElementById('lblModalDashboardRacha');
-                if (lblRacha) lblRacha.innerText = `${racha} ${racha === 1 ? 'Día' : 'Días'} Consecutivos`;
+                if (lblRacha) lblRacha.innerText = racha > 0 ? `${racha} ${racha === 1 ? 'día' : 'días'} seguidos` : '0 días';
+
+                const hoyKey = (() => {
+                    try {
+                        return new Date().toLocaleDateString('en-CA', { timeZone: 'America/Bogota' });
+                    } catch (e) {
+                        return new Date().toISOString().slice(0, 10);
+                    }
+                })();
+                const hechasHoy = parseInt(localStorage.getItem('dante_preguntas_hoy') || localStorage.getItem(`dante_preguntas_${hoyKey}`) || '0', 10);
+                const metaDia = 10;
+                const lblMision = document.getElementById('lblModalDashboardMision');
+                if (lblMision) {
+                    lblMision.innerText = hechasHoy > 0
+                        ? `${Math.min(hechasHoy, metaDia)} / ${metaDia} preguntas`
+                        : 'Sin bloque hoy';
+                }
 
                 // Proyecciones
                 let s11 = null;
@@ -12571,6 +12622,8 @@
 
                 const elS11 = document.getElementById('lblDashS11Score');
                 if (elS11) elS11.innerText = (s11 > 0) ? `${s11} / 500` : 'Sin medición';
+                const elS11Pct = document.getElementById('lblDashS11Pct');
+                if (elS11Pct) elS11Pct.innerText = (s11 > 0) ? 'Proyección según tus respuestas' : 'Sin percentil medido';
 
                 let vals = [0, 0, 0, 0, 0];
                 let hayRadar = false;
@@ -13757,7 +13810,7 @@
                 const stEl = document.getElementById('lblDanteStatusModo');
                 if (!txtEl) return;
 
-                const nombre = localStorage.getItem('dante_student_name') || localStorage.getItem('dante_user_name') || 'Mateo';
+                const nombre = localStorage.getItem('dante_student_name') || localStorage.getItem('dante_user_name') || 'estudiante';
                 let frase = "";
                 let modo = "Exigencia de Rigor Táctico";
 

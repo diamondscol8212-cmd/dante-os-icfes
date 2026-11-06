@@ -891,7 +891,7 @@ class RutaVocacionalEngine {
                                 <span class="text-[10px] font-mono text-amber-400 font-bold uppercase">Ingeniería & IA</span>
                                 <span class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 text-[10px] font-mono border border-amber-500/30">60s Reto</span>
                             </div>
-                            <h3 class="text-sm font-bold text-white font-sans">Debug de Backend: Latencia Crítica en Cluster</h3>
+                            <h3 class="text-sm font-bold text-white font-sans">Equipo saturado: ¿priorizas el servicio o la calidad?</h3>
                             <p class="text-xs text-slate-400 leading-relaxed">Identifica la fuga de memoria en un microservicio de base de datos distribuidas y aplica el parche de concurrencia.</p>
                             <button onclick="RutaVocacionalEngine.ejecutarMicroSimulacion('ingenieria')" class="w-full py-2.5 rounded-lg bg-amber-950 border border-amber-500/40 text-amber-300 hover:bg-amber-900 font-mono font-bold text-xs transition-all cursor-pointer flex items-center justify-center gap-2">
                                 <i class="fa-solid fa-laptop-code text-amber-400 text-sm"></i>
@@ -1096,7 +1096,7 @@ class RutaVocacionalEngine {
         },
         ingenieria: {
             id: 'ingenieria',
-            titulo: 'Debug de Backend: Latencia Crítica en Cluster',
+            titulo: 'Equipo saturado: ¿priorizas el servicio o la calidad?',
             areaLabel: 'Arquitectura de Software & Sistemas IA',
             badgeColor: 'text-amber-300 bg-amber-950 border-amber-500/40',
             headerColor: 'text-amber-300',
