@@ -9,7 +9,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="assets/icons/icon-192.svg">
     <link rel="apple-touch-icon" href="assets/icons/icon-192.svg">
-    <title>Dante OS · Tu informe c-1.3.18</title>
+    <title>Dante OS · Tu informe c-1.3.38</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
 
@@ -20,15 +20,15 @@
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="theme.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/danteCacheVersion.js?v=c-1.3.18"></script>
-    <script src="js/danteNube.js?v=c-1.3.18"></script>
-    <script src="js/danteRegistro.js?v=c-1.3.18"></script>
+    <script src="js/danteCacheVersion.js?v=c-1.3.38"></script>
+    <script src="js/danteNube.js?v=c-1.3.38"></script>
+    <script src="js/danteRegistro.js?v=c-1.3.38"></script>
     <script src="js/danteVectorIcons.js"></script>
     <script src="js/danteStorage.js"></script>
     <script src="js/streakManager.js?v=23.1.2"></script>
     <script src="js/rutaSimulacroEngine.js"></script>
     <script src="js/danteRadarEngine.js"></script>
-    <script src="js/danteTutorEngine.js?v=c-1.3.18"></script>
+    <script src="js/danteTutorEngine.js?v=c-1.3.38"></script>
 
     <style>
         #bentoContainer { display: flex; flex-direction: column; gap: 1.05rem; }
@@ -966,13 +966,7 @@
             color: #f1f5f9 !important; text-transform: none !important;
             letter-spacing: -0.02em !important;
         }
-        #btnVerTodasPruebas {
-            background: transparent; border: 0; cursor: pointer;
-            color: #94a3b8; font-size: 0.72rem; font-weight: 600;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            padding: 0.15rem 0;
-        }
-        #btnVerTodasPruebas[hidden] { display: none !important; }
+        #btnVerTodasPruebas { display: none !important; }
         #bloquePruebas thead { display: none; }
         #bloquePruebas table { width: 100%; border-collapse: collapse; }
         #tblExamenesBody tr.perfil-prueba-row {
@@ -1017,15 +1011,28 @@
         #piePruebas {
             display: block;
             text-align: center;
-            padding-top: 0.35rem;
+            margin-top: 0.15rem;
+            padding: 0.55rem 0 0.15rem;
+            border-top: 1px solid rgba(148, 163, 184, 0.12);
         }
         #piePruebas:empty { display: none; }
         #piePruebas button {
             color: #94a3b8 !important;
             font-family: 'Plus Jakarta Sans', sans-serif !important;
-            font-size: 0.75rem !important;
+            font-size: 0.74rem !important;
             font-weight: 600 !important;
+            letter-spacing: -0.01em !important;
             text-decoration: none !important;
+            background: transparent !important;
+            border: 0 !important;
+            cursor: pointer;
+            padding: 0.35rem 0.5rem !important;
+            border-radius: 999px;
+            transition: color 0.15s ease, background 0.15s ease;
+        }
+        #piePruebas button:hover {
+            color: #e2e8f0 !important;
+            background: rgba(148, 163, 184, 0.08) !important;
         }
         #tarjetaPadresInforme {
             border-radius: 1.1rem !important;
@@ -1086,7 +1093,7 @@
         </div>
         <div class="perfil-hdr-tag-wrap">
             <span class="perfil-hdr-tag" id="lblHdrProyeccionTag">PROYECCIÓN 2026</span>
-            <span id="badgeDanteVersion" class="perfil-hdr-ver">c-1.3.18</span>
+            <span id="badgeDanteVersion" class="perfil-hdr-ver">c-1.3.38</span>
         </div>
         <div class="relative flex items-center gap-2.5 shrink-0">
             <button type="button" id="badgeRacha" onclick="if(window.StreakManager) StreakManager.abrirModalRacha()" class="flex items-center gap-1.5 cursor-pointer bg-transparent border-0 p-0 text-amber-400 font-mono text-xs font-black transition-transform hover:scale-105 active:scale-95 shrink-0 select-none" title="Ver Racha Real de Días">
@@ -1303,7 +1310,7 @@
             <div id="bloquePruebas" class="bg-slate-950/90 border border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xl space-y-3 font-mono text-xs">
                 <div class="perfil-pruebas-head">
                     <h3>Pruebas que has hecho</h3>
-                    <button type="button" id="btnVerTodasPruebas" onclick="PerfilEstudiante.toggleVerTodasPruebas()">Ver todas ›</button>
+                    <button type="button" id="btnVerTodasPruebas" hidden aria-hidden="true" onclick="PerfilEstudiante.toggleVerTodasPruebas()">Ver todas</button>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
@@ -3965,19 +3972,19 @@
 
                 const btnTodas = document.getElementById('btnVerTodasPruebas');
                 const pie = document.getElementById('piePruebas');
+                if (btnTodas) btnTodas.hidden = true;
 
                 if (!items || items.length === 0) {
                     const tr = document.createElement("tr");
                     tr.innerHTML = `<td colspan="2" class="text-center py-8 text-slate-400 text-xs" style="display:block;width:100%">Cuando termines una prueba, queda escrita aquí.</td>`;
                     tbody.appendChild(tr);
-                    if (btnTodas) btnTodas.hidden = true;
                     if (pie) pie.innerHTML = '';
                     return;
                 }
 
                 items.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
                 const mostrarTodas = this._verTodasLasPruebas === true;
-                const limite = 3;
+                const limite = 2;
                 const visibles = mostrarTodas ? items : items.slice(0, limite);
                 this._pruebasOrdenadas = items;
 
@@ -4015,16 +4022,12 @@
                 });
 
                 const hayMas = items.length > limite;
-                if (btnTodas) {
-                    btnTodas.hidden = !hayMas;
-                    btnTodas.textContent = mostrarTodas ? 'Ver menos ›' : 'Ver todas ›';
-                }
                 if (pie) {
                     if (hayMas && !mostrarTodas) {
                         const resto = items.length - limite;
-                        pie.innerHTML = `<button type="button" class="bg-transparent border-0 cursor-pointer py-2" onclick="PerfilEstudiante.toggleVerTodasPruebas()">Ver todas (${resto} más) ›</button>`;
+                        pie.innerHTML = `<button type="button" onclick="PerfilEstudiante.toggleVerTodasPruebas()" aria-expanded="false">Ver todas · ${resto} más</button>`;
                     } else if (hayMas && mostrarTodas) {
-                        pie.innerHTML = `<button type="button" class="bg-transparent border-0 cursor-pointer py-2" onclick="PerfilEstudiante.toggleVerTodasPruebas()">Ver solo las últimas ›</button>`;
+                        pie.innerHTML = `<button type="button" onclick="PerfilEstudiante.toggleVerTodasPruebas()" aria-expanded="true">Ver menos</button>`;
                     } else {
                         pie.innerHTML = '';
                     }
