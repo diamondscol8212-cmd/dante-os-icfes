@@ -9,7 +9,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="assets/icons/icon-192.svg">
     <link rel="apple-touch-icon" href="assets/icons/icon-192.svg">
-            <title>Dante OS c-1.3.32</title>
+            <title>Dante OS c-1.3.33</title>
     <script>
         try { sessionStorage.setItem('dante_entrada_viva', String(Date.now())); } catch (e) {}
     </script>
@@ -99,7 +99,7 @@
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" defer></script>
 
     <!-- Motores del Ecosistema Dante OS (Cargados en orden estricto de dependencias) -->
-    <script src="js/danteCacheVersion.js?v=c-1.3.32"></script>
+    <script src="js/danteCacheVersion.js?v=c-1.3.33"></script>
     <script src="js/danteSecurityGuard.js?v=c-1.2.85"></script>
     <script src="js/danteSecurityDRM.js?v=c-1.2.85"></script>
     <script src="js/danteStorage.js?v=c-1.2.85"></script>
@@ -110,7 +110,7 @@
     <script src="js/highlighterIRD.js?v=c-1.2.85"></script>
     <script src="js/danteAds.js?v=c-1.2.85"></script>
     <script src="js/dantePlanSala.js?v=c-1.2.85"></script>
-    <script src="js/danteRecorrido.js?v=c-1.3.19"></script>
+    <script src="js/danteRecorrido.js?v=c-1.3.33"></script>
     <script src="js/ojoBionico3D.js?v=c-1.2.85"></script>
     <script src="js/modoSniper.js?v=c-1.2.85"></script>
     <script src="js/danteNube.js?v=c-1.2.85"></script>
@@ -127,7 +127,7 @@
     <script src="js/hackeaCampaign.js?v=c-1.3.19"></script>
     <script src="js/hackeaArc.js?v=c-1.3.19"></script>
     <script src="js/hackeaPulso.js?v=c-1.3.19"></script>
-    <script src="js/hackeaMente.js?v=c-1.3.19"></script>
+    <script src="js/hackeaMente.js?v=c-1.3.33"></script>
     <script src="js/danteHubEngine.js?v=c-1.3.19"></script>
     <script src="js/danteExamWorkspace.js?v=c-1.3.32"></script>
     <script src="js/danteSemana.js?v=c-1.2.85"></script>
@@ -1705,12 +1705,20 @@
         #btnIniciarMisionUnificado .sala-cta-arrow {
             color: #94a3b8; font-size: 0.85rem; flex-shrink: 0; margin-left: auto;
         }
-        #btnHoldProgressFill {
+        #btnHoldProgressFill,
+        #btnHoldProgressFillRefuerzo {
             top: auto !important;
             height: 2px !important;
             background: rgba(34, 211, 238, 0.85) !important;
             border-radius: 0 0 14px 14px;
             box-shadow: none;
+        }
+        #btnAbrirRefuerzo.holding-active {
+            border-color: rgba(34, 211, 238, 0.55) !important;
+        }
+        #btnAbrirRefuerzo .sala-refuerzo-hold {
+            color: rgba(148, 163, 184, 0.9);
+            letter-spacing: 0.01em;
         }
         #btnIniciarMisionUnificado.btn-espera {
             background: rgba(18, 22, 26, 0.92) !important;
@@ -2014,57 +2022,66 @@
         }
         body.hackea-ritual-active #hackeaPortalCaption { opacity: 0; }
 
-        /* Coach post-diagnóstico: obliga a conocer la espiral */
-        #hackeaCoachObligatorio {
-            position: fixed; inset: 0; z-index: 12500;
-            display: none; align-items: flex-end; justify-content: center;
-            padding: 1.25rem 1rem 2rem;
-            background: radial-gradient(ellipse at 50% 28%, rgba(231,215,195,0.12), transparent 42%),
-                        rgba(3, 2, 1, 0.55);
+        /* Cue post-diagnóstico: sin modal; la espiral sigue tocable */
+        #hackeaCoachObligatorio { display: none !important; }
+        #hackeaCueEspiral {
             pointer-events: none;
-        }
-        #hackeaCoachObligatorio.is-on { display: flex; }
-        .hackea-coach-card {
-            width: min(22rem, 100%);
-            border-radius: 18px;
-            border: 1px solid rgba(231,215,195,0.35);
-            background: rgba(18, 16, 14, 0.96);
-            padding: 1.15rem 1.1rem 1.2rem;
-            text-align: center;
-            box-shadow: 0 24px 50px rgba(0,0,0,0.55);
-            pointer-events: auto;
-        }
-        .hackea-coach-kicker {
-            margin: 0 0 0.45rem;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
-            color: #99f6e4;
-        }
-        .hackea-coach-title {
-            margin: 0 0 0.55rem;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 1.15rem; font-weight: 650; color: #fafaf9;
-            letter-spacing: -0.02em; line-height: 1.3;
-        }
-        .hackea-coach-body {
-            margin: 0;
-            font-size: 0.9rem; line-height: 1.45; color: #d6d3d1;
-        }
-        .hackea-coach-body strong { color: #e7d7c3; font-weight: 650; }
-        body.hackea-coach-on #contenedorOrbeDante {
-            z-index: 12550;
             position: relative;
-            filter: drop-shadow(0 0 28px rgba(231, 215, 195, 0.55));
-            animation: hackeaCoachPulse 1.6s ease-in-out infinite;
+            z-index: 8;
+            width: min(18rem, 88%);
+            margin: 0.35rem auto 0.55rem;
+            padding: 0.65rem 0.8rem;
+            border-radius: 12px;
+            border: 1px solid rgba(34, 211, 238, 0.28);
+            background: rgba(8, 18, 22, 0.72);
+            text-align: center;
         }
-        body.hackea-coach-on #hackeaPortalCaption {
-            z-index: 12550;
-            color: #fde68a;
-            font-size: 10px;
+        #hackeaCueEspiral[hidden] { display: none !important; }
+        .hackea-cue-kicker {
+            margin: 0 0 0.25rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.62rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #67e8f9;
+            font-weight: 650;
         }
-        @keyframes hackeaCoachPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.04); }
+        .hackea-cue-txt {
+            margin: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.84rem;
+            line-height: 1.4;
+            color: #e2e8f0;
+        }
+        .hackea-cue-txt strong { color: #67e8f9; font-weight: 700; }
+        body.hackea-cue-espiral #contenedorOrbeDante {
+            z-index: 9;
+            position: relative;
+            box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.35), 0 0 36px rgba(34, 211, 238, 0.22);
+            animation: hackeaCuePulse 1.8s ease-in-out infinite;
+        }
+        body.hackea-cue-espiral #salaTituloHackea {
+            color: #67e8f9;
+        }
+        body.hackea-cue-espiral #hackeaPortalCaption {
+            color: #f8fafc;
+            font-size: 0.78rem;
+            display: block !important;
+        }
+        body.hackea-cue-espiral #hackeaPortalCaption .hackea-hold-hint {
+            display: block !important;
+            opacity: 1 !important;
+            color: #94a3b8;
+            margin-top: 0.2rem;
+        }
+        body.hackea-cue-espiral .sala-acciones,
+        body.hackea-cue-espiral .sala-puertas-grid {
+            opacity: 0.42;
+            transition: opacity 0.25s ease;
+        }
+        @keyframes hackeaCuePulse {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 18px rgba(34, 211, 238, 0.28)); }
+            50% { transform: scale(1.035); filter: drop-shadow(0 0 28px rgba(34, 211, 238, 0.42)); }
         }
 
         /* Hackea Sincronía — intro entre espiral y umbral */
@@ -5982,7 +5999,7 @@
                     <img src="assets/icons/dante-logo-icon.svg" alt="Dante OS Logo" class="w-6 h-6 rounded-md shadow-[0_0_12px_rgba(56,189,248,0.45)] border border-cyan-500/30 shrink-0 object-contain" />
                     <span class="font-mono font-bold text-xs tracking-wider text-white select-none whitespace-nowrap flex items-center gap-1.5">
                         DANTE OS
-                        <span id="badgeDanteVersion" class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">c-1.3.32</span>
+                        <span id="badgeDanteVersion" class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">c-1.3.33</span>
                     </span>
                 </a>
 
@@ -6090,11 +6107,16 @@
             </div>
 
             <div id="tarjetaTareaSala">
-                <button type="button" id="btnAbrirRefuerzo" class="sala-refuerzo-btn sin-tarea mt-0 w-full">
-                    <span class="sala-cta-dot" aria-hidden="true"></span>
-                    <span class="sala-cta-ico" aria-hidden="true"><i class="fa-solid fa-arrow-trend-up"></i></span>
-                    <span class="min-w-0 flex-1 text-left">Refuerzo · 5 preguntas</span>
-                    <span class="sala-cta-arrow" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>
+                <button type="button" id="btnAbrirRefuerzo" class="sala-refuerzo-btn sin-tarea mt-0 w-full relative overflow-hidden" data-refuerzo-modo="sin-tarea">
+                    <div id="btnHoldProgressFillRefuerzo" class="absolute left-0 bottom-0 pointer-events-none" style="width: 0%;"></div>
+                    <span class="relative z-10 flex flex-row items-center justify-between gap-2 w-full">
+                        <span class="sala-cta-dot" aria-hidden="true"></span>
+                        <span class="flex flex-col items-start justify-center gap-0.5 min-w-0 flex-1 text-left">
+                            <span>Refuerzo · 5 preguntas</span>
+                            <span id="txtRefuerzoSubprompt" data-reposo="Mantén presionado" class="text-[11px] sala-refuerzo-hold">Mantén presionado</span>
+                        </span>
+                        <span class="sala-cta-arrow" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>
+                    </span>
                 </button>
             </div>
 
@@ -6901,6 +6923,84 @@
             }
             if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', engancharSostener);
             else engancharSostener();
+        })();
+        (function() {
+            const HOLD_MS = 2000;
+            let holding = false;
+            let timer = null;
+            let raf = 0;
+            let start = 0;
+            let activeBtn = null;
+            const fill = function() { return document.getElementById('btnHoldProgressFillRefuerzo'); };
+            const soltar = function() {
+                holding = false;
+                if (timer) clearTimeout(timer);
+                if (raf) cancelAnimationFrame(raf);
+                timer = null;
+                raf = 0;
+                if (activeBtn) activeBtn.classList.remove('holding-active');
+                activeBtn = null;
+                const f = fill();
+                if (f) f.style.width = '0%';
+            };
+            const pintar = function() {
+                if (!holding) return;
+                const p = Math.min(1, (performance.now() - start) / HOLD_MS);
+                const f = fill();
+                if (f) f.style.width = (p * 100) + '%';
+                if (p < 1) raf = requestAnimationFrame(pintar);
+            };
+            document.addEventListener('click', function(ev) {
+                const btn = ev.target && ev.target.closest && ev.target.closest('#btnAbrirRefuerzo');
+                if (!btn) return;
+                const modo = btn.getAttribute('data-refuerzo-modo') || '';
+                if (modo === 'espera') {
+                    if (window.DanteRecorrido && typeof window.DanteRecorrido.decirEspera === 'function') {
+                        window.DanteRecorrido.decirEspera();
+                    }
+                } else if (modo === 'sin-tarea') {
+                    if (window.DanteRecorrido && typeof window.DanteRecorrido.decirSinTarea === 'function') {
+                        window.DanteRecorrido.decirSinTarea();
+                    }
+                }
+            }, true);
+            document.addEventListener('pointerdown', function(ev) {
+                const btn = ev.target && ev.target.closest && ev.target.closest('#btnAbrirRefuerzo');
+                if (!btn) return;
+                const modo = btn.getAttribute('data-refuerzo-modo') || '';
+                if (modo !== 'listo') return;
+                if (btn.disabled) return;
+                if (ev.pointerType === 'mouse' && ev.button !== 0) return;
+                ev.preventDefault();
+                holding = true;
+                activeBtn = btn;
+                btn.classList.add('holding-active');
+                start = performance.now();
+                try { btn.setPointerCapture(ev.pointerId); } catch (err) {}
+                try { if (navigator.vibrate) navigator.vibrate(12); } catch (err) {}
+                pintar();
+                timer = setTimeout(function() {
+                    timer = null;
+                    holding = false;
+                    if (activeBtn) activeBtn.classList.remove('holding-active');
+                    activeBtn = null;
+                    const f = fill();
+                    if (f) f.style.width = '100%';
+                    if (navigator.vibrate) navigator.vibrate(16);
+                    if (window.DanteRecorrido && typeof window.DanteRecorrido.abrirRefuerzo === 'function') {
+                        window.DanteRecorrido.abrirRefuerzo();
+                    }
+                }, HOLD_MS);
+            }, true);
+            const soltarVisual = function() {
+                if (!holding && !activeBtn) return;
+                soltar();
+            };
+            document.addEventListener('pointerup', soltarVisual, true);
+            document.addEventListener('pointercancel', soltarVisual, true);
+            document.addEventListener('contextmenu', function(ev) {
+                if (ev.target && ev.target.closest && ev.target.closest('#btnAbrirRefuerzo')) ev.preventDefault();
+            }, true);
         })();
         window.abrirAjustesEntorno = function(ev) {
             if (ev && ev.preventDefault) ev.preventDefault();

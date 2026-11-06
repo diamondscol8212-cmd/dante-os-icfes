@@ -209,19 +209,45 @@
         tarjeta.dataset.firma = firma;
         let htmlBtn;
         if (!tieneTarea) {
-          htmlBtn = '<button type="button" id="btnAbrirRefuerzo" class="sala-refuerzo-btn sin-tarea mt-0 w-full"><span class="sala-cta-ico" aria-hidden="true"><i class="fa-solid fa-arrow-trend-up"></i></span><span>Refuerzo · 5 preguntas</span></button>';
+          htmlBtn = ''
+            + '<button type="button" id="btnAbrirRefuerzo" class="sala-refuerzo-btn sin-tarea mt-0 w-full relative overflow-hidden" data-refuerzo-modo="sin-tarea">'
+            + '<div id="btnHoldProgressFillRefuerzo" class="absolute left-0 bottom-0 pointer-events-none" style="width:0%;"></div>'
+            + '<span class="relative z-10 flex flex-row items-center justify-between gap-2 w-full">'
+            + '<span class="sala-cta-dot" aria-hidden="true"></span>'
+            + '<span class="flex flex-col items-start justify-center gap-0.5 min-w-0 flex-1 text-left">'
+            + '<span>Refuerzo · 5 preguntas</span>'
+            + '<span id="txtRefuerzoSubprompt" data-reposo="Mantén presionado" class="text-[11px] sala-refuerzo-hold">Mantén presionado</span>'
+            + '</span>'
+            + '<span class="sala-cta-arrow" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>'
+            + '</span></button>';
         } else if (faltaTarjeta > 0) {
-          htmlBtn = '<button type="button" id="btnAbrirRefuerzo" class="sala-refuerzo-btn en-espera mt-0 w-full"><span class="sala-cta-ico" aria-hidden="true"><i class="fa-regular fa-clock"></i></span><span>Refuerzo · 5 preguntas</span><span class="sala-refuerzo-meta">Abre a las ' + reloj(faltaTarjeta) + '</span></button>';
+          htmlBtn = ''
+            + '<button type="button" id="btnAbrirRefuerzo" class="sala-refuerzo-btn en-espera btn-espera mt-0 w-full relative overflow-hidden" data-refuerzo-modo="espera">'
+            + '<div id="btnHoldProgressFillRefuerzo" class="absolute left-0 bottom-0 pointer-events-none" style="width:0%;"></div>'
+            + '<span class="relative z-10 flex flex-row items-center justify-between gap-2 w-full">'
+            + '<span class="sala-cta-dot" aria-hidden="true"></span>'
+            + '<span class="flex flex-col items-start justify-center gap-0.5 min-w-0 flex-1 text-left">'
+            + '<span>Refuerzo · 5 preguntas</span>'
+            + '<span id="txtRefuerzoSubprompt" class="text-[11px] sala-refuerzo-meta">Abre a las ' + reloj(faltaTarjeta) + '</span>'
+            + '</span>'
+            + '<span class="sala-cta-arrow" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>'
+            + '</span></button>';
         } else {
-          htmlBtn = '<button type="button" id="btnAbrirRefuerzo" class="sala-refuerzo-btn mt-0 w-full"><span class="sala-cta-ico" aria-hidden="true"><i class="fa-solid fa-arrow-trend-up"></i></span><span>Refuerzo · 5 preguntas</span><span class="sala-refuerzo-meta">' + (estado.tarea.nombre || '') + '</span></button>';
+          htmlBtn = ''
+            + '<button type="button" id="btnAbrirRefuerzo" class="sala-refuerzo-btn mt-0 w-full relative overflow-hidden" data-refuerzo-modo="listo">'
+            + '<div id="btnHoldProgressFillRefuerzo" class="absolute left-0 bottom-0 pointer-events-none" style="width:0%;"></div>'
+            + '<span class="relative z-10 flex flex-row items-center justify-between gap-2 w-full">'
+            + '<span class="sala-cta-dot" aria-hidden="true"></span>'
+            + '<span class="flex flex-col items-start justify-center gap-0.5 min-w-0 flex-1 text-left">'
+            + '<span>Refuerzo · 5 preguntas</span>'
+            + '<span id="txtRefuerzoSubprompt" data-reposo="Mantén presionado" class="text-[11px] sala-refuerzo-hold">Mantén presionado</span>'
+            + (estado.tarea.nombre ? '<span class="sala-refuerzo-meta">' + estado.tarea.nombre + '</span>' : '')
+            + '</span>'
+            + '<span class="sala-cta-arrow" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>'
+            + '</span></button>';
         }
         tarjeta.innerHTML = htmlBtn;
-        const btn = document.getElementById('btnAbrirRefuerzo');
-        if (btn) {
-          if (!tieneTarea) btn.onclick = decirSinTarea;
-          else if (faltaTarjeta > 0) btn.onclick = decirEspera;
-          else btn.onclick = abrirRefuerzo;
-        }
+        // Apertura por sostener (delegación en index.html). Click corto: aviso.
       } else if (tieneTarea && faltaTarjeta > 0) {
         const btn = document.getElementById('btnAbrirRefuerzo');
         const meta = btn && btn.querySelector('.sala-refuerzo-meta');
@@ -328,6 +354,7 @@
     cerrarRefuerzo: cerrarRefuerzo,
     abrirRefuerzo: abrirRefuerzo,
     decirEspera: decirEspera,
+    decirSinTarea: decirSinTarea,
     cerrarEspera: cerrarEspera,
     pintar: pintar
   };

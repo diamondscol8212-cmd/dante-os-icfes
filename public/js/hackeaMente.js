@@ -1338,33 +1338,54 @@
         this.hide();
         return;
       }
-      let root = document.getElementById('hackeaCoachObligatorio');
-      if (!root) {
-        root = document.createElement('div');
-        root.id = 'hackeaCoachObligatorio';
-        root.innerHTML = `
-          <div class="hackea-coach-card" role="dialog" aria-labelledby="hackeaCoachTitle">
-            <p class="hackea-coach-kicker">Método obligatorio</p>
-            <h2 class="hackea-coach-title" id="hackeaCoachTitle">Hackea tu mente</h2>
-            <p class="hackea-coach-body">
-              Ya terminaste el diagnóstico. Ahora debes conocer el método.<br><br>
-              <strong>Presiona la espiral y mantén</strong> el dedo unos segundos (no solo un toque).
-              Ahí empieza Hackea tu mente.
-            </p>
-          </div>`;
-        document.body.appendChild(root);
+      // Sin modal bloqueante: la espiral debe poder sostenerse
+      const viejo = document.getElementById('hackeaCoachObligatorio');
+      if (viejo) {
+        viejo.classList.remove('is-on');
+        try { viejo.remove(); } catch (_) { viejo.style.display = 'none'; }
       }
-      root.classList.add('is-on');
-      document.body.classList.add('hackea-coach-on');
+      document.body.classList.remove('hackea-coach-on');
+      document.body.classList.add('hackea-cue-espiral');
+
+      const titulo = document.getElementById('salaTituloHackea');
+      if (titulo) titulo.textContent = 'Siguiente paso';
+
       const cap = document.getElementById('hackeaPortalCaption');
-      if (cap && !cap.classList.contains('hackea-breach-cap')) {
-        cap.innerHTML = 'Hackea tu mente<span class="hackea-hold-hint">Mantén presionada la espiral</span>';
+      if (cap) {
+        cap.classList.remove('sala-caption-base');
+        cap.innerHTML = 'Mantén presionada la espiral<span class="hackea-hold-hint">Así entra Hackea tu mente</span>';
       }
+
+      let tip = document.getElementById('hackeaCueEspiral');
+      if (!tip) {
+        tip = document.createElement('div');
+        tip.id = 'hackeaCueEspiral';
+        tip.setAttribute('aria-live', 'polite');
+        tip.innerHTML = '<p class="hackea-cue-kicker">Método obligatorio</p><p class="hackea-cue-txt">Presiona la espiral y <strong>mantén</strong> unos segundos.</p>';
+        const ancla = document.getElementById('hackeaPortalCaption')
+          || document.getElementById('salaTituloHackea')
+          || document.getElementById('contenedorOrbeDante');
+        if (ancla && ancla.parentNode) {
+          ancla.parentNode.insertBefore(tip, ancla.nextSibling);
+        } else {
+          document.body.appendChild(tip);
+        }
+      }
+      tip.hidden = false;
     },
     hide: function () {
       const root = document.getElementById('hackeaCoachObligatorio');
-      if (root) root.classList.remove('is-on');
-      document.body.classList.remove('hackea-coach-on');
+      if (root) {
+        root.classList.remove('is-on');
+        try { root.remove(); } catch (_) { root.style.display = 'none'; }
+      }
+      const tip = document.getElementById('hackeaCueEspiral');
+      if (tip) tip.hidden = true;
+      document.body.classList.remove('hackea-coach-on', 'hackea-cue-espiral');
+      const titulo = document.getElementById('salaTituloHackea');
+      if (titulo && /siguiente paso/i.test(titulo.textContent || '')) {
+        titulo.textContent = 'Hackea tu mente';
+      }
     },
     maybeShow: function () {
       try {
