@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" fill="none">
+  <!-- Isotipo Dante OS limpio: sin fondo, trazo claro -->
+  <g transform="translate(10, 0)" fill="#f4f1ea">
+    <path d="M 75 320 L 85 240 L 95 320 Z"/>
+    <circle cx="85" cy="240" r="14"/>
+    <path d="M 81 240 L 83 195 L 87 195 L 89 240 Z"/>
+    <circle cx="85" cy="195" r="9"/>
+    <path d="M 83 195 L 85 140 L 87 195 Z"/>
+    <path d="M 103 320 L 115 130 L 122 320 Z" opacity="0.95"/>
+    <rect x="132" y="70" width="7" height="250" rx="3.5"/>
+    <rect x="165" y="70" width="7" height="250" rx="3.5"/>
+    <circle cx="152" cy="135" r="22"/>
+    <circle cx="152" cy="245" r="22"/>
+    <path d="M 182 85 L 295 320 L 182 320 Z"/>
+    <rect x="65" y="318" width="240" height="4" rx="2"/>
+  </g>
+</svg>
