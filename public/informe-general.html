@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informe general · Dante OS</title>
+    <meta name="description" content="Informe general de avance en Dante OS para la familia. Es una estimación de la app, no el puntaje oficial del ICFES.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Source+Serif+4:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --rp-ink: #0f172a; --rp-muted: #64748b; --rp-line: #e2e8f0; --rp-card: #ffffff;
+            --rp-bg: #f1f5f9; --rp-blue: #1e3a5f; --rp-accent: #1d4ed8; --rp-green: #15803d;
+            --rp-orange: #c2410c; --fondo: #0b1220;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: radial-gradient(circle at top, #152238 0%, var(--fondo) 55%);
+            color: #e2e8f0;
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+        }
+        header {
+            position: sticky; top: 0; z-index: 2;
+            background: rgba(11, 18, 32, 0.92);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+            backdrop-filter: blur(10px);
+        }
+        .barra, main { width: min(28.5rem, calc(100% - 1.5rem)); margin: 0 auto; }
+        .barra {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 0.75rem; padding: 0.85rem 0;
+        }
+        .marca { display: flex; align-items: center; gap: 0.7rem; }
+        .marca b {
+            width: 2.15rem; height: 2.15rem; border-radius: 0.7rem;
+            display: grid; place-items: center; background: #4ade80; color: #052e16; font-size: 0.95rem;
+        }
+        .marca strong { display: block; font-size: 0.82rem; letter-spacing: 0.04em; color: #f8fafc; }
+        .marca span { color: #94a3b8; font-size: 0.72rem; }
+        .acciones { display: flex; gap: 0.4rem; }
+        .acciones a, .acciones button {
+            border: 1px solid rgba(148, 163, 184, 0.28);
+            background: rgba(22, 26, 36, 0.95); color: #e2e8f0;
+            border-radius: 999px; padding: 0.4rem 0.7rem;
+            font: inherit; font-size: 0.72rem; text-decoration: none; cursor: pointer;
+        }
+        main { padding: 1.1rem 0 2.4rem; }
+        .reporte-papel {
+            color: var(--rp-ink); background: var(--rp-bg); border: 1px solid var(--rp-line);
+            border-radius: 1rem; padding: 1.15rem 1rem 1.35rem; margin: 0;
+            text-align: left; box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+        }
+        .rp-brand {
+            display: flex; align-items: center; gap: 0.55rem;
+            font-size: 0.68rem; font-weight: 750; letter-spacing: 0.08em;
+            text-transform: uppercase; color: var(--rp-blue);
+        }
+        .rp-brand-mark {
+            font-family: 'Source Serif 4', 'Times New Roman', serif;
+            font-weight: 800; font-size: 0.95rem; letter-spacing: 0.04em;
+        }
+        .rp-brand-sep { width: 1px; height: 0.85rem; background: #cbd5e1; }
+        .rp-brand-sub { color: #94a3b8; font-weight: 650; }
+        .rp-title {
+            margin: 0.85rem 0 0.35rem; font-family: 'Source Serif 4', 'Times New Roman', serif;
+            font-size: 1.45rem; font-weight: 700; line-height: 1.2; color: var(--rp-blue);
+        }
+        .rp-lead { margin: 0 0 1rem; font-size: 0.86rem; line-height: 1.45; color: var(--rp-muted); }
+        .rp-sec { margin-top: 1.15rem; padding-top: 1rem; border-top: 1px solid var(--rp-line); }
+        .rp-sec-h {
+            display: flex; align-items: center; gap: 0.4rem;
+            margin: 0 0 0.75rem; font-size: 0.92rem; font-weight: 750; color: var(--rp-ink);
+        }
+        .rp-card {
+            background: var(--rp-card); border: 1px solid var(--rp-line);
+            border-radius: 0.85rem; padding: 0.85rem 0.9rem;
+        }
+        .rp-metrics { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.45rem; text-align: center; }
+        .rp-metric-lbl {
+            display: block; font-size: 0.65rem; font-weight: 700; color: var(--rp-muted);
+            text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 0.2rem;
+        }
+        .rp-metric-val {
+            display: block; font-family: 'Source Serif 4', Georgia, serif;
+            font-size: 1.25rem; font-weight: 700; line-height: 1.1; color: var(--rp-blue);
+        }
+        .rp-metric-val.ok { color: var(--rp-green); }
+        .rp-metric-val.gap { color: var(--rp-orange); }
+        .rp-metric-sub { display: block; margin-top: 0.15rem; font-size: 0.68rem; color: #94a3b8; }
+        .rp-area { display: grid; gap: 0.55rem; }
+        .rp-area-row { display: grid; gap: 0.25rem; }
+        .rp-area-top { display: flex; justify-content: space-between; align-items: center; gap: 0.4rem; }
+        .rp-area-name { font-size: 0.8rem; font-weight: 700; color: #1e293b; }
+        .rp-area-meta { font-size: 0.68rem; font-weight: 650; color: var(--rp-muted); white-space: nowrap; }
+        .rp-bar { height: 0.55rem; border-radius: 999px; background: #e2e8f0; overflow: hidden; }
+        .rp-bar > span { display: block; height: 100%; border-radius: 999px; }
+        .rp-badge {
+            font-size: 0.62rem; font-weight: 700; padding: 0.12rem 0.4rem;
+            border-radius: 999px; border: 1px solid transparent;
+        }
+        .rp-badge.ok { color: #166534; background: #dcfce7; border-color: #bbf7d0; }
+        .rp-badge.mid { color: #92400e; background: #ffedd5; border-color: #fed7aa; }
+        .rp-badge.low { color: #9f1239; background: #ffe4e6; border-color: #fecdd3; }
+        .rp-manana-txt { font-size: 0.9rem; line-height: 1.5; color: #1e293b; margin: 0; font-weight: 550; }
+        .aviso {
+            margin: 1rem 0 0; font-size: 0.75rem; line-height: 1.45; color: #64748b;
+        }
+        .vacio {
+            background: rgba(22, 26, 36, 0.95); border: 1px solid rgba(148, 163, 184, 0.22);
+            border-radius: 1rem; padding: 1.25rem 1.1rem; color: #cbd5e1;
+        }
+        .vacio h1 { margin: 0 0 0.45rem; font-size: 1.2rem; color: #f8fafc; }
+        .vacio p { margin: 0; color: #94a3b8; line-height: 1.45; font-size: 0.9rem; }
+        @media (max-width: 380px) { .rp-metrics { grid-template-columns: 1fr; } }
+        @media print {
+            body { background: #fff; }
+            header, .no-print { display: none !important; }
+            .barra, main { width: 100%; }
+            .reporte-papel { box-shadow: none; }
+        }
+    </style>
+</head>
+<body>
+    <header class="no-print">
+        <div class="barra">
+            <div class="marca">
+                <b>D</b>
+                <div>
+                    <strong>DANTE OS</strong>
+                    <span>Informe general · Saber 11°</span>
+                </div>
+            </div>
+            <div class="acciones">
+                <button type="button" onclick="window.print()">Imprimir</button>
+            </div>
+        </div>
+    </header>
+    <main id="raizInforme">
+        <div class="vacio">
+            <h1>Cargando informe…</h1>
+            <p>Estamos abriendo el informe general compartido.</p>
+        </div>
+    </main>
+    <script>
+        function esc(v) {
+            return String(v == null ? '' : v)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        function decodificarToken(raw) {
+            if (!raw) return null;
+            try {
+                const json = decodeURIComponent(escape(atob(raw)));
+                return JSON.parse(json);
+            } catch (e1) {
+                try { return JSON.parse(decodeURIComponent(atob(raw))); } catch (e2) { return null; }
+            }
+        }
+
+        function barrasAreas(areas) {
+            const lista = Array.isArray(areas) ? areas : [];
+            if (!lista.length) return '';
+            return lista.map((a) => {
+                const pct = Math.max(0, Math.min(100, Math.round(Number(a.pct) || 0)));
+                let badgeText = 'Fortaleza';
+                let badgeClass = 'ok';
+                if (pct < 40) { badgeText = 'Para reforzar'; badgeClass = 'low'; }
+                else if (pct < 70) { badgeText = 'En progreso'; badgeClass = 'mid'; }
+                const k = String(a.key || '').toLowerCase();
+                let color = '#334155';
+                if (k.includes('lect')) color = '#7c3aed';
+                else if (k.includes('mate')) color = '#2563eb';
+                else if (k.includes('cien') || k.includes('natur')) color = '#16a34a';
+                else if (k.includes('social')) color = '#ea580c';
+                else if (k.includes('ingl')) color = '#64748b';
+                return (
+                    '<div class="rp-area-row">' +
+                    '<div class="rp-area-top"><span class="rp-area-name">' + esc(a.name || a.key) + '</span>' +
+                    '<span class="rp-badge ' + badgeClass + '">' + badgeText + '</span></div>' +
+                    '<div class="rp-bar"><span style="width:' + Math.max(4, pct) + '%;background:' + color + ';"></span></div>' +
+                    '<div class="rp-area-meta">' + pct + '%</div></div>'
+                );
+            }).join('');
+        }
+
+        function pintar(snap) {
+            const raiz = document.getElementById('raizInforme');
+            if (!snap || snap.v !== 2) {
+                raiz.innerHTML = '<div class="vacio"><h1>Informe no disponible</h1><p>Este enlace no trae un informe general válido. Pide que lo vuelvan a compartir desde el perfil.</p></div>';
+                return;
+            }
+
+            const nombre = String(snap.n || '').trim() || 'el estudiante';
+            const proy = snap.proy || {};
+            const hackea = snap.hackea || {};
+            const sim = snap.sim || {};
+            const train = snap.train || {};
+            const ruta = snap.ruta || {};
+            const scoreTxt = proy.scoreTxt || null;
+            const meta = proy.meta != null ? Number(proy.meta) : null;
+            const carreraClean = proy.carrera || '';
+            const brecha = proy.brecha != null ? Number(proy.brecha) : null;
+            const racha = Number(proy.racha) || 0;
+            const fechaTxt = snap.fecha || new Date().toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' });
+
+            let hackeaHtml = '';
+            if (!hackea.calibrated && !(hackea.sessions > 0)) {
+                hackeaHtml = '<p class="rp-manana-txt">Aún no ha hecho <strong>Hackea tu mente</strong>. Ese ejercicio ayuda a personalizar cómo le enseña Dante.</p>';
+            } else {
+                const vecesTxt = hackea.sessions === 1 ? '1 vez' : ((hackea.sessions || 0) + ' veces');
+                let punto = '';
+                if (hackea.day >= 15) punto = 'Ya completó los 15 días de la campaña.';
+                else if (hackea.day > 0) punto = 'Va en el día <strong>' + hackea.day + ' de 15</strong>. El siguiente paso es el día ' + (hackea.nextDay || (hackea.day + 1)) + '.';
+                else punto = 'Ya lo empezó. Puede seguir desde la sala.';
+                hackeaHtml = '<p class="rp-manana-txt">Ya realizó Hackea tu mente <strong>' + vecesTxt + '</strong>. ' + punto + '</p>';
+            }
+
+            let simHtml = '';
+            let simAreasHtml = '';
+            if (!sim.estado || (sim.estado !== 'abierto' && sim.estado !== 'listo')) {
+                simHtml = '<p class="rp-manana-txt">Aún no ha hecho el <strong>simulacro completo</strong>. Cuando lo termine, aquí verás su resultado principal.</p>';
+            } else if (sim.estado === 'abierto') {
+                const n = Math.min(254, Math.max(1, (Number(sim.indice) || 0) + 1));
+                const marcadas = Number(sim.marcadas) || 0;
+                simHtml = '<p class="rp-manana-txt">Tiene un simulacro <strong>en curso</strong>. Va en la pregunta ' + n + ' de 254 y lleva ' + marcadas + ' marcada' + (marcadas === 1 ? '' : 's') + '. Aún no hay resultado final.</p>';
+            } else if (typeof sim.global === 'number' && Number.isFinite(sim.global)) {
+                simHtml = '<p class="rp-manana-txt">Ya hizo el simulacro completo. Su resultado principal fue <strong>' + sim.global + ' / 500</strong>.</p>';
+                const bars = barrasAreas(sim.areas || []);
+                if (bars) simAreasHtml = '<div class="rp-card rp-area" style="margin-top:0.65rem">' + bars + '</div>';
+            } else {
+                simHtml = '<p class="rp-manana-txt">Terminó un simulacro, pero todavía no hay un puntaje global completo para mostrar.</p>';
+            }
+
+            let trainHtml = '';
+            if (!(train.totalSesiones > 0) && !train.diagHecho && !(train.totalRespuestas > 0)) {
+                trainHtml = '<p class="rp-manana-txt">Aún no hay sesiones de entrenamiento o refuerzo registradas.</p>';
+            } else {
+                const partes = [];
+                if (train.totalSesiones > 0) partes.push('Ha completado <strong>' + train.totalSesiones + '</strong> sesión' + (train.totalSesiones === 1 ? '' : 'es') + ' registrada' + (train.totalSesiones === 1 ? '' : 's') + '.');
+                if (train.diags || train.diagHecho) partes.push(train.diags > 0 ? (train.diags + ' de diagnóstico inicial.') : 'Ya completó el diagnóstico inicial.');
+                if (train.diarios) partes.push(train.diarios + ' de entrenamiento diario.');
+                if (train.refuerzos) partes.push(train.refuerzos + ' de refuerzo.');
+                if (train.totalRespuestas > 0) partes.push('Lleva <strong>' + (train.totalAciertos || 0) + ' aciertos</strong> en ' + train.totalRespuestas + ' preguntas guardadas.');
+                if (train.precisionGeneral != null) partes.push('Su precisión general acumulada es del <strong>' + train.precisionGeneral + '%</strong>.');
+                if (train.fuerte && train.debil && train.fuerte.key !== train.debil.key) {
+                    partes.push('Su área más fuerte ahora es <strong>' + esc(train.fuerte.name) + '</strong> (' + Math.round(train.fuerte.pct) + '%). La que más necesita reforzar es <strong>' + esc(train.debil.name) + '</strong> (' + Math.round(train.debil.pct) + '%).');
+                } else if (train.fuerte) {
+                    partes.push('Por ahora destaca <strong>' + esc(train.fuerte.name) + '</strong> (' + Math.round(train.fuerte.pct) + '%).');
+                }
+                trainHtml = '<p class="rp-manana-txt">' + partes.join(' ') + '</p>';
+            }
+            const areaRows = barrasAreas(train.areas || []);
+            const areasBloque = areaRows
+                ? '<div class="rp-card rp-area" style="margin-top:0.65rem">' + areaRows + '</div>'
+                : '<div class="rp-card" style="margin-top:0.65rem"><p class="rp-manana-txt">Aún no hay suficiente información por área para mostrar barras de progreso.</p></div>';
+
+            let rutaHtml = '';
+            if (ruta.listaCompleta) {
+                const bits = ['Ya tiene orientación vocacional suficiente para verla.'];
+                if (Array.isArray(ruta.palabras) && ruta.palabras.length) bits.push('Su perfil se parece más a alguien ' + ruta.palabras.map(esc).join(', ') + '.');
+                if (ruta.carrera) bits.push('La carrera que está explorando es <strong>' + esc(ruta.carrera) + '</strong>.');
+                if (Array.isArray(ruta.otras) && ruta.otras.length) bits.push('También se parecen: ' + ruta.otras.map(esc).join(', ') + '.');
+                if (ruta.informe) bits.push(esc(String(ruta.informe).slice(0, 420)));
+                rutaHtml = '<p class="rp-manana-txt">' + bits.join(' ') + '</p>';
+            } else if ((ruta.elecciones > 0) || ruta.carrera || ruta.lista) {
+                rutaHtml = '<p class="rp-manana-txt">Su ruta vocacional <strong>aún está en construcción</strong>. Va en el día ' + (ruta.dia || 1) + ' de 6.' + (ruta.carrera ? ' Ya marcó interés en <strong>' + esc(ruta.carrera) + '</strong>.' : '') + '</p>';
+            } else {
+                rutaHtml = '<p class="rp-manana-txt">Aún no hay suficiente información para mostrar la ruta vocacional.</p>';
+            }
+
+            const resumenPartes = [];
+            if (scoreTxt) {
+                resumenPartes.push('Su proyección actual es de <strong>' + esc(scoreTxt) + ' / 500</strong>.');
+                if (meta != null) {
+                    if (brecha === 0) resumenPartes.push('Ya alcanzó la meta de ' + meta + ' puntos' + (carreraClean ? ' para ' + esc(carreraClean) : '') + '.');
+                    else if (brecha != null) resumenPartes.push('Le faltan <strong>' + brecha + ' puntos</strong> para la meta de ' + meta + (carreraClean ? ' (' + esc(carreraClean) + ')' : '') + '.');
+                } else {
+                    resumenPartes.push('Cuando elija una carrera y una meta, aquí verás la brecha con claridad.');
+                }
+            } else {
+                resumenPartes.push('Todavía no hay una proyección de puntaje.');
+            }
+            if (racha > 0) resumenPartes.push('Su racha actual es de <strong>' + racha + ' día' + (racha === 1 ? '' : 's') + '</strong> seguidos.');
+            else resumenPartes.push('Todavía no tiene una racha activa.');
+
+            let siguiente = '';
+            if (train.totalSesiones > 0 && train.debil) siguiente = 'Conviene seguir reforzando <strong>' + esc(train.debil.name) + '</strong>, que es su área más débil ahora.';
+            else if (!hackea.calibrated) siguiente = 'Un buen siguiente paso es hacer <strong>Hackea tu mente</strong>.';
+            else if (!ruta.listaCompleta) siguiente = 'Conviene seguir la <strong>ruta vocacional</strong> para completar la orientación.';
+            else if (sim.estado !== 'listo') siguiente = 'Cuando quiera medir el examen completo, puede abrir el <strong>simulacro</strong>.';
+            else siguiente = 'Conviene seguir con el entrenamiento diario para subir la proyección con constancia.';
+            resumenPartes.push(siguiente);
+
+            raiz.innerHTML = `
+                <article class="reporte-papel">
+                    <div class="rp-brand">
+                        <span class="rp-brand-mark">ICFES</span>
+                        <span class="rp-brand-sep" aria-hidden="true"></span>
+                        <span class="rp-brand-sub">Informe general · ${esc(fechaTxt)}</span>
+                    </div>
+                    <h2 class="rp-title">Informe general de ${esc(nombre)}</h2>
+                    <p class="rp-lead">Este es el resumen completo de su avance real en Dante OS. La misma información que ve el estudiante en su informe general.</p>
+
+                    <section class="rp-sec">
+                        <h3 class="rp-sec-h">Hackea tu mente</h3>
+                        <div class="rp-card">${hackeaHtml}</div>
+                    </section>
+
+                    <section class="rp-sec">
+                        <h3 class="rp-sec-h">Simulacro completo</h3>
+                        <div class="rp-card">${simHtml}</div>
+                        ${simAreasHtml}
+                    </section>
+
+                    <section class="rp-sec">
+                        <h3 class="rp-sec-h">Entrenamiento y refuerzos</h3>
+                        <div class="rp-card">${trainHtml}</div>
+                        ${areasBloque}
+                    </section>
+
+                    <section class="rp-sec">
+                        <h3 class="rp-sec-h">Ruta vocacional</h3>
+                        <div class="rp-card">${rutaHtml}</div>
+                    </section>
+
+                    <section class="rp-sec">
+                        <h3 class="rp-sec-h">Proyección y resumen</h3>
+                        <div class="rp-card">
+                            <div class="rp-metrics">
+                                <div>
+                                    <span class="rp-metric-lbl">Proyección</span>
+                                    <span class="rp-metric-val ok">${scoreTxt ? esc(scoreTxt) : '—'}</span>
+                                    <span class="rp-metric-sub">sobre 500</span>
+                                </div>
+                                <div>
+                                    <span class="rp-metric-lbl">Meta</span>
+                                    <span class="rp-metric-val">${meta != null ? meta : '—'}</span>
+                                    <span class="rp-metric-sub">sobre 500</span>
+                                </div>
+                                <div>
+                                    <span class="rp-metric-lbl">Brecha</span>
+                                    <span class="rp-metric-val gap">${brecha == null ? '—' : ('-' + brecha + ' pts')}</span>
+                                    <span class="rp-metric-sub">${brecha == null ? 'Elige meta para verla' : ('Le faltan ' + brecha + ' puntos')}</span>
+                                </div>
+                            </div>
+                            <p class="rp-manana-txt" style="margin-top:0.85rem">${resumenPartes.join(' ')}</p>
+                        </div>
+                    </section>
+
+                    <p class="aviso">Estimación de Dante OS a partir de lo practicado. No es el puntaje oficial del ICFES.</p>
+                </article>`;
+        }
+
+        (function init() {
+            const params = new URLSearchParams(window.location.search);
+            const snap = decodificarToken(params.get('token'));
+            pintar(snap);
+        })();
+    </script>
+</body>
+</html>

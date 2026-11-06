@@ -9,7 +9,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="assets/icons/icon-192.svg">
     <link rel="apple-touch-icon" href="assets/icons/icon-192.svg">
-    <title>Dante OS · Tu informe c-1.3.49</title>
+    <title>Dante OS · Tu informe c-1.3.50</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Serif+4:wght@600;700;800&display=swap">
 
@@ -20,15 +20,15 @@
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="theme.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/danteCacheVersion.js?v=c-1.3.49"></script>
-    <script src="js/danteNube.js?v=c-1.3.49"></script>
-    <script src="js/danteRegistro.js?v=c-1.3.49"></script>
+    <script src="js/danteCacheVersion.js?v=c-1.3.50"></script>
+    <script src="js/danteNube.js?v=c-1.3.50"></script>
+    <script src="js/danteRegistro.js?v=c-1.3.50"></script>
     <script src="js/danteVectorIcons.js"></script>
     <script src="js/danteStorage.js"></script>
     <script src="js/streakManager.js?v=23.1.2"></script>
     <script src="js/rutaSimulacroEngine.js"></script>
     <script src="js/danteRadarEngine.js"></script>
-    <script src="js/danteTutorEngine.js?v=c-1.3.49"></script>
+    <script src="js/danteTutorEngine.js?v=c-1.3.50"></script>
 
     <style>
         #bentoContainer { display: flex; flex-direction: column; gap: 0.95rem; }
@@ -1435,7 +1435,7 @@
         </div>
         <div class="perfil-hdr-tag-wrap">
             <span class="perfil-hdr-tag" id="lblHdrProyeccionTag">PROYECCIÓN 2026</span>
-            <span id="badgeDanteVersion" class="perfil-hdr-ver">c-1.3.49</span>
+            <span id="badgeDanteVersion" class="perfil-hdr-ver">c-1.3.50</span>
         </div>
         <div class="relative flex items-center gap-2.5 shrink-0">
             <button type="button" id="badgeRacha" onclick="if(window.StreakManager) StreakManager.abrirModalRacha()" class="flex items-center gap-1.5 cursor-pointer bg-transparent border-0 p-0 text-amber-400 font-mono text-xs font-black transition-transform hover:scale-105 active:scale-95 shrink-0 select-none" title="Ver Racha Real de Días">
@@ -1452,7 +1452,7 @@
                     <svg class="w-4 h-4 shrink-0 text-emerald-400 fill-current" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.969.541 1.831.819 2.796.819 3.18 0 5.767-2.587 5.767-5.766.001-3.181-2.585-5.766-5.767-5.766zm6.634 5.766c-.001 3.659-2.977 6.635-6.635 6.635-1.127 0-2.226-.291-3.197-.842l-3.533.927.943-3.447c-.613-1.026-.948-2.208-.947-3.273.001-3.658 2.977-6.635 6.634-6.635 3.657 0 6.635 2.977 6.635 6.635zm-2.73 1.897c-.151-.076-.893-.441-1.032-.491-.138-.05-.239-.075-.339.076-.1.151-.389.491-.477.592-.088.101-.176.113-.327.038-.151-.076-.639-.235-1.217-.751-.45-.401-.754-.897-.842-1.048-.088-.151-.009-.233.067-.308.068-.068.151-.176.226-.264.076-.088.101-.151.151-.252.05-.101.025-.189-.013-.264-.038-.076-.339-.817-.465-1.12-.123-.294-.248-.254-.339-.258-.088-.004-.189-.005-.289-.005-.101 0-.264.038-.402.189-.138.151-.528.516-.528 1.258 0 .742.541 1.458.616 1.559.076.101 1.065 1.625 2.58 2.278.36.155.641.248.86.318.362.115.691.099.951.06.29-.044.893-.365 1.019-.717.126-.352.126-.654.088-.717-.038-.063-.138-.101-.289-.176z"/></svg>
                     <span>Compartir con tus padres</span>
                 </button>
-                <a href="/boletin" target="_blank" onclick="PerfilEstudiante.toggleMenuHeader()" class="w-full px-3 py-2 text-left rounded-xl hover:bg-slate-900 text-cyan-300 flex items-center gap-2 block">
+                <a href="/informe-general" target="_blank" onclick="PerfilEstudiante.toggleMenuHeader()" class="w-full px-3 py-2 text-left rounded-xl hover:bg-slate-900 text-cyan-300 flex items-center gap-2 block">
                     <svg class="w-4 h-4 shrink-0 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M7 12h10"></path><path d="M12 7v10"></path></svg>
                     <span>Ver el boletín</span>
                 </a>
@@ -3111,63 +3111,125 @@
                 elAreas.innerHTML = html;
             }
 
-            static generarTokenBoletin() {
+            static _nombreEstudianteParaPadres() {
+                const id = String(STUDENT_ID || '');
+                const aliasEl = document.getElementById('ui-alias-box');
+                const desdeUi = aliasEl ? String(aliasEl.textContent || '').replace(/\s+/g, ' ').trim() : '';
+                const nombreGuardado = ['dante_nombre', 'dante_student_name', 'dante_user_name']
+                    .map((clave) => localStorage.getItem(clave) || '')
+                    .map((texto) => texto.replace(/\s+/g, ' ').trim())
+                    .find((texto) => texto && texto.toLowerCase() !== id.toLowerCase() && !/^\d+$/.test(texto) && !texto.includes('@')) || '';
+                const candidato = (desdeUi && desdeUi.toLowerCase() !== id.toLowerCase() && !/^\d+$/.test(desdeUi) && !desdeUi.includes('@'))
+                    ? desdeUi
+                    : nombreGuardado;
+                return (candidato || 'tu hijo/a').slice(0, 60);
+            }
+
+            static _construirSnapshotInformeGeneral() {
+                const hackea = this._leerHackeaReal();
+                const simRaw = this._leerSimulacroReal();
+                const train = this._leerEntrenamientoReal();
+                const ruta = this._leerRutaVocacionalReal();
+                const proy = this._leerProyeccionReal();
+                const simEstado = simRaw && simRaw.estado ? simRaw.estado : null;
+                const simResultado = (simRaw && simRaw.resultado) || {};
+                const simAreas = this._normalizarAreasPct(simResultado.areas || {}).map((a) => ({
+                    key: a.key, name: a.name, pct: a.pct
+                }));
+                const trainAreas = (train.areas || []).map((a) => ({ key: a.key, name: a.name, pct: a.pct }));
+                return {
+                    v: 2,
+                    n: this._nombreEstudianteParaPadres(),
+                    fecha: new Date().toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' }),
+                    t: Date.now(),
+                    proy: {
+                        scoreTxt: proy.scoreTxt || null,
+                        meta: proy.meta != null ? proy.meta : null,
+                        carrera: proy.carreraClean || '',
+                        brecha: proy.brecha != null ? proy.brecha : null,
+                        racha: Number(proy.racha) || 0
+                    },
+                    hackea: {
+                        calibrated: !!hackea.calibrated,
+                        sessions: Number(hackea.sessions) || 0,
+                        day: Number(hackea.day) || 0,
+                        nextDay: Number(hackea.nextDay) || 1
+                    },
+                    sim: {
+                        estado: simEstado,
+                        global: (typeof simResultado.global === 'number' && Number.isFinite(simResultado.global)) ? simResultado.global : null,
+                        areas: simAreas,
+                        indice: Number(simRaw && simRaw.indice) || 0,
+                        marcadas: Array.isArray(simRaw && simRaw.respuestas) ? simRaw.respuestas.filter((r) => r && r.id).length : 0
+                    },
+                    train: {
+                        totalSesiones: Number(train.totalSesiones) || 0,
+                        diags: Number(train.diags) || 0,
+                        diarios: Number(train.diarios) || 0,
+                        refuerzos: Number(train.refuerzos) || 0,
+                        diagHecho: !!train.diagHecho,
+                        precisionGeneral: train.precisionGeneral != null ? train.precisionGeneral : null,
+                        totalRespuestas: Number(train.totalRespuestas) || 0,
+                        totalAciertos: Number(train.totalAciertos) || 0,
+                        areas: trainAreas,
+                        fuerte: train.fuerte ? { key: train.fuerte.key, name: train.fuerte.name, pct: train.fuerte.pct } : null,
+                        debil: train.debil ? { key: train.debil.key, name: train.debil.name, pct: train.debil.pct } : null
+                    },
+                    ruta: {
+                        elecciones: Number(ruta.elecciones) || 0,
+                        lista: !!ruta.lista,
+                        listaCompleta: !!ruta.listaCompleta,
+                        dia: Number(ruta.dia) || 1,
+                        carrera: ruta.carrera || '',
+                        palabras: Array.isArray(ruta.palabras) ? ruta.palabras.slice(0, 3) : [],
+                        otras: Array.isArray(ruta.otras) ? ruta.otras.slice(0, 3) : [],
+                        informe: ruta.informe ? String(ruta.informe).slice(0, 420) : ''
+                    }
+                };
+            }
+
+            static generarTokenInformeGeneral() {
                 try {
-                    const score = parseInt(localStorage.getItem('dante_score_proyectado') || '0', 10);
-                    const pacto = localStorage.getItem('dante_pacto_meta');
-                    const metaVal = pacto === '300_BASE' ? 300 : (pacto === '380_ELITE' ? 380 : 0);
-                    const metaCar = localStorage.getItem('dante_carrera_objetivo') || '';
-                    const areas = {};
-                    try {
-                        const conteo = JSON.parse(localStorage.getItem('dante_area_conteo') || '{}') || {};
-                        Object.entries(conteo).forEach(([clave, fila]) => {
-                            const total = Number(fila && fila.total);
-                            const aciertos = Number(fila && fila.aciertos);
-                            if (total > 0 && Number.isFinite(aciertos)) areas[clave] = [aciertos, total];
-                        });
-                    } catch (e) {}
-                    const id = String(STUDENT_ID || '');
-                    const nombreGuardado = ['dante_nombre', 'dante_student_name', 'dante_user_name']
-                        .map((clave) => localStorage.getItem(clave) || '')
-                        .map((texto) => texto.replace(/\s+/g, ' ').trim())
-                        .find((texto) => texto && texto.toLowerCase() !== id.toLowerCase() && !/^\d+$/.test(texto) && !texto.includes('@')) || '';
-                    const payload = {
-                        s: STUDENT_ID,
-                        n: nombreGuardado.slice(0, 60),
-                        sc: score,
-                        m: metaVal,
-                        c: metaCar,
-                        f: localStorage.getItem('dante_pacto_fecha_texto') || '',
-                        a: areas,
-                        t: Date.now()
-                    };
-                    const jsonStr = JSON.stringify(payload);
+                    const jsonStr = JSON.stringify(this._construirSnapshotInformeGeneral());
                     return btoa(unescape(encodeURIComponent(jsonStr)));
                 } catch (e) {
-                    return btoa(STUDENT_ID);
+                    return btoa('{}');
                 }
             }
 
-            static obtenerUrlBoletin() {
-                const token = this.generarTokenBoletin();
-                return `${window.location.origin}/boletin?token=${token}`;
+            static generarTokenBoletin() {
+                return this.generarTokenInformeGeneral();
             }
 
-            static compartirBoletinWhatsApp() {
-                const url = this.obtenerUrlBoletin();
-                const score = parseInt(localStorage.getItem('dante_score_proyectado') || '0', 10);
-                const pacto = localStorage.getItem('dante_pacto_meta');
-                const metaVal = pacto === '300_BASE' ? 300 : (pacto === '380_ELITE' ? 380 : 0);
-                const metaCar = localStorage.getItem('dante_carrera_objetivo') || '';
-                const scoreTxt = score > 0 ? `${score}/500` : 'aún sin una proyección medida';
-                const fraseMeta = metaVal ? `, con meta ${metaVal}${metaCar ? ' (' + metaCar + ')' : ''}` : '';
-                const mensaje = `Hola. Te comparto mi avance en Dante OS Saber 11°. Voy en ${scoreTxt}${fraseMeta}. Aquí está el boletín: ${url}`;
+            static obtenerUrlInformeGeneral() {
+                const token = this.generarTokenInformeGeneral();
+                return `${window.location.origin}/informe-general?token=${token}`;
+            }
+
+            static obtenerUrlBoletin() {
+                return this.obtenerUrlInformeGeneral();
+            }
+
+            static async compartirBoletinWhatsApp() {
+                try {
+                    if (typeof this._enriquecerInformeGeneralDesdeServidor === 'function') {
+                        await this._enriquecerInformeGeneralDesdeServidor();
+                    }
+                } catch (e) {}
+                const url = this.obtenerUrlInformeGeneral();
+                const nombre = this._nombreEstudianteParaPadres();
+                const mensaje = `Hola. Te comparto el informe general de avance de ${nombre} en Dante OS. Aquí puedes ver su progreso completo: ${url}`;
                 const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(mensaje)}`;
                 window.open(waUrl, '_blank');
             }
 
-            static copiarEnlaceBoletin() {
-                const url = this.obtenerUrlBoletin();
+            static async copiarEnlaceBoletin() {
+                try {
+                    if (typeof this._enriquecerInformeGeneralDesdeServidor === 'function') {
+                        await this._enriquecerInformeGeneralDesdeServidor();
+                    }
+                } catch (e) {}
+                const url = this.obtenerUrlInformeGeneral();
                 if (navigator.clipboard && navigator.clipboard.writeText) {
                     navigator.clipboard.writeText(url).then(() => {
                         this.notificarCopiadoBoletin();
