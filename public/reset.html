@@ -1,167 +1,281 @@
 <!DOCTYPE html>
-<html lang="es" class="dark">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dante // Reset de este aparato</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Dante OS · Limpiar este navegador</title>
     <style>
-        body { background: #070a12; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; }
+        :root {
+            --bg: #0b1220;
+            --card: #121a2b;
+            --line: rgba(148, 163, 184, 0.28);
+            --text: #e8eef8;
+            --mute: #94a3b8;
+            --ok: #34d399;
+            --warn: #fbbf24;
+            --accent: #f59e0b;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 1.25rem;
+            background:
+                radial-gradient(ellipse 80% 50% at 50% -10%, rgba(245, 158, 11, 0.18), transparent 55%),
+                var(--bg);
+            color: var(--text);
+            font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+        }
+        .card {
+            width: min(26rem, 100%);
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 1.35rem;
+            padding: 1.4rem 1.25rem 1.25rem;
+            text-align: center;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+        }
+        .icon {
+            width: 3.4rem;
+            height: 3.4rem;
+            margin: 0 auto 0.9rem;
+            border-radius: 1rem;
+            display: grid;
+            place-items: center;
+            background: rgba(245, 158, 11, 0.14);
+            border: 1px solid rgba(245, 158, 11, 0.35);
+            color: var(--accent);
+            font-size: 1.35rem;
+        }
+        h1 {
+            margin: 0;
+            font-size: 1.2rem;
+            letter-spacing: -0.02em;
+        }
+        .lead {
+            margin: 0.55rem 0 0;
+            color: var(--mute);
+            font-size: 0.82rem;
+            line-height: 1.45;
+        }
+        .steps {
+            margin: 1.1rem 0;
+            padding: 0.85rem 0.9rem;
+            border-radius: 0.9rem;
+            background: rgba(2, 6, 23, 0.55);
+            border: 1px solid var(--line);
+            text-align: left;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 0.72rem;
+            line-height: 1.55;
+            color: var(--mute);
+        }
+        .steps .ok { color: var(--ok); }
+        .steps .run { color: var(--warn); }
+        .btn {
+            display: block;
+            width: 100%;
+            border: 0;
+            border-radius: 0.9rem;
+            padding: 0.95rem 1rem;
+            font-weight: 800;
+            font-size: 0.78rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            cursor: pointer;
+            color: #111827;
+            background: linear-gradient(135deg, #f59e0b, #eab308);
+        }
+        .btn:disabled {
+            opacity: 0.65;
+            cursor: wait;
+        }
+        .link {
+            display: block;
+            margin-top: 0.75rem;
+            color: var(--mute);
+            text-decoration: none;
+            font-size: 0.78rem;
+        }
+        .link:hover { color: var(--text); }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4">
-    <div class="max-w-md w-full bg-slate-900/90 border border-slate-800 rounded-3xl p-6 shadow-2xl text-center space-y-5">
-        <div class="w-16 h-16 mx-auto rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 text-2xl">
-            <i class="fa-solid fa-broom"></i>
+<body>
+    <div class="card">
+        <div class="icon" aria-hidden="true">🧹</div>
+        <h1>Limpiar este navegador</h1>
+        <p class="lead">
+            Borra caché profunda, Service Worker, cookies y memoria local de Dante en este aparato.
+            Luego te lleva al login limpio para probar de cero.
+        </p>
+        <div id="steps" class="steps" aria-live="polite">
+            <div id="s1">1. Esperando…</div>
+            <div id="s2">2. Cerrar sesión del servidor</div>
+            <div id="s3">3. Vaciar memoria y caché</div>
+            <div id="s4">4. Ir al login limpio</div>
         </div>
-
-        <div>
-            <h1 class="text-xl font-black text-white tracking-tight">Borrar datos de este aparato</h1>
-            <p class="text-xs text-slate-400 mt-2 leading-relaxed">
-                Solo se borra cuando tocas el botón. Cierra la sesión en el servidor, espera la confirmación y después limpia la memoria de este celular o navegador.
-            </p>
-        </div>
-
-        <div id="statusBox" class="p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300 font-mono text-left space-y-1">
-            <div id="stepEspera" class="flex items-center gap-2 text-slate-400"><i class="fa-regular fa-circle"></i> <span>Listo para limpiar cuando lo digas.</span></div>
-            <div id="stepBackend" class="flex items-center gap-2 text-slate-500"><i class="fa-regular fa-circle"></i> <span>Cerrar sesión en el servidor…</span></div>
-            <div id="stepStorage" class="flex items-center gap-2 text-slate-500"><i class="fa-regular fa-circle"></i> <span>Vaciar memoria local…</span></div>
-        </div>
-
-        <div class="space-y-2 pt-2">
-            <button id="btnEjecutarReset" type="button" class="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-400 hover:to-yellow-500 text-slate-950 font-black text-xs uppercase tracking-wider transition-all shadow-lg active:scale-95 cursor-pointer">
-                <i class="fa-solid fa-rotate-left mr-1.5"></i> Limpiar todo y volver a entrar
-            </button>
-            <a href="login.html" id="lnkVolverLogin" class="block w-full py-2.5 text-xs text-slate-400 hover:text-white font-mono">
-                Volver a iniciar sesión sin borrar
-            </a>
-        </div>
+        <button id="btnReset" class="btn" type="button">Limpiar todo ahora</button>
+        <a class="link" href="/login.html">Volver sin borrar</a>
     </div>
 
     <script>
-        let resetEnCurso = false;
-        let resetAbortado = false;
-        let generacion = 0;
+        (function () {
+            var enCurso = false;
+            var bust = 'r=' + Date.now();
 
-        function marcarPaso(id, ok, texto) {
-            const nodo = document.getElementById(id);
-            if (!nodo) return;
-            nodo.innerHTML = ok
-                ? '<i class="fa-solid fa-check text-emerald-400"></i> <span class="text-emerald-300">' + texto + '</span>'
-                : '<i class="fa-solid fa-circle-notch animate-spin text-amber-400"></i> <span>' + texto + '</span>';
-        }
+            function paso(id, estado, texto) {
+                var el = document.getElementById(id);
+                if (!el) return;
+                el.className = estado || '';
+                el.textContent = texto;
+            }
 
-        async function cerrarSesionServidor(tokenViejo, signal) {
-            try {
-                const configResp = await fetch('/api/v1/auth/config', { signal }).catch(() => null);
-                if (configResp && configResp.ok) {
-                    const configData = await configResp.json();
-                    if (configData.hasSupabase && configData.supabaseUrl && configData.supabaseKey && window.supabase) {
-                        const client = window.supabase.createClient(configData.supabaseUrl, configData.supabaseKey);
-                        await client.auth.signOut({ scope: 'global' }).catch(() => {});
+            function sleep(ms) {
+                return new Promise(function (resolve) { setTimeout(resolve, ms); });
+            }
+
+            async function cerrarSesionServidor(tokenViejo) {
+                try {
+                    var configResp = await fetch('/api/v1/auth/config', { credentials: 'include', cache: 'no-store' });
+                    if (configResp.ok && window.supabase) {
+                        var cfg = await configResp.json();
+                        if (cfg.hasSupabase && cfg.supabaseUrl && cfg.supabaseKey) {
+                            var client = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseKey);
+                            await client.auth.signOut({ scope: 'global' }).catch(function () {});
+                        }
                     }
-                }
-            } catch (e) {}
-            try {
-                await fetch('/api/auth/logout', {
-                    method: 'POST',
-                    credentials: 'include',
-                    headers: { 'Content-Type': 'application/json' },
-                    signal,
-                    body: JSON.stringify({ token: tokenViejo || '' })
-                });
-            } catch (e) {}
-        }
-
-        function vaciarMemoriaLocal() {
-            try { localStorage.clear(); } catch (e) {}
-            try { sessionStorage.clear(); } catch (e) {}
-            try {
-                document.cookie.split(';').forEach((c) => {
-                    document.cookie = c.replace(/^ +/, '').replace(/=.*/, '=;expires=' + new Date(0).toUTCString() + ';path=/');
-                });
-            } catch (e) {}
-            try {
-                if ('caches' in window) {
-                    caches.keys().then((names) => names.forEach((name) => caches.delete(name))).catch(() => {});
-                }
-            } catch (e) {}
-            try {
-                if (window.indexedDB && window.indexedDB.databases) {
-                    window.indexedDB.databases().then((dbs) => {
-                        if (dbs) dbs.forEach((db) => { if (db.name) window.indexedDB.deleteDatabase(db.name); });
-                    }).catch(() => {});
-                }
-            } catch (e) {}
-            try { sessionStorage.setItem('dante_reset_listo', '1'); } catch (e) {}
-        }
-
-        async function ejecutarResetTotal() {
-            if (resetEnCurso) return;
-            resetEnCurso = true;
-            resetAbortado = false;
-            const mia = ++generacion;
-            const btn = document.getElementById('btnEjecutarReset');
-            const link = document.getElementById('lnkVolverLogin');
-            if (btn) {
-                btn.disabled = true;
-                btn.innerHTML = '<i class="fa-solid fa-circle-notch animate-spin mr-1.5"></i> Limpiando…';
+                } catch (e) {}
+                try {
+                    await fetch('/api/auth/logout', {
+                        method: 'POST',
+                        credentials: 'include',
+                        cache: 'no-store',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ token: tokenViejo || '' })
+                    });
+                } catch (e) {}
             }
-            if (link) link.style.pointerEvents = 'none';
 
-            const tokenViejo = localStorage.getItem('dante_token') || localStorage.getItem('dante_jwt') || '';
-            const corte = new AbortController();
+            function borrarCookies() {
+                try {
+                    var host = location.hostname;
+                    var parts = host.split('.');
+                    var dominios = ['', host];
+                    if (parts.length >= 2) dominios.push('.' + parts.slice(-2).join('.'));
+                    if (parts.length >= 3) dominios.push('.' + parts.slice(-3).join('.'));
+                    var paths = ['/', '/login.html', '/perfil.html', '/onboarding.html'];
+                    document.cookie.split(';').forEach(function (raw) {
+                        var nombre = raw.replace(/^ +/, '').split('=')[0];
+                        if (!nombre) return;
+                        dominios.forEach(function (dom) {
+                            paths.forEach(function (p) {
+                                var base = nombre + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=' + p + ';Max-Age=0';
+                                document.cookie = base;
+                                if (dom) document.cookie = base + ';domain=' + dom;
+                            });
+                        });
+                    });
+                } catch (e) {}
+            }
 
-            marcarPaso('stepEspera', false, 'Empezó el borrado…');
-            marcarPaso('stepBackend', false, 'Cerrando sesión en el servidor…');
+            async function borrarCaches() {
+                if (!('caches' in window)) return;
+                try {
+                    var names = await caches.keys();
+                    await Promise.all(names.map(function (name) { return caches.delete(name); }));
+                } catch (e) {}
+            }
 
-            await Promise.race([
-                cerrarSesionServidor(tokenViejo, corte.signal),
-                new Promise((resolver) => setTimeout(resolver, 5000))
-            ]);
-            corte.abort();
+            async function borrarServiceWorkers() {
+                if (!('serviceWorker' in navigator)) return;
+                try {
+                    var regs = await navigator.serviceWorker.getRegistrations();
+                    await Promise.all(regs.map(function (reg) { return reg.unregister(); }));
+                } catch (e) {}
+            }
 
-            if (resetAbortado || mia !== generacion || document.visibilityState === 'hidden') {
-                resetEnCurso = false;
+            async function borrarIndexedDB() {
+                try {
+                    if (window.indexedDB && indexedDB.databases) {
+                        var dbs = await indexedDB.databases();
+                        await Promise.all((dbs || []).map(function (db) {
+                            if (!db || !db.name) return Promise.resolve();
+                            return new Promise(function (resolve) {
+                                var req = indexedDB.deleteDatabase(db.name);
+                                req.onsuccess = req.onerror = req.onblocked = function () { resolve(); };
+                            });
+                        }));
+                    }
+                } catch (e) {}
+            }
+
+            function vaciarStorage() {
+                try { localStorage.clear(); } catch (e) {}
+                try { sessionStorage.clear(); } catch (e) {}
+                try {
+                    var keys = [];
+                    for (var i = 0; i < localStorage.length; i++) {
+                        var k = localStorage.key(i);
+                        if (k) keys.push(k);
+                    }
+                    keys.forEach(function (k) {
+                        try { localStorage.removeItem(k); } catch (e2) {}
+                    });
+                } catch (e) {}
+            }
+
+            async function limpiarProfundo() {
+                if (enCurso) return;
+                enCurso = true;
+                var btn = document.getElementById('btnReset');
                 if (btn) {
-                    btn.disabled = false;
-                    btn.innerHTML = '<i class="fa-solid fa-rotate-left mr-1.5"></i> Limpiar todo y volver a entrar';
+                    btn.disabled = true;
+                    btn.textContent = 'Limpiando…';
                 }
-                if (link) link.style.pointerEvents = '';
-                marcarPaso('stepEspera', false, 'Se canceló porque saliste de esta página. Nada más se borró.');
-                return;
+
+                var tokenViejo = '';
+                try {
+                    tokenViejo = localStorage.getItem('dante_token')
+                        || localStorage.getItem('dante_jwt')
+                        || '';
+                } catch (e) {}
+
+                paso('s1', 'run', '1. Empezó el borrado profundo…');
+                paso('s2', 'run', '2. Cerrando sesión del servidor…');
+                await Promise.race([
+                    cerrarSesionServidor(tokenViejo),
+                    sleep(4500)
+                ]);
+                paso('s2', 'ok', '2. Sesión del servidor cerrada.');
+
+                paso('s3', 'run', '3. Vaciando memoria, cookies, SW y caché…');
+                vaciarStorage();
+                borrarCookies();
+                await borrarServiceWorkers();
+                await borrarCaches();
+                await borrarIndexedDB();
+                vaciarStorage();
+                try { sessionStorage.setItem('dante_reset_listo', '1'); } catch (e) {}
+                paso('s3', 'ok', '3. Memoria y caché vaciadas.');
+
+                paso('s4', 'run', '4. Abriendo login limpio…');
+                await sleep(350);
+                window.location.replace('/login.html?limpio=1&' + bust);
             }
 
-            marcarPaso('stepBackend', true, 'Sesión del servidor cerrada.');
-            marcarPaso('stepStorage', false, 'Vaciando memoria local…');
-            vaciarMemoriaLocal();
-
-            if (resetAbortado || mia !== generacion) {
-                resetEnCurso = false;
-                return;
-            }
-
-            marcarPaso('stepStorage', true, 'Memoria local vaciada.');
-            marcarPaso('stepEspera', true, 'Listo. Entrando al login…');
-            window.location.replace('login.html?limpio=1');
-        }
-
-        window.addEventListener('pagehide', () => {
-            resetAbortado = true;
-            generacion += 1;
-        });
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'hidden' && resetEnCurso) {
-                resetAbortado = true;
-            }
-        });
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const btn = document.getElementById('btnEjecutarReset');
-            if (btn) btn.addEventListener('click', () => { ejecutarResetTotal(); });
-        });
+            document.addEventListener('DOMContentLoaded', function () {
+                var btn = document.getElementById('btnReset');
+                if (btn) btn.addEventListener('click', limpiarProfundo);
+                // Al abrir /reset desde el explorador, limpia solo.
+                setTimeout(limpiarProfundo, 250);
+            });
+        })();
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </body>
 </html>

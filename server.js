@@ -281,7 +281,11 @@ app.get('/boletin', (req, res) => {
     res.redirect(302, '/informe-general' + q);
 });
 
-app.get('/reset', (req, res) => {
+app.get(['/reset', '/reset/'], (req, res) => {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    res.setHeader('Clear-Site-Data', '"cache", "cookies", "storage"');
     res.sendFile(path.join(__dirname, 'public', 'reset.html'));
 });
 
