@@ -66,7 +66,7 @@ class DanteStorage {
         'dante_session', 'dante_token', 'dante_jwt', 'dante_session_token', 'dante_user', 'dante_plan', 'dante_user_plan', 'dante_vidas',
         'dante_pacto_accepted', 'dante_pacto_meta', 'dante_pacto_tiempo', 'dante_pacto_calendario',
         'dante_pacto_fecha_texto', 'dante_pacto_dias_restantes', 'dante_pacto_viabilidad',
-        'dante_pacto_fecha', 'dante_student_name', 'dante_student_id', 'dante_active_student', 'dante_onboarding_completed'
+        'dante_pacto_fecha', 'dante_modo_libre', 'dante_student_name', 'dante_student_id', 'dante_active_student', 'dante_onboarding_completed'
     ]) {
         try {
             const backups = {};

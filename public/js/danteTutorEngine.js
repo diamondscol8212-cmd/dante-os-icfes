@@ -156,8 +156,14 @@ class DanteTutorEngine {
 
         const nombreEstudiante = localStorage.getItem('dante_student_name') || 'Estudiante';
         const pactoMeta = localStorage.getItem('dante_pacto_meta') || '380_ELITE';
-        const fechaTexto = localStorage.getItem('dante_pacto_fecha_texto') || 'Agosto 2026';
-        const diasRestantes = localStorage.getItem('dante_pacto_dias_restantes') || '160';
+        const modoLibre = localStorage.getItem('dante_modo_libre') === 'true'
+            || localStorage.getItem('dante_pacto_calendario') === 'LIBRE';
+        const fechaTexto = modoLibre
+            ? 'Entrenamiento libre'
+            : (localStorage.getItem('dante_pacto_fecha_texto') || 'Agosto 2026');
+        const diasRestantes = modoLibre
+            ? ''
+            : (localStorage.getItem('dante_pacto_dias_restantes') || '160');
         const pactoTiempo = localStorage.getItem('dante_pacto_tiempo') || '15_FREE';
 
         let metaTxt = "380+ Pts Saber 11°";
@@ -367,9 +373,9 @@ class DanteTutorEngine {
                 <!-- Info de Calendario & Días Restantes -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs text-slate-200">
                     <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800">
-                        <span class="text-[10px] text-slate-400 block uppercase flex items-center gap-1"><svg class="w-3 h-3 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Ventana de Examen:</span>
+                        <span class="text-[10px] text-slate-400 block uppercase flex items-center gap-1"><svg class="w-3 h-3 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> ${modoLibre ? 'Modo de estudio:' : 'Ventana de Examen:'}</span>
                         <strong class="text-teal-300 text-xs font-bold block truncate mt-0.5">${fechaTexto}</strong>
-                        <span class="text-[10px] text-cyan-400 font-bold block mt-0.5 flex items-center gap-1"><svg class="w-3 h-3 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ${diasRestantes} Días Restantes</span>
+                        <span class="text-[10px] text-cyan-400 font-bold block mt-0.5 flex items-center gap-1"><svg class="w-3 h-3 text-cyan-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> ${modoLibre ? 'Sin fecha · avanza a tu meta' : ((diasRestantes || '—') + ' Días Restantes')}</span>
                     </div>
 
                     <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800">

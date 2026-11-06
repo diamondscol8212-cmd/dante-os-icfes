@@ -279,7 +279,7 @@
             <div id="stepContainer3" class="space-y-3 hidden">
                 <p class="text-xs font-mono font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
                     <i class="fa-solid fa-calendar-check text-cyan-400"></i>
-                    <span>3. ¿Cuándo presentas el examen?</span>
+                    <span>3. ¿Cómo quieres prepararte?</span>
                 </p>
                 <div class="grid grid-cols-1 gap-2.5">
                     <div data-fecha="CAL_A" onclick="OnboardingManager.selectFecha('CAL_A', this)" class="step-option p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800">
@@ -288,9 +288,9 @@
                     <div data-fecha="CAL_B" onclick="OnboardingManager.selectFecha('CAL_B', this)" class="step-option p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800">
                         <h3 class="text-xs font-bold text-white">Calendario B, marzo 2027</h3>
                     </div>
-                    <div data-fecha="CUSTOM" onclick="OnboardingManager.selectFecha('CUSTOM', this)" class="step-option p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-2">
-                        <h3 class="text-xs font-bold text-white">Otra fecha</h3>
-                        <input type="date" id="inputFechaExamenAjuste" onclick="event.stopPropagation()" onchange="OnboardingManager.selectFecha('CUSTOM', this.parentElement)" class="w-full p-3 rounded-xl bg-slate-950 border border-slate-700 text-white font-mono text-xs outline-none" style="color-scheme: dark;">
+                    <div data-fecha="LIBRE" onclick="OnboardingManager.selectFecha('LIBRE', this)" class="step-option p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800">
+                        <h3 class="text-xs font-bold text-white">Entrenamiento libre (quiero estudiar)</h3>
+                        <p class="text-[10px] text-slate-400 mt-1">Sin fecha de examen. Solo eliges tu meta de puntaje.</p>
                     </div>
                 </div>
                 <p id="lblDiasFechaAjuste" class="text-xs text-slate-400"></p>
@@ -702,30 +702,30 @@
             }
 
             static selectFecha(val, el) {
-                SelectedFecha = val === 'CAL_B' ? 'CAL_B' : (val === 'CUSTOM' ? 'CUSTOM' : 'CAL_A');
+                if (val === 'CAL_B') SelectedFecha = 'CAL_B';
+                else if (val === 'LIBRE' || val === 'CUSTOM') SelectedFecha = 'LIBRE';
+                else SelectedFecha = 'CAL_A';
                 document.querySelectorAll('#stepContainer3 .step-option').forEach((opt) => {
                     opt.classList.remove('selected', 'border-cyan-400');
                 });
                 if (el) el.classList.add('selected', 'border-cyan-400');
+                const lbl = document.getElementById('lblDiasFechaAjuste');
+                if (SelectedFecha === 'LIBRE') {
+                    FechaCustom = '';
+                    FechaTexto = 'Entrenamiento libre';
+                    if (lbl) lbl.textContent = 'Sin fecha de examen. Avanzas hacia tu meta de puntaje.';
+                    this.actualizarEstadoBotonNext(true);
+                    return;
+                }
                 const ahora = new Date();
                 let examen = new Date('2027-08-15');
                 FechaTexto = 'Agosto 2027 (Calendario A)';
                 if (SelectedFecha === 'CAL_B') {
                     examen = new Date('2027-03-21');
                     FechaTexto = 'Marzo 2027 (Calendario B)';
-                } else if (SelectedFecha === 'CUSTOM') {
-                    const inp = document.getElementById('inputFechaExamenAjuste');
-                    if (!inp || !inp.value) {
-                        FechaTexto = '';
-                        this.actualizarEstadoBotonNext(false);
-                        return;
-                    }
-                    FechaCustom = inp.value;
-                    examen = new Date(inp.value);
-                    FechaTexto = inp.value;
                 }
+                FechaCustom = '';
                 const dias = Math.max(1, Math.ceil((examen - ahora) / 86400000));
-                const lbl = document.getElementById('lblDiasFechaAjuste');
                 if (lbl) lbl.textContent = dias + ' días hasta el examen.';
                 this.actualizarEstadoBotonNext(true);
             }
@@ -841,14 +841,14 @@
                     }
                 } else if (CurrentStep === 3) {
                     if (c3) c3.classList.remove("hidden");
-                    if (tracker) tracker.innerText = "Paso 3 de 3: Fecha del examen";
+                    if (tracker) tracker.innerText = "Paso 3 de 3: Cómo quieres prepararte";
                     if (d3) d3.className = "w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.8)] transition-all";
                     if (btnNextLabel) btnNextLabel.innerText = AjustarMeta ? "Guardar y volver al informe" : "Empezar el diagnóstico";
                     if (btnNextIcon) btnNextIcon.className = AjustarMeta ? "fa-solid fa-check text-slate-950 text-xs" : "fa-solid fa-bolt text-slate-950 text-xs";
                     if (greetingContainer) {
                         greetingContainer.innerHTML = `
-                            <h2 class="text-xl sm:text-2xl font-black text-white tracking-tight">¿Cuándo presentas el examen?</h2>
-                            <p class="text-xs text-slate-400 font-sans">${AjustarMeta ? "Los días se cuentan desde esta fecha." : "Con esto armamos tu ruta. Luego ves cómo responder y entras al diagnóstico."}</p>
+                            <h2 class="text-xl sm:text-2xl font-black text-white tracking-tight">¿Cómo quieres prepararte?</h2>
+                            <p class="text-xs text-slate-400 font-sans">${AjustarMeta ? "Puedes elegir calendario oficial o entrenamiento libre." : "Elige calendario oficial o entrena sin fecha. Luego ves cómo responder y entras al diagnóstico."}</p>
                         `;
                     }
                     if (SelectedFecha) {
@@ -856,7 +856,7 @@
                             opt.classList.toggle("selected", opt.getAttribute("data-fecha") === SelectedFecha);
                             opt.classList.toggle("border-cyan-400", opt.getAttribute("data-fecha") === SelectedFecha);
                         });
-                        this.actualizarEstadoBotonNext(SelectedFecha !== "CUSTOM" || Boolean(FechaCustom));
+                        this.actualizarEstadoBotonNext(true);
                     } else {
                         this.actualizarEstadoBotonNext(false);
                     }
@@ -914,7 +914,7 @@
 
                 if (txtLoadingTitle) {
                     txtLoadingTitle.innerText = AjustarMeta
-                        ? "Guardando tu meta, la carrera y la fecha."
+                        ? "Guardando tu meta, la carrera y cómo te preparas."
                         : `Guardando tu meta para ${SelectedCarrera.split('/')[0].trim()}. Luego te muestro cómo responder.`;
                 }
 
@@ -937,18 +937,22 @@
                 localStorage.setItem("dante_target_track", "ICFES");
                 localStorage.setItem("dante_pacto_meta", SelectedMeta);
                 localStorage.setItem("dante_carrera_objetivo", SelectedCarrera);
-                localStorage.setItem("dante_pacto_calendario", SelectedFecha);
-                localStorage.setItem("dante_pacto_fecha_texto", FechaTexto || "");
+                localStorage.setItem("dante_pacto_calendario", SelectedFecha === 'LIBRE' ? 'LIBRE' : SelectedFecha);
+                localStorage.setItem("dante_modo_libre", SelectedFecha === 'LIBRE' ? 'true' : 'false');
+                localStorage.setItem("dante_pacto_fecha_texto", SelectedFecha === 'LIBRE' ? 'Entrenamiento libre' : (FechaTexto || ""));
                 localStorage.setItem("dante_pacto_accepted", "true");
                 localStorage.setItem("dante_pacto_socratico", "true");
-                if (FechaCustom) localStorage.setItem("dante_pacto_fecha_custom", FechaCustom);
+                try { localStorage.removeItem("dante_pacto_fecha_custom"); } catch (e) {}
                 try {
-                    const ahora = new Date();
-                    let examen = new Date('2027-08-15');
-                    if (SelectedFecha === 'CAL_B') examen = new Date('2027-03-21');
-                    else if (SelectedFecha === 'CUSTOM' && FechaCustom) examen = new Date(FechaCustom);
-                    const dias = Math.max(1, Math.ceil((examen - ahora) / 86400000));
-                    localStorage.setItem("dante_pacto_dias_restantes", String(dias));
+                    if (SelectedFecha === 'LIBRE') {
+                        localStorage.setItem("dante_pacto_dias_restantes", "");
+                    } else {
+                        const ahora = new Date();
+                        let examen = new Date('2027-08-15');
+                        if (SelectedFecha === 'CAL_B') examen = new Date('2027-03-21');
+                        const dias = Math.max(1, Math.ceil((examen - ahora) / 86400000));
+                        localStorage.setItem("dante_pacto_dias_restantes", String(dias));
+                    }
                 } catch (e) {}
                 localStorage.setItem("dante_onboarding_completed", "true");
                 localStorage.setItem("dante_user_arquetipo", arquetipo);

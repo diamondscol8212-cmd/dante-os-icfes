@@ -5722,9 +5722,9 @@
             <div id="pactoPaso3" class="space-y-4 hidden font-sans">
                 <div class="space-y-1">
                     <h3 class="text-xs sm:text-sm font-bold text-teal-300 font-mono uppercase flex items-center gap-2">
-                        <i class="fa-solid fa-calendar-check text-teal-400"></i> PASO 3/5: ¿CUÁNDO PRESENTAS TU EXAMEN?
+                        <i class="fa-solid fa-calendar-check text-teal-400"></i> PASO 3/5: ¿CÓMO QUIERES PREPARARTE?
                     </h3>
-                    <p class="text-xs sm:text-sm text-slate-300 font-sans">Elige la fecha. Los días se cuentan desde ahí.</p>
+                    <p class="text-xs sm:text-sm text-slate-300 font-sans">Elige un calendario oficial o entrena sin fecha fija.</p>
                 </div>
 
                 <div class="space-y-2.5 text-xs sm:text-sm">
@@ -5748,20 +5748,20 @@
                         <span class="px-2.5 py-1 rounded-md bg-slate-800 text-slate-300 font-mono font-bold text-xs shrink-0">CAL B</span>
                     </div>
 
-                    <div onclick="PactoDanteManager.seleccionarCalendario('CUSTOM')" id="optCal_CUSTOM" class="p-3.5 sm:p-4 rounded-2xl bg-slate-900 border-2 border-slate-800 hover:border-slate-700 cursor-pointer transition-all space-y-2 opacity-70">
-                        <div class="flex items-center justify-between">
-                            <span class="font-bold text-purple-300 text-xs sm:text-sm flex items-center gap-2">
-                                <i class="fa-solid fa-clock text-purple-400"></i> Seleccionar Fecha Personalizada:
+                    <div onclick="PactoDanteManager.seleccionarCalendario('LIBRE')" id="optCal_LIBRE" class="p-3.5 sm:p-4 rounded-2xl bg-slate-900 border-2 border-slate-800 hover:border-slate-700 cursor-pointer transition-all flex items-center justify-between gap-2 opacity-70">
+                        <div class="space-y-0.5">
+                            <span class="font-bold text-emerald-300 text-xs sm:text-sm flex items-center gap-2">
+                                <i class="fa-solid fa-book-open text-emerald-400"></i> Entrenamiento libre (quiero estudiar)
                             </span>
-                            <span class="px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30 font-mono font-bold text-xs">A MEDIDA</span>
+                            <span class="text-xs text-slate-400 font-sans block">Sin fecha de examen. Solo avanzas hacia tu meta de puntaje.</span>
                         </div>
-                        <input type="date" id="inputFechaExamenCustom" onchange="PactoDanteManager.calcularDiasRestantesCustom()" class="w-full p-3 rounded-xl bg-slate-950 border border-slate-700 text-white font-mono text-xs sm:text-sm outline-none focus:border-purple-400" style="color-scheme: dark;">
+                        <span class="px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-mono font-bold text-xs shrink-0">LIBRE</span>
                     </div>
                 </div>
 
-                <!-- BANNER DINÁMICO DE DÍAS RESTANTES -->
+                <!-- BANNER DINÁMICO DE DÍAS RESTANTES / MODO LIBRE -->
                 <div class="p-4 rounded-2xl bg-cyan-950/70 border border-cyan-500/40 text-center space-y-1 shadow-[0_0_20px_rgba(6,182,212,0.15)]">
-                    <span class="text-xs text-cyan-300/80 uppercase font-bold tracking-wider block font-mono flex items-center justify-center gap-1.5">
+                    <span class="text-xs text-cyan-300/80 uppercase font-bold tracking-wider block font-mono flex items-center justify-center gap-1.5" id="lblBannerPactoKicker">
                         <i class="fa-solid fa-hourglass-half text-cyan-400"></i> VENTANA TEMPORAL CALCULADA:
                     </span>
                     <span class="text-base sm:text-lg font-black text-cyan-200 font-mono" id="lblDiasRestantesPacto">Calculando los días</span>
@@ -14087,11 +14087,13 @@
                 const meta = localStorage.getItem('dante_pacto_meta');
                 if (meta === '300_BASE' || meta === '380_ELITE') this.metaElegida = meta;
                 const cal = localStorage.getItem('dante_pacto_calendario');
-                if (cal) this.calendarioElegido = cal;
+                if (cal) this.calendarioElegido = (cal === 'CUSTOM') ? 'LIBRE' : cal;
+                if (localStorage.getItem('dante_modo_libre') === 'true') this.calendarioElegido = 'LIBRE';
                 const fechaTxt = localStorage.getItem('dante_pacto_fecha_texto');
                 if (fechaTxt) this.fechaExamenTexto = fechaTxt;
                 const dias = parseInt(localStorage.getItem('dante_pacto_dias_restantes') || '0', 10);
-                if (dias > 0) this.diasRestantesExamen = dias;
+                if (this.calendarioElegido === 'LIBRE') this.diasRestantesExamen = 0;
+                else if (dias > 0) this.diasRestantesExamen = dias;
                 const nom = localStorage.getItem('dante_student_name') || localStorage.getItem('dante_active_student');
                 if (nom) this.nombreEstudiante = nom;
                 this.prescripcionElegida = localStorage.getItem('dante_pacto_tiempo') || 'BASE_FREE';
@@ -14205,13 +14207,32 @@
                         else if (this.metaElegida === 'PREUNIVESITARIO') lblMeta.innerHTML = `<i class="fa-solid fa-graduation-cap text-cyan-400 me-1"></i> Preuniversitario UNAL / UdeA`;
                         else lblMeta.innerHTML = `<i class="fa-solid fa-chart-line text-emerald-400 me-1"></i> Superar 300 Pts ICFES`;
                     }
-                    if (lblFecha) lblFecha.innerText = `${this.fechaExamenTexto} (${this.diasRestantesExamen} Días Restantes)`;
+                    if (lblFecha) {
+                        lblFecha.innerText = this.esModoLibreSeleccionado()
+                            ? 'Entrenamiento libre (sin fecha)'
+                            : `${this.fechaExamenTexto} (${this.diasRestantesExamen} días restantes)`;
+                    }
                     if (lblTiempo) {
                         lblTiempo.innerText = "Bloques de 10, con 15 minutos entre uno y otro";
                     }
                     if (lblVia) {
-                        lblVia.innerText = this.diasRestantesExamen + ' días';
+                        lblVia.innerText = this.esModoLibreSeleccionado()
+                            ? 'Sin cuenta regresiva'
+                            : (this.diasRestantesExamen + ' días');
                     }
+                }
+            }
+
+            static esModoLibreSeleccionado() {
+                return this.calendarioElegido === 'LIBRE';
+            }
+
+            static esModoLibreGuardado() {
+                try {
+                    return localStorage.getItem('dante_modo_libre') === 'true'
+                        || localStorage.getItem('dante_pacto_calendario') === 'LIBRE';
+                } catch (e) {
+                    return false;
                 }
             }
 
@@ -14232,8 +14253,9 @@
 
             static seleccionarCalendario(calKey) {
                 if (calKey === 'UNAL_UDEA') calKey = 'CAL_A';
+                if (calKey === 'CUSTOM') calKey = 'LIBRE';
                 this.calendarioElegido = calKey;
-                ['CAL_A', 'CAL_B', 'CUSTOM'].forEach(c => {
+                ['CAL_A', 'CAL_B', 'LIBRE'].forEach(c => {
                     const card = document.getElementById(`optCal_${c}`);
                     if (card) {
                         if (c === calKey) {
@@ -14245,6 +14267,15 @@
                 });
 
                 const now = new Date();
+                const kicker = document.getElementById('lblBannerPactoKicker');
+                const lbl = document.getElementById('lblDiasRestantesPacto');
+                if (calKey === 'LIBRE') {
+                    this.diasRestantesExamen = 0;
+                    this.fechaExamenTexto = 'Entrenamiento libre';
+                    if (kicker) kicker.innerHTML = '<i class="fa-solid fa-book-open text-emerald-400"></i> MODO LIBRE:';
+                    if (lbl) lbl.innerText = 'Sin fecha de examen. Avanzas hacia tu meta de puntaje.';
+                    return;
+                }
                 if (calKey === 'CAL_A') {
                     // ICFES Calendario A (Agosto 2027)
                     const examDate = new Date('2027-08-15');
@@ -14265,22 +14296,13 @@
                     this.fechaExamenTexto = "Abril/Mayo 2027 (Admisión UNAL / UdeA 2027)";
                 }
 
-                const lbl = document.getElementById('lblDiasRestantesPacto');
+                if (kicker) kicker.innerHTML = '<i class="fa-solid fa-hourglass-half text-cyan-400"></i> VENTANA TEMPORAL CALCULADA:';
                 if (lbl) lbl.innerText = `${this.diasRestantesExamen} Días Restantes de Preparación`;
             }
 
             static calcularDiasRestantesCustom() {
-                const inp = document.getElementById('inputFechaExamenCustom');
-                if (!inp || !inp.value) return;
-
-                const examDate = new Date(inp.value);
-                const now = new Date();
-                const diffTime = examDate - now;
-                this.diasRestantesExamen = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
-                this.fechaExamenTexto = `${inp.value} (Fecha Personalizada)`;
-
-                const lbl = document.getElementById('lblDiasRestantesPacto');
-                if (lbl) lbl.innerText = `${this.diasRestantesExamen} Días Restantes de Preparación`;
+                // Compatibilidad: la fecha personalizada fue reemplazada por Entrenamiento libre.
+                this.seleccionarCalendario('LIBRE');
             }
 
             static seleccionarPrescripcion(prescKey) {
@@ -14303,6 +14325,14 @@
                 const txtEl = document.getElementById('txtMensajeViabilidadDante');
                 const dias = this.diasRestantesExamen;
                 const nom = this.nombreEstudiante || 'Estudiante';
+                if (this.esModoLibreSeleccionado()) {
+                    this.viabilidadNivel = 'LIBRE';
+                    if (badgeEl) badgeEl.textContent = 'Entrenamiento libre';
+                    if (txtEl) {
+                        txtEl.textContent = nom + ', entrenas sin fecha fija. Cada bloque son 10 preguntas y puedes hacer varios el mismo día, con 15 minutos de espera.';
+                    }
+                    return;
+                }
                 this.viabilidadNivel = dias < 15 ? 'CORTO' : 'EN_CURSO';
                 if (badgeEl) badgeEl.textContent = dias < 15 ? 'Ventana corta' : (dias + ' días');
                 if (txtEl) {
@@ -14313,9 +14343,11 @@
             }
 
             static firmarPactoFinal() {
-                if (this.diasRestantesExamen < 15) {
+                const libre = this.esModoLibreSeleccionado();
+                if (!libre && this.diasRestantesExamen < 15) {
                     this.viabilidadNivel = 'PLAN_CHOQUE_EMERGENCIA';
                 }
+                if (libre) this.viabilidadNivel = 'LIBRE';
 
                 if (this.metaElegida !== '300_BASE') this.metaElegida = '380_ELITE';
                 localStorage.setItem('dante_pacto_accepted', 'true');
@@ -14323,9 +14355,15 @@
                 localStorage.setItem('dante_target_track', 'ICFES');
                 localStorage.setItem('dante_pacto_meta', this.metaElegida);
                 localStorage.setItem('dante_pacto_tiempo', this.prescripcionElegida);
-                localStorage.setItem('dante_pacto_calendario', this.calendarioElegido);
-                localStorage.setItem('dante_pacto_fecha_texto', this.fechaExamenTexto);
-                localStorage.setItem('dante_pacto_dias_restantes', this.diasRestantesExamen);
+                localStorage.setItem('dante_pacto_calendario', libre ? 'LIBRE' : this.calendarioElegido);
+                localStorage.setItem('dante_modo_libre', libre ? 'true' : 'false');
+                localStorage.setItem('dante_pacto_fecha_texto', libre ? 'Entrenamiento libre' : this.fechaExamenTexto);
+                if (libre) {
+                    localStorage.setItem('dante_pacto_dias_restantes', '');
+                    try { localStorage.removeItem('dante_pacto_fecha_custom'); } catch (e) {}
+                } else {
+                    localStorage.setItem('dante_pacto_dias_restantes', String(this.diasRestantesExamen || ''));
+                }
                 localStorage.setItem('dante_pacto_viabilidad', this.viabilidadNivel);
                 localStorage.setItem('dante_pacto_fecha', new Date().toISOString());
                 try {
@@ -14345,8 +14383,8 @@
                                 track: 'ICFES',
                                 carrera: localStorage.getItem('dante_carrera_objetivo') || null,
                                 tiempo: this.prescripcionElegida || 'BASE_FREE',
-                                fecha: this.fechaExamenTexto || null,
-                                calendario: this.calendarioElegido || null
+                                fecha: libre ? null : (this.fechaExamenTexto || null),
+                                calendario: libre ? 'LIBRE' : (this.calendarioElegido || null)
                             })
                         }).catch(function () {});
                     }
@@ -14373,7 +14411,9 @@
 
                     const msgEl = document.getElementById('lblExitoMensajeDante');
                     if (msgEl) {
-                        msgEl.innerHTML = `¡Bienvenido oficialmente, <strong class="text-white">${this.nombreEstudiante}</strong>! Tu compromiso de preparación para tu examen de <strong class="text-teal-300">${this.fechaExamenTexto}</strong> (<strong class="text-cyan-300">${this.diasRestantesExamen} días restantes</strong>) ha sido registrado en tu motor adaptativo.`;
+                        msgEl.innerHTML = libre
+                            ? `¡Bienvenido oficialmente, <strong class="text-white">${this.nombreEstudiante}</strong>! Entrenas en <strong class="text-teal-300">modo libre</strong>, sin fecha de examen. Tu meta de puntaje ya quedó registrada.`
+                            : `¡Bienvenido oficialmente, <strong class="text-white">${this.nombreEstudiante}</strong>! Tu compromiso de preparación para tu examen de <strong class="text-teal-300">${this.fechaExamenTexto}</strong> (<strong class="text-cyan-300">${this.diasRestantesExamen} días restantes</strong>) ha sido registrado en tu motor adaptativo.`;
                     }
                     const metaEl = document.getElementById('lblExitoMeta');
                     if (metaEl) {
@@ -14382,7 +14422,7 @@
                         else metaEl.innerText = "Superar 300 Pts ICFES";
                     }
                     const fechaEl = document.getElementById('lblExitoFecha');
-                    if (fechaEl) fechaEl.innerText = `${this.fechaExamenTexto}`;
+                    if (fechaEl) fechaEl.innerText = libre ? 'Entrenamiento libre' : `${this.fechaExamenTexto}`;
 
                     const tiempoEl = document.getElementById('lblExitoTiempo');
                     if (tiempoEl) tiempoEl.innerText = "Bloques de 10, con 15 minutos entre uno y otro";
@@ -14407,7 +14447,7 @@
                 const tiempo = localStorage.getItem('dante_pacto_tiempo') || '15_FREE';
                 const nombre = localStorage.getItem('dante_student_name') || 'Estudiante';
                 const fechaTxt = localStorage.getItem('dante_pacto_fecha_texto') || 'Marzo 2027 (Calendario B)';
-                const calKey = localStorage.getItem('dante_pacto_cal') || 'CAL_B';
+                const calKey = localStorage.getItem('dante_pacto_calendario') || localStorage.getItem('dante_pacto_cal') || 'CAL_B';
 
                 const lblPasoTitulo = document.getElementById('lblPasoTitulo');
                 const lblPasoDescripcion = document.getElementById('lblPasoDescripcion');
@@ -14418,6 +14458,11 @@
 
                 let tiempoText = "Bloques de 10, con 15 minutos entre uno y otro";
                 if (tiempo === '45_PRO' || tiempo === '30_PRO' || tiempo === '15_FREE') tiempoText = "Bloques de 10, con 15 minutos entre uno y otro";
+
+                if (this.esModoLibreGuardado() || calKey === 'LIBRE') {
+                    this.iniciarBannerModoLibre(metaText);
+                    return;
+                }
 
                 // Determinar fecha exacta del examen para la cuenta regresiva viva
                 let targetDate = new Date('2027-03-21T08:00:00');
@@ -14432,8 +14477,37 @@
                 this.iniciarRelojContadorLive(targetDate, fechaTxt);
             }
 
+            static iniciarBannerModoLibre(metaText) {
+                if (this._timerLiveReloj) {
+                    clearInterval(this._timerLiveReloj);
+                    this._timerLiveReloj = null;
+                }
+                const container = document.getElementById('containerRelojContadorLive');
+                if (!container) return;
+                const score = parseInt(localStorage.getItem('dante_score_proyectado') || localStorage.getItem('dante_puntaje_global') || '0', 10);
+                const metaPts = /300/.test(String(metaText)) ? 300 : 380;
+                const brecha = (score > 0) ? Math.max(0, metaPts - score) : null;
+                const avanceTxt = score > 0
+                    ? (`Proyección ${score} / 500` + (brecha == null ? '' : (brecha === 0 ? ' · Meta alcanzada' : ` · Faltan ${brecha} pts`)))
+                    : 'Entrena para ver tu proyección hacia la meta';
+                container.innerHTML = `
+                    <div class="px-4 py-2.5 rounded-2xl bg-slate-950/90 border border-emerald-500/40 text-xs font-mono shadow-[0_0_20px_rgba(16,185,129,0.15)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                        <div class="flex items-center gap-2">
+                            <div class="w-2.5 h-2.5 rounded-full bg-emerald-400 shrink-0"></div>
+                            <span class="text-slate-300 font-sans font-extrabold text-xs">
+                                ENTRENAMIENTO LIBRE · Meta ${metaText}
+                            </span>
+                        </div>
+                        <span class="text-emerald-300 font-bold text-xs">${avanceTxt}</span>
+                    </div>`;
+            }
+
             static iniciarRelojContadorLive(targetDate, fechaTxt) {
                 if (this._timerLiveReloj) clearInterval(this._timerLiveReloj);
+                if (this.esModoLibreGuardado()) {
+                    this.iniciarBannerModoLibre(localStorage.getItem('dante_pacto_meta') === '300_BASE' ? '300+ Pts ICFES' : '380+ Pts Saber 11°');
+                    return;
+                }
 
                 const updateClock = () => {
                     const container = document.getElementById('containerRelojContadorLive');
