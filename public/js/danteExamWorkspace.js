@@ -3145,7 +3145,7 @@
         else if (rawXml.startsWith('data:image/svg+xml;')) rawXml = rawXml.substring(rawXml.indexOf(',') + 1);
         try { rawXml = decodeURIComponent(rawXml); } catch (e) {}
         rawXml = rawXml.replace(/%23/g, '#');
-        // En cuadernillo papel: fondo claro para que la gráfica se lea.
+        // En cuadernillo papel: fondo claro y paneles oscuros ilegibles → tonos claros.
         if (/background\s*:\s*#0/i.test(rawXml) || /background\s*:\s*%230/i.test(rawXml)) {
           rawXml = rawXml.replace(/background\s*:\s*#0[0-9a-fA-F]{5}/gi, 'background:#ffffff');
           rawXml = rawXml.replace(/background\s*:\s*%230[0-9a-fA-F]{5}/gi, 'background:#ffffff');
@@ -3153,6 +3153,18 @@
         if (!/background\s*:/i.test(rawXml)) {
           rawXml = rawXml.replace('<svg ', '<svg style="background:#ffffff;" ');
         }
+        rawXml = rawXml.replace(/fill=(["'])#1a1d26\1/gi, 'fill=$1#eef2f7$1');
+        rawXml = rawXml.replace(/fill=(["'])%231a1d26\1/gi, 'fill=$1#eef2f7$1');
+        rawXml = rawXml.replace(/fill="#1a1d26"/gi, 'fill="#eef2f7"');
+        rawXml = rawXml.replace(/fill="%231a1d26"/gi, 'fill="#eef2f7"');
+        rawXml = rawXml.replace(/fill=(["'])#1a233a\1/gi, 'fill=$1#eef2f7$1');
+        rawXml = rawXml.replace(/fill=(["'])%231a233a\1/gi, 'fill=$1#eef2f7$1');
+        rawXml = rawXml.replace(/fill="#1a233a"/gi, 'fill="#eef2f7"');
+        rawXml = rawXml.replace(/fill="%231a233a"/gi, 'fill="#eef2f7"');
+        rawXml = rawXml.replace(/fill=(["'])#0f172a\1/gi, 'fill=$1#f8fafc$1');
+        rawXml = rawXml.replace(/fill=(["'])%230f172a\1/gi, 'fill=$1#f8fafc$1');
+        rawXml = rawXml.replace(/fill="#0f172a"/gi, 'fill="#f8fafc"');
+        rawXml = rawXml.replace(/fill="%230f172a"/gi, 'fill="#f8fafc"');
         try {
           srcSegura = `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(rawXml)))}`;
         } catch (e) {

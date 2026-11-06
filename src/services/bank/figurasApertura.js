@@ -260,7 +260,9 @@ function circuito() {
 }
 
 function reaccion() {
-  return barras([['20 °C', 40], ['30 °C', 25]]).replace('</svg>', '<text x="210" y="222" text-anchor="middle" font-size="13" fill="#1c1917">tiempo de reacción (s)</text></svg>');
+  return barras([['20 °C', 40], ['30 °C', 25]])
+    .replace('viewBox="0 0 420 230"', 'viewBox="0 0 420 248"')
+    .replace('</svg>', '<text x="210" y="236" text-anchor="middle" font-size="13" fill="#1c1917">tiempo de reacción (s)</text></svg>');
 }
 
 function poste() {
