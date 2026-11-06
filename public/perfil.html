@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -9,7 +9,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="assets/icons/icon-192.svg">
     <link rel="apple-touch-icon" href="assets/icons/icon-192.svg">
-    <title>Dante OS · Tu informe c-1.3.40</title>
+    <title>Dante OS · Tu informe c-1.3.41</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap">
 
@@ -20,15 +20,15 @@
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="theme.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/danteCacheVersion.js?v=c-1.3.40"></script>
-    <script src="js/danteNube.js?v=c-1.3.40"></script>
-    <script src="js/danteRegistro.js?v=c-1.3.40"></script>
+    <script src="js/danteCacheVersion.js?v=c-1.3.41"></script>
+    <script src="js/danteNube.js?v=c-1.3.41"></script>
+    <script src="js/danteRegistro.js?v=c-1.3.41"></script>
     <script src="js/danteVectorIcons.js"></script>
     <script src="js/danteStorage.js"></script>
     <script src="js/streakManager.js?v=23.1.2"></script>
     <script src="js/rutaSimulacroEngine.js"></script>
     <script src="js/danteRadarEngine.js"></script>
-    <script src="js/danteTutorEngine.js?v=c-1.3.40"></script>
+    <script src="js/danteTutorEngine.js?v=c-1.3.41"></script>
 
     <style>
         #bentoContainer { display: flex; flex-direction: column; gap: 1.05rem; }
@@ -1071,10 +1071,117 @@
             padding: 1rem !important;
             border-color: rgba(126, 184, 196, 0.28) !important;
         }
-        #panelEnfoque_conducta:not(.hidden) {
-            margin: 0.9rem auto 0;
-            max-width: 28rem;
-            padding: 0 1rem 1rem;
+        #panelEnfoque_conducta { display: none !important; }
+        #modalComoRespondes .cr-card {
+            width: min(100%, 24.5rem);
+            background: #0f1115;
+            border: 1px solid rgba(148, 163, 184, 0.16);
+            border-radius: 1.25rem;
+            padding: 1.15rem 1.1rem 1.05rem;
+            box-shadow: 0 22px 50px rgba(0, 0, 0, 0.45);
+            max-height: min(88vh, 40rem);
+            overflow: auto;
+        }
+        #modalComoRespondes .cr-head {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 0.75rem; margin-bottom: 1rem;
+        }
+        #modalComoRespondes .cr-title {
+            margin: 0;
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+            font-size: 1.15rem; font-weight: 700; color: #f8fafc;
+            letter-spacing: -0.02em;
+        }
+        #modalComoRespondes .cr-close-x {
+            background: transparent; border: 0; color: #94a3b8;
+            font-size: 1.25rem; line-height: 1; cursor: pointer; padding: 0.2rem;
+        }
+        #modalComoRespondes .cr-kpi {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem;
+            margin-bottom: 0.85rem;
+        }
+        #modalComoRespondes .cr-kpi > div {
+            background: #161a22; border: 1px solid rgba(148, 163, 184, 0.12);
+            border-radius: 0.95rem; padding: 0.85rem 0.8rem; text-align: center;
+        }
+        #modalComoRespondes .cr-kpi span {
+            display: block; font-size: 0.68rem; color: #94a3b8;
+            letter-spacing: 0.04em; text-transform: uppercase; font-weight: 650;
+        }
+        #modalComoRespondes .cr-kpi strong {
+            display: block; margin-top: 0.35rem;
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+            font-size: 1.2rem; font-weight: 750; color: #f8fafc;
+            letter-spacing: -0.02em;
+        }
+        #modalComoRespondes .cr-insight {
+            background: linear-gradient(160deg, rgba(127, 29, 29, 0.28), rgba(15, 17, 21, 0.95));
+            border: 1px solid rgba(251, 113, 133, 0.35);
+            border-radius: 0.95rem; padding: 0.95rem 0.95rem 0.9rem;
+            margin-bottom: 1rem;
+        }
+        #modalComoRespondes .cr-insight p {
+            margin: 0; color: #e2e8f0; font-size: 0.88rem; line-height: 1.45;
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+        }
+        #modalComoRespondes .cr-insight strong { color: #fbbf24; font-weight: 700; }
+        #modalComoRespondes .cr-sec-h {
+            margin: 0 0 0.65rem;
+            font-size: 0.78rem; font-weight: 700; color: #cbd5e1;
+            letter-spacing: 0.02em;
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+        }
+        #modalComoRespondes .cr-areas {
+            display: grid; gap: 0.7rem; margin-bottom: 1.05rem;
+        }
+        #modalComoRespondes .cr-area-row {
+            display: grid; grid-template-columns: 1fr auto; gap: 0.35rem 0.6rem;
+            align-items: center;
+        }
+        #modalComoRespondes .cr-area-name {
+            font-size: 0.84rem; color: #e2e8f0; font-weight: 600;
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+        }
+        #modalComoRespondes .cr-area-meta {
+            display: flex; align-items: center; gap: 0.4rem;
+            justify-content: flex-end;
+        }
+        #modalComoRespondes .cr-area-pct {
+            font-size: 0.8rem; font-weight: 700; color: #f8fafc; min-width: 2.2rem; text-align: right;
+        }
+        #modalComoRespondes .cr-badge {
+            font-size: 0.62rem; font-weight: 700; padding: 0.18rem 0.45rem;
+            border-radius: 999px; white-space: nowrap;
+        }
+        #modalComoRespondes .cr-badge.ok {
+            background: rgba(16, 185, 129, 0.15); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        #modalComoRespondes .cr-badge.mid {
+            background: rgba(245, 158, 11, 0.14); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        #modalComoRespondes .cr-badge.low {
+            background: rgba(244, 63, 94, 0.14); color: #fda4af; border: 1px solid rgba(244, 63, 94, 0.3);
+        }
+        #modalComoRespondes .cr-badge.empty {
+            background: rgba(148, 163, 184, 0.1); color: #94a3b8; border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+        #modalComoRespondes .cr-bar {
+            grid-column: 1 / -1;
+            height: 0.45rem; border-radius: 999px;
+            background: #1e2430; overflow: hidden;
+        }
+        #modalComoRespondes .cr-bar > i {
+            display: block; height: 100%; border-radius: 999px;
+            background: linear-gradient(90deg, #38bdf8, #22d3ee);
+        }
+        #modalComoRespondes .cr-bar > i.mid { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+        #modalComoRespondes .cr-bar > i.low { background: linear-gradient(90deg, #f43f5e, #fb7185); }
+        #modalComoRespondes .cr-bar > i.empty { width: 0 !important; }
+        #modalComoRespondes .cr-btn {
+            width: 100%; min-height: 2.75rem; border: 0; border-radius: 0.9rem;
+            background: #e7d7c3; color: #1c1917; cursor: pointer;
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+            font-weight: 750; font-size: 0.92rem;
         }
     </style>
 </head>
@@ -1093,7 +1200,7 @@
         </div>
         <div class="perfil-hdr-tag-wrap">
             <span class="perfil-hdr-tag" id="lblHdrProyeccionTag">PROYECCIÓN 2026</span>
-            <span id="badgeDanteVersion" class="perfil-hdr-ver">c-1.3.40</span>
+            <span id="badgeDanteVersion" class="perfil-hdr-ver">c-1.3.41</span>
         </div>
         <div class="relative flex items-center gap-2.5 shrink-0">
             <button type="button" id="badgeRacha" onclick="if(window.StreakManager) StreakManager.abrirModalRacha()" class="flex items-center gap-1.5 cursor-pointer bg-transparent border-0 p-0 text-amber-400 font-mono text-xs font-black transition-transform hover:scale-105 active:scale-95 shrink-0 select-none" title="Ver Racha Real de Días">
@@ -1619,144 +1726,20 @@
                 </div>
             </div>
 
-            <!-- ========================================== -->
-            <!-- 4. PANEL ENFOQUE: GEMELO & CONDUCTA        -->
-            <!-- ========================================== -->
-            <div id="panelEnfoque_conducta" class="hidden space-y-6">
-                <!-- TARJETA PACTO DEL PROFESOR DANTE -->
-                <div class="bg-gradient-to-r from-cyan-950/80 via-slate-900 to-slate-950 border-2 border-cyan-500/50 rounded-xl p-4 sm:p-5 relative shadow-xl font-mono text-xs">
-                    <div class="flex justify-between items-center border-b border-cyan-500/30 pb-3 mb-3">
-                        <div class="flex items-center gap-2.5">
-                            <div class="w-8 h-8 rounded-lg bg-cyan-950/80 border border-cyan-500/40 flex items-center justify-center text-cyan-400 shrink-0">
-                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 0 0-4 4v1a4 4 0 0 0-3 3.87A4 4 0 0 0 4 14v1a4 4 0 0 0 4 4h8a4 4 0 0 0 4-4v-1a4 4 0 0 0-1-3.13A4 4 0 0 0 16 7V6a4 4 0 0 0-4-4z"></path></svg>
-                            </div>
-                            <div>
-                                <h3 class="text-xs font-black text-cyan-300 uppercase tracking-wider">
-                                    PACTO ACTIVO CON EL PROFESOR DANTE
-                                </h3>
-                                <p class="text-[11px] text-slate-300 font-sans">Compromiso pedagógico de entrenamiento diario rigoroso.</p>
-                            </div>
-                        </div>
-                        <span id="lblPerfilPactoStatus" class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/50 text-[10px] font-bold uppercase flex items-center gap-1">
-                            <svg class="w-3 h-3 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                            <span>PACTO FIRMADO</span>
-                        </span>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
-                        <div class="py-2 border-b border-slate-800/70">
-                            <span class="text-[10px] text-slate-400 block uppercase font-bold">Meta Programada:</span>
-                            <span class="text-sm font-bold text-amber-400" id="lblPerfilPactoMeta">Sin meta elegida</span>
-                        </div>
-
-                        <div class="py-2 border-b border-slate-800/70">
-                            <span class="text-[10px] text-slate-400 block uppercase font-bold">Prescripción Diaria:</span>
-                            <span class="text-sm font-bold text-cyan-300" id="lblPerfilPactoTiempo">10 preguntas</span>
-                        </div>
-
-                        <div class="py-2 border-b border-slate-800/70">
-                            <span class="text-[10px] text-slate-400 block uppercase font-bold">Tutor Socrático:</span>
-                            <span class="text-sm font-bold text-emerald-300">Una pista en el bloque</span>
-                        </div>
-                    </div>
-
-                    <a href="/index.html?sala=1" class="block w-full py-2 px-3 text-center rounded bg-slate-900 hover:bg-slate-800 border border-cyan-500/30 text-cyan-300 font-bold text-[11px] transition cursor-pointer flex items-center justify-center gap-1.5">
-                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
-                        <span>Volver a la sala</span>
-                    </a>
-                </div>
-
-                <!-- VISUALIZADOR DEL GEMELO DIGITAL CONDUCTUAL -->
-                <div class="text-sm font-semibold text-white mb-2">Cómo respondes</div>
-                
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <!-- RADAR CHART Y BARRAS DE HABILIDAD -->
-                    <div class="space-y-3">
-                        <div class="flex justify-between items-end gap-3">
-                            <span class="text-sm font-semibold text-white">Cada área</span>
-                            <span class="text-[11px] text-slate-400">De 0 a 100, solo con respuestas</span>
-                        </div>
-                        <canvas id="chartRadarGemeloExtra" width="320" height="240" class="w-full max-w-[320px] h-[240px] mx-auto block"></canvas>
-                        <p id="notaRadarLatente" class="text-xs text-slate-400 leading-relaxed">El dibujo se llena cuando cada área tiene respuestas. Un cero no se inventa.</p>
-
-                        <div class="space-y-2 font-mono text-[11px]" id="contenedorBarrasHabilidad">
-                            <!-- Inyectado dinámicamente -->
-                        </div>
-                    </div>
-
-                    <!-- 3 MÉTRICAS DE ESTILO DE RESOLUCIÓN -->
-                    <div class="bg-slate-900/90 border border-slate-800 p-4 rounded-xl space-y-4 font-mono text-xs flex flex-col justify-between">
-                        <div>
-                            <div class="border-b border-slate-800 pb-2 mb-3 flex justify-between items-center">
-                                <span class="font-bold text-amber-300 uppercase flex items-center gap-1.5">
-                                    <i class="fas fa-microscope text-amber-400"></i> 3 MÉTRICAS DE ESTILO DE RESOLUCIÓN
-                                </span>
-                                <span class="text-[9.5px] bg-slate-800 px-2 py-0.5 rounded text-slate-300">TELEMETRÍA EN VIVO</span>
-                            </div>
-
-                            <div class="p-3 rounded-xl bg-slate-950 border border-cyan-500/30 space-y-1 mb-3">
-                                <div class="flex justify-between items-center text-slate-300">
-                                    <span class="font-bold text-cyan-300 flex items-center gap-1.5">
-                                        <svg class="w-3.5 h-3.5 text-cyan-400 fill-current" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-                                        <span>1. Pace de Lectura</span>
-                                    </span>
-                                    <strong class="text-cyan-300 text-sm font-extrabold" id="kpiPaceLecturaVal">Sin medición</strong>
-                                </div>
-                                <p class="text-[10.5px] text-slate-300 font-sans leading-relaxed">
-                                    Ritmo promedio solo de las preguntas ya respondidas.
-                                </p>
-                            </div>
-
-                            <div class="p-3 rounded-xl bg-slate-950 border border-emerald-500/30 space-y-1 mb-3">
-                                <div class="flex justify-between items-center text-slate-300">
-                                    <span class="font-bold text-emerald-400 flex items-center gap-1.5">
-                                        <svg class="w-3.5 h-3.5 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-                                        <span>2. Resiliencia ante la Dificultad</span>
-                                    </span>
-                                    <strong class="text-emerald-400 text-sm font-extrabold" id="kpiImpulsividadIRI">Sin medición</strong>
-                                </div>
-                                <p class="text-[10.5px] text-slate-300 font-sans leading-relaxed">
-                                    Acierto en las preguntas más difíciles, cuando ya hay al menos tres.
-                                </p>
-                            </div>
-
-                            <div class="p-3 rounded-xl bg-slate-950 border border-purple-500/30 space-y-1">
-                                <div class="flex justify-between items-center text-slate-300">
-                                    <span class="font-bold text-purple-300 flex items-center gap-1.5">
-                                        <svg class="w-3.5 h-3.5 text-purple-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"></circle><line x1="12" y1="3" x2="12" y2="7"></line><line x1="12" y1="17" x2="12" y2="21"></line><line x1="3" y1="12" x2="7" y2="12"></line><line x1="17" y1="12" x2="21" y2="12"></line><circle cx="12" cy="12" r="2"></circle></svg>
-                                        <span>3. Enfoque de Atención</span>
-                                    </span>
-                                    <strong class="text-purple-300 text-sm font-extrabold" id="kpiCertezaICC">Sin medición</strong>
-                                </div>
-                                <p class="text-[10.5px] text-slate-300 font-sans leading-relaxed">
-                                    Aún no guardamos los cambios de opción, así que esta cifra no se inventa.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="pt-2 border-t border-slate-800">
-                            <div class="flex justify-between items-center text-[11px] mb-1">
-                                <span class="text-slate-400">Nivel de Habilidad Latente Global (&theta;):</span>
-                                <strong class="text-cyan-300 font-bold" id="kpiThetaVal">Sin medición</strong>
-                            </div>
-                            <p class="summary-text text-xs" id="ui-summary">Cargando expediente...</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TENDENCIA DE EVOLUCIÓN EN EL TIEMPO -->
-                <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-4 sm:p-5 space-y-3 shadow-xl font-mono text-xs">
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs font-bold text-emerald-400 uppercase flex items-center gap-1.5">
-                            <i class="fas fa-chart-line"></i> TENDENCIA DE EVOLUCIÓN EN EL TIEMPO
-                        </span>
-                        <span class="text-[10px] text-slate-400">PUNTAJE POR EVALUACIÓN</span>
-                    </div>
-                    <div class="relative w-full h-44 bg-slate-950 border border-slate-800 rounded-xl p-2">
-                        <canvas id="chartTrendEvolucion" class="w-full h-full"></canvas>
-                    </div>
-                </div>
-
+            <!-- Panel legado oculto: Cómo respondes ahora abre modal -->
+            <div id="panelEnfoque_conducta" class="hidden" aria-hidden="true">
+                <span id="lblPerfilPactoStatus" hidden></span>
+                <span id="lblPerfilPactoMeta" hidden></span>
+                <span id="lblPerfilPactoTiempo" hidden></span>
+                <canvas id="chartRadarGemeloExtra" hidden width="1" height="1"></canvas>
+                <p id="notaRadarLatente" hidden></p>
+                <div id="contenedorBarrasHabilidad" hidden></div>
+                <strong id="kpiPaceLecturaVal" hidden>Sin medición</strong>
+                <strong id="kpiImpulsividadIRI" hidden>Sin medición</strong>
+                <strong id="kpiCertezaICC" hidden>Sin medición</strong>
+                <strong id="kpiThetaVal" hidden>Sin medición</strong>
+                <p id="ui-summary" hidden></p>
+                <canvas id="chartTrendEvolucion" hidden width="1" height="1"></canvas>
             </div>
         </div>
     </div>
@@ -1845,21 +1828,46 @@
         </div>
     </div>
 
-    <!-- MODAL FORENSE DE DETALLE DE PRUEBA -->
+    <!-- MODAL CÓMO RESPONDES -->
+    <div id="modalComoRespondes" class="modal-overlay" style="display:none; align-items:center; justify-content:center;">
+        <div class="cr-card" role="dialog" aria-modal="true" aria-labelledby="crTitulo">
+            <div class="cr-head">
+                <h3 id="crTitulo" class="cr-title">Cómo respondes</h3>
+                <button type="button" class="cr-close-x" onclick="PerfilEstudiante.cerrarComoRespondes()" aria-label="Cerrar">&times;</button>
+            </div>
+            <div class="cr-kpi">
+                <div>
+                    <span>Puntaje</span>
+                    <strong id="crPuntaje">—</strong>
+                </div>
+                <div>
+                    <span>Aciertos</span>
+                    <strong id="crAciertos">—</strong>
+                </div>
+            </div>
+            <div class="cr-insight">
+                <p id="crInsight">Cuando termines una prueba, aquí verás en qué área necesitas más práctica mañana.</p>
+            </div>
+            <p class="cr-sec-h">Tus áreas</p>
+            <div id="crAreas" class="cr-areas"></div>
+            <button type="button" class="cr-btn" onclick="PerfilEstudiante.cerrarComoRespondes()">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- MODAL DETALLE DE PRUEBA -->
     <div id="modalForense" class="modal-overlay">
-        <div class="adn-card max-w-2xl w-full text-left p-5 shadow-2xl relative">
-            <div class="flex justify-between items-center border-b border-zinc-800 pb-3 mb-4">
-                <h3 class="font-mono text-xs sm:text-sm font-bold text-[#51e2f5] uppercase flex items-center gap-2" id="lblModalForenseTitulo">
-                    <svg class="w-4 h-4 text-[#51e2f5]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                    <span>INSPECCIÓN FORENSE DE EXAMEN</span>
+        <div class="adn-card max-w-lg w-full text-left p-5 shadow-2xl relative" style="background:#0f1115;border:1px solid rgba(148,163,184,0.16);border-radius:1.25rem;">
+            <div class="flex justify-between items-center pb-3 mb-3">
+                <h3 class="text-base font-semibold text-slate-100" id="lblModalForenseTitulo" style="font-family:'Plus Jakarta Sans',sans-serif">
+                    Detalle de la prueba
                 </h3>
-                <button type="button" onclick="document.getElementById('modalForense').style.display='none'" class="text-slate-400 hover:text-white font-mono text-base font-bold cursor-pointer">&times;</button>
+                <button type="button" onclick="document.getElementById('modalForense').style.display='none'" class="text-slate-400 hover:text-white text-xl font-bold cursor-pointer leading-none">&times;</button>
             </div>
-            <div id="lblModalForenseCuerpo" class="text-xs text-slate-200 font-mono space-y-3 max-h-[70vh] overflow-y-auto pr-1">
-                Cargando datos...
+            <div id="lblModalForenseCuerpo" class="text-sm text-slate-200 space-y-3 max-h-[70vh] overflow-y-auto pr-1" style="font-family:'Plus Jakarta Sans',sans-serif">
+                Cargando…
             </div>
-            <button type="button" class="w-full mt-4 py-2.5 bg-[#D4AF37] text-slate-950 font-mono font-bold text-xs uppercase rounded-lg cursor-pointer" onclick="document.getElementById('modalForense').style.display='none'">
-                CERRAR INSPECCIÓN
+            <button type="button" class="w-full mt-4 py-2.5 bg-[#e7d7c3] text-slate-950 font-bold text-sm rounded-xl cursor-pointer" style="font-family:'Plus Jakarta Sans',sans-serif" onclick="document.getElementById('modalForense').style.display='none'">
+                Cerrar
             </button>
         </div>
     </div>
@@ -2713,8 +2721,8 @@
 
             static toggleModuloExtra(mod) {
                 const ruta = document.getElementById('panelRutaEnPalabras');
-                const gem = document.getElementById('panelEnfoque_conducta');
                 if (mod === 'vocacional') {
+                    this.cerrarComoRespondes();
                     if (ruta) {
                         ruta.classList.toggle('hidden');
                         if (!ruta.classList.contains('hidden')) {
@@ -2722,16 +2730,165 @@
                             ruta.scrollIntoView({ behavior: 'smooth' });
                         }
                     }
-                    if (gem) gem.classList.add('hidden');
                 } else if (mod === 'gemelo') {
-                    if (gem) {
-                        gem.classList.toggle('hidden');
-                        if (!gem.classList.contains('hidden')) {
-                            gem.scrollIntoView({ behavior: 'smooth' });
-                        }
-                    }
                     if (ruta) ruta.classList.add('hidden');
+                    this.abrirComoRespondes();
                 }
+            }
+
+            static cerrarComoRespondes() {
+                const modal = document.getElementById('modalComoRespondes');
+                if (modal) modal.style.display = 'none';
+            }
+
+            static abrirComoRespondes() {
+                this.pintarComoRespondes();
+                const modal = document.getElementById('modalComoRespondes');
+                if (modal) modal.style.display = 'flex';
+            }
+
+            static _escTexto(v) {
+                return String(v == null ? '' : v)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;');
+            }
+
+            static _obtenerPrecisionAreas() {
+                let precMap = {};
+                try {
+                    const rawC = localStorage.getItem('dante_area_conteo');
+                    if (rawC) {
+                        const conteo = JSON.parse(rawC) || {};
+                        Object.entries(conteo).forEach(([k, v]) => {
+                            if (v && v.total) precMap[k] = Math.round((100 * v.aciertos) / v.total);
+                        });
+                    }
+                    if (Object.keys(precMap).length === 0) {
+                        const rawP = localStorage.getItem('dante_precision_por_area');
+                        if (rawP) precMap = JSON.parse(rawP) || {};
+                    }
+                } catch (e) {}
+                if (Object.keys(precMap).length === 0 && Array.isArray(cacheHistorialCompleto)) {
+                    const diag = cacheHistorialCompleto.find(x => x.precisionPorArea || (x.items_respondidos && x.items_respondidos.precisionPorArea));
+                    if (diag) precMap = diag.precisionPorArea || diag.items_respondidos?.precisionPorArea || {};
+                }
+                return precMap || {};
+            }
+
+            static _ultimaPrueba() {
+                const ordenadas = Array.isArray(this._pruebasOrdenadas) ? this._pruebasOrdenadas : [];
+                if (ordenadas.length) return ordenadas[0];
+                const hist = Array.isArray(cacheHistorialCompleto) ? [...cacheHistorialCompleto] : [];
+                if (!hist.length) {
+                    try {
+                        const raw = localStorage.getItem('dante_history_cache');
+                        if (raw) hist.push(...(JSON.parse(raw) || []));
+                    } catch (e) {}
+                }
+                hist.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+                return hist[0] || null;
+            }
+
+            static pintarComoRespondes() {
+                const elPts = document.getElementById('crPuntaje');
+                const elAci = document.getElementById('crAciertos');
+                const elIns = document.getElementById('crInsight');
+                const elAreas = document.getElementById('crAreas');
+                const materias = [
+                    { key: 'matematicas', name: 'Matemáticas' },
+                    { key: 'lectura_critica', name: 'Lectura Crítica' },
+                    { key: 'ciencias_naturales', name: 'Ciencias Naturales' },
+                    { key: 'sociales_ciudadanas', name: 'Sociales y Ciudadanas' },
+                    { key: 'ingles', name: 'Inglés' }
+                ];
+
+                const reg = this._ultimaPrueba();
+                const scoreProy = parseInt(localStorage.getItem('dante_score_proyectado') || localStorage.getItem('dante_puntaje_global') || '0', 10);
+                let pts = null;
+                if (reg && reg.puntaje_escalonado !== undefined && reg.puntaje_escalonado !== null && reg.puntaje_escalonado !== '') {
+                    pts = Number(reg.puntaje_escalonado);
+                } else if (scoreProy > 0) {
+                    pts = scoreProy;
+                }
+                const maxPts = (reg && String(reg.materia || '').toUpperCase().includes('UNAL')) ? 1000 : 500;
+                if (elPts) elPts.textContent = (pts != null && Number.isFinite(pts)) ? `${Math.round(pts)} / ${maxPts}` : '—';
+
+                let aciertosTxt = '—';
+                if (reg && typeof reg.aciertos === 'number' && typeof reg.total === 'number' && reg.total > 0) {
+                    aciertosTxt = `${reg.aciertos} de ${reg.total}`;
+                } else {
+                    try {
+                        const conteo = JSON.parse(localStorage.getItem('dante_area_conteo') || '{}') || {};
+                        let a = 0, t = 0;
+                        Object.values(conteo).forEach((fila) => {
+                            if (fila && fila.total) {
+                                a += Number(fila.aciertos) || 0;
+                                t += Number(fila.total) || 0;
+                            }
+                        });
+                        if (t > 0) aciertosTxt = `${a} de ${t}`;
+                    } catch (e) {}
+                }
+                if (elAci) elAci.textContent = aciertosTxt;
+
+                const precMap = this._obtenerPrecisionAreas();
+                let radio = (reg && (reg.radiografia || (reg.items_respondidos && reg.items_respondidos.radiografia_error))) || null;
+                if (!radio) {
+                    try {
+                        const rawR = localStorage.getItem('dante_radiografia_error');
+                        if (rawR) radio = JSON.parse(rawR);
+                    } catch (e) {}
+                }
+
+                let insightHtml = 'Cuando termines una prueba, aquí verás en qué área necesitas más práctica mañana.';
+                const presentes = materias
+                    .map((m) => ({ ...m, pct: precMap[m.key] !== undefined && precMap[m.key] !== null ? Number(precMap[m.key]) : null }))
+                    .filter((m) => m.pct !== null && Number.isFinite(m.pct));
+
+                if (radio && radio.materiaVulnerable) {
+                    const matNom = this._escTexto(radio.materiaVulnerable);
+                    const pctVuln = presentes.find((m) => m.name.toLowerCase() === String(radio.materiaVulnerable).toLowerCase()
+                        || m.key === String(radio.materiaVulnerable || '').toLowerCase().replace(/\s+/g, '_'));
+                    const pctTxt = pctVuln != null ? Math.round(pctVuln.pct) : (typeof radio.precision === 'number' ? Math.round(radio.precision) : null);
+                    if (pctTxt != null) {
+                        insightHtml = `Detectamos que en <strong>${matNom}</strong> tu precisión fue del <strong>${pctTxt}%</strong>. Mañana el entrenamiento empieza por ${matNom}.`;
+                    } else {
+                        insightHtml = `Detectamos que en <strong>${matNom}</strong> necesitas más práctica. Mañana el entrenamiento empieza por esa área.`;
+                    }
+                } else if (presentes.length) {
+                    presentes.sort((a, b) => a.pct - b.pct);
+                    const peor = presentes[0];
+                    insightHtml = `Detectamos que en <strong>${this._escTexto(peor.name)}</strong> tu precisión fue del <strong>${Math.round(peor.pct)}%</strong>. Mañana el entrenamiento empieza por ${this._escTexto(peor.name)}.`;
+                }
+                if (elIns) elIns.innerHTML = insightHtml;
+
+                if (!elAreas) return;
+                let html = '';
+                materias.forEach((m) => {
+                    const raw = precMap[m.key];
+                    const has = raw !== undefined && raw !== null && !Number.isNaN(Number(raw));
+                    const pct = has ? Math.max(0, Math.min(100, Math.round(Number(raw)))) : 0;
+                    let badge = 'empty';
+                    let badgeTxt = 'Sin datos';
+                    let barCls = 'empty';
+                    if (has) {
+                        if (pct >= 70) { badge = 'ok'; badgeTxt = 'Fortaleza'; barCls = ''; }
+                        else if (pct >= 40) { badge = 'mid'; badgeTxt = 'En calibración'; barCls = 'mid'; }
+                        else { badge = 'low'; badgeTxt = 'Para reforzar'; barCls = 'low'; }
+                    }
+                    html += `
+                        <div class="cr-area-row">
+                            <span class="cr-area-name">${this._escTexto(m.name)}</span>
+                            <span class="cr-area-meta">
+                                <span class="cr-area-pct">${has ? pct + '%' : '—'}</span>
+                                <span class="cr-badge ${badge}">${badgeTxt}</span>
+                            </span>
+                            <div class="cr-bar"><i class="${barCls}" style="width:${has ? Math.max(4, pct) : 0}%"></i></div>
+                        </div>`;
+                });
+                elAreas.innerHTML = html;
             }
 
             static generarTokenBoletin() {
@@ -4082,19 +4239,18 @@
                 }
 
                 const reg = (this._pruebasOrdenadas && this._pruebasOrdenadas[regIndex]) || (items && items[regIndex]) || items[0] || {};
-                const materia = (reg.materia || 'Diagnóstico Inicial Saber 11°').toUpperCase().replace(/_/g, ' ');
-                const esDiag = reg.tipo === 'DIAGNOSTICO_INICIAL' || materia.includes('DIAGNÓSTICO') || materia.includes('DIAGNOSTICO');
-                const maxPts = materia.includes('UNAL') ? 1000 : 500;
-                const pts = (reg.puntaje_escalonado !== undefined && reg.puntaje_escalonado !== null && reg.puntaje_escalonado !== '') ? reg.puntaje_escalonado : '—';
-                const theta = (reg.theta !== undefined && reg.theta !== null && reg.theta !== '') ? reg.theta : '—';
+                const materiaRaw = (reg.materia || 'Diagnóstico inicial').replace(/_/g, ' ');
+                const materia = materiaRaw.charAt(0).toUpperCase() + materiaRaw.slice(1);
+                const maxPts = String(materiaRaw).toUpperCase().includes('UNAL') ? 1000 : 500;
+                const ptsNum = (reg.puntaje_escalonado !== undefined && reg.puntaje_escalonado !== null && reg.puntaje_escalonado !== '')
+                    ? Number(reg.puntaje_escalonado) : null;
+                const ptsTxt = (ptsNum != null && Number.isFinite(ptsNum)) ? `${Math.round(ptsNum)} / ${maxPts}` : '—';
                 const aciertosTxt = (typeof reg.aciertos === 'number' && typeof reg.total === 'number')
-                    ? `${reg.aciertos} de ${reg.total} reactivos (${typeof reg.precision === 'number' ? reg.precision : '—'}%)`
+                    ? `${reg.aciertos} de ${reg.total}`
                     : '—';
-                const semTxt = (reg.sem !== undefined && reg.sem !== null && reg.sem !== '') ? `± ${reg.sem}` : '—';
 
-                if (titulo) titulo.innerText = `INSPECCIÓN FORENSE: ${materia}`;
+                if (titulo) titulo.innerText = 'Cómo respondes';
 
-                // Obtener radiografía del error
                 let radio = reg.radiografia || (reg.items_respondidos && reg.items_respondidos.radiografia_error) || null;
                 if (!radio) {
                     try {
@@ -4102,20 +4258,16 @@
                         if (rawR) radio = JSON.parse(rawR);
                     } catch(e) {}
                 }
-                const matVulnerable = radio?.materiaVulnerable || "Lectura Crítica";
-                const patronError = radio?.patronDetectado || radio?.patron || "Distractores de sobre-interpretación (sesgo literal / extrapolación sin evidencia)";
-                const prescrip = radio?.prescripcion || "En tu primer Bloque Diario de entrenamiento, Profesor Dante te asignará reactivos guiados para neutralizar este patrón exacto.";
 
-                // Semáforo de las 5 competencias
                 let precMap = reg.precisionPorArea || {};
                 if (Object.keys(precMap).length === 0) {
                     try {
                         const rawP = localStorage.getItem('dante_precision_por_area');
-                        if (rawP) precMap = JSON.parse(rawP);
+                        if (rawP) precMap = JSON.parse(rawP) || {};
                     } catch(e) {}
                 }
                 if (Object.keys(precMap).length === 0) {
-                    precMap = {};
+                    precMap = this._obtenerPrecisionAreas();
                 }
 
                 const NOMBRES = {
@@ -4126,94 +4278,85 @@
                     ingles: 'Inglés'
                 };
 
+                const presentes = Object.entries(precMap)
+                    .map(([k, v]) => ({ key: k, name: NOMBRES[k] || k, pct: Number(v) }))
+                    .filter((x) => Number.isFinite(x.pct));
+                presentes.sort((a, b) => a.pct - b.pct);
+
+                let matVulnerable = radio?.materiaVulnerable || (presentes[0] && presentes[0].name) || '';
+                let pctVulnerable = null;
+                if (presentes.length) {
+                    const match = presentes.find((p) => p.name.toLowerCase() === String(matVulnerable).toLowerCase()
+                        || p.key === String(matVulnerable || '').toLowerCase().replace(/\s+/g, '_'));
+                    pctVulnerable = match ? Math.round(match.pct) : Math.round(presentes[0].pct);
+                    if (!radio?.materiaVulnerable) matVulnerable = presentes[0].name;
+                } else if (typeof radio?.precision === 'number') {
+                    pctVulnerable = Math.round(radio.precision);
+                }
+
+                let insightHtml = 'Cuando termines una prueba, aquí verás en qué área necesitas más práctica mañana.';
+                if (matVulnerable) {
+                    const matEsc = this._escTexto(matVulnerable);
+                    insightHtml = (pctVulnerable != null)
+                        ? `Detectamos que en <strong style="color:#fbbf24">${matEsc}</strong> tu precisión fue del <strong style="color:#fbbf24">${pctVulnerable}%</strong>. Mañana el entrenamiento empieza por ${matEsc}.`
+                        : `Detectamos que en <strong style="color:#fbbf24">${matEsc}</strong> necesitas más práctica. Mañana el entrenamiento empieza por esa área.`;
+                }
+
                 let semaforoHtml = '';
-                for (const [k, v] of Object.entries(precMap)) {
-                    const val = Number(v) || 0;
-                    let badge = '<span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">Fortaleza</span>';
-                    let barColor = 'bg-emerald-400';
-                    if (val < 40) {
-                        badge = '<span class="text-[9px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40">Refuerzo Táctico</span>';
-                        barColor = 'bg-rose-400';
-                    } else if (val < 70) {
-                        badge = '<span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40">En Calibración</span>';
-                        barColor = 'bg-amber-400';
+                const orden = ['matematicas', 'lectura_critica', 'ciencias_naturales', 'sociales_ciudadanas', 'ingles'];
+                orden.forEach((k) => {
+                    const has = precMap[k] !== undefined && precMap[k] !== null && !Number.isNaN(Number(precMap[k]));
+                    const val = has ? Math.max(0, Math.min(100, Math.round(Number(precMap[k])))) : 0;
+                    let badge = 'Sin datos';
+                    let badgeStyle = 'background:rgba(148,163,184,0.1);color:#94a3b8;border:1px solid rgba(148,163,184,0.2)';
+                    let barColor = '#38bdf8';
+                    if (has) {
+                        if (val >= 70) {
+                            badge = 'Fortaleza';
+                            badgeStyle = 'background:rgba(16,185,129,0.15);color:#6ee7b7;border:1px solid rgba(16,185,129,0.3)';
+                            barColor = '#34d399';
+                        } else if (val >= 40) {
+                            badge = 'En calibración';
+                            badgeStyle = 'background:rgba(245,158,11,0.14);color:#fcd34d;border:1px solid rgba(245,158,11,0.3)';
+                            barColor = '#fbbf24';
+                        } else {
+                            badge = 'Para reforzar';
+                            badgeStyle = 'background:rgba(244,63,94,0.14);color:#fda4af;border:1px solid rgba(244,63,94,0.3)';
+                            barColor = '#fb7185';
+                        }
                     }
                     semaforoHtml += `
-                        <div class="py-1.5 flex items-center justify-between gap-2 border-b border-slate-800/60 last:border-0">
-                            <span class="text-xs text-slate-300 w-2/5 truncate">${NOMBRES[k] || k}</span>
-                            <div class="flex-1 bg-slate-900 h-2 rounded-full overflow-hidden border border-white/5">
-                                <div class="h-full ${barColor} rounded-full" style="width: ${Math.max(5, val)}%"></div>
+                        <div style="display:grid;grid-template-columns:1fr auto;gap:0.35rem 0.6rem;align-items:center;padding:0.35rem 0;border-bottom:1px solid rgba(148,163,184,0.1)">
+                            <span style="font-size:0.84rem;color:#e2e8f0;font-weight:600">${NOMBRES[k]}</span>
+                            <span style="display:flex;align-items:center;gap:0.4rem;justify-content:flex-end">
+                                <span style="font-size:0.8rem;font-weight:700;color:#f8fafc;min-width:2.2rem;text-align:right">${has ? val + '%' : '—'}</span>
+                                <span style="font-size:0.62rem;font-weight:700;padding:0.18rem 0.45rem;border-radius:999px;${badgeStyle}">${badge}</span>
+                            </span>
+                            <div style="grid-column:1/-1;height:0.45rem;border-radius:999px;background:#1e2430;overflow:hidden">
+                                <div style="height:100%;width:${has ? Math.max(4, val) : 0}%;border-radius:999px;background:${barColor}"></div>
                             </div>
-                            <span class="text-xs font-bold text-white w-10 text-right">${val}%</span>
-                            ${badge}
                         </div>
                     `;
-                }
+                });
 
                 if (cuerpo) {
                     cuerpo.innerHTML = `
-                        <!-- MÉTRICAS PSICOMÉTRICAS -->
-                        <div class="p-3 bg-slate-950 rounded-xl border border-cyan-500/30 space-y-2 font-mono text-xs">
-                            <div class="flex justify-between items-center">
-                                <span class="text-slate-400">Puntaje Escalonado:</span>
-                                <strong class="text-emerald-400 text-sm font-bold">${pts} / ${maxPts} pts</strong>
+                        <p style="margin:0 0 0.75rem;font-size:0.78rem;color:#94a3b8">${this._escTexto(materia)}</p>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.65rem;margin-bottom:0.85rem">
+                            <div style="background:#161a22;border:1px solid rgba(148,163,184,0.12);border-radius:0.95rem;padding:0.85rem 0.8rem;text-align:center">
+                                <span style="display:block;font-size:0.68rem;color:#94a3b8;letter-spacing:0.04em;text-transform:uppercase;font-weight:650">Puntaje</span>
+                                <strong style="display:block;margin-top:0.35rem;font-size:1.15rem;font-weight:750;color:#f8fafc">${ptsTxt}</strong>
                             </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-slate-400">Parámetro de Habilidad (&theta;):</span>
-                                <strong class="text-cyan-300">${theta}</strong>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-slate-400">Aciertos:</span>
-                                <strong class="text-amber-300">${aciertosTxt}</strong>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <span class="text-slate-400">Error Estándar de Medición (SE):</span>
-                                <strong class="text-slate-300">${semTxt}</strong>
+                            <div style="background:#161a22;border:1px solid rgba(148,163,184,0.12);border-radius:0.95rem;padding:0.85rem 0.8rem;text-align:center">
+                                <span style="display:block;font-size:0.68rem;color:#94a3b8;letter-spacing:0.04em;text-transform:uppercase;font-weight:650">Aciertos</span>
+                                <strong style="display:block;margin-top:0.35rem;font-size:1.15rem;font-weight:750;color:#f8fafc">${this._escTexto(aciertosTxt)}</strong>
                             </div>
                         </div>
-
-                        <!-- RADIOGRAFÍA DEL ERROR -->
-                        <div class="p-3.5 bg-gradient-to-br from-rose-950/40 via-slate-950 to-slate-900 rounded-xl border border-rose-500/50 space-y-2 font-sans">
-                            <div class="flex items-center gap-2">
-                                <span class="w-6 h-6 rounded-lg bg-rose-500/20 border border-rose-500/40 flex items-center justify-center shrink-0">
-                                    <svg class="w-3.5 h-3.5 text-rose-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <circle cx="12" cy="12" r="10"></circle>
-                                        <line x1="22" y1="12" x2="18" y2="12"></line>
-                                        <line x1="6" y1="12" x2="2" y2="12"></line>
-                                        <line x1="12" y1="6" x2="12" y2="2"></line>
-                                        <line x1="12" y1="22" x2="12" y2="18"></line>
-                                    </svg>
-                                </span>
-                                <h4 class="text-xs font-mono font-bold text-rose-300 uppercase tracking-wider">
-                                    RADIOGRAFÍA DEL ERROR: PATRÓN COGNITIVO DETECTADO
-                                </h4>
-                            </div>
-                            <p class="text-xs text-slate-200 leading-relaxed">
-                                Detectamos que en <strong class="text-amber-300 font-bold">${matVulnerable}</strong> caíste en <span class="text-rose-200 font-semibold">${patronError}</span>.
-                            </p>
-                            <div class="p-2.5 rounded-lg bg-slate-900/90 border border-cyan-500/30 flex items-start gap-2">
-                                <i class="fa-solid fa-graduation-cap text-cyan-400 text-xs mt-0.5 shrink-0"></i>
-                                <p class="text-[11px] text-cyan-200 leading-snug">
-                                    ${prescrip}
-                                </p>
-                            </div>
+                        <div style="background:linear-gradient(160deg,rgba(127,29,29,0.28),rgba(15,17,21,0.95));border:1px solid rgba(251,113,133,0.35);border-radius:0.95rem;padding:0.95rem;margin-bottom:1rem">
+                            <p style="margin:0;color:#e2e8f0;font-size:0.88rem;line-height:1.45">${insightHtml}</p>
                         </div>
-
-                        <!-- SEMÁFORO DE LAS 5 COMPETENCIAS -->
-                        <div class="p-3 bg-slate-950/90 rounded-xl border border-slate-800 space-y-2 font-mono">
-                            <div class="flex justify-between items-center pb-1 border-b border-slate-800">
-                                <span class="text-xs font-bold text-amber-400 uppercase flex items-center gap-1.5">
-                                    <svg class="w-3.5 h-3.5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <line x1="18" y1="20" x2="18" y2="10"></line>
-                                        <line x1="12" y1="20" x2="12" y2="4"></line>
-                                        <line x1="6" y1="20" x2="6" y2="14"></line>
-                                    </svg>
-                                    Desglose por Competencia
-                                </span>
-                                <span class="text-[10px] text-slate-400">Escala Porcentual</span>
-                            </div>
-                            ${semaforoHtml}
-                        </div>
+                        <p style="margin:0 0 0.65rem;font-size:0.78rem;font-weight:700;color:#cbd5e1">Tus áreas</p>
+                        <div style="display:grid;gap:0.55rem;margin-bottom:0.25rem">${semaforoHtml}</div>
                     `;
                 }
                 if (modal) modal.style.display = 'flex';
