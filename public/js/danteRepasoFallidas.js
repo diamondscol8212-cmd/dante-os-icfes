@@ -1,12 +1,13 @@
 /**
  * Repaso · preguntas fallidas
- * Arma un bloque solo con ítems que el estudiante ya falló en sus pruebas (historial local).
+ * Solo ítems fallados en pruebas. Si en el repaso las aciertas, salen del contador.
  */
 (function () {
   'use strict';
 
   const MAX_BLOQUE = 10;
-  const CLAVE_HECHAS = 'dante_repaso_fallidas_hechas';
+  /** IDs superados en repaso (acertados); no vuelven al pool hasta nuevo fallo. */
+  const CLAVE_SUPERADAS = 'dante_repaso_fallidas_superadas';
 
   function limpio(t) {
     return String(t || '').replace(/\s+/g, ' ').trim();
@@ -21,48 +22,75 @@
     }
   }
 
-  function leerHechasHoy() {
+  function leerSuperadas() {
     try {
-      const raw = JSON.parse(localStorage.getItem(CLAVE_HECHAS) || '{}');
-      const hoy = new Date().toISOString().slice(0, 10);
-      if (!raw || raw.dia !== hoy) return new Set();
-      return new Set(Array.isArray(raw.ids) ? raw.ids.map(String) : []);
+      const raw = JSON.parse(localStorage.getItem(CLAVE_SUPERADAS) || '[]');
+      return new Set((Array.isArray(raw) ? raw : []).map(String));
     } catch (e) {
       return new Set();
     }
   }
 
-  function marcarHecha(id) {
-    if (!id) return;
-    const hoy = new Date().toISOString().slice(0, 10);
-    let raw = { dia: hoy, ids: [] };
+  function guardarSuperadas(set) {
     try {
-      const prev = JSON.parse(localStorage.getItem(CLAVE_HECHAS) || 'null');
-      if (prev && prev.dia === hoy && Array.isArray(prev.ids)) raw = prev;
+      localStorage.setItem(CLAVE_SUPERADAS, JSON.stringify([...set].slice(-400)));
     } catch (e) {}
-    if (!raw.ids.includes(String(id))) raw.ids.push(String(id));
-    try { localStorage.setItem(CLAVE_HECHAS, JSON.stringify({ dia: hoy, ids: raw.ids.slice(-200) })); } catch (e) {}
+  }
+
+  function marcarSuperada(id) {
+    if (!id) return;
+    const set = leerSuperadas();
+    set.add(String(id));
+    guardarSuperadas(set);
+  }
+
+  function quitarSuperada(id) {
+    if (!id) return;
+    const set = leerSuperadas();
+    if (!set.has(String(id))) return;
+    set.delete(String(id));
+    guardarSuperadas(set);
   }
 
   /**
-   * Recolecta fallos con el máximo detalle disponible.
-   * @returns {Map<string, object>}
+   * Fallos del historial. Si más adelante hubo un acierto en la misma pregunta
+   * (en cualquier sesión), ya no cuenta como pendiente.
    */
   function mapaFallos() {
     const out = new Map();
-    leerHistorial().forEach((ses) => {
+    const ultimoResultado = new Map(); // id → true si última vez fue correcta
+
+    const sesiones = leerHistorial().slice().sort((a, b) => {
+      const ta = new Date(a && a.created_at || 0).getTime();
+      const tb = new Date(b && b.created_at || 0).getTime();
+      return ta - tb;
+    });
+
+    sesiones.forEach((ses) => {
       if (!ses) return;
       const tipo = String(ses.tipo || '').toUpperCase();
-      // Incluye diagnóstico, entrenamiento, refuerzo, simulacro si trae detalle.
-      const listas = [];
-      if (Array.isArray(ses.preguntas_falladas)) listas.push(ses.preguntas_falladas);
-      if (Array.isArray(ses.items_respondidos)) {
-        listas.push(ses.items_respondidos.filter((it) => it && it.correcto === false));
-      }
-      listas.forEach((lista) => {
-        lista.forEach((f) => {
+      const items = Array.isArray(ses.items_respondidos) ? ses.items_respondidos : [];
+      items.forEach((it) => {
+        const id = String((it && (it.id || it.itemId || it.item_original || it.item_id)) || '').trim();
+        if (!id || typeof it.correcto !== 'boolean') return;
+        ultimoResultado.set(id, it.correcto === true);
+        if (it.correcto === false) {
+          out.set(id, {
+            id: id,
+            materia: limpio(it.materia || it.area || ''),
+            enunciado: limpio(it.enunciado || '').slice(0, 320),
+            ayuda: limpio(it.ayuda || it.explicacion || it.repaso || '').slice(0, 520),
+            tipoSesion: tipo || 'MISION_DIARIA',
+            created_at: ses.created_at || null
+          });
+        }
+      });
+      if (Array.isArray(ses.preguntas_falladas)) {
+        ses.preguntas_falladas.forEach((f) => {
           const id = String((f && (f.id || f.itemId || f.item_original || f.item_id)) || '').trim();
-          if (!id || out.has(id)) return;
+          if (!id) return;
+          if (!ultimoResultado.has(id)) ultimoResultado.set(id, false);
+          if (ultimoResultado.get(id) === true) return;
           out.set(id, {
             id: id,
             materia: limpio(f.materia || f.area || ''),
@@ -72,19 +100,29 @@
             created_at: ses.created_at || null
           });
         });
-      });
+      }
     });
+
+    // Si la última vez que apareció el ítem fue correcta, ya no es fallo pendiente.
+    ultimoResultado.forEach((ok, id) => {
+      if (ok) out.delete(id);
+    });
+
+    const superadas = leerSuperadas();
+    superadas.forEach((id) => {
+      // Superada en repaso: fuera del pool, salvo que el historial diga que volvió a fallar después.
+      if (ultimoResultado.get(id) !== false) out.delete(id);
+    });
+
     return out;
   }
 
   function inventario() {
     const mapa = mapaFallos();
-    const hechas = leerHechasHoy();
-    const pendientes = [...mapa.keys()].filter((id) => !hechas.has(id));
     return {
       total: mapa.size,
-      pendientes: pendientes.length,
-      hechasHoy: hechas.size
+      pendientes: mapa.size,
+      hechasHoy: leerSuperadas().size
     };
   }
 
@@ -184,30 +222,24 @@
     const el = document.getElementById('lblRepasoFallidasDetalle');
     if (!el) return;
     const inv = inventario();
-    if (!inv.total) {
-      el.textContent = 'Cuando falles en un bloque, aquí se juntan.';
-      return;
-    }
     if (!inv.pendientes) {
-      el.textContent = inv.total + ' fallidas · hoy ya repasaste las pendientes';
+      el.textContent = 'Sin fallos pendientes. Bien.';
       return;
     }
-    el.textContent = inv.pendientes + ' pendientes · de ' + inv.total + ' fallidas guardadas';
+    el.textContent = inv.pendientes + (inv.pendientes === 1 ? ' pregunta pendiente' : ' preguntas pendientes');
   }
 
   async function abrir() {
     const fallos = mapaFallos();
     if (!fallos.size) {
-      nota('Aún no hay fallos guardados', 'Termina un entrenamiento o el diagnóstico. Las preguntas que falles quedan en tu perfil y aquí para repasarlas.', [
+      nota('Nada pendiente', 'No hay preguntas fallidas por repasar. Cuando falles en un bloque, aparecen aquí.', [
         { texto: 'Entendido', alClick: cerrarNota }
       ]);
+      pintarDetalle();
       return;
     }
 
-    const hechas = leerHechasHoy();
-    let ids = [...fallos.keys()].filter((id) => !hechas.has(id));
-    if (!ids.length) ids = [...fallos.keys()];
-
+    const ids = [...fallos.keys()];
     const listaBanco = await banco();
     const porId = new Map();
     (listaBanco || []).forEach((raw) => {
@@ -215,14 +247,10 @@
     });
 
     const reactivos = [];
-    const sinBanco = [];
     for (let i = 0; i < ids.length && reactivos.length < MAX_BLOQUE; i++) {
       const id = ids[i];
       const raw = porId.get(id);
-      if (!raw) {
-        sinBanco.push(id);
-        continue;
-      }
+      if (!raw) continue;
       const item = adaptar(raw);
       if (!item || !item.id || !(item.enunciado || item.pregunta_texto)) continue;
       const meta = fallos.get(id);
@@ -231,7 +259,7 @@
     }
 
     if (!reactivos.length) {
-      nota('No pude armar el repaso', 'Tienes fallos guardados, pero esas preguntas ya no están en el banco de este aparato (o cambiaron de id). Sigue entrenando: los fallos nuevos sí entrarán.', [
+      nota('No pude armar el repaso', 'Tienes fallos guardados, pero esas preguntas ya no están en el banco de este aparato.', [
         { texto: 'Volver', alClick: cerrarNota }
       ]);
       return;
@@ -239,7 +267,7 @@
 
     nota(
       'Repaso · preguntas fallidas',
-      'Van ' + reactivos.length + ' preguntas que ya fallaste en tus pruebas. Misma forma que el entrenamiento: elige, confirma y mira la explicación.',
+      'Van ' + reactivos.length + ' de ' + fallos.size + ' pendientes. Si las aciertas, salen de la lista.',
       [
         {
           texto: 'Empezar repaso',
@@ -256,7 +284,7 @@
               totalReactivos: reactivos.length,
               reactivos: reactivos,
               microDilemasVocacionales: [],
-              saludoDante: 'Repaso de ' + reactivos.length + ' preguntas que fallaste. Usa la pista si la necesitas.'
+              saludoDante: 'Repaso de ' + reactivos.length + ' fallidas. Si aciertas, dejan de contar.'
             };
             entrarWorkspace(mision);
           }
@@ -266,12 +294,20 @@
     );
   }
 
-  /** Llamar al cerrar sesión de repaso fallidas para no repetir las mismas hoy. */
+  /**
+   * Tras cada respuesta (o al cerrar): acierto → fuera del contador; fallo → sigue pendiente.
+   */
+  function registrarRespuesta(fila) {
+    if (!fila || !fila.id) return;
+    const id = String(fila.id);
+    if (fila.correcto === true) marcarSuperada(id);
+    else if (fila.correcto === false) quitarSuperada(id);
+    pintarDetalle();
+  }
+
   function anotarSesion(respuestas) {
     const lista = Array.isArray(respuestas) ? respuestas : Object.values(respuestas || {});
-    lista.forEach((r) => {
-      if (r && r.id) marcarHecha(String(r.id));
-    });
+    lista.forEach((r) => registrarRespuesta(r));
     pintarDetalle();
   }
 
@@ -280,6 +316,7 @@
     inventario: inventario,
     pintar: pintarDetalle,
     anotarSesion: anotarSesion,
+    registrarRespuesta: registrarRespuesta,
     mapaFallos: mapaFallos
   };
 

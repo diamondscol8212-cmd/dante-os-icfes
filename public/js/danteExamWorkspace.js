@@ -4065,6 +4065,16 @@
         });
       }
 
+      if (this.misionData && this.misionData.esRepasoFallidas
+          && window.DanteRepasoFallidas && typeof window.DanteRepasoFallidas.registrarRespuesta === 'function') {
+        try {
+          window.DanteRepasoFallidas.registrarRespuesta({
+            id: recordRespuesta.id,
+            correcto: recordRespuesta.correcto === true
+          });
+        } catch (eRfLive) {}
+      }
+
       if (this.misionData && this.misionData.esSimulacro) {
         const containerCore = document.getElementById('uiContenedorPreguntaCore');
         if (containerCore) {

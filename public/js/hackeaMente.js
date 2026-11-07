@@ -841,7 +841,7 @@
       this._cierre(this._stage());
     }
 
-    /** Activación (ex-cierre): el umbral selló; ahora empieza el Primer pulso. */
+    /** Activación: umbral listo → día 1 del hack (misma lógica de arranque, copy claro). */
     _cierre(stage) {
       if (!stage) return;
       const view = document.getElementById('viewHackeaMente');
@@ -849,29 +849,31 @@
         view.classList.remove('hackea-en-sinred', 'hackea-en-tormenta', 'hackea-en-eco', 'hackea-en-llegada', 'hackea-en-pulso');
         view.classList.add('hackea-en-activacion');
       }
+      const salirBtn = document.querySelector('#viewHackeaMente .hackea-salir-umbral');
+      if (salirBtn) salirBtn.textContent = 'Volver a la sala';
       stage.innerHTML = `
         <div class="hackea-cierre hackea-activacion" id="hackeaActivacion">
           <div class="hackea-cierre-glow" aria-hidden="true"></div>
           <div class="hackea-act-shell hackea-cierre-sheet">
             <div class="hackea-act-label">MODO DANTE</div>
             <h2 class="hackea-act-title">Ya te escucha</h2>
-            <p class="hackea-prompt hackea-cierre-copy">Primer pulso: preguntas reales. Sin ayudas. Sin pausa. Cómo eliges tu respuesta (A, B, C o D) cuenta.</p>
-            <p class="hackea-cierre-sub">Tres a cinco ensayos. El formato cambia según cómo respondes.</p>
-            <button type="button" class="hl-cta hackea-pulso-cta" id="hackeaBtnPulso">Empezar el pulso</button>
+            <p class="hackea-prompt hackea-cierre-copy">El pulso terminó. Ahora empieza tu entrenamiento.</p>
+            <p class="hackea-cierre-sub">Día 1 de 15. Preguntas reales. Sin ayudas. Sin pausa.</p>
+            <button type="button" class="hl-cta hackea-pulso-cta" id="hackeaBtnPulso">Comenzar el día 1</button>
           </div>
         </div>`;
       this._clearTimers();
       this._timers.push(setTimeout(() => stage.querySelector('#hackeaActivacion')?.classList.add('is-in'), 20));
+      const startDay1 = () => {
+        view?.classList.remove('hackea-en-activacion');
+        if (global.HackeaPulso && typeof global.HackeaPulso.start === 'function') {
+          global.HackeaPulso.start(this.mind, this, { blockIndex: 1, campaignDay: 1 });
+        } else {
+          this.closeToSala();
+        }
+      };
       stage.querySelector('#hackeaBtnPulso')?.addEventListener('click', () => {
-        const startDay1 = () => {
-          view?.classList.remove('hackea-en-activacion');
-          if (global.HackeaPulso && typeof global.HackeaPulso.start === 'function') {
-            global.HackeaPulso.start(this.mind, this, { blockIndex: 1, campaignDay: 1 });
-          } else {
-            this.closeToSala();
-          }
-        };
-        // Intro de task-set del día 1 antes del primer ensayo
+        // Misma lógica de día 1; el CTA solo cambió de nombre/copy.
         if (global.HackeaCampaign && typeof global.HackeaCampaign.playDayIntro === 'function') {
           global.HackeaCampaign.playDayIntro(1, startDay1);
         } else {
