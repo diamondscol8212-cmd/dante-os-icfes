@@ -33,11 +33,27 @@ export async function cargarVistos(estudiante) {
       const lista = row && row.items_respondidos;
       if (!Array.isArray(lista)) return;
       if (row.materia === MATERIA) {
-        lista.forEach((item) => { if (item) vistos.add(String(item)); });
+        lista.forEach((item) => {
+          if (item == null) return;
+          // vistos_sala guarda strings (id de banco) o, en legado, UUIDs.
+          if (typeof item === 'string' || typeof item === 'number') {
+            vistos.add(String(item));
+            return;
+          }
+          if (typeof item === 'object') {
+            if (item.item_original) vistos.add(String(item.item_original));
+            if (item.item_id) vistos.add(String(item.item_id));
+            if (item.id) vistos.add(String(item.id));
+          }
+        });
         return;
       }
       lista.forEach((item) => {
-        if (item && item.item_original) vistos.add(String(item.item_original));
+        if (!item) return;
+        if (item.item_original) vistos.add(String(item.item_original));
+        // Solo añadir item_id si parece id de banco (no UUID), para no ensuciar el Set.
+        const iid = item.item_id != null ? String(item.item_id) : '';
+        if (iid && !/^[0-9a-f]{8}-[0-9a-f]{4}-/i.test(iid)) vistos.add(iid);
       });
     });
     return vistos;

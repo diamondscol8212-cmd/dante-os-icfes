@@ -207,8 +207,10 @@ export async function obtenerMisionDiaria(req, res) {
       if (reactivosUnicos.length === totalLimite) break;
     }
 
-    // Rellenar hasta totalLimite: primero sin repetir vistos del alumno; solo al final permitir reuso.
-    if (!esRefuerzo && reactivosUnicos.length < totalLimite) {
+    // Rellenar hasta totalLimite solo con ítems NO vistos.
+    // El reuso (permitirReuso) queda exclusivo de seleccionarBloque/seleccionarRefuerzo
+    // cuando el pool del área está agotado — nunca un relleno ciego del banco completo.
+    if (reactivosUnicos.length < totalLimite) {
       const poolParaRellenar = BANCO_COMPLETO || [];
       for (const item of poolParaRellenar) {
         const id = item && item.id ? String(item.id) : '';
@@ -216,15 +218,6 @@ export async function obtenerMisionDiaria(req, res) {
         idsVistos.add(id);
         reactivosUnicos.push(item);
         if (reactivosUnicos.length === totalLimite) break;
-      }
-      if (reactivosUnicos.length < totalLimite) {
-        for (const item of poolParaRellenar) {
-          const id = item && item.id ? String(item.id) : '';
-          if (!id || idsVistos.has(id)) continue;
-          idsVistos.add(id);
-          reactivosUnicos.push(item);
-          if (reactivosUnicos.length === totalLimite) break;
-        }
       }
     }
     rawItems = reactivosUnicos;

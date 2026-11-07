@@ -8,6 +8,32 @@ export function aliasEstudiante(raw) {
   return texto.split('@')[0].replace(/[^a-z0-9._-]/g, '').slice(0, 80);
 }
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+/** Misma huella que danteRespuestaController.idEstable (sin import circular). */
+function idEstableLocal(raw) {
+  const texto = String(raw || '').trim();
+  if (UUID_RE.test(texto)) return texto.toLowerCase();
+  if (!texto) return '';
+  let h1 = 2166136261;
+  let h2 = 2166136261 ^ 0x9e3779b9;
+  const serie = `dante:${texto}`;
+  for (let i = 0; i < serie.length; i++) {
+    h1 ^= serie.charCodeAt(i);
+    h1 = Math.imul(h1, 16777619);
+    h2 ^= serie.charCodeAt(serie.length - 1 - i);
+    h2 = Math.imul(h2, 16777619);
+  }
+  const hex = [(h1 >>> 0), (h2 >>> 0), ((h1 ^ h2) >>> 0), ((h1 + h2) >>> 0)]
+    .map((n) => n.toString(16).padStart(8, '0'))
+    .join('');
+  const chars = hex.split('');
+  chars[12] = '5';
+  chars[16] = 'a';
+  const h = chars.join('');
+  return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20, 32)}`;
+}
+
 /** Evita dos cierres del mismo bloque (cliente eval_* + servidor mision_daily_*) en <2 min. */
 function esSesionCasiIgual(a, b) {
   if (!a || !b) return false;
@@ -181,17 +207,20 @@ export async function registrarSesionExpediente(alias, payload = {}) {
 
   const respuestas = Array.isArray(payload.respuestas) ? payload.respuestas : [];
   const itemsPrev = Array.isArray(fila && fila.items_respondidos) ? fila.items_respondidos : [];
-  const nuevosItems = respuestas.map((r) => ({
-    item_original: String(r.itemId || r.id || '').trim(),
-    item_id: String(r.itemId || r.id || '').trim(),
-    correcta: Boolean(r.esCorrecta || r.correcto),
-    area: String(r.area || r.materia || '').toLowerCase(),
-    letra: String(r.letra || r.opcionSeleccionada || '').toUpperCase(),
-    tipo: payload.tipo || 'MISION_DIARIA',
-    timestamp: new Date().toISOString()
-  })).filter((r) => r.item_original && !/^item_\d+$/i.test(r.item_original) && !/^preun_/i.test(r.item_original));
+  const nuevosItems = respuestas.map((r) => {
+    const original = String(r.itemId || r.id || '').trim();
+    return {
+      item_original: original,
+      item_id: idEstableLocal(original) || original,
+      correcta: Boolean(r.esCorrecta || r.correcto),
+      area: String(r.area || r.materia || '').toLowerCase(),
+      letra: String(r.letra || r.opcionSeleccionada || '').toUpperCase(),
+      tipo: payload.tipo || 'MISION_DIARIA',
+      timestamp: new Date().toISOString()
+    };
+  }).filter((r) => r.item_original && !/^item_\d+$/i.test(r.item_original) && !/^preun_/i.test(r.item_original));
 
-  // Última respuesta gana (antes se ignoraban reintentos → fallidas eternas / contador raro).
+  // Última respuesta gana. Clave = item_original (nunca UUID solo).
   const mapaItems = new Map();
   itemsPrev.forEach((x) => {
     const id = String((x && (x.item_original || x.item_id || x.id)) || '').trim();

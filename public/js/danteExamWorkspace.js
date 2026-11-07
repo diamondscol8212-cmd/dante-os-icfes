@@ -3603,6 +3603,32 @@
         </figure>`;
     }
 
+    _idsYaVistosHistorial() {
+      const out = new Set();
+      try {
+        const raw = localStorage.getItem('dante_respuestas_irt');
+        const lista = raw ? JSON.parse(raw) : [];
+        (Array.isArray(lista) ? lista : []).forEach((row) => {
+          if (row && row.id) out.add(String(row.id));
+        });
+      } catch (e) {}
+      try {
+        const rawH = localStorage.getItem('dante_history_cache');
+        const hist = rawH ? JSON.parse(rawH) : [];
+        (Array.isArray(hist) ? hist : []).forEach((ses) => {
+          const items = (ses && ses.items_respondidos) || [];
+          (Array.isArray(items) ? items : []).forEach((it) => {
+            const id = it && (it.item_original || it.item_id || it.id);
+            if (id) out.add(String(id));
+          });
+        });
+      } catch (e2) {}
+      Object.values(this.respuestasSesionActiva || {}).forEach((r) => {
+        if (r && (r.id || r.itemId)) out.add(String(r.id || r.itemId));
+      });
+      return out;
+    }
+
     prepararSiguientePorInformacion() {
       const reactivos = this.misionData && this.misionData.reactivos;
       if (!reactivos || !window.DanteAbility || typeof window.DanteAbility.informacion !== 'function') return;
@@ -3623,23 +3649,8 @@
         reactivos[siguiente] = reactivos[mejor];
         reactivos[mejor] = tmp;
       }
-      const banco = window.DANTE_BANCO_ITEMS;
-      const puesto = reactivos[siguiente];
-      if (!Array.isArray(banco) || !puesto || typeof window.DanteAbility.adaptarItem !== 'function') return;
-      const area = puesto.area || puesto.materia;
-      const usados = new Set(reactivos.map((r) => r && r.id).filter(Boolean));
-      let candidato = null;
-      let infoCandidato = window.DanteAbility.informacion(theta, puesto);
-      banco.forEach((raw) => {
-        const item = window.DanteAbility.adaptarItem(raw);
-        if (!item || !item.id || usados.has(item.id) || item.area !== area) return;
-        const info = window.DanteAbility.informacion(theta, item);
-        if (info > infoCandidato) {
-          infoCandidato = info;
-          candidato = item;
-        }
-      });
-      if (candidato) reactivos[siguiente] = candidato;
+      // Solo reordenar dentro del bloque ya asignado por el servidor.
+      // No inyectar ítems del banco local: eso reintroducía preguntas ya vistas.
     }
 
     /**
@@ -4133,7 +4144,13 @@
           ms: recordRespuesta.latenciaMs,
           letra: recordRespuesta.opcionSeleccionada
         }, {
-          tipo: isDiag ? 'DIAGNOSTICO_INICIAL' : 'MISION_DIARIA',
+          tipo: isDiag
+            ? 'DIAGNOSTICO_INICIAL'
+            : (this.misionData && this.misionData.esRepasoFallidas
+              ? 'REPASO_FALLIDAS'
+              : (this.misionData && (this.misionData.esRefuerzo || this.misionData.repasoArea)
+                ? 'REFUERZO'
+                : (this.misionData && this.misionData.esSimulacro ? 'SIMULACRO_COMPLETO' : 'MISION_DIARIA'))),
           theta: estGuardado && estGuardado.theta,
           sem: estGuardado && estGuardado.sem,
           puntos: estGuardado && estGuardado.puntos
@@ -5241,6 +5258,29 @@
             ? ('Carrera de admisión: ' + carreraPreu + '.')
             : 'En la sala eliges la carrera. El corte queda en la escala de esa convocatoria.';
           this._registrarSesionExpediente('MISION_DIARIA', 'Entrenamiento Pre-U', ptsPreu > 0 ? ptsPreu : null, null);
+        } else if (esRefuerzoFin) {
+          const estRef = this._recalibrarHabilidad();
+          if (estRef && estRef.puntos != null) {
+            if (previoSala > 0) {
+              localStorage.setItem('dante_score_anterior', String(previoSala));
+              if (!localStorage.getItem('dante_score_base')) {
+                localStorage.setItem('dante_score_base', String(previoSala));
+              }
+            }
+            proyeccionSala = estRef.puntos;
+            valorScore = proyeccionSala + ' Pts';
+            localStorage.setItem('dante_score_proyectado', String(proyeccionSala));
+            localStorage.setItem('dante_puntaje_global', String(proyeccionSala));
+            localStorage.setItem('dante_proyeccion_practicas', '1');
+          }
+          this._registrarSesionExpediente(
+            'REFUERZO',
+            'REFUERZO',
+            proyeccionSala,
+            estRef && typeof estRef.theta === 'number' ? estRef.theta : this.thetaEstimado
+          );
+          // Un solo publish con tipo REFUERZO (antes también salía como MISION_DIARIA → duplicados).
+          this._publicarEnNube('REFUERZO');
         } else {
           const estSala = this._recalibrarHabilidad();
           if (estSala && estSala.puntos != null) {

@@ -168,20 +168,35 @@ export async function guardarRespuestas(req, res) {
       return res.status(500).json({ ok: false, motivo: previo.error.message });
     }
     const anterior = (previo.data && previo.data[0]) || null;
+    // Clave canónica = item_original (id de banco). Evita duplicar el mismo ítem
+    // cuando una ruta guarda UUID (idEstable) y otra guarda el id textual.
+    const claveItem = (row) => {
+      if (!row) return '';
+      const original = String(row.item_original || '').trim();
+      if (original) return original;
+      return String(row.item_id || row.id || '').trim();
+    };
     const mapa = new Map();
     const listaPrevia = anterior && Array.isArray(anterior.items_respondidos) ? anterior.items_respondidos : [];
     listaPrevia.forEach((row) => {
-      if (row && row.item_id) mapa.set(String(row.item_id), row);
+      const k = claveItem(row);
+      if (k) mapa.set(k, row);
     });
     nuevas.forEach((row) => {
-      const prev = mapa.get(row.item_id);
+      const k = claveItem(row) || String(row.item_id || '');
+      if (!k) return;
+      const prev = mapa.get(k);
       if (esRespaldo && prev) {
         const tipoPrev = String(prev.tipo || '').toUpperCase();
         // El respaldo IRT no puede pisar un registro de sesión real (ni bajar un acierto a fallo).
         if (TIPOS_SESION_REAL.has(tipoPrev)) return;
         if (prev.correcta === true && row.correcta === false) return;
       }
-      mapa.set(row.item_id, row);
+      mapa.set(k, {
+        ...row,
+        item_original: row.item_original || k,
+        item_id: row.item_id || idEstable(row.item_original || k)
+      });
     });
     const items = Array.from(mapa.values()).slice(-600);
     const areas = {};

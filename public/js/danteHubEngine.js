@@ -403,7 +403,14 @@
       if (isDiagLaunch || pidioRefuerzo || (this.pendingStartAfterFetch && !this._llegadaASala(urlParams))) {
         this.isBlocked = false;
         this.pendingStartAfterFetch = false;
-        console.log('⚡ [DANTE HUB ENGINE]: Disparando Diagnóstico Inicial adaptativo sin intermediación del Hub...');
+        // Consumir el área de refuerzo para no contaminar el próximo bloque diario.
+        if (pidioRefuerzo) {
+          if (data && !data.repasoArea) data.repasoArea = this._refuerzoArea;
+          if (data && data.esRefuerzo == null) data.esRefuerzo = true;
+          this.misionActual = data;
+        }
+        this._refuerzoArea = null;
+        console.log('⚡ [DANTE HUB ENGINE]: Disparando bloque (diagnóstico/refuerzo) sin intermediación del Hub...');
         this.iniciarMision(true);
         return;
       }
@@ -1879,47 +1886,19 @@
     async iniciarRepasoArea(area) {
       const permitidas = ['matematicas', 'lectura_critica', 'ciencias_naturales', 'sociales_ciudadanas', 'ingles'];
       const limpia = String(area || '').toLowerCase();
-      if (!permitidas.includes(limpia) || !window.DanteAbility) return;
+      if (!permitidas.includes(limpia)) return;
       this.targetTrack = 'ICFES';
       this._repasoEnCurso = true;
-      const banco = await this.precargarBanco();
-      let vistos = new Set();
+      this._refuerzoArea = limpia;
+      // Preferir selector de servidor (vistos_sala + colaDeArea). No rellenar con vistos locales.
+      this.pendingStartAfterFetch = true;
       try {
-        const previas = JSON.parse(localStorage.getItem('dante_respuestas_irt') || '[]');
-        (Array.isArray(previas) ? previas : []).forEach((row) => {
-          if (row && row.id) vistos.add(String(row.id));
-        });
-      } catch (e) { vistos = new Set(); }
-      const adaptados = (banco || []).map((raw) => DanteAbility.adaptarItem(raw)).filter((it) => it && it.id && it.enunciado && it.area === limpia);
-      const frescos = adaptados.filter((it) => !vistos.has(String(it.id)));
-      const pool = (frescos.length >= 5 ? frescos : adaptados).slice();
-      pool.sort((a, b) => Math.abs(a.b) - Math.abs(b.b));
-      const cercanos = pool.slice(0, 12);
-      for (let i = cercanos.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        const tmp = cercanos[i];
-        cercanos[i] = cercanos[j];
-        cercanos[j] = tmp;
+        await this.consultarMisionDiaria('ICFES');
+      } catch (e) {
+        this._refuerzoArea = null;
+        this._repasoEnCurso = false;
+        this.pendingStartAfterFetch = false;
       }
-      const reactivos = cercanos.slice(0, 5);
-      if (!reactivos.length) return;
-      const nombres = { matematicas: 'Matemáticas', lectura_critica: 'Lectura Crítica', ciencias_naturales: 'Ciencias Naturales', sociales_ciudadanas: 'Sociales y Ciudadanas', ingles: 'Inglés' };
-      const data = {
-        success: true,
-        isDiagnostic: false,
-        repasoArea: limpia,
-        targetTrack: 'ICFES',
-        misionId: 'repaso_' + limpia + '_' + Date.now(),
-        totalReactivos: reactivos.length,
-        reactivos: reactivos,
-        microDilemasVocacionales: [],
-        saludoDante: 'Cinco preguntas de ' + (nombres[limpia] || limpia) + '. Usa la pista antes de confirmar la letra.'
-      };
-      try { sessionStorage.setItem('dante_mision_actual', JSON.stringify(data)); } catch (e) {}
-      this.misionActual = data;
-      if (typeof this.procesarRespuestaMision === 'function') this.procesarRespuestaMision(data);
-      this._iniciandoMisionLock = false;
-      this.iniciarMision(true);
     },
 
     alumnoDeRuta() {
