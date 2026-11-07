@@ -3851,20 +3851,16 @@
     }
 
     /**
-     * Meta Saber 11° (1–500): corte de carrera, pacto de onboarding (300/380) o sello local.
-     * Nunca asume que “sin corte” = “sin carrera elegida”.
+     * Meta Saber 11° (1–500): corte estimado con fuente, o meta de preparación 300/380.
+     * Fase 2 — no usa cortes UNAL (>500) como meta Saber 11°.
      */
-    _resolverMetaSaber11() {
-      const corte = parseInt(localStorage.getItem('dante_corte_objetivo') || '0', 10);
-      let meta = (corte > 0 && corte <= 500) ? corte : null;
-      const pacto = String(localStorage.getItem('dante_pacto_meta') || '').trim();
-      if (meta == null) {
-        if (pacto === '300_BASE') meta = 300;
-        else if (pacto === '380_ELITE') meta = 380;
-        else {
-          const n = parseInt(pacto, 10);
-          if (n > 0 && n <= 500) meta = n;
-        }
+    _resolverMetaDetalleSaber11() {
+      let metaObj = null;
+      if (window.DanteCortes && typeof window.DanteCortes.resolverMetaSaber11 === 'function') {
+        metaObj = window.DanteCortes.resolverMetaSaber11({
+          carrera: localStorage.getItem('dante_carrera_objetivo') || '',
+          pacto: localStorage.getItem('dante_pacto_meta') || ''
+        });
       }
       try {
         const sid = (window.DanteRegistro && typeof DanteRegistro.idAlumno === 'function')
@@ -3873,20 +3869,41 @@
         if (sid) {
           const sello = JSON.parse(localStorage.getItem(`dante_sello_metas_${sid}`) || 'null');
           if (sello && Number(sello.pts) > 0 && Number(sello.pts) <= 500) {
-            meta = Math.round(Number(sello.pts));
+            metaObj = {
+              pts: Math.round(Number(sello.pts)),
+              tipo: 'meta_preparacion',
+              etiqueta: 'Meta de preparación',
+              fuente: 'Sello de metas del estudiante',
+              convocatoria: null,
+              actualizadoEn: (window.DanteCortes && window.DanteCortes.ACTUALIZADO) || '2025-11',
+              carrera: localStorage.getItem('dante_carrera_objetivo') || ''
+            };
           }
         }
       } catch (e) {}
-      if (meta != null && meta > 0 && meta <= 500) {
-        try {
-          const actual = parseInt(localStorage.getItem('dante_corte_objetivo') || '0', 10);
-          if (!(actual > 0 && actual <= 500)) {
-            localStorage.setItem('dante_corte_objetivo', String(meta));
-          }
-        } catch (e) {}
-        return meta;
+      if (metaObj && metaObj.pts > 0 && metaObj.pts <= 500) {
+        if (window.DanteCortes && typeof window.DanteCortes.persistirMeta === 'function') {
+          window.DanteCortes.persistirMeta(metaObj);
+        } else {
+          try { localStorage.setItem('dante_corte_objetivo', String(metaObj.pts)); } catch (e) {}
+        }
+        return metaObj;
       }
       return null;
+    }
+
+    _resolverMetaSaber11() {
+      const det = this._resolverMetaDetalleSaber11();
+      return det && det.pts != null ? det.pts : null;
+    }
+
+    _etiquetaMetaBrecha(metaObj) {
+      if (window.DanteCortes && typeof window.DanteCortes.etiquetaBrecha === 'function' && metaObj) {
+        return window.DanteCortes.etiquetaBrecha(metaObj);
+      }
+      if (!metaObj) return '';
+      if (metaObj.tipo === 'meta_preparacion') return 'Meta de preparación (' + metaObj.pts + ' pts)';
+      return 'Corte estimado ' + (metaObj.convocatoria || '2025');
     }
 
     _mensajeBrechaSinMeta(carreraClean) {
@@ -4729,12 +4746,14 @@
 
           const estPuntos = estSesion && estSesion.puntos != null ? estSesion.puntos : 0;
           const scoreProyectado = estPuntos;
-          const metaResuelta = this._resolverMetaSaber11();
+          const metaDetalle = esMisionPreun ? null : this._resolverMetaDetalleSaber11();
+          const metaResuelta = metaDetalle && metaDetalle.pts != null ? metaDetalle.pts : this._resolverMetaSaber11();
           let metaPuntaje = metaResuelta != null ? metaResuelta : 0;
           const hayMeta = metaPuntaje > 0 && metaPuntaje <= 500;
           const brechaPuntos = hayMeta ? Math.max(0, metaPuntaje - scoreProyectado) : null;
           const proximidadPct = hayMeta ? Math.min(100, Math.max(0, Math.round((scoreProyectado / metaPuntaje) * 100))) : 0;
           const msgSinMeta = this._mensajeBrechaSinMeta(carreraClean);
+          const etiquetaFuenteMeta = esMisionPreun ? '' : this._etiquetaMetaBrecha(metaDetalle);
 
           if (window.DanteDiagnosticGateManager && typeof window.DanteDiagnosticGateManager.markDiagnosticCompleted === 'function') {
             window.DanteDiagnosticGateManager.markDiagnosticCompleted(scoreProyectado);
@@ -4921,12 +4940,21 @@
           const escalaCorte = localStorage.getItem('dante_preu_escala') || '';
           const tituloPuntaje = esMisionPreun ? 'Habilidad Pre-U' : 'Puntaje proyectado';
           const numeroPuntaje = esMisionPreun ? (ptsPreuSala > 0 ? ptsPreuSala : '—') : scoreProyectado;
-          const tituloMeta = esMisionPreun ? 'Corte de la carrera' : 'Meta requerida';
+          const esCorteEstimado = !!(metaDetalle && metaDetalle.tipo === 'corte_estimado');
+          const tituloMeta = esMisionPreun
+            ? 'Corte de la carrera'
+            : (esCorteEstimado ? 'Corte estimado' : 'Meta de preparación');
           const numeroMeta = esMisionPreun ? (cortePreu || '—') : (hayMeta ? metaPuntaje : '—');
-          const sufijoMeta = esMisionPreun ? (escalaCorte ? '/ ' + escalaCorte : '') : (hayMeta ? 'sobre 500' : 'sobre 500');
+          const sufijoMeta = esMisionPreun
+            ? (escalaCorte ? '/ ' + escalaCorte : '')
+            : (hayMeta ? 'sobre 500' : 'sobre 500');
           const tituloBrecha = esMisionPreun ? 'Escalas' : 'Brecha';
           const numeroBrecha = esMisionPreun ? 'aparte' : (brechaPuntos == null ? '—' : '-' + brechaPuntos + ' pts');
-          const tituloCercania = esMisionPreun ? 'Dos mediciones distintas' : ('Proximidad al Estándar de Corte (' + proximidadPct + '%)');
+          const tituloCercania = esMisionPreun
+            ? 'Dos mediciones distintas'
+            : (esCorteEstimado
+              ? ('Proximidad al corte estimado (' + proximidadPct + '%)')
+              : ('Proximidad a tu meta (' + proximidadPct + '%)'));
           const textoCercania = esMisionPreun
             ? 'Esta habilidad va de 0 a 500. El corte se lee en la escala de la convocatoria.'
             : (hayMeta ? scoreProyectado + ' de ' + metaPuntaje + ' Pts' : msgSinMeta);
@@ -4945,11 +4973,15 @@
             : ('Proyección · ' + nombreExamen);
           const textoBrechaCap = (brechaPuntos == null)
             ? (esMisionPreun ? 'Escalas distintas' : msgSinMeta)
-            : ('Te faltan ' + brechaPuntos + ' puntos para alcanzar la meta');
+            : (esCorteEstimado
+              ? ('Te faltan ' + brechaPuntos + ' puntos al corte estimado')
+              : ('Te faltan ' + brechaPuntos + ' puntos para tu meta de preparación'));
           const textoCorte = esMisionPreun
             ? textoCercania
             : (hayMeta
-              ? ('Cercanía al corte: A ' + brechaPuntos + ' puntos del puntaje mínimo estimado.')
+              ? (esCorteEstimado
+                ? ('Cercanía al corte estimado: a ' + brechaPuntos + ' puntos' + (etiquetaFuenteMeta ? ' · ' + etiquetaFuenteMeta : '') + '.')
+                : ('Cercanía a tu meta: a ' + brechaPuntos + ' puntos' + (etiquetaFuenteMeta ? ' · ' + etiquetaFuenteMeta : '') + '.'))
               : msgSinMeta);
           const pctFirmezaAnillo = firmezaScore == null ? 0 : firmezaScore;
           const textoFirmezaPct = firmezaScore == null ? '—' : (firmezaScore + '%');
@@ -4998,6 +5030,7 @@
                     <i class="fa-solid fa-bullseye" aria-hidden="true"></i>
                     <span>${textoCorte}</span>
                   </div>
+                  ${(!esMisionPreun && etiquetaFuenteMeta) ? ('<p class="rp-metric-sub" style="margin-top:8px;opacity:.85">' + etiquetaFuenteMeta + (metaDetalle && metaDetalle.actualizadoEn ? (' · act. ' + metaDetalle.actualizadoEn) : '') + '</p>') : ''}
                 </div>
               </section>
 
@@ -5116,20 +5149,32 @@
         const tituloProySala = carreraSala
           ? ('Proyección para ' + carreraSala)
           : (esMisionPreun ? 'Proyección Pre-U' : 'Proyección Saber 11°');
-        const metaResueltaSala = esMisionPreun ? null : this._resolverMetaSaber11();
+        const metaDetalleSala = esMisionPreun ? null : this._resolverMetaDetalleSaber11();
+        const metaResueltaSala = metaDetalleSala && metaDetalleSala.pts != null
+          ? metaDetalleSala.pts
+          : (esMisionPreun ? null : this._resolverMetaSaber11());
         const metaSala = metaResueltaSala != null ? metaResueltaSala : 0;
         const hayMetaSala = metaSala > 0;
         const scoreNumSala = (!esMisionPreun && proyeccionSala > 0) ? proyeccionSala : null;
         const brechaSala = (hayMetaSala && scoreNumSala != null) ? Math.max(0, metaSala - scoreNumSala) : null;
         const msgSinMetaSala = this._mensajeBrechaSinMeta(carreraSala);
+        const esCorteEstimadoSala = !!(metaDetalleSala && metaDetalleSala.tipo === 'corte_estimado');
+        const etiquetaFuenteSala = esMisionPreun ? '' : this._etiquetaMetaBrecha(metaDetalleSala);
         const textoBrechaSala = brechaSala == null
           ? (esMisionPreun ? 'Escalas distintas' : msgSinMetaSala)
-          : ('Te faltan ' + brechaSala + ' puntos para alcanzar la meta');
+          : (esCorteEstimadoSala
+            ? ('Te faltan ' + brechaSala + ' puntos al corte estimado')
+            : ('Te faltan ' + brechaSala + ' puntos para tu meta de preparación'));
         const textoCorteSala = esMisionPreun
           ? 'Esta habilidad va de 0 a 500. El corte se lee en la escala de la convocatoria.'
           : (hayMetaSala && brechaSala != null
-            ? ('Cercanía al corte: A ' + brechaSala + ' puntos del puntaje mínimo estimado.')
-            : (hayMetaSala ? ('Meta registrada: ' + metaSala + ' pts') : msgSinMetaSala));
+            ? ((esCorteEstimadoSala ? 'Cercanía al corte estimado: a ' : 'Cercanía a tu meta: a ')
+              + brechaSala + ' puntos'
+              + (etiquetaFuenteSala ? ' · ' + etiquetaFuenteSala : '') + '.')
+            : (hayMetaSala ? ((esCorteEstimadoSala ? 'Corte estimado: ' : 'Meta de preparación: ') + metaSala + ' pts') : msgSinMetaSala));
+        const tituloMetaSala = esMisionPreun
+          ? 'Corte de la carrera'
+          : (esCorteEstimadoSala ? 'Corte estimado' : 'Meta de preparación');
         const numeroPuntajeSala = esMisionPreun
           ? (parseInt(localStorage.getItem('dante_preu_puntos') || '0', 10) || '—')
           : (scoreNumSala != null ? scoreNumSala : '—');
@@ -5250,7 +5295,7 @@
                     <span class="rp-metric-sub">sobre 500</span>
                   </div>
                   <div>
-                    <span class="rp-metric-lbl">${esMisionPreun ? 'Corte de la carrera' : 'Meta requerida'}</span>
+                    <span class="rp-metric-lbl">${tituloMetaSala}</span>
                     <span class="rp-metric-val">${numeroMetaSala}</span>
                     <span class="rp-metric-sub">sobre 500</span>
                   </div>
@@ -5264,6 +5309,7 @@
                   <i class="fa-solid fa-bullseye" aria-hidden="true"></i>
                   <span>${textoCorteSala}</span>
                 </div>
+                ${(!esMisionPreun && etiquetaFuenteSala) ? ('<p class="rp-metric-sub" style="margin-top:8px;opacity:.85">' + etiquetaFuenteSala + (metaDetalleSala && metaDetalleSala.actualizadoEn ? (' · act. ' + metaDetalleSala.actualizadoEn) : '') + '</p>') : ''}
               </div>
             </section>
 

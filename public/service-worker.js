@@ -23,6 +23,7 @@ const STATIC_ASSETS = [
   './profesor.html',
   './js/danteHubEngine.js',
   './js/danteExamWorkspace.js',
+  './js/danteCortes.js',
   './js/preunEngine.js',
   './js/danteTutorEngine.js',
   './bancoPreguntas.json',

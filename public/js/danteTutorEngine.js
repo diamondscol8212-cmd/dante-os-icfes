@@ -169,6 +169,18 @@ class DanteTutorEngine {
         let metaTxt = "380+ Pts Saber 11°";
         if (pactoMeta === 'PREUNIVESITARIO') metaTxt = "Admisión UNAL / UdeA";
         else if (pactoMeta === '300_BASE') metaTxt = "300+ Pts ICFES Base";
+        try {
+            if (window.DanteCortes && typeof window.DanteCortes.resolverMetaSaber11 === 'function') {
+                const m = window.DanteCortes.resolverMetaSaber11({
+                    carrera: localStorage.getItem('dante_carrera_objetivo') || '',
+                    pacto: pactoMeta
+                });
+                if (m && m.pts > 0 && m.pts <= 500) {
+                    metaTxt = (m.tipo === 'corte_estimado' ? 'Corte est. ' : 'Meta ') + m.pts + '+ Pts';
+                    if (typeof window.DanteCortes.persistirMeta === 'function') window.DanteCortes.persistirMeta(m);
+                }
+            }
+        } catch (eMetaTutor) {}
 
         const totalHoy = estado.reactivosTotalHoy;
         const hechosHoy = estado.reactivosHoyCompletados;
@@ -1768,6 +1780,19 @@ class OrientacionVocacionalWizardEngine {
         if (corte) {
             localStorage.setItem('dante_corte_objetivo', String(corte));
             localStorage.setItem('dante_pacto_meta', String(corte));
+            try {
+                if (window.DanteCortes && typeof window.DanteCortes.persistirMeta === 'function') {
+                    window.DanteCortes.persistirMeta({
+                        pts: Number(corte),
+                        tipo: 'corte_estimado',
+                        etiqueta: 'Corte estimado 2025',
+                        fuente: 'Ruta vocacional Dante',
+                        convocatoria: '2025',
+                        actualizadoEn: window.DanteCortes.ACTUALIZADO || '2025-11',
+                        carrera: this.carreraSeleccionada || ''
+                    });
+                }
+            } catch (eCorte) {}
         }
 
         const alumno = (window.DanteRegistro && DanteRegistro.idAlumno && DanteRegistro.idAlumno())

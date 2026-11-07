@@ -5,7 +5,9 @@ Fase 1 (APROBADA / en curso): Explicaciones uniformes
   - justificacion_opciones útil + fallback neutro
   - Feedback UI consistente en entrenamiento
 
-Fase 2: Cortes universidad con fecha/fuente + fallback meta 300/380
+Fase 2 (HECHA / c-1.3.69): Cortes universidad con fecha/fuente + fallback meta 300/380
+  - DanteCortes + cortesAdmision.js (escala Saber 11° 500; UNAL aparte)
+  - Onboarding: cortes est. por familia; reporte: etiqueta fuente/convocatoria
 
 Fase 3: Banco — inventario, meta por área, calibración viva (sin _gen_ basura)
 
