@@ -8,7 +8,7 @@
  */
 
 const params = new URL(location).searchParams;
-const BUILD_VERSION = params.get('v') || 'v23.1.3-LIVE_UPDATE';
+const BUILD_VERSION = params.get('v') || 'v23.1.80-ONBOARD_Q3';
 
 const CACHE_NAME_STATIC = `dante-os-static-${BUILD_VERSION}`;
 const CACHE_NAME_DYNAMIC = `dante-os-dynamic-${BUILD_VERSION}`;
@@ -17,7 +17,6 @@ const STATIC_ASSETS = [
   './',
   './index.html',
   './perfil.html',
-  './onboarding.html',
   './login.html',
   './reporte.html',
   './rector.html',
