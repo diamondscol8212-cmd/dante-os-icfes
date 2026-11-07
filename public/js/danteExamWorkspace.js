@@ -3834,6 +3834,50 @@
       return false;
     }
 
+    /**
+     * Meta Saber 11° (1–500): corte de carrera, pacto de onboarding (300/380) o sello local.
+     * Nunca asume que “sin corte” = “sin carrera elegida”.
+     */
+    _resolverMetaSaber11() {
+      const corte = parseInt(localStorage.getItem('dante_corte_objetivo') || '0', 10);
+      let meta = (corte > 0 && corte <= 500) ? corte : null;
+      const pacto = String(localStorage.getItem('dante_pacto_meta') || '').trim();
+      if (meta == null) {
+        if (pacto === '300_BASE') meta = 300;
+        else if (pacto === '380_ELITE') meta = 380;
+        else {
+          const n = parseInt(pacto, 10);
+          if (n > 0 && n <= 500) meta = n;
+        }
+      }
+      try {
+        const sid = (window.DanteRegistro && typeof DanteRegistro.idAlumno === 'function')
+          ? DanteRegistro.idAlumno()
+          : (localStorage.getItem('dante_student_id') || '');
+        if (sid) {
+          const sello = JSON.parse(localStorage.getItem(`dante_sello_metas_${sid}`) || 'null');
+          if (sello && Number(sello.pts) > 0 && Number(sello.pts) <= 500) {
+            meta = Math.round(Number(sello.pts));
+          }
+        }
+      } catch (e) {}
+      if (meta != null && meta > 0 && meta <= 500) {
+        try {
+          const actual = parseInt(localStorage.getItem('dante_corte_objetivo') || '0', 10);
+          if (!(actual > 0 && actual <= 500)) {
+            localStorage.setItem('dante_corte_objetivo', String(meta));
+          }
+        } catch (e) {}
+        return meta;
+      }
+      return null;
+    }
+
+    _mensajeBrechaSinMeta(carreraClean) {
+      if (carreraClean) return 'Meta no disponible';
+      return 'Carrera no disponible';
+    }
+
     async _calificarPreun(item, letra, ms) {
       const alumno = window.DanteRegistro && typeof DanteRegistro.idAlumno === 'function' ? DanteRegistro.idAlumno() : '';
       if (!alumno || !item || !item.id) return null;
@@ -4641,7 +4685,6 @@
             sessionStorage.removeItem('dante_mision_actual');
           } catch (e) {}
 
-          const metaRaw = localStorage.getItem('dante_pacto_meta') || '';
           const carreraRaw = localStorage.getItem('dante_carrera_objetivo') || '';
           const carreraClean = carreraRaw ? (carreraRaw.split('/')[0].trim() || carreraRaw) : '';
 
@@ -4652,11 +4695,12 @@
 
           const estPuntos = estSesion && estSesion.puntos != null ? estSesion.puntos : 0;
           const scoreProyectado = estPuntos;
-          const corteRuta = parseInt(localStorage.getItem('dante_corte_objetivo') || '0', 10);
-          let metaPuntaje = corteRuta > 0 && corteRuta <= 500 ? corteRuta : 0;
+          const metaResuelta = this._resolverMetaSaber11();
+          let metaPuntaje = metaResuelta != null ? metaResuelta : 0;
           const hayMeta = metaPuntaje > 0 && metaPuntaje <= 500;
           const brechaPuntos = hayMeta ? Math.max(0, metaPuntaje - scoreProyectado) : null;
           const proximidadPct = hayMeta ? Math.min(100, Math.max(0, Math.round((scoreProyectado / metaPuntaje) * 100))) : 0;
+          const msgSinMeta = this._mensajeBrechaSinMeta(carreraClean);
 
           if (window.DanteDiagnosticGateManager && typeof window.DanteDiagnosticGateManager.markDiagnosticCompleted === 'function') {
             window.DanteDiagnosticGateManager.markDiagnosticCompleted(scoreProyectado);
@@ -4851,26 +4895,28 @@
           const tituloCercania = esMisionPreun ? 'Dos mediciones distintas' : ('Proximidad al Estándar de Corte (' + proximidadPct + '%)');
           const textoCercania = esMisionPreun
             ? 'Esta habilidad va de 0 a 500. El corte se lee en la escala de la convocatoria.'
-            : (hayMeta ? scoreProyectado + ' de ' + metaPuntaje + ' Pts' : 'Elige carrera para ver la brecha');
+            : (hayMeta ? scoreProyectado + ' de ' + metaPuntaje + ' Pts' : msgSinMeta);
           const anchoBarra = esMisionPreun ? 0 : proximidadPct;
           const tituloPlan = esMisionPreun
             ? 'Siguiente paso'
-            : ('Plan de Cierre de Brecha Táctica (' + (brechaPuntos == null ? 'elige carrera' : '-' + brechaPuntos + ' Pts') + ')');
+            : ('Plan de Cierre de Brecha Táctica (' + (brechaPuntos == null ? (carreraClean ? 'meta pendiente' : 'sin carrera') : '-' + brechaPuntos + ' Pts') + ')');
           const fraseProyeccion = esMisionPreun
             ? 'Profesor Dante dejó tu habilidad Pre-U con las preguntas de admisión.'
-            : ('Profesor Dante dejó tu proyección en <strong class="text-slate-100 font-semibold">' + nombreExamen + '</strong>' + (carreraClean ? ' frente a <strong class="text-cyan-300 font-bold">' + carreraClean + '</strong>' : '') + '.');
+            : ('Profesor Dante dejó tu proyección en <strong class="text-slate-900 font-semibold">' + scoreProyectado + '</strong> puntos'
+              + (carreraClean ? (' frente a <strong class="text-slate-900 font-semibold">' + carreraClean + '</strong>') : '')
+              + '.');
 
           const tituloProyeccion = carreraClean
             ? ('Proyección para ' + carreraClean)
             : ('Proyección · ' + nombreExamen);
           const textoBrechaCap = (brechaPuntos == null)
-            ? (esMisionPreun ? 'Escalas distintas' : 'Elige carrera para ver la brecha')
+            ? (esMisionPreun ? 'Escalas distintas' : msgSinMeta)
             : ('Te faltan ' + brechaPuntos + ' puntos para alcanzar la meta');
           const textoCorte = esMisionPreun
             ? textoCercania
             : (hayMeta
               ? ('Cercanía al corte: A ' + brechaPuntos + ' puntos del puntaje mínimo estimado.')
-              : textoCercania);
+              : msgSinMeta);
           const pctFirmezaAnillo = firmezaScore == null ? 0 : firmezaScore;
           const textoFirmezaPct = firmezaScore == null ? '—' : (firmezaScore + '%');
 
@@ -5036,19 +5082,20 @@
         const tituloProySala = carreraSala
           ? ('Proyección para ' + carreraSala)
           : (esMisionPreun ? 'Proyección Pre-U' : 'Proyección Saber 11°');
-        const corteSala = parseInt(localStorage.getItem('dante_corte_objetivo') || '0', 10);
-        const metaSala = (!esMisionPreun && corteSala > 0 && corteSala <= 500) ? corteSala : 0;
+        const metaResueltaSala = esMisionPreun ? null : this._resolverMetaSaber11();
+        const metaSala = metaResueltaSala != null ? metaResueltaSala : 0;
         const hayMetaSala = metaSala > 0;
         const scoreNumSala = (!esMisionPreun && proyeccionSala > 0) ? proyeccionSala : null;
         const brechaSala = (hayMetaSala && scoreNumSala != null) ? Math.max(0, metaSala - scoreNumSala) : null;
+        const msgSinMetaSala = this._mensajeBrechaSinMeta(carreraSala);
         const textoBrechaSala = brechaSala == null
-          ? (esMisionPreun ? 'Escalas distintas' : 'Elige carrera para ver la brecha')
+          ? (esMisionPreun ? 'Escalas distintas' : msgSinMetaSala)
           : ('Te faltan ' + brechaSala + ' puntos para alcanzar la meta');
         const textoCorteSala = esMisionPreun
           ? 'Esta habilidad va de 0 a 500. El corte se lee en la escala de la convocatoria.'
           : (hayMetaSala && brechaSala != null
             ? ('Cercanía al corte: A ' + brechaSala + ' puntos del puntaje mínimo estimado.')
-            : (hayMetaSala ? ('Meta registrada: ' + metaSala + ' pts') : 'Elige carrera para ver la brecha'));
+            : (hayMetaSala ? ('Meta registrada: ' + metaSala + ' pts') : msgSinMetaSala));
         const numeroPuntajeSala = esMisionPreun
           ? (parseInt(localStorage.getItem('dante_preu_puntos') || '0', 10) || '—')
           : (scoreNumSala != null ? scoreNumSala : '—');
