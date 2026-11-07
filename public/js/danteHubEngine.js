@@ -1151,7 +1151,8 @@
           badgeContent.innerText = `En pausa · pregunta ${idxActivo} de ${tot}`;
         }
         if (txtPrompt) {
-          txtPrompt.innerText = `Seguir ${nombrePausa} · ${idxActivo} de ${tot}`;
+          // Contador en acento: el estudiante ve claro cuántas lleva / faltan.
+          txtPrompt.innerHTML = `Seguir ${nombrePausa} · <span class="sala-cta-progreso">${idxActivo} de ${tot}</span>`;
         }
         if (txtSubprompt) {
           txtSubprompt.innerText = 'Mantén para continuar';
