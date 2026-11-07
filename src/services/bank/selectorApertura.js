@@ -1,7 +1,9 @@
+import { esEscrito as esEscritoCalidad, poolElegible } from './calidadBanco.js';
+
 export const AREAS_SABER = ['matematicas', 'lectura_critica', 'ciencias_naturales', 'ingles', 'sociales_ciudadanas'];
 
 export function esEscrito(item) {
-  return !/_gen_/.test(String((item && item.id) || ''));
+  return esEscritoCalidad(item);
 }
 
 export function esSaber11(item) {
@@ -20,12 +22,22 @@ function mezclar(lista) {
   return copia;
 }
 
+/** Cache del pool anti-plantilla (se invalida al reiniciar proceso). */
+let _poolCache = null;
+function bancoFiltrado(banco) {
+  if (_poolCache && _poolCache.base === banco) return _poolCache.pool;
+  const pool = poolElegible(banco || [], { maxPorPlantilla: 2 });
+  _poolCache = { base: banco, pool };
+  return pool;
+}
+
 /**
- * Cola por área. Por defecto NO reusa ítems ya vistos (diagnóstico/bloques previos).
- * Solo si permitirReuso=true (banco agotado) vuelve a ofrecer vistos.
+ * Cola por área. Prioriza escritos; gen solo piloto deduplicado (sin plantilla basura).
+ * Por defecto NO reusa ítems ya vistos. Solo si permitirReuso=true (banco agotado).
  */
 export function colaDeArea(items, vistos, opts = {}) {
   const permitirReuso = Boolean(opts && opts.permitirReuso);
+  const maxGenRatio = opts && opts.maxGenRatio != null ? Number(opts.maxGenRatio) : 0.35;
   const nuevosEscritos = [];
   const nuevosGen = [];
   const vistosEscritos = [];
@@ -44,9 +56,14 @@ export function colaDeArea(items, vistos, opts = {}) {
       vistosGen.push(it);
     }
   });
-  let cola = mezclar(nuevosEscritos).concat(mezclar(nuevosGen));
+  const escritosMix = mezclar(nuevosEscritos);
+  const genMix = mezclar(nuevosGen);
+  // Tope de gen en la cola fresca para no inundar el bloque con clones.
+  const cupoGen = Math.max(0, Math.floor(escritosMix.length * maxGenRatio / Math.max(0.01, 1 - maxGenRatio)));
+  const genCapped = genMix.slice(0, Math.max(cupoGen, escritosMix.length ? 2 : genMix.length));
+  let cola = escritosMix.concat(genCapped);
   if (permitirReuso) {
-    cola = cola.concat(mezclar(vistosEscritos), mezclar(vistosGen));
+    cola = cola.concat(mezclar(vistosEscritos), mezclar(vistosGen).slice(0, 4));
   }
   return cola;
 }
@@ -79,8 +96,10 @@ export function seleccionarBloque(banco, opciones) {
   const cantidad = (opciones && opciones.cantidad) || 10;
   const vistos = (opciones && opciones.vistos) || new Set();
   const areas = (opciones && opciones.areas) || AREAS_SABER;
+  // Fase 3: trabajar sobre pool elegible (escritos + gen deduplicado), no sobre 5k plantillas.
+  const filtrado = bancoFiltrado(banco);
   const porArea = new Map(areas.map((area) => [area, []]));
-  (banco || []).forEach((it) => {
+  (filtrado || []).forEach((it) => {
     const area = String((it && (it.area || it.area_general)) || '').toLowerCase();
     if (porArea.has(area)) porArea.get(area).push(it);
   });
@@ -95,6 +114,20 @@ export function seleccionarBloque(banco, opciones) {
     porArea.forEach((lista, area) => colasReuso.set(area, colaDeArea(lista, vistos, { permitirReuso: true })));
     const idsYa = elegidos.map((it) => it.id);
     const extra = elegirDesdeColas(colasReuso, areas, cantidad - elegidos.length, idsYa);
+    elegidos = elegidos.concat(extra);
+  }
+
+  // Último recurso: pool completo sin filtro de plantilla (banco muy agotado).
+  if (elegidos.length < cantidad) {
+    const porAreaFull = new Map(areas.map((area) => [area, []]));
+    (banco || []).forEach((it) => {
+      const area = String((it && (it.area || it.area_general)) || '').toLowerCase();
+      if (porAreaFull.has(area)) porAreaFull.get(area).push(it);
+    });
+    const colasFull = new Map();
+    porAreaFull.forEach((lista, area) => colasFull.set(area, colaDeArea(lista, vistos, { permitirReuso: true, maxGenRatio: 0.8 })));
+    const idsYa = elegidos.map((it) => it.id);
+    const extra = elegirDesdeColas(colasFull, areas, cantidad - elegidos.length, idsYa);
     elegidos = elegidos.concat(extra);
   }
   return elegidos;
@@ -112,7 +145,7 @@ export function areaCoincide(item, prefijo) {
 }
 
 export function seleccionarRefuerzo(banco, prefijo, vistos, n = 5) {
-  const pool = (banco || []).filter((it) => areaCoincide(it, prefijo));
+  const pool = bancoFiltrado(banco).filter((it) => areaCoincide(it, prefijo));
   const setVistos = vistos || new Set();
   let elegidos = colaDeArea(pool, setVistos, { permitirReuso: false }).slice(0, n);
   if (elegidos.length < n) {

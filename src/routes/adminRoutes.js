@@ -342,13 +342,15 @@ router.post('/verificar-certificado', verifyToken, requireRole(['rector', 'admin
 router.post('/calibracion/proponer', verifyToken, requireRole(['rector', 'admin']), async (req, res) => {
     try {
         const { generarPropuestasCalibracion } = await import('../services/bank/recalibracionPropuestas.js');
-        const minN = Number(req.body && req.body.minN) || 8;
+        const { CALIBRACION_MIN_N } = await import('../services/bank/calidadBanco.js');
+        const minN = Number(req.body && req.body.minN) || CALIBRACION_MIN_N;
         const resultado = await generarPropuestasCalibracion({ minN });
         if (!resultado.ok) return res.status(500).json({ success: false, error: resultado.error });
         return res.status(200).json({
             success: true,
             insertadas: resultado.insertadas,
             propuestas: resultado.propuestas,
+            minN,
             aviso: resultado.aviso || null,
             version: SERVER_VERSION
         });
@@ -365,6 +367,39 @@ router.get('/calibracion/propuestas', verifyToken, requireRole(['rector', 'admin
         const resultado = await listarPropuestas(status === 'todas' ? null : status);
         if (!resultado.ok) return res.status(500).json({ success: false, error: resultado.error });
         return res.status(200).json({ success: true, propuestas: resultado.propuestas, version: SERVER_VERSION });
+    } catch (err) {
+        return res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// POST /api/admin/calibracion/aprobar — aplica override vivo a/b/c (N≥30)
+router.post('/calibracion/aprobar', verifyToken, requireRole(['rector', 'admin']), async (req, res) => {
+    try {
+        const { aprobarYAplicarPropuesta } = await import('../services/bank/recalibracionPropuestas.js');
+        const itemId = String((req.body && req.body.item_id) || '').trim();
+        const resultado = await aprobarYAplicarPropuesta(itemId);
+        if (!resultado.ok) return res.status(400).json({ success: false, error: resultado.error });
+        return res.status(200).json({ success: true, ...resultado, version: SERVER_VERSION });
+    } catch (err) {
+        return res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// GET /api/admin/banco/inventario — cobertura escritos vs _gen_ + metas
+router.get('/banco/inventario', verifyToken, requireRole(['rector', 'admin', 'profesor']), async (req, res) => {
+    try {
+        const { BANCO_COMPLETO } = await import('../services/bank/index.js');
+        const { inventariarBanco, META_LISTOS_POR_AREA, CALIBRACION_MIN_N } = await import('../services/bank/calidadBanco.js');
+        const { listarOverrides } = await import('../services/bank/calibracionOverrides.js');
+        const inventario = inventariarBanco(BANCO_COMPLETO);
+        return res.status(200).json({
+            success: true,
+            inventario,
+            meta_listos_por_area: META_LISTOS_POR_AREA,
+            calibracion_min_n: CALIBRACION_MIN_N,
+            overrides_vivos: listarOverrides().length,
+            version: SERVER_VERSION
+        });
     } catch (err) {
         return res.status(500).json({ success: false, error: err.message });
     }

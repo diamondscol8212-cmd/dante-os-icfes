@@ -1206,5 +1206,6 @@ const reactivosSeed = [
     }
 ];
 
-const reactivosGen = generarReactivosMatematicasMasivos(1000);
+// Fase 3: menos _gen_ plantilla (mejor pocos clones que 1000 basura).
+const reactivosGen = generarReactivosMatematicasMasivos(120);
 export const reactivosMatematicas = [...reactivosSeed, ...reactivosGen];

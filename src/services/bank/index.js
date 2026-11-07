@@ -205,7 +205,10 @@ export const BANCO_COMPLETO = balancearColeccion([
     ok: item.correcta || item.ok,
     a: item.a || item.parametro_a_discriminacion || 1.2,
     b: item.b || item.parametro_b_dificultad || 0.0,
-    c: item.c || item.parametro_c_adivinacion || 0.25
+    c: item.c || item.parametro_c_adivinacion || 0.25,
+    // Fase 3: etiqueta de fuente (la selección usa pool anti-plantilla).
+    fuente: String(item.id || '').includes('_gen_') ? 'gen' : 'escrito',
+    calibracion_status: String(item.id || '').includes('_gen_') ? 'piloto' : 'semilla'
 })).map((item) => {
     const conAyuda = (item.pista || item.razonesPorTexto) ? item : (() => {
         const ayuda = ayudaDeSemilla(item);

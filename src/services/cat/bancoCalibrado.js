@@ -1,4 +1,5 @@
 import { BANCO_COMPLETO } from '../bank/index.js';
+import { overrideDeItem } from '../bank/calibracionOverrides.js';
 
 const mapa = new Map();
 
@@ -20,5 +21,16 @@ function meter(item) {
 BANCO_COMPLETO.forEach(meter);
 
 export function parametrosDeItem(id) {
-  return mapa.get(String(id || '')) || null;
+  const key = String(id || '');
+  const base = mapa.get(key) || null;
+  const over = overrideDeItem(key);
+  if (!over) return base;
+  return {
+    a: Number.isFinite(over.a) && over.a > 0 ? over.a : (base ? base.a : 1.2),
+    b: Number.isFinite(over.b) ? over.b : (base ? base.b : 0),
+    c: Number.isFinite(over.c) ? Math.min(0.45, Math.max(0, over.c)) : (base ? base.c : 0.2),
+    area: base ? base.area : '',
+    calibracion_viva: true,
+    n: over.n || 0
+  };
 }

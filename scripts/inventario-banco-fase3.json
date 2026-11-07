@@ -1,0 +1,101 @@
+{
+  "actualizadoEn": "2025-11",
+  "total": 1507,
+  "escritos": 907,
+  "gen": 600,
+  "listos": 907,
+  "piloto_gen_unicos_aprox": 103,
+  "plantilla_gen": 497,
+  "incompletos": 0,
+  "huellas_gen_unicas": 84,
+  "pool_elegible": 1075,
+  "pool_por_area": {
+    "matematicas": 201,
+    "lectura_critica": 212,
+    "ciencias_naturales": 204,
+    "ingles": 254,
+    "sociales_ciudadanas": 204
+  },
+  "por_area": {
+    "matematicas": {
+      "total": 305,
+      "escritos": 185,
+      "gen": 120,
+      "listos": 185,
+      "piloto_gen": 0,
+      "plantilla_gen": 120,
+      "incompletos": 0,
+      "meta_listos": 250,
+      "brecha_meta": 65
+    },
+    "lectura_critica": {
+      "total": 302,
+      "escritos": 182,
+      "gen": 120,
+      "listos": 182,
+      "piloto_gen": 0,
+      "plantilla_gen": 120,
+      "incompletos": 0,
+      "meta_listos": 250,
+      "brecha_meta": 68
+    },
+    "ciencias_naturales": {
+      "total": 300,
+      "escritos": 180,
+      "gen": 120,
+      "listos": 180,
+      "piloto_gen": 0,
+      "plantilla_gen": 120,
+      "incompletos": 0,
+      "meta_listos": 200,
+      "brecha_meta": 20
+    },
+    "ingles": {
+      "total": 300,
+      "escritos": 180,
+      "gen": 120,
+      "listos": 180,
+      "piloto_gen": 103,
+      "plantilla_gen": 17,
+      "incompletos": 0,
+      "meta_listos": 200,
+      "brecha_meta": 20
+    },
+    "sociales_ciudadanas": {
+      "total": 300,
+      "escritos": 180,
+      "gen": 120,
+      "listos": 180,
+      "piloto_gen": 0,
+      "plantilla_gen": 120,
+      "incompletos": 0,
+      "meta_listos": 200,
+      "brecha_meta": 20
+    }
+  },
+  "nota": "Meta = ítems escritos listos (enunciado+4 opciones+clave+IRT). El _gen_ plantilla no cuenta para la meta; solo relleno piloto deduplicado.",
+  "meta_listos_por_area": {
+    "matematicas": 250,
+    "lectura_critica": 250,
+    "ciencias_naturales": 200,
+    "ingles": 200,
+    "sociales_ciudadanas": 200
+  },
+  "calibracion_min_n": 30,
+  "smoke_bloque_10": {
+    "ids": [
+      "11111111-0000-4000-8000-000000000096",
+      "22222222-0000-4000-8000-000000000015",
+      "33333333-0000-4000-8000-000000000005",
+      "44444444-0000-4000-8000-000000000050",
+      "item_ap_soc_013",
+      "11111111-0000-4000-8000-000000000058",
+      "item_ap_lec_057",
+      "33333333-0000-4000-8000-000000000078",
+      "44444444-0000-4000-8000-000000000060",
+      "item_ap_soc_042"
+    ],
+    "gen": 0,
+    "escritos": 10
+  }
+}

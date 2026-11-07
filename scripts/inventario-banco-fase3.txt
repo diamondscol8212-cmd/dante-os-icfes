@@ -1,0 +1,15 @@
+Fase 3 — Inventario banco Dante OS
+actualizado: 2025-11
+total=1507 escritos=907 gen=600
+listos=907 plantilla_gen=497 pool_elegible=1075
+huellas_gen_unicas=84 calibracion_min_n=30
+
+Por área (listos / meta / brecha):
+  matematicas: listos=185 meta=250 brecha=65 (escritos=185 gen=120 plantilla=120)
+  lectura_critica: listos=182 meta=250 brecha=68 (escritos=182 gen=120 plantilla=120)
+  ciencias_naturales: listos=180 meta=200 brecha=20 (escritos=180 gen=120 plantilla=120)
+  ingles: listos=180 meta=200 brecha=20 (escritos=180 gen=120 plantilla=17)
+  sociales_ciudadanas: listos=180 meta=200 brecha=20 (escritos=180 gen=120 plantilla=120)
+
+Smoke bloque 10: escritos=10 gen=0
+Meta = ítems escritos listos (enunciado+4 opciones+clave+IRT). El _gen_ plantilla no cuenta para la meta; solo relleno piloto deduplicado.

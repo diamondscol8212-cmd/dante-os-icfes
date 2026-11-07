@@ -1716,5 +1716,6 @@ const reactivosSeed = [
     }
 ];
 
-const reactivosGen = generarReactivosSocialesMasivos(1000);
+// Fase 3: menos _gen_ plantilla.
+const reactivosGen = generarReactivosSocialesMasivos(120);
 export const reactivosSociales = [...reactivosSeed, ...reactivosGen];

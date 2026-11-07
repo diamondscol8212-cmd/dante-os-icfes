@@ -7,7 +7,11 @@ import { calibrarParametrosItemEmpirico } from '../cat/CatDomainService.js';
 import { BANCO_COMPLETO } from './index.js';
 import { parametrosDeItem } from '../cat/bancoCalibrado.js';
 
-const MIN_N = 8;
+import { CALIBRACION_MIN_N } from './calidadBanco.js';
+import { guardarOverride } from './calibracionOverrides.js';
+
+/** Fase 3: calibración viva exige N≥30 (no recalibrar con muestra chica). */
+const MIN_N = CALIBRACION_MIN_N;
 const MAX_ITEMS = 80;
 
 function itemOriginalDe(row) {
@@ -122,4 +126,43 @@ export async function listarPropuestas(status = 'pendiente') {
   const { data, error } = await q;
   if (error) return { ok: false, error: error.message };
   return { ok: true, propuestas: data || [] };
+}
+
+/**
+ * Aprueba una propuesta y aplica override vivo a/b/c (sin editar el banco JS).
+ */
+export async function aprobarYAplicarPropuesta(itemId) {
+  const id = String(itemId || '').trim();
+  if (!id) return { ok: false, error: 'item_id vacío' };
+
+  const { data, error } = await supabase
+    .from('propuesta_calibracion_items')
+    .select('*')
+    .eq('item_id', id)
+    .eq('status', 'pendiente')
+    .order('created_at', { ascending: false })
+    .limit(1);
+
+  if (error) return { ok: false, error: error.message };
+  const prop = (data && data[0]) || null;
+  if (!prop) return { ok: false, error: 'No hay propuesta pendiente para ese ítem' };
+  if (Number(prop.n) < MIN_N) {
+    return { ok: false, error: `N insuficiente (${prop.n} < ${MIN_N})` };
+  }
+
+  const saved = guardarOverride(id, {
+    a: prop.a_new,
+    b: prop.b_new,
+    c: prop.c_new,
+    n: prop.n
+  });
+  if (!saved.ok) return saved;
+
+  await supabase
+    .from('propuesta_calibracion_items')
+    .update({ status: 'aprobada', applied_at: new Date().toISOString() })
+    .eq('item_id', id)
+    .eq('status', 'pendiente');
+
+  return { ok: true, override: saved.row, persistido: saved.persistido !== false, aviso: saved.aviso || null };
 }
