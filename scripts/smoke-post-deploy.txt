@@ -10,3 +10,14 @@ Checklist humo post-deploy (danteos.com)
 7. Perfil: proyección y áreas visibles
 8. SQL: fila saber_11 en progreso_estudiantes (score, racha, historial, perfil_diagnostico_at)
 9. /reset limpia y permite re-registro
+
+Simulacro (fase 4) — confiabilidad
+----------------------------------
+A. Puerta "Simulacro Completo" → briefing → 254 Q / 2 sesiones · 4 h 30
+B. Responder 2–3 → Pausar y volver a la sala → detalle muestra sesión y avance
+C. Reabrir: reanuda índice y reloj (no reinicia desde 0)
+D. Cambiar de pestaña unos segundos: reloj pausa; al volver, sigue
+E. Cerrar sesión 1 (o llegar al puente) → opción sesión 2 / guardar
+F. Al terminar: hoja estilo ICFES con global/500 si hay evidencia completa
+G. Perfil/expediente: simulacro_oficial o historial_simulacros actualizado
+H. node scripts/smoke-simulacro.mjs  → ok:true

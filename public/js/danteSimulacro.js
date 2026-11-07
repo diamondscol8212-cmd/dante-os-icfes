@@ -141,12 +141,73 @@
       });
       if (!resp.ok) return null;
       const json = await resp.json();
+      const local = leer();
+      // Recuperar checkpoint abierto del servidor si no hay sesión local abierta.
+      if (json && json.abierto && json.abierto.id && !(local && local.estado === 'abierto')) {
+        await aplicarCheckpointServidor(json.abierto);
+      }
       if (json && json.simulacro) {
         aplicarExpedienteServidor(json.simulacro);
         return json.simulacro;
       }
+      return json && json.abierto ? json.abierto : null;
     } catch (e) {}
     return null;
+  }
+
+  async function aplicarCheckpointServidor(chk) {
+    if (!chk || !chk.id) return;
+    const lista = await banco();
+    const mapa = mapaBanco(lista);
+    const ids = Array.isArray(chk.ids) ? chk.ids : [];
+    const reactivos = ids.map((id) => mapa.get(String(id))).filter(Boolean);
+    if (!ids.length || reactivos.length !== TOTAL) {
+      // Sin las 254 preguntas del cuadernillo no reabrimos desde la nube.
+      return;
+    }
+    const dato = {
+      id: chk.id,
+      estado: 'abierto',
+      sesion: chk.sesion === 2 ? 2 : 1,
+      restanteMs: Math.max(0, Number(chk.restanteMs) || TIEMPO_MS),
+      indice: Math.max(0, Number(chk.indice) || 0),
+      ids: ids.length ? ids : reactivos.map((r) => r.id),
+      reactivos: reactivos,
+      respuestas: Array.isArray(chk.respuestas) ? chk.respuestas : [],
+      puenteVisto: chk.sesion === 2,
+      resultado: null,
+      persistidoCheckpoint: true
+    };
+    guardar(dato);
+  }
+
+  let syncCheckpointEnCurso = false;
+  async function enviarCheckpoint(dato) {
+    if (!dato || dato.estado !== 'abierto' || syncCheckpointEnCurso) return;
+    const { studentId, email, token } = identidad();
+    if (!studentId && !email) return;
+    syncCheckpointEnCurso = true;
+    try {
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers.Authorization = 'Bearer ' + token;
+      if (studentId) headers['x-student-id'] = studentId;
+      await fetch('/api/dante/simulacro/checkpoint', {
+        method: 'POST',
+        headers,
+        credentials: 'include',
+        body: JSON.stringify({
+          studentId,
+          email,
+          simulacroId: dato.id,
+          sesion: dato.sesion,
+          indice: dato.indice,
+          restanteMs: dato.restanteMs,
+          respuestas: dato.respuestas || [],
+          ids: dato.ids || []
+        })
+      });
+    } catch (e) {}
+    syncCheckpointEnCurso = false;
   }
 
   function nivelArea(puntaje) {
@@ -221,7 +282,7 @@
         const g = informe.resultado.global;
         detalle.textContent = g != null ? (g + ' / 500') : 'Informe listo';
       } else {
-        detalle.textContent = '2 h 30 min';
+        detalle.textContent = '2 sesiones · 4 h 30';
       }
     }
     if (dato && dato.estado === 'abierto') pintarDialogoSala(dato);
@@ -378,12 +439,30 @@
     const dato = leer();
     if (!dato || dato.estado !== 'abierto' || !ws || !ws.misionData || !ws.misionData.esSimulacro) return;
     dato.indice = ws.indexReactivoActivo || 0;
-    dato.respuestas = Object.values(ws.respuestasSesionActiva || {}).filter((fila) => fila && fila.id && typeof fila.correcto === 'boolean').map((fila) => ({
+    const listaResp = Array.isArray(ws.respuestasSesionActiva)
+      ? ws.respuestasSesionActiva
+      : Object.values(ws.respuestasSesionActiva || {});
+    dato.respuestas = listaResp.filter((fila) => fila && fila.id && typeof fila.correcto === 'boolean').map((fila) => ({
       id: fila.id,
       correcto: fila.correcto,
       materia: fila.materia || fila.area || ''
     }));
+    dato.pausado_en = null;
     guardar(dato);
+    pintar();
+  }
+
+  /** Fase 4 — pausa confiable: frena reloj, guarda y checkpoint en nube. */
+  function alPausar(ws) {
+    pararReloj();
+    const activo = ws || window.DanteExamWorkspace;
+    if (activo) guardarParcial(activo);
+    const dato = leer();
+    if (dato && dato.estado === 'abierto') {
+      dato.pausado_en = new Date().toISOString();
+      guardar(dato);
+      enviarCheckpoint(dato);
+    }
     pintar();
   }
 
@@ -689,8 +768,9 @@
       }));
     } catch (e) {}
     if (window.DanteSemana) DanteSemana.anotarSimulacro(resultado);
-    const completo = resultado && resultado.global != null && !porTiempo;
-    hoja(resultado, !completo);
+    // Parcial solo si falta evidencia de áreas (sin global). Agotar tiempo no oculta el puntaje.
+    const parcial = !(resultado && resultado.global != null);
+    hoja(resultado, parcial);
     window.isExamActive = false;
     pintar();
     cerrandoSimulacro = false;
@@ -764,18 +844,26 @@
     }
     document.documentElement.classList.add('sim-sin-pista');
     document.documentElement.classList.remove('diag-sin-pista');
+    if (dato.pausado_en) {
+      dato.pausado_en = null;
+      guardar(dato);
+    }
     arrancarReloj();
+    // Checkpoint ligero al entrar (por si el dispositivo se cierra después).
+    enviarCheckpoint(dato);
   }
 
   window.DanteSimulacro = {
     abrir: abrir,
     pintar: pintar,
     guardarParcial: guardarParcial,
+    alPausar: alPausar,
     antesDePregunta: antesDePregunta,
     alTerminarPreguntas: alTerminarPreguntas,
     alEntrar: alEntrar,
     etiqueta: etiqueta,
     total: TOTAL,
+    tiempoMsSesion: TIEMPO_MS,
     sincronizarDesdeServidor: sincronizarDesdeServidor,
     aceptarBriefing: aceptarBriefing,
     cerrarBriefing: cerrarBriefing,
@@ -784,5 +872,27 @@
 
   document.addEventListener('DOMContentLoaded', () => {
     sincronizarDesdeServidor().finally(pintar);
+  });
+
+  // Fase 4 — autosave + pausa de reloj al ocultar pestaña; reanuda al volver.
+  document.addEventListener('visibilitychange', () => {
+    const ws = window.DanteExamWorkspace;
+    if (!ws || !ws.misionData || !ws.misionData.esSimulacro) return;
+    if (document.visibilityState === 'hidden') {
+      pararReloj();
+      guardarParcial(ws);
+      const dato = leer();
+      if (dato && dato.estado === 'abierto') enviarCheckpoint(dato);
+    } else if (document.visibilityState === 'visible') {
+      const dato = leer();
+      if (dato && dato.estado === 'abierto' && window.isExamActive) arrancarReloj();
+    }
+  });
+  window.addEventListener('pagehide', () => {
+    const ws = window.DanteExamWorkspace;
+    if (ws && ws.misionData && ws.misionData.esSimulacro) {
+      pararReloj();
+      guardarParcial(ws);
+    }
   });
 })();

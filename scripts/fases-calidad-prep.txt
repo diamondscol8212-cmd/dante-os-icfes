@@ -15,4 +15,8 @@ Fase 3 (HECHA / c-1.3.70): Banco — inventario, meta por área, calibración vi
   - Calibración viva N≥30 + overrides aprobados (admin /calibracion/aprobar)
   - scripts/inventarioBanco.mjs + GET /api/admin/banco/inventario
 
-Fase 4: Pulir simulacro completo (confiabilidad, tiempo, reporte, sync)
+Fase 4 (HECHA / c-1.3.71): Simulacro — confiabilidad, tiempo, reporte, sync
+  - Pausa frena reloj + checkpoint nube (mision_activa.simulacro_abierto)
+  - Autosave al ocultar pestaña; reanuda reloj al volver
+  - Puntaje global visible aunque se agote el tiempo (si hay evidencia)
+  - UI: "2 sesiones · 4 h 30"; smoke-simulacro.mjs + checklist humo

@@ -308,6 +308,91 @@ export async function guardarSimulacroOficial(alias, payload) {
   return { ok: true, simulacro: ins.data && ins.data.simulacro_oficial ? ins.data.simulacro_oficial : registro };
 }
 
+/**
+ * Fase 4 — Checkpoint de simulacro abierto (pausa / sync).
+ * No pisa el último simulacro_oficial cerrado; vive en mision_activa.simulacro_abierto.
+ */
+export async function guardarCheckpointSimulacro(alias, payload) {
+  if (!alias || !payload) return { ok: false, error: 'sin_estudiante' };
+  const correo = String(payload.email || `${alias}@danteos.edu.co`).trim().toLowerCase();
+  const checkpoint = {
+    id: String(payload.id || `sim_${Date.now()}`).slice(0, 80),
+    estado: 'abierto',
+    sesion: Number(payload.sesion) === 2 ? 2 : 1,
+    indice: Math.max(0, Math.min(253, Number(payload.indice) || 0)),
+    restanteMs: Math.max(0, Number(payload.restanteMs) || 0),
+    respuestas_n: Array.isArray(payload.respuestas) ? payload.respuestas.length : (Number(payload.respuestas_n) || 0),
+    respuestas: Array.isArray(payload.respuestas)
+      ? payload.respuestas.slice(0, 254).map((r) => ({
+        id: String((r && r.id) || '').slice(0, 80),
+        correcto: Boolean(r && r.correcto),
+        materia: String((r && r.materia) || '').slice(0, 40)
+      })).filter((r) => r.id)
+      : [],
+    ids: Array.isArray(payload.ids) ? payload.ids.slice(0, 254).map((id) => String(id).slice(0, 80)) : [],
+    actualizado_en: new Date().toISOString()
+  };
+
+  const previo = await cargarProgresoSaber(alias);
+  if (previo.error) return { ok: false, error: previo.error.message };
+  const fila = previo.data;
+  const misionPrev = fila && fila.mision_activa && typeof fila.mision_activa === 'object' ? fila.mision_activa : {};
+  const cuerpo = {
+    estudiante: alias,
+    estudiante_id: alias,
+    materia: 'saber_11',
+    email: correo,
+    mision_activa: {
+      ...misionPrev,
+      simulacro_abierto: checkpoint
+    },
+    updated_at: new Date().toISOString(),
+    ultima_actualizacion: new Date().toISOString(),
+    institution_id: (fila && fila.institution_id) || 'colegio_sandbox_default'
+  };
+
+  if (fila && fila.id) {
+    const up = await supabase.from('progreso_estudiantes').update(cuerpo).eq('id', fila.id);
+    if (up.error) return { ok: false, error: up.error.message };
+    return { ok: true, checkpoint };
+  }
+
+  const ins = await supabase.from('progreso_estudiantes').insert({
+    ...cuerpo,
+    id: crypto.randomUUID(),
+    theta_global: null,
+    sem_global: null,
+    baseline_proyeccion: null,
+    preguntas_respondidas: 0,
+    racha_dias: 0,
+    plan: 'EXPLORADOR',
+    items_respondidos: [],
+    onboarding_completed: true,
+    simulacro_oficial: null,
+    historial_simulacros: []
+  });
+  if (ins.error) return { ok: false, error: ins.error.message };
+  return { ok: true, checkpoint };
+}
+
+export async function limpiarCheckpointSimulacro(alias) {
+  if (!alias) return { ok: false, error: 'sin_estudiante' };
+  const previo = await cargarProgresoSaber(alias);
+  if (previo.error) return { ok: false, error: previo.error.message };
+  const fila = previo.data;
+  if (!fila || !fila.id) return { ok: true };
+  const misionPrev = fila.mision_activa && typeof fila.mision_activa === 'object' ? fila.mision_activa : {};
+  if (!misionPrev.simulacro_abierto) return { ok: true };
+  const mision = { ...misionPrev };
+  delete mision.simulacro_abierto;
+  const up = await supabase.from('progreso_estudiantes').update({
+    mision_activa: mision,
+    updated_at: new Date().toISOString()
+  }).eq('id', fila.id);
+  if (up.error) return { ok: false, error: up.error.message };
+  return { ok: true };
+}
+
 function numONulo(v, min, max) {
   const n = Number(v);
   if (!Number.isFinite(n)) return null;

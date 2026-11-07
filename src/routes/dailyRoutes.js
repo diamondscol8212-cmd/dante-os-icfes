@@ -11,6 +11,8 @@ import {
   estudianteDesdeRequest,
   cargarProgresoSaber,
   guardarSimulacroOficial,
+  guardarCheckpointSimulacro,
+  limpiarCheckpointSimulacro,
   guardarSnapshotCliente,
   guardarPerfilDiagnostico,
   snapshotDesdeFila
@@ -64,7 +66,8 @@ router.post('/simulacro/puntaje', optionalToken, async (req, res) => {
     const resultado = calificarSimulacro(limpias);
     const alias = estudianteDesdeRequest(req, cuerpo);
     const porTiempo = Boolean(cuerpo.porTiempo || cuerpo.por_tiempo);
-    const completo = resultado && resultado.global != null && !porTiempo;
+    // Fase 4: el global vale si hay evidencia completa de áreas; el tiempo solo es etiqueta.
+    const completo = Boolean(resultado && resultado.global != null);
     let guardado = null;
     if (alias) {
       const persistido = await guardarSimulacroOficial(alias, {
@@ -78,6 +81,7 @@ router.post('/simulacro/puntaje', optionalToken, async (req, res) => {
       });
       if (persistido.ok) guardado = persistido.simulacro;
       else console.warn('[simulacro/puntaje] no se pudo persistir:', persistido.error);
+      try { await limpiarCheckpointSimulacro(alias); } catch (eChk) {}
     }
     return res.json({
       ...resultado,
@@ -92,6 +96,29 @@ router.post('/simulacro/puntaje', optionalToken, async (req, res) => {
   }
 });
 
+// Fase 4 — checkpoint de pausa (reloj + índice + respuestas)
+router.post('/simulacro/checkpoint', optionalToken, async (req, res) => {
+  try {
+    const cuerpo = req.body || {};
+    const alias = estudianteDesdeRequest(req, cuerpo);
+    if (!alias) return res.status(400).json({ ok: false, error: 'Falta el estudiante.' });
+    const resultado = await guardarCheckpointSimulacro(alias, {
+      id: cuerpo.simulacroId || cuerpo.id,
+      email: cuerpo.email || null,
+      sesion: cuerpo.sesion,
+      indice: cuerpo.indice,
+      restanteMs: cuerpo.restanteMs,
+      respuestas: cuerpo.respuestas,
+      ids: cuerpo.ids
+    });
+    if (!resultado.ok) return res.status(500).json({ ok: false, error: resultado.error });
+    return res.json({ ok: true, checkpoint: resultado.checkpoint });
+  } catch (err) {
+    console.error('[simulacro/checkpoint]', err);
+    return res.status(500).json({ ok: false, error: err.message || 'error' });
+  }
+});
+
 router.get('/simulacro/ultimo', optionalToken, async (req, res) => {
   try {
     const alias = estudianteDesdeRequest(req, {
@@ -101,9 +128,13 @@ router.get('/simulacro/ultimo', optionalToken, async (req, res) => {
     if (!alias) return res.status(400).json({ ok: false, error: 'Falta el estudiante.' });
     const { data, error } = await cargarProgresoSaber(alias);
     if (error) return res.status(500).json({ ok: false, error: error.message });
+    const abierto = data && data.mision_activa && data.mision_activa.simulacro_abierto
+      ? data.mision_activa.simulacro_abierto
+      : null;
     return res.json({
       ok: true,
       simulacro: (data && data.simulacro_oficial) || null,
+      abierto,
       historial: Array.isArray(data && data.historial_simulacros) ? data.historial_simulacros : []
     });
   } catch (err) {
