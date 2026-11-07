@@ -649,21 +649,34 @@
       } catch (e) {}
 
       let alumno = '';
+      let emailAlumno = '';
       try {
         if (window.DanteRegistro && typeof DanteRegistro.idAlumno === 'function') alumno = DanteRegistro.idAlumno() || '';
       } catch (e) {}
       try {
-        await fetch('/api/dante/progreso/perfil-diagnostico', {
-          method: 'POST',
-          credentials: 'same-origin',
-          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-          body: JSON.stringify({
-            estudiante: alumno,
-            studentId: alumno,
-            ...payload
-          })
-        });
+        const u = JSON.parse(localStorage.getItem('dante_user') || 'null');
+        if (!alumno && u) alumno = String(u.estudiante || u.email || '').toLowerCase().trim().split('@')[0];
+        emailAlumno = String((u && u.email) || localStorage.getItem('dante_email') || '').trim().toLowerCase();
       } catch (e) {}
+      if (!alumno) {
+        alumno = String(localStorage.getItem('dante_student_id') || localStorage.getItem('dante_active_student') || '')
+          .toLowerCase().trim().split('@')[0];
+      }
+      if (alumno && alumno !== 'estudiante' && alumno !== 'student_demo_01') {
+        try {
+          await fetch('/api/dante/progreso/perfil-diagnostico', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+            body: JSON.stringify({
+              estudiante: alumno,
+              studentId: alumno,
+              email: emailAlumno || undefined,
+              ...payload
+            })
+          });
+        } catch (e) {}
+      }
       if (window.DanteNube && typeof window.DanteNube.subirProgresoDebounced === 'function') {
         window.DanteNube.subirProgresoDebounced(600);
       }

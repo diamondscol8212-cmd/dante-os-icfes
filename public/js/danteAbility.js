@@ -178,33 +178,78 @@
     };
   }
 
-  function seleccionarMision(items, nPorArea) {
+  function idsExcluidosLocal() {
+    const set = new Set();
+    try {
+      const hist = JSON.parse(localStorage.getItem('dante_history_cache') || '[]');
+      (Array.isArray(hist) ? hist : []).forEach(function (h) {
+        const items = (h && (h.items_respondidos || h.preguntas_falladas)) || [];
+        if (!Array.isArray(items)) return;
+        items.forEach(function (it) {
+          const id = it && (it.id || it.itemId || it.item_original);
+          if (id) set.add(String(id));
+        });
+      });
+    } catch (e) {}
+    try {
+      const irt = JSON.parse(localStorage.getItem('dante_respuestas_irt') || '[]');
+      (Array.isArray(irt) ? irt : []).forEach(function (r) {
+        if (r && r.id) set.add(String(r.id));
+      });
+    } catch (e) {}
+    return set;
+  }
+
+  function seleccionarMision(items, nPorArea, excluir) {
     const cupo = nPorArea > 0 ? nPorArea : 2;
     const areas = ['matematicas', 'lectura_critica', 'ciencias_naturales', 'sociales_ciudadanas', 'ingles'];
+    const excluidos = excluir instanceof Set ? excluir : idsExcluidosLocal();
     const porArea = {};
+    const porAreaReuso = {};
     (items || []).forEach(function (raw) {
       const item = adaptarItem(raw);
       if (!item.id || !item.enunciado) return;
-      if (!porArea[item.area]) porArea[item.area] = [];
-      porArea[item.area].push(item);
+      const visto = excluidos.has(String(item.id));
+      const destino = visto ? porAreaReuso : porArea;
+      if (!destino[item.area]) destino[item.area] = [];
+      destino[item.area].push(item);
     });
-    const columnas = areas.map(function (area) {
-      const pool = (porArea[area] || []).slice();
-      pool.sort(function (x, y) { return Math.abs(x.b) - Math.abs(y.b); });
-      const cercanos = pool.slice(0, Math.max(cupo * 4, cupo));
-      for (let i = cercanos.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        const tmp = cercanos[i];
-        cercanos[i] = cercanos[j];
-        cercanos[j] = tmp;
-      }
-      return cercanos.slice(0, cupo);
-    });
+    function tomarDe(mapa) {
+      return areas.map(function (area) {
+        const pool = (mapa[area] || []).slice();
+        pool.sort(function (x, y) { return Math.abs(x.b) - Math.abs(y.b); });
+        const cercanos = pool.slice(0, Math.max(cupo * 4, cupo));
+        for (let i = cercanos.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          const tmp = cercanos[i];
+          cercanos[i] = cercanos[j];
+          cercanos[j] = tmp;
+        }
+        return cercanos.slice(0, cupo);
+      });
+    }
+    let columnas = tomarDe(porArea);
     const orden = [];
+    const usados = new Set();
     for (let k = 0; k < cupo; k++) {
       columnas.forEach(function (col) {
-        if (col[k]) orden.push(col[k]);
+        if (col[k] && !usados.has(col[k].id)) {
+          usados.add(col[k].id);
+          orden.push(col[k]);
+        }
       });
+    }
+    if (orden.length < cupo * areas.length) {
+      columnas = tomarDe(porAreaReuso);
+      for (let k = 0; k < cupo && orden.length < cupo * areas.length; k++) {
+        columnas.forEach(function (col) {
+          if (orden.length >= cupo * areas.length) return;
+          if (col[k] && !usados.has(col[k].id)) {
+            usados.add(col[k].id);
+            orden.push(col[k]);
+          }
+        });
+      }
     }
     return orden;
   }

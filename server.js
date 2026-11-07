@@ -18,6 +18,7 @@ import dailyRouter from './src/routes/dailyRoutes.js';
 import mindRouter from './src/routes/mindRoutes.js';
 import { cmmiGovernanceEngine } from './src/security/cmmiGovernance.js';
 import { guardarInformeCompartido, leerInformeCompartido } from './src/services/informeCompartidoStore.js';
+import { supabase } from './supabaseClient.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -26,6 +27,16 @@ const app = express();
 app.set('trust proxy', 1);
 const PORT = Number(process.env.PORT) || 3000;
 const SERVER_VERSION = "Dante OS v22.0.0-RC1 (Enterprise Gold - Production Ready)";
+
+// Canónico: danteos.com → www.danteos.com (evita 301 que rompe POST/fetch del dual-write).
+app.use((req, res, next) => {
+    const host = String(req.hostname || (req.headers.host || '').split(':')[0] || '').toLowerCase();
+    const forzar = process.env.FORCE_WWW === '1' || process.env.NODE_ENV === 'production';
+    if (forzar && host === 'danteos.com') {
+        return res.redirect(301, `https://www.danteos.com${req.originalUrl || '/'}`);
+    }
+    next();
+});
 
 // 📡 INICIALIZACIÓN SUAVE DE SENTRY OBSERVABILIDAD EN BACKEND CON SCRUBBING PII (LEY 1581)
 if (process.env.SENTRY_DSN) {
@@ -78,6 +89,7 @@ const ALLOWED_ORIGINS = [
     'http://localhost:5173', 'http://127.0.0.1:5173',
     'http://localhost:3000', 'http://127.0.0.1:5500', 
     'http://localhost:5500', 'https://danteos.com',
+    'https://www.danteos.com',
     'https://app.danteos.com',
     'https://danteos.app',
     'https://www.danteos.app',
@@ -246,9 +258,35 @@ app.get(['/api/informe-general/corto/:id', '/api/v1/informe-general/corto/:id'],
     return res.status(200).json({ success: true, snap });
 });
 
-// ENDPOINT DE MONITOREO DE SALUD DEL CLÚSTER (HEALTHCHECK)
-app.get(['/api/health', '/api/v1/health'], (req, res) => {
-    return res.status(200).json({ success: true, status: "HEALTHY", version: SERVER_VERSION, timestamp: new Date().toISOString() });
+// ENDPOINT DE MONITOREO DE SALUD DEL CLÚSTER (HEALTHCHECK + ping Supabase)
+app.get(['/api/health', '/api/v1/health'], async (req, res) => {
+    let supabaseOk = false;
+    let supabaseError = null;
+    try {
+        const { error } = await supabase.from('progreso_estudiantes').select('id').limit(1);
+        if (error) {
+            supabaseError = error.message || 'supabase_error';
+            if (/invalid api key/i.test(supabaseError)) {
+                console.error('🚨 [HEALTH]: Invalid API key de Supabase en el servidor.');
+                if (process.env.SENTRY_DSN) {
+                    try { Sentry.captureMessage('Supabase Invalid API key', 'error'); } catch {}
+                }
+            }
+        } else {
+            supabaseOk = true;
+        }
+    } catch (err) {
+        supabaseError = err && err.message ? err.message : 'supabase_unreachable';
+    }
+    const ok = supabaseOk;
+    return res.status(ok ? 200 : 503).json({
+        success: ok,
+        status: ok ? 'HEALTHY' : 'DEGRADED',
+        supabase: ok ? 'ok' : 'error',
+        supabaseError: ok ? undefined : supabaseError,
+        version: SERVER_VERSION,
+        timestamp: new Date().toISOString()
+    });
 });
 
 // ====================================================================

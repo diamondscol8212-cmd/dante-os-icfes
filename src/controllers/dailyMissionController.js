@@ -207,15 +207,24 @@ export async function obtenerMisionDiaria(req, res) {
       if (reactivosUnicos.length === totalLimite) break;
     }
 
-    // Rellenar hasta totalLimite asegurando unicidad absoluta de IDs
+    // Rellenar hasta totalLimite: primero sin repetir vistos del alumno; solo al final permitir reuso.
     if (!esRefuerzo && reactivosUnicos.length < totalLimite) {
       const poolParaRellenar = BANCO_COMPLETO || [];
       for (const item of poolParaRellenar) {
-        if (item && item.id && !idsVistos.has(item.id)) {
-          idsVistos.add(item.id);
-          reactivosUnicos.push(item);
-        }
+        const id = item && item.id ? String(item.id) : '';
+        if (!id || idsVistos.has(id) || vistos.has(id)) continue;
+        idsVistos.add(id);
+        reactivosUnicos.push(item);
         if (reactivosUnicos.length === totalLimite) break;
+      }
+      if (reactivosUnicos.length < totalLimite) {
+        for (const item of poolParaRellenar) {
+          const id = item && item.id ? String(item.id) : '';
+          if (!id || idsVistos.has(id)) continue;
+          idsVistos.add(id);
+          reactivosUnicos.push(item);
+          if (reactivosUnicos.length === totalLimite) break;
+        }
       }
     }
     rawItems = reactivosUnicos;

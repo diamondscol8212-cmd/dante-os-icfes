@@ -1,0 +1,12 @@
+Checklist humo post-deploy (danteos.com)
+=====================================
+1. GET https://www.danteos.com/api/health
+   -> success:true, supabase:"ok" (si Invalid API key = arreglar env en Render)
+2. Abrir https://www.danteos.com (no apex sin www)
+3. Login Google / correo
+4. Onboarding si aplica + diagnóstico (3 perfil + 10)
+5. Ver reporte con meta/brecha de carrera
+6. Un bloque de entrenamiento: no debe repetir ítems del diagnóstico
+7. Perfil: proyección y áreas visibles
+8. SQL: fila saber_11 en progreso_estudiantes (score, racha, historial, perfil_diagnostico_at)
+9. /reset limpia y permite re-registro

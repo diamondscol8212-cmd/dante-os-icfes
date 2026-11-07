@@ -20,20 +20,59 @@ function mezclar(lista) {
   return copia;
 }
 
-export function colaDeArea(items, vistos) {
-  const nuevos = [];
-  const yaVistos = [];
-  const reserva = [];
+/**
+ * Cola por área. Por defecto NO reusa ítems ya vistos (diagnóstico/bloques previos).
+ * Solo si permitirReuso=true (banco agotado) vuelve a ofrecer vistos.
+ */
+export function colaDeArea(items, vistos, opts = {}) {
+  const permitirReuso = Boolean(opts && opts.permitirReuso);
+  const nuevosEscritos = [];
+  const nuevosGen = [];
+  const vistosEscritos = [];
+  const vistosGen = [];
   (items || []).forEach((it) => {
     if (!it || !esSaber11(it)) return;
     const id = String(it.id || '');
     if (!id) return;
     const visto = vistos.has(id);
-    if (esEscrito(it) && !visto) nuevos.push(it);
-    else if (esEscrito(it)) yaVistos.push(it);
-    else if (!visto) reserva.push(it);
+    if (esEscrito(it)) {
+      if (!visto) nuevosEscritos.push(it);
+      else vistosEscritos.push(it);
+    } else if (!visto) {
+      nuevosGen.push(it);
+    } else {
+      vistosGen.push(it);
+    }
   });
-  return mezclar(nuevos).concat(mezclar(yaVistos), mezclar(reserva));
+  let cola = mezclar(nuevosEscritos).concat(mezclar(nuevosGen));
+  if (permitirReuso) {
+    cola = cola.concat(mezclar(vistosEscritos), mezclar(vistosGen));
+  }
+  return cola;
+}
+
+function elegirDesdeColas(colas, areas, cantidad, idsPrevios) {
+  const elegidos = [];
+  const ids = new Set(idsPrevios || []);
+  let turno = 0;
+  let guardia = 0;
+  while (elegidos.length < cantidad && guardia < cantidad * (areas.length + 2)) {
+    const cola = colas.get(areas[turno % areas.length]) || [];
+    while (cola.length) {
+      const candidato = cola.shift();
+      if (candidato && candidato.id && !ids.has(candidato.id)) {
+        ids.add(candidato.id);
+        elegidos.push(candidato);
+        break;
+      }
+    }
+    turno += 1;
+    guardia += 1;
+    let queda = false;
+    colas.forEach((cola) => { if (cola.length) queda = true; });
+    if (!queda) break;
+  }
+  return elegidos;
 }
 
 export function seleccionarBloque(banco, opciones) {
@@ -45,27 +84,18 @@ export function seleccionarBloque(banco, opciones) {
     const area = String((it && (it.area || it.area_general)) || '').toLowerCase();
     if (porArea.has(area)) porArea.get(area).push(it);
   });
-  const colas = new Map();
-  porArea.forEach((lista, area) => colas.set(area, colaDeArea(lista, vistos)));
-  const elegidos = [];
-  const ids = new Set();
-  let turno = 0;
-  let guardia = 0;
-  while (elegidos.length < cantidad && guardia < cantidad * (areas.length + 2)) {
-    const cola = colas.get(areas[turno % areas.length]) || [];
-    while (cola.length) {
-      const candidato = cola.shift();
-      if (candidato && !ids.has(candidato.id)) {
-        ids.add(candidato.id);
-        elegidos.push(candidato);
-        break;
-      }
-    }
-    turno += 1;
-    guardia += 1;
-    let queda = false;
-    colas.forEach((cola) => { if (cola.length) queda = true; });
-    if (!queda) break;
+
+  const colasFrescas = new Map();
+  porArea.forEach((lista, area) => colasFrescas.set(area, colaDeArea(lista, vistos, { permitirReuso: false })));
+  let elegidos = elegirDesdeColas(colasFrescas, areas, cantidad, []);
+
+  // Solo si no alcanza el cupo con ítems nuevos, permitir reuso (último recurso).
+  if (elegidos.length < cantidad) {
+    const colasReuso = new Map();
+    porArea.forEach((lista, area) => colasReuso.set(area, colaDeArea(lista, vistos, { permitirReuso: true })));
+    const idsYa = elegidos.map((it) => it.id);
+    const extra = elegirDesdeColas(colasReuso, areas, cantidad - elegidos.length, idsYa);
+    elegidos = elegidos.concat(extra);
   }
   return elegidos;
 }
@@ -83,5 +113,17 @@ export function areaCoincide(item, prefijo) {
 
 export function seleccionarRefuerzo(banco, prefijo, vistos, n = 5) {
   const pool = (banco || []).filter((it) => areaCoincide(it, prefijo));
-  return colaDeArea(pool, vistos || new Set()).slice(0, n);
+  const setVistos = vistos || new Set();
+  let elegidos = colaDeArea(pool, setVistos, { permitirReuso: false }).slice(0, n);
+  if (elegidos.length < n) {
+    const ids = new Set(elegidos.map((it) => it && it.id).filter(Boolean));
+    const reuso = colaDeArea(pool, setVistos, { permitirReuso: true });
+    for (const it of reuso) {
+      if (!it || !it.id || ids.has(it.id)) continue;
+      elegidos.push(it);
+      ids.add(it.id);
+      if (elegidos.length >= n) break;
+    }
+  }
+  return elegidos;
 }

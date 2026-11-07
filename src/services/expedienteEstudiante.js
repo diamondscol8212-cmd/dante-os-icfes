@@ -8,6 +8,36 @@ export function aliasEstudiante(raw) {
   return texto.split('@')[0].replace(/[^a-z0-9._-]/g, '').slice(0, 80);
 }
 
+/** Evita dos cierres del mismo bloque (cliente eval_* + servidor mision_daily_*) en <2 min. */
+function esSesionCasiIgual(a, b) {
+  if (!a || !b) return false;
+  if (a.id && b.id && String(a.id) === String(b.id)) return true;
+  const ta = Date.parse(a.created_at || '') || 0;
+  const tb = Date.parse(b.created_at || '') || 0;
+  if (!ta || !tb) return false;
+  if (Math.abs(ta - tb) > 120000) return false;
+  if (String(a.tipo || '') !== String(b.tipo || '')) return false;
+  const pa = Number(a.puntaje);
+  const pb = Number(b.puntaje);
+  if (Number.isFinite(pa) && Number.isFinite(pb) && Math.abs(pa - pb) <= 20) return true;
+  const totA = Number(a.total) || 0;
+  const totB = Number(b.total) || 0;
+  return totA > 0 && totA === totB && Number(a.aciertos) === Number(b.aciertos);
+}
+
+function fusionarHistorialSesiones(previas, nuevas) {
+  const out = [];
+  const cola = [...(Array.isArray(nuevas) ? nuevas : []), ...(Array.isArray(previas) ? previas : [])];
+  cola.forEach((ses) => {
+    if (!ses) return;
+    if (out.some((x) => esSesionCasiIgual(x, ses))) return;
+    out.push(ses);
+  });
+  return out
+    .sort((a, b) => String(b.created_at || '').localeCompare(String(a.created_at || '')))
+    .slice(0, 80);
+}
+
 export function estudianteDesdeRequest(req, body = {}) {
   const user = req.user || {};
   const crudo = user.estudiante || user.studentId || user.email || user.id
@@ -186,8 +216,7 @@ export async function registrarSesionExpediente(alias, payload = {}) {
     precisionPorArea: payload.precisionPorArea || {}
   };
   const histSesiones = Array.isArray(fila && fila.historial_sesiones) ? fila.historial_sesiones.slice() : [];
-  const histSinDup = histSesiones.filter((x) => x && x.id !== sesion.id);
-  histSinDup.unshift(sesion);
+  const histSinDup = fusionarHistorialSesiones(histSesiones, [sesion]);
 
   const preguntasPrev = Number(fila && fila.preguntas_respondidas) || 0;
   const cuerpo = {
@@ -201,7 +230,7 @@ export async function registrarSesionExpediente(alias, payload = {}) {
     preguntas_respondidas: preguntasPrev + nuevosItems.length,
     items_respondidos: mezclados.slice(-4000),
     historial_theta: histTheta,
-    historial_sesiones: histSinDup.slice(0, 80),
+    historial_sesiones: histSinDup,
     racha_dias: Number.isFinite(Number(payload.rachaDias)) ? Number(payload.rachaDias) : (fila && fila.racha_dias) || 0,
     onboarding_completed: true,
     updated_at: new Date().toISOString(),
@@ -428,29 +457,20 @@ export async function guardarSnapshotCliente(alias, snapshotRaw = {}) {
     }
   }
 
-  const histMap = new Map();
   const histPrev = Array.isArray(fila && fila.historial_sesiones) ? fila.historial_sesiones : [];
-  histPrev.forEach((ses) => {
-    if (ses && ses.id) histMap.set(String(ses.id), ses);
-  });
-  (snap.history || []).forEach((h) => {
-    if (!h || !h.id || histMap.has(h.id)) return;
-    histMap.set(h.id, {
-      id: h.id,
-      tipo: h.tipo || 'SESION',
-      created_at: h.created_at || snap.updatedAt,
-      puntaje: h.puntaje_escalonado,
-      theta: h.theta,
-      sem: h.sem,
-      aciertos: h.aciertos || 0,
-      total: h.total || 0,
-      precisionPorcentaje: h.precision,
-      precisionPorArea: h.precisionPorArea || {}
-    });
-  });
-  const histSesiones = Array.from(histMap.values())
-    .sort((a, b) => String(b.created_at || '').localeCompare(String(a.created_at || '')))
-    .slice(0, 80);
+  const histDesdeSnap = (snap.history || []).map((h) => ({
+    id: h.id,
+    tipo: h.tipo || 'SESION',
+    created_at: h.created_at || snap.updatedAt,
+    puntaje: h.puntaje_escalonado,
+    theta: h.theta,
+    sem: h.sem,
+    aciertos: h.aciertos || 0,
+    total: h.total || 0,
+    precisionPorcentaje: h.precision,
+    precisionPorArea: h.precisionPorArea || {}
+  })).filter((h) => h && h.id);
+  const histSesiones = fusionarHistorialSesiones(histPrev, histDesdeSnap);
 
   const scoreDb = numONulo(fila && fila.baseline_proyeccion, 0, 500);
   let baseline = scoreDb;

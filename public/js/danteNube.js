@@ -223,6 +223,35 @@
     }, typeof ms === 'number' ? ms : 1200);
   }
 
+  async function reenviarPerfilDiagnosticoSiFalta(id) {
+    try {
+      if (localStorage.getItem('dante_perfil_diagnostico_done') !== 'true') return;
+      const local = leerJson('dante_perfil_diagnostico', null);
+      if (!local || !local.q1 || !local.q2 || !local.q3) return;
+      let email = '';
+      try {
+        const u = JSON.parse(localStorage.getItem('dante_user') || 'null');
+        email = String((u && u.email) || '').trim().toLowerCase();
+      } catch (e) {}
+      await fetch('/api/dante/progreso/perfil-diagnostico', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          estudiante: id,
+          studentId: id,
+          email: email || undefined,
+          q1: local.q1,
+          q2: local.q2,
+          q3: local.q3,
+          percepcion: local.percepcion || local.q1,
+          area: local.area || local.q2,
+          tiempo: local.tiempo || local.q3
+        })
+      });
+    } catch (e) {}
+  }
+
   async function reconciliarProgreso(studentId) {
     const id = idAlumno(studentId);
     if (!id) return { ok: false, motivo: 'sin_alumno' };
@@ -248,6 +277,8 @@
         } catch (e) {}
       }
     }
+    // Si el cuadernillo quedó solo en local (p. ej. sync falló antes), reintenta a Supabase.
+    await reenviarPerfilDiagnosticoSiFalta(id);
     const push = await subirProgreso(id);
     return { ok: true, nube: Boolean(nube), push: push };
   }
