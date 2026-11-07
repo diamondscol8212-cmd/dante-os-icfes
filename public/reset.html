@@ -6,7 +6,8 @@
     <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Dante OS · Limpiar este navegador</title>
+    <title>Dante OS · Limpiar este navegador c-1.3.64</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --bg: #0b1220;
@@ -52,11 +53,7 @@
             color: var(--accent);
             font-size: 1.35rem;
         }
-        h1 {
-            margin: 0;
-            font-size: 1.2rem;
-            letter-spacing: -0.02em;
-        }
+        h1 { margin: 0; font-size: 1.2rem; letter-spacing: -0.02em; }
         .lead {
             margin: 0.55rem 0 0;
             color: var(--mute);
@@ -91,10 +88,7 @@
             color: #111827;
             background: linear-gradient(135deg, #f59e0b, #eab308);
         }
-        .btn:disabled {
-            opacity: 0.65;
-            cursor: wait;
-        }
+        .btn:disabled { opacity: 0.65; cursor: wait; }
         .link {
             display: block;
             margin-top: 0.75rem;
@@ -103,6 +97,7 @@
             font-size: 0.78rem;
         }
         .link:hover { color: var(--text); }
+        .ver { margin-top: 0.65rem; font-size: 0.65rem; color: #64748b; font-family: ui-monospace, monospace; }
     </style>
 </head>
 <body>
@@ -120,13 +115,14 @@
             <div id="s4">4. Ir al login limpio</div>
         </div>
         <button id="btnReset" class="btn" type="button">Limpiar todo ahora</button>
-        <a class="link" href="/login.html">Volver sin borrar</a>
+        <a class="link" href="/login.html?limpio=1">Volver sin borrar</a>
+        <p class="ver">c-1.3.64</p>
     </div>
 
     <script>
         (function () {
             var enCurso = false;
-            var bust = 'r=' + Date.now();
+            var bust = 'r=' + Date.now() + '&v=c-1.3.64';
 
             function paso(id, estado, texto) {
                 var el = document.getElementById(id);
@@ -150,15 +146,17 @@
                         }
                     }
                 } catch (e) {}
-                try {
-                    await fetch('/api/auth/logout', {
-                        method: 'POST',
-                        credentials: 'include',
-                        cache: 'no-store',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ token: tokenViejo || '' })
-                    });
-                } catch (e) {}
+                var body = JSON.stringify({ token: tokenViejo || '' });
+                var opts = {
+                    method: 'POST',
+                    credentials: 'include',
+                    cache: 'no-store',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: body
+                };
+                try { await fetch('/api/auth/logout', opts); } catch (e) {}
+                try { await fetch('/api/v1/auth/logout', opts); } catch (e) {}
+                try { await fetch('/api/auth/logout', { method: 'GET', credentials: 'include', cache: 'no-store' }); } catch (e) {}
             }
 
             function borrarCookies() {
@@ -167,11 +165,17 @@
                     var parts = host.split('.');
                     var dominios = ['', host];
                     if (parts.length >= 2) dominios.push('.' + parts.slice(-2).join('.'));
-                    if (parts.length >= 3) dominios.push('.' + parts.slice(-3).join('.'));
-                    var paths = ['/', '/login.html', '/perfil.html', '/onboarding.html'];
+                    if (parts.length >= 3) dominios.push('.' + host);
+                    var paths = ['/', '/login.html', '/perfil.html', '/onboarding.html', '/index.html', '/reset', '/reset/'];
+                    var nombres = [];
                     document.cookie.split(';').forEach(function (raw) {
                         var nombre = raw.replace(/^ +/, '').split('=')[0];
-                        if (!nombre) return;
+                        if (nombre) nombres.push(nombre);
+                    });
+                    ['dante_token', 'dante_jwt', 'sb-access-token', 'sb-refresh-token'].forEach(function (n) {
+                        if (nombres.indexOf(n) < 0) nombres.push(n);
+                    });
+                    nombres.forEach(function (nombre) {
                         dominios.forEach(function (dom) {
                             paths.forEach(function (p) {
                                 var base = nombre + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=' + p + ';Max-Age=0';
@@ -217,16 +221,6 @@
             function vaciarStorage() {
                 try { localStorage.clear(); } catch (e) {}
                 try { sessionStorage.clear(); } catch (e) {}
-                try {
-                    var keys = [];
-                    for (var i = 0; i < localStorage.length; i++) {
-                        var k = localStorage.key(i);
-                        if (k) keys.push(k);
-                    }
-                    keys.forEach(function (k) {
-                        try { localStorage.removeItem(k); } catch (e2) {}
-                    });
-                } catch (e) {}
             }
 
             async function limpiarProfundo() {
@@ -249,33 +243,38 @@
                 paso('s2', 'run', '2. Cerrando sesión del servidor…');
                 await Promise.race([
                     cerrarSesionServidor(tokenViejo),
-                    sleep(4500)
+                    sleep(5000)
                 ]);
                 paso('s2', 'ok', '2. Sesión del servidor cerrada.');
 
                 paso('s3', 'run', '3. Vaciando memoria, cookies, SW y caché…');
-                vaciarStorage();
-                borrarCookies();
                 await borrarServiceWorkers();
                 await borrarCaches();
                 await borrarIndexedDB();
+                vaciarStorage();
+                borrarCookies();
                 vaciarStorage();
                 try { sessionStorage.setItem('dante_reset_listo', '1'); } catch (e) {}
                 paso('s3', 'ok', '3. Memoria y caché vaciadas.');
 
                 paso('s4', 'run', '4. Abriendo login limpio…');
-                await sleep(350);
-                window.location.replace('/login.html?limpio=1&' + bust);
+                await sleep(400);
+                // location.href fuerza recarga completa tras quitar SW
+                window.location.href = '/login.html?limpio=1&' + bust;
             }
 
-            document.addEventListener('DOMContentLoaded', function () {
+            function arrancar() {
                 var btn = document.getElementById('btnReset');
                 if (btn) btn.addEventListener('click', limpiarProfundo);
-                // Al abrir /reset desde el explorador, limpia solo.
-                setTimeout(limpiarProfundo, 250);
-            });
+                setTimeout(limpiarProfundo, 300);
+            }
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', arrancar);
+            } else {
+                arrancar();
+            }
         })();
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </body>
 </html>
