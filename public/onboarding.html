@@ -145,6 +145,141 @@
             background: #e7d7c3 !important;
         }
         .onboard-card .uppercase { text-transform: none !important; letter-spacing: -0.02em !important; }
+
+        /* Paso 3: opciones al estilo cuadernillo de prueba */
+        #stepContainer3 .onboard-pregunta-grid {
+            background: #1c1917;
+            border: 1px solid rgba(231, 215, 195, 0.22);
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+        #stepContainer3 .onboard-opcion {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.85rem 0.9rem;
+            border-bottom: 1px solid rgba(231, 215, 195, 0.14);
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.15s ease;
+        }
+        #stepContainer3 .onboard-opcion:last-child { border-bottom: 0; }
+        #stepContainer3 .onboard-opcion:hover { background: rgba(231, 215, 195, 0.05); }
+        #stepContainer3 .onboard-opcion.selected {
+            background: rgba(231, 215, 195, 0.1);
+        }
+        #stepContainer3 .badge-opcion-letra {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 999px;
+            border: 2px solid rgba(231, 215, 195, 0.55);
+            background: #0c0b09;
+            color: #e7d7c3;
+            font-family: var(--font-mono), monospace;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        #stepContainer3 .onboard-opcion.selected .badge-opcion-letra {
+            background: #e7d7c3;
+            color: #1c1917;
+            border-color: #e7d7c3;
+            box-shadow: inset 0 0 0 2px #1c1917;
+        }
+        #stepContainer3 .onboard-opcion-body {
+            flex: 1;
+            min-width: 0;
+            text-align: left;
+        }
+        #stepContainer3 .onboard-opcion-title {
+            margin: 0;
+            font-size: 0.84rem;
+            font-weight: 700;
+            color: #f5f0e8;
+            line-height: 1.3;
+        }
+        #stepContainer3 .onboard-opcion-sub {
+            margin: 0.2rem 0 0;
+            font-size: 0.7rem;
+            color: #a8a29e;
+            line-height: 1.35;
+        }
+        #stepContainer3 .onboard-instruccion {
+            margin: 0 0 0.55rem;
+            font-size: 0.72rem;
+            color: #a8a29e;
+            font-family: var(--font-mono), monospace;
+        }
+        #btnOnboardPista {
+            width: 100%;
+            margin-top: 0.65rem;
+            padding: 0.7rem 0.9rem;
+            border-radius: 0.9rem;
+            border: 1px solid rgba(231, 215, 195, 0.28);
+            background: #1c1917;
+            color: #e7d7c3;
+            font-size: 0.75rem;
+            font-weight: 650;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+            cursor: pointer;
+        }
+        #cajaOnboardPista {
+            margin-top: 0.55rem;
+            padding: 0.85rem 0.95rem;
+            border-radius: 0.9rem;
+            border: 1px solid rgba(231, 215, 195, 0.28);
+            background: rgba(231, 215, 195, 0.08);
+            color: #e7d7c3;
+            font-size: 0.78rem;
+            line-height: 1.45;
+            text-align: left;
+        }
+        #btnOnboardHoldConfirm {
+            width: 100%;
+            margin-top: 0.75rem;
+            padding: 0.95rem 1rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(231, 215, 195, 0.4);
+            background: #3a2c20;
+            color: #f8efe2;
+            font-family: var(--font-mono), monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            user-select: none;
+            touch-action: none;
+        }
+        #btnOnboardHoldConfirm:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+        #btnOnboardHoldFill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 0%;
+            background: rgba(231, 215, 195, 0.28);
+            pointer-events: none;
+            transition: width 0.05s linear;
+        }
+        #btnOnboardHoldConfirm .hold-label {
+            position: relative;
+            z-index: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.45rem;
+        }
     </style>
 </head>
 <body class="p-3 sm:p-6 selection:bg-cyan-500 selection:text-slate-950">
@@ -277,23 +412,45 @@
             </div>
 
             <div id="stepContainer3" class="space-y-3 hidden">
-                <p class="text-xs font-mono font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
-                    <i class="fa-solid fa-calendar-check text-cyan-400"></i>
-                    <span>3. ¿Cómo quieres prepararte?</span>
-                </p>
-                <div class="grid grid-cols-1 gap-2.5">
-                    <div data-fecha="CAL_A" onclick="OnboardingManager.selectFecha('CAL_A', this)" class="step-option p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800">
-                        <h3 class="text-xs font-bold text-white">Calendario A, agosto 2027</h3>
+                <p class="onboard-instruccion">Toca el círculo o la opción para marcar. Solo una respuesta a la vez.</p>
+                <div class="onboard-pregunta-grid" role="radiogroup" aria-label="Cómo quieres prepararte">
+                    <div data-fecha="CAL_A" data-letra="A" onclick="OnboardingManager.selectFecha('CAL_A', this)" class="onboard-opcion step-option" role="radio" aria-checked="false">
+                        <span class="badge-opcion-letra" aria-hidden="true">A</span>
+                        <div class="onboard-opcion-body">
+                            <p class="onboard-opcion-title">Calendario A, agosto 2027</p>
+                        </div>
                     </div>
-                    <div data-fecha="CAL_B" onclick="OnboardingManager.selectFecha('CAL_B', this)" class="step-option p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800">
-                        <h3 class="text-xs font-bold text-white">Calendario B, marzo 2027</h3>
+                    <div data-fecha="CAL_B" data-letra="B" onclick="OnboardingManager.selectFecha('CAL_B', this)" class="onboard-opcion step-option" role="radio" aria-checked="false">
+                        <span class="badge-opcion-letra" aria-hidden="true">B</span>
+                        <div class="onboard-opcion-body">
+                            <p class="onboard-opcion-title">Calendario B, marzo 2027</p>
+                        </div>
                     </div>
-                    <div data-fecha="LIBRE" onclick="OnboardingManager.selectFecha('LIBRE', this)" class="step-option p-3.5 rounded-2xl bg-slate-900/80 border border-slate-800">
-                        <h3 class="text-xs font-bold text-white">Entrenamiento libre (quiero estudiar)</h3>
-                        <p class="text-[10px] text-slate-400 mt-1">Sin fecha de examen. Solo eliges tu meta de puntaje.</p>
+                    <div data-fecha="LIBRE" data-letra="C" onclick="OnboardingManager.selectFecha('LIBRE', this)" class="onboard-opcion step-option" role="radio" aria-checked="false">
+                        <span class="badge-opcion-letra" aria-hidden="true">C</span>
+                        <div class="onboard-opcion-body">
+                            <p class="onboard-opcion-title">Entrenamiento libre (quiero estudiar)</p>
+                            <p class="onboard-opcion-sub">Sin fecha de examen. Solo eliges tu meta de puntaje.</p>
+                        </div>
                     </div>
                 </div>
                 <p id="lblDiasFechaAjuste" class="text-xs text-slate-400"></p>
+
+                <button type="button" id="btnOnboardPista" onclick="OnboardingManager.togglePistaPaso3()">
+                    <i class="fa-solid fa-lightbulb" aria-hidden="true"></i>
+                    <span>¿No la ves? Pista</span>
+                </button>
+                <div id="cajaOnboardPista" class="hidden" role="note">
+                    Si ya sabes la fecha de tu examen, elige Calendario A o B. Si aún no la tienes o quieres estudiar sin presión de fecha, elige Entrenamiento libre.
+                </div>
+
+                <button type="button" id="btnOnboardHoldConfirm" disabled aria-disabled="true">
+                    <div id="btnOnboardHoldFill"></div>
+                    <span class="hold-label">
+                        <i class="fa-regular fa-clock text-[12px] opacity-80" aria-hidden="true"></i>
+                        <span id="txtOnboardHoldPrompt">Confirmar y empezar el diagnóstico</span>
+                    </span>
+                </button>
             </div>
 
             <!-- ========================================================= -->
@@ -330,6 +487,7 @@
                     <i id="iconNextBtn" class="fa-solid fa-arrow-right text-slate-950 text-xs"></i>
                 </button>
             </div>
+            <p id="notaConfirmPaso3" class="hidden text-[11px] text-slate-400 text-center pt-1">Marca una opción y mantén el botón 2 segundos para confirmar.</p>
 
         </div>
     </main>
@@ -705,16 +863,21 @@
                 if (val === 'CAL_B') SelectedFecha = 'CAL_B';
                 else if (val === 'LIBRE' || val === 'CUSTOM') SelectedFecha = 'LIBRE';
                 else SelectedFecha = 'CAL_A';
-                document.querySelectorAll('#stepContainer3 .step-option').forEach((opt) => {
-                    opt.classList.remove('selected', 'border-cyan-400');
+                document.querySelectorAll('#stepContainer3 .onboard-opcion').forEach((opt) => {
+                    const activa = opt.getAttribute('data-fecha') === SelectedFecha;
+                    opt.classList.toggle('selected', activa);
+                    opt.setAttribute('aria-checked', activa ? 'true' : 'false');
                 });
-                if (el) el.classList.add('selected', 'border-cyan-400');
+                if (el) {
+                    el.classList.add('selected');
+                    el.setAttribute('aria-checked', 'true');
+                }
                 const lbl = document.getElementById('lblDiasFechaAjuste');
                 if (SelectedFecha === 'LIBRE') {
                     FechaCustom = '';
                     FechaTexto = 'Entrenamiento libre';
                     if (lbl) lbl.textContent = 'Sin fecha de examen. Avanzas hacia tu meta de puntaje.';
-                    this.actualizarEstadoBotonNext(true);
+                    this.actualizarEstadoConfirmacionPaso3(true);
                     return;
                 }
                 const ahora = new Date();
@@ -727,7 +890,105 @@
                 FechaCustom = '';
                 const dias = Math.max(1, Math.ceil((examen - ahora) / 86400000));
                 if (lbl) lbl.textContent = dias + ' días hasta el examen.';
-                this.actualizarEstadoBotonNext(true);
+                this.actualizarEstadoConfirmacionPaso3(true);
+            }
+
+            static togglePistaPaso3() {
+                const caja = document.getElementById('cajaOnboardPista');
+                if (!caja) return;
+                caja.classList.toggle('hidden');
+            }
+
+            static textoPromptConfirmacionPaso3() {
+                return AjustarMeta
+                    ? 'Mantén 2 segundos para guardar'
+                    : 'Confirmar y empezar el diagnóstico';
+            }
+
+            static actualizarEstadoConfirmacionPaso3(habilitado) {
+                const btn = document.getElementById('btnOnboardHoldConfirm');
+                const prompt = document.getElementById('txtOnboardHoldPrompt');
+                if (prompt) prompt.textContent = this.textoPromptConfirmacionPaso3();
+                if (!btn) return;
+                if (habilitado) {
+                    btn.disabled = false;
+                    btn.setAttribute('aria-disabled', 'false');
+                } else {
+                    btn.disabled = true;
+                    btn.setAttribute('aria-disabled', 'true');
+                    const fill = document.getElementById('btnOnboardHoldFill');
+                    if (fill) fill.style.width = '0%';
+                }
+                // En paso 3 el avance es por hold-confirm, no por el botón Next.
+                this.actualizarEstadoBotonNext(false);
+            }
+
+            static bindHoldConfirmacionPaso3() {
+                const btn = document.getElementById('btnOnboardHoldConfirm');
+                if (!btn || btn._holdBound) return;
+                btn._holdBound = true;
+
+                let holding = false;
+                let timer = null;
+                let start = 0;
+                const HOLD_MS = 2000;
+                const self = this;
+
+                const limpiar = () => {
+                    holding = false;
+                    if (timer) {
+                        clearInterval(timer);
+                        timer = null;
+                    }
+                    const fill = document.getElementById('btnOnboardHoldFill');
+                    if (fill) fill.style.width = '0%';
+                    const prompt = document.getElementById('txtOnboardHoldPrompt');
+                    if (prompt) prompt.textContent = self.textoPromptConfirmacionPaso3();
+                };
+
+                const completar = () => {
+                    if (!SelectedFecha || self.isLaunching) return;
+                    limpiar();
+                    const fill = document.getElementById('btnOnboardHoldFill');
+                    const prompt = document.getElementById('txtOnboardHoldPrompt');
+                    if (fill) fill.style.width = '100%';
+                    if (prompt) prompt.textContent = '✓ Confirmado';
+                    if (navigator.vibrate) {
+                        try { navigator.vibrate([40, 20, 60]); } catch (e) {}
+                    }
+                    btn.disabled = true;
+                    self.iniciarDiagnosticoDirecto();
+                };
+
+                const iniciar = (e) => {
+                    if (btn.disabled || !SelectedFecha || self.isLaunching) return;
+                    if (e && e.cancelable && e.type !== 'click') e.preventDefault();
+                    if (holding) return;
+                    holding = true;
+                    start = Date.now();
+                    if (navigator.vibrate) {
+                        try { navigator.vibrate(20); } catch (err) {}
+                    }
+                    const fill = document.getElementById('btnOnboardHoldFill');
+                    const prompt = document.getElementById('txtOnboardHoldPrompt');
+                    if (prompt) prompt.textContent = 'Mantén 2 segundos para confirmar';
+                    timer = setInterval(() => {
+                        const elapsed = Date.now() - start;
+                        const progress = Math.min(100, (elapsed / HOLD_MS) * 100);
+                        if (fill) fill.style.width = progress + '%';
+                        if (elapsed >= HOLD_MS) {
+                            clearInterval(timer);
+                            timer = null;
+                            completar();
+                        }
+                    }, 40);
+                };
+
+                btn.addEventListener('pointerdown', iniciar);
+                btn.addEventListener('pointerup', limpiar);
+                btn.addEventListener('pointerleave', limpiar);
+                btn.addEventListener('pointercancel', limpiar);
+                btn.addEventListener('contextmenu', (e) => e.preventDefault());
             }
 
             static pasoAnterior(triggerHistory = true) {
@@ -843,23 +1104,42 @@
                     if (c3) c3.classList.remove("hidden");
                     if (tracker) tracker.innerText = "Paso 3 de 3: Cómo quieres prepararte";
                     if (d3) d3.className = "w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.8)] transition-all";
-                    if (btnNextLabel) btnNextLabel.innerText = AjustarMeta ? "Guardar y volver al informe" : "Empezar el diagnóstico";
+                    if (btnNextLabel) btnNextLabel.innerText = AjustarMeta ? "Guardar y volver al informe" : "Confirmar y empezar el diagnóstico";
                     if (btnNextIcon) btnNextIcon.className = AjustarMeta ? "fa-solid fa-check text-slate-950 text-xs" : "fa-solid fa-bolt text-slate-950 text-xs";
                     if (greetingContainer) {
                         greetingContainer.innerHTML = `
                             <h2 class="text-xl sm:text-2xl font-black text-white tracking-tight">¿Cómo quieres prepararte?</h2>
-                            <p class="text-xs text-slate-400 font-sans">${AjustarMeta ? "Puedes elegir calendario oficial o entrenamiento libre." : "Elige calendario oficial o entrena sin fecha. Luego ves cómo responder y entras al diagnóstico."}</p>
+                            <p id="lblStepInstruction" class="text-xs text-slate-400 font-sans">Elige calendario oficial o entrena sin fecha.</p>
                         `;
                     }
+                    const btnNext = document.getElementById('btnNextStep');
+                    const notaHold = document.getElementById('notaConfirmPaso3');
+                    if (btnNext) btnNext.classList.add('hidden');
+                    if (notaHold) notaHold.classList.remove('hidden');
+                    this.bindHoldConfirmacionPaso3();
+                    const pista = document.getElementById('cajaOnboardPista');
+                    if (pista) pista.classList.add('hidden');
                     if (SelectedFecha) {
-                        document.querySelectorAll("#stepContainer3 .step-option").forEach((opt) => {
-                            opt.classList.toggle("selected", opt.getAttribute("data-fecha") === SelectedFecha);
-                            opt.classList.toggle("border-cyan-400", opt.getAttribute("data-fecha") === SelectedFecha);
+                        document.querySelectorAll("#stepContainer3 .onboard-opcion").forEach((opt) => {
+                            const activa = opt.getAttribute("data-fecha") === SelectedFecha;
+                            opt.classList.toggle("selected", activa);
+                            opt.setAttribute('aria-checked', activa ? 'true' : 'false');
                         });
-                        this.actualizarEstadoBotonNext(true);
+                        this.actualizarEstadoConfirmacionPaso3(true);
                     } else {
-                        this.actualizarEstadoBotonNext(false);
+                        document.querySelectorAll("#stepContainer3 .onboard-opcion").forEach((opt) => {
+                            opt.classList.remove("selected");
+                            opt.setAttribute('aria-checked', 'false');
+                        });
+                        this.actualizarEstadoConfirmacionPaso3(false);
                     }
+                }
+
+                if (CurrentStep !== 3) {
+                    const btnNextShow = document.getElementById('btnNextStep');
+                    const notaHoldHide = document.getElementById('notaConfirmPaso3');
+                    if (btnNextShow) btnNextShow.classList.remove('hidden');
+                    if (notaHoldHide) notaHoldHide.classList.add('hidden');
                 }
             }
 
