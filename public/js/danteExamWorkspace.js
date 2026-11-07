@@ -3337,8 +3337,11 @@
       const fallidas = [];
       Object.values(this.respuestasSesionActiva || {}).forEach((r) => {
         if (!r || typeof r.correcto !== 'boolean') return;
+        const idRaw = String(r.id || r.itemId || '').trim();
+        // No persistir IDs sintéticos: ensucian el pool de Repaso · Fallidas.
+        if (!idRaw || /^item_\d+$/i.test(idRaw) || /^preun_/i.test(idRaw)) return;
         const fila = {
-          id: String(r.id || r.itemId || ''),
+          id: idRaw,
           materia: String(r.materia || r.area || 'general'),
           correcto: r.correcto === true,
           opcionSeleccionada: String(r.opcionSeleccionada || r.letra || '').toUpperCase().slice(0, 1),
@@ -3347,8 +3350,10 @@
           tema: String(r.tema || '').slice(0, 80),
           ayuda: String(r.ayuda || '').slice(0, 520)
         };
+        if (r.calificacionPendiente === true) fila.calificacionPendiente = true;
         items.push(fila);
-        if (!fila.correcto) fallidas.push(fila);
+        // Solo fallos calificados de verdad (no pendientes de servidor).
+        if (!fila.correcto && r.calificacionPendiente !== true) fallidas.push(fila);
       });
       return { items_respondidos: items, preguntas_falladas: fallidas };
     }
@@ -5106,7 +5111,22 @@
         let etiquetaScore = 'Score Proyectado';
         let valorScore = proyeccionSala + ' Pts';
         let notaRuta = holland ? holland : 'El perfil vocacional queda registrado cuando respondes los dilemas de la sesión.';
-        if (esMisionPreun) {
+        const esRepasoFallidasFin = Boolean(this.misionData && this.misionData.esRepasoFallidas);
+        const esRefuerzoFin = Boolean(this.misionData && (this.misionData.esRefuerzo || this.misionData.repasoArea));
+        const esSimFin = Boolean(this.misionData && this.misionData.esSimulacro);
+
+        if (esRepasoFallidasFin) {
+          // No registrar como MISION_DIARIA: reinyectaba fallos (y a veces IDs basura) al pool.
+          if (window.DanteRepasoFallidas && typeof window.DanteRepasoFallidas.anotarSesion === 'function') {
+            try { window.DanteRepasoFallidas.anotarSesion(this.respuestasSesionActiva); } catch (eRf) {}
+          }
+          this._registrarSesionExpediente(
+            'REPASO_FALLIDAS',
+            'Repaso de fallidas',
+            proyeccionSala,
+            this.thetaEstimado
+          );
+        } else if (esMisionPreun) {
           const ptsPreu = parseInt(localStorage.getItem('dante_preu_puntos') || '0', 10);
           etiquetaScore = 'Habilidad Pre-U';
           valorScore = (ptsPreu > 0 ? ptsPreu : '—') + ' de 500';
@@ -5139,17 +5159,11 @@
           this._publicarEnNube('MISION_DIARIA');
         }
 
-        const esRepasoFallidasFin = Boolean(this.misionData && this.misionData.esRepasoFallidas);
-        const esRefuerzoFin = Boolean(this.misionData && (this.misionData.esRefuerzo || this.misionData.repasoArea));
-        const esSimFin = Boolean(this.misionData && this.misionData.esSimulacro);
         let tituloBloque = 'Entrenamiento terminado';
         let leadBloque = 'Gracias por completar tu bloque. Aquí está tu análisis de la sesión.';
         if (esRepasoFallidasFin) {
           tituloBloque = 'Repaso de fallidas terminado';
           leadBloque = 'Volviste a las preguntas que habías fallado. Estos son los datos de la sesión.';
-          if (window.DanteRepasoFallidas && typeof window.DanteRepasoFallidas.anotarSesion === 'function') {
-            try { window.DanteRepasoFallidas.anotarSesion(this.respuestasSesionActiva); } catch (eRf) {}
-          }
         } else if (esRefuerzoFin) {
           tituloBloque = 'Refuerzo terminado';
           leadBloque = 'Completaste el refuerzo. Estos son los datos de la sesión.';
@@ -5447,6 +5461,9 @@
       sessionStorage.removeItem('dante_is_diagnostic');
       localStorage.removeItem('dante_is_diagnostic');
 
+      if (window.DanteRepasoFallidas && typeof window.DanteRepasoFallidas.pintar === 'function') {
+        try { window.DanteRepasoFallidas.pintar(); } catch (eRfPintar) {}
+      }
       if (window.DanteHubEngine && typeof window.DanteHubEngine.consultarMisionDiaria === 'function') {
         window.DanteHubEngine.consultarMisionDiaria();
       }
