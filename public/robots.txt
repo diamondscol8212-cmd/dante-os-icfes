@@ -1,0 +1,9 @@
+# Dante OS — ficha pública para buscadores e IAs (no es la app de estudio)
+User-agent: *
+Disallow: /
+Allow: /sobre.html
+Allow: /sobre
+Allow: /robots.txt
+Allow: /sitemap.xml
+
+Sitemap: https://www.danteos.com/sitemap.xml

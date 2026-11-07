@@ -304,6 +304,13 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// Ficha pública indexable (sin login). No forma parte del flujo de la app.
+app.get(['/sobre', '/sobre.html'], (req, res) => {
+    res.setHeader('Cache-Control', 'public, max-age=300');
+    res.setHeader('X-Robots-Tag', 'index, follow');
+    res.sendFile(path.join(__dirname, 'public', 'sobre.html'));
+});
+
 app.get('/informe-general', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'informe-general.html'));
 });
