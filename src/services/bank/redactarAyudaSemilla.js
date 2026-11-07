@@ -101,19 +101,19 @@ function porque(area, mala, bien) {
   const izquierda = corta(bonito(mala), 110);
   const derecha = corta(bonito(bien), 110);
   if (area.includes('mate')) {
-    return `«${izquierda}» sale de otra cuenta. El resultado que cierra los datos es «${derecha}».`;
+    return `«${izquierda}» no cierra la relación con los datos. La cuenta que sí cuadra es «${derecha}».`;
   }
   if (area.includes('lect')) {
-    return `«${izquierda}» no se sostiene en el texto. El texto sostiene «${derecha}».`;
+    return `«${izquierda}» no se sostiene en el texto. Lo que el texto sí sostiene es «${derecha}».`;
   }
   if (area.includes('cien') || area.includes('natur')) {
-    return `«${izquierda}» cambia el proceso o el dato. Lo que corresponde es «${derecha}».`;
+    return `«${izquierda}» cambia el proceso o el dato del caso. Lo que corresponde es «${derecha}».`;
   }
   if (area.includes('social')) {
-    return `«${izquierda}» nombra otro hecho, otro lugar o otra norma. Lo que corresponde es «${derecha}».`;
+    return `«${izquierda}» nombra otro hecho, lugar o norma. En este caso corresponde «${derecha}».`;
   }
   if (area.includes('ingl')) {
-    return `«${izquierda}» no es lo que dice el texto. Lo que dice es «${derecha}».`;
+    return `«${izquierda}» no es lo que dice el texto. El texto dice «${derecha}».`;
   }
   return `«${izquierda}» no responde lo pedido. Lo que sí responde es «${derecha}».`;
 }

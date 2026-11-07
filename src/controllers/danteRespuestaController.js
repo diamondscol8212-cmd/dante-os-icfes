@@ -91,7 +91,10 @@ export function calificarRespuesta(req, res) {
     textoElegido: juicio.textoElegido || '',
     razon: juicio.razon || '',
     fraseAcierto: juicio.fraseAcierto || '',
-    repaso: juicio.repaso || ''
+    repaso: juicio.repaso || '',
+    queMedia: juicio.queMedia || '',
+    explicacion: juicio.explicacion || '',
+    sinExplicacion: juicio.sinExplicacion === true
   });
 }
 

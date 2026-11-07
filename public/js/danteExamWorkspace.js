@@ -3163,7 +3163,10 @@
           textoElegido: String(data.textoElegido || ''),
           razon: String(data.razon || ''),
           fraseAcierto: String(data.fraseAcierto || ''),
-          repaso: String(data.repaso || '')
+          repaso: String(data.repaso || ''),
+          queMedia: String(data.queMedia || ''),
+          explicacion: String(data.explicacion || ''),
+          sinExplicacion: data.sinExplicacion === true
         };
       } catch (e) {
         return null;
@@ -3984,6 +3987,9 @@
           }
           if (juicio.fraseAcierto) item.frase_acierto = juicio.fraseAcierto;
           if (juicio.repaso) item.repaso = juicio.repaso;
+          if (juicio.queMedia) item._queMediaFeedback = juicio.queMedia;
+          if (juicio.explicacion) item._explicacionUniforme = juicio.explicacion;
+          item._sinExplicacion = juicio.sinExplicacion === true;
           recordRespuesta.correcto = juicio.esCorrecta === true;
           recordRespuesta.textoOpcion = textoMarcado;
         } else if (clave) {
@@ -4160,18 +4166,33 @@
       const razon = this._textoLimpio(item.justificacion_opciones && item.justificacion_opciones[elegidaFeedback]);
       const acierto = this._textoLimpio(item.frase_acierto);
       const repaso = this._textoLimpio(item.repaso);
-      const repasoSirve = repaso && repaso.toLowerCase() !== nombreArea.toLowerCase();
-      let frase = 'Bien.';
-      if (!claveFeedback) {
-        frase = esCorrecta ? (acierto ? ('Bien. ' + acierto) : 'Bien.') : 'Esta no era.';
-      } else if (esCorrecta) {
-        frase = acierto ? ('Bien. ' + acierto) : 'Bien.';
-      } else {
-        frase = 'Marcaste ' + elegidaFeedback + '.';
-        if (razon) frase += ' ' + razon;
-        else if (textoMarcado && textoDeClave) frase += ' «' + textoMarcado + '» no responde lo pedido. Lo que sí responde es «' + textoDeClave + '».';
-        frase += ' La respuesta es ' + claveFeedback + '.';
-        if (repasoSirve) frase += ' ' + repaso + '.';
+      const repasoSirve = repaso && repaso.toLowerCase() !== String(nombreArea || '').toLowerCase();
+      // Fase 1: plantilla uniforme (servidor) o armado local equivalente.
+      let frase = this._textoLimpio(item._explicacionUniforme);
+      if (!frase) {
+        if (esCorrecta) {
+          frase = acierto ? ('Bien. ' + acierto) : 'Bien.';
+        } else {
+          const partes = [];
+          const media = this._textoLimpio(item._queMediaFeedback || item.pista);
+          if (media) partes.push(media);
+          if (elegidaFeedback) {
+            if (razon) partes.push('Marcaste ' + elegidaFeedback + '. ' + razon);
+            else if (textoMarcado && textoDeClave) {
+              partes.push('Marcaste ' + elegidaFeedback + '. «' + textoMarcado + '» no responde lo pedido.');
+            } else {
+              partes.push('Marcaste ' + elegidaFeedback + '.');
+            }
+          }
+          if (claveFeedback) partes.push('La correcta es ' + claveFeedback + '.');
+          if (!razon && !acierto) {
+            partes.push('Aún no hay explicación guardada para esta opción.');
+            if (repasoSirve) partes.push('Repasa: ' + repaso + '.');
+          } else if (repasoSirve) {
+            partes.push('Repasa: ' + repaso + '.');
+          }
+          frase = partes.filter(Boolean).join(' ') || 'Esta no era.';
+        }
       }
       this._señalarLetraClave(claveFeedback);
       if (badgeOpcion) {

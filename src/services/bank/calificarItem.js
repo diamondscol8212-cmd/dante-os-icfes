@@ -1,4 +1,5 @@
 import { BANCO_COMPLETO } from './index.js';
+import { armarExplicacionUniforme, queMediaDe } from './explicacionUniforme.js';
 
 const mapa = new Map(BANCO_COMPLETO.map((it) => [String(it.id), it]));
 
@@ -65,13 +66,31 @@ export function juicioDeItem(itemId, letra, textoOpcion) {
     }
   }
 
+  const fraseAcierto = acierto ? String(item.frase_acierto || '') : '';
+  const repaso = String(item.repaso || '');
+  const queMedia = queMediaDe(item);
+  const uniforme = armarExplicacionUniforme({
+    acierto,
+    letraMarcada: letraDelTexto || elegida,
+    letraCorrecta: clave,
+    razon,
+    fraseAcierto,
+    queMedia,
+    textoMarcado: textoUsuario,
+    textoCorrecto: textoClave,
+    repaso
+  });
+
   return {
     esCorrecta: acierto,
     letraCorrecta: clave,
     textoCorrecto: textoClave,
     textoElegido: textoUsuario,
     razon,
-    fraseAcierto: acierto ? String(item.frase_acierto || '') : '',
-    repaso: String(item.repaso || '')
+    fraseAcierto,
+    repaso,
+    queMedia,
+    explicacion: uniforme.texto,
+    sinExplicacion: uniforme.sinExplicacion === true
   };
 }

@@ -1,0 +1,12 @@
+4 fases — calidad tipo apps top (Dante OS)
+==========================================
+Fase 1 (APROBADA / en curso): Explicaciones uniformes
+  - Plantilla fija acierto/fallo (voz Profesor Dante)
+  - justificacion_opciones útil + fallback neutro
+  - Feedback UI consistente en entrenamiento
+
+Fase 2: Cortes universidad con fecha/fuente + fallback meta 300/380
+
+Fase 3: Banco — inventario, meta por área, calibración viva (sin _gen_ basura)
+
+Fase 4: Pulir simulacro completo (confiabilidad, tiempo, reporte, sync)
