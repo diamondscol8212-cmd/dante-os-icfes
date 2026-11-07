@@ -1,12 +1,13 @@
 /**
- * Fallidas reales del alumno desde progreso_estudiantes.items_respondidos.
- * Solo ítems con registro de respuesta incorrecta (última versión por item_id).
+ * Fallidas reales del alumno.
+ * Solo cuentan respuestas de sesiones reales (diagnóstico, entrenamiento,
+ * refuerzo, simulacro, repaso). Nunca RESPALDO_LOCAL ni rellenos del banco.
  */
 import crypto from 'crypto';
 import { supabase } from '../../supabaseClient.js';
 import { aliasEstudiante, cargarProgresoSaber } from './expedienteEstudiante.js';
 
-const TIPOS_VALIDOS = new Set([
+const TIPOS_REALES = new Set([
   'MISION_DIARIA',
   'REFUERZO',
   'REPASO_FALLIDAS',
@@ -14,19 +15,46 @@ const TIPOS_VALIDOS = new Set([
   'SIMULACRO_COMPLETO',
   'DIAGNOSTICO_INICIAL',
   'DIAGNOSTICO',
-  'RESPUESTA',
-  'SESION',
-  'RESPALDO_LOCAL',
   'ENTRENAMIENTO'
 ]);
 
+const TIPOS_IGNORAR = new Set([
+  'RESPALDO_LOCAL',
+  'RESPUESTA',
+  'SESION'
+]);
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+export function idEstableFallida(raw) {
+  const texto = String(raw || '').trim();
+  if (!texto || /^item_\d+$/i.test(texto) || /^preun_/i.test(texto)) return '';
+  if (texto === 'undefined' || texto === 'null') return '';
+  if (UUID.test(texto)) return texto.toLowerCase();
+  let h1 = 2166136261;
+  let h2 = 2166136261 ^ 0x9e3779b9;
+  const serie = `dante:${texto}`;
+  for (let i = 0; i < serie.length; i++) {
+    h1 ^= serie.charCodeAt(i);
+    h1 = Math.imul(h1, 16777619);
+    h2 ^= serie.charCodeAt(serie.length - 1 - i);
+    h2 = Math.imul(h2, 16777619);
+  }
+  const hex = [(h1 >>> 0), (h2 >>> 0), ((h1 ^ h2) >>> 0), ((h1 + h2) >>> 0)]
+    .map((n) => n.toString(16).padStart(8, '0'))
+    .join('');
+  const chars = hex.split('');
+  chars[12] = '5';
+  chars[16] = 'a';
+  const h = chars.join('');
+  return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20, 32)}`;
+}
+
 function idItem(raw) {
-  const id = String((raw && (raw.item_id || raw.item_original || raw.id || raw.itemId)) || '').trim();
-  if (!id) return '';
-  if (/^item_\d+$/i.test(id)) return '';
-  if (/^preun_/i.test(id)) return '';
-  if (id === 'undefined' || id === 'null') return '';
-  return id.slice(0, 80);
+  if (raw && typeof raw === 'object') {
+    return idEstableFallida(raw.item_original || raw.item_id || raw.id || raw.itemId);
+  }
+  return idEstableFallida(raw);
 }
 
 function esCorrecta(row) {
@@ -34,26 +62,28 @@ function esCorrecta(row) {
   if (typeof row.correcta === 'boolean') return row.correcta;
   if (typeof row.correcto === 'boolean') return row.correcto;
   if (typeof row.is_correct === 'boolean') return row.is_correct;
-  if (row.correcta === 'true' || row.correcta === true) return true;
-  if (row.correcta === 'false' || row.correcta === false) return false;
+  if (row.correcta === 'true') return true;
+  if (row.correcta === 'false') return false;
   return null;
 }
 
-function tipoOk(tipo) {
+function tipoEsReal(tipo) {
   const t = String(tipo || '').toUpperCase().trim();
-  if (!t) return true; // sin tipo: se acepta si hay evidencia de fallo
-  return TIPOS_VALIDOS.has(t);
+  if (!t) return false;
+  if (TIPOS_IGNORAR.has(t)) return false;
+  return TIPOS_REALES.has(t);
 }
 
 /**
- * Último estado por ítem. Pendiente = última respuesta fue incorrecta.
+ * Último resultado por ítem, solo sesiones reales.
+ * Pendiente = última respuesta real fue incorrecta.
  */
 export function pendientesDesdeItems(lista) {
   const mapa = new Map();
   (Array.isArray(lista) ? lista : []).forEach((row) => {
+    if (!tipoEsReal(row && row.tipo)) return;
     const id = idItem(row);
     if (!id) return;
-    if (!tipoOk(row && row.tipo)) return;
     const ok = esCorrecta(row);
     if (ok === null) return;
     const ts = Date.parse((row && (row.timestamp || row.created_at)) || '') || 0;
@@ -66,7 +96,8 @@ export function pendientesDesdeItems(lista) {
       letra: String((row && (row.letra || row.opcion_marcada || row.opcionSeleccionada)) || '').toUpperCase().slice(0, 1),
       tipo: String((row && row.tipo) || 'MISION_DIARIA').toUpperCase(),
       timestamp: (row && (row.timestamp || row.created_at)) || null,
-      ts
+      ts,
+      item_original: String((row && (row.item_original || row.id)) || id)
     });
   });
 
@@ -74,7 +105,8 @@ export function pendientesDesdeItems(lista) {
   mapa.forEach((fila) => {
     if (fila.correcta === false) {
       pendientes.push({
-        id: fila.id,
+        id: fila.item_original || fila.id,
+        item_id: fila.id,
         area: fila.area,
         letra: fila.letra,
         tipo: fila.tipo,
@@ -94,37 +126,8 @@ export async function listarFallidasAlumno(aliasRaw) {
   if (error) return { ok: false, error: error.message, pendientes: [], total: 0 };
 
   const items = data && Array.isArray(data.items_respondidos) ? data.items_respondidos : [];
-  let pendientes = pendientesDesdeItems(items);
-
-  // Complemento: eventos recientes del alumno (si progreso está vacío o desfasado).
-  // Solo se usan si el ítem no está ya resuelto (correcta=true) en items_respondidos.
-  try {
-    const { data: eventos, error: errEv } = await supabase
-      .from('registro_eventos')
-      .select('item_id,is_correct,created_at,skill,opcion_marcada')
-      .eq('student_id', alias)
-      .order('created_at', { ascending: true })
-      .limit(800);
-    if (!errEv && Array.isArray(eventos) && eventos.length) {
-      const comoItems = eventos.map((ev) => ({
-        item_id: ev.item_id,
-        item_original: ev.item_id,
-        correcta: ev.is_correct === true,
-        area: ev.skill || '',
-        letra: ev.opcion_marcada || '',
-        tipo: 'RESPUESTA',
-        timestamp: ev.created_at
-      }));
-      // Fusionar: items_respondidos gana si tiene el id; si no, eventos aportan.
-      const idsEnProgreso = new Set(
-        items.map((r) => idItem(r)).filter(Boolean)
-      );
-      const soloNuevosDeEventos = comoItems.filter((r) => !idsEnProgreso.has(idItem(r)));
-      pendientes = pendientesDesdeItems([...items, ...soloNuevosDeEventos]);
-    }
-  } catch (e) {
-    // Sin eventos: nos quedamos con progreso.
-  }
+  // Solo progreso canónico de sesiones reales. Sin eventos ni RESPALDO_LOCAL.
+  const pendientes = pendientesDesdeItems(items);
 
   return {
     ok: true,
@@ -136,17 +139,27 @@ export async function listarFallidasAlumno(aliasRaw) {
 }
 
 /**
- * Upsert de respuestas del alumno en progreso_estudiantes (última gana).
- * Usado por repaso de fallidas y por simulacro al cerrar.
+ * Upsert de respuestas reales. Última gana.
+ * No permite que un false pise un true más reciente del mismo ítem.
  */
 export async function upsertRespuestasAlumno(aliasRaw, respuestas, meta = {}) {
   const alias = aliasEstudiante(aliasRaw);
   if (!alias) return { ok: false, error: 'sin_estudiante' };
 
   const tipo = String(meta.tipo || 'MISION_DIARIA').toUpperCase().slice(0, 40);
+  if (TIPOS_IGNORAR.has(tipo) || !tipoEsReal(tipo)) {
+    // No escribir ruido de respaldo en el ledger de fallidas.
+    const { data } = await cargarProgresoSaber(alias);
+    const items = data && Array.isArray(data.items_respondidos) ? data.items_respondidos : [];
+    const pendientes = pendientesDesdeItems(items);
+    return { ok: true, actualizados: 0, pendientes, total: pendientes.length, ids: pendientes.map((p) => p.id) };
+  }
+
+  const ahora = Date.now();
   const nuevas = (Array.isArray(respuestas) ? respuestas : [])
     .map((r) => {
-      const id = idItem(r);
+      const original = String((r && (r.id || r.itemId || r.item_original || r.item_id)) || '').trim();
+      const id = idEstableFallida(original);
       if (!id) return null;
       const ok = typeof r.correcto === 'boolean'
         ? r.correcto
@@ -154,7 +167,7 @@ export async function upsertRespuestasAlumno(aliasRaw, respuestas, meta = {}) {
       if (ok === null) return null;
       if (r.calificacionPendiente === true) return null;
       return {
-        item_original: id,
+        item_original: original || id,
         item_id: id,
         correcta: ok === true,
         area: String(r.area || r.materia || '').toLowerCase().slice(0, 40),
@@ -164,12 +177,17 @@ export async function upsertRespuestasAlumno(aliasRaw, respuestas, meta = {}) {
         b: Number(r.b) || null,
         c: Number(r.c) || null,
         tiempo: Number(r.ms || r.tiempo || r.latenciaMs) || 0,
-        timestamp: new Date().toISOString()
+        timestamp: new Date(ahora).toISOString()
       };
     })
     .filter(Boolean);
 
-  if (!nuevas.length) return { ok: true, actualizados: 0, pendientes: [], total: 0 };
+  if (!nuevas.length) {
+    const { data } = await cargarProgresoSaber(alias);
+    const items = data && Array.isArray(data.items_respondidos) ? data.items_respondidos : [];
+    const pendientes = pendientesDesdeItems(items);
+    return { ok: true, actualizados: 0, pendientes, total: pendientes.length, ids: pendientes.map((p) => p.id) };
+  }
 
   const previo = await cargarProgresoSaber(alias);
   if (previo.error) return { ok: false, error: previo.error.message };
@@ -181,7 +199,16 @@ export async function upsertRespuestasAlumno(aliasRaw, respuestas, meta = {}) {
     const id = idItem(row);
     if (id) mapa.set(id, row);
   });
-  nuevas.forEach((row) => mapa.set(row.item_id, row));
+  nuevas.forEach((row) => {
+    const prev = mapa.get(row.item_id);
+    if (prev) {
+      const tsPrev = Date.parse(prev.timestamp || prev.created_at || '') || 0;
+      const tsNew = Date.parse(row.timestamp) || ahora;
+      // Nunca dejar que un fallo viejo pise un acierto más nuevo.
+      if (esCorrecta(prev) === true && row.correcta === false && tsPrev > tsNew) return;
+    }
+    mapa.set(row.item_id, row);
+  });
   const items = Array.from(mapa.values()).slice(-4000);
 
   const cuerpo = {
@@ -217,7 +244,6 @@ export async function upsertRespuestasAlumno(aliasRaw, respuestas, meta = {}) {
     if (ins.error) return { ok: false, error: ins.error.message };
   }
 
-  // Eventos: insertar reintentos (no bloquear si el id ya existía).
   try {
     const eventos = nuevas.map((row) => ({
       id: crypto.randomUUID(),
@@ -235,12 +261,8 @@ export async function upsertRespuestasAlumno(aliasRaw, respuestas, meta = {}) {
       ],
       created_at: row.timestamp
     }));
-    if (eventos.length) {
-      await supabase.from('registro_eventos').insert(eventos);
-    }
-  } catch (eEv) {
-    // El progreso ya quedó; eventos son complemento.
-  }
+    if (eventos.length) await supabase.from('registro_eventos').insert(eventos);
+  } catch (eEv) {}
 
   const pendientes = pendientesDesdeItems(items);
   return {

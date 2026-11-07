@@ -4070,13 +4070,25 @@
         });
       }
 
-      if (this.misionData && this.misionData.esRepasoFallidas
-          && window.DanteRepasoFallidas && typeof window.DanteRepasoFallidas.registrarRespuesta === 'function') {
+      if (window.DanteRepasoFallidas && typeof recordRespuesta.correcto === 'boolean'
+          && recordRespuesta.calificacionPendiente !== true && !esPreun) {
         try {
-          window.DanteRepasoFallidas.registrarRespuesta({
+          const filaRf = {
             id: recordRespuesta.id,
-            correcto: recordRespuesta.correcto === true
-          });
+            correcto: recordRespuesta.correcto === true,
+            materia: recordRespuesta.materia,
+            area: recordRespuesta.materia
+          };
+          if (this.misionData && this.misionData.esRepasoFallidas
+              && typeof window.DanteRepasoFallidas.registrarRespuesta === 'function') {
+            window.DanteRepasoFallidas.registrarRespuesta(filaRf);
+          } else if (typeof window.DanteRepasoFallidas.registrarResultadoSesion === 'function') {
+            let tipoRf = 'MISION_DIARIA';
+            if (this.misionData && this.misionData.isDiagnostic) tipoRf = 'DIAGNOSTICO_INICIAL';
+            else if (this.misionData && this.misionData.esSimulacro) tipoRf = 'SIMULACRO_COMPLETO';
+            else if (this.misionData && this.misionData.esRefuerzo) tipoRf = 'REFUERZO';
+            window.DanteRepasoFallidas.registrarResultadoSesion(filaRf, tipoRf);
+          }
         } catch (eRfLive) {}
       }
 
@@ -5116,7 +5128,7 @@
         const esSimFin = Boolean(this.misionData && this.misionData.esSimulacro);
 
         if (esRepasoFallidasFin) {
-          // Persiste aciertos/fallos en la base (fuente del contador) y recalibra brecha/proyección.
+          // Persiste aciertos (baja contador) y recalibra proyección/brecha.
           const estRepaso = this._recalibrarHabilidad();
           if (estRepaso && estRepaso.puntos != null) {
             if (previoSala > 0) {
@@ -5132,9 +5144,17 @@
             localStorage.setItem('dante_proyeccion_practicas', '1');
           }
           if (window.DanteRepasoFallidas && typeof window.DanteRepasoFallidas.anotarSesion === 'function') {
-            try { window.DanteRepasoFallidas.anotarSesion(this.respuestasSesionActiva); } catch (eRf) {}
+            try {
+              Promise.resolve(window.DanteRepasoFallidas.anotarSesion(this.respuestasSesionActiva))
+                .then(() => { try { window.DanteRepasoFallidas.pintar(); } catch (e1) {} })
+                .catch(() => { try { window.DanteRepasoFallidas.pintar(); } catch (e2) {} });
+            } catch (eRf) {
+              try { window.DanteRepasoFallidas.pintar(); } catch (eRfP) {}
+            }
+          } else if (window.DanteRepasoFallidas && typeof window.DanteRepasoFallidas.pintar === 'function') {
+            try { window.DanteRepasoFallidas.pintar(); } catch (eRfP2) {}
           }
-          this._publicarEnNube('REPASO_FALLIDAS');
+          // No publicar respaldo IRT aquí: pisaba aciertos y volvía a subir el contador.
           this._registrarSesionExpediente(
             'REPASO_FALLIDAS',
             'Repaso de fallidas',
@@ -5178,7 +5198,12 @@
         let leadBloque = 'Gracias por completar tu bloque. Aquí está tu análisis de la sesión.';
         if (esRepasoFallidasFin) {
           tituloBloque = 'Repaso de fallidas terminado';
-          leadBloque = 'Volviste a las preguntas que habías fallado. Estos son los datos de la sesión.';
+          const quedanRf = (window.DanteRepasoFallidas && typeof window.DanteRepasoFallidas.inventario === 'function')
+            ? Number((window.DanteRepasoFallidas.inventario() || {}).pendientes) || 0
+            : 0;
+          leadBloque = quedanRf === 0
+            ? 'Acertaste las fallidas de este bloque. En la sala el contador queda en cero para estas preguntas.'
+            : ('Quedan ' + quedanRf + ' fallidas pendientes en tu lista. El contador de la sala ya se actualizó.');
         } else if (esRefuerzoFin) {
           tituloBloque = 'Refuerzo terminado';
           leadBloque = 'Completaste el refuerzo. Estos son los datos de la sesión.';

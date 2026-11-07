@@ -105,46 +105,56 @@ export async function guardarRespuestas(req, res) {
     if (!alumno || alumno === 'estudiante' || alumno === 'student_demo_01') {
       return res.status(400).json({ ok: false, motivo: 'sin_alumno' });
     }
-    const tipo = String(body.tipo || 'SESION').slice(0, 40);
+    const tipo = String(body.tipo || 'SESION').slice(0, 40).toUpperCase();
+    const esRespaldo = tipo === 'RESPALDO_LOCAL';
+    const TIPOS_SESION_REAL = new Set([
+      'MISION_DIARIA', 'REFUERZO', 'REPASO_FALLIDAS', 'SIMULACRO', 'SIMULACRO_COMPLETO',
+      'DIAGNOSTICO_INICIAL', 'DIAGNOSTICO', 'ENTRENAMIENTO'
+    ]);
     const nuevas = normalizar(body.respuestas, tipo).map(conBanco).map((row) => {
+      // No inventar fallo si el banco no califica: respeta el correcto del cliente.
       const juicio = juicioDeItem(row.item_original, row.letra);
       if (juicio) return { ...row, correcta: juicio.esCorrecta === true };
-      return { ...row, correcta: false };
+      return row;
     });
     if (!nuevas.length) {
       return res.status(400).json({ ok: false, motivo: 'sin_respuestas' });
     }
 
-    const ya = await supabase
-      .from('registro_eventos')
-      .select('item_id')
-      .eq('student_id', alumno)
-      .limit(600);
-    if (ya.error) {
-      return res.status(500).json({ ok: false, motivo: ya.error.message });
-    }
-    const puestos = new Set((ya.data || []).map((row) => row.item_id));
-    const frescas = nuevas.filter((row) => !puestos.has(row.item_id));
-    if (frescas.length) {
-      const eventos = frescas.map((row) => ({
-        id: crypto.randomUUID(),
-        student_id: alumno,
-        item_id: row.item_id,
-        skill: row.area || null,
-        is_correct: row.correcta,
-        response_time: row.tiempo > 0 ? Math.round(row.tiempo / 1000) : null,
-        opcion_marcada: row.letra || null,
-        declared_confidence: 'media',
-        institution_id: 'colegio_sandbox_default',
-        selection_vector: [
-          { opcion: row.letra || '', timestamp_relativo: row.tiempo > 0 ? Math.round(row.tiempo / 1000) : 0 },
-          { parametro_a: row.a, parametro_b: row.b, parametro_c: row.c, area: row.area, tipo: tipo, item_original: row.item_original }
-        ],
-        created_at: row.timestamp
-      }));
-      const ins = await supabase.from('registro_eventos').insert(eventos);
-      if (ins.error) {
-        return res.status(500).json({ ok: false, motivo: ins.error.message });
+    // RESPALDO_LOCAL no escribe eventos ni pisa fallidas/aciertos de sesiones reales.
+    let frescas = [];
+    if (!esRespaldo) {
+      const ya = await supabase
+        .from('registro_eventos')
+        .select('item_id')
+        .eq('student_id', alumno)
+        .limit(600);
+      if (ya.error) {
+        return res.status(500).json({ ok: false, motivo: ya.error.message });
+      }
+      const puestos = new Set((ya.data || []).map((row) => row.item_id));
+      frescas = nuevas.filter((row) => !puestos.has(row.item_id));
+      if (frescas.length) {
+        const eventos = frescas.map((row) => ({
+          id: crypto.randomUUID(),
+          student_id: alumno,
+          item_id: row.item_id,
+          skill: row.area || null,
+          is_correct: row.correcta,
+          response_time: row.tiempo > 0 ? Math.round(row.tiempo / 1000) : null,
+          opcion_marcada: row.letra || null,
+          declared_confidence: 'media',
+          institution_id: 'colegio_sandbox_default',
+          selection_vector: [
+            { opcion: row.letra || '', timestamp_relativo: row.tiempo > 0 ? Math.round(row.tiempo / 1000) : 0 },
+            { parametro_a: row.a, parametro_b: row.b, parametro_c: row.c, area: row.area, tipo: tipo, item_original: row.item_original }
+          ],
+          created_at: row.timestamp
+        }));
+        const ins = await supabase.from('registro_eventos').insert(eventos);
+        if (ins.error) {
+          return res.status(500).json({ ok: false, motivo: ins.error.message });
+        }
       }
     }
 
@@ -163,7 +173,16 @@ export async function guardarRespuestas(req, res) {
     listaPrevia.forEach((row) => {
       if (row && row.item_id) mapa.set(String(row.item_id), row);
     });
-    nuevas.forEach((row) => mapa.set(row.item_id, row));
+    nuevas.forEach((row) => {
+      const prev = mapa.get(row.item_id);
+      if (esRespaldo && prev) {
+        const tipoPrev = String(prev.tipo || '').toUpperCase();
+        // El respaldo IRT no puede pisar un registro de sesión real (ni bajar un acierto a fallo).
+        if (TIPOS_SESION_REAL.has(tipoPrev)) return;
+        if (prev.correcta === true && row.correcta === false) return;
+      }
+      mapa.set(row.item_id, row);
+    });
     const items = Array.from(mapa.values()).slice(-600);
     const areas = {};
     items.forEach((row) => {
