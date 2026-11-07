@@ -19,6 +19,7 @@
     "test:system": "node tests/systemIntegrity.test.js",
     "test:all": "node tests/dailyMission.test.js && node tests/tutorHint.test.js && node tests/phase4Persistence.test.js && node tests/profileIsolation.test.js && node tests/systemIntegrity.test.js",
     "banco:export": "node scripts/exportarBancoJson.mjs",
+    "banco:audit-graficas": "node scripts/auditGraficasBanco.mjs",
     "cap:sync": "npx cap sync",
     "cap:android": "npx cap open android",
     "cap:ios": "npx cap open ios",

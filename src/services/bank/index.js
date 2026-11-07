@@ -8,6 +8,7 @@ import { reactivosApertura } from './bancoApertura.js';
 export { balancearItem, balancearColeccion } from './balancer.js';
 import { balancearColeccion } from './balancer.js';
 import { ayudaDeSemilla } from './redactarAyudaSemilla.js';
+import { embeberGraficaItem } from './embeberGraficas.js';
 
 export const reactivosMultiExamen = [
     {
@@ -221,5 +222,5 @@ export const BANCO_COMPLETO = balancearColeccion([
             razonesPorTexto: ayuda.razones
         };
     })();
-    return { ...conAyuda, repaso: repasoConcreto(conAyuda) };
+    return embeberGraficaItem({ ...conAyuda, repaso: repasoConcreto(conAyuda) });
 }));

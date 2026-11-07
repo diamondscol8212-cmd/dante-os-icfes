@@ -11,6 +11,7 @@ import { supabase } from '../../supabaseClient.js';
 import { idEstable } from '../controllers/danteRespuestaController.js';
 import { estimarHistorial } from './cat/estimarEap.js';
 import { balancearColeccion } from './bank/balancer.js';
+import { embeberGraficaItem } from './bank/embeberGraficas.js';
 
 // 🗄️ CACHE DE BANCO PREUNIVERSITARIO AISLADO EN RAM
 const CACHE_BANCO_PREUN = new Map();
@@ -108,6 +109,7 @@ export const BANCO_PREUNIVERSITARIO_BASE = balancearColeccion([
         area: "analisis_imagen",
         materia: "analisis_imagen",
         pregunta_texto: "Se proyectan simultáneamente la vista frontal (alzado) y la vista lateral derecha de un sólido. La vista frontal muestra un cuadrado con sus dos diagonales trazadas; la vista lateral es un triángulo isósceles. ¿Qué sólido tridimensional corresponde a estas proyecciones?",
+        imagen_url: "/assets/unal/vistas_03.svg",
         opciones: [
             "A) Una pirámide recta de base cuadrada apoyada lateralmente sobre una de sus caras triangulares.",
             "B) Un prisma triangular recto apoyado sobre su cara rectangular mayor.",
@@ -568,7 +570,7 @@ export const BANCO_PREUNIVERSITARIO_BASE = balancearColeccion([
         sub_competencia: "economia_politica_cepal",
         atajo_tactico: "Prebisch demostró que las manufacturas del centro se encarecen frente a las materias primas periféricas; la respuesta estratégica fue el modelo ISI."
     }
-]);
+].map(embeberGraficaItem));
 
 // 🚀 Inicialización aislada del banco Preuniversitario en memoria RAM
 function inicializarBancoPreun() {

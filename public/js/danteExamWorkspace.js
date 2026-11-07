@@ -14,6 +14,33 @@
 (function () {
   'use strict';
 
+  /** Fallback de imágenes rotas: nunca mostrar alt “Gráfico de la pregunta”. Solo log en dev. */
+  window.__danteOnGraficaError = function (img) {
+    if (!img) return;
+    const fb = img.getAttribute('data-fallback-src');
+    const tried = img.getAttribute('data-tried-fallback') === '1';
+    if (fb && !tried) {
+      img.setAttribute('data-tried-fallback', '1');
+      img.src = fb;
+      return;
+    }
+    img.style.display = 'none';
+    const src = img.getAttribute('src') || fb || '';
+    let esDev = false;
+    try {
+      const host = String(location.hostname || '');
+      esDev = host === 'localhost' || host === '127.0.0.1' || /\.local$/i.test(host)
+        || new URLSearchParams(location.search).get('dante_dev') === '1';
+    } catch (e) {}
+    if (esDev) {
+      try { console.error('[DANTE GRAFICA FALTANTE]', src); } catch (e2) {}
+      try {
+        window.__DANTE_GRAFICAS_ROTAS = window.__DANTE_GRAFICAS_ROTAS || [];
+        window.__DANTE_GRAFICAS_ROTAS.push({ src: String(src).slice(0, 200), ts: Date.now() });
+      } catch (e3) {}
+    }
+  };
+
   const BANCO_CONTINGENCIA_WORK = {
     matematicas: [
       {
@@ -3486,6 +3513,27 @@
       return registro;
     }
 
+    _esDevGrafica() {
+      try {
+        const host = String(location.hostname || '');
+        if (host === 'localhost' || host === '127.0.0.1') return true;
+        if (/\.local$/i.test(host)) return true;
+        if (new URLSearchParams(location.search).get('dante_dev') === '1') return true;
+      } catch (e) {}
+      return false;
+    }
+
+    _reportarGraficaRota(src, motivo) {
+      if (!this._esDevGrafica()) return;
+      try {
+        console.error('[DANTE GRAFICA FALTANTE]', motivo || 'error', String(src || '').slice(0, 180));
+      } catch (e) {}
+      try {
+        window.__DANTE_GRAFICAS_ROTAS = window.__DANTE_GRAFICAS_ROTAS || [];
+        window.__DANTE_GRAFICAS_ROTAS.push({ src: String(src || '').slice(0, 180), motivo: motivo || 'error', ts: Date.now() });
+      } catch (e2) {}
+    }
+
     _htmlFigura(src, cartilla) {
       if (!src || typeof src !== 'string') return '';
       const limpio = src.trim();
@@ -3524,15 +3572,33 @@
         rawXml = rawXml.replace(/fill=(["'])%230f172a\1/gi, 'fill=$1#f8fafc$1');
         rawXml = rawXml.replace(/fill="#0f172a"/gi, 'fill="#f8fafc"');
         rawXml = rawXml.replace(/fill="%230f172a"/gi, 'fill="#f8fafc"');
+        // Preferir SVG inline: no depende de decode/base64 ni de red.
+        if (rawXml.trim().startsWith('<svg')) {
+          const cuerpoSvg = `<div class="fig-examen">${rawXml.replace('<svg ', '<svg style="width:100%;height:auto;max-height:300px;display:block;margin:0 auto;background:#ffffff;" ')}</div>`;
+          return `<figure class="my-3 p-1 ${marco} overflow-x-auto" data-figura="1">${cuerpoSvg}${pie}</figure>`;
+        }
         try {
           srcSegura = `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(rawXml)))}`;
         } catch (e) {
           srcSegura = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(rawXml)}`;
         }
       }
+      // Rutas /assets: sin alt de placeholder (evita “Gráfico de la pregunta” si 404).
+      // onerror: prueba ruta relativa una vez; si falla, oculta (dev log vía __danteOnGraficaError).
+      const esRutaAsset = /^\/?assets\//i.test(limpio);
+      let srcEsc = String(srcSegura).replace(/"/g, '&quot;');
+      let fallbackAttr = '';
+      if (esRutaAsset && !limpio.startsWith('data:')) {
+        const abs = limpio.startsWith('/') ? limpio : `/${limpio}`;
+        const rel = abs.replace(/^\//, '');
+        srcEsc = abs.replace(/"/g, '&quot;');
+        fallbackAttr = ` data-fallback-src="${rel.replace(/"/g, '&quot;')}"`;
+      }
       return `
         <figure class="my-3 p-1 ${marco} overflow-x-auto text-center" data-figura="1">
-          <img src="${srcSegura}" alt="Gráfico de la pregunta" style="width:100%;max-height:300px;height:auto;object-fit:contain;background:#ffffff;display:block;margin:0 auto;" />
+          <img class="fig-pregunta-img" src="${srcEsc}"${fallbackAttr} alt=""
+            style="width:100%;max-height:300px;height:auto;object-fit:contain;background:#ffffff;display:block;margin:0 auto;"
+            onerror="window.__danteOnGraficaError&amp;&amp;window.__danteOnGraficaError(this)" />
           ${pie}
         </figure>`;
     }
