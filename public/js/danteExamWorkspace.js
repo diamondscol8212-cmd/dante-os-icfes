@@ -5129,11 +5129,18 @@
           this._publicarEnNube('MISION_DIARIA');
         }
 
+        const esRepasoFallidasFin = Boolean(this.misionData && this.misionData.esRepasoFallidas);
         const esRefuerzoFin = Boolean(this.misionData && (this.misionData.esRefuerzo || this.misionData.repasoArea));
         const esSimFin = Boolean(this.misionData && this.misionData.esSimulacro);
         let tituloBloque = 'Entrenamiento terminado';
         let leadBloque = 'Gracias por completar tu bloque. Aquí está tu análisis de la sesión.';
-        if (esRefuerzoFin) {
+        if (esRepasoFallidasFin) {
+          tituloBloque = 'Repaso de fallidas terminado';
+          leadBloque = 'Volviste a las preguntas que habías fallado. Estos son los datos de la sesión.';
+          if (window.DanteRepasoFallidas && typeof window.DanteRepasoFallidas.anotarSesion === 'function') {
+            try { window.DanteRepasoFallidas.anotarSesion(this.respuestasSesionActiva); } catch (eRf) {}
+          }
+        } else if (esRefuerzoFin) {
           tituloBloque = 'Refuerzo terminado';
           leadBloque = 'Completaste el refuerzo. Estos son los datos de la sesión.';
         } else if (esSimFin) {

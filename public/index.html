@@ -9,7 +9,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="assets/icons/icon-192.svg">
     <link rel="apple-touch-icon" href="assets/icons/icon-192.svg">
-            <title>Dante OS c-1.3.71</title>
+            <title>Dante OS c-1.3.72</title>
     <script>
         try { sessionStorage.setItem('dante_entrada_viva', String(Date.now())); } catch (e) {}
     </script>
@@ -99,7 +99,7 @@
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" defer></script>
 
     <!-- Motores del Ecosistema Dante OS (Cargados en orden estricto de dependencias) -->
-    <script src="js/danteCacheVersion.js?v=c-1.3.71"></script>
+    <script src="js/danteCacheVersion.js?v=c-1.3.72"></script>
     <script src="js/danteSecurityGuard.js?v=c-1.2.85"></script>
     <script src="js/danteSecurityDRM.js?v=c-1.2.85"></script>
     <script src="js/danteStorage.js?v=c-1.2.85"></script>
@@ -113,12 +113,12 @@
     <script src="js/danteRecorrido.js?v=c-1.3.33"></script>
     <script src="js/ojoBionico3D.js?v=c-1.2.85"></script>
     <script src="js/modoSniper.js?v=c-1.2.85"></script>
-    <script src="js/danteNube.js?v=c-1.3.71"></script>
-    <script src="js/danteRegistro.js?v=c-1.3.71"></script>
+    <script src="js/danteNube.js?v=c-1.3.72"></script>
+    <script src="js/danteRegistro.js?v=c-1.3.72"></script>
     <script src="js/danteAbility.js?v=c-1.2.85"></script>
-    <script src="js/danteCortes.js?v=c-1.3.71"></script>
+    <script src="js/danteCortes.js?v=c-1.3.72"></script>
     <script src="js/rutaSimulacroEngine.js?v=c-1.2.85"></script>
-    <script src="js/danteTutorEngine.js?v=c-1.3.71"></script>
+    <script src="js/danteTutorEngine.js?v=c-1.3.72"></script>
     <script src="js/danteSpiralEntity.js?v=c-1.3.32"></script>
     <script src="js/hackeaSyncIntro.js?v=c-1.3.19"></script>
     <script src="js/hackeaUmbralVault.js?v=c-1.3.19"></script>
@@ -129,10 +129,11 @@
     <script src="js/hackeaArc.js?v=c-1.3.19"></script>
     <script src="js/hackeaPulso.js?v=c-1.3.19"></script>
     <script src="js/hackeaMente.js?v=c-1.3.34"></script>
-    <script src="js/danteHubEngine.js?v=c-1.3.19"></script>
-    <script src="js/danteExamWorkspace.js?v=c-1.3.71"></script>
+    <script src="js/danteHubEngine.js?v=c-1.3.72"></script>
+    <script src="js/danteExamWorkspace.js?v=c-1.3.72"></script>
     <script src="js/danteSemana.js?v=c-1.2.85"></script>
-    <script src="js/danteSimulacro.js?v=c-1.3.71"></script>
+    <script src="js/danteSimulacro.js?v=c-1.3.72"></script>
+    <script src="js/danteRepasoFallidas.js?v=c-1.3.72"></script>
     <script src="js/danteRadarEngine.js?v=c-1.2.85"></script>
 
     <!-- 📡 OBSERVABILIDAD SENTRY BROWSER SDK (SCRUBBING LEY 1581) -->
@@ -6297,7 +6298,7 @@
                     <img src="assets/icons/dante-logo-icon.svg" alt="Dante OS Logo" class="w-6 h-6 rounded-md shadow-[0_0_12px_rgba(56,189,248,0.45)] border border-cyan-500/30 shrink-0 object-contain" />
                     <span class="font-mono font-bold text-xs tracking-wider text-white select-none whitespace-nowrap flex items-center gap-1.5">
                         DANTE OS
-                        <span id="badgeDanteVersion" class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">c-1.3.71</span>
+                        <span id="badgeDanteVersion" class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">c-1.3.72</span>
                     </span>
                 </a>
 
@@ -6446,6 +6447,17 @@
                 </div>
                 <span class="sala-card-arrow" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>
                 <div class="sala-card-art sala-card-art-clock" aria-hidden="true"><i class="fa-regular fa-file-lines"></i></div>
+            </button>
+
+            <button type="button" id="puertaRepasoFallidas" onclick="if(window.DanteRepasoFallidas){DanteRepasoFallidas.abrir();}" class="sala-glass-card block w-full cursor-pointer">
+                <span class="sala-card-help" role="button" tabindex="0" title="Qué es" aria-label="Qué es Repaso de fallidas" onclick="event.preventDefault();event.stopPropagation();window.salaAyudaTarjeta&&salaAyudaTarjeta(event,'repaso_fallidas');">?</span>
+                <span class="sala-card-ico" aria-hidden="true"><i class="fa-solid fa-rotate-left"></i></span>
+                <div class="sala-card-title">Repaso · fallidas</div>
+                <div class="sala-card-metric">
+                    <span id="lblRepasoFallidasDetalle">Solo las preguntas que ya fallaste.</span>
+                </div>
+                <span class="sala-card-arrow" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>
+                <div class="sala-card-art sala-card-art-clock" aria-hidden="true"><i class="fa-solid fa-book-open-reader"></i></div>
             </button>
 
             <a id="cardExpedienteStatus" href="/perfil.html" class="sala-glass-card block w-full cursor-pointer transition-all active:scale-[0.99] no-underline">
@@ -7129,6 +7141,7 @@
             if (!tip) return;
             const textos = {
                 simulacro: 'Simulacro Completo: prueba larga tipo Saber 11°. Cronometrada en sesiones. Al terminar ves el puntaje por áreas.',
+                repaso_fallidas: 'Repaso · fallidas: solo las preguntas que ya fallaste en diagnóstico, entrenamiento u otras pruebas. Hasta 10 por sesión.',
                 proyeccion: 'Tu Proyección: estimación de puntaje / 500 según lo que respondes. Se afina con el diagnóstico y cada bloque.',
                 ruta: 'Ruta Vocacional: dilemas cortos que revelan tu perfil y caminos de carrera. Un paso al día hasta el informe.'
             };

@@ -121,7 +121,13 @@
       await this.consultarMisionDiaria();
       await this.hidratarHabilidadPreu();
       const areaRepaso = urlParams.get('repaso');
-      if (areaRepaso) {
+      if (areaRepaso === 'fallidas') {
+        sessionStorage.removeItem('dante_is_diagnostic');
+        localStorage.removeItem('dante_is_diagnostic');
+        if (window.DanteRepasoFallidas && typeof window.DanteRepasoFallidas.abrir === 'function') {
+          window.DanteRepasoFallidas.abrir();
+        }
+      } else if (areaRepaso) {
         sessionStorage.removeItem('dante_is_diagnostic');
         localStorage.removeItem('dante_is_diagnostic');
         this.iniciarRepasoArea(areaRepaso);
