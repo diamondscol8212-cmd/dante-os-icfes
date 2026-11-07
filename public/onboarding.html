@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#08090c">
-    <title>Dante OS · Tu meta c-1.3.61</title>
+    <title>Dante OS · Tu meta c-1.3.62</title>
     <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -152,32 +152,42 @@
         }
         .onboard-card .uppercase { text-transform: none !important; letter-spacing: -0.02em !important; }
 
-        /* Paso 3: cuadernillo blanco (mismo lenguaje visual del entrenamiento) */
+        /* Paso 3 = misma UI de pregunta en papel (entrenamiento / diagnóstico) */
         #stepContainer3.onboard-paso-cuadernillo {
             background: #f2f2f2;
             border: 1px solid #e6e6e6;
             border-radius: 0.85rem;
-            padding: 0.85rem 0.75rem 1rem;
-            margin: 0 -0.15rem;
+            padding: 0.55rem 0.55rem 0.85rem;
+            margin: 0 -0.35rem;
         }
         #stepContainer3 .onboard-papel {
             background: #ffffff;
             border: 1px solid #e6e6e6;
-            border-radius: 0.75rem;
-            padding: 0.95rem 0.95rem 1.05rem;
+            border-bottom: 0;
+            border-radius: 0.85rem 0.85rem 0 0;
+            padding: 1.05rem 1.05rem 1.15rem;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
         }
-        #stepContainer3 .onboard-instruccion {
-            margin: 0 0 0.65rem;
-            font-size: 0.72rem;
+        #stepContainer3 .onboard-pregunta-titulo {
+            margin: 0 0 0.35rem;
+            font-size: 1.15rem;
+            font-weight: 400;
+            color: #111;
+            line-height: 1.35;
+            font-family: 'Source Serif 4', 'Times New Roman', Times, serif;
+            text-align: left;
+        }
+        #stepContainer3 .onboard-pregunta-sub {
+            margin: 0 0 0.95rem;
+            font-size: 0.8rem;
             color: #64748b;
-            font-family: var(--font-mono), monospace;
+            line-height: 1.4;
+            text-align: left;
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
         }
         #stepContainer3 .onboard-pregunta-grid {
             background: transparent;
             border: 0;
-            border-radius: 0;
-            overflow: visible;
         }
         #stepContainer3 .onboard-opcion.step-option {
             display: flex;
@@ -234,11 +244,7 @@
             width: 1.1rem;
             flex-shrink: 0;
         }
-        #stepContainer3 .onboard-opcion-body {
-            flex: 1;
-            min-width: 0;
-            text-align: left;
-        }
+        #stepContainer3 .onboard-opcion-body { flex: 1; min-width: 0; text-align: left; }
         #stepContainer3 .onboard-opcion-title {
             margin: 0;
             font-size: 0.95rem;
@@ -252,61 +258,82 @@
             font-size: 0.72rem;
             color: #64748b;
             line-height: 1.35;
-            font-family: var(--font-main), system-ui, sans-serif;
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
         }
         #stepContainer3 #lblDiasFechaAjuste {
             color: #64748b !important;
             margin-top: 0.55rem;
+            text-align: left;
         }
-        #btnOnboardPista {
-            width: 100%;
-            margin-top: 0.75rem;
-            padding: 0.7rem 0.9rem;
-            border-radius: 0.75rem;
-            border: 1px solid #d4d4d4;
-            background: #fff;
-            color: #334155;
-            font-size: 0.75rem;
-            font-weight: 650;
+        #uiInstruccionOnboard {
+            display: flex;
+            margin-top: 0;
+            padding: 0.72rem 0.95rem;
+            border-radius: 0 0 0.7rem 0.7rem;
+            background: #111;
+            color: #fff;
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+            font-size: 0.8rem;
+            font-weight: 500;
+            line-height: 1.35;
+            text-align: left;
+            align-items: center;
+            gap: 0.55rem;
+        }
+        #uiInstruccionOnboard::before {
+            content: 'i';
+            flex: 0 0 auto;
+            width: 1.15rem;
+            height: 1.15rem;
+            border-radius: 999px;
+            border: 1.5px solid rgba(255,255,255,0.85);
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 0.45rem;
-            cursor: pointer;
+            font-size: 0.72rem;
+            font-weight: 700;
+            font-style: italic;
+            font-family: Georgia, 'Times New Roman', serif;
+            line-height: 1;
         }
-        #btnOnboardPista i { color: #b45309; }
-        #cajaOnboardPista {
-            margin-top: 0.55rem;
-            padding: 0.85rem 0.95rem;
-            border-radius: 0.75rem;
-            border: 1px solid #e2e8f0;
-            background: #f8fafc;
-            color: #334155;
-            font-size: 0.78rem;
-            line-height: 1.45;
-            text-align: left;
+        #uiAccionesOnboard {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 0.55rem;
+            margin-top: 0.7rem;
+            align-items: stretch;
         }
         #btnOnboardHoldConfirm {
+            margin: 0;
             width: 100%;
-            margin-top: 0.75rem;
-            padding: 0.95rem 1rem;
-            border-radius: 1rem;
-            border: 1px solid rgba(180, 140, 80, 0.45);
-            background: #3a2c20;
-            color: #f8efe2;
-            font-family: var(--font-mono), monospace;
-            font-size: 0.8rem;
-            font-weight: 700;
-            letter-spacing: 0.02em;
+            min-height: 3.15rem;
+            padding: 0.55rem 0.75rem;
+            border-radius: 0.7rem;
+            border: 0;
+            background: #1a1a1a;
+            color: #fff;
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+            font-size: 0.76rem;
+            font-weight: 650;
+            letter-spacing: 0;
+            text-transform: none;
             position: relative;
             overflow: hidden;
             cursor: pointer;
             user-select: none;
             touch-action: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #btnOnboardHoldConfirm.confirm-opcion-lista {
+            background: #1565c0;
+            box-shadow: 0 4px 14px rgba(21, 101, 192, 0.35);
         }
         #btnOnboardHoldConfirm:disabled {
             opacity: 0.45;
             cursor: not-allowed;
+            box-shadow: none;
         }
         #btnOnboardHoldFill {
             position: absolute;
@@ -314,7 +341,7 @@
             top: 0;
             bottom: 0;
             width: 0%;
-            background: rgba(231, 215, 195, 0.28);
+            background: rgba(255,255,255,0.16);
             pointer-events: none;
             transition: width 0.05s linear;
         }
@@ -325,6 +352,48 @@
             align-items: center;
             justify-content: center;
             gap: 0.45rem;
+        }
+        #btnOnboardHoldConfirm .hold-label::before {
+            content: '';
+            width: 0.95rem;
+            height: 0.95rem;
+            display: inline-block;
+            flex-shrink: 0;
+            background: no-repeat center / contain;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2'%3E%3Cpath d='M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'/%3E%3C/svg%3E");
+        }
+        #btnOnboardPista {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            width: 100%;
+            min-height: 3.15rem;
+            padding: 0.55rem 0.65rem;
+            border-radius: 0.7rem;
+            background: #fff;
+            border: 1.5px solid #222;
+            color: #111;
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+            font-size: 0.76rem;
+            font-weight: 650;
+            cursor: pointer;
+            margin: 0;
+        }
+        #btnOnboardPista i.fa-lightbulb {
+            color: #f5c518;
+            filter: drop-shadow(0 0 2px rgba(245, 197, 24, 0.55));
+        }
+        #cajaOnboardPista {
+            margin-top: 0.55rem;
+            padding: 0.85rem 0.95rem;
+            border-radius: 0.85rem;
+            border: 1px solid #e2e8f0;
+            background: #fff;
+            color: #334155;
+            font-size: 0.78rem;
+            line-height: 1.45;
+            text-align: left;
         }
     </style>
 </head>
@@ -345,7 +414,7 @@
                             Dante OS <span class="text-[9px] font-mono px-2 py-0.5 rounded-full bg-[#1c1917] text-[#e7d7c3] border border-[rgba(231,215,195,0.32)]">Saber 11°</span>
                         </h1>
                         <p id="lblStepTracker" class="text-[11px] text-slate-400 font-mono">Paso 1 de 3: Tu meta en Saber 11°</p>
-                        <p class="text-[9px] text-slate-500 font-mono mt-0.5">c-1.3.61</p>
+                        <p class="text-[9px] text-slate-500 font-mono mt-0.5">c-1.3.62</p>
                     </div>
                 </div>
 
@@ -458,9 +527,10 @@
                 </div>
             </div>
 
-            <div id="stepContainer3" class="onboard-paso-cuadernillo space-y-3 hidden">
+            <div id="stepContainer3" class="onboard-paso-cuadernillo hidden">
                 <div class="onboard-papel">
-                    <p class="onboard-instruccion">Toca el círculo o la opción para marcar. Solo una respuesta a la vez.</p>
+                    <h2 class="onboard-pregunta-titulo">¿Cómo quieres prepararte?</h2>
+                    <p class="onboard-pregunta-sub">Elige calendario oficial o entrena sin fecha.</p>
                     <div class="onboard-pregunta-grid" role="radiogroup" aria-label="Cómo quieres prepararte">
                         <div data-fecha="CAL_A" data-letra="A" onclick="OnboardingManager.selectFecha('CAL_A', this)" class="onboard-opcion step-option" role="radio" aria-checked="false">
                             <span class="badge-opcion-letra" aria-hidden="true"></span>
@@ -488,21 +558,23 @@
                     <p id="lblDiasFechaAjuste" class="text-xs"></p>
                 </div>
 
-                <button type="button" id="btnOnboardPista" onclick="OnboardingManager.togglePistaPaso3()">
-                    <i class="fa-solid fa-lightbulb" aria-hidden="true"></i>
-                    <span>¿No la ves? Pista</span>
-                </button>
+                <div id="uiInstruccionOnboard">Toca el círculo o la opción para marcar. Solo una respuesta a la vez.</div>
+
+                <div id="uiAccionesOnboard">
+                    <button type="button" id="btnOnboardHoldConfirm" disabled aria-disabled="true">
+                        <div id="btnOnboardHoldFill"></div>
+                        <span class="hold-label">
+                            <span id="txtOnboardHoldPrompt">Mantén 2 segundos para confirmar</span>
+                        </span>
+                    </button>
+                    <button type="button" id="btnOnboardPista" onclick="OnboardingManager.togglePistaPaso3()">
+                        <i class="fa-solid fa-lightbulb" aria-hidden="true"></i>
+                        <span>¿No la ves? Pista</span>
+                    </button>
+                </div>
                 <div id="cajaOnboardPista" class="hidden" role="note">
                     Si ya sabes la fecha de tu examen, elige Calendario A o B. Si aún no la tienes o quieres estudiar sin presión de fecha, elige Entrenamiento libre.
                 </div>
-
-                <button type="button" id="btnOnboardHoldConfirm" disabled aria-disabled="true">
-                    <div id="btnOnboardHoldFill"></div>
-                    <span class="hold-label">
-                        <i class="fa-regular fa-clock text-[12px] opacity-80" aria-hidden="true"></i>
-                        <span id="txtOnboardHoldPrompt">Confirmar y empezar el diagnóstico</span>
-                    </span>
-                </button>
             </div>
 
             <!-- ========================================================= -->
@@ -952,9 +1024,7 @@
             }
 
             static textoPromptConfirmacionPaso3() {
-                return AjustarMeta
-                    ? 'Mantén 2 segundos para guardar'
-                    : 'Confirmar y empezar el diagnóstico';
+                return 'Mantén 2 segundos para confirmar';
             }
 
             static actualizarEstadoConfirmacionPaso3(habilitado) {
@@ -965,9 +1035,11 @@
                 if (habilitado) {
                     btn.disabled = false;
                     btn.setAttribute('aria-disabled', 'false');
+                    btn.classList.add('confirm-opcion-lista');
                 } else {
                     btn.disabled = true;
                     btn.setAttribute('aria-disabled', 'true');
+                    btn.classList.remove('confirm-opcion-lista');
                     const fill = document.getElementById('btnOnboardHoldFill');
                     if (fill) fill.style.width = '0%';
                 }
@@ -1156,18 +1228,14 @@
                     if (c3) c3.classList.remove("hidden");
                     if (tracker) tracker.innerText = "Paso 3 de 3: Cómo quieres prepararte";
                     if (d3) d3.className = "w-2.5 h-2.5 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.8)] transition-all";
-                    if (btnNextLabel) btnNextLabel.innerText = AjustarMeta ? "Guardar y volver al informe" : "Confirmar y empezar el diagnóstico";
+                    if (btnNextLabel) btnNextLabel.innerText = AjustarMeta ? "Guardar y volver al informe" : "Confirmar respuesta";
                     if (btnNextIcon) btnNextIcon.className = AjustarMeta ? "fa-solid fa-check text-slate-950 text-xs" : "fa-solid fa-bolt text-slate-950 text-xs";
-                    if (greetingContainer) {
-                        greetingContainer.innerHTML = `
-                            <h2 class="text-xl sm:text-2xl font-black text-white tracking-tight">¿Cómo quieres prepararte?</h2>
-                            <p id="lblStepInstruction" class="text-xs text-slate-400 font-sans">Elige calendario oficial o entrena sin fecha.</p>
-                        `;
-                    }
+                    // El enunciado vive dentro del papel blanco, como en la prueba real.
+                    if (greetingContainer) greetingContainer.classList.add('hidden');
                     const btnNext = document.getElementById('btnNextStep');
                     const notaHold = document.getElementById('notaConfirmPaso3');
                     if (btnNext) btnNext.classList.add('hidden');
-                    if (notaHold) notaHold.classList.remove('hidden');
+                    if (notaHold) notaHold.classList.add('hidden');
                     this.bindHoldConfirmacionPaso3();
                     const pista = document.getElementById('cajaOnboardPista');
                     if (pista) pista.classList.add('hidden');
@@ -1192,6 +1260,7 @@
                     const notaHoldHide = document.getElementById('notaConfirmPaso3');
                     if (btnNextShow) btnNextShow.classList.remove('hidden');
                     if (notaHoldHide) notaHoldHide.classList.add('hidden');
+                    if (greetingContainer) greetingContainer.classList.remove('hidden');
                 }
             }
 
