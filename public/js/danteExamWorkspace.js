@@ -3455,8 +3455,12 @@
       const detalle = this._serializarItemsSesion();
       const radiografia = this._radiografiaDesdeSesion(suma.precisionSesion);
       try { localStorage.setItem('dante_radiografia_error', JSON.stringify(radiografia)); } catch (e) {}
+      const idMision = (this.misionData && (this.misionData.misionId || this.misionData.id)) || '';
+      const idReg = idMision
+        ? String(idMision).slice(0, 80)
+        : (`eval_${tipo}_${Date.now()}`);
       const registro = {
-        id: `eval_${tipo}_${Date.now()}`,
+        id: idReg,
         created_at: new Date().toISOString(),
         materia: materia,
         tipo: tipo,
@@ -4571,7 +4575,8 @@
         misionId: misionId,
         targetTrack: targetTrack,
         isDiagnostic: esDiagnosticoCierre,
-        esRefuerzo: Boolean(this.misionData && (this.misionData.esRefuerzo || this.misionData.repasoArea)),
+        esRepasoFallidas: Boolean(this.misionData && this.misionData.esRepasoFallidas),
+        esRefuerzo: Boolean(this.misionData && (this.misionData.esRefuerzo || this.misionData.repasoArea) && !this.misionData.esRepasoFallidas),
         refuerzoArea: (this.misionData && (this.misionData.refuerzoArea || this.misionData.repasoArea)) || null,
         respuestasReactivos: this.respuestasSesionActiva,
         respuestasVocacionales: arrVoc,
@@ -5157,7 +5162,7 @@
           // No publicar respaldo IRT aquí: pisaba aciertos y volvía a subir el contador.
           this._registrarSesionExpediente(
             'REPASO_FALLIDAS',
-            'Repaso de fallidas',
+            'Repaso · Fallidas',
             proyeccionSala,
             estRepaso && typeof estRepaso.theta === 'number' ? estRepaso.theta : this.thetaEstimado
           );

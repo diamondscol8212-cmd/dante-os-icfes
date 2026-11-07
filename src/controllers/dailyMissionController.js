@@ -544,8 +544,15 @@ export async function completarMisionDiaria(req, res) {
     RACHAS_ESTUDIANTES.set(studentClean, rachaDiasActualizada);
 
     const esDiagnosticoCierre = Boolean(body.isDiagnostic === true || body.isDiagnostic === 'true' || req.headers?.['x-is-diagnostic'] === 'true');
-    const esRefuerzoCierre = Boolean(body.esRefuerzo === true || body.refuerzoArea);
-    const tipoSesion = esDiagnosticoCierre ? 'DIAGNOSTICO' : (esRefuerzoCierre ? 'REFUERZO' : 'MISION_DIARIA');
+    const esRepasoFallidasCierre = Boolean(
+      body.esRepasoFallidas === true
+      || String(misionId || '').toLowerCase().startsWith('repaso_fallidas')
+      || String(body.refuerzoArea || '').toLowerCase() === 'fallidas'
+    );
+    const esRefuerzoCierre = Boolean(body.esRefuerzo === true || body.refuerzoArea) && !esRepasoFallidasCierre;
+    const tipoSesion = esDiagnosticoCierre
+      ? 'DIAGNOSTICO'
+      : (esRepasoFallidasCierre ? 'REPASO_FALLIDAS' : (esRefuerzoCierre ? 'REFUERZO' : 'MISION_DIARIA'));
     try {
       await registrarSesionExpediente(studentClean, {
         tipo: tipoSesion,
@@ -574,6 +581,8 @@ export async function completarMisionDiaria(req, res) {
     let feedbackDante = `Bloque listo, ${studentName}. Precisión ${precisionPorcentaje}%. Proyección ${puntajeProyectadoEscala}/500. Descansa 15 minutos antes del siguiente bloque.`;
     if (esDiagnosticoCierre) {
       feedbackDante = `Diagnóstico listo, ${studentName}. Tu punto de partida quedó en ${puntajeProyectadoEscala}/500. Ya puedes entrenar en la sala.`;
+    } else if (esRepasoFallidasCierre) {
+      feedbackDante = `Repaso de fallidas listo, ${studentName}. Quedó en tu historial con el boletín de esa sesión.`;
     } else if (esRefuerzoCierre) {
       feedbackDante = `Refuerzo listo, ${studentName}. Esas 5 preguntas también quedaron en tu expediente.`;
     } else if (esPro) {

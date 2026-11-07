@@ -9,7 +9,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="assets/icons/icon-192.svg">
     <link rel="apple-touch-icon" href="assets/icons/icon-192.svg">
-    <title>Dante OS · Tu informe c-1.3.80</title>
+    <title>Dante OS · Tu informe c-1.3.81</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Source+Serif+4:wght@600;700;800&display=swap">
 
@@ -20,16 +20,16 @@
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="theme.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/danteCacheVersion.js?v=c-1.3.80"></script>
-    <script src="js/danteNube.js?v=c-1.3.80"></script>
-    <script src="js/danteRegistro.js?v=c-1.3.80"></script>
+    <script src="js/danteCacheVersion.js?v=c-1.3.81"></script>
+    <script src="js/danteNube.js?v=c-1.3.81"></script>
+    <script src="js/danteRegistro.js?v=c-1.3.81"></script>
     <script src="js/danteVectorIcons.js"></script>
     <script src="js/danteStorage.js"></script>
     <script src="js/streakManager.js?v=23.1.2"></script>
     <script src="js/rutaSimulacroEngine.js"></script>
     <script src="js/danteRadarEngine.js"></script>
-    <script src="js/danteCortes.js?v=c-1.3.80"></script>
-    <script src="js/danteTutorEngine.js?v=c-1.3.80"></script>
+    <script src="js/danteCortes.js?v=c-1.3.81"></script>
+    <script src="js/danteTutorEngine.js?v=c-1.3.81"></script>
 
     <style>
         #bentoContainer { display: flex; flex-direction: column; gap: 0.95rem; }
@@ -1472,7 +1472,7 @@
         </div>
         <div class="perfil-hdr-tag-wrap">
             <span class="perfil-hdr-tag" id="lblHdrProyeccionTag">PROYECCIÓN 2026</span>
-            <span id="badgeDanteVersion" class="perfil-hdr-ver">c-1.3.80</span>
+            <span id="badgeDanteVersion" class="perfil-hdr-ver">c-1.3.81</span>
         </div>
         <div class="relative flex items-center gap-2.5 shrink-0">
             <button type="button" id="badgeRacha" onclick="if(window.StreakManager) StreakManager.abrirModalRacha()" class="flex items-center gap-1.5 cursor-pointer bg-transparent border-0 p-0 text-amber-400 font-mono text-xs font-black transition-transform hover:scale-105 active:scale-95 shrink-0 select-none" title="Ver Racha Real de Días">
@@ -3634,13 +3634,92 @@
                 }
             }
 
+            /** Snapshot de nube / proyección ≠ prueba real. Relabela repasos mal tipados. */
+            static _esSnapshotProyeccion(reg) {
+                if (!reg) return true;
+                const tipo = String(reg.tipo || '').toUpperCase();
+                const mat = String(reg.materia || '');
+                const id = String(reg.id || '');
+                if (tipo === 'NUBE') return true;
+                if (/^nube_/i.test(id)) return true;
+                if (/proyecci[oó]n\s+guardada/i.test(mat)) return true;
+                return false;
+            }
+
+            static _esRepasoFallidasReg(reg) {
+                if (!reg) return false;
+                const tipo = String(reg.tipo || '').toUpperCase();
+                const mat = String(reg.materia || '');
+                const id = String(reg.id || '');
+                if (tipo === 'REPASO_FALLIDAS' || tipo.includes('REPASO_FALL')) return true;
+                if (/^repaso_fallidas_/i.test(id)) return true;
+                if (/repaso\s*[·•-]?\s*fallid/i.test(mat)) return true;
+                if (/fallidas/i.test(mat) && /repaso/i.test(mat)) return true;
+                return false;
+            }
+
+            static _esPruebaReal(reg) {
+                if (!reg || this._esSnapshotProyeccion(reg)) return false;
+                const tipo = String(reg.tipo || '').toUpperCase();
+                const id = String(reg.id || '');
+                const mat = String(reg.materia || '').toLowerCase();
+                if (tipo === 'NUBE') return false;
+                if (mat === 'saber_11' || mat === 'preuniversitario') {
+                    // Filas de progreso_estudiantes del gemelo ≠ sesión de prueba.
+                    if (!tipo || tipo === 'PROGRESO' || tipo === 'EXPEDIENTE') return false;
+                }
+                if (
+                    tipo === 'MISION_DIARIA' || tipo === 'REFUERZO' || tipo === 'REPASO_FALLIDAS'
+                    || tipo === 'SIMULACRO' || tipo === 'SIMULACRO_COMPLETO'
+                    || tipo === 'DIAGNOSTICO' || tipo === 'DIAGNOSTICO_INICIAL'
+                    || tipo.includes('SIMUL') || tipo.includes('DIAG') || tipo.includes('REPASO')
+                    || tipo.includes('MISION') || tipo.includes('REFUERZO')
+                ) return true;
+                if (/^(eval_|repaso_fallidas_|sim_|ses_|diag)/i.test(id)) return true;
+                if (Number.isFinite(Number(reg.total)) && Number(reg.total) > 0 && (reg.aciertos != null || reg.puntaje_escalonado != null)) {
+                    return true;
+                }
+                // Materias con nombre de prueba legible (Entrenamiento, Refuerzo, Diagnóstico…).
+                if (mat && mat !== 'saber_11' && mat !== 'preuniversitario' && !/^nube_/i.test(id)) return true;
+                return false;
+            }
+
+            static _sanearHistorialPruebas(lista) {
+                const out = [];
+                const seen = new Set();
+                (Array.isArray(lista) ? lista : []).forEach((raw) => {
+                    if (!raw || !this._esPruebaReal(raw)) return;
+                    let reg = raw;
+                    if (this._esRepasoFallidasReg(reg)) {
+                        reg = Object.assign({}, reg, {
+                            tipo: 'REPASO_FALLIDAS',
+                            materia: 'Repaso · Fallidas'
+                        });
+                    }
+                    const tipo = String(reg.tipo || '').toUpperCase();
+                    const key = String(reg.id || '')
+                        || [tipo, reg.created_at || '', reg.total || '', reg.puntaje_escalonado || ''].join('|');
+                    if (seen.has(key)) return;
+                    seen.add(key);
+                    out.push(reg);
+                });
+                return out;
+            }
+
+            static _persistirHistorialSaneado(lista) {
+                const limpio = this._sanearHistorialPruebas(lista);
+                cacheHistorialCompleto = limpio;
+                try { localStorage.setItem('dante_history_cache', JSON.stringify(limpio)); } catch (e) {}
+                return limpio;
+            }
+
             static cargarCacheLocal() {
                 try {
                     const cached = localStorage.getItem('dante_history_cache');
                     if (cached) {
                         const parsed = JSON.parse(cached);
                         if (Array.isArray(parsed) && parsed.length > 0) {
-                            cacheHistorialCompleto = parsed;
+                            this._persistirHistorialSaneado(parsed);
                         }
                     }
                 } catch (e) {
@@ -3671,8 +3750,7 @@
                     if (res && res.ok) {
                         const json = await res.json();
                         if (json && json.success && Array.isArray(json.gemelo) && json.gemelo.length > 0) {
-                            cacheHistorialCompleto = json.gemelo;
-                            localStorage.setItem('dante_history_cache', JSON.stringify(json.gemelo));
+                            this._persistirHistorialSaneado(json.gemelo);
                         }
                         const pProy = json?.puntajeProyectado || (Array.isArray(json?.gemelo) && json.gemelo[0]?.puntaje_escalonado) || parseInt(localStorage.getItem('dante_score_proyectado') || '0', 10);
                         const bCalc = json?.brechaCalculada !== undefined ? json.brechaCalculada : (380 - pProy);
@@ -3694,7 +3772,7 @@
                         if (cached) {
                             const parsed = JSON.parse(cached);
                             if (Array.isArray(parsed) && parsed.length > 0) {
-                                cacheHistorialCompleto = parsed;
+                                this._persistirHistorialSaneado(parsed);
                             }
                         }
                     } catch (e) {}
@@ -3713,12 +3791,12 @@
                 let nube = null;
                 try { nube = await window.DanteNube.leerExpediente(STUDENT_ID); } catch (e) { nube = null; }
                 if (!nube) return;
-                const local = Array.isArray(cacheHistorialCompleto) ? cacheHistorialCompleto.slice() : [];
+                const local = this._sanearHistorialPruebas(
+                    Array.isArray(cacheHistorialCompleto) ? cacheHistorialCompleto.slice() : []
+                );
                 const ids = new Set(local.map((x) => x && x.id).filter(Boolean));
                 (nube.progreso || []).forEach((row) => {
                     if (!row || !row.medido || !(Number(row.puntaje_escalonado) >= 0)) return;
-                    const id = `nube_${row.materia || 'saber_11'}_${row.ultima_actualizacion || ''}`;
-                    if (ids.has(id)) return;
                     const localN = (() => {
                         try { return (JSON.parse(localStorage.getItem('dante_respuestas_irt') || '[]') || []).length; }
                         catch (e) { return 0; }
@@ -3749,19 +3827,7 @@
                             if (row.bayesian_sem != null) localStorage.setItem('dante_sem_estimado', String(row.bayesian_sem));
                         } catch (e) {}
                     }
-                    local.unshift({
-                        id: id,
-                        created_at: row.ultima_actualizacion || new Date().toISOString(),
-                        materia: 'Proyección guardada',
-                        tipo: 'NUBE',
-                        fuente: 'nube',
-                        puntaje_escalonado: Math.round(row.puntaje_escalonado),
-                        theta: row.theta,
-                        sem: row.bayesian_sem,
-                        total: nubeN,
-                        precisionPorArea: {}
-                    });
-                    ids.add(id);
+                    // No insertar NUBE / "Proyección guardada" en el historial de pruebas.
                     if (row.materia === 'saber_11' && Array.isArray(row.items_respondidos)) {
                         const conteo = {};
                         row.items_respondidos.forEach((item) => {
@@ -3795,9 +3861,15 @@
                     if (!row || row.materia !== 'saber_11' || !Array.isArray(row.historial_sesiones)) return;
                     row.historial_sesiones.forEach((ses) => {
                         if (!ses || !ses.id || ids.has(ses.id)) return;
-                        const tipo = String(ses.tipo || 'MISION_DIARIA').toUpperCase();
-                        const etiqueta = tipo === 'DIAGNOSTICO' ? 'Diagnóstico'
-                          : (tipo === 'REFUERZO' ? 'Refuerzo' : 'Entrenamiento');
+                        let tipo = String(ses.tipo || 'MISION_DIARIA').toUpperCase();
+                        const idSes = String(ses.id || '');
+                        if (/^repaso_fallidas_/i.test(idSes) || tipo === 'REPASO_FALLIDAS' || tipo.includes('REPASO_FALL')) {
+                            tipo = 'REPASO_FALLIDAS';
+                        }
+                        const etiqueta = (tipo === 'DIAGNOSTICO' || tipo === 'DIAGNOSTICO_INICIAL') ? 'Diagnóstico'
+                          : (tipo === 'REPASO_FALLIDAS' ? 'Repaso · Fallidas'
+                            : (tipo === 'REFUERZO' ? 'REFUERZO'
+                              : (tipo === 'MISION_DIARIA' ? 'Entrenamiento diario' : 'Entrenamiento')));
                         local.unshift({
                             id: ses.id,
                             created_at: ses.created_at || row.ultima_actualizacion || new Date().toISOString(),
@@ -3829,8 +3901,7 @@
                         ids.add('sim_' + row.simulacro_oficial.id);
                     }
                 });
-                cacheHistorialCompleto = local.slice(0, 80);
-                try { localStorage.setItem('dante_history_cache', JSON.stringify(cacheHistorialCompleto)); } catch (e) {}
+                this._persistirHistorialSaneado(local.slice(0, 80));
             }
 
             static async cargarPerfilVocacionalServidor() {
@@ -4053,10 +4124,13 @@
 
                 const tieneHistorial = Array.isArray(cacheHistorialCompleto) && cacheHistorialCompleto.length > 0;
 
-                // Filtrar según materia
-                let listaFiltro = cacheHistorialCompleto;
+                // Filtrar según materia (solo pruebas reales; sin snapshots NUBE)
+                let listaFiltro = this._sanearHistorialPruebas(cacheHistorialCompleto);
+                if (listaFiltro.length !== (cacheHistorialCompleto || []).length) {
+                    this._persistirHistorialSaneado(listaFiltro);
+                }
                 if (currentMateriaFiltro !== 'todas') {
-                    listaFiltro = cacheHistorialCompleto.filter(x => x.materia === currentMateriaFiltro);
+                    listaFiltro = listaFiltro.filter(x => x.materia === currentMateriaFiltro);
                 }
 
                 // FUENTE ÚNICA DE VERDAD (SSOT) PARA PROYECCIÓN DE PUNTAJE
@@ -4505,10 +4579,14 @@
             static _tituloPrueba(reg) {
                 const tipo = String(reg.tipo || '').toUpperCase();
                 const mat = String(reg.materia || '').trim();
+                if (this._esRepasoFallidasReg(reg) || tipo === 'REPASO_FALLIDAS') return 'Repaso · Fallidas';
                 if (tipo === 'SIMULACRO') return mat || 'Simulacro Saber 11°';
-                if (tipo === 'DIAGNOSTICO_INICIAL' || /diagn[oó]stico/i.test(mat)) return mat || 'Diagnóstico Inicial';
+                if (tipo === 'DIAGNOSTICO' || tipo === 'DIAGNOSTICO_INICIAL' || /diagn[oó]stico/i.test(mat)) {
+                    return mat || 'Diagnóstico Inicial';
+                }
+                if (tipo === 'REFUERZO' || /^refuerzo$/i.test(mat)) return 'REFUERZO';
                 if (tipo === 'MISION_DIARIA') return 'Entrenamiento diario';
-                if (tipo === 'NUBE') return mat || 'Sesión en la nube';
+                if (tipo === 'NUBE' || /proyecci[oó]n\s+guardada/i.test(mat)) return 'Proyección (no es prueba)';
                 return mat || 'Sesión';
             }
 
@@ -4536,8 +4614,10 @@
                     else partes.push(`${total} preguntas`);
                 }
                 const tipo = String(reg.tipo || '').toUpperCase();
-                if (tipo === 'SIMULACRO') partes.push('Simulacro');
-                else if (tipo === 'DIAGNOSTICO_INICIAL') partes.push('Diagnóstico');
+                if (this._esRepasoFallidasReg(reg) || tipo === 'REPASO_FALLIDAS') partes.push('Repaso');
+                else if (tipo === 'SIMULACRO') partes.push('Simulacro');
+                else if (tipo === 'DIAGNOSTICO' || tipo === 'DIAGNOSTICO_INICIAL') partes.push('Diagnóstico');
+                else if (tipo === 'REFUERZO') partes.push('Refuerzo');
                 else if (tipo === 'MISION_DIARIA') partes.push('Diario');
                 return partes.join(' · ') || 'Sesión terminada';
             }
@@ -4558,6 +4638,7 @@
                         }
                     } catch(e) {}
                 }
+                items = this._sanearHistorialPruebas(items);
 
                 const btnTodas = document.getElementById('btnVerTodasPruebas');
                 const pie = document.getElementById('piePruebas');
@@ -4694,7 +4775,10 @@
                 const tipo = String(reg.tipo || '').toUpperCase();
                 let tituloBloque = 'Sesión terminada';
                 let leadBloque = 'Este es el informe de esa prueba.';
-                if (tipo.includes('DIAG')) {
+                if (this._esRepasoFallidasReg(reg) || tipo.includes('REPASO_FALL') || /repaso.*fallid/i.test(materia)) {
+                    tituloBloque = 'Repaso · Fallidas terminado';
+                    leadBloque = 'Completaste el repaso de preguntas fallidas. Este es el boletín de esa sesión.';
+                } else if (tipo.includes('DIAG')) {
                     tituloBloque = 'Diagnóstico terminado';
                     leadBloque = 'Gracias por completar tu diagnóstico. Aquí está tu análisis.';
                 } else if (tipo.includes('REFUERZO') || /refuerzo/i.test(materia)) {
