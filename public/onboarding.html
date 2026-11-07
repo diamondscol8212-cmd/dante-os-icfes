@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#08090c">
-    <title>Dante OS · Tu meta c-1.3.60</title>
+    <title>Dante OS · Tu meta c-1.3.61</title>
     <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -149,48 +149,87 @@
         }
         .onboard-card .uppercase { text-transform: none !important; letter-spacing: -0.02em !important; }
 
-        /* Paso 3: opciones al estilo cuadernillo de prueba */
-        #stepContainer3 .onboard-pregunta-grid {
-            background: #1c1917;
-            border: 1px solid rgba(231, 215, 195, 0.22);
-            border-radius: 1rem;
-            overflow: hidden;
+        /* Paso 3: cuadernillo blanco (mismo lenguaje visual del entrenamiento) */
+        #stepContainer3.onboard-paso-cuadernillo {
+            background: #f2f2f2;
+            border: 1px solid #e6e6e6;
+            border-radius: 0.85rem;
+            padding: 0.85rem 0.75rem 1rem;
+            margin: 0 -0.15rem;
         }
-        #stepContainer3 .onboard-opcion {
+        #stepContainer3 .onboard-papel {
+            background: #ffffff;
+            border: 1px solid #e6e6e6;
+            border-radius: 0.75rem;
+            padding: 0.95rem 0.95rem 1.05rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        }
+        #stepContainer3 .onboard-instruccion {
+            margin: 0 0 0.65rem;
+            font-size: 0.72rem;
+            color: #64748b;
+            font-family: var(--font-mono), monospace;
+        }
+        #stepContainer3 .onboard-pregunta-grid {
+            background: transparent;
+            border: 0;
+            border-radius: 0;
+            overflow: visible;
+        }
+        #stepContainer3 .onboard-opcion.step-option {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            padding: 0.85rem 0.9rem;
-            border-bottom: 1px solid rgba(231, 215, 195, 0.14);
+            gap: 0.7rem;
+            padding: 0.95rem 0.1rem;
+            border: 0 !important;
+            border-bottom: 1px solid #e0e0e0 !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
             cursor: pointer;
             user-select: none;
-            transition: background 0.15s ease;
+            transform: none !important;
         }
-        #stepContainer3 .onboard-opcion:last-child { border-bottom: 0; }
-        #stepContainer3 .onboard-opcion:hover { background: rgba(231, 215, 195, 0.05); }
+        #stepContainer3 .onboard-opcion:last-child { border-bottom: 0 !important; }
+        #stepContainer3 .onboard-opcion:hover,
         #stepContainer3 .onboard-opcion.selected {
-            background: rgba(231, 215, 195, 0.1);
+            background: transparent !important;
+            border-color: transparent !important;
+            box-shadow: none !important;
+            transform: none !important;
         }
         #stepContainer3 .badge-opcion-letra {
-            width: 2rem;
-            height: 2rem;
-            border-radius: 999px;
-            border: 2px solid rgba(231, 215, 195, 0.55);
-            background: #0c0b09;
-            color: #e7d7c3;
-            font-family: var(--font-mono), monospace;
-            font-size: 0.75rem;
-            font-weight: 700;
+            box-sizing: border-box;
+            width: 1.75rem;
+            height: 1.75rem;
+            min-width: 1.75rem;
+            min-height: 1.75rem;
+            border-radius: 50%;
+            border: 2px solid #555;
+            background: #fff;
+            color: transparent;
+            font-size: 0;
+            line-height: 0;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            flex-shrink: 0;
+            flex: 0 0 1.75rem;
+            box-shadow: none;
+            overflow: hidden;
         }
         #stepContainer3 .onboard-opcion.selected .badge-opcion-letra {
-            background: #e7d7c3;
-            color: #1c1917;
-            border-color: #e7d7c3;
-            box-shadow: inset 0 0 0 2px #1c1917;
+            background: #111;
+            border-color: #111;
+            color: transparent;
+            box-shadow: none;
+        }
+        #stepContainer3 .opcion-letra-label {
+            font-family: 'Source Serif 4', 'Times New Roman', Times, serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #111;
+            width: 1.1rem;
+            flex-shrink: 0;
         }
         #stepContainer3 .onboard-opcion-body {
             flex: 1;
@@ -199,31 +238,31 @@
         }
         #stepContainer3 .onboard-opcion-title {
             margin: 0;
-            font-size: 0.84rem;
-            font-weight: 700;
-            color: #f5f0e8;
-            line-height: 1.3;
+            font-size: 0.95rem;
+            font-weight: 400;
+            color: #111;
+            line-height: 1.45;
+            font-family: 'Source Serif 4', 'Times New Roman', Times, serif;
         }
         #stepContainer3 .onboard-opcion-sub {
-            margin: 0.2rem 0 0;
-            font-size: 0.7rem;
-            color: #a8a29e;
-            line-height: 1.35;
-        }
-        #stepContainer3 .onboard-instruccion {
-            margin: 0 0 0.55rem;
+            margin: 0.25rem 0 0;
             font-size: 0.72rem;
-            color: #a8a29e;
-            font-family: var(--font-mono), monospace;
+            color: #64748b;
+            line-height: 1.35;
+            font-family: var(--font-main), system-ui, sans-serif;
+        }
+        #stepContainer3 #lblDiasFechaAjuste {
+            color: #64748b !important;
+            margin-top: 0.55rem;
         }
         #btnOnboardPista {
             width: 100%;
-            margin-top: 0.65rem;
+            margin-top: 0.75rem;
             padding: 0.7rem 0.9rem;
-            border-radius: 0.9rem;
-            border: 1px solid rgba(231, 215, 195, 0.28);
-            background: #1c1917;
-            color: #e7d7c3;
+            border-radius: 0.75rem;
+            border: 1px solid #d4d4d4;
+            background: #fff;
+            color: #334155;
             font-size: 0.75rem;
             font-weight: 650;
             display: inline-flex;
@@ -232,13 +271,14 @@
             gap: 0.45rem;
             cursor: pointer;
         }
+        #btnOnboardPista i { color: #b45309; }
         #cajaOnboardPista {
             margin-top: 0.55rem;
             padding: 0.85rem 0.95rem;
-            border-radius: 0.9rem;
-            border: 1px solid rgba(231, 215, 195, 0.28);
-            background: rgba(231, 215, 195, 0.08);
-            color: #e7d7c3;
+            border-radius: 0.75rem;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            color: #334155;
             font-size: 0.78rem;
             line-height: 1.45;
             text-align: left;
@@ -248,7 +288,7 @@
             margin-top: 0.75rem;
             padding: 0.95rem 1rem;
             border-radius: 1rem;
-            border: 1px solid rgba(231, 215, 195, 0.4);
+            border: 1px solid rgba(180, 140, 80, 0.45);
             background: #3a2c20;
             color: #f8efe2;
             font-family: var(--font-mono), monospace;
@@ -302,7 +342,7 @@
                             Dante OS <span class="text-[9px] font-mono px-2 py-0.5 rounded-full bg-[#1c1917] text-[#e7d7c3] border border-[rgba(231,215,195,0.32)]">Saber 11°</span>
                         </h1>
                         <p id="lblStepTracker" class="text-[11px] text-slate-400 font-mono">Paso 1 de 3: Tu meta en Saber 11°</p>
-                        <p class="text-[9px] text-slate-500 font-mono mt-0.5">c-1.3.60</p>
+                        <p class="text-[9px] text-slate-500 font-mono mt-0.5">c-1.3.61</p>
                     </div>
                 </div>
 
@@ -415,30 +455,35 @@
                 </div>
             </div>
 
-            <div id="stepContainer3" class="space-y-3 hidden">
-                <p class="onboard-instruccion">Toca el círculo o la opción para marcar. Solo una respuesta a la vez.</p>
-                <div class="onboard-pregunta-grid" role="radiogroup" aria-label="Cómo quieres prepararte">
-                    <div data-fecha="CAL_A" data-letra="A" onclick="OnboardingManager.selectFecha('CAL_A', this)" class="onboard-opcion step-option" role="radio" aria-checked="false">
-                        <span class="badge-opcion-letra" aria-hidden="true">A</span>
-                        <div class="onboard-opcion-body">
-                            <p class="onboard-opcion-title">Calendario A, agosto 2027</p>
+            <div id="stepContainer3" class="onboard-paso-cuadernillo space-y-3 hidden">
+                <div class="onboard-papel">
+                    <p class="onboard-instruccion">Toca el círculo o la opción para marcar. Solo una respuesta a la vez.</p>
+                    <div class="onboard-pregunta-grid" role="radiogroup" aria-label="Cómo quieres prepararte">
+                        <div data-fecha="CAL_A" data-letra="A" onclick="OnboardingManager.selectFecha('CAL_A', this)" class="onboard-opcion step-option" role="radio" aria-checked="false">
+                            <span class="badge-opcion-letra" aria-hidden="true"></span>
+                            <span class="opcion-letra-label" aria-hidden="true">A</span>
+                            <div class="onboard-opcion-body">
+                                <p class="onboard-opcion-title">Calendario A, agosto 2027</p>
+                            </div>
+                        </div>
+                        <div data-fecha="CAL_B" data-letra="B" onclick="OnboardingManager.selectFecha('CAL_B', this)" class="onboard-opcion step-option" role="radio" aria-checked="false">
+                            <span class="badge-opcion-letra" aria-hidden="true"></span>
+                            <span class="opcion-letra-label" aria-hidden="true">B</span>
+                            <div class="onboard-opcion-body">
+                                <p class="onboard-opcion-title">Calendario B, marzo 2027</p>
+                            </div>
+                        </div>
+                        <div data-fecha="LIBRE" data-letra="C" onclick="OnboardingManager.selectFecha('LIBRE', this)" class="onboard-opcion step-option" role="radio" aria-checked="false">
+                            <span class="badge-opcion-letra" aria-hidden="true"></span>
+                            <span class="opcion-letra-label" aria-hidden="true">C</span>
+                            <div class="onboard-opcion-body">
+                                <p class="onboard-opcion-title">Entrenamiento libre (quiero estudiar)</p>
+                                <p class="onboard-opcion-sub">Sin fecha de examen. Solo eliges tu meta de puntaje.</p>
+                            </div>
                         </div>
                     </div>
-                    <div data-fecha="CAL_B" data-letra="B" onclick="OnboardingManager.selectFecha('CAL_B', this)" class="onboard-opcion step-option" role="radio" aria-checked="false">
-                        <span class="badge-opcion-letra" aria-hidden="true">B</span>
-                        <div class="onboard-opcion-body">
-                            <p class="onboard-opcion-title">Calendario B, marzo 2027</p>
-                        </div>
-                    </div>
-                    <div data-fecha="LIBRE" data-letra="C" onclick="OnboardingManager.selectFecha('LIBRE', this)" class="onboard-opcion step-option" role="radio" aria-checked="false">
-                        <span class="badge-opcion-letra" aria-hidden="true">C</span>
-                        <div class="onboard-opcion-body">
-                            <p class="onboard-opcion-title">Entrenamiento libre (quiero estudiar)</p>
-                            <p class="onboard-opcion-sub">Sin fecha de examen. Solo eliges tu meta de puntaje.</p>
-                        </div>
-                    </div>
+                    <p id="lblDiasFechaAjuste" class="text-xs"></p>
                 </div>
-                <p id="lblDiasFechaAjuste" class="text-xs text-slate-400"></p>
 
                 <button type="button" id="btnOnboardPista" onclick="OnboardingManager.togglePistaPaso3()">
                     <i class="fa-solid fa-lightbulb" aria-hidden="true"></i>
