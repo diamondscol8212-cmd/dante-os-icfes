@@ -281,6 +281,13 @@ app.get('/boletin', (req, res) => {
     res.redirect(302, '/informe-general' + q);
 });
 
+app.get(['/onboarding', '/onboarding.html'], (req, res) => {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    res.sendFile(path.join(__dirname, 'public', 'onboarding.html'));
+});
+
 app.get(['/reset', '/reset/'], (req, res) => {
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
     res.setHeader('Pragma', 'no-cache');
