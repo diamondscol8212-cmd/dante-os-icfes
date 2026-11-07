@@ -3,7 +3,7 @@
  * Todos tienen las mismas 5 ayudas pedagógicas por bloque de 10.
  * Gratis: anuncio al entrar a cada bloque.
  * Pago (Play / App Store / web): solo quita la publicidad.
- * Entre un bloque de 10 y el siguiente hay 15 minutos. El refuerzo de 5 cabe en esa espera.
+ * Entre un bloque de 10 y el siguiente hay 15 minutos. El refuerzo de 5 usa 13 minutos de espera.
  */
 (function () {
   const OFERTA_KEY = 'dante_oferta_vista';

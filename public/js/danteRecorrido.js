@@ -1,10 +1,11 @@
 /**
- * Sala: varios bloques, espera de 15 minutos, una tarea de 5 y la medalla.
- * El primer bloque del día llena 10%, el segundo 5%, cada refuerzo 5% hasta dos.
+ * Sala: bloques de entrenamiento, espera, refuerzo de 5 y medalla.
+ * Bloque → espera 15 min. Refuerzo de 5 → espera 13 min (15 − 2).
  */
 (function () {
   const KEY = 'dante_recorrido';
-  const ESPERA_MS = 15 * 60 * 1000;
+  const ESPERA_BLOQUE_MS = 15 * 60 * 1000;
+  const ESPERA_REFUERZO_MS = 13 * 60 * 1000; // refuerzo 5 preguntas: 2 min menos
   const NOMBRES = {
     matematicas: 'Matemáticas',
     lectura_critica: 'Lectura crítica',
@@ -23,6 +24,7 @@
       puntos: 0,
       medallas: 0,
       esperaHasta: null,
+      esperaRefuerzoHasta: null,
       dia: hoy(),
       bloquesHoy: 0,
       refuerzosHoy: 0,
@@ -50,6 +52,10 @@
       estado.bloquesHoy = 0;
       estado.refuerzosHoy = 0;
     }
+    // Migración: si solo existe esperaHasta, el refuerzo hereda ese reloj.
+    if (!estado.esperaRefuerzoHasta && estado.esperaHasta) {
+      estado.esperaRefuerzoHasta = estado.esperaHasta;
+    }
     return estado;
   }
 
@@ -70,14 +76,27 @@
     }
   }
 
-  function segundos() {
-    const hasta = Date.parse(leer().esperaHasta || '');
+  function segundosHasta(iso) {
+    const hasta = Date.parse(iso || '');
     if (!Number.isFinite(hasta)) return 0;
     return Math.max(0, Math.ceil((hasta - Date.now()) / 1000));
   }
 
+  function segundos() {
+    return segundosHasta(leer().esperaHasta);
+  }
+
+  function segundosRefuerzo() {
+    const e = leer();
+    return segundosHasta(e.esperaRefuerzoHasta || e.esperaHasta);
+  }
+
   function bloqueado() {
     return segundos() > 0;
+  }
+
+  function bloqueadoRefuerzo() {
+    return segundosRefuerzo() > 0;
   }
 
   function reloj(seg) {
@@ -117,11 +136,23 @@
     return { area: mejor, nombre: NOMBRES[mejor] || mejor, hecha: false };
   }
 
+  function hayBloqueAMedias() {
+    try {
+      const pausa = JSON.parse(localStorage.getItem('dante_sesion_pausada') || 'null');
+      return Boolean(pausa && pausa.misionData);
+    } catch (e) {
+      return false;
+    }
+  }
+
   function cerrarBloque(respuestas, misionId) {
     const estado = leer();
     if (misionId && estado.ultimoBloqueId === misionId) return estado;
     estado.ultimoBloqueId = misionId || String(Date.now());
-    estado.esperaHasta = new Date(Date.now() + ESPERA_MS).toISOString();
+    const finBloque = new Date(Date.now() + ESPERA_BLOQUE_MS).toISOString();
+    const finRefuerzo = new Date(Date.now() + ESPERA_REFUERZO_MS).toISOString();
+    estado.esperaHasta = finBloque;
+    estado.esperaRefuerzoHasta = finRefuerzo;
     if (estado.bloquesHoy === 0) subir(estado, 10);
     else if (estado.bloquesHoy === 1) subir(estado, 5);
     estado.bloquesHoy = Math.min(2, estado.bloquesHoy + 1);
@@ -135,7 +166,7 @@
     const estado = leer();
     if (misionId && estado.ultimoRefuerzoId === misionId) return estado;
     estado.ultimoRefuerzoId = misionId || String(Date.now());
-    estado.esperaHasta = new Date(Date.now() + ESPERA_MS).toISOString();
+    estado.esperaRefuerzoHasta = new Date(Date.now() + ESPERA_REFUERZO_MS).toISOString();
     if (estado.refuerzosHoy < 2) subir(estado, 5);
     estado.refuerzosHoy = Math.min(2, estado.refuerzosHoy + 1);
     estado.tarea = null;
@@ -149,19 +180,28 @@
   function abrirRefuerzo() {
     const estado = leer();
     const area = estado.tarea && estado.tarea.area;
-    let bloqueAMedias = false;
-    try {
-      const pausa = JSON.parse(localStorage.getItem('dante_sesion_pausada') || 'null');
-      bloqueAMedias = Boolean(pausa && pausa.misionData);
-    } catch (e) { bloqueAMedias = false; }
-    if (!area || !window.DanteHubEngine || bloqueAMedias || abriendoRefuerzo || bloqueado()) return;
+    const bloqueAMedias = hayBloqueAMedias();
+    if (!area) {
+      decirSinTarea();
+      return;
+    }
+    if (bloqueAMedias) {
+      decirPausaActiva();
+      return;
+    }
+    if (bloqueadoRefuerzo()) {
+      decirEsperaRefuerzo();
+      return;
+    }
+    if (!window.DanteHubEngine || abriendoRefuerzo) return;
     abriendoRefuerzo = true;
     const tarjeta = document.getElementById('tarjetaTareaSala');
     const btn = document.getElementById('btnAbrirRefuerzo');
     if (tarjeta) tarjeta.dataset.firma = 'abriendo';
     if (btn) {
       btn.disabled = true;
-      btn.textContent = 'Abriendo el refuerzo…';
+      const sub = btn.querySelector('#txtRefuerzoSubprompt');
+      if (sub) sub.textContent = 'Abriendo…';
     }
     window.setTimeout(() => {
       abriendoRefuerzo = false;
@@ -174,6 +214,80 @@
     window.DanteHubEngine.pendingStartAfterFetch = true;
     try { sessionStorage.removeItem('dante_mision_actual'); } catch (e) {}
     window.DanteHubEngine.consultarMisionDiaria();
+  }
+
+  function mostrarNotaSala(opts) {
+    const nota = document.getElementById('notaEspera');
+    if (!nota) return;
+    const relojNota = document.getElementById('txtNotaEsperaReloj');
+    const kicker = document.getElementById('notaEsperaKicker');
+    const titulo = document.getElementById('notaEsperaTitulo');
+    const cuerpo = document.getElementById('notaEsperaCuerpo');
+    const cajaReloj = document.getElementById('notaEsperaRelojBox');
+    if (cajaReloj) cajaReloj.hidden = !opts.mostrarReloj;
+    if (relojNota && opts.reloj) relojNota.textContent = opts.reloj;
+    if (kicker) kicker.textContent = opts.kicker || '';
+    if (titulo) titulo.textContent = opts.titulo || '';
+    if (cuerpo) cuerpo.innerHTML = opts.cuerpoHtml || '';
+    nota.hidden = false;
+  }
+
+  function decirEspera() {
+    // Espera del bloque principal (entrenamiento).
+    if (!bloqueado()) return;
+    const seg = segundos();
+    mostrarNotaSala({
+      mostrarReloj: true,
+      reloj: reloj(seg),
+      kicker: 'Descanso del entrenamiento',
+      titulo: 'El próximo bloque aún no está listo',
+      cuerpoHtml:
+        '<p>Entre un entrenamiento y el siguiente hay <strong>15 minutos</strong> de descanso.</p>'
+        + '<p>Faltan <strong>' + reloj(seg) + '</strong>. Cuando el reloj llegue a cero, puedes abrir el siguiente bloque.</p>'
+    });
+  }
+
+  function decirEsperaRefuerzo() {
+    const seg = segundosRefuerzo();
+    if (seg <= 0) return;
+    const estado = leer();
+    const area = estado.tarea && estado.tarea.nombre ? (' de ' + estado.tarea.nombre) : '';
+    mostrarNotaSala({
+      mostrarReloj: true,
+      reloj: reloj(seg),
+      kicker: 'Refuerzo en pausa',
+      titulo: 'El refuerzo de 5 preguntas estará disponible pronto',
+      cuerpoHtml:
+        '<p>Después de un bloque o de un refuerzo hay un descanso corto.</p>'
+        + '<p>Tu refuerzo' + area + ' se abre en <strong>' + reloj(seg) + '</strong>.</p>'
+        + '<p>Mientras tanto puedes revisar tu sala o tu proyección.</p>'
+    });
+  }
+
+  function decirSinTarea() {
+    mostrarNotaSala({
+      mostrarReloj: false,
+      kicker: 'Refuerzo no disponible',
+      titulo: 'Todavía no hay un refuerzo para ti',
+      cuerpoHtml:
+        '<p>El <strong>Refuerzo · 5 preguntas</strong> se arma cuando terminas un entrenamiento y fallas alguna pregunta.</p>'
+        + '<p>Haz primero tu bloque de entrenamiento. Si fallas algo, aquí aparecerá el área a reforzar y podrás abrirlo.</p>'
+    });
+  }
+
+  function decirPausaActiva() {
+    mostrarNotaSala({
+      mostrarReloj: false,
+      kicker: 'Sesión en pausa',
+      titulo: 'Primero termina o cierra lo que dejaste a medias',
+      cuerpoHtml:
+        '<p>Tienes un entrenamiento o una prueba pausada. Termínala o vuelve a ella desde la sala antes de abrir el refuerzo.</p>'
+    });
+  }
+
+  function cerrarEspera() {
+    const nota = document.getElementById('notaEspera');
+    if (nota) nota.hidden = true;
   }
 
   function pintar() {
@@ -190,68 +304,49 @@
     if (barra) barra.hidden = false;
 
     const tarjeta = document.getElementById('tarjetaTareaSala');
-    let bloqueAMedias = false;
-    try {
-      const pausa = JSON.parse(localStorage.getItem('dante_sesion_pausada') || 'null');
-      bloqueAMedias = Boolean(pausa && pausa.misionData);
-    } catch (e) { bloqueAMedias = false; }
+    const bloqueAMedias = hayBloqueAMedias();
     if (tarjeta) {
-      // Siempre visible (mock): ámbar · 5 preguntas. Solo abre si hay tarea asignada.
       tarjeta.hidden = false;
-      const faltaTarjeta = segundos();
+      const faltaRef = segundosRefuerzo();
       const tieneTarea = Boolean(estado.tarea && estado.tarea.nombre && !bloqueAMedias);
-      const firma = bloqueAMedias
-        ? 'pausa'
-        : (tieneTarea
-          ? (estado.tarea.nombre + '|' + (faltaTarjeta > 0 ? 'espera' : 'libre'))
-          : 'sin-tarea');
+      let modo = 'sin-tarea';
+      if (bloqueAMedias) modo = 'pausa';
+      else if (tieneTarea && faltaRef > 0) modo = 'espera';
+      else if (tieneTarea) modo = 'listo';
+
+      const firma = modo + '|' + (estado.tarea && estado.tarea.nombre || '') + '|' + (modo === 'espera' ? Math.floor(faltaRef / 5) : '0');
       if (tarjeta.dataset.firma !== firma && tarjeta.dataset.firma !== 'abriendo') {
         tarjeta.dataset.firma = firma;
-        let htmlBtn;
-        if (!tieneTarea) {
-          htmlBtn = ''
-            + '<button type="button" id="btnAbrirRefuerzo" class="sala-refuerzo-btn sin-tarea mt-0 w-full relative overflow-hidden" data-refuerzo-modo="sin-tarea">'
-            + '<div id="btnHoldProgressFillRefuerzo" class="absolute left-0 bottom-0 pointer-events-none" style="width:0%;"></div>'
-            + '<span class="relative z-10 flex flex-row items-center justify-between gap-2 w-full">'
-            + '<span class="sala-cta-dot" aria-hidden="true"></span>'
-            + '<span class="flex flex-col items-start justify-center gap-0.5 min-w-0 flex-1 text-left">'
-            + '<span>Refuerzo · 5 preguntas</span>'
-            + '<span id="txtRefuerzoSubprompt" data-reposo="Mantén presionado" class="text-[11px] sala-refuerzo-hold">Mantén presionado</span>'
-            + '</span>'
-            + '<span class="sala-cta-arrow" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>'
-            + '</span></button>';
-        } else if (faltaTarjeta > 0) {
-          htmlBtn = ''
-            + '<button type="button" id="btnAbrirRefuerzo" class="sala-refuerzo-btn en-espera btn-espera mt-0 w-full relative overflow-hidden" data-refuerzo-modo="espera">'
-            + '<div id="btnHoldProgressFillRefuerzo" class="absolute left-0 bottom-0 pointer-events-none" style="width:0%;"></div>'
-            + '<span class="relative z-10 flex flex-row items-center justify-between gap-2 w-full">'
-            + '<span class="sala-cta-dot" aria-hidden="true"></span>'
-            + '<span class="flex flex-col items-start justify-center gap-0.5 min-w-0 flex-1 text-left">'
-            + '<span>Refuerzo · 5 preguntas</span>'
-            + '<span id="txtRefuerzoSubprompt" class="text-[11px] sala-refuerzo-meta">Abre a las ' + reloj(faltaTarjeta) + '</span>'
-            + '</span>'
-            + '<span class="sala-cta-arrow" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>'
-            + '</span></button>';
+        let sub = '';
+        let clases = 'sala-refuerzo-btn mt-0 w-full relative overflow-hidden';
+        let dataModo = modo;
+        if (modo === 'sin-tarea') {
+          clases += ' sin-tarea';
+          sub = 'Termina un entrenamiento primero';
+        } else if (modo === 'pausa') {
+          clases += ' sin-tarea';
+          sub = 'Cierra primero la sesión en pausa';
+          dataModo = 'pausa';
+        } else if (modo === 'espera') {
+          clases += ' en-espera btn-espera';
+          sub = 'Disponible en ' + reloj(faltaRef);
         } else {
-          htmlBtn = ''
-            + '<button type="button" id="btnAbrirRefuerzo" class="sala-refuerzo-btn mt-0 w-full relative overflow-hidden" data-refuerzo-modo="listo">'
-            + '<div id="btnHoldProgressFillRefuerzo" class="absolute left-0 bottom-0 pointer-events-none" style="width:0%;"></div>'
-            + '<span class="relative z-10 flex flex-row items-center justify-between gap-2 w-full">'
-            + '<span class="sala-cta-dot" aria-hidden="true"></span>'
-            + '<span class="flex flex-col items-start justify-center gap-0.5 min-w-0 flex-1 text-left">'
-            + '<span>Refuerzo · 5 preguntas</span>'
-            + '<span id="txtRefuerzoSubprompt" data-reposo="Mantén presionado" class="text-[11px] sala-refuerzo-hold">Mantén presionado</span>'
-            + (estado.tarea.nombre ? '<span class="sala-refuerzo-meta">' + estado.tarea.nombre + '</span>' : '')
-            + '</span>'
-            + '<span class="sala-cta-arrow" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>'
-            + '</span></button>';
+          sub = 'Mantén presionado · ' + (estado.tarea.nombre || '5 preguntas');
         }
-        tarjeta.innerHTML = htmlBtn;
-        // Apertura por sostener (delegación en index.html). Click corto: aviso.
-      } else if (tieneTarea && faltaTarjeta > 0) {
-        const btn = document.getElementById('btnAbrirRefuerzo');
-        const meta = btn && btn.querySelector('.sala-refuerzo-meta');
-        if (meta) meta.textContent = 'Abre a las ' + reloj(faltaTarjeta);
+        tarjeta.innerHTML = ''
+          + '<button type="button" id="btnAbrirRefuerzo" class="' + clases + '" data-refuerzo-modo="' + dataModo + '">'
+          + '<div id="btnHoldProgressFillRefuerzo" class="absolute left-0 bottom-0 pointer-events-none" style="width:0%;"></div>'
+          + '<span class="relative z-10 flex flex-row items-center justify-between gap-2 w-full">'
+          + '<span class="sala-cta-dot" aria-hidden="true"></span>'
+          + '<span class="flex flex-col items-start justify-center gap-0.5 min-w-0 flex-1 text-left">'
+          + '<span>Refuerzo · 5 preguntas</span>'
+          + '<span id="txtRefuerzoSubprompt" class="text-[11px] ' + (modo === 'listo' ? 'sala-refuerzo-hold' : 'sala-refuerzo-meta') + '">' + sub + '</span>'
+          + '</span>'
+          + '<span class="sala-cta-arrow" aria-hidden="true"><i class="fa-solid fa-arrow-right"></i></span>'
+          + '</span></button>';
+      } else if (modo === 'espera') {
+        const meta = document.getElementById('txtRefuerzoSubprompt');
+        if (meta) meta.textContent = 'Disponible en ' + reloj(faltaRef);
       }
     }
 
@@ -261,37 +356,19 @@
     const boton = document.getElementById('btnIniciarMisionUnificado');
     if (falta > 0 && !bloqueAMedias && prompt && sub) {
       prompt.textContent = 'Próximo bloque';
-      sub.textContent = 'Abre a las ' + reloj(falta);
+      sub.textContent = 'Disponible en ' + reloj(falta);
       if (boton) boton.classList.add('btn-espera');
     } else if (boton) {
       boton.classList.remove('btn-espera');
     }
+
     const nota = document.getElementById('notaEspera');
     const relojNota = document.getElementById('txtNotaEsperaReloj');
-    if (nota && !nota.hidden) {
-      if (falta <= 0) nota.hidden = true;
-      else if (relojNota) relojNota.textContent = reloj(falta);
+    if (nota && !nota.hidden && relojNota && !document.getElementById('notaEsperaRelojBox').hidden) {
+      const segNota = bloqueadoRefuerzo() && !bloqueado() ? segundosRefuerzo() : segundos();
+      if (segNota <= 0 && !bloqueado() && !bloqueadoRefuerzo()) nota.hidden = true;
+      else relojNota.textContent = reloj(Math.max(segundos(), segundosRefuerzo()));
     }
-  }
-
-  function decirEspera() {
-    if (!bloqueado()) return;
-    const nota = document.getElementById('notaEspera');
-    const relojNota = document.getElementById('txtNotaEsperaReloj');
-    if (!nota) return;
-    if (relojNota) relojNota.textContent = reloj(segundos());
-    nota.hidden = false;
-  }
-
-  function decirSinTarea() {
-    const msg = 'El refuerzo de 5 se abre cuando terminas un bloque y hay algo por reforzar.';
-    if (typeof window.showToast === 'function') window.showToast(msg, 'info');
-    else if (typeof window.mostrarNotificacionPWA === 'function') window.mostrarNotificacionPWA(msg, 'info');
-  }
-
-  function cerrarEspera() {
-    const nota = document.getElementById('notaEspera');
-    if (nota) nota.hidden = true;
   }
 
   function sincronizar(estado) {
@@ -321,10 +398,12 @@
       const remoto = data.estado;
       const localEspera = esperaVigente(local.esperaHasta);
       const remotoEspera = esperaVigente(remoto.esperaHasta);
+      const localRef = esperaVigente(local.esperaRefuerzoHasta);
+      const remotoRef = esperaVigente(remoto.esperaRefuerzoHasta);
       const remotoGana =
         (remoto.medallas || 0) > (local.medallas || 0) ||
         ((remoto.medallas || 0) === (local.medallas || 0) && (remoto.puntos || 0) > (local.puntos || 0));
-      if (!remotoGana && !remotoEspera) return;
+      if (!remotoGana && !remotoEspera && !remotoRef) return;
       const mezcla = Object.assign(vacio(), remotoGana ? remoto : local);
       mezcla.dia = hoy();
       if (remotoGana && remoto.dia === hoy()) {
@@ -336,10 +415,12 @@
         mezcla.refuerzosHoy = local.refuerzosHoy || 0;
         mezcla.tarea = local.tarea || remoto.tarea || null;
       }
-      // Nunca borrar una espera local vigente por un remoto viejo o vacío.
       const tLocal = localEspera ? Date.parse(localEspera) : 0;
       const tRemoto = remotoEspera ? Date.parse(remotoEspera) : 0;
       mezcla.esperaHasta = tLocal >= tRemoto ? (localEspera || remotoEspera) : (remotoEspera || localEspera);
+      const tLocalR = localRef ? Date.parse(localRef) : 0;
+      const tRemotoR = remotoRef ? Date.parse(remotoRef) : 0;
+      mezcla.esperaRefuerzoHasta = tLocalR >= tRemotoR ? (localRef || remotoRef) : (remotoRef || localRef);
       if (local.ultimoBloqueId) mezcla.ultimoBloqueId = local.ultimoBloqueId;
       try { localStorage.setItem(KEY, JSON.stringify(mezcla)); } catch (e) {}
       pintar();
@@ -349,12 +430,16 @@
   window.DanteRecorrido = {
     leer: leer,
     bloqueado: bloqueado,
+    bloqueadoRefuerzo: bloqueadoRefuerzo,
     segundos: segundos,
+    segundosRefuerzo: segundosRefuerzo,
     cerrarBloque: cerrarBloque,
     cerrarRefuerzo: cerrarRefuerzo,
     abrirRefuerzo: abrirRefuerzo,
     decirEspera: decirEspera,
+    decirEsperaRefuerzo: decirEsperaRefuerzo,
     decirSinTarea: decirSinTarea,
+    decirPausaActiva: decirPausaActiva,
     cerrarEspera: cerrarEspera,
     pintar: pintar
   };

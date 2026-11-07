@@ -9,7 +9,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="assets/icons/icon-192.svg">
     <link rel="apple-touch-icon" href="assets/icons/icon-192.svg">
-            <title>Dante OS c-1.3.77</title>
+            <title>Dante OS c-1.3.78</title>
     <script>
         try { sessionStorage.setItem('dante_entrada_viva', String(Date.now())); } catch (e) {}
     </script>
@@ -99,7 +99,7 @@
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" defer></script>
 
     <!-- Motores del Ecosistema Dante OS (Cargados en orden estricto de dependencias) -->
-    <script src="js/danteCacheVersion.js?v=c-1.3.77"></script>
+    <script src="js/danteCacheVersion.js?v=c-1.3.78"></script>
     <script src="js/danteSecurityGuard.js?v=c-1.2.85"></script>
     <script src="js/danteSecurityDRM.js?v=c-1.2.85"></script>
     <script src="js/danteStorage.js?v=c-1.2.85"></script>
@@ -110,15 +110,15 @@
     <script src="js/highlighterIRD.js?v=c-1.2.85"></script>
     <script src="js/danteAds.js?v=c-1.2.85"></script>
     <script src="js/dantePlanSala.js?v=c-1.2.85"></script>
-    <script src="js/danteRecorrido.js?v=c-1.3.33"></script>
+    <script src="js/danteRecorrido.js?v=c-1.3.78"></script>
     <script src="js/ojoBionico3D.js?v=c-1.2.85"></script>
     <script src="js/modoSniper.js?v=c-1.2.85"></script>
-    <script src="js/danteNube.js?v=c-1.3.77"></script>
-    <script src="js/danteRegistro.js?v=c-1.3.77"></script>
+    <script src="js/danteNube.js?v=c-1.3.78"></script>
+    <script src="js/danteRegistro.js?v=c-1.3.78"></script>
     <script src="js/danteAbility.js?v=c-1.2.85"></script>
-    <script src="js/danteCortes.js?v=c-1.3.77"></script>
+    <script src="js/danteCortes.js?v=c-1.3.78"></script>
     <script src="js/rutaSimulacroEngine.js?v=c-1.2.85"></script>
-    <script src="js/danteTutorEngine.js?v=c-1.3.77"></script>
+    <script src="js/danteTutorEngine.js?v=c-1.3.78"></script>
     <script src="js/danteSpiralEntity.js?v=c-1.3.32"></script>
     <script src="js/hackeaSyncIntro.js?v=c-1.3.19"></script>
     <script src="js/hackeaUmbralVault.js?v=c-1.3.19"></script>
@@ -128,12 +128,12 @@
     <script src="js/hackeaCampaign.js?v=c-1.3.19"></script>
     <script src="js/hackeaArc.js?v=c-1.3.19"></script>
     <script src="js/hackeaPulso.js?v=c-1.3.19"></script>
-    <script src="js/hackeaMente.js?v=c-1.3.77"></script>
-    <script src="js/danteHubEngine.js?v=c-1.3.77"></script>
-    <script src="js/danteExamWorkspace.js?v=c-1.3.77"></script>
+    <script src="js/hackeaMente.js?v=c-1.3.78"></script>
+    <script src="js/danteHubEngine.js?v=c-1.3.78"></script>
+    <script src="js/danteExamWorkspace.js?v=c-1.3.78"></script>
     <script src="js/danteSemana.js?v=c-1.2.85"></script>
-    <script src="js/danteSimulacro.js?v=c-1.3.77"></script>
-    <script src="js/danteRepasoFallidas.js?v=c-1.3.77"></script>
+    <script src="js/danteSimulacro.js?v=c-1.3.78"></script>
+    <script src="js/danteRepasoFallidas.js?v=c-1.3.78"></script>
     <script src="js/danteRadarEngine.js?v=c-1.2.85"></script>
 
     <!-- 📡 OBSERVABILIDAD SENTRY BROWSER SDK (SCRUBBING LEY 1581) -->
@@ -4449,15 +4449,17 @@
     <div id="notaEspera" hidden>
         <button type="button" class="nota-espera-velo" onclick="DanteRecorrido.cerrarEspera()" aria-label="Cerrar"></button>
         <div class="nota-espera-hoja" role="dialog" aria-labelledby="notaEsperaTitulo">
-            <div class="nota-espera-reloj" aria-live="polite">
+            <div class="nota-espera-reloj" id="notaEsperaRelojBox" aria-live="polite">
                 <i class="fa-regular fa-clock" aria-hidden="true"></i>
                 <span id="txtNotaEsperaReloj">15:00</span>
             </div>
-            <p class="nota-espera-kicker">Descanso activo</p>
+            <p class="nota-espera-kicker" id="notaEsperaKicker">Descanso activo</p>
             <h3 id="notaEsperaTitulo">Este descanso también entrena</h3>
-            <p>Entre una sesión y la siguiente hay quince minutos. El entrenamiento y el refuerzo esperan juntos.</p>
-            <p>Cuando el reloj llegue a cero, puedes abrir cualquiera de las dos.</p>
-            <button type="button" id="btnCerrarNotaEspera" onclick="DanteRecorrido.cerrarEspera()">Seguir en la sala</button>
+            <div id="notaEsperaCuerpo">
+                <p>Entre un entrenamiento y el siguiente hay 15 minutos de descanso.</p>
+                <p>El refuerzo de 5 preguntas usa un descanso de 13 minutos.</p>
+            </div>
+            <button type="button" id="btnCerrarNotaEspera" onclick="DanteRecorrido.cerrarEspera()">Entendido</button>
         </div>
     </div>
     <div id="salaAyudaTip" role="status" aria-live="polite" hidden></div>
@@ -5983,7 +5985,7 @@
                 <div class="p-4 rounded-2xl bg-slate-950 border border-cyan-500/40 text-left space-y-2">
                     <p class="text-sm text-slate-100">Un bloque son 10 preguntas de las cinco áreas.</p>
                     <p class="text-sm text-slate-100">Puedes hacer varios el mismo día.</p>
-                    <p class="text-sm text-slate-100">Entre una sesión y la siguiente hay 15 minutos. El entrenamiento y el refuerzo esperan ese tiempo.</p>
+                    <p class="text-sm text-slate-100">Entre un entrenamiento y el siguiente hay 15 minutos. El refuerzo de 5 preguntas usa 13 minutos de descanso.</p>
                     <p class="text-sm text-slate-300">Todos tienen cinco ayudas por bloque. En gratis hay un anuncio al entrar; si pagas, ese anuncio se quita.</p>
                 </div>
 
@@ -6354,7 +6356,7 @@
                     <img src="assets/icons/dante-logo-icon.svg" alt="Dante OS Logo" class="w-6 h-6 rounded-md shadow-[0_0_12px_rgba(56,189,248,0.45)] border border-cyan-500/30 shrink-0 object-contain" />
                     <span class="font-mono font-bold text-xs tracking-wider text-white select-none whitespace-nowrap flex items-center gap-1.5">
                         DANTE OS
-                        <span id="badgeDanteVersion" class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">c-1.3.77</span>
+                        <span id="badgeDanteVersion" class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">c-1.3.78</span>
                     </span>
                 </a>
 
@@ -7305,12 +7307,18 @@
                 if (!btn) return;
                 const modo = btn.getAttribute('data-refuerzo-modo') || '';
                 if (modo === 'espera') {
-                    if (window.DanteRecorrido && typeof window.DanteRecorrido.decirEspera === 'function') {
+                    if (window.DanteRecorrido && typeof window.DanteRecorrido.decirEsperaRefuerzo === 'function') {
+                        window.DanteRecorrido.decirEsperaRefuerzo();
+                    } else if (window.DanteRecorrido && typeof window.DanteRecorrido.decirEspera === 'function') {
                         window.DanteRecorrido.decirEspera();
                     }
                 } else if (modo === 'sin-tarea') {
                     if (window.DanteRecorrido && typeof window.DanteRecorrido.decirSinTarea === 'function') {
                         window.DanteRecorrido.decirSinTarea();
+                    }
+                } else if (modo === 'pausa') {
+                    if (window.DanteRecorrido && typeof window.DanteRecorrido.decirPausaActiva === 'function') {
+                        window.DanteRecorrido.decirPausaActiva();
                     }
                 }
             }, true);
