@@ -9,7 +9,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="assets/icons/icon-192.svg">
     <link rel="apple-touch-icon" href="assets/icons/icon-192.svg">
-            <title>Dante OS c-1.3.62</title>
+            <title>Dante OS c-1.3.63</title>
     <script>
         try { sessionStorage.setItem('dante_entrada_viva', String(Date.now())); } catch (e) {}
     </script>
@@ -99,7 +99,7 @@
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" defer></script>
 
     <!-- Motores del Ecosistema Dante OS (Cargados en orden estricto de dependencias) -->
-    <script src="js/danteCacheVersion.js?v=c-1.3.62"></script>
+    <script src="js/danteCacheVersion.js?v=c-1.3.63"></script>
     <script src="js/danteSecurityGuard.js?v=c-1.2.85"></script>
     <script src="js/danteSecurityDRM.js?v=c-1.2.85"></script>
     <script src="js/danteStorage.js?v=c-1.2.85"></script>
@@ -113,8 +113,8 @@
     <script src="js/danteRecorrido.js?v=c-1.3.33"></script>
     <script src="js/ojoBionico3D.js?v=c-1.2.85"></script>
     <script src="js/modoSniper.js?v=c-1.2.85"></script>
-    <script src="js/danteNube.js?v=c-1.3.62"></script>
-    <script src="js/danteRegistro.js?v=c-1.3.62"></script>
+    <script src="js/danteNube.js?v=c-1.3.63"></script>
+    <script src="js/danteRegistro.js?v=c-1.3.63"></script>
     <script src="js/danteAbility.js?v=c-1.2.85"></script>
     <script src="js/rutaSimulacroEngine.js?v=c-1.2.85"></script>
     <script src="js/danteTutorEngine.js?v=c-1.2.85"></script>
@@ -129,7 +129,7 @@
     <script src="js/hackeaPulso.js?v=c-1.3.19"></script>
     <script src="js/hackeaMente.js?v=c-1.3.34"></script>
     <script src="js/danteHubEngine.js?v=c-1.3.19"></script>
-    <script src="js/danteExamWorkspace.js?v=c-1.3.62"></script>
+    <script src="js/danteExamWorkspace.js?v=c-1.3.63"></script>
     <script src="js/danteSemana.js?v=c-1.2.85"></script>
     <script src="js/danteSimulacro.js?v=c-1.3.19"></script>
     <script src="js/danteRadarEngine.js?v=c-1.2.85"></script>
@@ -1087,6 +1087,140 @@
             font-weight: 400 !important;
             line-height: 1.45 !important;
         }
+        /* Cuadernillo de perfil del diagnóstico inicial */
+        .perfil-diag-enunciado {
+            margin: 0 0 0.45rem;
+            font-family: 'Source Serif 4', 'Times New Roman', Times, serif;
+            font-size: 0.98rem;
+            font-weight: 400;
+            color: #111;
+            line-height: 1.4;
+            text-align: left;
+        }
+        .perfil-diag-opcion {
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            padding: 0.72rem 0.1rem;
+            border-bottom: 1px solid #e0e0e0;
+            cursor: pointer;
+            user-select: none;
+        }
+        .perfil-diag-opcion:last-child { border-bottom: 0; }
+        .perfil-diag-opcion .badge-opcion-letra {
+            box-sizing: border-box;
+            width: 1.75rem;
+            height: 1.75rem;
+            min-width: 1.75rem;
+            border-radius: 50%;
+            border: 2px solid #555;
+            background: #fff;
+            flex: 0 0 1.75rem;
+        }
+        .perfil-diag-opcion.selected .badge-opcion-letra {
+            background: #111;
+            border-color: #111;
+        }
+        .perfil-diag-opcion .opcion-letra-label {
+            font-family: 'Source Serif 4', 'Times New Roman', Times, serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #111;
+            width: 1.05rem;
+            flex-shrink: 0;
+        }
+        .perfil-diag-txt {
+            font-family: 'Source Serif 4', 'Times New Roman', Times, serif;
+            font-size: 0.92rem;
+            color: #111;
+            line-height: 1.35;
+            text-align: left;
+        }
+        .perfil-diag-instruccion {
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            margin-top: 0;
+            padding: 0.72rem 0.95rem;
+            border-radius: 0 0 0.7rem 0.7rem;
+            background: #111;
+            color: #fff;
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+            font-size: 0.8rem;
+            font-weight: 500;
+            line-height: 1.35;
+        }
+        .perfil-diag-instruccion::before {
+            content: 'i';
+            flex: 0 0 auto;
+            width: 1.15rem;
+            height: 1.15rem;
+            border-radius: 999px;
+            border: 1.5px solid rgba(255,255,255,0.85);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.72rem;
+            font-weight: 700;
+            font-style: italic;
+            font-family: Georgia, 'Times New Roman', serif;
+            line-height: 1;
+        }
+        .perfil-diag-acciones {
+            margin-top: 0.7rem;
+        }
+        #btnPerfilDiagConfirmar {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            min-height: 3.15rem;
+            border: 0;
+            border-radius: 0.7rem;
+            background: #1a1a1a;
+            color: #fff;
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+            font-size: 0.76rem;
+            font-weight: 650;
+            cursor: pointer;
+            user-select: none;
+            touch-action: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #btnPerfilDiagConfirmar.confirm-opcion-lista {
+            background: #1565c0;
+            box-shadow: 0 4px 14px rgba(21, 101, 192, 0.35);
+        }
+        #btnPerfilDiagConfirmar:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        #btnPerfilDiagHoldFill {
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 0%;
+            background: rgba(255,255,255,0.16);
+            pointer-events: none;
+        }
+        #btnPerfilDiagConfirmar .hold-label {
+            position: relative;
+            z-index: 1;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+        }
+        #btnPerfilDiagConfirmar .hold-label::before {
+            content: '';
+            width: 0.95rem;
+            height: 0.95rem;
+            display: inline-block;
+            flex-shrink: 0;
+            background: no-repeat center / contain;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2'%3E%3Cpath d='M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'/%3E%3C/svg%3E");
+        }
+
         #uiInstruccionMarcado {
             display: none;
             margin-top: 1.05rem;
@@ -6006,6 +6140,79 @@
         </div>
     </div>
 
+    <!-- Cuadernillo fijo de perfil (solo diagnóstico inicial; no califica) -->
+    <div id="modalPerfilDiagnostico" class="fixed inset-0 z-[10060] hidden items-center justify-center p-3 sm:p-5" style="background:#f2f2f2;" aria-modal="true" role="dialog" aria-labelledby="tituloPerfilDiagnostico">
+        <div class="w-full max-w-xl max-h-[96dvh] overflow-y-auto">
+            <div class="perfil-diag-papel bg-white border border-[#e6e6e6] rounded-t-[0.85rem] px-4 pt-4 pb-3 sm:px-5 sm:pt-5">
+                <p id="tituloPerfilDiagnostico" class="text-[0.92rem] sm:text-[1rem] text-[#111] leading-relaxed mb-4" style="font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-weight:500;">
+                    Este es el diagnóstico inicial. Son 13 preguntas. No es un puntaje real. Es la base con la que empezarás a entrenar. Tus respuestas nos ayudan a personalizar tu práctica.
+                </p>
+
+                <div class="perfil-diag-bloque mb-4">
+                    <p class="perfil-diag-enunciado">1. ¿Qué tan preparado te sientes para la prueba ICFES Saber 11°?</p>
+                    <div class="perfil-diag-ops" role="radiogroup" aria-label="Preparación">
+                        <div class="perfil-diag-opcion" data-q="q1" data-letra="A" role="radio" aria-checked="false" onclick="window.DanteExamWorkspace && DanteExamWorkspace._seleccionarPerfilDiagnostico('q1','A',this)">
+                            <span class="badge-opcion-letra" aria-hidden="true"></span><span class="opcion-letra-label">A</span><span class="perfil-diag-txt">Muy preparado</span>
+                        </div>
+                        <div class="perfil-diag-opcion" data-q="q1" data-letra="B" role="radio" aria-checked="false" onclick="window.DanteExamWorkspace && DanteExamWorkspace._seleccionarPerfilDiagnostico('q1','B',this)">
+                            <span class="badge-opcion-letra" aria-hidden="true"></span><span class="opcion-letra-label">B</span><span class="perfil-diag-txt">Algo preparado</span>
+                        </div>
+                        <div class="perfil-diag-opcion" data-q="q1" data-letra="C" role="radio" aria-checked="false" onclick="window.DanteExamWorkspace && DanteExamWorkspace._seleccionarPerfilDiagnostico('q1','C',this)">
+                            <span class="badge-opcion-letra" aria-hidden="true"></span><span class="opcion-letra-label">C</span><span class="perfil-diag-txt">Poco preparado</span>
+                        </div>
+                        <div class="perfil-diag-opcion" data-q="q1" data-letra="D" role="radio" aria-checked="false" onclick="window.DanteExamWorkspace && DanteExamWorkspace._seleccionarPerfilDiagnostico('q1','D',this)">
+                            <span class="badge-opcion-letra" aria-hidden="true"></span><span class="opcion-letra-label">D</span><span class="perfil-diag-txt">No me siento preparado</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="perfil-diag-bloque mb-4">
+                    <p class="perfil-diag-enunciado">2. ¿En qué área te sientes más seguro?</p>
+                    <div class="perfil-diag-ops" role="radiogroup" aria-label="Área">
+                        <div class="perfil-diag-opcion" data-q="q2" data-letra="A" role="radio" aria-checked="false" onclick="window.DanteExamWorkspace && DanteExamWorkspace._seleccionarPerfilDiagnostico('q2','A',this)">
+                            <span class="badge-opcion-letra" aria-hidden="true"></span><span class="opcion-letra-label">A</span><span class="perfil-diag-txt">Matemáticas</span>
+                        </div>
+                        <div class="perfil-diag-opcion" data-q="q2" data-letra="B" role="radio" aria-checked="false" onclick="window.DanteExamWorkspace && DanteExamWorkspace._seleccionarPerfilDiagnostico('q2','B',this)">
+                            <span class="badge-opcion-letra" aria-hidden="true"></span><span class="opcion-letra-label">B</span><span class="perfil-diag-txt">Lectura Crítica</span>
+                        </div>
+                        <div class="perfil-diag-opcion" data-q="q2" data-letra="C" role="radio" aria-checked="false" onclick="window.DanteExamWorkspace && DanteExamWorkspace._seleccionarPerfilDiagnostico('q2','C',this)">
+                            <span class="badge-opcion-letra" aria-hidden="true"></span><span class="opcion-letra-label">C</span><span class="perfil-diag-txt">Ciencias Naturales</span>
+                        </div>
+                        <div class="perfil-diag-opcion" data-q="q2" data-letra="D" role="radio" aria-checked="false" onclick="window.DanteExamWorkspace && DanteExamWorkspace._seleccionarPerfilDiagnostico('q2','D',this)">
+                            <span class="badge-opcion-letra" aria-hidden="true"></span><span class="opcion-letra-label">D</span><span class="perfil-diag-txt">Sociales y Ciudadanas / Inglés</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="perfil-diag-bloque">
+                    <p class="perfil-diag-enunciado">3. ¿Cuánto tiempo a la semana dedicas actualmente a prepararte?</p>
+                    <div class="perfil-diag-ops" role="radiogroup" aria-label="Tiempo">
+                        <div class="perfil-diag-opcion" data-q="q3" data-letra="A" role="radio" aria-checked="false" onclick="window.DanteExamWorkspace && DanteExamWorkspace._seleccionarPerfilDiagnostico('q3','A',this)">
+                            <span class="badge-opcion-letra" aria-hidden="true"></span><span class="opcion-letra-label">A</span><span class="perfil-diag-txt">Menos de 1 hora</span>
+                        </div>
+                        <div class="perfil-diag-opcion" data-q="q3" data-letra="B" role="radio" aria-checked="false" onclick="window.DanteExamWorkspace && DanteExamWorkspace._seleccionarPerfilDiagnostico('q3','B',this)">
+                            <span class="badge-opcion-letra" aria-hidden="true"></span><span class="opcion-letra-label">B</span><span class="perfil-diag-txt">Entre 1 y 3 horas</span>
+                        </div>
+                        <div class="perfil-diag-opcion" data-q="q3" data-letra="C" role="radio" aria-checked="false" onclick="window.DanteExamWorkspace && DanteExamWorkspace._seleccionarPerfilDiagnostico('q3','C',this)">
+                            <span class="badge-opcion-letra" aria-hidden="true"></span><span class="opcion-letra-label">C</span><span class="perfil-diag-txt">Entre 3 y 5 horas</span>
+                        </div>
+                        <div class="perfil-diag-opcion" data-q="q3" data-letra="D" role="radio" aria-checked="false" onclick="window.DanteExamWorkspace && DanteExamWorkspace._seleccionarPerfilDiagnostico('q3','D',this)">
+                            <span class="badge-opcion-letra" aria-hidden="true"></span><span class="opcion-letra-label">D</span><span class="perfil-diag-txt">Más de 5 horas</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="perfil-diag-instruccion">Toca el círculo o la opción para marcar. Solo una respuesta a la vez.</div>
+            <div class="perfil-diag-acciones">
+                <button type="button" id="btnPerfilDiagConfirmar" disabled>
+                    <div id="btnPerfilDiagHoldFill"></div>
+                    <span class="hold-label"><span id="txtPerfilDiagHoldPrompt">Mantén 2 segundos para confirmar</span></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- PAUSA: la misma espiral, en ciclo 4-7-8 -->
     <div id="modalModuladorVagal" class="dante-respiro fixed inset-0 z-[10000] hidden items-center justify-center">
         <div class="dante-respiro-escena">
@@ -6089,7 +6296,7 @@
                     <img src="assets/icons/dante-logo-icon.svg" alt="Dante OS Logo" class="w-6 h-6 rounded-md shadow-[0_0_12px_rgba(56,189,248,0.45)] border border-cyan-500/30 shrink-0 object-contain" />
                     <span class="font-mono font-bold text-xs tracking-wider text-white select-none whitespace-nowrap flex items-center gap-1.5">
                         DANTE OS
-                        <span id="badgeDanteVersion" class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">c-1.3.62</span>
+                        <span id="badgeDanteVersion" class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">c-1.3.63</span>
                     </span>
                 </a>
 

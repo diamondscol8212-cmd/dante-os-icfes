@@ -12,6 +12,7 @@ import {
   cargarProgresoSaber,
   guardarSimulacroOficial,
   guardarSnapshotCliente,
+  guardarPerfilDiagnostico,
   snapshotDesdeFila
 } from '../services/expedienteEstudiante.js';
 import { supabase } from '../../supabaseClient.js';
@@ -192,7 +193,33 @@ router.get('/progreso/snapshot', optionalToken, async (req, res) => {
     if (!alias) return res.status(400).json({ ok: false, error: 'Falta el estudiante.' });
     const { data, error } = await cargarProgresoSaber(alias);
     if (error) return res.status(500).json({ ok: false, error: error.message });
-    return res.json({ ok: true, snapshot: snapshotDesdeFila(data) });
+    return res.json({
+      ok: true,
+      snapshot: snapshotDesdeFila(data),
+      perfilDiagnostico: data ? {
+        percepcion_preparacion: data.percepcion_preparacion || null,
+        area_mas_segura: data.area_mas_segura || null,
+        tiempo_estudio_semanal: data.tiempo_estudio_semanal || null,
+        perfil_diagnostico_at: data.perfil_diagnostico_at || null
+      } : null
+    });
+  } catch (err) {
+    return res.status(500).json({ ok: false, error: err.message || 'error' });
+  }
+});
+
+/** Cuadernillo fijo de perfil al inicio del diagnóstico (no calificado). */
+router.post('/progreso/perfil-diagnostico', optionalToken, async (req, res) => {
+  try {
+    const cuerpo = req.body || {};
+    const alias = estudianteDesdeRequest(req, cuerpo);
+    if (!alias) return res.status(400).json({ ok: false, error: 'Falta el estudiante.' });
+    const resultado = await guardarPerfilDiagnostico(alias, cuerpo);
+    if (!resultado.ok) {
+      const code = resultado.error === 'respuestas_incompletas' ? 400 : 500;
+      return res.status(code).json({ ok: false, error: resultado.error || 'perfil_fail' });
+    }
+    return res.json({ ok: true, perfil: resultado.perfil || null });
   } catch (err) {
     return res.status(500).json({ ok: false, error: err.message || 'error' });
   }

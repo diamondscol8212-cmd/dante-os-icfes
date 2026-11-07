@@ -20,10 +20,122 @@ export async function cargarProgresoSaber(alias) {
   if (!alias) return { data: null, error: null };
   return supabase
     .from('progreso_estudiantes')
-    .select('id, estudiante, mision_activa, baseline_proyeccion, preguntas_respondidas, items_respondidos, historial_theta, historial_sesiones, simulacro_oficial, historial_simulacros, theta_global, sem_global, racha_dias, onboarding_completed, arquetipo, email, nombre, plan, updated_at, institution_id')
+    .select('id, estudiante, mision_activa, baseline_proyeccion, preguntas_respondidas, items_respondidos, historial_theta, historial_sesiones, simulacro_oficial, historial_simulacros, theta_global, sem_global, racha_dias, onboarding_completed, arquetipo, email, nombre, plan, updated_at, institution_id, percepcion_preparacion, area_mas_segura, tiempo_estudio_semanal, perfil_diagnostico_at, historico_onboarding')
     .eq('estudiante', alias)
     .eq('materia', 'saber_11')
     .maybeSingle();
+}
+
+const PERFIL_PREP = {
+  A: 'muy_preparado',
+  B: 'algo_preparado',
+  C: 'poco_preparado',
+  D: 'no_preparado'
+};
+const PERFIL_AREA = {
+  A: 'matematicas',
+  B: 'lectura_critica',
+  C: 'ciencias_naturales',
+  D: 'sociales_ingles'
+};
+const PERFIL_TIEMPO = {
+  A: 'menos_1h',
+  B: '1_a_3h',
+  C: '3_a_5h',
+  D: 'mas_5h'
+};
+
+/**
+ * Guarda el cuadernillo fijo de perfil del diagnóstico inicial (no calificado).
+ */
+export async function guardarPerfilDiagnostico(alias, payload = {}) {
+  const estudiante = aliasEstudiante(alias);
+  if (!estudiante) return { ok: false, error: 'sin_estudiante' };
+
+  const letraPrep = String(payload.percepcion || payload.percepcion_preparacion || payload.q1 || '').toUpperCase().slice(0, 1);
+  const letraArea = String(payload.area || payload.area_mas_segura || payload.q2 || '').toUpperCase().slice(0, 1);
+  const letraTiempo = String(payload.tiempo || payload.tiempo_estudio_semanal || payload.q3 || '').toUpperCase().slice(0, 1);
+  if (!PERFIL_PREP[letraPrep] || !PERFIL_AREA[letraArea] || !PERFIL_TIEMPO[letraTiempo]) {
+    return { ok: false, error: 'respuestas_incompletas' };
+  }
+
+  const percepcion = PERFIL_PREP[letraPrep];
+  const area = PERFIL_AREA[letraArea];
+  const tiempo = PERFIL_TIEMPO[letraTiempo];
+  const ahora = new Date().toISOString();
+
+  const previo = await cargarProgresoSaber(estudiante);
+  if (previo.error) return { ok: false, error: previo.error.message };
+  const fila = previo.data;
+  const misionPrev = fila && fila.mision_activa && typeof fila.mision_activa === 'object' ? fila.mision_activa : {};
+  const histPrev = fila && fila.historico_onboarding && typeof fila.historico_onboarding === 'object'
+    ? fila.historico_onboarding
+    : {};
+
+  const perfil = {
+    percepcion_preparacion: percepcion,
+    area_mas_segura: area,
+    tiempo_estudio_semanal: tiempo,
+    letras: { q1: letraPrep, q2: letraArea, q3: letraTiempo },
+    updatedAt: ahora
+  };
+
+  const cuerpo = {
+    estudiante,
+    estudiante_id: estudiante,
+    materia: 'saber_11',
+    email: String(payload.email || (fila && fila.email) || `${estudiante}@danteos.edu.co`).trim().toLowerCase(),
+    percepcion_preparacion: percepcion,
+    area_mas_segura: area,
+    tiempo_estudio_semanal: tiempo,
+    perfil_diagnostico_at: ahora,
+    mision_activa: {
+      ...misionPrev,
+      perfil_diagnostico: perfil,
+      dante_cliente: {
+        ...((misionPrev.dante_cliente && typeof misionPrev.dante_cliente === 'object') ? misionPrev.dante_cliente : {}),
+        perfilDiagnostico: perfil,
+        updatedAt: ahora
+      }
+    },
+    historico_onboarding: {
+      ...histPrev,
+      perfil_diagnostico: perfil
+    },
+    updated_at: ahora,
+    ultima_actualizacion: ahora,
+    institution_id: (fila && fila.institution_id) || 'colegio_sandbox_default',
+    onboarding_completed: true
+  };
+
+  if (fila && fila.id) {
+    const up = await supabase.from('progreso_estudiantes').update(cuerpo).eq('id', fila.id);
+    if (up.error) return { ok: false, error: up.error.message };
+  } else {
+    const ins = await supabase.from('progreso_estudiantes').insert({
+      ...cuerpo,
+      id: crypto.randomUUID(),
+      preguntas_respondidas: 0,
+      plan: 'EXPLORADOR',
+      items_respondidos: [],
+      historial_theta: [],
+      historial_sesiones: [],
+      simulacro_oficial: null,
+      historial_simulacros: []
+    });
+    if (ins.error) return { ok: false, error: ins.error.message };
+  }
+
+  return {
+    ok: true,
+    perfil: {
+      percepcion_preparacion: percepcion,
+      area_mas_segura: area,
+      tiempo_estudio_semanal: tiempo,
+      letras: perfil.letras,
+      perfil_diagnostico_at: ahora
+    }
+  };
 }
 
 /**

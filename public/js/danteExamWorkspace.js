@@ -513,10 +513,177 @@
       return;
     }
 
+    _perfilDiagnosticoHecho() {
+      try {
+        if (localStorage.getItem('dante_perfil_diagnostico_done') === 'true') return true;
+        const raw = localStorage.getItem('dante_perfil_diagnostico');
+        if (!raw) return false;
+        const parsed = JSON.parse(raw);
+        return Boolean(parsed && parsed.q1 && parsed.q2 && parsed.q3);
+      } catch (e) {
+        return false;
+      }
+    }
+
+    _abrirPerfilDiagnosticoSiAplica(continuar) {
+      const esDiag = Boolean(this.misionData && this.misionData.isDiagnostic);
+      if (!esDiag || this._perfilDiagnosticoHecho()) {
+        continuar();
+        return;
+      }
+      const modal = document.getElementById('modalPerfilDiagnostico');
+      if (!modal) {
+        continuar();
+        return;
+      }
+      this._perfilDiagContinuar = continuar;
+      this._perfilDiagSel = { q1: null, q2: null, q3: null };
+      modal.querySelectorAll('.perfil-diag-opcion').forEach((el) => {
+        el.classList.remove('selected');
+        el.setAttribute('aria-checked', 'false');
+      });
+      const fill = document.getElementById('btnPerfilDiagHoldFill');
+      if (fill) fill.style.width = '0%';
+      const prompt = document.getElementById('txtPerfilDiagHoldPrompt');
+      if (prompt) prompt.textContent = 'Mantén 2 segundos para confirmar';
+      const btn = document.getElementById('btnPerfilDiagConfirmar');
+      if (btn) {
+        btn.disabled = true;
+        btn.classList.remove('confirm-opcion-lista');
+        this._bindHoldPerfilDiagnostico(btn);
+      }
+      modal.classList.remove('hidden');
+      modal.style.display = 'flex';
+      document.documentElement.classList.add('perfil-diag-activo');
+    }
+
+    _seleccionarPerfilDiagnostico(pregunta, letra, el) {
+      if (!this._perfilDiagSel) this._perfilDiagSel = { q1: null, q2: null, q3: null };
+      const key = String(pregunta || '');
+      if (!['q1', 'q2', 'q3'].includes(key)) return;
+      const L = String(letra || '').toUpperCase().slice(0, 1);
+      if (!'ABCD'.includes(L)) return;
+      this._perfilDiagSel[key] = L;
+      const grupo = document.querySelectorAll(`.perfil-diag-opcion[data-q="${key}"]`);
+      grupo.forEach((opt) => {
+        const activa = opt.getAttribute('data-letra') === L;
+        opt.classList.toggle('selected', activa);
+        opt.setAttribute('aria-checked', activa ? 'true' : 'false');
+      });
+      if (el) {
+        el.classList.add('selected');
+        el.setAttribute('aria-checked', 'true');
+      }
+      const listo = Boolean(this._perfilDiagSel.q1 && this._perfilDiagSel.q2 && this._perfilDiagSel.q3);
+      const btn = document.getElementById('btnPerfilDiagConfirmar');
+      if (btn) {
+        btn.disabled = !listo;
+        btn.classList.toggle('confirm-opcion-lista', listo);
+      }
+    }
+
+    _bindHoldPerfilDiagnostico(btn) {
+      if (!btn || btn._holdBound) return;
+      btn._holdBound = true;
+      let holding = false;
+      let timer = null;
+      let start = 0;
+      const HOLD_MS = 2000;
+      const self = this;
+      const limpiar = () => {
+        holding = false;
+        if (timer) {
+          clearInterval(timer);
+          timer = null;
+        }
+        const fill = document.getElementById('btnPerfilDiagHoldFill');
+        if (fill) fill.style.width = '0%';
+        const prompt = document.getElementById('txtPerfilDiagHoldPrompt');
+        if (prompt) prompt.textContent = 'Mantén 2 segundos para confirmar';
+      };
+      const completar = () => {
+        limpiar();
+        self._confirmarPerfilDiagnostico();
+      };
+      const iniciar = (e) => {
+        if (btn.disabled || !self._perfilDiagSel || !self._perfilDiagSel.q1 || !self._perfilDiagSel.q2 || !self._perfilDiagSel.q3) return;
+        if (e && e.cancelable && e.type !== 'click') e.preventDefault();
+        if (holding) return;
+        holding = true;
+        start = Date.now();
+        const fill = document.getElementById('btnPerfilDiagHoldFill');
+        const prompt = document.getElementById('txtPerfilDiagHoldPrompt');
+        if (prompt) prompt.textContent = 'Mantén 2 segundos para confirmar';
+        timer = setInterval(() => {
+          const elapsed = Date.now() - start;
+          const progress = Math.min(100, (elapsed / HOLD_MS) * 100);
+          if (fill) fill.style.width = progress + '%';
+          if (elapsed >= HOLD_MS) {
+            clearInterval(timer);
+            timer = null;
+            completar();
+          }
+        }, 40);
+      };
+      btn.addEventListener('pointerdown', iniciar);
+      btn.addEventListener('pointerup', limpiar);
+      btn.addEventListener('pointerleave', limpiar);
+      btn.addEventListener('pointercancel', limpiar);
+      btn.addEventListener('contextmenu', (e) => e.preventDefault());
+    }
+
+    async _confirmarPerfilDiagnostico() {
+      const sel = this._perfilDiagSel || {};
+      if (!sel.q1 || !sel.q2 || !sel.q3) return;
+      const payload = {
+        q1: sel.q1,
+        q2: sel.q2,
+        q3: sel.q3,
+        percepcion: sel.q1,
+        area: sel.q2,
+        tiempo: sel.q3
+      };
+      try {
+        localStorage.setItem('dante_perfil_diagnostico', JSON.stringify(payload));
+        localStorage.setItem('dante_perfil_diagnostico_done', 'true');
+      } catch (e) {}
+
+      let alumno = '';
+      try {
+        if (window.DanteRegistro && typeof DanteRegistro.idAlumno === 'function') alumno = DanteRegistro.idAlumno() || '';
+      } catch (e) {}
+      try {
+        await fetch('/api/dante/progreso/perfil-diagnostico', {
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({
+            estudiante: alumno,
+            studentId: alumno,
+            ...payload
+          })
+        });
+      } catch (e) {}
+      if (window.DanteNube && typeof window.DanteNube.subirProgresoDebounced === 'function') {
+        window.DanteNube.subirProgresoDebounced(600);
+      }
+
+      const modal = document.getElementById('modalPerfilDiagnostico');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+      }
+      document.documentElement.classList.remove('perfil-diag-activo');
+      const next = this._perfilDiagContinuar;
+      this._perfilDiagContinuar = null;
+      if (typeof next === 'function') next();
+    }
+
     _abrirRespiracionDeEntrada(continuar, esDiagnostico) {
       const modal = document.getElementById('modalRespiracionInicio');
       if (!modal) {
-        continuar();
+        if (esDiagnostico) this._abrirPerfilDiagnosticoSiAplica(continuar);
+        else continuar();
         return;
       }
       this._respiracionCerrada = false;
@@ -622,7 +789,13 @@
         window.DanteHubEngine._relojEsperandoRespiracion = false;
         window.DanteHubEngine.iniciarRelojSesionMision();
       }
-      continuar();
+      const esDiag = Boolean(
+        (this.misionData && this.misionData.isDiagnostic) ||
+        sessionStorage.getItem('dante_is_diagnostic') === 'true' ||
+        localStorage.getItem('dante_is_diagnostic') === 'true'
+      );
+      if (esDiag) this._abrirPerfilDiagnosticoSiAplica(continuar);
+      else continuar();
     }
 
     _continuarEntradaEvaluacion() {
@@ -1450,44 +1623,52 @@
         modal.classList.add('hidden');
       }
 
-      // Asegurar visibilidad incondicional del workspace y contenedores de reactivos
-      const viewWs = document.getElementById('viewWorkspace');
-      if (viewWs) {
-        viewWs.classList.add('active');
-        viewWs.classList.remove('hidden');
-        viewWs.style.display = 'block';
-      }
+      const arrancarReactivos = () => {
+        // Asegurar visibilidad incondicional del workspace y contenedores de reactivos
+        const viewWs = document.getElementById('viewWorkspace');
+        if (viewWs) {
+          viewWs.classList.add('active');
+          viewWs.classList.remove('hidden');
+          viewWs.style.display = 'block';
+        }
 
-      const uiReactivoContainer = document.getElementById('uiReactivoContainer');
-      if (uiReactivoContainer) {
-        uiReactivoContainer.style.display = 'flex';
-        uiReactivoContainer.classList.remove('hidden');
-      }
+        const uiReactivoContainer = document.getElementById('uiReactivoContainer');
+        if (uiReactivoContainer) {
+          uiReactivoContainer.style.display = 'flex';
+          uiReactivoContainer.classList.remove('hidden');
+        }
 
-      const containerCore = document.getElementById('uiContenedorPreguntaCore');
-      if (containerCore) {
-        containerCore.style.display = 'block';
-        containerCore.style.opacity = '1';
-        containerCore.style.transform = 'none';
-      }
+        const containerCore = document.getElementById('uiContenedorPreguntaCore');
+        if (containerCore) {
+          containerCore.style.display = 'block';
+          containerCore.style.opacity = '1';
+          containerCore.style.transform = 'none';
+        }
 
-      const uiEnunciados = document.getElementById('uiEnunciados');
-      if (uiEnunciados) {
-        uiEnunciados.style.display = 'block';
-      }
+        const uiEnunciados = document.getElementById('uiEnunciados');
+        if (uiEnunciados) {
+          uiEnunciados.style.display = 'block';
+        }
 
-      this.liberarCapasCabecera();
-      this.tiempoInicioSesionWorkspace = Date.now();
-      this.tiempoInicioReactivo = performance.now();
-      this.iniciarCronometroWorkspace();
+        this.liberarCapasCabecera();
+        this.tiempoInicioSesionWorkspace = Date.now();
+        this.tiempoInicioReactivo = performance.now();
+        this.iniciarCronometroWorkspace();
 
-      // Asegurar renderizado inmediato del primer reactivo
-      this.faseActual = 'REACTIVOS';
-      if (!this.misionData || !Array.isArray(this.misionData.reactivos) || this.misionData.reactivos.length === 0) {
-        console.warn('⚡ [DANTE EXAM WORKSPACE]: Reactivos no encontrados al cerrar briefing. Activando banco local...');
-        this.usarBancoLocalFallback();
+        // Asegurar renderizado inmediato del primer reactivo
+        this.faseActual = 'REACTIVOS';
+        if (!this.misionData || !Array.isArray(this.misionData.reactivos) || this.misionData.reactivos.length === 0) {
+          console.warn('⚡ [DANTE EXAM WORKSPACE]: Reactivos no encontrados al cerrar briefing. Activando banco local...');
+          this.usarBancoLocalFallback();
+        } else {
+          this.renderizarReactivoActual();
+        }
+      };
+
+      if (this.misionData && this.misionData.isDiagnostic) {
+        this._abrirPerfilDiagnosticoSiAplica(arrancarReactivos);
       } else {
-        this.renderizarReactivoActual();
+        arrancarReactivos();
       }
     }
 
@@ -2000,7 +2181,14 @@
             ? DanteSimulacro.etiqueta(this.indexReactivoActivo)
             : materiaNombre;
         }
-        if (lblProgreso) lblProgreso.innerText = `${this.indexReactivoActivo + 1}/${totalReactivos}`;
+        if (lblProgreso) {
+          const esDiagProg = Boolean(this.misionData && this.misionData.isDiagnostic);
+          if (esDiagProg) {
+            lblProgreso.innerText = `${3 + this.indexReactivoActivo + 1}/13`;
+          } else {
+            lblProgreso.innerText = `${this.indexReactivoActivo + 1}/${totalReactivos}`;
+          }
+        }
       }
 
       const lblComp = document.getElementById('lblCompetenciaEvaluada');
