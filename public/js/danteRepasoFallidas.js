@@ -1,20 +1,22 @@
 /**
  * Repaso · preguntas fallidas
- * Solo ítems que el estudiante respondió y falló en una prueba real.
- * Si en el repaso las acierta, salen del contador al instante.
+ * Fuente de verdad: base de datos (progreso_estudiantes.items_respondidos).
+ * Solo ítems que ESTE alumno respondió mal. Nunca completa con banco genérico.
  */
 (function () {
   'use strict';
 
   const MAX_BLOQUE = 10;
-  /** id → ISO de cuándo se superó en repaso (acierto). */
+  const CLAVE_CACHE = 'dante_repaso_fallidas_db';
   const CLAVE_SUPERADAS = 'dante_repaso_fallidas_superadas';
+
+  let cachePendientes = [];
+  let cargando = false;
 
   function limpio(t) {
     return String(t || '').replace(/\s+/g, ' ').trim();
   }
 
-  /** IDs sintéticos / basura que no corresponden a ítems reales del banco. */
   function idValido(raw) {
     const id = String(raw || '').trim();
     if (!id) return '';
@@ -24,37 +26,40 @@
     return id;
   }
 
-  function leerHistorial() {
-    try {
-      const raw = JSON.parse(localStorage.getItem('dante_history_cache') || '[]');
-      return Array.isArray(raw) ? raw : [];
-    } catch (e) {
-      return [];
+  function idAlumno() {
+    if (window.DanteRegistro && typeof window.DanteRegistro.idAlumno === 'function') {
+      const a = window.DanteRegistro.idAlumno();
+      if (a) return a;
     }
+    const directos = [
+      localStorage.getItem('dante_student_id'),
+      localStorage.getItem('dante_active_student')
+    ];
+    for (let i = 0; i < directos.length; i++) {
+      const limpioId = String(directos[i] || '').toLowerCase().trim().split('@')[0];
+      if (limpioId && limpioId !== 'estudiante' && limpioId !== 'student_demo_01') return limpioId;
+    }
+    try {
+      const usuario = JSON.parse(localStorage.getItem('dante_user') || 'null');
+      const raw = usuario && (usuario.estudiante || usuario.email || usuario.id);
+      const limpioId = String(raw || '').toLowerCase().trim().split('@')[0];
+      if (limpioId && limpioId !== 'estudiante') return limpioId;
+    } catch (e) {}
+    return '';
   }
 
   function leerSuperadas() {
     try {
       const raw = JSON.parse(localStorage.getItem(CLAVE_SUPERADAS) || '{}');
-      // Formato nuevo: { id: iso }. Acepta array legado.
       if (Array.isArray(raw)) {
         const mapa = {};
         raw.forEach((id) => {
           const limpioId = idValido(id);
-          if (limpioId) mapa[limpioId] = '1970-01-01T00:00:00.000Z';
+          if (limpioId) mapa[limpioId] = Date.now();
         });
         return mapa;
       }
-      if (raw && typeof raw === 'object') {
-        const mapa = {};
-        Object.keys(raw).forEach((k) => {
-          const limpioId = idValido(k);
-          if (!limpioId) return;
-          mapa[limpioId] = String(raw[k] || '1970-01-01T00:00:00.000Z');
-        });
-        return mapa;
-      }
-      return {};
+      return raw && typeof raw === 'object' ? raw : {};
     } catch (e) {
       return {};
     }
@@ -62,14 +67,11 @@
 
   function guardarSuperadas(mapa) {
     try {
-      const keys = Object.keys(mapa || {});
-      const recorte = {};
-      keys.slice(-400).forEach((k) => { recorte[k] = mapa[k]; });
-      localStorage.setItem(CLAVE_SUPERADAS, JSON.stringify(recorte));
+      localStorage.setItem(CLAVE_SUPERADAS, JSON.stringify(mapa || {}));
     } catch (e) {}
   }
 
-  function marcarSuperada(id) {
+  function marcarSuperadaLocal(id) {
     const limpioId = idValido(id);
     if (!limpioId) return;
     const mapa = leerSuperadas();
@@ -77,7 +79,7 @@
     guardarSuperadas(mapa);
   }
 
-  function quitarSuperada(id) {
+  function quitarSuperadaLocal(id) {
     const limpioId = idValido(id);
     if (!limpioId) return;
     const mapa = leerSuperadas();
@@ -86,110 +88,191 @@
     guardarSuperadas(mapa);
   }
 
-  function tsSesion(ses) {
-    const t = Date.parse((ses && ses.created_at) || '');
-    return Number.isFinite(t) ? t : 0;
+  function leerCacheLocal() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(CLAVE_CACHE) || '[]');
+      return Array.isArray(raw) ? raw.filter((p) => p && idValido(p.id)) : [];
+    } catch (e) {
+      return [];
+    }
   }
 
-  /**
-   * Solo respuestas reales con correcto === false.
-   * No inventa ítems desde listas incompletas ni IDs fantasma.
-   */
-  function mapaFallos() {
-    const out = new Map();
-    const ultimo = new Map(); // id → { ok:boolean, ts:number }
+  function guardarCacheLocal(lista) {
+    try {
+      localStorage.setItem(CLAVE_CACHE, JSON.stringify((lista || []).slice(0, 400)));
+    } catch (e) {}
+  }
 
-    const sesiones = leerHistorial().slice().sort((a, b) => tsSesion(a) - tsSesion(b));
-
-    sesiones.forEach((ses) => {
-      if (!ses) return;
-      const tipo = String(ses.tipo || '').toUpperCase();
-      const ts = tsSesion(ses);
-      const items = Array.isArray(ses.items_respondidos) ? ses.items_respondidos : [];
-
-      items.forEach((it) => {
-        if (!it || typeof it.correcto !== 'boolean') return;
-        // Calificación pendiente no cuenta como fallo real.
-        if (it.calificacionPendiente === true) return;
-        const id = idValido(it.id || it.itemId || it.item_original || it.item_id);
-        if (!id) return;
-
-        const ok = it.correcto === true;
-        const prev = ultimo.get(id);
-        if (!prev || ts >= prev.ts) {
-          ultimo.set(id, { ok: ok, ts: ts });
-        }
-
-        if (!ok) {
-          out.set(id, {
-            id: id,
-            materia: limpio(it.materia || it.area || ''),
-            enunciado: limpio(it.enunciado || '').slice(0, 320),
-            ayuda: limpio(it.ayuda || it.explicacion || it.repaso || '').slice(0, 520),
-            tipoSesion: tipo || 'MISION_DIARIA',
-            created_at: ses.created_at || null,
-            ts: ts
-          });
-        }
-      });
-
-      // Legacy: solo si la sesión no trae items_respondidos, y el fallo es explícito.
-      if (!items.length && Array.isArray(ses.preguntas_falladas)) {
-        ses.preguntas_falladas.forEach((f) => {
-          if (!f) return;
-          if (f.calificacionPendiente === true) return;
-          // Exige evidencia de respuesta incorrecta (no IDs sueltos).
-          const falloExplícito = f.correcto === false
-            || (typeof f.correcto !== 'boolean' && (f.opcionSeleccionada || f.letra));
-          if (!falloExplícito) return;
-          if (f.correcto === true) return;
-          const id = idValido(f.id || f.itemId || f.item_original || f.item_id);
-          if (!id) return;
-          const prev = ultimo.get(id);
-          if (!prev || ts >= prev.ts) {
-            ultimo.set(id, { ok: false, ts: ts });
-          }
-          out.set(id, {
-            id: id,
-            materia: limpio(f.materia || f.area || ''),
-            enunciado: limpio(f.enunciado || '').slice(0, 320),
-            ayuda: limpio(f.ayuda || f.explicacion || f.repaso || '').slice(0, 520),
-            tipoSesion: tipo || 'MISION_DIARIA',
-            created_at: ses.created_at || null,
-            ts: ts
-          });
-        });
-      }
-    });
-
-    // Último resultado gana: si la última vez fue acierto, fuera del pool.
-    ultimo.forEach((estado, id) => {
-      if (estado && estado.ok) out.delete(id);
-    });
-
-    // Acierto en repaso (overlay local): fuera, salvo fallo MÁS NUEVO en historial.
+  function aplicarOverlayLocal(lista) {
     const superadas = leerSuperadas();
-    Object.keys(superadas).forEach((id) => {
-      const tsSuper = Date.parse(superadas[id]) || 0;
-      const estado = ultimo.get(id);
-      if (estado && estado.ok === false && estado.ts > tsSuper) {
-        // Volvió a fallar después del repaso → sigue pendiente; limpia overlay.
-        quitarSuperada(id);
-        return;
-      }
-      out.delete(id);
+    return (lista || []).filter((p) => {
+      const id = idValido(p && p.id);
+      if (!id) return false;
+      return !superadas[id];
     });
-
-    return out;
   }
 
   function inventario() {
-    const mapa = mapaFallos();
-    return {
-      total: mapa.size,
-      pendientes: mapa.size,
-      hechasHoy: Object.keys(leerSuperadas()).length
-    };
+    const lista = aplicarOverlayLocal(cachePendientes.length ? cachePendientes : leerCacheLocal());
+    return { total: lista.length, pendientes: lista.length, hechasHoy: Object.keys(leerSuperadas()).length };
+  }
+
+  function pintarDetalle() {
+    const el = document.getElementById('lblRepasoFallidasDetalle');
+    if (!el) return;
+    const inv = inventario();
+    if (!inv.pendientes) {
+      el.textContent = 'Sin fallos pendientes. Bien.';
+      return;
+    }
+    el.textContent = inv.pendientes + (inv.pendientes === 1 ? ' pregunta pendiente' : ' preguntas pendientes');
+  }
+
+  function pintarPerfil() {
+    const btn = document.getElementById('btnRepasoFallidasPerfil');
+    if (!btn) return;
+    const inv = inventario();
+    const span = btn.querySelector('span') || btn;
+    if (!inv.pendientes) {
+      span.textContent = 'Repaso · sin fallidas pendientes';
+    } else {
+      span.textContent = 'Repaso · ' + inv.pendientes + (inv.pendientes === 1 ? ' fallida' : ' fallidas');
+    }
+  }
+
+  function refrescarUI() {
+    pintarDetalle();
+    pintarPerfil();
+  }
+
+  async function cargarDesdeBase(forzar) {
+    if (cargando && !forzar) return cachePendientes;
+    const alumno = idAlumno();
+    if (!alumno) {
+      cachePendientes = [];
+      guardarCacheLocal([]);
+      refrescarUI();
+      return [];
+    }
+    cargando = true;
+    try {
+      const q = new URLSearchParams({ estudiante: alumno });
+      const resp = await fetch('/api/dante/fallidas?' + q.toString(), {
+        credentials: 'same-origin',
+        headers: { Accept: 'application/json' }
+      });
+      if (!resp.ok) throw new Error('http_' + resp.status);
+      const json = await resp.json();
+      if (!json || json.ok !== true) throw new Error((json && json.error) || 'fallidas_fail');
+      const lista = Array.isArray(json.pendientes) ? json.pendientes : [];
+      cachePendientes = lista
+        .map((p) => ({
+          id: idValido(p.id || p.item_id),
+          area: limpio(p.area || ''),
+          letra: limpio(p.letra || ''),
+          tipo: limpio(p.tipo || ''),
+          timestamp: p.timestamp || null
+        }))
+        .filter((p) => p.id);
+      // Si la base confirma acierto, limpia overlay local de esos ids.
+      const idsPend = new Set(cachePendientes.map((p) => p.id));
+      const superadas = leerSuperadas();
+      Object.keys(superadas).forEach((id) => {
+        if (!idsPend.has(id)) return; // sigue pendiente en DB → no tocar
+        // pendiente en DB y en superadas: la DB manda, quita overlay
+        // (si acertó hace un momento, el POST aún no llegó; mantener overlay)
+      });
+      guardarCacheLocal(cachePendientes);
+      refrescarUI();
+      return cachePendientes;
+    } catch (e) {
+      cachePendientes = leerCacheLocal();
+      refrescarUI();
+      return cachePendientes;
+    } finally {
+      cargando = false;
+    }
+  }
+
+  async function sincronizarRespuestas(respuestas, tipo) {
+    const alumno = idAlumno();
+    const lista = (Array.isArray(respuestas) ? respuestas : Object.values(respuestas || {}))
+      .map((r) => {
+        if (!r || typeof r.correcto !== 'boolean') return null;
+        if (r.calificacionPendiente === true) return null;
+        const id = idValido(r.id || r.itemId);
+        if (!id) return null;
+        return {
+          id: id,
+          correcto: r.correcto === true,
+          area: r.materia || r.area || '',
+          letra: r.opcionSeleccionada || r.letra || '',
+          a: r.a,
+          b: r.b,
+          c: r.c,
+          ms: r.latenciaMs || r.ms || 0
+        };
+      })
+      .filter(Boolean);
+
+    lista.forEach((r) => {
+      if (r.correcto) marcarSuperadaLocal(r.id);
+      else quitarSuperadaLocal(r.id);
+    });
+
+    // Baja inmediata del contador en sala (antes de la red).
+    if (lista.length) {
+      const quitados = new Set(lista.filter((r) => r.correcto).map((r) => r.id));
+      const reFallados = new Set(lista.filter((r) => !r.correcto).map((r) => r.id));
+      cachePendientes = aplicarOverlayLocal(cachePendientes).filter((p) => !quitados.has(p.id));
+      // Si falló de nuevo y no estaba, no inventamos: solo vuelve si ya estaba o DB lo trae.
+      reFallados.forEach((id) => {
+        if (!cachePendientes.some((p) => p.id === id)) {
+          // no agregar fantasmas; la DB lo traerá al recargar
+        }
+      });
+      guardarCacheLocal(cachePendientes);
+      refrescarUI();
+    }
+
+    if (!alumno || !lista.length) return { ok: false };
+
+    try {
+      const resp = await fetch('/api/dante/fallidas/actualizar', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          studentId: alumno,
+          tipo: tipo || 'REPASO_FALLIDAS',
+          respuestas: lista,
+          puntos: Number(localStorage.getItem('dante_score_proyectado') || 0) || null,
+          theta: Number(localStorage.getItem('dante_theta_estimado')),
+          sem: Number(localStorage.getItem('dante_sem_estimado'))
+        })
+      });
+      const json = await resp.json().catch(() => null);
+      if (json && json.ok) {
+        cachePendientes = Array.isArray(json.pendientes) ? json.pendientes.filter((p) => idValido(p.id)).map((p) => ({
+          id: idValido(p.id),
+          area: limpio(p.area || ''),
+          letra: limpio(p.letra || ''),
+          tipo: limpio(p.tipo || ''),
+          timestamp: p.timestamp || null
+        })) : [];
+        // Limpia superadas que ya no están pendientes en DB.
+        const idsPend = new Set(cachePendientes.map((p) => p.id));
+        const superadas = leerSuperadas();
+        Object.keys(superadas).forEach((id) => {
+          if (!idsPend.has(id)) delete superadas[id];
+        });
+        guardarSuperadas(superadas);
+        guardarCacheLocal(cachePendientes);
+        refrescarUI();
+        return { ok: true, total: json.total };
+      }
+    } catch (e) {}
+    return { ok: false };
   }
 
   async function banco() {
@@ -284,28 +367,18 @@
     }
   }
 
-  function pintarDetalle() {
-    const el = document.getElementById('lblRepasoFallidasDetalle');
-    if (!el) return;
-    const inv = inventario();
-    if (!inv.pendientes) {
-      el.textContent = 'Sin fallos pendientes. Bien.';
-      return;
-    }
-    el.textContent = inv.pendientes + (inv.pendientes === 1 ? ' pregunta pendiente' : ' preguntas pendientes');
-  }
-
   async function abrir() {
-    const fallos = mapaFallos();
-    if (!fallos.size) {
-      nota('Nada pendiente', 'No hay preguntas fallidas por repasar. Cuando falles en un bloque, aparecen aquí.', [
+    const desdeDb = await cargarDesdeBase(true);
+    const fallos = aplicarOverlayLocal(desdeDb);
+    if (!fallos.length) {
+      nota('Nada pendiente', 'No hay preguntas fallidas tuyas en la base. Cuando falles en un entrenamiento, refuerzo o simulacro, aparecen aquí.', [
         { texto: 'Entendido', alClick: cerrarNota }
       ]);
-      pintarDetalle();
+      refrescarUI();
       return;
     }
 
-    const ids = [...fallos.keys()];
+    const ids = fallos.map((f) => f.id);
     const listaBanco = await banco();
     const porId = new Map();
     (listaBanco || []).forEach((raw) => {
@@ -318,24 +391,23 @@
       const raw = porId.get(id);
       if (!raw) continue;
       const item = adaptar(raw);
-      if (!item || !item.id || !(item.enunciado || item.pregunta_texto)) continue;
-      // Solo el ítem del banco cuyo id coincide con un fallo real.
-      if (String(item.id) !== String(id)) continue;
-      const meta = fallos.get(id);
-      if (meta && meta.ayuda && !item.pista) item.pista = meta.ayuda;
+      if (!item || String(item.id) !== String(id)) continue;
+      if (!(item.enunciado || item.pregunta_texto)) continue;
       reactivos.push(item);
     }
 
     if (!reactivos.length) {
-      nota('No pude armar el repaso', 'Tienes fallos guardados, pero esas preguntas ya no están en el banco de este aparato.', [
-        { texto: 'Volver', alClick: cerrarNota }
-      ]);
+      nota(
+        'Fallidas en tu expediente',
+        'Tienes ' + fallos.length + ' fallidas reales en la base, pero este aparato no tiene esas preguntas del banco para practicarlas ahora.',
+        [{ texto: 'Volver', alClick: cerrarNota }]
+      );
       return;
     }
 
     nota(
       'Repaso · preguntas fallidas',
-      'Van ' + reactivos.length + ' de ' + fallos.size + ' pendientes. Si las aciertas, salen de la lista.',
+      'Son ' + reactivos.length + ' de tus ' + fallos.length + ' fallidas reales. Si las aciertas, salen de la lista y suman a tu proyección.',
       [
         {
           texto: 'Empezar repaso',
@@ -352,7 +424,7 @@
               totalReactivos: reactivos.length,
               reactivos: reactivos,
               microDilemasVocacionales: [],
-              saludoDante: 'Repaso de ' + reactivos.length + ' fallidas. Si aciertas, dejan de contar.'
+              saludoDante: 'Repaso de ' + reactivos.length + ' fallidas tuyas. Si aciertas, bajan del contador.'
             };
             entrarWorkspace(mision);
           }
@@ -362,37 +434,54 @@
     );
   }
 
-  /**
-   * Tras cada respuesta: acierto → fuera del contador al instante; fallo → sigue pendiente.
-   */
   function registrarRespuesta(fila) {
     if (!fila) return;
     const id = idValido(fila.id || fila.itemId);
     if (!id) return;
     if (fila.calificacionPendiente === true) {
-      pintarDetalle();
+      refrescarUI();
       return;
     }
-    if (fila.correcto === true) marcarSuperada(id);
-    else if (fila.correcto === false) quitarSuperada(id);
-    pintarDetalle();
+    if (fila.correcto === true) {
+      marcarSuperadaLocal(id);
+      cachePendientes = cachePendientes.filter((p) => p.id !== id);
+      guardarCacheLocal(cachePendientes);
+    } else if (fila.correcto === false) {
+      quitarSuperadaLocal(id);
+    }
+    refrescarUI();
+    // Persistencia ligera por respuesta (no bloquea la UI).
+    sincronizarRespuestas([fila], 'REPASO_FALLIDAS').catch(function () {});
   }
 
   function anotarSesion(respuestas) {
-    const lista = Array.isArray(respuestas) ? respuestas : Object.values(respuestas || {});
-    lista.forEach((r) => registrarRespuesta(r));
-    pintarDetalle();
+    sincronizarRespuestas(respuestas, 'REPASO_FALLIDAS').catch(function () {});
   }
 
   window.DanteRepasoFallidas = {
     abrir: abrir,
     inventario: inventario,
-    pintar: pintarDetalle,
+    pintar: refrescarUI,
     anotarSesion: anotarSesion,
     registrarRespuesta: registrarRespuesta,
-    mapaFallos: mapaFallos
+    cargar: cargarDesdeBase,
+    mapaFallos: function () {
+      const m = new Map();
+      aplicarOverlayLocal(cachePendientes.length ? cachePendientes : leerCacheLocal()).forEach((p) => m.set(p.id, p));
+      return m;
+    }
   };
 
-  document.addEventListener('DOMContentLoaded', pintarDetalle);
-  window.addEventListener('focus', pintarDetalle);
+  function arranque() {
+    cachePendientes = leerCacheLocal();
+    refrescarUI();
+    cargarDesdeBase(false);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', arranque);
+  } else {
+    arranque();
+  }
+  window.addEventListener('focus', function () { cargarDesdeBase(false); });
 })();

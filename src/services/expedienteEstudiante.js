@@ -189,16 +189,16 @@ export async function registrarSesionExpediente(alias, payload = {}) {
     letra: String(r.letra || r.opcionSeleccionada || '').toUpperCase(),
     tipo: payload.tipo || 'MISION_DIARIA',
     timestamp: new Date().toISOString()
-  })).filter((r) => r.item_original);
+  })).filter((r) => r.item_original && !/^item_\d+$/i.test(r.item_original) && !/^preun_/i.test(r.item_original));
 
-  const vistos = new Set(itemsPrev.map((x) => String((x && (x.item_original || x.item_id || x.id)) || '')));
-  const mezclados = itemsPrev.slice();
-  nuevosItems.forEach((item) => {
-    if (!vistos.has(item.item_original)) {
-      vistos.add(item.item_original);
-      mezclados.push(item);
-    }
+  // Última respuesta gana (antes se ignoraban reintentos → fallidas eternas / contador raro).
+  const mapaItems = new Map();
+  itemsPrev.forEach((x) => {
+    const id = String((x && (x.item_original || x.item_id || x.id)) || '').trim();
+    if (id) mapaItems.set(id, x);
   });
+  nuevosItems.forEach((item) => mapaItems.set(item.item_original, item));
+  const mezclados = Array.from(mapaItems.values());
 
   const histTheta = Array.isArray(fila && fila.historial_theta) ? fila.historial_theta.slice(-39) : [];
   if (Number.isFinite(Number(payload.theta))) histTheta.push(Math.round(Number(payload.theta) * 1000) / 1000);
@@ -274,6 +274,30 @@ export async function guardarSimulacroOficial(alias, payload) {
   const fila = previo.data;
   const historialPrev = Array.isArray(fila && fila.historial_simulacros) ? fila.historial_simulacros : [];
   const historial = [...historialPrev.filter((x) => x && x.id !== registro.id), registro].slice(-20);
+
+  // Persistir cada respuesta del simulacro en items_respondidos (fuente de Repaso · Fallidas).
+  const mapaItems = new Map();
+  const prevItems = Array.isArray(fila && fila.items_respondidos) ? fila.items_respondidos : [];
+  prevItems.forEach((x) => {
+    const id = String((x && (x.item_id || x.item_original || x.id)) || '').trim();
+    if (id) mapaItems.set(id, x);
+  });
+  (Array.isArray(payload.respuestas) ? payload.respuestas : []).forEach((r) => {
+    const id = String((r && (r.id || r.itemId || r.item_id)) || '').trim();
+    if (!id || /^item_\d+$/i.test(id) || /^preun_/i.test(id)) return;
+    if (typeof r.correcto !== 'boolean' && typeof r.correcta !== 'boolean') return;
+    mapaItems.set(id, {
+      item_original: id,
+      item_id: id,
+      correcta: r.correcto === true || r.correcta === true,
+      area: String((r && (r.area || r.materia)) || '').toLowerCase(),
+      letra: String((r && (r.letra || r.opcionSeleccionada)) || '').toUpperCase().slice(0, 1),
+      tipo: 'SIMULACRO_COMPLETO',
+      timestamp: new Date().toISOString()
+    });
+  });
+  const itemsFusion = Array.from(mapaItems.values()).slice(-4000);
+
   const cuerpo = {
     estudiante: alias,
     estudiante_id: alias,
@@ -281,6 +305,8 @@ export async function guardarSimulacroOficial(alias, payload) {
     email: correo,
     simulacro_oficial: registro,
     historial_simulacros: historial,
+    items_respondidos: itemsFusion,
+    preguntas_respondidas: Math.max(Number(fila && fila.preguntas_respondidas) || 0, itemsFusion.length),
     updated_at: new Date().toISOString(),
     ultima_actualizacion: new Date().toISOString(),
     institution_id: (fila && fila.institution_id) || 'colegio_sandbox_default'

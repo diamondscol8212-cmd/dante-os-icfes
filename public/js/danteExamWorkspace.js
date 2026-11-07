@@ -5116,15 +5116,30 @@
         const esSimFin = Boolean(this.misionData && this.misionData.esSimulacro);
 
         if (esRepasoFallidasFin) {
-          // No registrar como MISION_DIARIA: reinyectaba fallos (y a veces IDs basura) al pool.
+          // Persiste aciertos/fallos en la base (fuente del contador) y recalibra brecha/proyección.
+          const estRepaso = this._recalibrarHabilidad();
+          if (estRepaso && estRepaso.puntos != null) {
+            if (previoSala > 0) {
+              localStorage.setItem('dante_score_anterior', String(previoSala));
+              if (!localStorage.getItem('dante_score_base')) {
+                localStorage.setItem('dante_score_base', String(previoSala));
+              }
+            }
+            proyeccionSala = estRepaso.puntos;
+            valorScore = proyeccionSala + ' Pts';
+            localStorage.setItem('dante_score_proyectado', String(proyeccionSala));
+            localStorage.setItem('dante_puntaje_global', String(proyeccionSala));
+            localStorage.setItem('dante_proyeccion_practicas', '1');
+          }
           if (window.DanteRepasoFallidas && typeof window.DanteRepasoFallidas.anotarSesion === 'function') {
             try { window.DanteRepasoFallidas.anotarSesion(this.respuestasSesionActiva); } catch (eRf) {}
           }
+          this._publicarEnNube('REPASO_FALLIDAS');
           this._registrarSesionExpediente(
             'REPASO_FALLIDAS',
             'Repaso de fallidas',
             proyeccionSala,
-            this.thetaEstimado
+            estRepaso && typeof estRepaso.theta === 'number' ? estRepaso.theta : this.thetaEstimado
           );
         } else if (esMisionPreun) {
           const ptsPreu = parseInt(localStorage.getItem('dante_preu_puntos') || '0', 10);

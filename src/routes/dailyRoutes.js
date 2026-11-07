@@ -17,6 +17,7 @@ import {
   guardarPerfilDiagnostico,
   snapshotDesdeFila
 } from '../services/expedienteEstudiante.js';
+import { listarFallidasAlumno, upsertRespuestasAlumno } from '../services/fallidasEstudiante.js';
 import { supabase } from '../../supabaseClient.js';
 
 const router = Router();
@@ -77,7 +78,8 @@ router.post('/simulacro/puntaje', optionalToken, async (req, res) => {
         areas: resultado.areas,
         completo,
         por_tiempo: porTiempo,
-        respuestas_n: limpias.length
+        respuestas_n: limpias.length,
+        respuestas: limpias
       });
       if (persistido.ok) guardado = persistido.simulacro;
       else console.warn('[simulacro/puntaje] no se pudo persistir:', persistido.error);
@@ -257,5 +259,53 @@ router.post('/progreso/perfil-diagnostico', optionalToken, async (req, res) => {
 });
 
 router.post('/respuesta', optionalToken, guardarRespuestas);
+
+/** Fallidas reales del alumno (progreso_estudiantes + eventos). */
+router.get('/fallidas', optionalToken, async (req, res) => {
+  try {
+    const alias = estudianteDesdeRequest(req, {
+      studentId: req.query.estudiante || req.query.studentId,
+      email: req.query.email
+    });
+    if (!alias) return res.status(400).json({ ok: false, error: 'Falta el estudiante.', total: 0, pendientes: [] });
+    const out = await listarFallidasAlumno(alias);
+    if (!out.ok) return res.status(500).json({ ok: false, error: out.error || 'error', total: 0, pendientes: [] });
+    return res.json({
+      ok: true,
+      estudiante: out.estudiante,
+      total: out.total,
+      pendientes: out.pendientes,
+      ids: out.ids
+    });
+  } catch (err) {
+    return res.status(500).json({ ok: false, error: err.message || 'error', total: 0, pendientes: [] });
+  }
+});
+
+/** Marca aciertos/fallos del repaso en la base (última respuesta gana). */
+router.post('/fallidas/actualizar', optionalToken, async (req, res) => {
+  try {
+    const cuerpo = req.body || {};
+    const alias = estudianteDesdeRequest(req, cuerpo);
+    if (!alias) return res.status(400).json({ ok: false, error: 'Falta el estudiante.' });
+    const out = await upsertRespuestasAlumno(alias, cuerpo.respuestas || [], {
+      tipo: cuerpo.tipo || 'REPASO_FALLIDAS',
+      email: cuerpo.email || null,
+      theta: cuerpo.theta,
+      sem: cuerpo.sem,
+      puntaje: cuerpo.puntaje || cuerpo.puntos
+    });
+    if (!out.ok) return res.status(500).json({ ok: false, error: out.error || 'error' });
+    return res.json({
+      ok: true,
+      actualizados: out.actualizados,
+      total: out.total,
+      pendientes: out.pendientes,
+      ids: out.ids
+    });
+  } catch (err) {
+    return res.status(500).json({ ok: false, error: err.message || 'error' });
+  }
+});
 
 export default router;
