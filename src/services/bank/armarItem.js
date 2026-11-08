@@ -1,17 +1,25 @@
 import { figuraDe } from './figurasApertura.js';
 import { redactarAyuda } from './redactarAyudaApertura.js';
+import { pulirEnunciadoYOpciones } from './pulirEnunciados.js';
 
 export function armarArea(area, filas) {
   return filas.map((fila) => {
-    const [id, sub, b, texto, correcta, d1, d2, d3] = fila;
+    const [id, sub, b, textoCrudo, correcta, d1, d2, d3] = fila;
     const figura = figuraDe(id);
-    const ayuda = redactarAyuda(area, fila);
+    const pulido = pulirEnunciadoYOpciones(textoCrudo, [correcta, d1, d2, d3]);
+    const texto = pulido.texto;
+    const [okTxt, m1, m2, m3] = pulido.opciones.map((o) =>
+      String(o || '').replace(/^[A-Da-d][\)\.\:\-]\s*/, '').trim()
+    );
+    const filaAyuda = [id, sub, b, texto, okTxt, m1, m2, m3];
+    const ayuda = redactarAyuda(area, filaAyuda);
     return {
       id,
       area,
       sub,
       texto,
-      opciones: [`A) ${correcta}`, `B) ${d1}`, `C) ${d2}`, `D) ${d3}`],
+      pregunta_texto: texto,
+      opciones: [`A) ${okTxt}`, `B) ${m1}`, `C) ${m2}`, `D) ${m3}`],
       ok: 'A',
       a: 1.3,
       b: Number(b) || 0,

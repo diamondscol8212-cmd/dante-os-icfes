@@ -10,6 +10,7 @@ import { balancearColeccion } from './balancer.js';
 import { ayudaDeSemilla } from './redactarAyudaSemilla.js';
 import { embeberGraficaItem } from './embeberGraficas.js';
 import { enriquecerAyudaItem, pistaEsDebil } from './enriquecerAyudas.js';
+import { pulirItemEnunciado } from './pulirEnunciados.js';
 
 export const reactivosMultiExamen = [
     {
@@ -232,5 +233,5 @@ export const BANCO_COMPLETO = balancearColeccion([
         }
     }
     const conRepaso = { ...conAyuda, repaso: repasoConcreto(conAyuda) };
-    return embeberGraficaItem(enriquecerAyudaItem(conRepaso));
+    return embeberGraficaItem(enriquecerAyudaItem(pulirItemEnunciado(conRepaso)));
 });
