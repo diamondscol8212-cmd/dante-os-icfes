@@ -17,13 +17,36 @@
   }
 
   function studentKey() {
+    if (global.DanteStudentId && typeof global.DanteStudentId.studentKey === 'function') {
+      return global.DanteStudentId.studentKey();
+    }
     try {
       const u = JSON.parse(localStorage.getItem('dante_user') || '{}');
-      const id = u.document_id || u.estudiante || u.email || localStorage.getItem('dante_active_student');
+      const id = u.estudiante || u.email || localStorage.getItem('dante_active_student');
       return String(id || 'anon').split('@')[0].toLowerCase();
     } catch (_) {
       return 'anon';
     }
+  }
+
+  function daysCompletedSet(sk) {
+    const key = sk || studentKey();
+    try {
+      const raw = localStorage.getItem('dante_mind_days_done:' + key);
+      const arr = raw ? JSON.parse(raw) : [];
+      return new Set(Array.isArray(arr) ? arr.map(Number) : []);
+    } catch (_) {
+      return new Set();
+    }
+  }
+
+  function markDayDone(day, sk) {
+    const key = sk || studentKey();
+    const set = daysCompletedSet(key);
+    set.add(Number(day));
+    try {
+      localStorage.setItem('dante_mind_days_done:' + key, JSON.stringify([...set].sort((a, b) => a - b)));
+    } catch (_) { /* ignore */ }
   }
 
   function readArc(sk) {
@@ -162,6 +185,53 @@
       return readArc(sk);
     },
 
+    hasCompletedDay: function (dayNum, sk) {
+      const d = Number(dayNum) || 0;
+      if (d < 1) return false;
+      if (daysCompletedSet(sk).has(d)) return true;
+      const arc = readArc(sk);
+      if (!arc) return false;
+      if (Number(arc.campaign_day) >= d && (arc.blocks || []).some((b) => Number(b.campaign_day) === d)) {
+        return true;
+      }
+      return (arc.blocks || []).some((b) => Number(b.campaign_day) === d);
+    },
+
+    /** Hidrata arco + días completados desde Supabase (multi-dispositivo / unicidad). */
+    hydrateFromServer: function (sk) {
+      const key = sk || studentKey();
+      const headers = (global.DanteStudentId && global.DanteStudentId.authHeaders)
+        ? global.DanteStudentId.authHeaders()
+        : { 'Content-Type': 'application/json' };
+      return fetch('/api/v1/dante/mind/arc', { method: 'GET', headers, credentials: 'same-origin' })
+        .then(function (r) { return r.json().catch(function () { return {}; }); })
+        .then(function (data) {
+          if (!data || !data.ok) return readArc(key);
+          if (Array.isArray(data.days_completed)) {
+            data.days_completed.forEach(function (d) { markDayDone(d, key); });
+          }
+          if (data.arc && data.arc.student_key) {
+            const remote = data.arc;
+            const local = readArc(key);
+            const remoteDay = Number(remote.campaign_day) || 0;
+            const localDay = local ? (Number(local.campaign_day) || 0) : 0;
+            if (!local || remoteDay >= localDay) {
+              const merged = Object.assign({ schema: 1 }, remote, {
+                schema: 1,
+                student_key: key,
+                next_available_at: remote.next_available_at
+                  ? Date.parse(remote.next_available_at) || remote.next_available_at
+                  : (local && local.next_available_at) || 0
+              });
+              writeArc(merged, key);
+              return merged;
+            }
+          }
+          return readArc(key);
+        })
+        .catch(function () { return readArc(key); });
+    },
+
     /** Tras sellar un pulso: agenda siguiente bloque + día de campaña 1–15. */
     sealBlock: function (payload, sk) {
       const key = sk || studentKey();
@@ -173,6 +243,19 @@
         15,
         (payload && payload.campaign_day) || (prev.campaign_day || 0) + 1 || blockIndex
       );
+      // Unicidad: no resellar el mismo día (evita sobrescribir progreso).
+      if (this.hasCompletedDay(campaignDay, key)) {
+        this.syncPortal();
+        return {
+          arc: prev,
+          entry: null,
+          restMs: 0,
+          capacity: prev.capacity || null,
+          campaignDay,
+          intellect: prev.intellect,
+          skipped: 'day_already_completed'
+        };
+      }
       const trials = (payload && payload.trials) || [];
       const mind = payload && payload.mind;
       const cap = computeCapacity(mind, trials);
@@ -233,12 +316,15 @@
       prev.intellect = intellect;
       prev.updated_at = new Date().toISOString();
       writeArc(prev, key);
+      markDayDone(campaignDay, key);
 
       if (mind && typeof mind.absorbIntellect === 'function') {
         mind.absorbIntellect(intellect);
       }
 
-      this._syncRemote(prev);
+      this._syncRemote(Object.assign({}, prev, {
+        session_id: entry.session_id
+      }));
       this.syncPortal();
       return { arc: prev, entry, restMs, capacity: cap, campaignDay, intellect };
     },
@@ -323,16 +409,15 @@
 
     _syncRemote: function (arc) {
       try {
-        const headers = { 'Content-Type': 'application/json' };
-        try {
-          const t = localStorage.getItem('dante_token') || localStorage.getItem('token');
-          if (t) headers.Authorization = 'Bearer ' + t;
-        } catch (_) { /* ignore */ }
+        const headers = (global.DanteStudentId && global.DanteStudentId.authHeaders)
+          ? global.DanteStudentId.authHeaders()
+          : { 'Content-Type': 'application/json' };
         fetch('/api/v1/dante/mind/arc/seal', {
           method: 'POST',
           headers,
           body: JSON.stringify({
             student_key: arc.student_key,
+            session_id: arc.session_id || null,
             last_block: arc.last_block,
             next_block: arc.next_block,
             campaign_day: arc.campaign_day,

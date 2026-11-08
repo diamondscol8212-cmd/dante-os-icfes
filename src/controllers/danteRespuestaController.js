@@ -30,11 +30,21 @@ export function idEstable(raw) {
   return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20, 32)}`;
 }
 
-function alumnoDe(body) {
-  return String((body && (body.alumno || body.studentId)) || '')
+function alumnoDe(req, body) {
+  const user = (req && req.user) || {};
+  const crudo =
+    user.estudiante ||
+    user.studentId ||
+    user.email ||
+    (body && (body.alumno || body.studentId || body.estudiante)) ||
+    (req && req.headers && req.headers['x-student-id']) ||
+    '';
+  return String(crudo)
     .toLowerCase()
     .trim()
-    .split('@')[0];
+    .split('@')[0]
+    .replace(/[^a-z0-9._-]/g, '')
+    .slice(0, 80);
 }
 
 function normalizar(respuestas, tipo) {
@@ -104,7 +114,7 @@ export function calificarRespuesta(req, res) {
 export async function guardarRespuestas(req, res) {
   try {
     const body = req.body || {};
-    const alumno = alumnoDe(body);
+    const alumno = alumnoDe(req, body);
     if (!alumno || alumno === 'estudiante' || alumno === 'student_demo_01') {
       return res.status(400).json({ ok: false, motivo: 'sin_alumno' });
     }

@@ -89,6 +89,21 @@
       this._destroyPicker();
       this._clearVentana();
 
+      // Unicidad: un día sellado no se vuelve a ofrecer ni a sobrescribir.
+      if (global.HackeaArc && typeof global.HackeaArc.hasCompletedDay === 'function'
+        && global.HackeaArc.hasCompletedDay(this.campaignDay)) {
+        if (ritual && typeof ritual.showHackCooldown === 'function') {
+          const st = global.HackeaArc.status();
+          ritual.showHackCooldown(st.ready ? {
+            remaining_label: 'Día ' + this.campaignDay + ' ya sellado',
+            ready: true
+          } : st);
+        } else if (ritual && ritual.closeToSala) {
+          ritual.closeToSala();
+        }
+        return;
+      }
+
       if (global.HackeaArc && this.blockIndex >= 2) {
         const st = global.HackeaArc.status();
         if (st.focus_area) this.focusArea = st.focus_area;
@@ -107,7 +122,8 @@
       if (global.PulsoVault) {
         this.session = global.PulsoVault.beginSession({
           umbral_session_id: umbralId,
-          block_index: this.blockIndex
+          block_index: this.blockIndex,
+          campaign_day: this.campaignDay
         });
       } else {
         this.session = { session_id: 'local_' + Date.now(), trials: [] };
@@ -671,6 +687,7 @@
         seals_changed: sealsChanged,
         modes,
         block_index: this.blockIndex,
+        campaign_day: this.campaignDay,
         rest_ms: arcResult && arcResult.restMs,
         capacity: arcResult && arcResult.capacity
       };
@@ -682,6 +699,7 @@
             latents: latentsDelta,
             last_canal: this._canal(),
             block_index: this.blockIndex,
+            campaign_day: this.campaignDay,
             rest_ms: derived.rest_ms,
             capacity: derived.capacity
           }

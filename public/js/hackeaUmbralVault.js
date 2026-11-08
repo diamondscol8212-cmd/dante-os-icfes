@@ -1,18 +1,22 @@
 /**
  * Bóveda Umbral — telemetría aislada del resto de Dante OS / ICFES.
- * No mezclar con racha, simulacro, pacto ni progreso de examen.
- * schema v1 · append-only events
+ * Append-only events; sync en vivo por acto + seal final.
  */
 (function (global) {
   'use strict';
 
   const SCHEMA = 1;
   const PREFIX = 'dante_mind_umbral_v1:';
+  const API_SEAL = '/api/v1/dante/mind/umbral/seal';
+  const API_EVENT = '/api/v1/dante/mind/umbral/event';
 
   function studentKey() {
+    if (global.DanteStudentId && typeof global.DanteStudentId.studentKey === 'function') {
+      return global.DanteStudentId.studentKey();
+    }
     try {
       const u = JSON.parse(localStorage.getItem('dante_user') || '{}');
-      const id = u.document_id || u.estudiante || u.email || localStorage.getItem('dante_active_student');
+      const id = u.estudiante || u.email || localStorage.getItem('dante_active_student');
       return String(id || 'anon').split('@')[0].toLowerCase();
     } catch (_) {
       return 'anon';
@@ -50,6 +54,38 @@
     }
   }
 
+  function authHeaders() {
+    if (global.DanteStudentId && typeof global.DanteStudentId.authHeaders === 'function') {
+      return global.DanteStudentId.authHeaders();
+    }
+    const h = { 'Content-Type': 'application/json' };
+    try {
+      const t = localStorage.getItem('dante_token') || localStorage.getItem('token');
+      if (t) h.Authorization = 'Bearer ' + t;
+    } catch (_) { /* ignore */ }
+    return h;
+  }
+
+  function syncLive(doc) {
+    try {
+      fetch(API_EVENT, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({
+          student_key: doc.student_key,
+          session_id: doc.session_id,
+          started_at: doc.started_at,
+          events: doc.events || [],
+          derived: doc.derived,
+          seal: doc.seal
+        }),
+        keepalive: true
+      }).then(function (r) {
+        if (!r.ok) console.warn('[UmbralVault] event sync HTTP', r.status);
+      }).catch(function () { /* local vault holds */ });
+    } catch (_) { /* ignore */ }
+  }
+
   const UmbralVault = {
     SCHEMA,
 
@@ -76,7 +112,7 @@
       return read(sk || studentKey());
     },
 
-    /** Append-only: no pisa eventos previos de la sesión. */
+    /** Append-only: no pisa eventos previos de la sesión. Sync inmediato. */
     appendEvent: function (event, sk) {
       const key = sk || studentKey();
       let doc = read(key);
@@ -88,6 +124,7 @@
       }, event || {});
       doc.events.push(safe);
       write(doc, key);
+      syncLive(doc);
       return doc;
     },
 
@@ -105,14 +142,9 @@
 
     _syncRemote: function (doc) {
       try {
-        const headers = { 'Content-Type': 'application/json' };
-        try {
-          const t = localStorage.getItem('dante_token') || localStorage.getItem('token');
-          if (t) headers.Authorization = 'Bearer ' + t;
-        } catch (_) { /* ignore */ }
-        fetch('/api/v1/dante/mind/umbral/seal', {
+        fetch(API_SEAL, {
           method: 'POST',
-          headers,
+          headers: authHeaders(),
           body: JSON.stringify({
             student_key: doc.student_key,
             session_id: doc.session_id,

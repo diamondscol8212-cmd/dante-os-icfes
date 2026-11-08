@@ -142,6 +142,25 @@ class DanteStorage {
 
             if (user) {
                 const studentId = user.estudiante || user.email?.split('@')[0] || 'estudiante';
+                // Si cambia de cuenta en el mismo navegador, no heredar progreso ajeno.
+                try {
+                    if (typeof window !== 'undefined' && window.DanteStudentId
+                        && typeof window.DanteStudentId.ensureIsolatedSession === 'function') {
+                        window.DanteStudentId.ensureIsolatedSession(studentId);
+                    } else {
+                        const prev = String(localStorage.getItem('dante_student_id') || '').toLowerCase().split('@')[0];
+                        const next = String(studentId || '').toLowerCase().split('@')[0];
+                        if (prev && next && prev !== next) {
+                            [
+                                'dante_exam_progress', 'dante_sesion_pausada', 'dante_fallidas_ledger_v2',
+                                'dante_simulacro_largo', 'dante_history_cache', 'dante_respuestas_irt',
+                                'dante_pendiente_nube', 'dante_area_conteo', 'dante_respaldo_n',
+                                'dante_theta_estimado', 'dante_sem_estimado', 'dante_score_proyectado',
+                                'dante_diagnostico_completado', 'dante_is_diagnostic'
+                            ].forEach((k) => { try { localStorage.removeItem(k); } catch (_) {} });
+                        }
+                    }
+                } catch (_) { /* ignore */ }
                 localStorage.setItem('dante_active_student', studentId);
                 localStorage.setItem('dante_student_id', studentId);
                 localStorage.setItem('dante_student_name', user.nombre || studentId);

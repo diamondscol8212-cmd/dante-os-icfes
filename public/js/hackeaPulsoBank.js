@@ -541,9 +541,12 @@
   const LETTERS2 = ['A', 'B'];
 
   function studentKey() {
+    if (global.DanteStudentId && typeof global.DanteStudentId.studentKey === 'function') {
+      return global.DanteStudentId.studentKey();
+    }
     try {
       const u = JSON.parse(localStorage.getItem('dante_user') || '{}');
-      const id = u.document_id || u.estudiante || u.email || localStorage.getItem('dante_active_student');
+      const id = u.estudiante || u.email || localStorage.getItem('dante_active_student');
       return String(id || 'anon').split('@')[0].toLowerCase();
     } catch (_) {
       return 'anon';

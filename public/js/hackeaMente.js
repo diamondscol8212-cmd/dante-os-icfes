@@ -26,9 +26,12 @@
   }
 
   function studentKey() {
+    if (global.DanteStudentId && typeof global.DanteStudentId.studentKey === 'function') {
+      return global.DanteStudentId.studentKey();
+    }
     try {
       const u = JSON.parse(localStorage.getItem('dante_user') || '{}');
-      const id = u.document_id || u.estudiante || u.email || localStorage.getItem('dante_active_student');
+      const id = u.estudiante || u.email || localStorage.getItem('dante_active_student');
       return String(id || 'anon').split('@')[0].toLowerCase();
     } catch (_) {
       return 'anon';
@@ -931,6 +934,13 @@
       this._showView(true);
       const st = global.HackeaArc ? global.HackeaArc.status() : { next_block: 2, next_campaign_day: 2 };
       const day = st.next_campaign_day || st.next_block || 2;
+      if (global.HackeaArc && global.HackeaArc.hasCompletedDay && global.HackeaArc.hasCompletedDay(day)) {
+        this.showHackCooldown({
+          remaining_label: 'Día ' + day + ' ya sellado',
+          ready: true
+        });
+        return;
+      }
       const spec = global.HackeaCampaign ? global.HackeaCampaign.getDay(day) : null;
       const stage = this._stage();
       if (!stage) return;
@@ -1163,38 +1173,61 @@
     if (window.DanteSpiral) window.DanteSpiral.cancelPortalBreach();
     clearHackeaObligatorio();
 
-    const calibrated = !!(mindProfile && typeof mindProfile.isCalibrated === 'function' && mindProfile.isCalibrated());
-    const arcSt = global.HackeaArc ? global.HackeaArc.status() : { phase: 'none' };
+    const continueOpen = () => {
+      const calibrated = !!(mindProfile && typeof mindProfile.isCalibrated === 'function' && mindProfile.isCalibrated());
+      const arcSt = global.HackeaArc ? global.HackeaArc.status() : { phase: 'none' };
 
-    // Tras Bloque 1: cooldown propio o siguiente día de campaña (sin repetir umbral)
-    if (calibrated && arcSt.last_block >= 1) {
-      if (!arcSt.ready) {
-        hackeaRitual.showHackCooldown(arcSt);
+      // Tras Bloque 1: cooldown propio o siguiente día de campaña (sin repetir umbral)
+      if (calibrated && arcSt.last_block >= 1) {
+        if (!arcSt.ready) {
+          hackeaRitual.showHackCooldown(arcSt);
+          return;
+        }
+        if ((arcSt.campaign_day || 0) >= 15) {
+          hackeaRitual.showHackCooldown({
+            remaining_label: 'Campaña completa',
+            ready: true
+          });
+          return;
+        }
+        const nextDay = arcSt.next_campaign_day || (arcSt.campaign_day + 1) || 2;
+        if (global.HackeaArc && global.HackeaArc.hasCompletedDay && global.HackeaArc.hasCompletedDay(nextDay)) {
+          hackeaRitual.showHackCooldown({
+            remaining_label: 'Día ' + nextDay + ' ya sellado',
+            ready: true
+          });
+          return;
+        }
+        // La intro del día (task-set) vive en openNextPulso — no duplicar Sincronía corta
+        hackeaRitual.openNextPulso();
         return;
       }
-      if ((arcSt.campaign_day || 0) >= 15) {
-        hackeaRitual.showHackCooldown({
-          remaining_label: 'Campaña completa',
-          ready: true
-        });
+
+      // Umbral ya hecho, Día 1 aún no sellado → puerta “Ya te escucha”, no re-umbral
+      if (calibrated) {
+        if (global.HackeaArc && global.HackeaArc.hasCompletedDay && global.HackeaArc.hasCompletedDay(1)) {
+          hackeaRitual.openNextPulso();
+          return;
+        }
+        hackeaRitual.openDay1Gate();
         return;
       }
-      // La intro del día (task-set) vive en openNextPulso — no duplicar Sincronía corta
-      hackeaRitual.openNextPulso();
-      return;
-    }
 
-    // Umbral ya hecho, Día 1 aún no sellado → puerta “Ya te escucha”, no re-umbral
-    if (calibrated) {
-      hackeaRitual.openDay1Gate();
-      return;
-    }
+      const goUmbral = () => hackeaRitual.open();
+      if (global.HackeaSyncIntro && typeof global.HackeaSyncIntro.play === 'function') {
+        global.HackeaSyncIntro.play({ short: false }, goUmbral);
+      } else {
+        goUmbral();
+      }
+    };
 
-    const goUmbral = () => hackeaRitual.open();
-    if (global.HackeaSyncIntro && typeof global.HackeaSyncIntro.play === 'function') {
-      global.HackeaSyncIntro.play({ short: false }, goUmbral);
+    // Hidratar arco remoto antes de decidir el día (unicidad multi-dispositivo).
+    if (global.HackeaArc && typeof global.HackeaArc.hydrateFromServer === 'function') {
+      Promise.resolve(global.HackeaArc.hydrateFromServer())
+        .catch(function () { return null; })
+        .then(continueOpen);
     } else {
-      goUmbral();
+      continueOpen();
     }
   }
 

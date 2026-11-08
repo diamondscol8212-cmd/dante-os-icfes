@@ -5,6 +5,9 @@
   }
 
   function idAlumno() {
+    if (window.DanteStudentId && typeof window.DanteStudentId.idAlumno === 'function') {
+      return window.DanteStudentId.idAlumno();
+    }
     const directos = [
       localStorage.getItem('dante_student_id'),
       localStorage.getItem('dante_active_student')
@@ -15,16 +18,21 @@
     }
     try {
       const usuario = JSON.parse(localStorage.getItem('dante_user') || 'null');
-      const raw = usuario && (usuario.estudiante || usuario.email || usuario.id || usuario.username);
+      const raw = usuario && (usuario.estudiante || usuario.email || usuario.username);
       const limpio = limpiarId(raw);
       if (limpio && limpio !== 'estudiante') return limpio;
     } catch (e) {}
     return '';
   }
 
+  function claveCola() {
+    const alumno = idAlumno();
+    return alumno ? ('dante_pendiente_nube:' + alumno) : 'dante_pendiente_nube';
+  }
+
   function leerCola() {
     try {
-      const raw = JSON.parse(localStorage.getItem('dante_pendiente_nube') || '[]');
+      const raw = JSON.parse(localStorage.getItem(claveCola()) || localStorage.getItem('dante_pendiente_nube') || '[]');
       return Array.isArray(raw) ? raw : [];
     } catch (e) {
       return [];
@@ -32,7 +40,11 @@
   }
 
   function guardarCola(cola) {
-    try { localStorage.setItem('dante_pendiente_nube', JSON.stringify(cola.slice(-12))); } catch (e) {}
+    try {
+      localStorage.setItem(claveCola(), JSON.stringify(cola.slice(-12)));
+      // Evitar cola global residual que pueda flushearse bajo otra cuenta.
+      try { localStorage.removeItem('dante_pendiente_nube'); } catch (e2) {}
+    } catch (e) {}
   }
 
   /** Aviso en pantalla: solo errores de sesión (entrar de nuevo). Cola offline = silenciosa. */
@@ -115,9 +127,12 @@
       return { ok: false, motivo: 'sin_alumno' };
     }
     try {
+      const headers = (window.DanteStudentId && typeof window.DanteStudentId.authHeaders === 'function')
+        ? window.DanteStudentId.authHeaders()
+        : { 'Content-Type': 'application/json' };
       const resp = await fetch('/api/dante/respuesta', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: headers,
         credentials: 'same-origin',
         body: JSON.stringify({
           alumno: alumno,

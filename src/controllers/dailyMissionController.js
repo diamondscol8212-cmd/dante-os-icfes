@@ -48,15 +48,16 @@ function queryWithTimeout(promise, timeoutMs = 400, fallbackValue = { data: null
  */
 export async function obtenerMisionDiaria(req, res) {
   try {
-    // 1. Extracción y Validación de Identidad (Prioriza Claims de JWT Autenticado)
+    // 1. Identidad: preferir alias estudiante/email (mismo que /respuesta y expediente).
+    // No usar user_id UUID primero — partía el progreso en dos filas.
     const reqUser = req.user || {};
     let rawStudentId;
-    if (req.user && (reqUser.user_id || reqUser.id || reqUser.studentId || reqUser.estudiante || reqUser.email)) {
-      rawStudentId = reqUser.user_id || reqUser.id || reqUser.studentId || reqUser.estudiante || reqUser.email;
+    if (req.user && (reqUser.estudiante || reqUser.studentId || reqUser.email || reqUser.user_id || reqUser.id)) {
+      rawStudentId = reqUser.estudiante || reqUser.studentId || reqUser.email || reqUser.user_id || reqUser.id;
     } else {
       rawStudentId = req.body?.studentId || req.body?.student_id || req.headers?.['x-student-id'] || req.query?.studentId || ("student_guest_" + crypto.randomBytes(4).toString('hex'));
     }
-    const cleanStudentId = String(rawStudentId).toLowerCase().trim().split('@')[0];
+    const cleanStudentId = String(rawStudentId).toLowerCase().trim().split('@')[0].replace(/[^a-z0-9._-]/g, '').slice(0, 80);
 
     let isDiagnostic = Boolean(
       req.body?.isDiagnostic === true || 
@@ -361,12 +362,12 @@ export async function completarMisionDiaria(req, res) {
     const reqUser = req.user || {};
 
     let rawStudentId;
-    if (req.user && (reqUser.user_id || reqUser.id || reqUser.studentId || reqUser.estudiante || reqUser.email)) {
-      rawStudentId = reqUser.user_id || reqUser.id || reqUser.studentId || reqUser.estudiante || reqUser.email;
+    if (req.user && (reqUser.estudiante || reqUser.studentId || reqUser.email || reqUser.user_id || reqUser.id)) {
+      rawStudentId = reqUser.estudiante || reqUser.studentId || reqUser.email || reqUser.user_id || reqUser.id;
     } else {
-      rawStudentId = body.studentId || body.student_id || req.headers?.['x-student-id'] || "student_demo_01";
+      rawStudentId = body.studentId || body.student_id || body.estudiante || req.headers?.['x-student-id'] || "student_demo_01";
     }
-    const studentClean = String(rawStudentId).toLowerCase().trim().split('@')[0];
+    const studentClean = String(rawStudentId).toLowerCase().trim().split('@')[0].replace(/[^a-z0-9._-]/g, '').slice(0, 80);
     const studentName = reqUser.nombre || reqUser.name || body.studentName || body.nombre || "Estudiante";
     const institutionId = req.tenantId || reqUser.institution_id || body.institution_id || req.headers?.['x-institution-id'] || "dante_enterprise";
 
