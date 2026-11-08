@@ -137,6 +137,7 @@
         body: JSON.stringify({
           alumno: alumno,
           tipo: paquete.tipo || 'SESION',
+          recuperacion: paquete.recuperacion === true || undefined,
           theta: paquete.theta,
           sem: paquete.sem,
           puntos: paquete.puntos,
@@ -185,6 +186,7 @@
   function guardarUna(respuesta, resumen) {
     return publicar({
       tipo: (resumen && resumen.tipo) || 'RESPUESTA',
+      recuperacion: !!(resumen && resumen.recuperacion) || !!(respuesta && respuesta.recuperacion),
       theta: resumen && resumen.theta,
       sem: resumen && resumen.sem,
       puntos: resumen && resumen.puntos,

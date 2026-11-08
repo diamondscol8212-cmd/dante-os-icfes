@@ -3282,7 +3282,10 @@
           b: r.b,
           c: r.c,
           correcto: r.correcto,
-          ms: r.latenciaMs || r.tiempoRespuestaMs || 0
+          ms: r.latenciaMs || r.tiempoRespuestaMs || 0,
+          recuperacion: r.recuperacion === true || undefined,
+          excluirDeScore: r.excluirDeScore === true || undefined,
+          tipo: r.recuperacion ? 'REPASO_FALLIDAS' : undefined
         });
       });
       return historial;
@@ -4174,10 +4177,32 @@
       recordRespuesta.c = paramsItem.c;
       this._enriquecerRecordRespuesta(recordRespuesta, item, elegida);
 
+      // Acierto sobre una fallida (repaso o reintento tras ver explicación):
+      // limpia la fallida, pero no suma igual a la brecha / proyección.
+      const eraFallidaPendiente = !!(window.DanteRepasoFallidas
+        && typeof window.DanteRepasoFallidas.estaPendiente === 'function'
+        && window.DanteRepasoFallidas.estaPendiente(recordRespuesta.id));
+      const esRecuperacionScore = Boolean(
+        (this.misionData && this.misionData.esRepasoFallidas)
+        || (recordRespuesta.correcto === true && eraFallidaPendiente)
+      );
+      if (esRecuperacionScore) {
+        recordRespuesta.recuperacion = true;
+        recordRespuesta.excluirDeScore = true;
+      }
+
       this.respuestasSesionActiva[this.indexReactivoActivo] = recordRespuesta;
       let estGuardado = null;
       if (!esPreun && !(this.misionData && this.misionData.esSimulacro)) {
-        estGuardado = this._recalibrarHabilidad();
+        // Recuperación: no recalibrar con el acierto fresco (peso 0 en brecha).
+        if (!esRecuperacionScore) {
+          estGuardado = this._recalibrarHabilidad();
+        } else if (window.DanteAbility && typeof window.DanteAbility.leerRespuestas === 'function'
+            && typeof window.DanteAbility.estimar === 'function') {
+          estGuardado = window.DanteAbility.estimar(window.DanteAbility.leerRespuestas());
+          this.thetaEstimado = estGuardado.theta;
+          this.semEstimado = estGuardado.sem;
+        }
         this.prepararSiguientePorInformacion();
       }
 
@@ -4194,6 +4219,13 @@
                      localStorage.getItem('dante_is_diagnostic') === 'true';
 
       if (!esPreun && !(this.misionData && this.misionData.esSimulacro) && window.DanteRegistro && typeof window.DanteRegistro.guardarUna === 'function') {
+        const tipoGuardado = isDiag
+          ? 'DIAGNOSTICO_INICIAL'
+          : (this.misionData && this.misionData.esRepasoFallidas
+            ? 'REPASO_FALLIDAS'
+            : (this.misionData && (this.misionData.esRefuerzo || this.misionData.repasoArea)
+              ? 'REFUERZO'
+              : (this.misionData && this.misionData.esSimulacro ? 'SIMULACRO_COMPLETO' : 'MISION_DIARIA')));
         window.DanteRegistro.guardarUna({
           id: recordRespuesta.id,
           area: recordRespuesta.materia,
@@ -4202,18 +4234,16 @@
           c: recordRespuesta.c,
           correcto: recordRespuesta.correcto,
           ms: recordRespuesta.latenciaMs,
-          letra: recordRespuesta.opcionSeleccionada
+          letra: recordRespuesta.opcionSeleccionada,
+          recuperacion: esRecuperacionScore || undefined,
+          excluirDeScore: esRecuperacionScore || undefined
         }, {
-          tipo: isDiag
-            ? 'DIAGNOSTICO_INICIAL'
-            : (this.misionData && this.misionData.esRepasoFallidas
-              ? 'REPASO_FALLIDAS'
-              : (this.misionData && (this.misionData.esRefuerzo || this.misionData.repasoArea)
-                ? 'REFUERZO'
-                : (this.misionData && this.misionData.esSimulacro ? 'SIMULACRO_COMPLETO' : 'MISION_DIARIA'))),
-          theta: estGuardado && estGuardado.theta,
-          sem: estGuardado && estGuardado.sem,
-          puntos: estGuardado && estGuardado.puntos
+          tipo: tipoGuardado,
+          recuperacion: esRecuperacionScore || undefined,
+          // No empujar puntos/theta de recuperación al servidor como si fueran acierto pleno.
+          theta: esRecuperacionScore ? undefined : (estGuardado && estGuardado.theta),
+          sem: esRecuperacionScore ? undefined : (estGuardado && estGuardado.sem),
+          puntos: esRecuperacionScore ? undefined : (estGuardado && estGuardado.puntos)
         });
       }
 
@@ -4224,7 +4254,8 @@
             id: recordRespuesta.id,
             correcto: recordRespuesta.correcto === true,
             materia: recordRespuesta.materia,
-            area: recordRespuesta.materia
+            area: recordRespuesta.materia,
+            recuperacion: esRecuperacionScore || undefined
           };
           if (this.misionData && this.misionData.esRepasoFallidas
               && typeof window.DanteRepasoFallidas.registrarRespuesta === 'function') {
@@ -4234,6 +4265,7 @@
             if (this.misionData && this.misionData.isDiagnostic) tipoRf = 'DIAGNOSTICO_INICIAL';
             else if (this.misionData && this.misionData.esSimulacro) tipoRf = 'SIMULACRO_COMPLETO';
             else if (this.misionData && this.misionData.esRefuerzo) tipoRf = 'REFUERZO';
+            // Recuperación en entrenamiento/refuerzo: mismo tipo de sesión, flag recuperacion.
             window.DanteRepasoFallidas.registrarResultadoSesion(filaRf, tipoRf);
           }
         } catch (eRfLive) {}
@@ -5299,21 +5331,10 @@
         const esSimFin = Boolean(this.misionData && this.misionData.esSimulacro);
 
         if (esRepasoFallidasFin) {
-          // Persiste aciertos (baja contador) y recalibra proyección/brecha.
-          const estRepaso = this._recalibrarHabilidad();
-          if (estRepaso && estRepaso.puntos != null) {
-            if (previoSala > 0) {
-              localStorage.setItem('dante_score_anterior', String(previoSala));
-              if (!localStorage.getItem('dante_score_base')) {
-                localStorage.setItem('dante_score_base', String(previoSala));
-              }
-            }
-            proyeccionSala = estRepaso.puntos;
-            valorScore = proyeccionSala + ' Pts';
-            localStorage.setItem('dante_score_proyectado', String(proyeccionSala));
-            localStorage.setItem('dante_puntaje_global', String(proyeccionSala));
-            localStorage.setItem('dante_proyeccion_practicas', '1');
-          }
+          // Baja fallidas, pero el acierto fresco NO mueve proyección/brecha (peso 0).
+          proyeccionSala = previoSala;
+          valorScore = proyeccionSala + ' Pts';
+          etiquetaScore = 'Score (sin cambio por repaso)';
           if (window.DanteRepasoFallidas && typeof window.DanteRepasoFallidas.anotarSesion === 'function') {
             try {
               Promise.resolve(window.DanteRepasoFallidas.anotarSesion(this.respuestasSesionActiva))
@@ -5325,12 +5346,12 @@
           } else if (window.DanteRepasoFallidas && typeof window.DanteRepasoFallidas.pintar === 'function') {
             try { window.DanteRepasoFallidas.pintar(); } catch (eRfP2) {}
           }
-          // No publicar respaldo IRT aquí: pisaba aciertos y volvía a subir el contador.
+          // Expediente: limpia fallidas; puntaje null → no reescribe baseline.
           this._registrarSesionExpediente(
             'REPASO_FALLIDAS',
             'Repaso · Fallidas',
-            proyeccionSala,
-            estRepaso && typeof estRepaso.theta === 'number' ? estRepaso.theta : this.thetaEstimado
+            null,
+            null
           );
         } else if (esMisionPreun) {
           const ptsPreu = parseInt(localStorage.getItem('dante_preu_puntos') || '0', 10);

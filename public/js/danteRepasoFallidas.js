@@ -246,6 +246,9 @@
         if (r.calificacionPendiente === true) return null;
         const id = idValido(r.id || r.itemId);
         if (!id) return null;
+        const recup = r.recuperacion === true
+          || r.excluirDeScore === true
+          || String(tipo || '').toUpperCase() === 'REPASO_FALLIDAS';
         return {
           id: id,
           correcto: r.correcto === true,
@@ -254,7 +257,8 @@
           a: r.a,
           b: r.b,
           c: r.c,
-          ms: r.latenciaMs || r.ms || 0
+          ms: r.latenciaMs || r.ms || 0,
+          recuperacion: (recup && r.correcto === true) || undefined
         };
       })
       .filter(Boolean);
@@ -282,6 +286,7 @@
     if (!alumno || !lista.length) return { ok: false };
 
     try {
+      const hayRecuperacion = lista.some((r) => r.correcto && r.recuperacion);
       const resp = await fetch('/api/dante/fallidas/actualizar', {
         method: 'POST',
         credentials: 'same-origin',
@@ -289,10 +294,14 @@
         body: JSON.stringify({
           studentId: alumno,
           tipo: tipo || 'REPASO_FALLIDAS',
+          recuperacion: hayRecuperacion
+            || String(tipo || '').toUpperCase() === 'REPASO_FALLIDAS'
+            || undefined,
           respuestas: lista,
-          puntos: Number(localStorage.getItem('dante_score_proyectado') || 0) || null,
-          theta: Number(localStorage.getItem('dante_theta_estimado')),
-          sem: Number(localStorage.getItem('dante_sem_estimado'))
+          // No reenviar proyección: el acierto de fallida no debe mover la brecha.
+          puntos: null,
+          theta: null,
+          sem: null
         })
       });
       const json = await resp.json().catch(() => null);
@@ -547,6 +556,12 @@
     } catch (e) {}
   }
 
+  function estaPendiente(rawId) {
+    const id = idValido(rawId);
+    if (!id) return false;
+    return ledger.some((p) => p.id === id);
+  }
+
   window.DanteRepasoFallidas = {
     abrir: abrir,
     inventario: inventario,
@@ -555,6 +570,7 @@
     registrarRespuesta: registrarRespuesta,
     registrarResultadoSesion: registrarResultadoSesion,
     cargar: sincronizarConBase,
+    estaPendiente: estaPendiente,
     mapaFallos: function () {
       const m = new Map();
       ledger.forEach((p) => m.set(p.id, p));

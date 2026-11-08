@@ -195,6 +195,8 @@ export async function guardarRespuestas(req, res) {
       const k = claveItem(row);
       if (k) mapa.set(k, row);
     });
+    const esRecuperacionLote = String(tipo || '').toUpperCase() === 'REPASO_FALLIDAS'
+      || body.recuperacion === true;
     nuevas.forEach((row) => {
       const k = claveItem(row) || String(row.item_id || '');
       if (!k) return;
@@ -204,6 +206,33 @@ export async function guardarRespuestas(req, res) {
         // El respaldo IRT no puede pisar un registro de sesión real (ni bajar un acierto a fallo).
         if (TIPOS_SESION_REAL.has(tipoPrev)) return;
         if (prev.correcta === true && row.correcta === false) return;
+      }
+      const rowTipo = String(row.tipo || tipo || '').toUpperCase();
+      const esRecup = esRecuperacionLote
+        || rowTipo === 'REPASO_FALLIDAS'
+        || row.recuperacion === true
+        || row.excluir_score === true;
+      // Acierto tras fallo: limpia fallida (recuperado) sin voltear el fallo en IRT.
+      if (esRecup && row.correcta === true && prev && prev.correcta === false) {
+        mapa.set(k, {
+          ...prev,
+          recuperado: true,
+          recuperado_at: row.timestamp || new Date().toISOString(),
+          tipo_recuperacion: rowTipo || 'REPASO_FALLIDAS',
+          excluir_score: true,
+          timestamp: row.timestamp || prev.timestamp
+        });
+        return;
+      }
+      if (esRecup && row.correcta === true) {
+        mapa.set(k, {
+          ...row,
+          item_original: row.item_original || k,
+          item_id: row.item_id || idEstable(row.item_original || k),
+          recuperado: true,
+          excluir_score: true
+        });
+        return;
       }
       mapa.set(k, {
         ...row,
@@ -219,18 +248,42 @@ export async function guardarRespuestas(req, res) {
       areas[row.area].total += 1;
       if (row.correcta) areas[row.area].aciertos += 1;
     });
+    // IRT / brecha: solo primer intento (excluye repaso de fallidas y recuperaciones).
+    const itemsIrt = items.filter((row) => {
+      if (!row || typeof row.correcta !== 'boolean') return false;
+      const t = String(row.tipo || '').toUpperCase();
+      if (t === 'REPASO_FALLIDAS') return false;
+      if (row.excluir_score === true || row.recuperacion === true) return false;
+      return true;
+    });
     const thetaCliente = Number(body.theta);
     const semCliente = Number(body.sem);
     const puntosCliente = Number(body.puntos);
-    const est = estimarHistorial(items.map((row) => ({
+    const est = estimarHistorial(itemsIrt.map((row) => ({
       a: row.a,
       b: row.b,
       c: row.c,
       correcto: row.correcta
     })));
-    const theta = est.puntos != null ? est.theta : (Number.isFinite(thetaCliente) ? thetaCliente : 0);
-    const sem = est.puntos != null ? est.sem : (Number.isFinite(semCliente) ? semCliente : null);
-    const puntos = est.puntos != null ? est.puntos : (Number.isFinite(puntosCliente) ? puntosCliente : null);
+    // Lotes solo de recuperación: no reescribir proyección global con el acierto fresco.
+    let theta;
+    let sem;
+    let puntos;
+    if (esRecuperacionLote && (!nuevas.length || nuevas.every((r) => r.correcta === true))) {
+      theta = Number.isFinite(Number(anterior && anterior.theta_global))
+        ? Number(anterior.theta_global)
+        : (est.puntos != null ? est.theta : (Number.isFinite(thetaCliente) ? thetaCliente : 0));
+      sem = Number.isFinite(Number(anterior && anterior.sem_global))
+        ? Number(anterior.sem_global)
+        : (est.puntos != null ? est.sem : (Number.isFinite(semCliente) ? semCliente : null));
+      puntos = Number.isFinite(Number(anterior && anterior.baseline_proyeccion))
+        ? Number(anterior.baseline_proyeccion)
+        : (est.puntos != null ? est.puntos : (Number.isFinite(puntosCliente) ? puntosCliente : null));
+    } else {
+      theta = est.puntos != null ? est.theta : (Number.isFinite(thetaCliente) ? thetaCliente : 0);
+      sem = est.puntos != null ? est.sem : (Number.isFinite(semCliente) ? semCliente : null);
+      puntos = est.puntos != null ? est.puntos : (Number.isFinite(puntosCliente) ? puntosCliente : null);
+    }
     const historia = anterior && Array.isArray(anterior.historial_theta) ? anterior.historial_theta.slice(-39) : [];
     if (Number.isFinite(theta)) historia.push(Math.round(theta * 1000) / 1000);
     const payload = {

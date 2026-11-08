@@ -255,28 +255,55 @@ export async function registrarSesionExpediente(alias, payload = {}) {
   }).filter((r) => r.item_original && !/^item_\d+$/i.test(r.item_original) && !/^preun_/i.test(r.item_original));
 
   // Última respuesta gana. Clave = item_original (nunca UUID solo).
+  // REPASO_FALLIDAS: marca recuperado sin voltear el fallo original (no infla brecha).
+  const esRepasoFallidas = familiaTipoSesion(tipoNuevo) === 'REPASO_FALLIDAS';
   const mapaItems = new Map();
   itemsPrev.forEach((x) => {
     const id = String((x && (x.item_original || x.item_id || x.id)) || '').trim();
     if (id) mapaItems.set(id, x);
   });
-  nuevosItems.forEach((item) => mapaItems.set(item.item_original, item));
+  nuevosItems.forEach((item) => {
+    const prev = mapaItems.get(item.item_original);
+    if (esRepasoFallidas && item.correcta === true && prev && prev.correcta === false) {
+      mapaItems.set(item.item_original, {
+        ...prev,
+        recuperado: true,
+        recuperado_at: item.timestamp,
+        tipo_recuperacion: 'REPASO_FALLIDAS',
+        excluir_score: true,
+        timestamp: item.timestamp
+      });
+      return;
+    }
+    if (esRepasoFallidas && item.correcta === true) {
+      mapaItems.set(item.item_original, {
+        ...item,
+        recuperado: true,
+        excluir_score: true
+      });
+      return;
+    }
+    mapaItems.set(item.item_original, item);
+  });
   const mezclados = Array.from(mapaItems.values());
 
   const histTheta = Array.isArray(fila && fila.historial_theta) ? fila.historial_theta.slice(-39) : [];
-  if (Number.isFinite(Number(payload.theta))) histTheta.push(Math.round(Number(payload.theta) * 1000) / 1000);
+  if (!esRepasoFallidas && Number.isFinite(Number(payload.theta))) {
+    histTheta.push(Math.round(Number(payload.theta) * 1000) / 1000);
+  }
 
   const sesion = {
     id: String(payload.misionId || `ses_${Date.now()}`).slice(0, 80),
     tipo: payload.tipo || 'MISION_DIARIA',
     created_at: new Date().toISOString(),
-    puntaje: payload.puntaje == null ? null : Number(payload.puntaje),
-    theta: payload.theta == null ? null : Number(payload.theta),
-    sem: payload.sem == null ? null : Number(payload.sem),
+    puntaje: esRepasoFallidas ? null : (payload.puntaje == null ? null : Number(payload.puntaje)),
+    theta: esRepasoFallidas ? null : (payload.theta == null ? null : Number(payload.theta)),
+    sem: esRepasoFallidas ? null : (payload.sem == null ? null : Number(payload.sem)),
     aciertos: Number(payload.aciertos) || 0,
     total: Number(payload.total) || 0,
     precisionPorcentaje: payload.precisionPorcentaje == null ? null : Number(payload.precisionPorcentaje),
-    precisionPorArea: payload.precisionPorArea || {}
+    precisionPorArea: payload.precisionPorArea || {},
+    sin_efecto_brecha: esRepasoFallidas || undefined
   };
   const histSesiones = Array.isArray(fila && fila.historial_sesiones) ? fila.historial_sesiones.slice() : [];
   const histSinDup = fusionarHistorialSesiones(histSesiones, [sesion]);
@@ -287,10 +314,17 @@ export async function registrarSesionExpediente(alias, payload = {}) {
     estudiante_id: estudiante,
     materia: 'saber_11',
     email: String(payload.email || (fila && fila.email) || `${estudiante}@danteos.edu.co`).trim().toLowerCase(),
-    theta_global: Number.isFinite(Number(payload.theta)) ? Number(payload.theta) : (fila && fila.theta_global),
-    sem_global: Number.isFinite(Number(payload.sem)) ? Number(payload.sem) : (fila && fila.sem_global),
-    baseline_proyeccion: Number.isFinite(Number(payload.puntaje)) ? Math.round(Number(payload.puntaje)) : (fila && fila.baseline_proyeccion),
-    preguntas_respondidas: preguntasPrev + nuevosItems.length,
+    // Repaso de fallidas: limpia pendientes, no mueve proyección / theta global.
+    theta_global: esRepasoFallidas
+      ? (fila && fila.theta_global)
+      : (Number.isFinite(Number(payload.theta)) ? Number(payload.theta) : (fila && fila.theta_global)),
+    sem_global: esRepasoFallidas
+      ? (fila && fila.sem_global)
+      : (Number.isFinite(Number(payload.sem)) ? Number(payload.sem) : (fila && fila.sem_global)),
+    baseline_proyeccion: esRepasoFallidas
+      ? (fila && fila.baseline_proyeccion)
+      : (Number.isFinite(Number(payload.puntaje)) ? Math.round(Number(payload.puntaje)) : (fila && fila.baseline_proyeccion)),
+    preguntas_respondidas: preguntasPrev + (esRepasoFallidas ? 0 : nuevosItems.length),
     items_respondidos: mezclados.slice(-4000),
     historial_theta: histTheta,
     historial_sesiones: histSinDup,

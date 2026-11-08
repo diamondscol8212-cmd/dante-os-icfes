@@ -89,12 +89,21 @@
     }
   }
 
+  function esRecuperacionScore(r) {
+    if (!r) return false;
+    if (r.recuperacion === true || r.excluirDeScore === true || r.excluir_score === true) return true;
+    const tipo = String(r.tipo || '').toUpperCase();
+    return tipo === 'REPASO_FALLIDAS';
+  }
+
   function acumular(nuevas) {
     const mapa = new Map();
     function meter(r) {
       if (!r || typeof r.correcto !== 'boolean') return;
       const id = String(r.id || '');
       if (!id) return;
+      // Acierto de fallida / repaso: no entra al IRT ni voltea un fallo previo.
+      if (esRecuperacionScore(r)) return;
       const previo = mapa.get(id) || {};
       mapa.set(id, {
         id: id,
@@ -260,6 +269,7 @@
     informacion: informacion,
     estimar: estimar,
     acumular: acumular,
+    esRecuperacionScore: esRecuperacionScore,
     leerRespuestas: leerRespuestas,
     aPuntosSaber: aPuntosSaber,
     percentil: percentil,

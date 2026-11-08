@@ -93,6 +93,7 @@ export function pendientesDesdeItems(lista) {
       id,
       area: String((row && (row.area || row.materia || row.skill)) || '').toLowerCase(),
       correcta: ok,
+      recuperado: row && (row.recuperado === true || row.excluir_score === true),
       letra: String((row && (row.letra || row.opcion_marcada || row.opcionSeleccionada)) || '').toUpperCase().slice(0, 1),
       tipo: String((row && row.tipo) || 'MISION_DIARIA').toUpperCase(),
       timestamp: (row && (row.timestamp || row.created_at)) || null,
@@ -103,7 +104,9 @@ export function pendientesDesdeItems(lista) {
 
   const pendientes = [];
   mapa.forEach((fila) => {
-    if (fila.correcta === false) {
+    // recuperado=true: acierto en repaso/reintento — sale de fallidas sin
+    // exigir que correcta quede en true (así el IRT conserva el fallo original).
+    if (fila.correcta === false && fila.recuperado !== true) {
       pendientes.push({
         id: fila.item_original || fila.id,
         item_id: fila.id,
@@ -173,6 +176,8 @@ export async function upsertRespuestasAlumno(aliasRaw, respuestas, meta = {}) {
         area: String(r.area || r.materia || '').toLowerCase().slice(0, 40),
         letra: String(r.letra || r.opcionSeleccionada || '').toUpperCase().slice(0, 1),
         tipo,
+        recuperacion: r.recuperacion === true || undefined,
+        excluir_score: r.excluirDeScore === true || r.excluir_score === true || undefined,
         a: Number(r.a) || null,
         b: Number(r.b) || null,
         c: Number(r.c) || null,
@@ -199,6 +204,9 @@ export async function upsertRespuestasAlumno(aliasRaw, respuestas, meta = {}) {
     const id = idItem(row);
     if (id) mapa.set(id, row);
   });
+  const tipoMeta = String(meta.tipo || '').toUpperCase();
+  const esRecuperacionMeta = tipoMeta === 'REPASO_FALLIDAS' || meta.recuperacion === true;
+
   nuevas.forEach((row) => {
     const prev = mapa.get(row.item_id);
     if (prev) {
@@ -206,6 +214,27 @@ export async function upsertRespuestasAlumno(aliasRaw, respuestas, meta = {}) {
       const tsNew = Date.parse(row.timestamp) || ahora;
       // Nunca dejar que un fallo viejo pise un acierto más nuevo.
       if (esCorrecta(prev) === true && row.correcta === false && tsPrev > tsNew) return;
+    }
+    const esRecupFila = esRecuperacionMeta || row.recuperacion === true || row.excluir_score === true;
+    // Acierto tras haber fallado: marca recuperado, conserva el fallo para IRT/brecha.
+    if (esRecupFila && row.correcta === true && prev && esCorrecta(prev) === false) {
+      mapa.set(row.item_id, {
+        ...prev,
+        recuperado: true,
+        recuperado_at: row.timestamp,
+        tipo_recuperacion: tipoMeta || 'REPASO_FALLIDAS',
+        excluir_score: true,
+        timestamp: row.timestamp
+      });
+      return;
+    }
+    if (esRecupFila && row.correcta === true) {
+      mapa.set(row.item_id, {
+        ...row,
+        recuperado: true,
+        excluir_score: true
+      });
+      return;
     }
     mapa.set(row.item_id, row);
   });
@@ -223,9 +252,12 @@ export async function upsertRespuestasAlumno(aliasRaw, respuestas, meta = {}) {
     institution_id: (fila && fila.institution_id) || 'colegio_sandbox_default',
     onboarding_completed: true
   };
-  if (Number.isFinite(Number(meta.theta))) cuerpo.theta_global = Number(meta.theta);
-  if (Number.isFinite(Number(meta.sem))) cuerpo.sem_global = Number(meta.sem);
-  if (Number.isFinite(Number(meta.puntaje))) cuerpo.baseline_proyeccion = Math.round(Number(meta.puntaje));
+  // El repaso de fallidas no debe inflar theta / brecha / proyección.
+  if (!esRecuperacionMeta) {
+    if (Number.isFinite(Number(meta.theta))) cuerpo.theta_global = Number(meta.theta);
+    if (Number.isFinite(Number(meta.sem))) cuerpo.sem_global = Number(meta.sem);
+    if (Number.isFinite(Number(meta.puntaje))) cuerpo.baseline_proyeccion = Math.round(Number(meta.puntaje));
+  }
 
   if (fila && fila.id) {
     const up = await supabase.from('progreso_estudiantes').update(cuerpo).eq('id', fila.id);

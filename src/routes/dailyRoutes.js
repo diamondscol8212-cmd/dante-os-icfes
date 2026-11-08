@@ -299,6 +299,8 @@ router.post('/fallidas/actualizar', optionalToken, async (req, res) => {
     if (!alias) return res.status(400).json({ ok: false, error: 'Falta el estudiante.' });
     const out = await upsertRespuestasAlumno(alias, cuerpo.respuestas || [], {
       tipo: cuerpo.tipo || 'REPASO_FALLIDAS',
+      recuperacion: cuerpo.recuperacion === true
+        || String(cuerpo.tipo || '').toUpperCase() === 'REPASO_FALLIDAS',
       email: cuerpo.email || null,
       theta: cuerpo.theta,
       sem: cuerpo.sem,
