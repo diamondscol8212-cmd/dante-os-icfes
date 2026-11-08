@@ -25,11 +25,15 @@ export function sanitizeItemForClient(item) {
         razonesPorTexto: _razones,
         frase_acierto: _frase,
         repaso: _repaso,
+        explicacion_correcta: _explOk,
+        explicacion_incorrecta: _explMal,
+        explicacion_detallada: _explDet,
         ...itemSanitizado
     } = item;
 
     return {
         ...itemSanitizado,
+        // tema_a_estudiar se deja: orienta el estudio sin revelar la clave
         pregunta_texto: itemSanitizado.pregunta_texto || itemSanitizado.texto || itemSanitizado.enunciado || "Pregunta de evaluación",
         opciones_respuesta: Array.isArray(itemSanitizado.opciones_respuesta) && itemSanitizado.opciones_respuesta.length > 0
             ? itemSanitizado.opciones_respuesta

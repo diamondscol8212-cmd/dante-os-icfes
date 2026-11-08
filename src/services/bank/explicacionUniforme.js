@@ -1,7 +1,6 @@
 /**
- * Fase 1 — Plantilla uniforme de feedback (voz Profesor Dante).
- * Acierto: una frase corta.
- * Fallo: qué miraba + por qué no sirve lo marcado + cuál era la correcta.
+ * Feedback uniforme del boletín / corrección inmediata.
+ * Fallo: por qué falló la marcada + por qué es correcta la clave + tema a estudiar.
  */
 
 function limpio(texto) {
@@ -20,19 +19,18 @@ function areaDe(item) {
 
 export function queMediaDe(item) {
   const pista = limpio(item && item.pista);
-  if (pista) return corta(pista, 160);
+  if (pista) return corta(pista, 180);
   const area = areaDe(item);
-  if (area.includes('mate')) return 'Esta pregunta mide si armas la relación con los datos y las unidades.';
+  if (area.includes('mate')) return 'Esta pregunta mide si armas la relación correcta con los datos.';
   if (area.includes('lect')) return 'Esta pregunta mide si te quedas con lo que el texto sostiene.';
-  if (area.includes('cien') || area.includes('natur')) return 'Esta pregunta mide si nombras el proceso o el dato que pide el caso.';
+  if (area.includes('cien') || area.includes('natur')) return 'Esta pregunta mide si nombras el proceso o el dato del caso.';
   if (area.includes('social')) return 'Esta pregunta mide si sitúas el hecho, el lugar o la norma del caso.';
   if (area.includes('ingl')) return 'Esta pregunta mide si respondes con lo que dice el texto en inglés.';
   return 'Esta pregunta mide si respondes exactamente lo que pide el enunciado.';
 }
 
 /**
- * Arma el texto de feedback uniforme.
- * @returns {{ texto: string, sinExplicacion: boolean }}
+ * @returns {{ texto: string, sinExplicacion: boolean, bloques?: object }}
  */
 export function armarExplicacionUniforme({
   acierto,
@@ -43,49 +41,71 @@ export function armarExplicacionUniforme({
   queMedia,
   textoMarcado,
   textoCorrecto,
-  repaso
+  repaso,
+  explicacionCorrecta,
+  temaEstudiar
 }) {
   const marca = limpio(letraMarcada).toUpperCase();
   const clave = limpio(letraCorrecta).toUpperCase();
   const razonLimpia = limpio(razon);
   const frase = limpio(fraseAcierto);
   const media = limpio(queMedia);
-  const repasoLimpio = limpio(repaso);
-  const repasoSirve = repasoLimpio
-    && !/^(matem[aá]ticas|lectura|ciencias|sociales|ingl[eé]s)/i.test(repasoLimpio);
+  const explCorrecta = limpio(explicacionCorrecta);
+  const tema = limpio(temaEstudiar || repaso);
+  const temaSirve = tema
+    && !/^(matem[aá]ticas|lectura|ciencias|sociales|ingl[eé]s)$/i.test(tema);
 
   if (acierto) {
-    const cortaFrase = frase ? corta(frase, 140) : 'Bien.';
+    const partesOk = [];
+    if (frase) partesOk.push(`Bien. ${corta(frase, 160)}`);
+    else partesOk.push('Bien.');
+    if (explCorrecta) partesOk.push(corta(explCorrecta, 200));
+    if (temaSirve) partesOk.push(`Para preguntas similares, estudia: ${tema}.`);
     return {
-      texto: frase ? `Bien. ${cortaFrase}` : 'Bien.',
-      sinExplicacion: !frase
+      texto: partesOk.filter(Boolean).join(' '),
+      sinExplicacion: !frase && !explCorrecta,
+      bloques: {
+        acierto: true,
+        explicacion_correcta: explCorrecta || frase,
+        tema_a_estudiar: temaSirve ? tema : ''
+      }
     };
   }
 
+  const porQueFallo = razonLimpia
+    || (textoMarcado && textoCorrecto
+      ? `«${corta(textoMarcado, 100)}» no responde lo pedido.`
+      : (marca ? `La opción ${marca} no es la correcta.` : ''));
+
+  const porQueCorrecta = explCorrecta
+    || (clave && textoCorrecto
+      ? `La correcta es ${clave}: «${corta(textoCorrecto, 120)}».`
+      : (clave ? `La correcta es ${clave}.` : ''))
+    || (frase ? corta(frase, 160) : '');
+
   const partes = [];
   if (media) partes.push(media);
-  if (marca) {
-    if (razonLimpia) {
-      partes.push(`Marcaste ${marca}. ${razonLimpia}`);
-    } else if (textoMarcado && textoCorrecto) {
-      partes.push(`Marcaste ${marca}. «${corta(textoMarcado, 90)}» no responde lo pedido.`);
-    } else if (marca) {
-      partes.push(`Marcaste ${marca}.`);
-    }
-  } else if (razonLimpia) {
-    partes.push(razonLimpia);
+  if (marca && porQueFallo) {
+    partes.push(porQueFallo.startsWith('Marcaste') ? porQueFallo : `Marcaste ${marca}. ${porQueFallo}`);
+  } else if (porQueFallo) {
+    partes.push(porQueFallo);
   }
+  if (porQueCorrecta) partes.push(porQueCorrecta);
+  if (temaSirve) partes.push(`Estudia este tema: ${tema}.`);
 
-  if (clave) {
-    partes.push(`La correcta es ${clave}.`);
-  }
-
-  if (!razonLimpia && !frase) {
+  const sinExplicacion = !razonLimpia && !explCorrecta && !frase;
+  if (sinExplicacion) {
     partes.push('Aún no hay explicación guardada para esta opción.');
-    if (repasoSirve) partes.push(`Repasa: ${repasoLimpio}.`);
-    return { texto: partes.filter(Boolean).join(' '), sinExplicacion: true };
   }
 
-  if (repasoSirve) partes.push(`Repasa: ${repasoLimpio}.`);
-  return { texto: partes.filter(Boolean).join(' '), sinExplicacion: false };
+  return {
+    texto: partes.filter(Boolean).join(' '),
+    sinExplicacion,
+    bloques: {
+      acierto: false,
+      explicacion_incorrecta: porQueFallo,
+      explicacion_correcta: porQueCorrecta,
+      tema_a_estudiar: temaSirve ? tema : ''
+    }
+  };
 }

@@ -9,6 +9,7 @@ export { balancearItem, balancearColeccion } from './balancer.js';
 import { balancearColeccion } from './balancer.js';
 import { ayudaDeSemilla } from './redactarAyudaSemilla.js';
 import { embeberGraficaItem } from './embeberGraficas.js';
+import { enriquecerAyudaItem, pistaEsDebil } from './enriquecerAyudas.js';
 
 export const reactivosMultiExamen = [
     {
@@ -210,17 +211,26 @@ export const BANCO_COMPLETO = balancearColeccion([
     // Fase 3: etiqueta de fuente (la selección usa pool anti-plantilla).
     fuente: String(item.id || '').includes('_gen_') ? 'gen' : 'escrito',
     calibracion_status: String(item.id || '').includes('_gen_') ? 'piloto' : 'semilla'
-})).map((item) => {
-    const conAyuda = (item.pista || item.razonesPorTexto) ? item : (() => {
+}))
+).map((item) => {
+    // Después del balanceo: la letra correcta ya es definitiva.
+    if (!item) return item;
+    let conAyuda = item;
+    if (!item.pista || !item.razonesPorTexto || pistaEsDebil(item.pista)) {
         const ayuda = ayudaDeSemilla(item);
-        if (!ayuda) return item;
-        return {
-            ...item,
-            pista: ayuda.pista,
-            frase_acierto: ayuda.frase,
-            repaso: ayuda.repaso,
-            razonesPorTexto: ayuda.razones
-        };
-    })();
-    return embeberGraficaItem({ ...conAyuda, repaso: repasoConcreto(conAyuda) });
-}));
+        if (ayuda) {
+            conAyuda = {
+                ...item,
+                pista: pistaEsDebil(item.pista) ? ayuda.pista : (item.pista || ayuda.pista),
+                frase_acierto: item.frase_acierto || ayuda.frase,
+                repaso: item.repaso || ayuda.repaso,
+                razonesPorTexto: item.razonesPorTexto || ayuda.razones,
+                explicacion_correcta: item.explicacion_correcta || ayuda.explicacion_correcta,
+                tema_a_estudiar: item.tema_a_estudiar || ayuda.tema_a_estudiar,
+                justificacion_opciones: item.justificacion_opciones || ayuda.justificacion_opciones
+            };
+        }
+    }
+    const conRepaso = { ...conAyuda, repaso: repasoConcreto(conAyuda) };
+    return embeberGraficaItem(enriquecerAyudaItem(conRepaso));
+});

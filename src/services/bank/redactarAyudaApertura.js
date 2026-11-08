@@ -223,15 +223,25 @@ export function redactarAyuda(area, fila) {
     ayuda = desdeLista('x', id, GRAMATICA[id], malas);
     ayuda.repaso = 'Inglés: gramática';
   } else {
-    const metodo = METODO[sub] || 'Lee qué pide la pregunta y contrástalo con el enunciado.';
-    const senal = corta(sinRespuesta(texto, correcta), 120);
+    const metodo = METODO[sub] || 'Identifica qué pide exactamente la pregunta y contrástalo con cada opción.';
+    const tip = (() => {
+      if (sub === 'dos_textos') return 'Compara qué afirma cada uno y elige la relación que los une sin inventar datos.';
+      if (sub === 'textos_discontinuos') return 'Toma solo el dato de la figura o el aviso; no completes con lo que no está.';
+      if (sub === 'argumentacion') return 'Separa premisa y conclusión; descarta el salto que va más allá de los datos.';
+      if (sub === 'inferencia') return 'Quédate con lo que se puede sostener; no agregues un hecho nuevo.';
+      if (area === 'ciencias_naturales') return 'Nombra el proceso o la variable del caso; no la cambies por otra.';
+      if (area === 'sociales_ciudadanas') return 'Sitúa la norma, el lugar o el hecho del caso; un parecido no lo reemplaza.';
+      if (area === 'ingles') return 'Responde con lo que dice el texto; otra forma o sentido no está escrito.';
+      if (area === 'lectura_critica') return 'Descarta la opción que generaliza o niega un dato del texto.';
+      return 'Descarta la opción que responde otra pregunta o cambia el alcance del caso.';
+    })();
     const razones = {};
     malas.forEach((mala) => {
       razones[mala] = `«${corta(mala, 90)}» ${porque(mala, correcta)}`;
     });
     ayuda = {
-      pista: `${metodo} Fíjate en: ${senal}`,
-      frase: `La idea que sostiene el enunciado es «${corta(correcta, 90)}».`,
+      pista: `${metodo} ${tip}`.replace(/\s+/g, ' ').trim(),
+      frase: `Correcto: «${corta(correcta, 100)}» responde exactamente lo que pide el enunciado.`,
       repaso: REPASA[sub] || 'esta idea',
       razones
     };

@@ -56,18 +56,25 @@ export function juicioDeItem(itemId, letra, textoOpcion) {
     || (!limpio(textoOpcion) && elegida === clave)
   );
 
-  const razones = item.justificacion_opciones || {};
+  const razonesLetra = item.justificacion_opciones || {};
+  const razonesTexto = item.razonesPorTexto || {};
   let razon = '';
   if (!acierto) {
     const letraRazon = letraDelTexto || elegida;
-    razon = String(razones[letraRazon] || '');
+    razon = String(
+      razonesLetra[letraRazon]
+      || razonesTexto[textoUsuario]
+      || razonesTexto[limpio(textoUsuario)]
+      || ''
+    );
     if (!razon && textoUsuario && textoClave) {
       razon = `«${textoUsuario}» no responde lo pedido. Lo que sí responde es «${textoClave}».`;
     }
   }
 
   const fraseAcierto = acierto ? String(item.frase_acierto || '') : '';
-  const repaso = String(item.repaso || '');
+  const repaso = String(item.tema_a_estudiar || item.repaso || '');
+  const explicacionCorrecta = String(item.explicacion_correcta || item.explicacion_detallada || '');
   const queMedia = queMediaDe(item);
   const uniforme = armarExplicacionUniforme({
     acierto,
@@ -78,7 +85,9 @@ export function juicioDeItem(itemId, letra, textoOpcion) {
     queMedia,
     textoMarcado: textoUsuario,
     textoCorrecto: textoClave,
-    repaso
+    repaso,
+    explicacionCorrecta,
+    temaEstudiar: repaso
   });
 
   return {
@@ -91,6 +100,9 @@ export function juicioDeItem(itemId, letra, textoOpcion) {
     repaso,
     queMedia,
     explicacion: uniforme.texto,
+    explicacionIncorrecta: (uniforme.bloques && uniforme.bloques.explicacion_incorrecta) || razon,
+    explicacionCorrecta: (uniforme.bloques && uniforme.bloques.explicacion_correcta) || explicacionCorrecta,
+    temaAEstudiar: (uniforme.bloques && uniforme.bloques.tema_a_estudiar) || repaso,
     sinExplicacion: uniforme.sinExplicacion === true
   };
 }

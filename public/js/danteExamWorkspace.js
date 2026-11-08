@@ -3190,9 +3190,12 @@
           textoElegido: String(data.textoElegido || ''),
           razon: String(data.razon || ''),
           fraseAcierto: String(data.fraseAcierto || ''),
-          repaso: String(data.repaso || ''),
+          repaso: String(data.repaso || data.temaAEstudiar || ''),
           queMedia: String(data.queMedia || ''),
           explicacion: String(data.explicacion || ''),
+          explicacionIncorrecta: String(data.explicacionIncorrecta || ''),
+          explicacionCorrecta: String(data.explicacionCorrecta || ''),
+          temaAEstudiar: String(data.temaAEstudiar || data.repaso || ''),
           sinExplicacion: data.sinExplicacion === true
         };
       } catch (e) {
@@ -3336,14 +3339,24 @@
 
     _textoAyudaItem(item, elegida) {
       const letra = String(elegida || '').trim().toUpperCase();
-      const razon = this._textoLimpio(item && item.justificacion_opciones && item.justificacion_opciones[letra]);
-      const repaso = this._textoLimpio(item && item.repaso);
+      const razon = this._textoLimpio(
+        (item && item._explicacionIncorrecta)
+        || (item && item.justificacion_opciones && item.justificacion_opciones[letra])
+      );
+      const explOk = this._textoLimpio(
+        (item && (item._explicacionCorrecta || item.explicacion_correcta))
+      );
+      const tema = this._textoLimpio(
+        (item && (item.tema_a_estudiar || item.repaso))
+      );
+      const temaSirve = tema && !/^(matem[aá]ticas|lectura|ciencias|sociales|ingl[eé]s)$/i.test(tema);
       const atajo = this._textoLimpio(item && (item.atajo_tactico || item.atajoTactico));
       const partes = [];
       if (razon) partes.push(razon);
-      if (repaso) partes.push(repaso);
+      if (explOk) partes.push(explOk);
+      if (temaSirve) partes.push('Estudia: ' + tema + '.');
       if (atajo) partes.push(atajo);
-      return partes.join(' ').replace(/\s+/g, ' ').trim().slice(0, 520);
+      return partes.join(' ').replace(/\s+/g, ' ').trim().slice(0, 720);
     }
 
     _enriquecerRecordRespuesta(record, item, elegida) {
@@ -4090,6 +4103,15 @@
           }
           if (juicio.fraseAcierto) item.frase_acierto = juicio.fraseAcierto;
           if (juicio.repaso) item.repaso = juicio.repaso;
+          if (juicio.temaAEstudiar) {
+            item.tema_a_estudiar = juicio.temaAEstudiar;
+            item.repaso = juicio.temaAEstudiar;
+          }
+          if (juicio.explicacionIncorrecta) item._explicacionIncorrecta = juicio.explicacionIncorrecta;
+          if (juicio.explicacionCorrecta) {
+            item.explicacion_correcta = juicio.explicacionCorrecta;
+            item._explicacionCorrecta = juicio.explicacionCorrecta;
+          }
           if (juicio.queMedia) item._queMediaFeedback = juicio.queMedia;
           if (juicio.explicacion) item._explicacionUniforme = juicio.explicacion;
           item._sinExplicacion = juicio.sinExplicacion === true;
@@ -4294,15 +4316,25 @@
       );
 
       const nombreArea = this._nombreArea(item);
-      const razon = this._textoLimpio(item.justificacion_opciones && item.justificacion_opciones[elegidaFeedback]);
+      const razon = this._textoLimpio(
+        item._explicacionIncorrecta
+        || (item.justificacion_opciones && item.justificacion_opciones[elegidaFeedback])
+      );
       const acierto = this._textoLimpio(item.frase_acierto);
-      const repaso = this._textoLimpio(item.repaso);
-      const repasoSirve = repaso && repaso.toLowerCase() !== String(nombreArea || '').toLowerCase();
-      // Fase 1: plantilla uniforme (servidor) o armado local equivalente.
+      const explOk = this._textoLimpio(item._explicacionCorrecta || item.explicacion_correcta);
+      const repaso = this._textoLimpio(item.tema_a_estudiar || item.repaso);
+      const repasoSirve = repaso
+        && repaso.toLowerCase() !== String(nombreArea || '').toLowerCase()
+        && !/^(matem[aá]ticas|lectura|ciencias|sociales|ingl[eé]s)$/i.test(repaso);
+      // Plantilla uniforme (servidor) o armado local: fallo + correcta + tema.
       let frase = this._textoLimpio(item._explicacionUniforme);
       if (!frase) {
         if (esCorrecta) {
-          frase = acierto ? ('Bien. ' + acierto) : 'Bien.';
+          const partesOk = [];
+          partesOk.push(acierto ? ('Bien. ' + acierto) : 'Bien.');
+          if (explOk) partesOk.push(explOk);
+          if (repasoSirve) partesOk.push('Para preguntas similares, estudia: ' + repaso + '.');
+          frase = partesOk.filter(Boolean).join(' ');
         } else {
           const partes = [];
           const media = this._textoLimpio(item._queMediaFeedback || item.pista);
@@ -4315,13 +4347,12 @@
               partes.push('Marcaste ' + elegidaFeedback + '.');
             }
           }
-          if (claveFeedback) partes.push('La correcta es ' + claveFeedback + '.');
-          if (!razon && !acierto) {
+          if (explOk) partes.push(explOk);
+          else if (claveFeedback) partes.push('La correcta es ' + claveFeedback + '.');
+          if (!razon && !acierto && !explOk) {
             partes.push('Aún no hay explicación guardada para esta opción.');
-            if (repasoSirve) partes.push('Repasa: ' + repaso + '.');
-          } else if (repasoSirve) {
-            partes.push('Repasa: ' + repaso + '.');
           }
+          if (repasoSirve) partes.push('Estudia este tema: ' + repaso + '.');
           frase = partes.filter(Boolean).join(' ') || 'Esta no era.';
         }
       }

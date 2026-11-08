@@ -94,6 +94,9 @@ export function calificarRespuesta(req, res) {
     repaso: juicio.repaso || '',
     queMedia: juicio.queMedia || '',
     explicacion: juicio.explicacion || '',
+    explicacionIncorrecta: juicio.explicacionIncorrecta || '',
+    explicacionCorrecta: juicio.explicacionCorrecta || '',
+    temaAEstudiar: juicio.temaAEstudiar || juicio.repaso || '',
     sinExplicacion: juicio.sinExplicacion === true
   });
 }
