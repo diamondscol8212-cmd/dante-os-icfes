@@ -59,14 +59,36 @@
         || Boolean(localStorage.getItem('dante_sesion_pausada'));
     },
 
+    _diagnosticoHechoLocal() {
+      try {
+        if (localStorage.getItem('dante_calibracion_tactica_inicial_done') === 'true'
+          || localStorage.getItem('dante_diagnostico_completado') === 'true'
+          || localStorage.getItem('dante_diagnostic_completed') === 'true') {
+          return true;
+        }
+        const hist = JSON.parse(localStorage.getItem('dante_history_cache') || '[]');
+        if (Array.isArray(hist) && hist.some((h) => /DIAGNOSTICO/i.test(String((h && (h.tipo || h.materia)) || '')))) {
+          if (window.DanteNube && typeof window.DanteNube.marcarDiagnosticoHechoLocal === 'function') {
+            window.DanteNube.marcarDiagnosticoHechoLocal();
+          } else {
+            localStorage.setItem('dante_diagnostico_completado', 'true');
+            localStorage.setItem('dante_diagnostic_completed', 'true');
+            localStorage.setItem('dante_calibracion_tactica_inicial_done', 'true');
+          }
+          return true;
+        }
+      } catch (e) {}
+      return false;
+    },
+
     _debeAbrirExamen(params) {
       if (this._llegadaASala(params)) return false;
       const q = params || new URLSearchParams(window.location.search);
+      // Entrenamiento / repaso nunca deben reabrir el diagnóstico de por vida.
+      if (q.get('launch') === 'training' || q.get('repaso')) return false;
+      if (this._diagnosticoHechoLocal()) return false;
       if (q.get('launch') === 'diagnostic' || q.get('action') === 'start_diag') return true;
-      const hecho = localStorage.getItem('dante_calibracion_tactica_inicial_done') === 'true'
-        || localStorage.getItem('dante_diagnostico_completado') === 'true'
-        || localStorage.getItem('dante_diagnostic_completed') === 'true';
-      return localStorage.getItem('dante_onboarding_completed') === 'true' && !hecho;
+      return localStorage.getItem('dante_onboarding_completed') === 'true';
     },
 
     async init() {
@@ -75,8 +97,17 @@
       // Cargar credenciales e identidad desde almacenamiento local
       this.cargarIdentidad();
 
-      // El examen solo se abre solo si es el diagnóstico pendiente y nadie pidió la sala.
+      // Antes de decidir el diagnóstico: hidratar banderas desde la nube (una sola vez en la vida).
       const urlParams = new URLSearchParams(window.location.search);
+      try {
+        if (window.DanteNube && typeof window.DanteNube.reconciliarProgreso === 'function') {
+          await Promise.race([
+            window.DanteNube.reconciliarProgreso(),
+            new Promise((resolve) => setTimeout(resolve, 2500))
+          ]);
+        }
+      } catch (e) {}
+
       const isDiagLaunch = this._debeAbrirExamen(urlParams);
 
       if (isDiagLaunch) {

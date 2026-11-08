@@ -1530,9 +1530,21 @@
 
     _diagnosticoPendiente() {
       try {
-        return localStorage.getItem('dante_diagnostico_completado') !== 'true'
-          && localStorage.getItem('dante_diagnostic_completed') !== 'true'
-          && localStorage.getItem('dante_calibracion_tactica_inicial_done') !== 'true';
+        if (localStorage.getItem('dante_diagnostico_completado') === 'true'
+          || localStorage.getItem('dante_diagnostic_completed') === 'true'
+          || localStorage.getItem('dante_calibracion_tactica_inicial_done') === 'true') {
+          return false;
+        }
+        const hist = JSON.parse(localStorage.getItem('dante_history_cache') || '[]');
+        if (Array.isArray(hist) && hist.some((h) => /DIAGNOSTICO/i.test(String((h && (h.tipo || h.materia)) || '')))) {
+          localStorage.setItem('dante_diagnostico_completado', 'true');
+          localStorage.setItem('dante_diagnostic_completed', 'true');
+          localStorage.setItem('dante_calibracion_tactica_inicial_done', 'true');
+          return false;
+        }
+        const q = new URLSearchParams(window.location.search);
+        if (q.get('launch') === 'training' || q.get('repaso')) return false;
+        return true;
       } catch (e) {
         return false;
       }

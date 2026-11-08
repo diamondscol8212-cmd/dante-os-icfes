@@ -480,12 +480,19 @@ router.post('/login-perimetral', async (req, res) => {
         try {
             const { data: medido } = await supabase
                 .from('progreso_estudiantes')
-                .select('preguntas_respondidas, baseline_proyeccion')
+                .select('preguntas_respondidas, baseline_proyeccion, perfil_diagnostico_at, historial_sesiones, onboarding_completed')
                 .eq('estudiante', studentAlias)
                 .eq('materia', 'saber_11')
                 .maybeSingle();
+            const hist = Array.isArray(medido && medido.historial_sesiones) ? medido.historial_sesiones : [];
+            const huboDiag = hist.some((s) => /DIAGNOSTICO/i.test(String((s && s.tipo) || '')));
             diagnosticoCompletado = Boolean(
-                medido && (Number(medido.preguntas_respondidas) > 0 || medido.baseline_proyeccion != null)
+                medido && (
+                  Number(medido.preguntas_respondidas) > 0
+                  || medido.baseline_proyeccion != null
+                  || Boolean(medido.perfil_diagnostico_at)
+                  || huboDiag
+                )
             );
         } catch (medicionErr) {
             console.warn("⚠️ [AUTH] Sin lectura del diagnóstico previo:", medicionErr.message);

@@ -556,6 +556,14 @@ export function snapshotDesdeFila(fila) {
     if (!histMap.has(h.id)) histMap.set(h.id, h);
   });
 
+  const history = Array.from(histMap.values()).slice(0, 40);
+  const diagnosticoCompletado = Boolean(
+    (Number(fila.preguntas_respondidas) > 0)
+    || (fila.baseline_proyeccion != null && Number.isFinite(Number(fila.baseline_proyeccion)))
+    || Boolean(fila.perfil_diagnostico_at)
+    || history.some((h) => /DIAGNOSTICO/i.test(String((h && h.tipo) || '')))
+  );
+
   return {
     ...base,
     score: base.score != null ? base.score : scoreDb,
@@ -563,7 +571,9 @@ export function snapshotDesdeFila(fila) {
     theta: base.theta != null ? base.theta : numONulo(fila.theta_global, -6, 6),
     sem: base.sem != null ? base.sem : numONulo(fila.sem_global, 0, 10),
     preguntasLocal: Math.max(base.preguntasLocal || 0, Math.round(numONulo(fila.preguntas_respondidas, 0, 20000) || 0)),
-    history: Array.from(histMap.values()).slice(0, 40),
+    history,
+    diagnosticoCompletado,
+    onboardingCompletado: Boolean(fila.onboarding_completed) || diagnosticoCompletado,
     updatedAt: base.updatedAt || String(fila.updated_at || new Date().toISOString()).slice(0, 40)
   };
 }

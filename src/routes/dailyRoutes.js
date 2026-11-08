@@ -155,7 +155,7 @@ router.get('/expediente', optionalToken, async (req, res) => {
 
     const { data, error } = await supabase
       .from('progreso_estudiantes')
-      .select('estudiante,materia,theta_global,sem_global,baseline_proyeccion,preguntas_respondidas,items_respondidos,ultima_actualizacion,updated_at,historial_theta,historial_sesiones,simulacro_oficial,historial_simulacros,racha_dias,mision_activa')
+      .select('estudiante,materia,theta_global,sem_global,baseline_proyeccion,preguntas_respondidas,items_respondidos,ultima_actualizacion,updated_at,historial_theta,historial_sesiones,simulacro_oficial,historial_simulacros,racha_dias,mision_activa,onboarding_completed,perfil_diagnostico_at')
       .eq('estudiante', alias)
       .limit(40);
     if (error) return res.status(500).json({ ok: false, error: error.message });
@@ -196,8 +196,17 @@ router.get('/expediente', optionalToken, async (req, res) => {
 
     const saber = (data || []).find((row) => row && row.materia === 'saber_11') || (data || [])[0] || null;
     const snapshot = snapshotDesdeFila(saber);
+    const diagnosticoCompletado = Boolean(
+      snapshot && snapshot.diagnosticoCompletado
+    );
 
-    return res.json({ ok: true, progreso, eventos, snapshot });
+    return res.json({
+      ok: true,
+      progreso,
+      eventos,
+      snapshot,
+      diagnostico_completado: diagnosticoCompletado
+    });
   } catch (err) {
     return res.status(500).json({ ok: false, error: err.message || 'error' });
   }

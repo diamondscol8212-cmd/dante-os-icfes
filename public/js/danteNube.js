@@ -82,6 +82,29 @@
     };
   }
 
+  function marcarDiagnosticoHechoLocal() {
+    try {
+      localStorage.setItem('dante_diagnostico_completado', 'true');
+      localStorage.setItem('dante_diagnostic_completed', 'true');
+      localStorage.setItem('dante_calibracion_tactica_inicial_done', 'true');
+      localStorage.setItem('dante_onboarding_completed', 'true');
+      localStorage.removeItem('dante_diagnostico_en_curso');
+      sessionStorage.removeItem('dante_is_diagnostic');
+      localStorage.removeItem('dante_is_diagnostic');
+    } catch (e) {}
+  }
+
+  function snapshotDiceDiagnosticoHecho(snap) {
+    if (!snap || typeof snap !== 'object') return false;
+    if (snap.diagnosticoCompletado === true || snap.diagnostico_completado === true) return true;
+    if (Number(snap.preguntasLocal) > 0) return true;
+    if (snap.score != null && Number(snap.score) > 0) return true;
+    const hist = Array.isArray(snap.history) ? snap.history : [];
+    return hist.some(function (h) {
+      return /DIAGNOSTICO/i.test(String((h && (h.tipo || h.materia)) || ''));
+    });
+  }
+
   function aplicarSnapshot(snap, opts) {
     if (!snap || typeof snap !== 'object') return false;
     const soloVacios = !(opts && opts.forzar);
@@ -94,6 +117,11 @@
       localStorage.setItem(clave, String(valor));
       cambiado = true;
     };
+
+    if (snapshotDiceDiagnosticoHecho(snap)) {
+      marcarDiagnosticoHechoLocal();
+      cambiado = true;
+    }
 
     if (snap.score != null && Number.isFinite(Number(snap.score))) {
       const localScore = Number(localStorage.getItem('dante_score_proyectado') || localStorage.getItem('dante_puntaje_global') || 0);
@@ -257,6 +285,9 @@
     if (!id) return { ok: false, motivo: 'sin_alumno' };
     let nube = null;
     try { nube = await leerExpediente(id); } catch (e) { nube = null; }
+    if (nube && (nube.diagnostico_completado === true || (nube.snapshot && snapshotDiceDiagnosticoHecho(nube.snapshot)))) {
+      marcarDiagnosticoHechoLocal();
+    }
     if (nube && nube.snapshot) {
       try { aplicarSnapshot(nube.snapshot, { forzar: false }); } catch (e) {}
     } else if (nube && Array.isArray(nube.progreso)) {
@@ -272,6 +303,7 @@
             sem: saber.bayesian_sem,
             preguntasLocal: saber.preguntas_respondidas || 0,
             history: Array.isArray(saber.historial_sesiones) ? saber.historial_sesiones : [],
+            diagnosticoCompletado: true,
             updatedAt: saber.ultima_actualizacion || new Date().toISOString()
           }, { forzar: false });
         } catch (e) {}
@@ -280,7 +312,12 @@
     // Si el cuadernillo quedó solo en local (p. ej. sync falló antes), reintenta a Supabase.
     await reenviarPerfilDiagnosticoSiFalta(id);
     const push = await subirProgreso(id);
-    return { ok: true, nube: Boolean(nube), push: push };
+    return {
+      ok: true,
+      nube: Boolean(nube),
+      push: push,
+      diagnosticoCompletado: localStorage.getItem('dante_diagnostico_completado') === 'true'
+    };
   }
 
   window.DanteNube = {
@@ -289,7 +326,8 @@
     recolectarSnapshot: recolectarSnapshot,
     subirProgreso: subirProgreso,
     subirProgresoDebounced: subirProgresoDebounced,
-    reconciliarProgreso: reconciliarProgreso
+    reconciliarProgreso: reconciliarProgreso,
+    marcarDiagnosticoHechoLocal: marcarDiagnosticoHechoLocal
   };
 
   function arrancar() {
