@@ -64,14 +64,9 @@
      */
     start(mind, ritual, opts) {
       opts = opts || {};
-      // Respiración obligatoria antes del primer ensayo del pulso
-      if (!opts._yaRespiro && window.DanteExamWorkspace && typeof window.DanteExamWorkspace._abrirRespiracionDeEntrada === 'function') {
-        const self = this;
-        window.DanteExamWorkspace._abrirRespiracionDeEntrada(function () {
-          self.start(mind, ritual, Object.assign({}, opts, { _yaRespiro: true }));
-        }, false);
-        return;
-      }
+      // Hackea tiene su propia Sincronía / intro de día. No reutilizar la
+      // respiración de entrada del examen: dejaba “Ya te escucha” debajo,
+      // no arrancaba el pulso, y al “Volver a la sala” aparecía el modal.
       this.mind = mind;
       this.ritual = ritual;
       this.blockIndex = (opts && opts.blockIndex) || 1;
