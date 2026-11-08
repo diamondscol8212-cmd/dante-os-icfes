@@ -144,6 +144,7 @@
             <p>Estamos abriendo el informe general compartido.</p>
         </div>
     </main>
+    <script src="js/danteRevealScroll.js?v=c-1.3.91"></script>
     <script>
         function esc(v) {
             return String(v == null ? '' : v)
@@ -383,6 +384,14 @@
 
                     <p class="aviso">Estimación de Dante OS a partir de lo practicado. No es el puntaje oficial del ICFES.</p>
                 </article>`;
+            try {
+                if (window.DanteRevealScroll && typeof window.DanteRevealScroll.revealBoletin === 'function') {
+                    var ancla = document.querySelector('#raizInforme .rp-brand, #raizInforme .rp-title, #raizInforme');
+                    setTimeout(function () {
+                        window.DanteRevealScroll.revealBoletin(document.documentElement, ancla);
+                    }, 80);
+                }
+            } catch (eRev) {}
         }
 
         async function init() {

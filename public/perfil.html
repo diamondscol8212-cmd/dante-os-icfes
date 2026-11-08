@@ -20,7 +20,8 @@
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="theme.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/danteCacheVersion.js?v=c-1.3.87"></script>
+    <script src="js/danteCacheVersion.js?v=c-1.3.91"></script>
+    <script src="js/danteRevealScroll.js?v=c-1.3.91"></script>
     <script src="js/danteNube.js?v=c-1.3.87"></script>
     <script src="js/danteRegistro.js?v=c-1.3.87"></script>
     <script src="js/danteVectorIcons.js"></script>
@@ -4983,7 +4984,7 @@
                 }
                 if (modal) {
                     modal.style.display = 'flex';
-                    try { modal.scrollTop = 0; } catch (e) {}
+                    this._revealBoletinEntrada();
                 }
             }
 
@@ -5257,6 +5258,15 @@
                 } catch (e) {}
             }
 
+            static _revealBoletinEntrada() {
+                try {
+                    const modal = document.getElementById('modalBoletinSesion');
+                    if (!modal || !window.DanteRevealScroll) return;
+                    const ancla = modal.querySelector('.rp-brand, .rp-title, .boletin-shell');
+                    window.DanteRevealScroll.revealBoletin(modal, ancla);
+                } catch (e) {}
+            }
+
             static async abrirInformeGeneral() {
                 this.cerrarComoRespondes();
                 const modal = document.getElementById('modalBoletinSesion');
@@ -5265,7 +5275,6 @@
 
                 if (modal) {
                     modal.style.display = 'flex';
-                    try { modal.scrollTop = 0; } catch (e) {}
                 }
                 cuerpo.innerHTML = `
                     <article class="reporte-papel">
@@ -5490,7 +5499,7 @@
 
                 if (modal) {
                     modal.style.display = 'flex';
-                    try { modal.scrollTop = 0; } catch (e) {}
+                    this._revealBoletinEntrada();
                 }
             }
 
@@ -5524,7 +5533,6 @@
                 if (!cuerpo) return null;
                 if (modal) {
                     modal.style.display = 'flex';
-                    try { modal.scrollTop = 0; } catch (e) {}
                 }
                 cuerpo.innerHTML = `
                     <article class="reporte-papel">
@@ -5631,7 +5639,7 @@
                     </article>`;
                 if (modal) {
                     modal.style.display = 'flex';
-                    try { modal.scrollTop = 0; } catch (e) {}
+                    this._revealBoletinEntrada();
                 }
             }
 
@@ -5720,7 +5728,7 @@
                     </article>`;
                 if (modal) {
                     modal.style.display = 'flex';
-                    try { modal.scrollTop = 0; } catch (e) {}
+                    this._revealBoletinEntrada();
                 }
             }
         }
