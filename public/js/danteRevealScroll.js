@@ -1,16 +1,15 @@
 /**
- * Entrada visual: queda anclado abajo y sube suave hasta arriba del todo.
- * Misma sensación en sala y boletín. Sin textos ni ayudas.
+ * Un solo recorrido: anclado abajo → sube suave hasta arriba.
+ * Sala, perfil y boletín. Sin reinicios ni “varios movimientos”.
  */
 (function (global) {
   'use strict';
 
-  var _lockUntil = 0;
-  var _raf = 0;
   var _timer = 0;
   var _retryTimer = 0;
-  var _salaGen = 0;
   var _animRaf = 0;
+  var _gen = 0;
+  var _active = false; // true mientras hay un reveal en curso
 
   function elOf(ref) {
     if (!ref) return null;
@@ -19,7 +18,7 @@
   }
 
   function isWindowScroller(scroller) {
-    return scroller === document.documentElement || scroller === document.body;
+    return !scroller || scroller === document.documentElement || scroller === document.body;
   }
 
   function canScroll(scroller) {
@@ -42,13 +41,6 @@
       return Math.max(0, h - window.innerHeight);
     }
     return Math.max(0, scroller.scrollHeight - scroller.clientHeight);
-  }
-
-  function getScrollTop(scroller) {
-    if (isWindowScroller(scroller)) {
-      return window.pageYOffset || document.documentElement.scrollTop || 0;
-    }
-    return scroller.scrollTop || 0;
   }
 
   function setScrollTop(scroller, top) {
@@ -75,11 +67,13 @@
     return node || document.documentElement;
   }
 
-  function easeInOutCubic(t) {
-    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  /** Curva suave (un solo gesto, sin “pasos”). */
+  function easeInOutQuint(t) {
+    return t < 0.5
+      ? 16 * t * t * t * t * t
+      : 1 - Math.pow(-2 * t + 2, 5) / 32;
   }
 
-  /** Scroll suave propio (más estable que behavior:smooth en overflow internos). */
   function animateScroll(scroller, from, to, durationMs, done) {
     if (_animRaf) cancelAnimationFrame(_animRaf);
     var start = performance.now();
@@ -92,7 +86,7 @@
     setScrollTop(scroller, from);
     function frame(now) {
       var t = Math.min(1, (now - start) / durationMs);
-      setScrollTop(scroller, from + dist * easeInOutCubic(t));
+      setScrollTop(scroller, from + dist * easeInOutQuint(t));
       if (t < 1) {
         _animRaf = requestAnimationFrame(frame);
       } else {
@@ -120,15 +114,11 @@
     return Math.max(0, scroller.scrollTop + (tRect.top - sRect.top) - (offset || 8));
   }
 
-  /**
-   * Ancla YA al fondo (sin animación) para no ver el salto arriba→abajo.
-   */
   function pinBottom(preferred) {
     var scroller = resolveScroller(preferred);
     if (!scroller) return null;
     var max = maxScroll(scroller);
     if (max <= 0) {
-      // Aun sin overflow medido, fuerza al final por si el layout sigue creciendo.
       if (!isWindowScroller(scroller)) scroller.scrollTop = scroller.scrollHeight;
       else window.scrollTo(0, document.documentElement.scrollHeight);
       return scroller;
@@ -137,22 +127,18 @@
     return scroller;
   }
 
+  function finishActive() {
+    _active = false;
+  }
+
   /**
-   * @param {{
-   *   scroller?: Element|string,
-   *   target?: Element|string|null,
-   *   toTop?: boolean,
-   *   holdMs?: number,
-   *   durationMs?: number,
-   *   force?: boolean
-   * }} opts
+   * Un único movimiento: fondo → arriba (o ancla).
+   * Si ya hay uno en curso, no reinicia.
    */
   function revealFromBottom(opts) {
     opts = opts || {};
-    var now = Date.now();
-    if (!opts.force && now < _lockUntil) return false;
+    if (_active && !opts.restart) return false;
 
-    if (_raf) cancelAnimationFrame(_raf);
     if (_timer) clearTimeout(_timer);
     if (_animRaf) cancelAnimationFrame(_animRaf);
 
@@ -160,88 +146,104 @@
     var scroller = resolveScroller(preferred);
     if (!canScroll(scroller)) return false;
 
-    var holdMs = opts.holdMs != null ? opts.holdMs : 280;
-    var durationMs = opts.durationMs != null ? opts.durationMs : 1200;
-    var toTop = opts.toTop !== false && !opts.target;
-    var target = opts.toTop === true ? null : elOf(opts.target);
+    var holdMs = opts.holdMs != null ? opts.holdMs : 240;
+    var durationMs = opts.durationMs != null ? opts.durationMs : 1700;
+    var toTop = opts.toTop === true || (!opts.target && opts.toTop !== false);
+    var target = toTop ? null : elOf(opts.target);
 
-    _lockUntil = now + holdMs + durationMs + 200;
-
-    // 1) Quedar abajo de inmediato (sin pasar por arriba a la vista).
+    _active = true;
     setScrollTop(scroller, maxScroll(scroller));
 
     _timer = setTimeout(function () {
       _timer = 0;
       scroller = resolveScroller(preferred);
-      if (!canScroll(scroller)) return;
+      if (!canScroll(scroller)) {
+        finishActive();
+        return;
+      }
+      // Re-pin por si el layout creció durante el hold (sin reiniciar curva).
       var from = maxScroll(scroller);
       setScrollTop(scroller, from);
       var to = toTop || !target ? 0 : targetTop(scroller, target, opts.offset != null ? opts.offset : 8);
-      // 2) Subir suave desde el fondo hasta arriba (o ancla).
-      animateScroll(scroller, from, to, durationMs);
+      animateScroll(scroller, from, to, durationMs, finishActive);
     }, holdMs);
 
     return true;
   }
 
-  /** Sala: fondo → arriba del todo (ruta vocacional incluida en el recorrido). */
+  function revealWithRetry(preferred, revealOpts, maxAttempts) {
+    if (_active) {
+      pinBottom(preferred);
+      return;
+    }
+    var gen = ++_gen;
+    if (_retryTimer) clearTimeout(_retryTimer);
+    pinBottom(preferred);
+
+    var attempts = 0;
+    var limit = maxAttempts != null ? maxAttempts : 14;
+
+    function tryOnce() {
+      if (gen !== _gen) return;
+      if (_active) return;
+      pinBottom(preferred);
+      var ok = revealFromBottom(Object.assign({}, revealOpts, {
+        scroller: preferred,
+        toTop: true,
+        restart: false
+      }));
+      if (ok) return;
+      attempts += 1;
+      if (attempts >= limit) return;
+      _retryTimer = setTimeout(tryOnce, 100 + attempts * 30);
+    }
+    tryOnce();
+  }
+
   function revealSala(opts) {
     opts = opts || {};
     var gw = document.getElementById('viewGateway');
     if (!gw) return;
     if (!gw.classList.contains('active') && gw.style.display === 'none') return;
-
-    var gen = ++_salaGen;
-    if (_retryTimer) clearTimeout(_retryTimer);
-
-    // Ancla al fondo YA, aunque aún no midamos overflow (evita flash arriba).
-    try {
-      gw.scrollTop = gw.scrollHeight;
-    } catch (_) {}
-
-    var attempts = 0;
-    var maxAttempts = opts.retries != null ? opts.retries : 16;
-
-    function tryOnce() {
-      if (gen !== _salaGen) return;
-      pinBottom(gw);
-      var ok = revealFromBottom({
-        scroller: gw,
-        toTop: true,
-        target: null,
-        holdMs: 320,
-        durationMs: 1350,
-        force: true
-      });
-      if (ok) return;
-      attempts += 1;
-      if (attempts >= maxAttempts) return;
-      _retryTimer = setTimeout(tryOnce, 120 + attempts * 35);
-    }
-
-    tryOnce();
+    try { gw.scrollTop = gw.scrollHeight; } catch (_) {}
+    revealWithRetry(gw, {
+      holdMs: 260,
+      durationMs: 1750
+    }, opts.retries != null ? opts.retries : 14);
   }
 
-  /** Boletín / informe: fondo → marca/título (cerca del tope). */
+  function revealPerfil(opts) {
+    opts = opts || {};
+    // Perfil scrollea la ventana.
+    pinBottom(document.documentElement);
+    revealWithRetry(document.documentElement, {
+      holdMs: 260,
+      durationMs: 1750
+    }, opts.retries != null ? opts.retries : 14);
+  }
+
   function revealBoletin(scrollerRef, targetRef) {
+    if (_active) return;
     var scroller = elOf(scrollerRef) || document.documentElement;
     pinBottom(scroller);
     revealFromBottom({
       scroller: scroller,
       target: targetRef || null,
       toTop: !targetRef,
-      holdMs: 300,
-      durationMs: 1250,
-      force: true
+      holdMs: 260,
+      durationMs: 1650,
+      restart: false
     });
   }
 
   global.DanteRevealScroll = {
     revealFromBottom: revealFromBottom,
     revealSala: revealSala,
+    revealPerfil: revealPerfil,
     revealBoletin: revealBoletin,
     pinBottom: pinBottom,
     canScroll: canScroll,
-    resolveScroller: resolveScroller
+    resolveScroller: resolveScroller,
+    isActive: function () { return _active; }
   };
 })(window);
