@@ -371,17 +371,27 @@
       this.misionData = data;
       this.misionData.targetTrack = activeTrack; // Asegurar consistencia de track
 
-      // Identificar si es lanzamiento de diagnóstico
+      // Identificar si es lanzamiento de diagnóstico (nunca si el usuario ya lo hizo o pide entrenamiento).
       const urlParams = new URLSearchParams(window.location.search);
       const esRepaso = Boolean(urlParams.get('repaso') || this.misionData?.repasoArea);
-      const isDiagnostic = !esRepaso && (
+      const pideTraining = urlParams.get('launch') === 'training' || Boolean(data && (data.esRefuerzo || data.repasoArea));
+      const diagHechoLocal = localStorage.getItem('dante_diagnostico_completado') === 'true'
+        || localStorage.getItem('dante_diagnostic_completed') === 'true'
+        || localStorage.getItem('dante_calibracion_tactica_inicial_done') === 'true'
+        || data?.diagnosticoYaHecho === true;
+      if (pideTraining || diagHechoLocal || data?.isDiagnostic === false) {
+        try {
+          sessionStorage.removeItem('dante_is_diagnostic');
+          localStorage.removeItem('dante_is_diagnostic');
+          localStorage.removeItem('dante_diagnostico_en_curso');
+        } catch (eClr) {}
+      }
+      const isDiagnostic = !esRepaso && !pideTraining && !diagHechoLocal && (
+                           data?.isDiagnostic === true ||
                            urlParams.get('launch') === 'diagnostic' || 
                            urlParams.get('action') === 'start_diag' ||
                            sessionStorage.getItem('dante_is_diagnostic') === 'true' ||
-                           localStorage.getItem('dante_is_diagnostic') === 'true' ||
-                           (localStorage.getItem('dante_onboarding_completed') === 'true' &&
-                            localStorage.getItem('dante_calibracion_tactica_inicial_done') !== 'true' &&
-                            localStorage.getItem('dante_diagnostico_completado') !== 'true'));
+                           localStorage.getItem('dante_is_diagnostic') === 'true');
 
       if (data && data.esSimulacro) {
         this.misionData.isDiagnostic = false;
@@ -390,6 +400,9 @@
         this.misionData.isDiagnostic = true;
         // Balance Estricto de 10 Reactivos sin recortes arbitrarios que rompan la simetría 50/50
         this.misionData.reactivos = this.garantizarDistribucionDiagnostico(this.misionData.reactivos, activeTrack);
+      } else {
+        this.misionData.isDiagnostic = false;
+        this.misionData.isFirstSession = false;
       }
 
       // Erradicación obligatoria de Reactivos Duplicados por Set de identificadores únicos (item.id)
@@ -428,7 +441,7 @@
       } catch (e) {}
       sessionStorage.setItem('dante_mision_actual', JSON.stringify(this.misionData));
 
-      // 2. Intentar recuperar progreso previo si fue interrupción involuntaria en el MISMO track
+      // 2. Intentar recuperar progreso previo solo del MISMO misionId (nunca colar dilemas/cierre viejos).
       const savedProgress = this.misionData.esSimulacro ? false : this.recuperarProgresoSesion();
       if (this.misionData.esSimulacro) {
         this.indexReactivoActivo = Number(this.misionData.reanudarIndice) || 0;
@@ -440,6 +453,16 @@
         this.respuestasSesionActiva = [];
         this.respuestasDilemas = {};
         this.faseActual = 'REACTIVOS';
+      } else if (this.faseActual === 'DILEMAS' || this.faseActual === 'COMPLETADO') {
+        // Sesión nueva de entrenamiento: no reanudar un cierre colgado.
+        this.indexReactivoActivo = 0;
+        this.respuestasSesionActiva = [];
+        this.respuestasDilemas = {};
+        this.faseActual = 'REACTIVOS';
+        try {
+          sessionStorage.removeItem('dante_exam_progress');
+          localStorage.removeItem('dante_exam_progress');
+        } catch (eClrProg) {}
       }
 
       // 3. Cambiar la vista activa a #viewWorkspace
@@ -3919,6 +3942,9 @@
       let btnConf = document.getElementById('btnConfirmarSeleccion');
       if (btnConf) {
         btnConf.style.display = 'block';
+        btnConf.disabled = false;
+        btnConf.onclick = null; // evita onclick de «Cerrar el bloque» colgado de dilemas
+        btnConf.classList.remove('cierre-listo');
         const txtPrompt = document.getElementById('txtCommitPrompt');
         if (txtPrompt) txtPrompt.innerText = this._textoPromptConfirmar();
         this.bindHoldToCommit(btnConf);
@@ -4651,6 +4677,16 @@
      */
     async completarMisionDiaria() {
       if (this.isSubmitting) return;
+      // No cerrar el bloque en plena pregunta de entrenamiento (bug: onclick/fase DILEMAS colgada).
+      const totalRx = (this.misionData && Array.isArray(this.misionData.reactivos)) ? this.misionData.reactivos.length : 0;
+      const enReactivos = this.faseActual === 'REACTIVOS' || this.faseActual === 'VOCACIONAL';
+      const quedanPreguntas = totalRx > 0 && this.indexReactivoActivo < totalRx - 1;
+      if (enReactivos && quedanPreguntas && !(this.misionData && this.misionData.isDiagnostic && this.indexReactivoActivo >= totalRx)) {
+        console.warn('⚠️ [DANTE EXAM]: Se intentó cerrar el bloque antes de terminar las preguntas. Se ignora.');
+        this.isSubmitting = false;
+        this.renderizarBotonConfirmacion();
+        return;
+      }
       this.isSubmitting = true;
       this.isSubmittingRespuesta = false;
       this.opcionSeleccionadaTemp = null;
@@ -4721,21 +4757,20 @@
         if (activeToken) headersCierre.Authorization = `Bearer ${activeToken}`;
         if (esDiagnosticoCierre) headersCierre['x-is-diagnostic'] = 'true';
 
-        let res = await fetch(primaryEndpoint, {
-          method: 'POST',
-          credentials: 'include',
-          headers: headersCierre,
-          body: JSON.stringify(payload)
-        }).catch(() => null);
-
-        if (!res || !res.ok) {
-          res = await fetch(fallbackEndpoint, {
+        const fetchConTope = (url) => {
+          const ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+          const timer = setTimeout(() => { try { if (ctrl) ctrl.abort(); } catch (eAb) {} }, 12000);
+          return fetch(url, {
             method: 'POST',
             credentials: 'include',
             headers: headersCierre,
-            body: JSON.stringify(payload)
-          }).catch(() => null);
-        }
+            body: JSON.stringify(payload),
+            signal: ctrl ? ctrl.signal : undefined
+          }).catch(() => null).finally(() => clearTimeout(timer));
+        };
+
+        let res = await fetchConTope(primaryEndpoint);
+        if (!res || !res.ok) res = await fetchConTope(fallbackEndpoint);
 
         let summary = null;
         if (res && res.ok) {
@@ -4764,6 +4799,11 @@
         this.mostrarPantallaResumen(null);
       } finally {
         this.isSubmitting = false;
+        const btnFin = document.getElementById('btnConfirmarSeleccion');
+        if (btnFin && this.faseActual !== 'COMPLETADO') {
+          btnFin.disabled = false;
+          this.renderizarBotonConfirmacion();
+        }
       }
     }
 
@@ -5741,17 +5781,16 @@
         const activeTrack = (window.DanteHubEngine && window.DanteHubEngine.targetTrack) || localStorage.getItem('dante_target_track') || 'ICFES';
         if (state && (!state.targetTrack || String(state.targetTrack).toUpperCase() === String(activeTrack).toUpperCase())) {
           const esMismoLote = Boolean(state.misionId && this.misionData && state.misionId === this.misionData.misionId);
-          const esDiagnosticoActivo = Boolean(this.misionData?.isDiagnostic || sessionStorage.getItem('dante_is_diagnostic') === 'true');
-          
-          if (esMismoLote || (esDiagnosticoActivo && !this.misionData?.repasoArea) || (!state.misionId && this.misionData && !this.misionData.repasoArea)) {
-            const maxIdx = (this.misionData?.reactivos?.length || 10) - 1;
-            this.indexReactivoActivo = Math.max(0, Math.min(parseInt(state.indexReactivoActivo, 10) || 0, maxIdx));
-            this.faseActual = state.faseActual || 'REACTIVOS';
-            this.respuestasSesionActiva = Array.isArray(state.respuestasSesionActiva) ? state.respuestasSesionActiva : [];
-            this.respuestasDilemas = state.respuestasDilemas || {};
-            console.log(`⚡ [DANTE EXAM WORKSPACE]: Progreso reanudado exitosamente (Reactivo ${this.indexReactivoActivo + 1}).`);
-            return true;
-          }
+          // Solo reanudar el mismo misionId. Nunca colar progreso de otro bloque/diagnóstico.
+          if (!esMismoLote) return false;
+          if (state.faseActual === 'DILEMAS' || state.faseActual === 'COMPLETADO') return false;
+          const maxIdx = (this.misionData?.reactivos?.length || 10) - 1;
+          this.indexReactivoActivo = Math.max(0, Math.min(parseInt(state.indexReactivoActivo, 10) || 0, maxIdx));
+          this.faseActual = 'REACTIVOS';
+          this.respuestasSesionActiva = Array.isArray(state.respuestasSesionActiva) ? state.respuestasSesionActiva : [];
+          this.respuestasDilemas = state.respuestasDilemas || {};
+          console.log(`⚡ [DANTE EXAM WORKSPACE]: Progreso reanudado exitosamente (Reactivo ${this.indexReactivoActivo + 1}).`);
+          return true;
         }
       } catch (e) {
         console.warn('⚠️ Error recuperando progreso guardado:', e);

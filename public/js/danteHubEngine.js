@@ -99,14 +99,14 @@
 
       // Antes de decidir el diagnóstico: hidratar banderas desde la nube (una sola vez en la vida).
       const urlParams = new URLSearchParams(window.location.search);
-      try {
-        if (window.DanteNube && typeof window.DanteNube.reconciliarProgreso === 'function') {
+      if (!this._diagnosticoHechoLocal() && window.DanteNube && typeof window.DanteNube.reconciliarProgreso === 'function') {
+        try {
           await Promise.race([
             window.DanteNube.reconciliarProgreso(),
-            new Promise((resolve) => setTimeout(resolve, 2500))
+            new Promise((resolve) => setTimeout(resolve, 1800))
           ]);
-        }
-      } catch (e) {}
+        } catch (e) {}
+      }
 
       const isDiagLaunch = this._debeAbrirExamen(urlParams);
 
@@ -424,11 +424,31 @@
         return this.mananejarOfflineFallback();
       }
 
+      if (data.diagnosticoYaHecho) {
+        try {
+          if (window.DanteNube && typeof window.DanteNube.marcarDiagnosticoHechoLocal === 'function') {
+            window.DanteNube.marcarDiagnosticoHechoLocal();
+          } else {
+            localStorage.setItem('dante_diagnostico_completado', 'true');
+            localStorage.setItem('dante_diagnostic_completed', 'true');
+            localStorage.setItem('dante_calibracion_tactica_inicial_done', 'true');
+          }
+          sessionStorage.removeItem('dante_is_diagnostic');
+          localStorage.removeItem('dante_is_diagnostic');
+        } catch (eYa) {}
+        this.pendingStartAfterFetch = false;
+        console.log('🛡️ [DANTE HUB]: Diagnóstico ya hecho en servidor. No se vuelve a abrir.');
+        if (!Array.isArray(data.reactivos) || !data.reactivos.length) {
+          this.consultarMisionDiaria(this.targetTrack);
+          return;
+        }
+      }
+
       this.misionActual = data;
 
       // 🎯 FASE 4: Si es lanzamiento de diagnóstico, montar inmediatamente sin pasar por el Hub
       const urlParams = new URLSearchParams(window.location.search);
-      const isDiagLaunch = this._debeAbrirExamen(urlParams);
+      const isDiagLaunch = this._debeAbrirExamen(urlParams) && !data.diagnosticoYaHecho;
 
       const pidioRefuerzo = Boolean(this._refuerzoArea) && this.pendingStartAfterFetch;
       if (isDiagLaunch || pidioRefuerzo || (this.pendingStartAfterFetch && !this._llegadaASala(urlParams))) {

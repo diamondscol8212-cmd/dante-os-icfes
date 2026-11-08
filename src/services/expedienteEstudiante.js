@@ -34,15 +34,31 @@ function idEstableLocal(raw) {
   return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20, 32)}`;
 }
 
-/** Evita dos cierres del mismo bloque (cliente eval_* + servidor mision_daily_*) en <2 min. */
+function familiaTipoSesion(tipo) {
+  const t = String(tipo || '').toUpperCase();
+  if (t === 'NUBE' || t === 'RESPALDO_LOCAL') return 'IGNORAR';
+  if (t.includes('DIAGNOSTICO')) return 'DIAGNOSTICO';
+  if (t.includes('SIMULACRO')) return 'SIMULACRO';
+  if (t.includes('REPASO')) return 'REPASO_FALLIDAS';
+  if (t.includes('REFUERZO')) return 'REFUERZO';
+  if (t.includes('MISION') || t.includes('ENTRENAMIENTO')) return 'MISION_DIARIA';
+  return t || 'OTRO';
+}
+
+/** Evita dos cierres del mismo bloque (cliente + servidor) y DIAGNOSTICO duplicado. */
 function esSesionCasiIgual(a, b) {
   if (!a || !b) return false;
   if (a.id && b.id && String(a.id) === String(b.id)) return true;
+  const fa = familiaTipoSesion(a.tipo);
+  const fb = familiaTipoSesion(b.tipo);
+  if (fa === 'IGNORAR' || fb === 'IGNORAR') return false;
   const ta = Date.parse(a.created_at || '') || 0;
   const tb = Date.parse(b.created_at || '') || 0;
   if (!ta || !tb) return false;
+  // Un solo diagnóstico de por vida: cualquier par DIAGNOSTICO* cuenta como el mismo.
+  if (fa === 'DIAGNOSTICO' && fb === 'DIAGNOSTICO') return true;
   if (Math.abs(ta - tb) > 120000) return false;
-  if (String(a.tipo || '') !== String(b.tipo || '')) return false;
+  if (fa !== fb) return false;
   const pa = Number(a.puntaje);
   const pb = Number(b.puntaje);
   if (Number.isFinite(pa) && Number.isFinite(pb) && Math.abs(pa - pb) <= 20) return true;
@@ -56,6 +72,7 @@ function fusionarHistorialSesiones(previas, nuevas) {
   const cola = [...(Array.isArray(nuevas) ? nuevas : []), ...(Array.isArray(previas) ? previas : [])];
   cola.forEach((ses) => {
     if (!ses) return;
+    if (familiaTipoSesion(ses.tipo) === 'IGNORAR') return;
     if (out.some((x) => esSesionCasiIgual(x, ses))) return;
     out.push(ses);
   });
@@ -197,6 +214,17 @@ export async function guardarPerfilDiagnostico(alias, payload = {}) {
 /**
  * Anota diagnóstico, entrenamiento o refuerzo en el expediente canónico (saber_11).
  */
+export function diagnosticoYaHechoEnFila(fila) {
+  if (!fila) return false;
+  const hist = Array.isArray(fila.historial_sesiones) ? fila.historial_sesiones : [];
+  const huboDiag = hist.some((s) => familiaTipoSesion(s && s.tipo) === 'DIAGNOSTICO');
+  return Boolean(
+    huboDiag
+    || Boolean(fila.perfil_diagnostico_at)
+    || (Number(fila.preguntas_respondidas) > 0 && fila.baseline_proyeccion != null)
+  );
+}
+
 export async function registrarSesionExpediente(alias, payload = {}) {
   const estudiante = aliasEstudiante(alias);
   if (!estudiante) return { ok: false, error: 'sin_estudiante' };
@@ -204,6 +232,12 @@ export async function registrarSesionExpediente(alias, payload = {}) {
   const previo = await cargarProgresoSaber(estudiante);
   if (previo.error) return { ok: false, error: previo.error.message };
   const fila = previo.data;
+
+  // Diagnóstico: una sola vez. Si ya existe, no anotar otro DIAGNOSTICO*.
+  const tipoNuevo = String(payload.tipo || 'MISION_DIARIA').toUpperCase();
+  if (familiaTipoSesion(tipoNuevo) === 'DIAGNOSTICO' && diagnosticoYaHechoEnFila(fila)) {
+    return { ok: true, skipped: true, motivo: 'diagnostico_ya_hecho' };
+  }
 
   const respuestas = Array.isArray(payload.respuestas) ? payload.respuestas : [];
   const itemsPrev = Array.isArray(fila && fila.items_respondidos) ? fila.items_respondidos : [];

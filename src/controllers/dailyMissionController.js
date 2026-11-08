@@ -15,7 +15,7 @@ import { generarBateriaDiagnostico } from '../services/bank/diagnosticGenerator.
 import { seleccionarBloque, seleccionarRefuerzo } from '../services/bank/selectorApertura.js';
 import { cargarVistos, recordarVistos } from '../services/bank/vistosSala.js';
 import { juicioDeItem } from '../services/bank/calificarItem.js';
-import { registrarSesionExpediente } from '../services/expedienteEstudiante.js';
+import { cargarProgresoSaber, diagnosticoYaHechoEnFila, registrarSesionExpediente } from '../services/expedienteEstudiante.js';
 
 // Cache en memoria RAM para resiliencia de estado de sesión completada hoy y racha (Bogotá)
 export const SESIONES_COMPLETADAS_HOY = new Set();
@@ -58,7 +58,7 @@ export async function obtenerMisionDiaria(req, res) {
     }
     const cleanStudentId = String(rawStudentId).toLowerCase().trim().split('@')[0];
 
-    const isDiagnostic = Boolean(
+    let isDiagnostic = Boolean(
       req.body?.isDiagnostic === true || 
       req.body?.is_diagnostic === true || 
       req.body?.isDiagnostic === 'true' || 
@@ -68,6 +68,33 @@ export async function obtenerMisionDiaria(req, res) {
       req.headers?.['x-is-diagnostic'] === 'true'
     );
     const refuerzoArea = String(req.body?.refuerzoArea || req.query?.refuerzoArea || '').toLowerCase().trim();
+
+    // Diagnóstico único de por vida: si ya está en el expediente, no se vuelve a servir.
+    if (isDiagnostic) {
+      try {
+        const prev = await cargarProgresoSaber(cleanStudentId);
+        if (diagnosticoYaHechoEnFila(prev && prev.data)) {
+          return res.status(200).json({
+            success: true,
+            diagnosticoYaHecho: true,
+            isDiagnostic: false,
+            bloqueadoPorDescanso: false,
+            misionId: `mision_daily_postdiag_${Date.now()}`,
+            targetTrack: 'ICFES',
+            planTier: 'FREE',
+            bloqueActual: 1,
+            tiempoEstimadoMinutos: 25,
+            saludoDante: 'Tu diagnóstico ya quedó registrado. Entra al entrenamiento desde la sala.',
+            rachaDias: Number((prev.data && prev.data.racha_dias) || 0),
+            totalReactivos: 0,
+            reactivos: [],
+            microDilemasVocacionales: []
+          });
+        }
+      } catch (eDiagGate) {
+        console.warn('⚠️ [DAILY MISSION]: No se pudo verificar diagnóstico previo:', eDiagGate && eDiagGate.message);
+      }
+    }
 
     const studentName = reqUser.nombre || reqUser.name || req.body?.studentName || req.body?.nombre || "Estudiante";
     const institutionId = req.tenantId || reqUser.institution_id || req.body?.institution_id || req.headers?.['x-institution-id'] || "dante_enterprise";
