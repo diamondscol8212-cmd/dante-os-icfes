@@ -544,6 +544,12 @@ class CooldownTimerEngine {
     }
 
     static toggleRecordatorio() {
+        if (window.DanteNotificaciones && typeof window.DanteNotificaciones.toggle === 'function') {
+            window.DanteNotificaciones.toggle().then(() => {
+                this.actualizarBotonRecordatorioUI();
+            });
+            return;
+        }
         const activo = localStorage.getItem('dante_recordatorio_dosis_activo') === 'true';
         const nuevoEstado = !activo;
         localStorage.setItem('dante_recordatorio_dosis_activo', String(nuevoEstado));
@@ -561,31 +567,28 @@ class CooldownTimerEngine {
     }
 
     static actualizarBotonRecordatorioUI() {
-        const activo = localStorage.getItem('dante_recordatorio_dosis_activo') === 'true';
+        let activo = localStorage.getItem('dante_recordatorio_dosis_activo') === 'true';
+        try {
+            if (window.DanteNotificaciones && typeof window.DanteNotificaciones.leerPrefs === 'function') {
+                const p = window.DanteNotificaciones.leerPrefs();
+                activo = !!(p && p.enabled && !p.denied);
+            }
+        } catch (_) {}
         const txtSinVidas = document.getElementById('lblRecordatorioDosisSinVidas');
         if (txtSinVidas) {
-            txtSinVidas.innerText = activo 
-                ? "🔔 Recordatorio Activado (4:00 PM) - ¡Listo!" 
-                : "🔔 Activar Recordatorio Diario a las 4:00 PM";
+            txtSinVidas.innerText = activo
+                ? 'Recordatorio activado (~4:00 p. m.)'
+                : 'Activar recordatorio de entrenamiento';
         }
     }
 
     static revisarEstadoRecordatorio() {
         this.actualizarBotonRecordatorioUI();
-        const now = new Date();
-        if (now.getHours() === 16 && now.getMinutes() === 0 && localStorage.getItem('dante_recordatorio_dosis_activo') === 'true') {
-            const notifNotified = localStorage.getItem('dante_recordatorio_notificado_hoy');
-            const todayStr = now.toISOString().split('T')[0];
-            if (notifNotified !== todayStr) {
-                localStorage.setItem('dante_recordatorio_notificado_hoy', todayStr);
-                if ("Notification" in window && Notification.permission === "granted") {
-                    new Notification("🧠 Dante OS - Tu Dosis Diaria está Lista", {
-                        body: "Salida del colegio: Tu dosis de 10 reactivos calibrados de hoy está esperándote. Mantén tu racha activa.",
-                        icon: "/assets/icons/brain.png"
-                    });
-                }
+        try {
+            if (window.DanteNotificaciones && typeof window.DanteNotificaciones.evaluarYEnviar === 'function') {
+                window.DanteNotificaciones.evaluarYEnviar();
             }
-        }
+        } catch (_) {}
     }
 }
 
@@ -2983,6 +2986,7 @@ window.togglePlanModoSimulador = function() {
 
 // Global Exports
 window.CooldownTimerEngine = CooldownTimerEngine;
+window.DataTimerEngine = CooldownTimerEngine; // alias legacy del botón de recordatorio
 window.ShareCardEngine = ShareCardEngine;
 window.CrossSellUNALEngine = CrossSellUNALEngine;
 window.DiagnosticoExpresEngine = DiagnosticoExpresEngine;

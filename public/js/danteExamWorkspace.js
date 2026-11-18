@@ -3586,6 +3586,13 @@
       if (!Array.isArray(hist)) hist = [];
       hist.unshift(registro);
       try { localStorage.setItem('dante_history_cache', JSON.stringify(hist.slice(0, 80))); } catch (e) {}
+      try {
+        if (String(tipo || '').toUpperCase() === 'MISION_DIARIA'
+            && window.DanteNotificaciones
+            && typeof window.DanteNotificaciones.marcarEntrenamientoHechoHoy === 'function') {
+          window.DanteNotificaciones.marcarEntrenamientoHechoHoy();
+        }
+      } catch (eNotif) {}
       return registro;
     }
 
