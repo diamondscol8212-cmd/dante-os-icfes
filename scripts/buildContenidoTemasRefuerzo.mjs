@@ -135,7 +135,7 @@ C.biologia = pack(
     'Mezclar respiración celular con fotosíntesis.'
   ],
   {
-    titulo: 'Ejemplo resuelto',
+    titulo: 'Ejemplo resuelto · mismo tipo',
     enunciado: 'En la fase luminosa de la fotosíntesis, en los tilacoides se generan principalmente…',
     pasos: [
       '1) La luz excita pigmentos en tilacoides.',
@@ -143,7 +143,11 @@ C.biologia = pack(
       '3) El azúcar se forma después, en el estroma (Calvin).'
     ],
     respuesta: 'ATP y NADPH (energía reductora)',
-    contraste: null
+    contraste: {
+      titulo: 'Contraste · no confundir fases',
+      invalido: 'Inválido: «En tilacoides se forma la glucosa del Calvin.»',
+      valido: 'Válido: «Tilacoides = fase luminosa (ATP/NADPH); estroma = Calvin (azúcar).»'
+    }
   },
   [
     q('tr_bio_01', 'La fase luminosa ocurre sobre todo en:', ['A) mitocondrias', 'B) tilacoides del cloroplasto', 'C) ribosomas libres', 'D) vacuolas'], 'B',

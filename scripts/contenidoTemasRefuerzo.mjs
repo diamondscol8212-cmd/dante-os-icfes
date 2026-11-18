@@ -274,7 +274,7 @@ export const CONTENIDO_TEMAS = {
       "Mezclar respiración celular con fotosíntesis."
     ],
     "ejemplo": {
-      "titulo": "Ejemplo resuelto",
+      "titulo": "Ejemplo resuelto · mismo tipo",
       "enunciado": "En la fase luminosa de la fotosíntesis, en los tilacoides se generan principalmente…",
       "pasos": [
         "1) La luz excita pigmentos en tilacoides.",
@@ -282,7 +282,11 @@ export const CONTENIDO_TEMAS = {
         "3) El azúcar se forma después, en el estroma (Calvin)."
       ],
       "respuesta": "ATP y NADPH (energía reductora)",
-      "contraste": null
+      "contraste": {
+        "titulo": "Contraste · no confundir fases",
+        "invalido": "Inválido: «En tilacoides se forma la glucosa del Calvin.»",
+        "valido": "Válido: «Tilacoides = fase luminosa (ATP/NADPH); estroma = Calvin (azúcar).»"
+      }
     },
     "practica": [
       {

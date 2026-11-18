@@ -717,6 +717,20 @@ function diagramaOpcionesDe(id) {
       180
     );
   }
+  if (id === 'biologia') {
+    return wrap(
+      `<text x="24" y="52" fill="#cbd5e1" font-size="12">¿Dónde ocurre la fase luminosa?</text>`
+      + `<rect x="40" y="70" width="200" height="70" rx="10" fill="#111827" stroke="#34d39955"/>`
+      + `<text x="140" y="100" text-anchor="middle" fill="#6ee7b7" font-size="12">✓ Tilacoides</text>`
+      + `<text x="140" y="122" text-anchor="middle" fill="#94a3b8" font-size="10">ATP / NADPH</text>`
+      + `<rect x="280" y="70" width="200" height="70" rx="10" fill="#111827" stroke="#f8717155"/>`
+      + `<text x="380" y="100" text-anchor="middle" fill="#f87171" font-size="12">✗ Estroma = Calvin</text>`
+      + `<text x="380" y="122" text-anchor="middle" fill="#94a3b8" font-size="10">fija CO₂, otra fase</text>`
+      + `<text x="24" y="170" fill="#64748b" font-size="11">No mezcles fase luminosa con ciclo de Calvin</text>`,
+      'Opciones biología',
+      200
+    );
+  }
   return '';
 }
 

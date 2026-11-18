@@ -83,13 +83,17 @@
 
   function pintarDetalle() {
     const el = document.getElementById('lblRepasoFallidasDetalle');
-    if (!el) return;
+    const puerta = document.getElementById('puertaRepasoFallidas');
     const n = ledger.length;
-    if (!n) {
-      el.textContent = 'Sin fallos pendientes. Bien.';
-      return;
+    if (el) {
+      el.textContent = n
+        ? (n + (n === 1 ? ' pregunta pendiente' : ' preguntas pendientes'))
+        : 'Sin fallos pendientes. Bien.';
     }
-    el.textContent = n + (n === 1 ? ' pregunta pendiente' : ' preguntas pendientes');
+    if (puerta) {
+      puerta.classList.toggle('sala-card-has-pending', n > 0);
+      puerta.setAttribute('data-pendientes', String(n));
+    }
   }
 
   function pintarPerfil() {

@@ -1471,6 +1471,7 @@
       "estadoContenido": "completo",
       "profundizar": "Repasa fotosíntesis, genética de poblaciones y organización biológica.",
       "diagrama_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 520 200\" role=\"img\" aria-label=\"Biología: estructuras y procesos\"><rect width=\"520\" height=\"200\" rx=\"14\" fill=\"#0b1220\"/><rect x=\"1\" y=\"1\" width=\"518\" height=\"198\" rx=\"13\" fill=\"none\" stroke=\"#1e293b\"/><text x=\"24\" y=\"28\" fill=\"#94a3b8\" font-size=\"11\" font-family=\"ui-monospace,monospace\" letter-spacing=\"1\">AYUDA VISUAL</text><rect x=\"40\" y=\"55\" width=\"140\" height=\"50\" rx=\"8\" fill=\"#111827\" stroke=\"#7eb8c455\"/><text x=\"110\" y=\"85\" text-anchor=\"middle\" fill=\"#7eb8c4\" font-size=\"12\">Luz + H₂O</text><text x=\"195\" y=\"85\" fill=\"#64748b\" font-size=\"16\">→</text><rect x=\"220\" y=\"55\" width=\"140\" height=\"50\" rx=\"8\" fill=\"#111827\" stroke=\"#c4a57455\"/><text x=\"290\" y=\"85\" text-anchor=\"middle\" fill=\"#c4a574\" font-size=\"12\">Tilacoides</text><text x=\"375\" y=\"85\" fill=\"#64748b\" font-size=\"16\">→</text><rect x=\"400\" y=\"55\" width=\"90\" height=\"50\" rx=\"8\" fill=\"#111827\" stroke=\"#34d39955\"/><text x=\"445\" y=\"85\" text-anchor=\"middle\" fill=\"#6ee7b7\" font-size=\"12\">ATP</text><text x=\"24\" y=\"140\" fill=\"#cbd5e1\" font-size=\"12\">Calvin fija CO₂ → glucosa · O₂ se libera</text><text x=\"24\" y=\"170\" fill=\"#64748b\" font-size=\"11\">No confundir fase luminosa con ciclo de Calvin</text></svg>",
+      "diagrama_opciones_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 520 200\" role=\"img\" aria-label=\"Opciones biología\"><rect width=\"520\" height=\"200\" rx=\"14\" fill=\"#0b1220\"/><rect x=\"1\" y=\"1\" width=\"518\" height=\"198\" rx=\"13\" fill=\"none\" stroke=\"#1e293b\"/><text x=\"24\" y=\"28\" fill=\"#94a3b8\" font-size=\"11\" font-family=\"ui-monospace,monospace\" letter-spacing=\"1\">OPCIONES · AYUDA VISUAL</text><text x=\"24\" y=\"52\" fill=\"#cbd5e1\" font-size=\"12\">¿Dónde ocurre la fase luminosa?</text><rect x=\"40\" y=\"70\" width=\"200\" height=\"70\" rx=\"10\" fill=\"#111827\" stroke=\"#34d39955\"/><text x=\"140\" y=\"100\" text-anchor=\"middle\" fill=\"#6ee7b7\" font-size=\"12\">✓ Tilacoides</text><text x=\"140\" y=\"122\" text-anchor=\"middle\" fill=\"#94a3b8\" font-size=\"10\">ATP / NADPH</text><rect x=\"280\" y=\"70\" width=\"200\" height=\"70\" rx=\"10\" fill=\"#111827\" stroke=\"#f8717155\"/><text x=\"380\" y=\"100\" text-anchor=\"middle\" fill=\"#f87171\" font-size=\"12\">✗ Estroma = Calvin</text><text x=\"380\" y=\"122\" text-anchor=\"middle\" fill=\"#94a3b8\" font-size=\"10\">fija CO₂, otra fase</text><text x=\"24\" y=\"170\" fill=\"#64748b\" font-size=\"11\">No mezcles fase luminosa con ciclo de Calvin</text></svg>",
       "terminos": [
         {
           "termino": "fotosíntesis",
@@ -1511,7 +1512,7 @@
           "Mezclar respiración celular con fotosíntesis."
         ],
         "ejemplo_resuelto": {
-          "titulo": "Ejemplo resuelto",
+          "titulo": "Ejemplo resuelto · mismo tipo",
           "enunciado": "En la fase luminosa de la fotosíntesis, en los tilacoides se generan principalmente…",
           "pasos": [
             "1) La luz excita pigmentos en tilacoides.",
@@ -1519,10 +1520,19 @@
             "3) El azúcar se forma después, en el estroma (Calvin)."
           ],
           "respuesta": "ATP y NADPH (energía reductora)",
-          "contraste": null
+          "contraste": {
+            "titulo": "Contraste · no confundir fases",
+            "invalido": "Inválido: «En tilacoides se forma la glucosa del Calvin.»",
+            "valido": "Válido: «Tilacoides = fase luminosa (ATP/NADPH); estroma = Calvin (azúcar).»"
+          }
         },
-        "contraste": null,
+        "contraste": {
+          "titulo": "Contraste · no confundir fases",
+          "invalido": "Inválido: «En tilacoides se forma la glucosa del Calvin.»",
+          "valido": "Válido: «Tilacoides = fase luminosa (ATP/NADPH); estroma = Calvin (azúcar).»"
+        },
         "diagrama_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 520 200\" role=\"img\" aria-label=\"Biología: estructuras y procesos\"><rect width=\"520\" height=\"200\" rx=\"14\" fill=\"#0b1220\"/><rect x=\"1\" y=\"1\" width=\"518\" height=\"198\" rx=\"13\" fill=\"none\" stroke=\"#1e293b\"/><text x=\"24\" y=\"28\" fill=\"#94a3b8\" font-size=\"11\" font-family=\"ui-monospace,monospace\" letter-spacing=\"1\">AYUDA VISUAL</text><rect x=\"40\" y=\"55\" width=\"140\" height=\"50\" rx=\"8\" fill=\"#111827\" stroke=\"#7eb8c455\"/><text x=\"110\" y=\"85\" text-anchor=\"middle\" fill=\"#7eb8c4\" font-size=\"12\">Luz + H₂O</text><text x=\"195\" y=\"85\" fill=\"#64748b\" font-size=\"16\">→</text><rect x=\"220\" y=\"55\" width=\"140\" height=\"50\" rx=\"8\" fill=\"#111827\" stroke=\"#c4a57455\"/><text x=\"290\" y=\"85\" text-anchor=\"middle\" fill=\"#c4a574\" font-size=\"12\">Tilacoides</text><text x=\"375\" y=\"85\" fill=\"#64748b\" font-size=\"16\">→</text><rect x=\"400\" y=\"55\" width=\"90\" height=\"50\" rx=\"8\" fill=\"#111827\" stroke=\"#34d39955\"/><text x=\"445\" y=\"85\" text-anchor=\"middle\" fill=\"#6ee7b7\" font-size=\"12\">ATP</text><text x=\"24\" y=\"140\" fill=\"#cbd5e1\" font-size=\"12\">Calvin fija CO₂ → glucosa · O₂ se libera</text><text x=\"24\" y=\"170\" fill=\"#64748b\" font-size=\"11\">No confundir fase luminosa con ciclo de Calvin</text></svg>",
+        "diagrama_opciones_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 520 200\" role=\"img\" aria-label=\"Opciones biología\"><rect width=\"520\" height=\"200\" rx=\"14\" fill=\"#0b1220\"/><rect x=\"1\" y=\"1\" width=\"518\" height=\"198\" rx=\"13\" fill=\"none\" stroke=\"#1e293b\"/><text x=\"24\" y=\"28\" fill=\"#94a3b8\" font-size=\"11\" font-family=\"ui-monospace,monospace\" letter-spacing=\"1\">OPCIONES · AYUDA VISUAL</text><text x=\"24\" y=\"52\" fill=\"#cbd5e1\" font-size=\"12\">¿Dónde ocurre la fase luminosa?</text><rect x=\"40\" y=\"70\" width=\"200\" height=\"70\" rx=\"10\" fill=\"#111827\" stroke=\"#34d39955\"/><text x=\"140\" y=\"100\" text-anchor=\"middle\" fill=\"#6ee7b7\" font-size=\"12\">✓ Tilacoides</text><text x=\"140\" y=\"122\" text-anchor=\"middle\" fill=\"#94a3b8\" font-size=\"10\">ATP / NADPH</text><rect x=\"280\" y=\"70\" width=\"200\" height=\"70\" rx=\"10\" fill=\"#111827\" stroke=\"#f8717155\"/><text x=\"380\" y=\"100\" text-anchor=\"middle\" fill=\"#f87171\" font-size=\"12\">✗ Estroma = Calvin</text><text x=\"380\" y=\"122\" text-anchor=\"middle\" fill=\"#94a3b8\" font-size=\"10\">fija CO₂, otra fase</text><text x=\"24\" y=\"170\" fill=\"#64748b\" font-size=\"11\">No mezcles fase luminosa con ciclo de Calvin</text></svg>",
         "terminos": [
           {
             "termino": "fotosíntesis",
