@@ -3376,11 +3376,30 @@
       };
     }
 
+    _razonOpcionIncorrecta(item, letra) {
+      const L = String(letra || '').trim().toUpperCase();
+      if (!item || !L) return '';
+      const porLetra = item.justificacion_opciones && item.justificacion_opciones[L];
+      if (this._textoLimpio(porLetra)) return this._textoLimpio(porLetra);
+      const textoOp = this._textoOpcionEnPantalla(item, L);
+      const porTexto = item.razonesPorTexto && textoOp && item.razonesPorTexto[textoOp];
+      if (this._textoLimpio(porTexto)) return this._textoLimpio(porTexto);
+      // Variantes sin prefijo «A) »
+      if (item.razonesPorTexto && typeof item.razonesPorTexto === 'object') {
+        const crudo = String(textoOp || '').replace(/^[A-D][\)\.\-\:]\s*/i, '').trim().toLowerCase();
+        for (const [k, v] of Object.entries(item.razonesPorTexto)) {
+          const kk = String(k || '').replace(/^[A-D][\)\.\-\:]\s*/i, '').trim().toLowerCase();
+          if (kk && crudo && kk === crudo && this._textoLimpio(v)) return this._textoLimpio(v);
+        }
+      }
+      return '';
+    }
+
     _textoAyudaItem(item, elegida) {
       const letra = String(elegida || '').trim().toUpperCase();
       const razon = this._textoLimpio(
         (item && item._explicacionIncorrecta)
-        || (item && item.justificacion_opciones && item.justificacion_opciones[letra])
+        || this._razonOpcionIncorrecta(item, letra)
       );
       const explOk = this._textoLimpio(
         (item && (item._explicacionCorrecta || item.explicacion_correcta))
@@ -3395,6 +3414,11 @@
       if (explOk) partes.push(explOk);
       if (temaSirve) partes.push('Estudia: ' + tema + '.');
       if (atajo) partes.push(atajo);
+      if (!partes.length && letra) {
+        const clave = String(item && (item.correcta || item.ok) || '').toUpperCase().slice(0, 1);
+        if (clave && clave !== letra) partes.push('La opción ' + letra + ' no es correcta. La respuesta es ' + clave + '.');
+        else if (explOk) partes.push(explOk);
+      }
       return partes.join(' ').replace(/\s+/g, ' ').trim().slice(0, 720);
     }
 
@@ -4438,7 +4462,7 @@
       const nombreArea = this._nombreArea(item);
       const razon = this._textoLimpio(
         item._explicacionIncorrecta
-        || (item.justificacion_opciones && item.justificacion_opciones[elegidaFeedback])
+        || this._razonOpcionIncorrecta(item, elegidaFeedback)
       );
       const acierto = this._textoLimpio(item.frase_acierto);
       const explOk = this._textoLimpio(item._explicacionCorrecta || item.explicacion_correcta);
@@ -4469,11 +4493,11 @@
           }
           if (explOk) partes.push(explOk);
           else if (claveFeedback) partes.push('La correcta es ' + claveFeedback + '.');
-          if (!razon && !acierto && !explOk) {
-            partes.push('Aún no hay explicación guardada para esta opción.');
+          if (!razon && !explOk && claveFeedback) {
+            partes.push('Revisa por qué la opción ' + claveFeedback + ' sí cumple lo pedido.');
           }
           if (repasoSirve) partes.push('Estudia este tema: ' + repaso + '.');
-          frase = partes.filter(Boolean).join(' ') || 'Esta no era.';
+          frase = partes.filter(Boolean).join(' ') || ('Esta no era. La correcta es ' + (claveFeedback || 'otra opción') + '.');
         }
       }
       this._señalarLetraClave(claveFeedback);

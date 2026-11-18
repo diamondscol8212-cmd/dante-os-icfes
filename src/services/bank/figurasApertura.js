@@ -327,6 +327,33 @@ const FIGURAS = {
   item_ap_lec_033: tabla(['Concepto', 'Valor'], [['Arriendo', '$400.000'], ['Energía', '$50.000'], ['Agua', '$30.000']]),
   item_ap_lec_034: mapaConceptual(),
   item_ap_lec_078: leyenda([['línea punteada', 'sendero'], ['línea continua', 'vía pavimentada']]),
+  item_ap_soc_010: papel(`
+    <p style="margin:0 0 8px;"><strong>Escala del mapa</strong> 1 : 50.000</p>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 100" style="width:100%;height:auto;">
+      <rect x="24" y="28" width="120" height="18" fill="none" stroke="#1c1917" stroke-width="2"/>
+      <text x="30" y="70" font-size="14" fill="#1c1917">1 cm en el papel</text>
+      <text x="170" y="42" font-size="15" fill="#1c1917">= 50.000 cm reales</text>
+      <text x="170" y="66" font-size="13" fill="#44403c">(0,5 km)</text>
+    </svg>
+  `),
+  item_ap_soc_011: svg(`
+    <circle cx="210" cy="110" r="70" fill="#fff7ed" stroke="#1c1917" stroke-width="2"/>
+    <line x1="210" y1="40" x2="210" y2="180" stroke="#1c1917" stroke-width="2"/>
+    <line x1="140" y1="110" x2="280" y2="110" stroke="#1c1917" stroke-width="2"/>
+    <text x="210" y="32" text-anchor="middle" font-size="14" fill="#9a3412">N</text>
+    <text x="210" y="198" text-anchor="middle" font-size="14" fill="#1c1917">S</text>
+    <text x="128" y="114" text-anchor="middle" font-size="14" fill="#1c1917">O</text>
+    <text x="292" y="114" text-anchor="middle" font-size="14" fill="#1c1917">E</text>
+    <text x="210" y="220" text-anchor="middle" font-size="13" fill="#44403c">Rosa de los vientos</text>
+  `, 420, 236),
+  item_ap_mat_063: papel(`
+    <p style="margin:0 0 8px;"><strong>Escala:</strong> 1 cm en el mapa = 5 km reales</p>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 90" style="width:100%;height:auto;">
+      <line x1="30" y1="40" x2="190" y2="40" stroke="#0f766e" stroke-width="4"/>
+      <text x="40" y="66" font-size="14" fill="#1c1917">ruta = 8 cm en el mapa</text>
+      <text x="210" y="44" font-size="14" fill="#1c1917">→ ¿km reales?</text>
+    </svg>
+  `),
   item_ap_soc_016: curvasNivel(),
   item_ap_soc_020: climograma(),
   item_ap_soc_023: barras([['Caribe', 20], ['Pacífica', 12], ['Andina', 48], ['Orinoquía', 8], ['Amazonía', 10]]),

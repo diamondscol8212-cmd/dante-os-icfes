@@ -22,9 +22,9 @@ const REPASA = {
   fisica: 'Física',
   quimica: 'Química',
   biologia: 'Biología',
-  geografia: 'Geografía de Colombia',
-  constitucion: 'Constitución',
-  historia: 'Historia de Colombia',
+  geografia: 'Geografía de Colombia: regiones, relieve y clima',
+  constitucion: 'Constitución Política y organización del Estado',
+  historia: 'Historia de Colombia: independencia y siglo XX',
   pensamiento_critico: 'Sociales: fuentes y pruebas',
   interpretacion: 'Sociales: leer gráficos y mapas',
   participacion: 'Sociales: participación',
@@ -186,6 +186,7 @@ function sinRespuesta(texto, correcta) {
 
 function porque(mala, correcta) {
   const m = String(mala || '').toLowerCase();
+  const c = String(correcta || '').toLowerCase();
   if (/niega|no hay|no existe|imposible|ninguno|nada/.test(m)) {
     return 'niega algo que el enunciado sí deja en pie.';
   }
@@ -195,7 +196,19 @@ function porque(mala, correcta) {
   if (/siempre|todo el|toda el|todos|toda la|completo/.test(m)) {
     return 'vuelve general un dato que solo vale para el caso que se cuenta.';
   }
-  return `responde otra pregunta. Lo que se pedía es «${corta(correcta, 80)}».`;
+  if (/amazonas/.test(m) && /magdalena|cauca|caribe/.test(c)) {
+    return 'confunde la cuenca del Amazonas con el sistema Magdalena-Cauca / Caribe.';
+  }
+  if (/orinoco/.test(m) && /magdalena|cauca|caribe/.test(c)) {
+    return 'el Orinoco drena los Llanos; no es la respuesta del sistema Magdalena-Cauca.';
+  }
+  if (/pac[ií]fico/.test(m) && /caribe/.test(c)) {
+    return 'confunde la desembocadura: el Magdalena llega al Caribe, no al Pacífico.';
+  }
+  if (/mediterr|titicaca/.test(m)) {
+    return 'nombra un cuerpo de agua que no pertenece a la hidrografía del caso colombiano.';
+  }
+  return `no encaja con el concepto o el dato pedido («${corta(correcta, 80)}»).`;
 }
 
 function desdeLista(area, id, lista, malas) {

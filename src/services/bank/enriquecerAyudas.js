@@ -17,7 +17,7 @@ const TEMA_SUB = {
   aritmetica: 'Aritmética y orden de operaciones',
   fracciones: 'Fracciones: equivalencia, suma y comparación',
   trigonometria: 'Trigonometría básica (seno, coseno, tangente)',
-  combinatoria: 'Combinatoria y conteo',
+  combinatoria: 'Combinatoria y conteo de arreglos',
   dos_textos: 'Lectura crítica: comparar dos textos',
   textos_discontinuos: 'Lectura de tablas, avisos y gráficas',
   argumentacion: 'Lectura crítica: argumentos y conclusiones',
@@ -36,10 +36,10 @@ const TEMA_SUB = {
   quimica: 'Química: cambios y reacciones',
   biologia: 'Biología: estructuras y procesos',
   cts: 'Ciencia, tecnología y sociedad',
-  geografia: 'Geografía de Colombia',
+  geografia: 'Geografía de Colombia: regiones, relieve y clima',
   hidrografia_colombia: 'Hidrografía de Colombia: ríos, afluentes y cuencas',
   constitucion: 'Constitución Política y organización del Estado',
-  historia: 'Historia de Colombia',
+  historia: 'Historia de Colombia: independencia y siglo XX',
   pensamiento_critico: 'Sociales: fuentes y evidencias',
   interpretacion: 'Sociales: lectura de gráficos y mapas',
   interpretacion_y_analisis: 'Sociales: interpretación y análisis de perspectivas',
@@ -61,9 +61,9 @@ const TEMA_SUB = {
   inferential_reading: 'Inglés: lectura inferencial',
   grammar: 'Inglés: gramática',
   grammar_reading: 'Inglés: gramática y lectura',
-  calculo_limites: 'Cálculo: límites',
-  aptitud_numerica_docente: 'Aptitud numérica',
-  aptitud_pedagogica: 'Aptitud pedagógica'
+  calculo_limites: 'Cálculo: límites y tendencia de funciones',
+  aptitud_numerica_docente: 'Aptitud numérica para docentes',
+  aptitud_pedagogica: 'Aptitud pedagógica y decisiones de aula'
 };
 
 function limpio(t) {
@@ -100,8 +100,10 @@ export function pistaEsDebil(pista) {
 export function temaEsDebil(tema) {
   const s = limpio(tema);
   if (!s) return true;
+  // Títulos canónicos del catálogo no son débiles aunque sean cortos.
+  const canon = Object.values(TEMA_SUB).some((t) => limpio(t).toLowerCase() === s.toLowerCase());
+  if (canon) return false;
   if (s.length < 22) return true;
-  if (/^aptitud /i.test(s)) return true;
   if (/^(f[ií]sica|biolog[ií]a|qu[ií]mica|probabilidad|gram[aá]tica|aritm[eé]tica|geometr[ií]a|[aá]lgebra|estad[ií]stica|historia|geograf[ií]a|vocabulario|lectura|ingl[eé]s)$/i.test(s)) {
     return true;
   }
@@ -134,11 +136,15 @@ function esJustifDebil(razon) {
   if (!r) return true;
   if (r.length < 55) return true;
   if (/no cumple la condici[oó]n o el c[aá]lculo del enunciado/i.test(r)) return true;
+  if (/responde (a )?otra pregunta|usa solo una parte de la informaci[oó]n|lo que se ped[ií]a es/i.test(r)
+      && !/cuenca|afluente|desemboc|macizo|complemento|numerador|pendiente|falacia|gradiente/i.test(r)) {
+    return true;
+  }
   if (/no (responde|cierra|es (lo|la)|sirve)|no es (correcta|v[aá]lida)|opci[oó]n incorrecta/i.test(r) && r.length < 110) {
     return true;
   }
   if (/^«[^»]{1,90}» no (responde|es lo que pide)/i.test(r)
-      && !/porque|error|olvid|sumaste|restaste|confund|mezcl|omit|invert|producto|uni[oó]n|complemento/i.test(r)) {
+      && !/porque|error|olvid|sumaste|restaste|confund|mezcl|omit|invert|producto|uni[oó]n|complemento|cuenca|afluente|desemboc/i.test(r)) {
     return true;
   }
   return false;
@@ -227,8 +233,27 @@ function errorTipicoPorTexto(mala, bien, sub, area, item) {
     return 'Error típico: mezclaste conceptos cercanos (causa/efecto, proceso/resultado, o la magnitud que no pide el caso).';
   }
 
-  if (area.includes('social') || /pensamiento_|constitucion|historia|geografia|ciudadan/.test(sub)) {
-    return 'Error típico: confundiste la norma, la competencia institucional o el mecanismo con otro parecido del enunciado.';
+  if (/afluente|cuenca|macizo colombiano|desemboca|r[ií]o (cauca|magdalena)|hidrograf/.test(enunciado + sub)
+      || sub === 'hidrografia_colombia' || sub === 'geografia') {
+    if (/amazonas/.test(m) && /cauca|magdalena|afluente/.test(enunciado + b)) {
+      return 'Error típico de hidrografía: ubicaste el río en la cuenca del Amazonas; el Cauca aporta al Magdalena (Caribe).';
+    }
+    if (/orinoco/.test(m) && /cauca|magdalena|afluente/.test(enunciado + b)) {
+      return 'Error típico: el Orinoco drena los Llanos; no es la cuenca del sistema Magdalena-Cauca.';
+    }
+    if (/pac[ií]fico/.test(m) && /caribe|magdalena|desemboca/.test(enunciado + b)) {
+      return 'Error típico: el Magdalena desemboca en el Caribe, no en el Pacífico.';
+    }
+    if (/mediterr|titicaca/.test(m)) {
+      return 'Error típico: esa cuenca o cuerpo de agua no pertenece al sistema hidrográfico colombiano del enunciado.';
+    }
+    if (/afluente|cuenca|desemboca|macizo|r[ií]o/.test(enunciado)) {
+      return 'Error típico de hidrografía/geografía: confundiste afluente, cuenca o desembocadura con otro río o vertiente.';
+    }
+  }
+
+  if (area.includes('social') || /pensamiento_|constitucion|historia|geografia|ciudadan|hidrograf/.test(sub)) {
+    return 'Error típico: confundiste la norma, el hecho histórico, la región o el mecanismo institucional con otro parecido del enunciado.';
   }
 
   if (area.includes('ingl') || /grammar|vocab|dialog|cloze|reading|aviso|sign/.test(sub)) {
@@ -236,10 +261,23 @@ function errorTipicoPorTexto(mala, bien, sub, area, item) {
   }
 
   if (numLike(mala) && numLike(bien)) {
+    const nm = parseFloat(String(mala).replace(',', '.').replace(/[^\d.-]/g, ''));
+    const nb = parseFloat(String(bien).replace(',', '.').replace(/[^\d.-]/g, ''));
+    if (Number.isFinite(nm) && Number.isFinite(nb) && nb !== 0) {
+      if (Math.abs(nm - nb * 2) < 0.05 || Math.abs(nm - nb / 2) < 0.05) {
+        return 'Error típico de cálculo: duplicaste o partiste a la mitad el valor correcto al operar.';
+      }
+      if (Math.abs(nm + nb) < 0.05 || Math.abs(Math.abs(nm) - Math.abs(nb)) < 0.05 && nm * nb < 0) {
+        return 'Error típico: invertiste el signo o restaste cuando debías sumar (o al revés) al despejar.';
+      }
+    }
+    if (/algebra|despej|ecuaci/.test(sub + enunciado)) {
+      return 'Error típico de álgebra: al despejar sumaste, restaste o multiplicaste mal el término con la variable.';
+    }
     return 'Error típico de cálculo: operaste con los datos visibles pero omitiste un paso, una conversión o la pregunta exacta.';
   }
 
-  return 'Error típico: esta opción responde a otra pregunta o usa solo una parte de la información del enunciado.';
+  return 'Error típico: elegiste un distractor cercano que no cumple la relación, la definición o el dato que pide el enunciado.';
 }
 
 function porqueIncorrecta(mala, bien, ctx) {
