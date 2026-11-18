@@ -4,44 +4,7 @@
  * y garantiza campos para el boletín: explicacion_incorrecta / correcta / tema_a_estudiar.
  */
 
-const PISTA_DEBIL = /F[ií]jate en:|Lee qu[eé] pide la pregunta|contr[aá]stalo con el enunciado|Arma la relaci[oó]n con los datos y las unidades\. Un n[uú]mero que solo suma/i;
-
-const METODO_SUB = {
-  probabilidad: 'Identifica el espacio muestral y cuenta solo los casos favorables que pide la pregunta.',
-  estadistica: 'Elige el resumen correcto (media, mediana, moda, rango o percentil) y aplica su definición, no otra.',
-  algebra: 'Plantea la ecuación o la relación con la incógnita y despeja paso a paso; no mezcles operaciones.',
-  geometria: 'Identifica la figura y la medida pedida (lado, área, perímetro, volumen o ángulo) antes de usar la fórmula.',
-  funciones: 'Lee la regla o la tabla: qué entra (x) y qué sale (y). Sustituye sin cambiar la operación.',
-  proporcionalidad: 'Decide si la razón es directa o inversa y arma la proporción con las mismas unidades.',
-  aritmetica: 'Respeta el orden de operaciones y convierte unidades antes de calcular.',
-  trigonometria: 'Separa cateto opuesto, adyacente e hipotenusa según el ángulo que nombra la pregunta.',
-  dos_textos: 'Lee cada texto por separado; la respuesta une lo que ambos sostienen, sin inventar un hecho nuevo.',
-  textos_discontinuos: 'Saca el dato de la tabla, el aviso o la gráfica. Si no está escrito, no lo completes.',
-  argumentacion: 'Separa premisa y conclusión. Descarta la opción que salta más allá de lo que permiten los datos.',
-  inferencia: 'Quédate solo con lo que se puede sostener; no agregues un hecho que el texto no dice.',
-  filosofia: 'Nombra la idea ética o el principio que el caso está usando, no un lema genérico.',
-  pragmatica: 'Pregúntate para qué se dice esa frase en esa situación concreta.',
-  semantica: 'Elige el sentido que pide el contexto, no otro significado de la misma palabra.',
-  literatura: 'Reconoce el recurso o la parte del relato; no lo leas como un dato literal del mundo.',
-  comprension_literal: 'La respuesta está dicha en el texto. Búscala; no la calcules ni la interpretes de más.',
-  indagacion: 'Separa pregunta, hipótesis, variable y conclusión: cada una tiene su lugar.',
-  fisica: 'Identifica la magnitud y la relación (fuerza, energía, movimiento). Una cuenta distinta da otro número.',
-  quimica: 'Distingue mezcla, cambio físico y reacción. El nombre tiene que coincidir con el caso.',
-  biologia: 'Ubica la estructura o el proceso en el ser vivo del enunciado.',
-  geografia: 'Sitúa el lugar o el fenómeno en el mapa de Colombia antes de marcar.',
-  constitucion: 'La pregunta pide la rama, el derecho o el mecanismo concreto. No lo cambies por uno parecido.',
-  historia: 'Ata el hecho a su fecha y a su proceso. Otro hito no lo reemplaza.',
-  pensamiento_critico: 'Una prueba tiene que poder verificarse. Un salto a «todos» o «siempre» queda corto.',
-  interpretacion: 'Lee la leyenda, los ejes y la escala. La figura no dice más de lo que muestra.',
-  participacion: 'El mecanismo de participación tiene un alcance. No lo vuelvas un poder que no tiene.',
-  pensamiento_social: 'Una norma se puede exigir; una costumbre, no siempre.',
-  dialogo: 'Responde con lo que los hablantes acaban de decir en el diálogo.',
-  aviso: 'Copia la condición del aviso (hora, lugar, requisito). Otra no está escrita.',
-  cloze: 'Mira el sujeto, el tiempo verbal y la palabra justo antes del hueco.',
-  vocabulario: 'Elige el sentido de esa palabra en esta frase, no uno cercano.',
-  lectura: 'La respuesta tiene que salir de la frase leída, no de otra idea.',
-  grammar: 'Ajusta la forma verbal o la preposición al sujeto y al tiempo de la oración.'
-};
+const PISTA_DEBIL = /F[ií]jate en:|Lee qu[eé] pide la pregunta|contr[aá]stalo con el enunciado|Arma la relaci[oó]n con los datos y las unidades\. Un n[uú]mero que solo suma|Una norma se puede exigir|Separa premisa y conclusi[oó]n|no se sostiene en el texto|nombra otro hecho, lugar o norma/i;
 
 const TEMA_SUB = {
   probabilidad: 'Probabilidad y conteo de casos',
@@ -51,6 +14,7 @@ const TEMA_SUB = {
   funciones: 'Funciones y representación',
   proporcionalidad: 'Proporcionalidad directa e inversa',
   aritmetica: 'Aritmética y orden de operaciones',
+  fracciones: 'Fracciones: equivalencia, suma y comparación',
   trigonometria: 'Trigonometría básica (seno, coseno, tangente)',
   dos_textos: 'Lectura crítica: comparar dos textos',
   textos_discontinuos: 'Lectura de tablas, avisos y gráficas',
@@ -110,51 +74,112 @@ export function pistaEsDebil(pista) {
   return false;
 }
 
+function pideElEnunciado(item) {
+  const t = limpio(item.pregunta_texto || item.texto || item.enunciado);
+  if (!t) return '';
+  const marca = t.match(/¿[^?]{8,180}\?/);
+  if (marca) return marca[0];
+  return corta(t, 160);
+}
+
 function metodoDe(item) {
-  const sub = subDe(item);
-  if (METODO_SUB[sub]) return METODO_SUB[sub];
-  const area = areaDe(item);
-  if (area.includes('mate')) return 'Identifica qué operación o relación pide el enunciado y usa solo los datos necesarios.';
-  if (area.includes('lect')) return 'Quédate con lo que el texto sostiene; descarta lo que suena bien pero no está dicho.';
-  if (area.includes('cien') || area.includes('natur')) return 'Nombra el proceso o la magnitud que la pregunta pide; no cambies la variable.';
-  if (area.includes('social')) return 'Sitúa el hecho, el lugar o la norma del caso; un parecido no lo reemplaza.';
-  if (area.includes('ingl')) return 'Responde con lo que dice el texto en inglés; otra hora, palabra o sentido no está escrito.';
-  return 'Identifica qué pide exactamente la pregunta y contrástalo con cada opción.';
+  const pide = pideElEnunciado(item);
+  if (pide) return `La pregunta dice: ${pide}`;
+  return 'Responde exactamente lo que pide este enunciado.';
 }
 
-function tipDescarte(item) {
-  const area = areaDe(item);
-  if (area.includes('mate')) return 'Descarta el distractor que suma cuando hay que multiplicar, o que olvida una conversión.';
-  if (area.includes('lect')) return 'Descarta la opción que generaliza («todos», «siempre») o niega un dato del texto.';
-  if (area.includes('cien') || area.includes('natur')) return 'Descarta la opción que cambia la causa, la variable o el resultado del experimento.';
-  if (area.includes('social')) return 'Descarta la opción que nombra otra institución, fecha o norma distinta a la del caso.';
-  if (area.includes('ingl')) return 'Descarta la forma verbal o la preposición que no concuerda con el sujeto o el tiempo.';
-  return 'Descarta la opción que responde otra pregunta o cambia el alcance del caso.';
+function tipDescarte() {
+  return 'Si la opción habla de otro caso, otra cifra u otra norma, no es la respuesta.';
 }
 
-function porqueIncorrecta(mala, bien, area) {
-  const izq = corta(crudo(mala), 100);
-  const der = corta(crudo(bien), 100);
-  const m = izq.toLowerCase();
-  if (/siempre|todos|toda|ninguno|nada|imposible/.test(m)) {
-    return `«${izq}» generaliza o niega de más. En este caso la respuesta que sí cuadra es «${der}».`;
+function esJustifDebil(razon) {
+  const r = limpio(razon);
+  if (!r) return true;
+  if (r.length < 48) return true;
+  if (/no (responde|cierra|es (lo|la)|sirve)|no es (correcta|válida)|opción incorrecta/i.test(r) && r.length < 90) {
+    return true;
   }
-  if (area.includes('mate')) {
-    return `«${izq}» no cierra la relación con los datos del enunciado. La cuenta que sí responde es «${der}».`;
+  if (/^«[^»]{1,80}» no (responde|es lo que pide)/i.test(r) && !/porque|error|olvid|sumaste|restaste|confund|mezcl|omit|invert/i.test(r)) {
+    return true;
   }
-  if (area.includes('lect')) {
-    return `«${izq}» no se sostiene en el texto. Lo que el texto sí sostiene es «${der}».`;
+  return false;
+}
+
+function trampaDeOpcion(item, letra) {
+  const lista = Array.isArray(item && item.trampas) ? item.trampas : [];
+  const L = String(letra || '').toUpperCase();
+  return lista.find((t) => String((t && (t.opcion || t.letra)) || '').toUpperCase() === L) || null;
+}
+
+function errorTipicoPorTrampa(trampa, sub) {
+  if (!trampa || typeof trampa !== 'object') return '';
+  if (trampa.vulnera_omision_conversion) {
+    return 'Es un error típico de unidades: olvidaste convertir (minutos↔segundos, horas↔minutos, cm↔m, %↔decimal) antes de operar.';
   }
-  if (area.includes('cien') || area.includes('natur')) {
-    return `«${izq}» cambia el proceso o el dato del caso. Lo que corresponde es «${der}».`;
+  if (trampa.vulnera_inversion_operacional) {
+    return 'Invertiste la operación o la razón (dividiste cuando tocaba multiplicar, o al revés).';
+  }
+  if (trampa.vulnera_heuristica_lineal) {
+    return 'Caíste en una proporción “a ojo”: sumaste o restaste cantidades en vez de usar la razón o el porcentaje correcto.';
+  }
+  if (trampa.vulnera_error_geometrico) {
+    return 'Mezclaste perímetro, área o volumen, o usaste una medida que no pide el enunciado.';
+  }
+  if (/fraccion|proporcional|aritmet/i.test(sub)) {
+    return 'Es un error de procedimiento aritmético: revisa denominadores, conversiones y el orden de las operaciones.';
+  }
+  return '';
+}
+
+function errorTipicoPorTexto(mala, bien, sub, area) {
+  const m = limpio(mala).toLowerCase();
+  const b = limpio(bien).toLowerCase();
+  if (/\/\d|\d\/\d|fracción|fraccion/.test(m + b) || /fraccion/.test(sub)) {
+    if (/\+/.test(m) || /sum/.test(m)) {
+      return 'Error típico: sumaste numeradores y denominadores por separado, en vez de llevar ambas fracciones al mismo denominador.';
+    }
+    return 'Error típico con fracciones: no igualaste denominadores o confundiste la fracción con el entero que aparece en el enunciado.';
+  }
+  if (/%|por\s*cien|iva|descuento/.test(m + b) || /aritmet|proporcional/.test(sub)) {
+    if (/sum|resta|\+|-/.test(m) && /%/.test(b + m)) {
+      return 'Error típico: trataste el porcentaje como si fuera una cantidad fija (sumaste o restaste el número del %) en vez de calcularlo sobre la base.';
+    }
+    return 'Error típico de porcentaje: no convertiste el % a decimal o lo aplicaste sobre la base equivocada.';
+  }
+  if (/hora|minuto|segundo|km\/h|m\/s/.test(m + b)) {
+    return 'Error típico de unidades: olvidaste convertir el tiempo o la magnitud a la misma unidad antes de calcular.';
+  }
+  if (/pendiente|resbaladiz|ad\s*hominem|autoridad|analog/.test(m) || /argument/.test(sub)) {
+    return 'Error típico de lectura: confundiste el tipo de falacia o la conclusión con una premisa que el texto no sostiene.';
+  }
+  if (/inferen|implica|sugiere/.test(sub) || area.includes('lect')) {
+    return 'Error típico: elegiste algo plausible, pero que el texto no afirma ni permite inferir con seguridad.';
+  }
+  if (area.includes('cien')) {
+    return 'Error típico: mezclaste conceptos cercanos (causa/efecto, proceso/resultado o unidades del fenómeno).';
   }
   if (area.includes('social')) {
-    return `«${izq}» nombra otro hecho, lugar o norma. En este caso corresponde «${der}».`;
+    return 'Error típico: confundiste la norma, la competencia o el mecanismo con otro parecido del enunciado.';
   }
   if (area.includes('ingl')) {
-    return `«${izq}» no es lo que dice o pide el texto. La forma correcta es «${der}».`;
+    return 'Error típico: la forma gramatical o el vocabulario suena familiar, pero no encaja con el tiempo o la estructura que pide la oración.';
   }
-  return `«${izq}» no responde lo pedido. La opción adecuada es «${der}».`;
+  return '';
+}
+
+function porqueIncorrecta(mala, bien, ctx) {
+  const izq = corta(crudo(mala), 90);
+  const der = corta(crudo(bien), 90);
+  const item = (ctx && ctx.item) || {};
+  const letra = (ctx && ctx.letra) || '';
+  const sub = subDe(item);
+  const area = areaDe(item);
+  const tipTrampa = errorTipicoPorTrampa(trampaDeOpcion(item, letra), sub);
+  const tipTexto = tipTrampa || errorTipicoPorTexto(izq, der, sub, area);
+  if (tipTexto) {
+    return `«${izq}» es un distractor. ${tipTexto} La opción que sí responde es «${der}».`;
+  }
+  return `«${izq}» no responde lo pedido porque no cumple la condición o el cálculo del enunciado. La opción correcta es «${der}».`;
 }
 
 function temaDe(item) {
@@ -189,7 +214,6 @@ function textoOpcion(opts, letra) {
 
 function mapaRazones(item) {
   const out = {};
-  const area = areaDe(item);
   const opts = opcionesDe(item);
   const clave = letraCorrecta(item);
   const bien = textoOpcion(opts, clave) || crudo(item.correcta);
@@ -203,8 +227,8 @@ function mapaRazones(item) {
     if (!letra || letra === clave) return;
     const texto = crudo(op);
     let razon = limpio(prevLetra[letra]) || limpio(prevTexto[texto]) || limpio(prevTexto[op]);
-    if (!razon || pistaEsDebil(razon) || /no responde lo pedido/i.test(razon) && razon.length < 60) {
-      razon = porqueIncorrecta(texto, bien, area);
+    if (esJustifDebil(razon) || pistaEsDebil(razon)) {
+      razon = porqueIncorrecta(texto, bien, { item, letra });
     }
     out[letra] = razon;
     if (texto) out[texto] = razon;
@@ -216,7 +240,6 @@ export function generarAyudaAnalitica(item) {
   const opts = opcionesDe(item);
   const clave = letraCorrecta(item);
   const bien = textoOpcion(opts, clave);
-  const area = areaDe(item);
   const metodo = metodoDe(item);
   const tip = tipDescarte(item);
   const pista = `${metodo} ${tip}`.replace(/\s+/g, ' ').trim();
@@ -224,7 +247,7 @@ export function generarAyudaAnalitica(item) {
     ? `Correcto: «${corta(bien, 120)}» responde exactamente lo que pide el enunciado.`
     : 'Correcto: esa opción responde lo que pide el enunciado.';
   const explicacion_correcta = bien
-    ? `La respuesta correcta es ${clave || ''}${clave ? ' — ' : ''}«${corta(bien, 140)}». ${metodo}`
+    ? `La respuesta es «${corta(bien, 140)}». ${metodo}`
     : `La respuesta correcta es ${clave || 'la opción válida'}. ${metodo}`;
   const tema = temaDe(item);
   const razonesMap = mapaRazones(item);
@@ -259,6 +282,7 @@ function alinearExplicacionCorrecta(item, ayuda) {
   const clave = letraCorrecta(item);
   const existente = limpio(item.explicacion_correcta) || limpio(item.explicacion_detallada);
   if (!existente) return ayuda.explicacion_correcta;
+  if (PISTA_DEBIL.test(existente)) return ayuda.explicacion_correcta;
   const marca = existente.match(/respuesta correcta es\s*([A-D])/i);
   if (marca && marca[1].toUpperCase() !== clave) return ayuda.explicacion_correcta;
   return existente;
@@ -276,9 +300,23 @@ export function enriquecerAyudaItem(item) {
     ? item.justificacion_opciones
     : ayuda.justificacion_opciones;
 
-  // Fusionar razones por letra si faltan (prioridad: específicas del ítem)
-  const justifFinal = { ...ayuda.justificacion_opciones, ...justif };
-  const razonesFinal = { ...ayuda.razonesPorTexto, ...razones };
+  // Prioridad: justificación específica del ítem si es fuerte; si es débil, la analítica.
+  const justifFinal = {};
+  const razonesFinal = { ...ayuda.razonesPorTexto };
+  'ABCD'.split('').forEach((L) => {
+    if (L === letraCorrecta(item)) return;
+    const prev = limpio(justif && justif[L]);
+    const gen = limpio(ayuda.justificacion_opciones && ayuda.justificacion_opciones[L]);
+    justifFinal[L] = esJustifDebil(prev) ? (gen || prev) : prev;
+  });
+  Object.keys(razones).forEach((k) => {
+    const prev = limpio(razones[k]);
+    if (!esJustifDebil(prev)) razonesFinal[k] = prev;
+  });
+  Object.keys(justifFinal).forEach((L) => {
+    const texto = textoOpcion(opcionesDe(item), L);
+    if (texto && justifFinal[L]) razonesFinal[texto] = justifFinal[L];
+  });
   const tema = limpio(item.tema_a_estudiar) || limpio(item.repaso) || ayuda.tema_a_estudiar;
 
   return {
@@ -293,3 +331,5 @@ export function enriquecerAyudaItem(item) {
     justificacion_opciones: justifFinal
   };
 }
+
+export { TEMA_SUB, esJustifDebil };

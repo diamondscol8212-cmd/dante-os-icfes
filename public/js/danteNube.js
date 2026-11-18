@@ -65,6 +65,13 @@
       Math.round(numLocal('dante_streak_count', 0, 3650) || 0)
     );
 
+    let temasRefuerzo = null;
+    try {
+      if (window.DanteTemasRefuerzo && typeof window.DanteTemasRefuerzo.exportarParaSnapshot === 'function') {
+        temasRefuerzo = window.DanteTemasRefuerzo.exportarParaSnapshot();
+      }
+    } catch (_) {}
+
     return {
       v: 1,
       updatedAt: new Date().toISOString(),
@@ -78,7 +85,8 @@
       sem: numLocal('dante_sem_estimado', 0, 10),
       preguntasLocal: respuestasN,
       areaConteo: areaConteo && typeof areaConteo === 'object' ? areaConteo : {},
-      history: Array.isArray(history) ? history.slice(0, 40) : []
+      history: Array.isArray(history) ? history.slice(0, 40) : [],
+      temasRefuerzo: temasRefuerzo
     };
   }
 
@@ -187,6 +195,13 @@
         cambiado = true;
       }
     }
+    if (snap.temasRefuerzo && window.DanteTemasRefuerzo
+        && typeof window.DanteTemasRefuerzo.importarDesdeSnapshot === 'function') {
+      try {
+        window.DanteTemasRefuerzo.importarDesdeSnapshot(snap.temasRefuerzo);
+        cambiado = true;
+      } catch (_) {}
+    }
     return cambiado;
   }
 
@@ -219,12 +234,16 @@
     const id = idAlumno(studentId);
     if (!id || _pushing) return { ok: false, motivo: 'busy_or_no_id' };
     const snapshot = recolectarSnapshot();
+    const temasN = snapshot.temasRefuerzo
+      && Array.isArray(snapshot.temasRefuerzo.pendientes)
+      && snapshot.temasRefuerzo.pendientes.length;
     const tieneAlgo = (snapshot.score != null && snapshot.score > 0)
       || snapshot.racha > 0
       || (snapshot.history && snapshot.history.length)
       || snapshot.meta
       || snapshot.preguntasLocal > 0
-      || Object.keys(snapshot.areaConteo || {}).length;
+      || Object.keys(snapshot.areaConteo || {}).length
+      || temasN;
     if (!tieneAlgo) return { ok: true, skipped: true };
     _pushing = true;
     try {

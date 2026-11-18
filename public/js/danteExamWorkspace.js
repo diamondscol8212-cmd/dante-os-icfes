@@ -3317,7 +3317,8 @@
         c: r.c,
         correcto: r.correcto,
         ms: r.latenciaMs || r.tiempoRespuestaMs || 0,
-        letra: r.opcionSeleccionada || ''
+        letra: r.opcionSeleccionada || '',
+        textoOpcion: r.textoOpcion || ''
       }));
       window.DanteRegistro.publicar({
         tipo: tipo,
@@ -4162,12 +4163,13 @@
           const textoClave = this._textoOpcionEnPantalla(item, clave);
           recordRespuesta.correcto = Boolean(textoMarcado && textoClave && textoMarcado === textoClave) || clave === elegida;
         } else {
-          // Nunca congelar la sala: si el servidor no califica, seguimos y marcamos como no acertada.
-          recordRespuesta.correcto = false;
+          // Sin respuesta del servidor no hay clave en el teléfono: no la marques como error.
+          delete recordRespuesta.correcto;
           recordRespuesta.textoOpcion = textoMarcado;
           recordRespuesta.calificacionPendiente = true;
+          item._sinVerificar = true;
           if (typeof mostrarNotificacionPWA === 'function') {
-            mostrarNotificacionPWA('No pude verificar en el servidor. Seguimos; esta no cuenta como acierto.', 'warning');
+            mostrarNotificacionPWA('No pude verificar esta respuesta. No queda marcada como error.', 'warning');
           }
         }
       }
@@ -4235,6 +4237,7 @@
           correcto: recordRespuesta.correcto,
           ms: recordRespuesta.latenciaMs,
           letra: recordRespuesta.opcionSeleccionada,
+          textoOpcion: recordRespuesta.textoOpcion || '',
           recuperacion: esRecuperacionScore || undefined,
           excluirDeScore: esRecuperacionScore || undefined
         }, {
@@ -4269,6 +4272,28 @@
             window.DanteRepasoFallidas.registrarResultadoSesion(filaRf, tipoRf);
           }
         } catch (eRfLive) {}
+      }
+
+      // Temas de refuerzo: al fallar, agregar subtema a la lista personal (sin duplicados).
+      if (recordRespuesta.correcto === false
+          && recordRespuesta.calificacionPendiente !== true
+          && !esPreun
+          && window.DanteTemasRefuerzo
+          && typeof window.DanteTemasRefuerzo.registrarFallo === 'function') {
+        try {
+          window.DanteTemasRefuerzo.registrarFallo({
+            id: recordRespuesta.id,
+            itemId: recordRespuesta.id,
+            sub: (item && (item.sub || item.sub_competencia)) || '',
+            sub_competencia: (item && (item.sub || item.sub_competencia)) || '',
+            tema_a_estudiar: (item && (item.tema_a_estudiar || item.repaso)) || recordRespuesta.tema || '',
+            tema: (item && (item.tema_a_estudiar || item.tema || item.repaso)) || '',
+            repaso: (item && item.repaso) || '',
+            area: (item && (item.area || item.area_general)) || recordRespuesta.materia || '',
+            materia: recordRespuesta.materia || '',
+            enunciado: (item && (item.pregunta_texto || item.texto || item.enunciado)) || ''
+          });
+        } catch (eTema) {}
       }
 
       if (this.misionData && this.misionData.esSimulacro) {
@@ -4368,6 +4393,30 @@
       if (!uiFeedbackTraining || !txtCuerpo) {
         // Fallback resiliente si no está el contenedor en DOM
         this.avanzarSiguienteReactivo();
+        return;
+      }
+
+      if (item._sinVerificar) {
+        if (badgeOpcion) badgeOpcion.textContent = 'Sin verificar';
+        uiFeedbackTraining.classList.remove('feedback-bien', 'feedback-mal');
+        txtCuerpo.textContent = 'La conexión no alcanzó a comprobar esta respuesta. No queda marcada como error. Cuando vuelva la red, revísala en el repaso.';
+        if (btnContinuar) {
+          const esUltimoPend = (this.indexReactivoActivo + 1 >= this.misionData.reactivos.length);
+          btnContinuar.innerHTML = esUltimoPend
+            ? '<span>Terminar</span> <i class="fa-solid fa-arrow-right ml-1.5"></i>'
+            : '<span>Siguiente pregunta</span> <i class="fa-solid fa-arrow-right ml-1.5"></i>';
+          btnContinuar.onclick = (e) => {
+            if (e) e.preventDefault();
+            this.avanzarSiguienteReactivo();
+          };
+        }
+        uiFeedbackTraining.style.display = 'block';
+        uiFeedbackTraining.classList.remove('hidden');
+        uiFeedbackTraining.hidden = false;
+        this.reactivoConfirmado = true;
+        this.isSubmittingRespuesta = true;
+        this._bloquearOpcionesTrasConfirmar(true);
+        uiFeedbackTraining.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         return;
       }
 

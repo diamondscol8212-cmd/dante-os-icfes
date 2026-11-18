@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -20,9 +20,11 @@
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="theme.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/danteCacheVersion.js?v=c-1.3.95"></script>
-    <script src="js/danteRevealScroll.js?v=c-1.3.95"></script>
-    <script src="js/danteSaber11Info.js?v=c-1.3.95"></script>
+    <script src="js/danteCacheVersion.js?v=c-1.3.96"></script>
+    <script src="js/danteRevealScroll.js?v=c-1.3.96"></script>
+    <script src="js/danteSaber11Info.js?v=c-1.3.96"></script>
+    <script src="js/danteStudentId.js?v=c-1.3.96"></script>
+    <script src="js/danteTemasRefuerzo.js?v=c-1.3.96"></script>
     <script src="js/danteNube.js?v=c-1.3.87"></script>
     <script src="js/danteRegistro.js?v=c-1.3.87"></script>
     <script src="js/danteVectorIcons.js"></script>
@@ -1494,6 +1496,10 @@
                     <svg class="w-4 h-4 shrink-0 text-amber-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                     <span>Sobre el examen ICFES</span>
                 </button>
+                <a href="temas-refuerzo.html" onclick="PerfilEstudiante.cerrarMenuHeader()" class="w-full px-3 py-2 text-left rounded-xl hover:bg-slate-900 text-slate-200 flex items-center gap-2 block">
+                    <svg class="w-4 h-4 shrink-0 text-cyan-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                    <span>Temas de refuerzo</span>
+                </a>
                 <div class="h-px bg-slate-800 my-1"></div>
                 <button type="button" onclick="document.getElementById('modalPTDP').style.display='flex'; PerfilEstudiante.cerrarMenuHeader();" class="w-full px-3 py-1.5 text-left rounded-xl hover:bg-slate-900 text-slate-500 text-[11px] cursor-pointer">Privacidad</button>
                 <button type="button" onclick="HabeasDataService.exportarDatosJSON(); PerfilEstudiante.cerrarMenuHeader();" class="w-full px-3 py-1.5 text-left rounded-xl hover:bg-slate-900 text-slate-500 text-[11px] cursor-pointer">Descargar mis datos</button>
@@ -1666,6 +1672,16 @@
                     </span>
                     <span class="puerta-chev" aria-hidden="true">›</span>
                 </button>
+                <a id="btnTemasRefuerzoPerfil" href="temas-refuerzo.html" class="puerta-informe">
+                    <span class="puerta-marca" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path><path d="M8 7h8"></path><path d="M8 11h6"></path></svg>
+                    </span>
+                    <span>
+                        <strong>Temas de refuerzo</strong>
+                        <span id="txtTemasRefuerzoResumen">Estudio de los subtemas que fallaste.</span>
+                    </span>
+                    <span class="puerta-chev" aria-hidden="true">›</span>
+                </a>
             </div>
 
             <div id="perfilLegacyOculto" hidden aria-hidden="true">
@@ -1709,6 +1725,10 @@
                     <span>Repaso · preguntas fallidas</span>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
                 </button>
+                <a href="temas-refuerzo.html" class="btn-fallaste" style="display:flex;width:100%;margin:0;text-decoration:none;">
+                    <span>Temas de refuerzo · cartilla</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </a>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
@@ -6330,6 +6350,17 @@
         window.onload = () => {
             PerfilEstudiante.init();
             VocacionalManager.init();
+            try {
+                if (window.DanteTemasRefuerzo) {
+                    const n = window.DanteTemasRefuerzo.contarPendientes();
+                    const el = document.getElementById('txtTemasRefuerzoResumen');
+                    if (el) {
+                        el.textContent = n > 0
+                            ? (n === 1 ? '1 tema pendiente de estudiar.' : (n + ' temas pendientes de estudiar.'))
+                            : 'Estudio de los subtemas que fallaste.';
+                    }
+                }
+            } catch (_) {}
             (function revealEntradaPerfil() {
                 function pin() {
                     try {

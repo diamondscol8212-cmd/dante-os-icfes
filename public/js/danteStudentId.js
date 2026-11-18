@@ -85,6 +85,7 @@
         if (!k) continue;
         if (
           k.indexOf('dante_pendiente_nube:') === 0 ||
+          k.indexOf('dante_temas_refuerzo_v1:') === 0 ||
           k.indexOf('dante_score_') === 0 ||
           k.indexOf('dante_diagnostico_') === 0 ||
           k === 'dante_is_diagnostic'

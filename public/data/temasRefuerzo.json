@@ -1,0 +1,258 @@
+{
+  "version": 1,
+  "nota": "Catálogo editable de Temas de refuerzo. Agrega temas con id estable (= sub_competencia o slug). estadoContenido: completo | placeholder.",
+  "temas": [
+    {
+      "id": "fracciones",
+      "titulo": "Fracciones: equivalencia, suma y comparación",
+      "area": "matematicas",
+      "subs": ["fracciones"],
+      "matchTema": ["fracción", "fracciones", "numerador", "denominador", "1/2", "2/5"],
+      "estadoContenido": "completo",
+      "profundizar": "Si quieres profundizar más: busca «mínimo común múltiplo (mcm)» y «fracciones equivalentes».",
+      "explicacion": {
+        "intro": "Una fracción a/b compara una parte (numerador) con un todo dividido en b partes iguales (denominador). Dos fracciones son equivalentes si representan la misma cantidad, aunque se escriban distinto (1/2 = 2/4 = 3/6).",
+        "pasos": [
+          "Para sumar o restar: lleva ambas al mismo denominador (usa el mcm). Luego suma o resta solo los numeradores.",
+          "Para comparar: con el mismo denominador, gana la de mayor numerador. Si no, conviértelas antes de decidir.",
+          "«De» entre una fracción y un entero suele ser multiplicación: (2/5) de 40 = (2/5)×40."
+        ],
+        "errores": [
+          "Sumar numeradores y denominadores por separado (1/2 + 1/3 ≠ 2/5).",
+          "Olvidar convertir 1/2 a sextos (o al denominador común) antes de sumar.",
+          "Tratar el denominador como si fuera un entero más del enunciado."
+        ]
+      },
+      "practica": [
+        {
+          "id": "tr_frac_01",
+          "enunciado": "¿Cuánto es 1/2 + 1/3?",
+          "opciones": ["A) 2/5", "B) 5/6", "C) 1/5", "D) 2/6"],
+          "correcta": "B",
+          "justificacion_incorrectas": {
+            "A": "Sumaste numeradores y denominadores por separado (1+1)/(2+3). Eso no suma fracciones.",
+            "C": "Restaste o invertiste el procedimiento; 1/5 no es la suma.",
+            "D": "Convertiste 1/2 a 2/6 pero no sumaste el 1/3 convertido (2/6)."
+          },
+          "explicacion_correcta": "mcm de 2 y 3 = 6 → 3/6 + 2/6 = 5/6."
+        },
+        {
+          "id": "tr_frac_02",
+          "enunciado": "¿Cuánto es (2/5) de 40?",
+          "opciones": ["A) 20", "B) 16", "C) 8", "D) 10"],
+          "correcta": "B",
+          "justificacion_incorrectas": {
+            "A": "Tomaste la mitad de 40; la fracción pedida es 2/5, no 1/2.",
+            "C": "Calculaste solo 1/5 de 40 (8), no los 2 quintos.",
+            "D": "Usaste 1/4 de 40; no es la fracción del enunciado."
+          },
+          "explicacion_correcta": "(2/5)×40 = 80/5 = 16."
+        },
+        {
+          "id": "tr_frac_03",
+          "enunciado": "¿Cuál fracción es mayor: 3/4 o 5/8?",
+          "opciones": ["A) 5/8", "B) 3/4", "C) Son iguales", "D) No se pueden comparar"],
+          "correcta": "B",
+          "justificacion_incorrectas": {
+            "A": "5/8 = 0,625; 3/4 = 0,75. 5/8 es menor.",
+            "C": "Con denominador 8: 3/4 = 6/8, que es mayor que 5/8.",
+            "D": "Siempre se pueden comparar llevándolas al mismo denominador."
+          },
+          "explicacion_correcta": "3/4 = 6/8 > 5/8."
+        },
+        {
+          "id": "tr_frac_04",
+          "enunciado": "Simplifica 8/12.",
+          "opciones": ["A) 4/6", "B) 2/3", "C) 8/3", "D) 3/2"],
+          "correcta": "B",
+          "justificacion_incorrectas": {
+            "A": "Dividiste solo por 2 una vez; aún se puede simplificar más (÷2 otra vez → 2/3).",
+            "C": "Invertiste o restaste mal numerador y denominador.",
+            "D": "Invertiste la fracción (recíproco), no la simplificaste."
+          },
+          "explicacion_correcta": "mcd(8,12)=4 → 8÷4 / 12÷4 = 2/3."
+        }
+      ]
+    },
+    {
+      "id": "argumentacion",
+      "titulo": "Lectura crítica: argumentos y conclusiones",
+      "area": "lectura_critica",
+      "subs": ["argumentacion"],
+      "matchTema": ["argumento", "conclusión", "falacia", "pendiente resbaladiza"],
+      "estadoContenido": "completo",
+      "profundizar": "Si quieres profundizar más: busca «estructura de un argumento» y «falacias comunes (pendiente resbaladiza, ad hominem, falsa analogía)».",
+      "explicacion": {
+        "intro": "Un argumento une premisas (razones) con una conclusión. En Saber 11° te piden identificar qué se concluye, qué se asume o qué falla en el razonamiento.",
+        "pasos": [
+          "Separa: ¿qué dice el autor como hecho o razón? ¿qué afirma al final?",
+          "Pregunta: ¿las premisas bastan para esa conclusión, o hay un salto?",
+          "Si hay un salto típico (atacar a la persona, exagerar consecuencias, comparar mal), nómbralo: es una falacia."
+        ],
+        "errores": [
+          "Confundir una premisa con la conclusión.",
+          "Elegir una idea «que suena bien» pero que el texto no sostiene.",
+          "Mezclar tipos de falacia (ad hominem ≠ pendiente resbaladiza)."
+        ]
+      },
+      "practica": [
+        {
+          "id": "tr_arg_01",
+          "enunciado": "«Si permitimos celulares en clase, pronto nadie estudiará y el colegio colapsará.» ¿Qué falla en este razonamiento?",
+          "opciones": [
+            "A) Pendiente resbaladiza: salta a consecuencias extremas sin prueba",
+            "B) Es un dato estadístico sólido",
+            "C) Solo describe una norma escolar",
+            "D) Es una definición de «celular»"
+          ],
+          "correcta": "A",
+          "justificacion_incorrectas": {
+            "B": "No hay cifras ni evidencia; solo una cadena de miedos.",
+            "C": "No está describiendo una norma: está prediciendo un desastre.",
+            "D": "No define el término; afirma consecuencias."
+          },
+          "explicacion_correcta": "Es una pendiente resbaladiza: de un permiso salta a un colapso total sin pasos intermedios demostrados."
+        },
+        {
+          "id": "tr_arg_02",
+          "enunciado": "Premisas: «Todo M es P. Todo S es M.» ¿Qué se concluye?",
+          "opciones": [
+            "A) Ningún S es P",
+            "B) Todo S es P",
+            "C) Algún P no es S",
+            "D) No se puede concluir nada"
+          ],
+          "correcta": "B",
+          "justificacion_incorrectas": {
+            "A": "Eso sería una negación; las premisas afirman inclusión, no exclusión.",
+            "C": "Puede ser verdad en otros casos, pero no es lo que se deduce aquí.",
+            "D": "Sí se deduce: S está dentro de M y M dentro de P."
+          },
+          "explicacion_correcta": "Si S ⊆ M y M ⊆ P, entonces S ⊆ P: todo S es P."
+        },
+        {
+          "id": "tr_arg_03",
+          "enunciado": "«No escuches su propuesta: él reprobó dos materias.» El error es:",
+          "opciones": [
+            "A) Falsa analogía",
+            "B) Ad hominem: ataca a la persona, no la propuesta",
+            "C) Generalización apresurada con datos",
+            "D) Definición circular"
+          ],
+          "correcta": "B",
+          "justificacion_incorrectas": {
+            "A": "No compara dos casos distintos; ataca al hablante.",
+            "C": "No generaliza a partir de una muestra; descalifica a alguien.",
+            "D": "No redefine un término consigo mismo."
+          },
+          "explicacion_correcta": "Ad hominem: desvía el debate hacia la persona en vez de evaluar la propuesta."
+        },
+        {
+          "id": "tr_arg_04",
+          "enunciado": "En un texto, la conclusión suele aparecer como:",
+          "opciones": [
+            "A) La idea que el autor quiere que aceptes a partir de las razones",
+            "B) Cualquier ejemplo anecdótico",
+            "C) El título del párrafo, siempre",
+            "D) Una pregunta retórica sin respuesta"
+          ],
+          "correcta": "A",
+          "justificacion_incorrectas": {
+            "B": "Un ejemplo puede ser premisa o ilustración, no necesariamente la tesis.",
+            "C": "El título orienta, pero la conclusión se demuestra con las razones del cuerpo.",
+            "D": "Una pregunta retórica puede abrir el tema; no es la conclusión en sí."
+          },
+          "explicacion_correcta": "La conclusión es lo que el autor pretende sostener con las premisas."
+        }
+      ]
+    },
+    {
+      "id": "proporcionalidad",
+      "titulo": "Proporcionalidad directa e inversa",
+      "area": "matematicas",
+      "subs": ["proporcionalidad"],
+      "matchTema": ["proporcional", "razón", "regla de tres"],
+      "estadoContenido": "completo",
+      "profundizar": "Si quieres profundizar más: busca «magnitudes directa e inversamente proporcionales» y «regla de tres compuesta».",
+      "explicacion": {
+        "intro": "Dos magnitudes son directamente proporcionales si al subir una, la otra sube en la misma razón. Son inversas si al subir una, la otra baja de modo que el producto se conserva.",
+        "pasos": [
+          "Identifica si el problema es directo (más → más) o inverso (más → menos).",
+          "Directo: a/b = c/d. Inverso: a·b = c·d (trabajo total, personas×días, etc.).",
+          "Mantén las unidades: no mezcles horas con minutos sin convertir."
+        ],
+        "errores": [
+          "Tratar un problema inverso como si fuera directo (o al revés).",
+          "Sumar o restar en vez de usar la razón.",
+          "Olvidar convertir unidades de tiempo o distancia."
+        ]
+      },
+      "practica": [
+        {
+          "id": "tr_prop_01",
+          "enunciado": "4 obreros terminan un muro en 6 días (mismo ritmo). ¿Cuántos días tardan 3 obreros?",
+          "opciones": ["A) 4,5", "B) 8", "C) 12", "D) 2"],
+          "correcta": "B",
+          "justificacion_incorrectas": {
+            "A": "Trataste el caso como proporción directa (menos obreros → menos días).",
+            "C": "Duplicaste los días sin usar el producto personas×días.",
+            "D": "Partiste los días a la mitad; con menos gente debe tardar más."
+          },
+          "explicacion_correcta": "Inversa: 4×6 = 24 jornadas; 24÷3 = 8 días."
+        },
+        {
+          "id": "tr_prop_02",
+          "enunciado": "Si 5 cuadernos cuestan 20.000, ¿cuánto cuestan 7?",
+          "opciones": ["A) 28.000", "B) 25.000", "C) 14.000", "D) 35.000"],
+          "correcta": "A",
+          "justificacion_incorrectas": {
+            "B": "Sumaste 5.000 sin usar el precio unitario.",
+            "C": "Usaste el precio de menos cuadernos o invertiste la razón.",
+            "D": "Multiplicaste de más (p. ej. por 1,75 mal armado o por 7/4)."
+          },
+          "explicacion_correcta": "Unitario = 4.000; 7×4.000 = 28.000."
+        },
+        {
+          "id": "tr_prop_03",
+          "enunciado": "Un auto recorre 120 km en 2 h a ritmo constante. ¿Cuántos km en 3 h?",
+          "opciones": ["A) 150", "B) 180", "C) 240", "D) 60"],
+          "correcta": "B",
+          "justificacion_incorrectas": {
+            "A": "Sumaste 30 km sin usar la velocidad (60 km/h).",
+            "C": "Duplicaste la distancia de 2 h.",
+            "D": "Usaste solo 1 hora o partiste mal."
+          },
+          "explicacion_correcta": "Velocidad 60 km/h × 3 h = 180 km."
+        }
+      ]
+    },
+    {
+      "id": "algebra",
+      "titulo": "Álgebra: ecuaciones y despeje",
+      "area": "matematicas",
+      "subs": ["algebra"],
+      "estadoContenido": "placeholder",
+      "profundizar": "Si quieres profundizar más: busca «despeje de ecuaciones lineales».",
+      "explicacion": {
+        "intro": "Contenido en preparación. Mientras tanto, practica despejar la incógnita haciendo la misma operación en ambos lados de la igualdad.",
+        "pasos": ["Aísla la variable.", "Verifica sustituyendo el resultado en la ecuación original."],
+        "errores": ["Cambiar de signo solo en un lado.", "Dividir solo un término y no toda la expresión."]
+      },
+      "practica": []
+    },
+    {
+      "id": "inferencia",
+      "titulo": "Lectura crítica: inferencias válidas",
+      "area": "lectura_critica",
+      "subs": ["inferencia"],
+      "estadoContenido": "placeholder",
+      "profundizar": "Si quieres profundizar más: busca «inferencia textual vs. conocimiento previo».",
+      "explicacion": {
+        "intro": "Contenido en preparación. Una inferencia válida se sostiene con pistas del texto, no solo con lo que «parece lógico» por fuera.",
+        "pasos": ["Subraya la evidencia.", "Descarta lo que el texto no menciona."],
+        "errores": ["Inventar datos.", "Elegir una opción exagerada."]
+      },
+      "practica": []
+    }
+  ]
+}

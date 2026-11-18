@@ -572,7 +572,43 @@ function limpiarSnapshotCliente(raw) {
     sem: numONulo(s.sem, 0, 10),
     preguntasLocal: Math.max(0, Math.round(numONulo(s.preguntasLocal, 0, 20000) || 0)),
     areaConteo,
-    history
+    history,
+    temasRefuerzo: limpiarTemasRefuerzo(s.temasRefuerzo)
+  };
+}
+
+function limpiarTemasRefuerzo(raw) {
+  if (!raw || typeof raw !== 'object') return undefined;
+  const pendientes = Array.isArray(raw.pendientes)
+    ? raw.pendientes.slice(0, 80).map((p) => {
+      if (!p || typeof p !== 'object') return null;
+      const id = String(p.id || '').slice(0, 60);
+      if (!id) return null;
+      return {
+        id,
+        titulo: String(p.titulo || '').slice(0, 120),
+        area: String(p.area || '').slice(0, 40),
+        itemId: String(p.itemId || '').slice(0, 80),
+        ts: Math.max(0, Math.round(Number(p.ts) || 0))
+      };
+    }).filter(Boolean)
+    : [];
+  const hechos = {};
+  if (raw.hechos && typeof raw.hechos === 'object') {
+    Object.entries(raw.hechos).slice(0, 80).forEach(([k, v]) => {
+      const id = String(k || '').slice(0, 60);
+      if (!id || !v || typeof v !== 'object') return;
+      hechos[id] = {
+        ts: Math.max(0, Math.round(Number(v.ts) || 0)),
+        aciertos: Math.max(0, Math.round(Number(v.aciertos) || 0)),
+        total: Math.max(0, Math.round(Number(v.total) || 0))
+      };
+    });
+  }
+  return {
+    pendientes,
+    hechos,
+    updatedAt: String(raw.updatedAt || '').slice(0, 40)
   };
 }
 
