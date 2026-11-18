@@ -142,13 +142,49 @@
     return '';
   }
 
+  /** True si el texto parece enunciado/fragmento de pregunta (no un nombre de tema). */
+  function pareceFragmentoPregunta(txt) {
+    var s = String(txt || '').replace(/\s+/g, ' ').trim();
+    if (!s) return true;
+    if (s.length > 72) return true;
+    if (/\?/.test(s)) return true;
+    if (/^(seg[uú]n|de acuerdo|lea|lee |observe|observa|cuál|cual |qué |que |en la figura|el texto|a continuation|choose|according)/i.test(s)) return true;
+    if ((s.match(/\b(el|la|los|las|de|en|un|una|que|del|al)\b/gi) || []).length >= 5) return true;
+    return false;
+  }
+
+  function humanizarIdTema(temaId) {
+    return String(temaId || '')
+      .replace(/_/g, ' ')
+      .replace(/\b\w/g, function (c) { return c.toUpperCase(); })
+      .replace(/\bIngles\b/i, 'Inglés')
+      .replace(/\bQuimica\b/i, 'Química')
+      .replace(/\bMatematicas\b/i, 'Matemáticas')
+      .replace(/\bBiologia\b/i, 'Biología')
+      .replace(/\bFisica\b/i, 'Física')
+      .trim();
+  }
+
+  /**
+   * Nombre limpio del tema para UI/modales.
+   * Nunca devuelve fragmentos de la pregunta fallida.
+   */
   function tituloDe(temaId, meta) {
-    var t = temaPorId(temaId);
-    if (t && t.titulo) return t.titulo;
-    if (meta && (meta.tema_a_estudiar || meta.tema || meta.repaso)) {
-      return String(meta.tema_a_estudiar || meta.tema || meta.repaso);
+    var id = String(temaId || '').trim();
+    var t = temaPorId(id);
+    if (t && t.titulo) return String(t.titulo).trim();
+    var candidatos = [
+      meta && meta.tema_a_estudiar,
+      meta && meta.tema,
+      meta && meta.repaso
+    ];
+    for (var i = 0; i < candidatos.length; i++) {
+      var c = String(candidatos[i] || '').replace(/\s+/g, ' ').trim();
+      if (!c || pareceFragmentoPregunta(c)) continue;
+      // Evita IDs crudos demasiado técnicos si ya hay algo legible corto
+      if (c.length <= 72) return c;
     }
-    return temaId.replace(/_/g, ' ');
+    return humanizarIdTema(id || 'tema');
   }
 
   function areaDe(temaId, meta) {
@@ -328,10 +364,18 @@
   function listarPendientes() {
     var estado = leerEstado();
     var hechos = estado.hechos || {};
+    var dirty = false;
     var limpios = (estado.pendientes || []).filter(function (p) {
       return p && p.id && !hechos[p.id];
+    }).map(function (p) {
+      var limpio = tituloDe(p.id, p);
+      if (p.titulo !== limpio) {
+        p.titulo = limpio;
+        dirty = true;
+      }
+      return p;
     });
-    if (limpios.length !== (estado.pendientes || []).length) {
+    if (dirty || limpios.length !== (estado.pendientes || []).length) {
       estado.pendientes = limpios;
       guardarEstado(estado);
     }
@@ -418,7 +462,14 @@
     { pattern: /\bp[aá]ramo\b/i, termino: 'páramo', definicion: 'Ecosistema de alta montaña tropical, frío y húmedo.', ejemplo: 'Frailejones y retención de agua.' },
     { pattern: /fuerza|f\s*=\s*m\s*[·\*]\s*a|\bnewton/i, termino: 'fuerza', definicion: 'Empuje o atracción que puede cambiar el movimiento: F = m·a.', ejemplo: 'Si m sube y F es fija, a baja.' },
     { pattern: /hip[oó]tesis|variable independiente|variable dependiente/i, termino: 'hipótesis', definicion: 'Afirmación comprobable que se pone a prueba en un experimento.', ejemplo: '“Si añado sal, el punto de ebullición sube.”' },
-    { pattern: /no smoking|do not enter|staff only|prohibici[oó]n/i, termino: 'aviso', definicion: 'Texto breve que informa o prohíbe (imperativo / No + -ing).', ejemplo: 'No smoking = no fumar.' }
+    { pattern: /no smoking|do not enter|staff only|prohibici[oó]n/i, termino: 'aviso', definicion: 'Texto breve que informa o prohíbe (imperativo / No + -ing).', ejemplo: 'No smoking = no fumar.' },
+    { pattern: /vocabulary|vocabulario|synonym|antonym|means the same|closest in meaning/i, termino: 'vocabulario', definicion: 'Palabra o expresión cuyo sentido se deduce del contexto.', ejemplo: 'Elige el sinónimo que encaja en la oración.' },
+    { pattern: /dialogue|di[aá]logo|speaker|conversation/i, termino: 'diálogo', definicion: 'Intercambio oral; identifica quién habla y qué pide o responde.', ejemplo: 'What does the woman want?' },
+    { pattern: /cloze|fill in the blank|complete the sentence|conjug/i, termino: 'cloze', definicion: 'Completar huecos con la forma gramatical correcta.', ejemplo: 'She ____ to school every day → goes.' },
+    { pattern: /argumento|tesis|conclusi[oó]n del autor/i, termino: 'argumento', definicion: 'Conjunto de premisas que sustentan una conclusión.', ejemplo: 'Premisas → conclusión.' },
+    { pattern: /redox|semirreacci[oó]n|p[eé]rdida de electrones|ganancia de electrones/i, termino: 'redox', definicion: 'Reacción con transferencia de electrones (oxidación + reducción).', ejemplo: 'Si el S pasa de +4 a +6, se oxida.' },
+    { pattern: /proporci[oó]n|regla de tres|raz[oó]n/i, termino: 'proporción', definicion: 'Igualdad de dos razones; sirve para hallar un valor desconocido.', ejemplo: '2/5 = x/20 → x = 8.' },
+    { pattern: /independencia|boyac[aá]|20 de julio|criollos/i, termino: 'Independencia', definicion: 'Proceso que llevó a Colombia a separarse de España (s. XIX).', ejemplo: '20 de julio de 1810; Boyacá 1819.' }
   ];
 
   function textoDeFallos(temaId) {

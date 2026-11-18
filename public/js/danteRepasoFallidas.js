@@ -491,9 +491,10 @@
       });
       if (!temaId || vistosIds[temaId]) return;
       vistosIds[temaId] = true;
+      // Solo el nombre limpio del catálogo (nunca el enunciado de la pregunta).
       const titulo = (typeof window.DanteTemasRefuerzo.tituloDe === 'function'
-        ? window.DanteTemasRefuerzo.tituloDe(temaId, item)
-        : temaId.replace(/_/g, ' '));
+        ? window.DanteTemasRefuerzo.tituloDe(temaId, null)
+        : String(temaId || '').replace(/_/g, ' '));
       const estudiado = typeof window.DanteTemasRefuerzo.fueEstudiado === 'function'
         && window.DanteTemasRefuerzo.fueEstudiado(temaId);
       if (!estudiado) {
@@ -515,7 +516,7 @@
         : '';
       nota(
         'Primero estudia el tema',
-        'Antes de responder esas fallidas, abre la cartilla de «' + primero.titulo + '»' + extra + '. Cuando la hayas visto, vuelve aquí al repaso.',
+        'Antes de responder esas fallidas, abre la cartilla «' + primero.titulo + '»' + extra + '. Cuando la hayas visto, vuelve aquí al repaso.',
         [
           {
             texto: 'Ir a la cartilla',

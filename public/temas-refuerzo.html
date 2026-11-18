@@ -12,9 +12,9 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" defer></script>
-  <script src="js/danteCacheVersion.js?v=c-1.3.113"></script>
-  <script src="js/danteStudentId.js?v=c-1.3.113"></script>
-  <script src="js/danteTemasRefuerzo.js?v=c-1.3.113"></script>
+  <script src="js/danteCacheVersion.js?v=c-1.3.114"></script>
+  <script src="js/danteStudentId.js?v=c-1.3.114"></script>
+  <script src="js/danteTemasRefuerzo.js?v=c-1.3.114"></script>
   <style>
     :root {
       --perfil-cyan: #7eb8c4;
@@ -216,6 +216,35 @@
       border: 1px solid var(--perfil-line); background: rgba(15,23,42,.7);
       font-size: .82rem; color: #94a3b8; line-height: 1.45;
     }
+    .tr-ejemplo-cartilla {
+      margin: .85rem 0 0;
+      padding: .85rem .7rem 1rem;
+      border-radius: .95rem;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+    }
+    .tr-ejemplo-cartilla .tr-ejemplo-label {
+      font-family: ui-monospace, monospace; font-size: 10px; letter-spacing: .12em;
+      text-transform: uppercase; color: #64748b; margin: 0 0 .55rem; font-weight: 700;
+    }
+    .tr-ejemplo-cartilla .tr-q { margin-bottom: 0; }
+    .tr-ejemplo-cartilla .tr-ejemplo-pasos {
+      margin: .75rem 0 0; padding: .7rem .8rem; border-radius: .65rem;
+      background: #fff; border: 1px solid #e2e8f0; color: #334155;
+      font-size: .88rem; line-height: 1.45;
+    }
+    .tr-ejemplo-cartilla .tr-ejemplo-pasos ul {
+      margin: .35rem 0 0; padding-left: 1.1rem; color: #334155;
+    }
+    .tr-ejemplo-cartilla .tr-ejemplo-pasos li { margin-bottom: .3rem; }
+    .tr-ejemplo-cartilla .tr-ejemplo-resp {
+      margin: .55rem 0 0; font-weight: 700; color: #166534;
+    }
+    .tr-ejemplo-cartilla .tr-ejemplo-contraste {
+      margin: .75rem 0 0; padding: .7rem .8rem; border-radius: .65rem;
+      background: #fffbeb; border: 1px solid #fde68a; color: #78350f;
+      font-size: .84rem; line-height: 1.45;
+    }
     .tr-fallos-wrap {
       background: #f1f5f9;
       border-radius: .95rem;
@@ -399,14 +428,6 @@
         <div id="listaHechos" class="space-y-2"></div>
         <p id="emptyHechos" class="tr-sub hidden">Aún no marcas ninguno como superado.</p>
       </details>
-      <details class="tr-card tr-superados" id="secEjemplos">
-        <summary class="tr-superados-sum">
-          <span class="tr-sec-h" style="margin:0">Cartillas de ejemplo</span>
-          <span class="tr-badge">Ver</span>
-        </summary>
-        <p class="tr-sub" style="margin:.65rem 0">Temas con explicación completa para explorar el módulo (no son tus pendientes).</p>
-        <div id="listaEjemplos" class="space-y-2"></div>
-      </details>
       <div class="tr-card">
         <a href="index.html?sala=1" class="tr-btn ghost">Volver a la sala</a>
       </div>
@@ -439,7 +460,7 @@
         </div>
       </div>
     </section>
-    <p class="tr-foot-ver"><span id="badgeDanteVersion">c-1.3.113</span></p>
+    <p class="tr-foot-ver"><span id="badgeDanteVersion">c-1.3.114</span></p>
   </main>
 
   <script>
@@ -483,26 +504,6 @@
           btn.onclick = function () { abrirTema(h.id); };
           boxH.appendChild(btn);
         });
-
-        var boxE = $('listaEjemplos');
-        if (boxE) {
-          boxE.innerHTML = '';
-          var cat = window.DanteTemasRefuerzo.temaPorId ? null : null;
-          window.DanteTemasRefuerzo.cargarCatalogo().then(function (c) {
-            boxE.innerHTML = '';
-            var destacados = ['fracciones', 'argumentacion', 'proporcionalidad', 'fisica', 'comprension_literal', 'grammar'];
-            (c.temas || []).filter(function (t) { return t && destacados.indexOf(t.id) >= 0; }).forEach(function (t) {
-              var btn = document.createElement('button');
-              btn.type = 'button';
-              btn.className = 'tr-item';
-              btn.innerHTML = '<div style="flex:1;min-width:0"><strong></strong><span class="meta"></span></div><span class="tr-badge">Ejemplo</span><span aria-hidden="true">›</span>';
-              btn.querySelector('strong').textContent = t.titulo;
-              btn.querySelector('.meta').textContent = t.nivel || String(t.area || '').replace(/_/g, ' ');
-              btn.onclick = function () { abrirTema(t.id); };
-              boxE.appendChild(btn);
-            });
-          });
-        }
       }
 
       function htmlExplicacion(tema) {
@@ -556,27 +557,33 @@
           ex.errores.forEach(function (s) { html += '<li>' + escapeHtml(s) + '</li>'; });
           html += '</ul>';
         }
-        // 5 · Ejemplo
+        // 5 · Ejemplo (cartilla blanca, mismo formato que la pregunta fallida)
         if (ex.ejemplo_resuelto) {
           var ej = ex.ejemplo_resuelto;
-          html += '<div class="tr-note" style="border-color:rgba(126,184,196,.35)">';
-          html += '<p class="tr-sec-h" style="margin:0 0 .4rem">5 · Ejemplo</p>';
-          if (ej.enunciado) html += '<p><strong>Problema:</strong> ' + escapeHtml(ej.enunciado) + '</p>';
+          html += '<p class="tr-sec-h" style="margin-top:1rem">5 · Ejemplo</p>';
+          html += '<div class="tr-ejemplo-cartilla">';
+          html += '<p class="tr-ejemplo-label">Ejemplo resuelto · misma cartilla</p>';
+          html += '<div class="tr-q">';
+          if (ej.enunciado) html += '<div class="enun">' + escapeHtml(ej.enunciado) + '</div>';
           if (Array.isArray(ej.pasos) && ej.pasos.length) {
-            html += '<ul>';
+            html += '<div class="tr-ejemplo-pasos"><strong>Cómo se resuelve</strong><ul>';
             ej.pasos.forEach(function (s) { html += '<li>' + escapeHtml(s) + '</li>'; });
             html += '</ul>';
+            if (ej.respuesta) html += '<p class="tr-ejemplo-resp">Respuesta: ' + escapeHtml(ej.respuesta) + '</p>';
+            html += '</div>';
+          } else if (ej.respuesta) {
+            html += '<div class="tr-ejemplo-pasos"><p class="tr-ejemplo-resp" style="margin:0">Respuesta: ' + escapeHtml(ej.respuesta) + '</p></div>';
           }
-          if (ej.respuesta) html += '<p><strong>Respuesta:</strong> ' + escapeHtml(ej.respuesta) + '</p>';
           html += '</div>';
           var ctr = ej.contraste || ex.contraste || null;
           if (ctr) {
-            html += '<div class="tr-note" style="border-color:rgba(196,165,116,.4)">';
-            html += '<p class="tr-sec-h" style="margin:0 0 .4rem">' + escapeHtml(ctr.titulo || 'Contraste') + '</p>';
-            if (ctr.invalido) html += '<p>' + escapeHtml(ctr.invalido) + '</p>';
-            if (ctr.valido) html += '<p>' + escapeHtml(ctr.valido) + '</p>';
+            html += '<div class="tr-ejemplo-contraste">';
+            html += '<strong>' + escapeHtml(ctr.titulo || 'Contraste') + '</strong>';
+            if (ctr.invalido) html += '<p style="margin:.35rem 0 0">' + escapeHtml(ctr.invalido) + '</p>';
+            if (ctr.valido) html += '<p style="margin:.35rem 0 0">' + escapeHtml(ctr.valido) + '</p>';
             html += '</div>';
           }
+          html += '</div>';
         }
         // 6 · Para profundizar
         var fuentes = (ex && ex.fuentes) || (tema && tema.fuentes) || [];
@@ -1095,21 +1102,18 @@
           try { window.DanteTemasRefuerzo.marcarVisto(tema.id || id); } catch (_) {}
           $('vistaLista').classList.add('hidden');
           $('vistaTema').classList.remove('hidden');
-          $('temaTitulo').textContent = tema.titulo || id;
+          var etiqueta = (typeof window.DanteTemasRefuerzo.tituloDe === 'function')
+            ? window.DanteTemasRefuerzo.tituloDe(tema.id || id, tema)
+            : (tema.titulo || id.replace(/_/g, ' '));
+          tema.titulo = etiqueta;
+          $('temaTitulo').textContent = etiqueta;
           $('temaArea').textContent = (tema.nivel || tema.area || 'refuerzo').replace(/_/g, ' ');
           $('temaEstado').textContent = tema.estadoContenido === 'completo'
             ? 'Cartilla lista · ejemplo resuelto · práctica al final'
             : 'Contenido base · se irá ampliando';
-          var etiqueta = tema.titulo || id.replace(/_/g, ' ');
-          try {
-            var pend = (window.DanteTemasRefuerzo.listarPendientes() || []).find(function (p) {
-              return p && p.id === (tema.id || id);
-            });
-            if (pend && pend.titulo) etiqueta = pend.titulo;
-          } catch (_) {}
           var ctx = $('temaContexto');
           if (ctx) {
-            ctx.textContent = 'Este tema aparece porque fallaste una pregunta sobre «' + etiqueta + '».';
+            ctx.textContent = 'Este tema aparece porque fallaste una pregunta de «' + etiqueta + '».';
             ctx.classList.remove('hidden');
           }
           pintarFallos(tema.id || id, tema).then(function () {
