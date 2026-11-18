@@ -105,6 +105,19 @@
         .rp-badge.mid { color: #92400e; background: #ffedd5; border-color: #fed7aa; }
         .rp-badge.low { color: #9f1239; background: #ffe4e6; border-color: #fecdd3; }
         .rp-manana-txt { font-size: 0.9rem; line-height: 1.5; color: #1e293b; margin: 0; font-weight: 550; }
+        .rp-temas-list {
+            list-style: none; margin: 0; padding: 0; display: grid; gap: 0.45rem;
+        }
+        .rp-temas-list li {
+            display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between;
+            gap: 0.35rem 0.65rem; padding: 0.55rem 0.65rem;
+            border: 1px solid var(--rp-line); border-radius: 0.65rem; background: #f8fafc;
+        }
+        .rp-tema-titulo { font-size: 0.86rem; font-weight: 700; color: #0f172a; line-height: 1.35; }
+        .rp-tema-area {
+            font-size: 0.68rem; font-weight: 700; letter-spacing: 0.02em;
+            color: #475569; background: #e2e8f0; border-radius: 999px; padding: 0.12rem 0.45rem;
+        }
         .aviso {
             margin: 1rem 0 0; font-size: 0.75rem; line-height: 1.45; color: #64748b;
         }
@@ -144,7 +157,7 @@
             <p>Estamos abriendo el informe general compartido.</p>
         </div>
     </main>
-    <script src="js/danteRevealScroll.js?v=c-1.3.96"></script>
+    <script src="js/danteRevealScroll.js?v=c-1.3.116"></script>
     <script>
         function esc(v) {
             return String(v == null ? '' : v)
@@ -218,7 +231,7 @@
             const raiz = document.getElementById('raizInforme');
             // Acepta v:2 (nuevo) y, por compatibilidad, snapshots con proy/hackea aunque falte v.
             const pareceInforme = snap && typeof snap === 'object' && (
-                snap.v === 2 || snap.proy || snap.hackea || snap.train || snap.sim || snap.ruta
+                snap.v === 2 || snap.proy || snap.hackea || snap.train || snap.sim || snap.ruta || snap.temas
             );
             if (!pareceInforme) {
                 raiz.innerHTML = '<div class="vacio"><h1>Informe no disponible</h1><p>Este enlace no trae un informe general válido. Pide que lo vuelvan a compartir desde el perfil.</p></div>';
@@ -289,6 +302,22 @@
                 ? '<div class="rp-card rp-area" style="margin-top:0.65rem">' + areaRows + '</div>'
                 : '<div class="rp-card" style="margin-top:0.65rem"><p class="rp-manana-txt">Aún no hay suficiente información por área para mostrar barras de progreso.</p></div>';
 
+            const temasPend = Array.isArray(snap.temas) ? snap.temas.filter((t) => t && t.titulo) : [];
+            let temasHtml = '';
+            if (!temasPend.length) {
+                temasHtml = '<p class="rp-manana-txt">No tiene temas de refuerzo pendientes en este momento.</p>';
+            } else {
+                temasHtml = '<p class="rp-manana-txt" style="margin-bottom:0.55rem">Estos son los temas que debe estudiar ahora (<strong>'
+                    + temasPend.length + '</strong>):</p><ul class="rp-temas-list">'
+                    + temasPend.map((t) => {
+                        const area = t.areaNombre
+                            ? ('<span class="rp-tema-area">' + esc(t.areaNombre) + '</span>')
+                            : '';
+                        return '<li><span class="rp-tema-titulo">' + esc(t.titulo) + '</span>' + area + '</li>';
+                    }).join('')
+                    + '</ul>';
+            }
+
             let rutaHtml = '';
             if (ruta.listaCompleta) {
                 const bits = ['Ya tiene orientación vocacional suficiente para verla.'];
@@ -319,7 +348,13 @@
             else resumenPartes.push('Todavía no tiene una racha activa.');
 
             let siguiente = '';
-            if (train.totalSesiones > 0 && train.debil) siguiente = 'Conviene seguir reforzando <strong>' + esc(train.debil.name) + '</strong>, que es su área más débil ahora.';
+            if (temasPend.length) {
+                const primero = esc(temasPend[0].titulo);
+                const extra = temasPend.length > 1
+                    ? (' (y ' + (temasPend.length - 1) + ' tema' + (temasPend.length === 2 ? '' : 's') + ' más)')
+                    : '';
+                siguiente = 'Conviene que estudie primero el tema <strong>' + primero + '</strong>' + extra + ' en Temas de refuerzo.';
+            } else if (train.totalSesiones > 0 && train.debil) siguiente = 'Conviene seguir reforzando <strong>' + esc(train.debil.name) + '</strong>, que es su área más débil ahora.';
             else if (!hackea.calibrated) siguiente = 'Un buen siguiente paso es hacer <strong>Hackea tu mente</strong>.';
             else if (!ruta.listaCompleta) siguiente = 'Conviene seguir la <strong>ruta vocacional</strong> para completar la orientación.';
             else if (sim.estado !== 'listo') siguiente = 'Cuando quiera medir el examen completo, puede abrir el <strong>simulacro</strong>.';
@@ -351,6 +386,11 @@
                         <h3 class="rp-sec-h">Entrenamiento y refuerzos</h3>
                         <div class="rp-card">${trainHtml}</div>
                         ${areasBloque}
+                    </section>
+
+                    <section class="rp-sec">
+                        <h3 class="rp-sec-h">Temas de refuerzo pendientes${temasPend.length ? (' (' + temasPend.length + ')') : ''}</h3>
+                        <div class="rp-card">${temasHtml}</div>
                     </section>
 
                     <section class="rp-sec">

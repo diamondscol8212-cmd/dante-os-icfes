@@ -20,12 +20,12 @@
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="theme.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/danteCacheVersion.js?v=c-1.3.115"></script>
-    <script src="js/danteRevealScroll.js?v=c-1.3.115"></script>
-    <script src="js/danteSaber11Info.js?v=c-1.3.115"></script>
-    <script src="js/danteStudentId.js?v=c-1.3.115"></script>
-    <script src="js/danteTemasRefuerzo.js?v=c-1.3.115"></script>
-    <script src="js/danteNotificaciones.js?v=c-1.3.115"></script>
+    <script src="js/danteCacheVersion.js?v=c-1.3.116"></script>
+    <script src="js/danteRevealScroll.js?v=c-1.3.116"></script>
+    <script src="js/danteSaber11Info.js?v=c-1.3.116"></script>
+    <script src="js/danteStudentId.js?v=c-1.3.116"></script>
+    <script src="js/danteTemasRefuerzo.js?v=c-1.3.116"></script>
+    <script src="js/danteNotificaciones.js?v=c-1.3.116"></script>
     <script src="js/danteNube.js?v=c-1.3.87"></script>
     <script src="js/danteRegistro.js?v=c-1.3.87"></script>
     <script src="js/danteVectorIcons.js"></script>
@@ -1456,6 +1456,21 @@
         }
         #modalBoletinSesion .reporte-papel .rp-manana-txt {
             font-size: 0.9rem; line-height: 1.5; color: #1e293b; margin: 0; font-weight: 550;
+        }
+        #modalBoletinSesion .reporte-papel .rp-temas-list {
+            list-style: none; margin: 0; padding: 0; display: grid; gap: 0.45rem;
+        }
+        #modalBoletinSesion .reporte-papel .rp-temas-list li {
+            display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between;
+            gap: 0.35rem 0.65rem; padding: 0.55rem 0.65rem;
+            border: 1px solid #e2e8f0; border-radius: 0.65rem; background: #f8fafc;
+        }
+        #modalBoletinSesion .reporte-papel .rp-tema-titulo {
+            font-size: 0.86rem; font-weight: 700; color: #0f172a; line-height: 1.35;
+        }
+        #modalBoletinSesion .reporte-papel .rp-tema-area {
+            font-size: 0.68rem; font-weight: 700; letter-spacing: 0.02em;
+            color: #475569; background: #e2e8f0; border-radius: 999px; padding: 0.12rem 0.45rem;
         }
         #modalBoletinSesion .reporte-papel .rp-fallidas { display: grid; gap: 0.75rem; }
         #modalBoletinSesion .reporte-papel .rp-fallida {
@@ -3284,6 +3299,8 @@
                 try { train = this._leerEntrenamientoReal() || train; } catch (e) {}
                 try { ruta = this._leerRutaVocacionalReal() || ruta; } catch (e) {}
                 try { proy = this._leerProyeccionReal() || proy; } catch (e) {}
+                let temasPend = [];
+                try { temasPend = this._leerTemasRefuerzoPendientes() || []; } catch (e) { temasPend = []; }
 
                 const simEstado = simRaw && simRaw.estado ? simRaw.estado : null;
                 const simResultado = (simRaw && simRaw.resultado) || {};
@@ -3343,7 +3360,13 @@
                         palabras: Array.isArray(ruta.palabras) ? ruta.palabras.slice(0, 3) : [],
                         otras: Array.isArray(ruta.otras) ? ruta.otras.slice(0, 3) : [],
                         informe: ruta.informe ? String(ruta.informe).slice(0, 420) : ''
-                    }
+                    },
+                    temas: temasPend.map((t) => ({
+                        id: t.id,
+                        titulo: t.titulo,
+                        area: t.area || '',
+                        areaNombre: t.areaNombre || ''
+                    }))
                 };
             }
 
@@ -3380,9 +3403,11 @@
                             ruta: {
                                 elecciones: 0, lista: false, listaCompleta: false, dia: 1,
                                 carrera: '', palabras: [], otras: [], informe: ''
-                            }
+                            },
+                            temas: []
                         };
                     }
+                    if (!Array.isArray(snap.temas)) snap.temas = [];
                     return this._codificarTokenBase64Url(snap);
                 } catch (e) {
                     return this._codificarTokenBase64Url({
@@ -3401,7 +3426,8 @@
                         ruta: {
                             elecciones: 0, lista: false, listaCompleta: false, dia: 1,
                             carrera: '', palabras: [], otras: [], informe: ''
-                        }
+                        },
+                        temas: []
                     });
                 }
             }
@@ -5373,6 +5399,64 @@
                         await this.cruzarNube();
                     }
                 } catch (e) {}
+                try {
+                    if (window.DanteTemasRefuerzo && typeof window.DanteTemasRefuerzo.cargarCatalogo === 'function') {
+                        await window.DanteTemasRefuerzo.cargarCatalogo();
+                    }
+                } catch (e) {}
+            }
+
+            /** Temas pendientes reales (para informe de padres). */
+            static _leerTemasRefuerzoPendientes() {
+                const AREA_NOM = {
+                    matematicas: 'Matemáticas',
+                    lectura_critica: 'Lectura crítica',
+                    ciencias_naturales: 'Ciencias naturales',
+                    sociales_ciudadanas: 'Sociales y ciudadanas',
+                    ingles: 'Inglés'
+                };
+                try {
+                    if (!window.DanteTemasRefuerzo || typeof window.DanteTemasRefuerzo.listarPendientes !== 'function') {
+                        return [];
+                    }
+                    return (window.DanteTemasRefuerzo.listarPendientes() || []).slice(0, 12).map((p) => {
+                        if (!p || !p.id) return null;
+                        const id = String(p.id);
+                        const cat = (typeof window.DanteTemasRefuerzo.temaPorId === 'function')
+                            ? window.DanteTemasRefuerzo.temaPorId(id)
+                            : null;
+                        const titulo = (typeof window.DanteTemasRefuerzo.tituloDe === 'function')
+                            ? window.DanteTemasRefuerzo.tituloDe(id, p)
+                            : (p.titulo || id.replace(/_/g, ' '));
+                        const areaKey = String((cat && cat.area) || p.area || '').toLowerCase().replace(/\s+/g, '_');
+                        return {
+                            id,
+                            titulo: String(titulo || '').replace(/\s+/g, ' ').trim().slice(0, 120),
+                            area: areaKey,
+                            areaNombre: AREA_NOM[areaKey] || (areaKey ? areaKey.replace(/_/g, ' ') : '')
+                        };
+                    }).filter((t) => t && t.titulo);
+                } catch (e) {
+                    return [];
+                }
+            }
+
+            static _htmlTemasRefuerzoInforme(temas, paraPadres) {
+                const lista = Array.isArray(temas) ? temas : [];
+                if (!lista.length) {
+                    return paraPadres
+                        ? '<p class="rp-manana-txt">No tiene temas de refuerzo pendientes en este momento.</p>'
+                        : '<p class="rp-manana-txt">No tienes temas de refuerzo pendientes en este momento.</p>';
+                }
+                const intro = paraPadres
+                    ? ('Estos son los temas que debe estudiar ahora (<strong>' + lista.length + '</strong>):')
+                    : ('Estos son los temas que debes estudiar ahora (<strong>' + lista.length + '</strong>):');
+                const items = lista.map((t) => {
+                    const area = t.areaNombre ? ('<span class="rp-tema-area">' + this._escTexto(t.areaNombre) + '</span>') : '';
+                    return '<li><span class="rp-tema-titulo">' + this._escTexto(t.titulo) + '</span>' + area + '</li>';
+                }).join('');
+                return '<p class="rp-manana-txt" style="margin-bottom:0.55rem">' + intro + '</p>'
+                    + '<ul class="rp-temas-list">' + items + '</ul>';
             }
 
             static _revealBoletinEntrada() {
@@ -5418,11 +5502,13 @@
                 const train = this._leerEntrenamientoReal();
                 const ruta = this._leerRutaVocacionalReal();
                 const proy = this._leerProyeccionReal();
+                const temasPend = this._leerTemasRefuerzoPendientes();
                 const scoreTxt = proy.scoreTxt;
                 const meta = proy.meta;
                 const carreraClean = proy.carreraClean;
                 const brecha = proy.brecha;
                 const racha = proy.racha;
+                const temasHtml = this._htmlTemasRefuerzoInforme(temasPend, false);
 
                 let hackeaHtml = '';
                 if (!hackea.calibrated && hackea.sessions <= 0) {
@@ -5528,7 +5614,13 @@
                 }
 
                 let siguiente = '';
-                if (train.totalSesiones > 0 && train.debil) {
+                if (temasPend.length) {
+                    const primero = this._escTexto(temasPend[0].titulo);
+                    const extra = temasPend.length > 1
+                        ? (' (y ' + (temasPend.length - 1) + ' tema' + (temasPend.length === 2 ? '' : 's') + ' más)')
+                        : '';
+                    siguiente = 'Empieza por el tema de refuerzo <strong>' + primero + '</strong>' + extra + '. Están en Temas de refuerzo en la sala.';
+                } else if (train.totalSesiones > 0 && train.debil) {
                     siguiente = `Mañana conviene empezar por <strong>${this._escTexto(train.debil.name)}</strong>, que es tu área más débil ahora.`;
                 } else if (!hackea.calibrated) {
                     siguiente = 'Un buen siguiente paso es hacer <strong>Hackea tu mente</strong> en la sala.';
@@ -5568,6 +5660,11 @@
                             <h3 class="rp-sec-h"><i class="fa-solid fa-dumbbell" aria-hidden="true"></i> Entrenamiento y refuerzos</h3>
                             <div class="rp-card">${trainHtml}</div>
                             ${areasBloque}
+                        </section>
+
+                        <section class="rp-sec">
+                            <h3 class="rp-sec-h"><i class="fa-solid fa-book-open" aria-hidden="true"></i> Temas de refuerzo pendientes${temasPend.length ? (' (' + temasPend.length + ')') : ''}</h3>
+                            <div class="rp-card">${temasHtml}</div>
                         </section>
 
                         <section class="rp-sec">
