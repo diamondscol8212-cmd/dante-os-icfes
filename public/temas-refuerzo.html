@@ -9,9 +9,9 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="css/design-tokens.css">
   <link rel="stylesheet" href="css/theme.css">
-  <script src="js/danteCacheVersion.js?v=c-1.3.96"></script>
-  <script src="js/danteStudentId.js?v=c-1.3.96"></script>
-  <script src="js/danteTemasRefuerzo.js?v=c-1.3.96"></script>
+  <script src="js/danteCacheVersion.js?v=c-1.3.97"></script>
+  <script src="js/danteStudentId.js?v=c-1.3.97"></script>
+  <script src="js/danteTemasRefuerzo.js?v=c-1.3.97"></script>
   <style>
     :root {
       --perfil-cyan: #7eb8c4;
@@ -104,7 +104,7 @@
       <img src="assets/icons/dante-logo-icon.svg" alt="" width="24" height="24" style="border-radius:6px">
       <span>Temas de refuerzo</span>
     </a>
-    <span id="badgeDanteVersion" class="tr-badge">c-1.3.96</span>
+    <span id="badgeDanteVersion" class="tr-badge">c-1.3.97</span>
   </header>
 
   <main class="tr-main">
@@ -174,7 +174,8 @@
           btn.className = 'tr-item';
           btn.innerHTML = '<div style="flex:1;min-width:0"><strong></strong><span class="meta"></span></div><span class="tr-badge wait">Pendiente</span><span aria-hidden="true">›</span>';
           btn.querySelector('strong').textContent = p.titulo || p.id;
-          btn.querySelector('.meta').textContent = (p.area || 'tema') + (p.id ? ' · ' + p.id : '');
+          var catP = window.DanteTemasRefuerzo.temaPorId(p.id);
+          btn.querySelector('.meta').textContent = (p.nivel || (catP && catP.nivel) || p.area || 'tema') + (p.id ? ' · ' + p.id : '');
           btn.onclick = function () { abrirTema(p.id); };
           boxP.appendChild(btn);
         });
@@ -184,7 +185,8 @@
           btn.className = 'tr-item';
           btn.innerHTML = '<div style="flex:1;min-width:0"><strong></strong><span class="meta"></span></div><span class="tr-badge ok">Hecho</span><span aria-hidden="true">›</span>';
           btn.querySelector('strong').textContent = h.titulo || h.id;
-          btn.querySelector('.meta').textContent = 'Puedes volver a estudiarlo';
+          var catH = window.DanteTemasRefuerzo.temaPorId(h.id);
+          btn.querySelector('.meta').textContent = (catH && catH.nivel) ? catH.nivel + ' · puedes volver' : 'Puedes volver a estudiarlo';
           btn.onclick = function () { abrirTema(h.id); };
           boxH.appendChild(btn);
         });
@@ -195,13 +197,14 @@
           var cat = window.DanteTemasRefuerzo.temaPorId ? null : null;
           window.DanteTemasRefuerzo.cargarCatalogo().then(function (c) {
             boxE.innerHTML = '';
-            (c.temas || []).filter(function (t) { return t && t.estadoContenido === 'completo'; }).forEach(function (t) {
+            var destacados = ['fracciones', 'argumentacion', 'proporcionalidad', 'fisica', 'comprension_literal', 'grammar'];
+            (c.temas || []).filter(function (t) { return t && destacados.indexOf(t.id) >= 0; }).forEach(function (t) {
               var btn = document.createElement('button');
               btn.type = 'button';
               btn.className = 'tr-item';
               btn.innerHTML = '<div style="flex:1;min-width:0"><strong></strong><span class="meta"></span></div><span class="tr-badge">Ejemplo</span><span aria-hidden="true">›</span>';
               btn.querySelector('strong').textContent = t.titulo;
-              btn.querySelector('.meta').textContent = (t.area || '').replace(/_/g, ' ');
+              btn.querySelector('.meta').textContent = t.nivel || String(t.area || '').replace(/_/g, ' ');
               btn.onclick = function () { abrirTema(t.id); };
               boxE.appendChild(btn);
             });
@@ -222,6 +225,19 @@
           html += '<p class="tr-sec-h">Errores típicos</p><ul>';
           ex.errores.forEach(function (s) { html += '<li>' + escapeHtml(s) + '</li>'; });
           html += '</ul>';
+        }
+        if (ex.ejemplo_resuelto) {
+          var ej = ex.ejemplo_resuelto;
+          html += '<div class="tr-note" style="border-color:rgba(126,184,196,.35)">';
+          html += '<p class="tr-sec-h" style="margin:0 0 .4rem">' + escapeHtml(ej.titulo || 'Ejemplo resuelto') + '</p>';
+          if (ej.enunciado) html += '<p><strong>Problema:</strong> ' + escapeHtml(ej.enunciado) + '</p>';
+          if (Array.isArray(ej.pasos) && ej.pasos.length) {
+            html += '<ul>';
+            ej.pasos.forEach(function (s) { html += '<li>' + escapeHtml(s) + '</li>'; });
+            html += '</ul>';
+          }
+          if (ej.respuesta) html += '<p><strong>Respuesta:</strong> ' + escapeHtml(ej.respuesta) + '</p>';
+          html += '</div>';
         }
         if (tema && tema.profundizar) {
           html += '<div class="tr-note">' + escapeHtml(tema.profundizar) + '</div>';
@@ -261,9 +277,9 @@
           $('vistaLista').classList.add('hidden');
           $('vistaTema').classList.remove('hidden');
           $('temaTitulo').textContent = tema.titulo || id;
-          $('temaArea').textContent = (tema.area || 'refuerzo').replace(/_/g, ' ');
+          $('temaArea').textContent = (tema.nivel || tema.area || 'refuerzo').replace(/_/g, ' ');
           $('temaEstado').textContent = tema.estadoContenido === 'completo'
-            ? 'Cartilla lista · practica al final'
+            ? 'Cartilla lista · ejemplo resuelto · práctica al final'
             : 'Contenido base · se irá ampliando';
           $('temaExplicacion').innerHTML = htmlExplicacion(tema);
           renderPractica(tema);

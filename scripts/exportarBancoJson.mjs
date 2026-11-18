@@ -29,11 +29,19 @@ const limpio = (BANCO_COMPLETO || []).map((item) => ({
   razonesPorTexto: item.razonesPorTexto || null,
   recurso_visual: item.recurso_visual || item.imagen_url || null,
   imagen_url: item.imagen_url || null,
-  sub_competencia: item.sub_competencia || null,
+  sub_competencia: item.sub_competencia || item.sub || null,
+  sub: item.sub || item.sub_competencia || null,
   es_escrito: Boolean(item.esEscrito || item.es_escrito),
   source: String(item.id || '').includes('_gen_') ? 'gen' : 'escrito'
 }));
 
-fs.writeFileSync(out, JSON.stringify(limpio));
-console.log(`OK ${limpio.length} ítems → ${out}`);
+const destinos = [
+  out,
+  path.join(__dirname, '..', 'dante-os-icfes', 'public', 'bancoPreguntas.json')
+];
+for (const destino of destinos) {
+  fs.mkdirSync(path.dirname(destino), { recursive: true });
+  fs.writeFileSync(destino, JSON.stringify(limpio));
+  console.log(`OK ${limpio.length} ítems → ${destino}`);
+}
 console.log(`escritos=${limpio.filter((x) => x.source === 'escrito').length} gen=${limpio.filter((x) => x.source === 'gen').length}`);

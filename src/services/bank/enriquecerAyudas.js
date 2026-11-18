@@ -6,6 +6,7 @@
 
 const PISTA_DEBIL = /F[ií]jate en:|Lee qu[eé] pide la pregunta|contr[aá]stalo con el enunciado|Arma la relaci[oó]n con los datos y las unidades\. Un n[uú]mero que solo suma|Una norma se puede exigir|Separa premisa y conclusi[oó]n|no se sostiene en el texto|nombra otro hecho, lugar o norma/i;
 
+/** Títulos canónicos por sub_competencia (id de Temas de refuerzo). */
 const TEMA_SUB = {
   probabilidad: 'Probabilidad y conteo de casos',
   estadistica: 'Estadística descriptiva (media, mediana, moda, rango)',
@@ -16,6 +17,7 @@ const TEMA_SUB = {
   aritmetica: 'Aritmética y orden de operaciones',
   fracciones: 'Fracciones: equivalencia, suma y comparación',
   trigonometria: 'Trigonometría básica (seno, coseno, tangente)',
+  combinatoria: 'Combinatoria y conteo',
   dos_textos: 'Lectura crítica: comparar dos textos',
   textos_discontinuos: 'Lectura de tablas, avisos y gráficas',
   argumentacion: 'Lectura crítica: argumentos y conclusiones',
@@ -25,23 +27,42 @@ const TEMA_SUB = {
   semantica: 'Lectura: significado en contexto',
   literatura: 'Lectura: recursos literarios',
   comprension_literal: 'Lectura: comprensión literal',
+  articulacion_global: 'Lectura: articulación global del texto',
+  evaluacion_critica: 'Lectura: evaluación crítica',
+  analisis_textual: 'Lectura: análisis textual',
+  analisis_imagen: 'Lectura de imágenes y recursos visuales',
   indagacion: 'Ciencias: indagación científica',
   fisica: 'Física: magnitudes y relaciones',
   quimica: 'Química: cambios y reacciones',
   biologia: 'Biología: estructuras y procesos',
+  cts: 'Ciencia, tecnología y sociedad',
   geografia: 'Geografía de Colombia',
   constitucion: 'Constitución Política y organización del Estado',
   historia: 'Historia de Colombia',
   pensamiento_critico: 'Sociales: fuentes y evidencias',
   interpretacion: 'Sociales: lectura de gráficos y mapas',
+  interpretacion_y_analisis: 'Sociales: interpretación y análisis de perspectivas',
   participacion: 'Ciudadanía: mecanismos de participación',
   pensamiento_social: 'Sociales: normas y convivencia',
+  pensamiento_sistemico: 'Sociales: pensamiento sistémico',
+  competencias_ciudadanas: 'Competencias ciudadanas',
   dialogo: 'Inglés: comprensión de diálogos',
+  dialogues: 'Inglés: comprensión de diálogos',
   aviso: 'Inglés: avisos e instrucciones',
+  signs_notices: 'Inglés: avisos e instrucciones',
   cloze: 'Inglés: gramática en contexto',
+  lexical_cloze: 'Inglés: gramática en contexto',
   vocabulario: 'Inglés: vocabulario en contexto',
+  vocabulary: 'Inglés: vocabulario en contexto',
   lectura: 'Inglés: comprensión de lectura',
-  grammar: 'Inglés: gramática'
+  reading_comprehension: 'Inglés: comprensión de lectura',
+  literal_reading: 'Inglés: lectura literal',
+  inferential_reading: 'Inglés: lectura inferencial',
+  grammar: 'Inglés: gramática',
+  grammar_reading: 'Inglés: gramática y lectura',
+  calculo_limites: 'Cálculo: límites',
+  aptitud_numerica_docente: 'Aptitud numérica',
+  aptitud_pedagogica: 'Aptitud pedagógica'
 };
 
 function limpio(t) {
@@ -69,8 +90,23 @@ function subDe(item) {
 export function pistaEsDebil(pista) {
   const p = limpio(pista);
   if (!p) return true;
+  if (p.length < 48) return true;
   if (PISTA_DEBIL.test(p)) return true;
   if (/^Lee /i.test(p) && p.length < 50) return true;
+  return false;
+}
+
+export function temaEsDebil(tema) {
+  const s = limpio(tema);
+  if (!s) return true;
+  if (s.length < 22) return true;
+  if (/^aptitud /i.test(s)) return true;
+  if (/^(f[ií]sica|biolog[ií]a|qu[ií]mica|probabilidad|gram[aá]tica|aritm[eé]tica|geometr[ií]a|[aá]lgebra|estad[ií]stica|historia|geograf[ií]a|vocabulario|lectura|ingl[eé]s)$/i.test(s)) {
+    return true;
+  }
+  if (/el caso o la norma|la estructura o el vocabulario de esta pregunta|el procedimiento que pide|el tipo de lectura|el proceso del caso|el tema concreto/i.test(s)) {
+    return true;
+  }
   return false;
 }
 
@@ -95,11 +131,13 @@ function tipDescarte() {
 function esJustifDebil(razon) {
   const r = limpio(razon);
   if (!r) return true;
-  if (r.length < 48) return true;
-  if (/no (responde|cierra|es (lo|la)|sirve)|no es (correcta|válida)|opción incorrecta/i.test(r) && r.length < 90) {
+  if (r.length < 55) return true;
+  if (/no cumple la condici[oó]n o el c[aá]lculo del enunciado/i.test(r)) return true;
+  if (/no (responde|cierra|es (lo|la)|sirve)|no es (correcta|v[aá]lida)|opci[oó]n incorrecta/i.test(r) && r.length < 110) {
     return true;
   }
-  if (/^«[^»]{1,80}» no (responde|es lo que pide)/i.test(r) && !/porque|error|olvid|sumaste|restaste|confund|mezcl|omit|invert/i.test(r)) {
+  if (/^«[^»]{1,90}» no (responde|es lo que pide)/i.test(r)
+      && !/porque|error|olvid|sumaste|restaste|confund|mezcl|omit|invert|producto|uni[oó]n|complemento/i.test(r)) {
     return true;
   }
   return false;
@@ -111,7 +149,7 @@ function trampaDeOpcion(item, letra) {
   return lista.find((t) => String((t && (t.opcion || t.letra)) || '').toUpperCase() === L) || null;
 }
 
-function errorTipicoPorTrampa(trampa, sub) {
+function errorTipicoPorTrampa(trampa) {
   if (!trampa || typeof trampa !== 'object') return '';
   if (trampa.vulnera_omision_conversion) {
     return 'Es un error típico de unidades: olvidaste convertir (minutos↔segundos, horas↔minutos, cm↔m, %↔decimal) antes de operar.';
@@ -125,46 +163,82 @@ function errorTipicoPorTrampa(trampa, sub) {
   if (trampa.vulnera_error_geometrico) {
     return 'Mezclaste perímetro, área o volumen, o usaste una medida que no pide el enunciado.';
   }
-  if (/fraccion|proporcional|aritmet/i.test(sub)) {
-    return 'Es un error de procedimiento aritmético: revisa denominadores, conversiones y el orden de las operaciones.';
-  }
   return '';
 }
 
-function errorTipicoPorTexto(mala, bien, sub, area) {
+function numLike(s) {
+  return /^-?\d+([.,]\d+)?%?$|^\$?\d/.test(limpio(s).replace(/\s/g, ''));
+}
+
+function errorTipicoPorTexto(mala, bien, sub, area, item) {
   const m = limpio(mala).toLowerCase();
   const b = limpio(bien).toLowerCase();
-  if (/\/\d|\d\/\d|fracción|fraccion/.test(m + b) || /fraccion/.test(sub)) {
+  const enunciado = limpio(item && (item.pregunta_texto || item.texto || item.enunciado)).toLowerCase();
+
+  if (/probabil|azar|dado|carta|moneda|evento/.test(sub + enunciado) || sub === 'probabilidad') {
+    if (numLike(mala) && numLike(bien)) {
+      const nm = parseFloat(String(mala).replace(',', '.').replace(/[^\d.-]/g, ''));
+      const nb = parseFloat(String(bien).replace(',', '.').replace(/[^\d.-]/g, ''));
+      if (Number.isFinite(nm) && Number.isFinite(nb)) {
+        if (Math.abs(nm + nb - 1) < 0.05) {
+          return 'Error típico: confundiste el evento con su complemento (1 − p).';
+        }
+        if (Math.abs(nm - nb * nb) < 0.05 || Math.abs(nm - nb * 0.5) < 0.05) {
+          return 'Error típico: multiplicaste o partiste mal las probabilidades (evento conjunto vs. simple).';
+        }
+      }
+      return 'Error típico de probabilidad: usaste otro conteo de casos favorables/posibles o confundiste unión con intersección.';
+    }
+    return 'Error típico de probabilidad: no identificaste bien el espacio muestral o la regla (suma/producto) que aplica.';
+  }
+
+  if (/\/\d|\d\/\d|fracción|fraccion/.test(m + b + enunciado) || /fraccion/.test(sub)) {
     if (/\+/.test(m) || /sum/.test(m)) {
       return 'Error típico: sumaste numeradores y denominadores por separado, en vez de llevar ambas fracciones al mismo denominador.';
     }
-    return 'Error típico con fracciones: no igualaste denominadores o confundiste la fracción con el entero que aparece en el enunciado.';
+    return 'Error típico con fracciones: no igualaste denominadores o confundiste la fracción con el entero del enunciado.';
   }
-  if (/%|por\s*cien|iva|descuento/.test(m + b) || /aritmet|proporcional/.test(sub)) {
-    if (/sum|resta|\+|-/.test(m) && /%/.test(b + m)) {
-      return 'Error típico: trataste el porcentaje como si fuera una cantidad fija (sumaste o restaste el número del %) en vez de calcularlo sobre la base.';
+
+  if (/%|por\s*cien|iva|descuento/.test(m + b + enunciado) || /aritmet|proporcional/.test(sub)) {
+    if (/sum|resta|\+|−|-/.test(m) && /%/.test(b + m + enunciado)) {
+      return 'Error típico: trataste el porcentaje como cantidad fija (sumaste/restaste el número del %) en vez de calcularlo sobre la base.';
     }
-    return 'Error típico de porcentaje: no convertiste el % a decimal o lo aplicaste sobre la base equivocada.';
+    return 'Error típico de porcentaje o razón: no convertiste el % a decimal o lo aplicaste sobre la base equivocada.';
   }
-  if (/hora|minuto|segundo|km\/h|m\/s/.test(m + b)) {
+
+  if (/hora|minuto|segundo|km\/h|m\/s/.test(m + b + enunciado)) {
     return 'Error típico de unidades: olvidaste convertir el tiempo o la magnitud a la misma unidad antes de calcular.';
   }
+
+  if (/media|mediana|moda|rango|desviaci/.test(sub + enunciado) || sub === 'estadistica') {
+    return 'Error típico de estadística: confundiste media, mediana o moda, o usaste el total en vez del promedio.';
+  }
+
   if (/pendiente|resbaladiz|ad\s*hominem|autoridad|analog/.test(m) || /argument/.test(sub)) {
     return 'Error típico de lectura: confundiste el tipo de falacia o la conclusión con una premisa que el texto no sostiene.';
   }
-  if (/inferen|implica|sugiere/.test(sub) || area.includes('lect')) {
+
+  if (/inferen|implica|sugiere|evaluacion_critica|articulacion/.test(sub) || area.includes('lect')) {
     return 'Error típico: elegiste algo plausible, pero que el texto no afirma ni permite inferir con seguridad.';
   }
-  if (area.includes('cien')) {
-    return 'Error típico: mezclaste conceptos cercanos (causa/efecto, proceso/resultado o unidades del fenómeno).';
+
+  if (area.includes('cien') || /fisica|quimica|biologia|indagacion|cts/.test(sub)) {
+    return 'Error típico: mezclaste conceptos cercanos (causa/efecto, proceso/resultado, o la magnitud que no pide el caso).';
   }
-  if (area.includes('social')) {
-    return 'Error típico: confundiste la norma, la competencia o el mecanismo con otro parecido del enunciado.';
+
+  if (area.includes('social') || /pensamiento_|constitucion|historia|geografia|ciudadan/.test(sub)) {
+    return 'Error típico: confundiste la norma, la competencia institucional o el mecanismo con otro parecido del enunciado.';
   }
-  if (area.includes('ingl')) {
+
+  if (area.includes('ingl') || /grammar|vocab|dialog|cloze|reading|aviso|sign/.test(sub)) {
     return 'Error típico: la forma gramatical o el vocabulario suena familiar, pero no encaja con el tiempo o la estructura que pide la oración.';
   }
-  return '';
+
+  if (numLike(mala) && numLike(bien)) {
+    return 'Error típico de cálculo: operaste con los datos visibles pero omitiste un paso, una conversión o la pregunta exacta.';
+  }
+
+  return 'Error típico: esta opción responde a otra pregunta o usa solo una parte de la información del enunciado.';
 }
 
 function porqueIncorrecta(mala, bien, ctx) {
@@ -174,20 +248,16 @@ function porqueIncorrecta(mala, bien, ctx) {
   const letra = (ctx && ctx.letra) || '';
   const sub = subDe(item);
   const area = areaDe(item);
-  const tipTrampa = errorTipicoPorTrampa(trampaDeOpcion(item, letra), sub);
-  const tipTexto = tipTrampa || errorTipicoPorTexto(izq, der, sub, area);
-  if (tipTexto) {
-    return `«${izq}» es un distractor. ${tipTexto} La opción que sí responde es «${der}».`;
-  }
-  return `«${izq}» no responde lo pedido porque no cumple la condición o el cálculo del enunciado. La opción correcta es «${der}».`;
+  const tipTrampa = errorTipicoPorTrampa(trampaDeOpcion(item, letra));
+  const tipTexto = tipTrampa || errorTipicoPorTexto(izq, der, sub, area, item);
+  return `«${izq}» es un distractor. ${tipTexto} La opción que sí responde es «${der}».`;
 }
 
 function temaDe(item) {
   const sub = subDe(item);
-  if (item.tema_a_estudiar) return limpio(item.tema_a_estudiar);
+  const prev = limpio(item.tema_a_estudiar) || limpio(item.repaso);
+  if (prev && !temaEsDebil(prev)) return prev;
   if (TEMA_SUB[sub]) return TEMA_SUB[sub];
-  const repaso = limpio(item.repaso);
-  if (repaso && !/^(matem[aá]ticas|lectura|ciencias|sociales|ingl[eé]s)$/i.test(repaso)) return repaso;
   const area = areaDe(item);
   if (area.includes('mate')) return 'Matemáticas: el procedimiento que pide esta pregunta';
   if (area.includes('lect')) return 'Lectura crítica: el tipo de lectura que pide esta pregunta';
@@ -275,9 +345,6 @@ export function generarAyudaAnalitica(item) {
   };
 }
 
-/**
- * Enriquece un ítem: reemplaza pista débil y completa campos de boletín.
- */
 function alinearExplicacionCorrecta(item, ayuda) {
   const clave = letraCorrecta(item);
   const existente = limpio(item.explicacion_correcta) || limpio(item.explicacion_detallada);
@@ -300,7 +367,6 @@ export function enriquecerAyudaItem(item) {
     ? item.justificacion_opciones
     : ayuda.justificacion_opciones;
 
-  // Prioridad: justificación específica del ítem si es fuerte; si es débil, la analítica.
   const justifFinal = {};
   const razonesFinal = { ...ayuda.razonesPorTexto };
   'ABCD'.split('').forEach((L) => {
@@ -317,7 +383,9 @@ export function enriquecerAyudaItem(item) {
     const texto = textoOpcion(opcionesDe(item), L);
     if (texto && justifFinal[L]) razonesFinal[texto] = justifFinal[L];
   });
-  const tema = limpio(item.tema_a_estudiar) || limpio(item.repaso) || ayuda.tema_a_estudiar;
+
+  const temaPrev = limpio(item.tema_a_estudiar) || limpio(item.repaso);
+  const tema = (!temaEsDebil(temaPrev) ? temaPrev : null) || ayuda.tema_a_estudiar;
 
   return {
     ...item,

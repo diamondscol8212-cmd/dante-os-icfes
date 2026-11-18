@@ -90,16 +90,10 @@
     ).toLowerCase();
     var cat = (_catalogo && _catalogo.temas) || [];
 
-    // Primero texto del tema (permite mapear aritmética→fracciones si el enunciado habla de fracciones).
-    for (var j = 0; j < cat.length; j++) {
-      var tm = cat[j];
-      if (!tm || !Array.isArray(tm.matchTema)) continue;
-      for (var k = 0; k < tm.matchTema.length; k++) {
-        if (temaTxt.indexOf(String(tm.matchTema[k]).toLowerCase()) >= 0) return tm.id;
-      }
-    }
+    // 1) Fracciones por enunciado/tema (antes de caer en aritmética genérica).
     if (/fraccion|numerador|denominador/.test(temaTxt)) return 'fracciones';
 
+    // 2) sub_competencia exacta del banco (= id del catálogo).
     if (sub) {
       for (var i = 0; i < cat.length; i++) {
         var t = cat[i];
@@ -107,8 +101,19 @@
         if (t.id === sub) return t.id;
         if (Array.isArray(t.subs) && t.subs.indexOf(sub) >= 0) return t.id;
       }
-      return sub;
     }
+
+    // 3) match por texto de tema_a_estudiar.
+    for (var j = 0; j < cat.length; j++) {
+      var tm = cat[j];
+      if (!tm || !Array.isArray(tm.matchTema)) continue;
+      for (var k = 0; k < tm.matchTema.length; k++) {
+        var needle = String(tm.matchTema[k]).toLowerCase();
+        if (needle && temaTxt.indexOf(needle) >= 0) return tm.id;
+      }
+    }
+
+    if (sub) return sub;
     if (temaTxt) return slugify(temaTxt);
     return '';
   }
@@ -144,10 +149,12 @@
       }
       var existe = estado.pendientes.some(function (p) { return p && p.id === temaId; });
       if (!existe) {
+        var catTema = temaPorId(temaId);
         estado.pendientes.unshift({
           id: temaId,
           titulo: tituloDe(temaId, meta),
           area: areaDe(temaId, meta),
+          nivel: (catTema && catTema.nivel) || '',
           itemId: meta.itemId || meta.id || '',
           ts: Date.now()
         });
