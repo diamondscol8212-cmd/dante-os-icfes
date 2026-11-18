@@ -4,6 +4,16 @@
   const NODOS = [-4.4444505893, -3.8118338356, -3.2423759570, -2.7161100344, -2.2198007421, -1.7451996504, -1.2862293414, -0.8380383173, -0.3964547464, 0, 0.3964547464, 0.8380383173, 1.2862293414, 1.7451996504, 2.2198007421, 2.7161100344, 3.2423759570, 3.8118338356, 4.4444505893];
   const PESOS = [1.733979e-09, 3.633454e-07, 2.378036e-05, 5.867160e-04, 6.438416e-03, 3.424933e-02, 1.002476e-01, 1.691717e-01, 2.210452e-01, 2.422491e-01, 2.210452e-01, 1.691717e-01, 1.002476e-01, 3.424933e-02, 6.438416e-03, 5.867160e-04, 2.378036e-05, 3.633454e-07, 1.733979e-09];
 
+  /**
+   * Pesos de proyección (puntaje / 500):
+   * - ACIERTO LIMPIO (entrenamiento, refuerzo, simulacro, diagnóstico): peso 1.0 → entra al IRT completo.
+   * - ACIERTO DE REPASO / recuperación (Repaso · Fallidas o rehacer tras cartilla): peso 0.35.
+   *   No voltea el fallo original en el historial IRT; solo aporta un crédito parcial al puntaje
+   *   mostrado, para que la proyección suba de forma gradual y no con saltos grandes.
+   */
+  const PESO_ACIERTO_LIMPIO = 1;
+  const PESO_ACIERTO_RECUPERACION = 0.35;
+
   function params(item) {
     const a = Number(item && item.a);
     const b = Number(item && item.b);
@@ -96,13 +106,24 @@
     return tipo === 'REPASO_FALLIDAS';
   }
 
+  /** Crédito parcial de proyección: base + 35% del alza que daría tratar el repaso como acierto limpio. */
+  function creditoParcialRecuperacion(puntosBase, puntosSiPleno) {
+    const base = Number(puntosBase);
+    const pleno = Number(puntosSiPleno);
+    if (!Number.isFinite(base) || !Number.isFinite(pleno)) return Number.isFinite(base) ? base : (Number.isFinite(pleno) ? pleno : null);
+    if (pleno <= base) return Math.round(base);
+    return Math.max(0, Math.min(500, Math.round(base + PESO_ACIERTO_RECUPERACION * (pleno - base))));
+  }
+
   function acumular(nuevas) {
+    const prevItems = leerRespuestas();
+    const prevEst = estimar(prevItems);
     const mapa = new Map();
-    function meter(r) {
+    function meterLimpio(r) {
       if (!r || typeof r.correcto !== 'boolean') return;
       const id = String(r.id || '');
       if (!id) return;
-      // Acierto de fallida / repaso: no entra al IRT ni voltea un fallo previo.
+      // Acierto de repaso: no entra al historial IRT ni voltea un fallo previo (acierto limpio ≠ acierto de repaso).
       if (esRecuperacionScore(r)) return;
       const previo = mapa.get(id) || {};
       mapa.set(id, {
@@ -113,16 +134,68 @@
         correcto: !!r.correcto,
         ms: Number(r.ms) > 0 ? Number(r.ms) : 0,
         area: r.area || r.materia || previo.area || '',
-        letra: r.letra || r.opcionSeleccionada || previo.letra || ''
+        letra: r.letra || r.opcionSeleccionada || previo.letra || '',
+        peso: PESO_ACIERTO_LIMPIO
       });
     }
-    leerRespuestas().forEach(meter);
-    (nuevas || []).forEach(meter);
+    prevItems.forEach(meterLimpio);
+    (nuevas || []).forEach(meterLimpio);
     const items = Array.from(mapa.values()).slice(-600);
     try { localStorage.setItem('dante_respuestas_irt', JSON.stringify(items)); } catch (e) {}
     const est = estimar(items);
     est.n = items.length;
-    if (est.puntos != null && items.length) {
+    est.pesoLimpio = PESO_ACIERTO_LIMPIO;
+    est.pesoRecuperacion = PESO_ACIERTO_RECUPERACION;
+
+    // Crédito parcial solo por aciertos de repaso de ESTE lote (no reescriben el IRT).
+    const recupOk = (nuevas || []).filter(function (r) {
+      return r && esRecuperacionScore(r) && r.correcto === true && String(r.id || '').trim();
+    });
+    if (recupOk.length) {
+      const simulMap = new Map(items.map(function (x) { return [x.id, Object.assign({}, x)]; }));
+      recupOk.forEach(function (r) {
+        const id = String(r.id || '');
+        const prev = simulMap.get(id);
+        if (prev) {
+          prev.correcto = true;
+        } else {
+          simulMap.set(id, {
+            id: id,
+            a: r.a,
+            b: r.b,
+            c: r.c,
+            correcto: true,
+            ms: Number(r.ms) > 0 ? Number(r.ms) : 0,
+            area: r.area || r.materia || '',
+            letra: r.letra || r.opcionSeleccionada || ''
+          });
+        }
+      });
+      const estPleno = estimar(Array.from(simulMap.values()));
+      const basePts = (prevEst && prevEst.puntos != null)
+        ? prevEst.puntos
+        : (est.puntos != null ? est.puntos : null);
+      const ptsParcial = creditoParcialRecuperacion(basePts, estPleno && estPleno.puntos);
+      if (ptsParcial != null) {
+        est.puntos = ptsParcial;
+        est.creditoRecuperacion = true;
+        est.puntosSiPleno = estPleno && estPleno.puntos;
+        est.puntosBase = basePts;
+      }
+    }
+
+    // Conserva crédito parcial de repasos previos hasta que el IRT limpio lo alcance (±40 pts).
+    if (!recupOk.length && est.puntos != null) {
+      try {
+        const storedPts = parseInt(localStorage.getItem('dante_score_proyectado') || '', 10);
+        if (Number.isFinite(storedPts) && storedPts > est.puntos && storedPts <= est.puntos + 40) {
+          est.puntos = storedPts;
+          est.conservaCreditoRepaso = true;
+        }
+      } catch (e) {}
+    }
+
+    if (est.puntos != null && (items.length || recupOk.length)) {
       try {
         localStorage.setItem('dante_score_proyectado', String(est.puntos));
         localStorage.setItem('dante_puntaje_global', String(est.puntos));
@@ -270,6 +343,9 @@
     estimar: estimar,
     acumular: acumular,
     esRecuperacionScore: esRecuperacionScore,
+    creditoParcialRecuperacion: creditoParcialRecuperacion,
+    PESO_ACIERTO_LIMPIO: PESO_ACIERTO_LIMPIO,
+    PESO_ACIERTO_RECUPERACION: PESO_ACIERTO_RECUPERACION,
     leerRespuestas: leerRespuestas,
     aPuntosSaber: aPuntosSaber,
     percentil: percentil,

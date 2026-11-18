@@ -3,6 +3,10 @@
  * Ledger local del alumno + sync a la base.
  * Solo preguntas que ESTE alumno falló en diagnóstico / entrenamiento / refuerzo / simulacro.
  * Acertar en el repaso BAJA el contador al instante. Nunca rellena con banco genérico.
+ *
+ * Acierto limpio (entrenamiento/simulacro) ≠ acierto de repaso:
+ * - Limpio: peso 1.0 en IRT / proyección y en precisión de «Cómo respondes».
+ * - Repaso: limpia la fallida; proyección solo crédito parcial (~35%); no infla precisión acumulada.
  */
 (function () {
   'use strict';
@@ -302,8 +306,13 @@
             || String(tipo || '').toUpperCase() === 'REPASO_FALLIDAS'
             || undefined,
           respuestas: lista,
-          // No reenviar proyección: el acierto de fallida no debe mover la brecha.
-          puntos: null,
+          // Crédito parcial ya aplicado en cliente (DanteAbility); no mandar salto pleno.
+          puntos: (function () {
+            try {
+              const p = parseInt(localStorage.getItem('dante_score_proyectado') || '', 10);
+              return Number.isFinite(p) ? p : null;
+            } catch (e) { return null; }
+          })(),
           theta: null,
           sem: null
         })

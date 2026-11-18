@@ -3332,13 +3332,31 @@
       }
     }
 
-    _sumarConteoAreas() {
+    /**
+     * Precisión de «Cómo respondes»: solo intentos limpios.
+     * Acierto de repaso / recuperación (excluirDeScore) NO se acumula en dante_area_conteo.
+     * opts.acumularGlobal=false → solo stats de sesión (p. ej. cierre de Repaso · Fallidas).
+     */
+    _sumarConteoAreas(opts) {
+      const acumularGlobal = !(opts && opts.acumularGlobal === false);
       const saber = {};
       const preu = {};
+      const saberSesion = {};
       Object.values(this.respuestasSesionActiva || {}).forEach((r) => {
         if (!r || typeof r.correcto !== 'boolean') return;
         const area = String(r.materia || r.area || 'general').toLowerCase().replace(/\s+/g, '_');
-        const destino = (r.esPreun || String(r.id || r.itemId || '').indexOf('preun_') === 0) ? preu : saber;
+        const esPreun = (r.esPreun || String(r.id || r.itemId || '').indexOf('preun_') === 0);
+        // Precisión limpia: ignora aciertos/fallos marcados como recuperación de fallidas.
+        const esRecup = r.recuperacion === true || r.excluirDeScore === true
+          || (window.DanteAbility && typeof window.DanteAbility.esRecuperacionScore === 'function'
+            && window.DanteAbility.esRecuperacionScore(r));
+        if (!saberSesion[area]) saberSesion[area] = { total: 0, aciertos: 0 };
+        if (!esPreun) {
+          saberSesion[area].total += 1;
+          if (r.correcto) saberSesion[area].aciertos += 1;
+        }
+        if (esRecup) return;
+        const destino = esPreun ? preu : saber;
         if (!destino[area]) destino[area] = { total: 0, aciertos: 0 };
         destino[area].total += 1;
         if (r.correcto) destino[area].aciertos += 1;
@@ -3349,17 +3367,21 @@
         try { conteo = JSON.parse(localStorage.getItem(clave) || '{}') || {}; } catch (e) { conteo = {}; }
         const precisionSesion = {};
         Object.entries(stats).forEach(([k, v]) => {
-          if (!conteo[k]) conteo[k] = { total: 0, aciertos: 0 };
-          conteo[k].total += v.total;
-          conteo[k].aciertos += v.aciertos;
+          if (acumularGlobal) {
+            if (!conteo[k]) conteo[k] = { total: 0, aciertos: 0 };
+            conteo[k].total += v.total;
+            conteo[k].aciertos += v.aciertos;
+          }
           precisionSesion[k] = Math.round((100 * v.aciertos) / v.total);
         });
-        try { localStorage.setItem(clave, JSON.stringify(conteo)); } catch (e) { /* almacenamiento bloqueado */ }
+        if (acumularGlobal) {
+          try { localStorage.setItem(clave, JSON.stringify(conteo)); } catch (e) { /* almacenamiento bloqueado */ }
+        }
         return precisionSesion;
       };
       const precisionSaber = fusionar('dante_area_conteo', saber);
       const precisionPreu = fusionar('dante_preu_area_conteo', preu);
-      if (Object.keys(saber).length) {
+      if (acumularGlobal && Object.keys(saber).length) {
         try {
           const conteo = JSON.parse(localStorage.getItem('dante_area_conteo') || '{}') || {};
           const precisionGlobal = {};
@@ -3370,9 +3392,16 @@
         } catch (e) { /* almacenamiento bloqueado */ }
       }
       const usaPreu = this._esMisionPreun();
+      // Para el resumen del bloque de repaso mostramos el % de la sesión, sin meterlo al acumulado limpio.
+      const precisionSesionRepaso = {};
+      Object.entries(saberSesion).forEach(([k, v]) => {
+        if (v && v.total) precisionSesionRepaso[k] = Math.round((100 * v.aciertos) / v.total);
+      });
       return {
         stats: usaPreu ? preu : saber,
-        precisionSesion: usaPreu ? precisionPreu : precisionSaber
+        precisionSesion: usaPreu ? precisionPreu : precisionSaber,
+        precisionSesionBruta: precisionSesionRepaso,
+        soloLimpios: true
       };
     }
 
@@ -3552,7 +3581,10 @@
     }
 
     _registrarSesionExpediente(tipo, materia, puntaje, theta) {
-      const suma = this._sumarConteoAreas();
+      const tipoUp = String(tipo || '').toUpperCase();
+      const esRepasoTipo = tipoUp === 'REPASO_FALLIDAS';
+      // Repaso · Fallidas: no inflar dante_area_conteo (precisión de «Cómo respondes»).
+      const suma = this._sumarConteoAreas({ acumularGlobal: !esRepasoTipo });
       const aciertos = Object.values(suma.stats).reduce((s, v) => s + v.aciertos, 0);
       const total = Object.values(suma.stats).reduce((s, v) => s + v.total, 0);
       const detalle = this._serializarItemsSesion();
@@ -4210,8 +4242,10 @@
       recordRespuesta.c = paramsItem.c;
       this._enriquecerRecordRespuesta(recordRespuesta, item, elegida);
 
-      // Acierto sobre una fallida (repaso o reintento tras ver explicación):
-      // limpia la fallida, pero no suma igual a la brecha / proyección.
+      // Acierto limpio vs acierto de repaso:
+      // - Limpio (entrenamiento/simulacro): peso 1.0 en IRT / proyección.
+      // - Repaso · Fallidas o rehacer tras cartilla: marca recuperación; IRT no voltea el fallo;
+      //   proyección solo recibe crédito parcial (35%) vía DanteAbility.acumular.
       const eraFallidaPendiente = !!(window.DanteRepasoFallidas
         && typeof window.DanteRepasoFallidas.estaPendiente === 'function'
         && window.DanteRepasoFallidas.estaPendiente(recordRespuesta.id));
@@ -4222,20 +4256,17 @@
       if (esRecuperacionScore) {
         recordRespuesta.recuperacion = true;
         recordRespuesta.excluirDeScore = true;
+        recordRespuesta.tipo = 'REPASO_FALLIDAS';
+        recordRespuesta.pesoProyeccion = (window.DanteAbility && window.DanteAbility.PESO_ACIERTO_RECUPERACION) || 0.35;
+      } else {
+        recordRespuesta.pesoProyeccion = (window.DanteAbility && window.DanteAbility.PESO_ACIERTO_LIMPIO) || 1;
       }
 
       this.respuestasSesionActiva[this.indexReactivoActivo] = recordRespuesta;
       let estGuardado = null;
       if (!esPreun && !(this.misionData && this.misionData.esSimulacro)) {
-        // Recuperación: no recalibrar con el acierto fresco (peso 0 en brecha).
-        if (!esRecuperacionScore) {
-          estGuardado = this._recalibrarHabilidad();
-        } else if (window.DanteAbility && typeof window.DanteAbility.leerRespuestas === 'function'
-            && typeof window.DanteAbility.estimar === 'function') {
-          estGuardado = window.DanteAbility.estimar(window.DanteAbility.leerRespuestas());
-          this.thetaEstimado = estGuardado.theta;
-          this.semEstimado = estGuardado.sem;
-        }
+        // Siempre pasar por acumular: limpio actualiza IRT; recuperación solo crédito parcial.
+        estGuardado = this._recalibrarHabilidad();
         this.prepararSiguientePorInformacion();
       }
 
@@ -4270,14 +4301,15 @@
           letra: recordRespuesta.opcionSeleccionada,
           textoOpcion: recordRespuesta.textoOpcion || '',
           recuperacion: esRecuperacionScore || undefined,
-          excluirDeScore: esRecuperacionScore || undefined
+          excluirDeScore: esRecuperacionScore || undefined,
+          excluir_score: esRecuperacionScore || undefined
         }, {
           tipo: tipoGuardado,
           recuperacion: esRecuperacionScore || undefined,
-          // No empujar puntos/theta de recuperación al servidor como si fueran acierto pleno.
-          theta: esRecuperacionScore ? undefined : (estGuardado && estGuardado.theta),
-          sem: esRecuperacionScore ? undefined : (estGuardado && estGuardado.sem),
-          puntos: esRecuperacionScore ? undefined : (estGuardado && estGuardado.puntos)
+          // Recuperación: solo puntos con crédito parcial (35%); nunca como acierto limpio pleno.
+          theta: estGuardado && estGuardado.theta,
+          sem: estGuardado && estGuardado.sem,
+          puntos: estGuardado && estGuardado.puntos
         });
       }
 
@@ -5421,10 +5453,17 @@
         const esSimFin = Boolean(this.misionData && this.misionData.esSimulacro);
 
         if (esRepasoFallidasFin) {
-          // Baja fallidas, pero el acierto fresco NO mueve proyección/brecha (peso 0).
-          proyeccionSala = previoSala;
+          // Acierto de repaso ≠ acierto limpio: crédito parcial (35%) a la proyección; no IRT pleno.
+          const estRepaso = this._recalibrarHabilidad();
+          if (estRepaso && estRepaso.puntos != null) {
+            proyeccionSala = estRepaso.puntos;
+          } else {
+            proyeccionSala = previoSala;
+          }
           valorScore = proyeccionSala + ' Pts';
-          etiquetaScore = 'Score (sin cambio por repaso)';
+          etiquetaScore = (estRepaso && estRepaso.creditoRecuperacion)
+            ? 'Score (crédito parcial por repaso · 35%)'
+            : 'Score (repaso · sin alza plena)';
           if (window.DanteRepasoFallidas && typeof window.DanteRepasoFallidas.anotarSesion === 'function') {
             try {
               Promise.resolve(window.DanteRepasoFallidas.anotarSesion(this.respuestasSesionActiva))
@@ -5436,12 +5475,12 @@
           } else if (window.DanteRepasoFallidas && typeof window.DanteRepasoFallidas.pintar === 'function') {
             try { window.DanteRepasoFallidas.pintar(); } catch (eRfP2) {}
           }
-          // Expediente: limpia fallidas; puntaje null → no reescribe baseline.
+          // Expediente: limpia fallidas; no acumula precisión limpia; baseline solo con crédito parcial.
           this._registrarSesionExpediente(
             'REPASO_FALLIDAS',
             'Repaso · Fallidas',
-            null,
-            null
+            proyeccionSala,
+            estRepaso && typeof estRepaso.theta === 'number' ? estRepaso.theta : this.thetaEstimado
           );
         } else if (esMisionPreun) {
           const ptsPreu = parseInt(localStorage.getItem('dante_preu_puntos') || '0', 10);
