@@ -207,39 +207,48 @@ C.fisica = pack(
 );
 
 C.quimica = pack(
-  'La química describe composición y cambio: estequiometría, disoluciones (molaridad), tabla periódica (radio, electronegatividad) y reacciones con conservación de átomos.',
+  'Si el ítem da una semirreacción como $\\text{SO}_3^{2-} \\rightarrow \\text{SO}_4^{2-}$, calcula el estado de oxidación del elemento que cambia (aquí el S): en sulfito suele ser +4 y en sulfato +6. Si el número sube, hay oxidación (pérdida de e⁻). También practica molaridad $M=n/V$ y balance de átomos.',
   [
-    'Balancea o usa la relación molar de la reacción.',
-    'Convierte gramos ↔ moles con masa molar.',
-    'Lee tendencias periódicas (grupo/periodo) con la causa correcta (capas, Z efe).'
+    'Identifica el elemento cuyo número de oxidación cambia (S, N, Fe…).',
+    'Asigna estados: O suele ser −2; H +1; la carga del ion cierra la suma.',
+    'Si el número sube → oxidación; si baja → reducción.',
+    'En disoluciones: $M = n/V$ con V en litros.'
   ],
   [
-    'Olvidar la masa molar al pasar de g a mol.',
-    'Invertir tendencias (radio vs electronegatividad).',
-    'Creer que los moles “desaparecen” sin conservación.'
+    'Invertir oxidación y reducción (+4→+6 no es reducción).',
+    'Olvidar la carga del ion al calcular el estado del S.',
+    'Usar gramos como si fueran moles en molaridad.'
   ],
   {
-    titulo: 'Ejemplo resuelto',
-    enunciado: '40 g de NaOH en 1 L de solución. Masa molar NaOH = 40 g/mol. ¿Molaridad?',
-    pasos: ['1) moles = 40/40 = 1 mol.', '2) V = 1 L.', '3) M = 1 mol/L.'],
-    respuesta: '1 M',
-    contraste: null
+    titulo: 'Ejemplo resuelto · mismo tipo',
+    enunciado: 'En $\\text{SO}_3^{2-} + \\text{H}_2\\text{O} \\rightarrow \\text{SO}_4^{2-} + 2\\text{H}^+ + 2e^-$, el S cambia de…',
+    pasos: [
+      '1) En SO₃²⁻: 3(−2) + x = −2 → x = +4 (sulfito).',
+      '2) En SO₄²⁻: 4(−2) + x = −2 → x = +6 (sulfato).',
+      '3) +4 → +6: el S se oxida (pierde 2e⁻, como en la semirreacción).'
+    ],
+    respuesta: '+4 → +6 (oxidación)',
+    contraste: {
+      titulo: 'Contraste · no invertir',
+      invalido: 'Inválido: «El S pasa de +6 a +4» (eso sería reducción).',
+      valido: 'Válido: «Sulfito (+4) → sulfato (+6): oxidación.»'
+    }
   },
   [
-    q('tr_qui_01', '40 g NaOH (MM=40) en 1 L → molaridad:', ['A) 0,4 M', 'B) 1 M', 'C) 40 M', 'D) 10 M'], 'B',
+    q('tr_qui_01', 'En la oxidación de sulfito a sulfato, el estado del S va de:', ['A) +6 a +4', 'B) +4 a +6', 'C) 0 a −2', 'D) +2 a +2'], 'B',
+      { A: 'Eso sería reducción.', C: 'No corresponde a SO₃²⁻/SO₄²⁻.', D: 'Sí cambia.' },
+      '+4 → +6.'),
+    q('tr_qui_02', 'Si el número de oxidación sube, el proceso es:', ['A) reducción', 'B) oxidación', 'C) solo disolución', 'D) precipitación siempre'], 'B',
+      { A: 'Reducción baja el número.', C: 'No explica el cambio de e⁻.', D: 'No aplica.' },
+      'Sube = oxidación.'),
+    q('tr_qui_03', '40 g NaOH (MM=40) en 1 L → molaridad:', ['A) 0,4 M', 'B) 1 M', 'C) 40 M', 'D) 10 M'], 'B',
       { A: 'Dividiste mal.', C: 'Usaste gramos como moles.', D: 'Factor 10 sin base.' },
       'n=1; M=1.'),
-    q('tr_qui_02', 'Al bajar en un grupo, el radio atómico suele:', ['A) disminuir', 'B) aumentar', 'C) anularse', 'D) igualar al del He siempre'], 'B',
-      { A: 'Al bajar hay más capas.', C: 'No se anula.', D: 'Falso.' },
-      'Más niveles de energía → mayor radio.'),
-    q('tr_qui_03', '2 H₂ + O₂ → 2 H₂O. Si hay 2 mol H₂ y 1 mol O₂, el agua máxima es:', ['A) 1 mol', 'B) 2 mol', 'C) 3 mol', 'D) 0 mol'], 'B',
-      { A: 'Eso sería si limitara a la mitad.', C: 'No hay átomos de más.', D: 'Sí reaccionan.' },
-      'Proporción exacta → 2 mol H₂O.'),
     q('tr_qui_04', 'La molaridad M es:', ['A) moles de soluto / litros de solución', 'B) litros / moles', 'C) solo gramos de solvente', 'D) presión atmosférica'], 'A',
       { B: 'Está invertido.', C: 'No define M.', D: 'No es concentración.' },
       'M = n/V.')
   ],
-  'Repasa moles, molaridad y tendencias periódicas.'
+  'Oxidación/reducción + estados · molaridad · balance.'
 );
 
 C.historia = pack(

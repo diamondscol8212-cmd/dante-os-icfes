@@ -130,11 +130,12 @@ export const TERMINOS_TEMAS = {
     t('energía', 'Capacidad de producir cambios (cinética, potencial…).', 'Se conserva en sistemas aislados.')
   ],
   quimica: [
-    t('átomo', 'Unidad básica de un elemento (núcleo + electrones).', 'El carbono tiene 6 protones.'),
-    t('mol', 'Cantidad de sustancia: 6,022×10²³ entidades.', '1 mol de H₂O ≈ 18 g.'),
-    t('reacción química', 'Transformación de sustancias en otras.', '2H₂ + O₂ → 2H₂O.'),
-    t('molaridad', 'Concentración: moles de soluto por litro de solución.', 'M = n/V.'),
-    t('enlace', 'Fuerza que une átomos (iónico, covalente…).', 'En H₂O los enlaces son covalentes.')
+    t('oxidación', 'Pérdida de electrones; el número de oxidación del elemento sube.', 'Sulfito → sulfato: el S se oxida.'),
+    t('estado de oxidación', 'Carga formal que tendría el átomo si los enlaces fueran iónicos.', 'En SO₄²⁻ el S tiene +6.'),
+    t('sulfito', 'Ion SO₃²⁻; el azufre suele tener estado de oxidación +4.', 'SO₃²⁻ + H₂O → SO₄²⁻ + 2H⁺ + 2e⁻.'),
+    t('sulfato', 'Ion SO₄²⁻; el azufre suele tener estado de oxidación +6.', 'Producto de oxidar el sulfito.'),
+    t('molaridad', 'Concentración: moles de soluto por litro de solución (M = n/V).', '2 mol en 1 L → M = 2.'),
+    t('mol', 'Cantidad de sustancia: 6,022×10²³ entidades.', '1 mol de H₂O ≈ 18 g.')
   ],
   cts: [
     t('CTS', 'Ciencia, Tecnología y Sociedad: impactos mutuos.', 'Una presa: energía + efecto ambiental.'),

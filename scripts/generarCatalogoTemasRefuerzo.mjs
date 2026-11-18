@@ -335,16 +335,18 @@ function diagramaDe(id, area, titulo) {
   }
   if (id === 'quimica') {
     return base(
-      `<text x="24" y="55" fill="#cbd5e1" font-size="13">Reacción balanceada</text>`
-      + `<circle cx="70" cy="95" r="14" fill="#7eb8c433" stroke="#7eb8c4"/><text x="70" y="99" text-anchor="middle" fill="#7eb8c4" font-size="10">H₂</text>`
-      + `<circle cx="110" cy="95" r="14" fill="#7eb8c433" stroke="#7eb8c4"/><text x="110" y="99" text-anchor="middle" fill="#7eb8c4" font-size="10">H₂</text>`
-      + `<text x="140" y="100" fill="#94a3b8" font-size="14">+</text>`
-      + `<circle cx="175" cy="95" r="16" fill="#c4a57433" stroke="#c4a574"/><text x="175" y="99" text-anchor="middle" fill="#c4a574" font-size="10">O₂</text>`
-      + `<text x="210" y="100" fill="#94a3b8" font-size="14">→</text>`
-      + `<circle cx="250" cy="95" r="16" fill="#34d39933" stroke="#34d399"/><text x="250" y="99" text-anchor="middle" fill="#6ee7b7" font-size="9">H₂O</text>`
-      + `<circle cx="295" cy="95" r="16" fill="#34d39933" stroke="#34d399"/><text x="295" y="99" text-anchor="middle" fill="#6ee7b7" font-size="9">H₂O</text>`
-      + `<text x="24" y="145" fill="#e2e8f0" font-size="12">2 H₂ + O₂ → 2 H₂O · mismos átomos a ambos lados</text>`
-      + `<text x="24" y="170" fill="#7eb8c4" font-size="12">Molaridad M = n / V</text>`
+      `<text x="24" y="48" fill="#cbd5e1" font-size="12">Oxidación · sulfito → sulfato</text>`
+      + `<rect x="40" y="62" width="150" height="70" rx="10" fill="#111827" stroke="#c4a57455"/>`
+      + `<text x="115" y="92" text-anchor="middle" fill="#c4a574" font-size="14">SO₃²⁻</text>`
+      + `<text x="115" y="114" text-anchor="middle" fill="#94a3b8" font-size="11">S en +4</text>`
+      + `<text x="210" y="100" fill="#64748b" font-size="18">→</text>`
+      + `<rect x="240" y="62" width="150" height="70" rx="10" fill="#111827" stroke="#34d39955"/>`
+      + `<text x="315" y="92" text-anchor="middle" fill="#6ee7b7" font-size="14">SO₄²⁻</text>`
+      + `<text x="315" y="114" text-anchor="middle" fill="#94a3b8" font-size="11">S en +6</text>`
+      + `<text x="410" y="100" fill="#7eb8c4" font-size="12">+2e⁻</text>`
+      + `<text x="24" y="160" fill="#e2e8f0" font-size="12">El S pierde e⁻ → se oxida (+4 → +6)</text>`
+      + `<text x="24" y="182" fill="#64748b" font-size="11">Semirreacción: SO₃²⁻ + H₂O → SO₄²⁻ + 2H⁺ + 2e⁻</text>`,
+      205
     );
   }
   if (id === 'cloze' || id === 'grammar' || id === 'lexical_cloze' || id === 'grammar_reading') {
@@ -652,14 +654,14 @@ function diagramaOpcionesDe(id) {
   }
   if (id === 'quimica') {
     return wrap(
-      `<text x="24" y="52" fill="#cbd5e1" font-size="12">¿Qué opción respeta el balance?</text>`
+      `<text x="24" y="52" fill="#cbd5e1" font-size="12">Cambio de oxidación del S</text>`
       + `<rect x="40" y="70" width="210" height="70" rx="10" fill="#111827" stroke="#34d39955"/>`
-      + `<text x="145" y="100" text-anchor="middle" fill="#6ee7b7" font-size="12">✓ 2 H₂ + O₂ → 2 H₂O</text>`
-      + `<text x="145" y="122" text-anchor="middle" fill="#94a3b8" font-size="10">4 H y 2 O a cada lado</text>`
+      + `<text x="145" y="100" text-anchor="middle" fill="#6ee7b7" font-size="13">✓ +4 → +6</text>`
+      + `<text x="145" y="122" text-anchor="middle" fill="#94a3b8" font-size="10">se oxida (pierde 2e⁻)</text>`
       + `<rect x="270" y="70" width="210" height="70" rx="10" fill="#111827" stroke="#f8717155"/>`
-      + `<text x="375" y="100" text-anchor="middle" fill="#f87171" font-size="12">✗ H₂ + O₂ → H₂O</text>`
-      + `<text x="375" y="122" text-anchor="middle" fill="#94a3b8" font-size="10">átomos no cuadran</text>`
-      + `<text x="24" y="170" fill="#64748b" font-size="11">Molaridad: revisa unidades n (mol) y V (L)</text>`,
+      + `<text x="375" y="100" text-anchor="middle" fill="#f87171" font-size="13">✗ +6 → +4</text>`
+      + `<text x="375" y="122" text-anchor="middle" fill="#94a3b8" font-size="10">sería reducción</text>`
+      + `<text x="24" y="170" fill="#64748b" font-size="11">Cuenta O y carga para hallar el n° de oxidación del S</text>`,
       'Opciones química',
       200
     );

@@ -512,31 +512,70 @@ export const CONTENIDO_TEMAS = {
     "diagrama_svg": ""
   },
   "quimica": {
-    "intro": "La química describe composición y cambio: estequiometría, disoluciones (molaridad), tabla periódica (radio, electronegatividad) y reacciones con conservación de átomos.",
+    "intro": "Si el ítem da una semirreacción como $\\text{SO}_3^{2-} \\rightarrow \\text{SO}_4^{2-}$, calcula el estado de oxidación del elemento que cambia (aquí el S): en sulfito suele ser +4 y en sulfato +6. Si el número sube, hay oxidación (pérdida de e⁻). También practica molaridad $M=n/V$ y balance de átomos.",
     "pasos": [
-      "Balancea o usa la relación molar de la reacción.",
-      "Convierte gramos ↔ moles con masa molar.",
-      "Lee tendencias periódicas (grupo/periodo) con la causa correcta (capas, Z efe)."
+      "Identifica el elemento cuyo número de oxidación cambia (S, N, Fe…).",
+      "Asigna estados: O suele ser −2; H +1; la carga del ion cierra la suma.",
+      "Si el número sube → oxidación; si baja → reducción.",
+      "En disoluciones: $M = n/V$ con V en litros."
     ],
     "errores": [
-      "Olvidar la masa molar al pasar de g a mol.",
-      "Invertir tendencias (radio vs electronegatividad).",
-      "Creer que los moles “desaparecen” sin conservación."
+      "Invertir oxidación y reducción (+4→+6 no es reducción).",
+      "Olvidar la carga del ion al calcular el estado del S.",
+      "Usar gramos como si fueran moles en molaridad."
     ],
     "ejemplo": {
-      "titulo": "Ejemplo resuelto",
-      "enunciado": "40 g de NaOH en 1 L de solución. Masa molar NaOH = 40 g/mol. ¿Molaridad?",
+      "titulo": "Ejemplo resuelto · mismo tipo",
+      "enunciado": "En $\\text{SO}_3^{2-} + \\text{H}_2\\text{O} \\rightarrow \\text{SO}_4^{2-} + 2\\text{H}^+ + 2e^-$, el S cambia de…",
       "pasos": [
-        "1) moles = 40/40 = 1 mol.",
-        "2) V = 1 L.",
-        "3) M = 1 mol/L."
+        "1) En SO₃²⁻: 3(−2) + x = −2 → x = +4 (sulfito).",
+        "2) En SO₄²⁻: 4(−2) + x = −2 → x = +6 (sulfato).",
+        "3) +4 → +6: el S se oxida (pierde 2e⁻, como en la semirreacción)."
       ],
-      "respuesta": "1 M",
-      "contraste": null
+      "respuesta": "+4 → +6 (oxidación)",
+      "contraste": {
+        "titulo": "Contraste · no invertir",
+        "invalido": "Inválido: «El S pasa de +6 a +4» (eso sería reducción).",
+        "valido": "Válido: «Sulfito (+4) → sulfato (+6): oxidación.»"
+      }
     },
     "practica": [
       {
         "id": "tr_qui_01",
+        "enunciado": "En la oxidación de sulfito a sulfato, el estado del S va de:",
+        "opciones": [
+          "A) +6 a +4",
+          "B) +4 a +6",
+          "C) 0 a −2",
+          "D) +2 a +2"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Eso sería reducción.",
+          "C": "No corresponde a SO₃²⁻/SO₄²⁻.",
+          "D": "Sí cambia."
+        },
+        "explicacion_correcta": "+4 → +6."
+      },
+      {
+        "id": "tr_qui_02",
+        "enunciado": "Si el número de oxidación sube, el proceso es:",
+        "opciones": [
+          "A) reducción",
+          "B) oxidación",
+          "C) solo disolución",
+          "D) precipitación siempre"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Reducción baja el número.",
+          "C": "No explica el cambio de e⁻.",
+          "D": "No aplica."
+        },
+        "explicacion_correcta": "Sube = oxidación."
+      },
+      {
+        "id": "tr_qui_03",
         "enunciado": "40 g NaOH (MM=40) en 1 L → molaridad:",
         "opciones": [
           "A) 0,4 M",
@@ -551,40 +590,6 @@ export const CONTENIDO_TEMAS = {
           "D": "Factor 10 sin base."
         },
         "explicacion_correcta": "n=1; M=1."
-      },
-      {
-        "id": "tr_qui_02",
-        "enunciado": "Al bajar en un grupo, el radio atómico suele:",
-        "opciones": [
-          "A) disminuir",
-          "B) aumentar",
-          "C) anularse",
-          "D) igualar al del He siempre"
-        ],
-        "correcta": "B",
-        "justificacion_incorrectas": {
-          "A": "Al bajar hay más capas.",
-          "C": "No se anula.",
-          "D": "Falso."
-        },
-        "explicacion_correcta": "Más niveles de energía → mayor radio."
-      },
-      {
-        "id": "tr_qui_03",
-        "enunciado": "2 H₂ + O₂ → 2 H₂O. Si hay 2 mol H₂ y 1 mol O₂, el agua máxima es:",
-        "opciones": [
-          "A) 1 mol",
-          "B) 2 mol",
-          "C) 3 mol",
-          "D) 0 mol"
-        ],
-        "correcta": "B",
-        "justificacion_incorrectas": {
-          "A": "Eso sería si limitara a la mitad.",
-          "C": "No hay átomos de más.",
-          "D": "Sí reaccionan."
-        },
-        "explicacion_correcta": "Proporción exacta → 2 mol H₂O."
       },
       {
         "id": "tr_qui_04",
@@ -604,32 +609,37 @@ export const CONTENIDO_TEMAS = {
         "explicacion_correcta": "M = n/V."
       }
     ],
-    "profundizar": "Repasa moles, molaridad y tendencias periódicas.",
+    "profundizar": "Oxidación/reducción + estados · molaridad · balance.",
     "terminos": [
       {
-        "termino": "átomo",
-        "definicion": "Unidad básica de un elemento (núcleo + electrones).",
-        "ejemplo": "El carbono tiene 6 protones."
+        "termino": "oxidación",
+        "definicion": "Pérdida de electrones; el número de oxidación del elemento sube.",
+        "ejemplo": "Sulfito → sulfato: el S se oxida."
+      },
+      {
+        "termino": "estado de oxidación",
+        "definicion": "Carga formal que tendría el átomo si los enlaces fueran iónicos.",
+        "ejemplo": "En SO₄²⁻ el S tiene +6."
+      },
+      {
+        "termino": "sulfito",
+        "definicion": "Ion SO₃²⁻; el azufre suele tener estado de oxidación +4.",
+        "ejemplo": "SO₃²⁻ + H₂O → SO₄²⁻ + 2H⁺ + 2e⁻."
+      },
+      {
+        "termino": "sulfato",
+        "definicion": "Ion SO₄²⁻; el azufre suele tener estado de oxidación +6.",
+        "ejemplo": "Producto de oxidar el sulfito."
+      },
+      {
+        "termino": "molaridad",
+        "definicion": "Concentración: moles de soluto por litro de solución (M = n/V).",
+        "ejemplo": "2 mol en 1 L → M = 2."
       },
       {
         "termino": "mol",
         "definicion": "Cantidad de sustancia: 6,022×10²³ entidades.",
         "ejemplo": "1 mol de H₂O ≈ 18 g."
-      },
-      {
-        "termino": "reacción química",
-        "definicion": "Transformación de sustancias en otras.",
-        "ejemplo": "2H₂ + O₂ → 2H₂O."
-      },
-      {
-        "termino": "molaridad",
-        "definicion": "Concentración: moles de soluto por litro de solución.",
-        "ejemplo": "M = n/V."
-      },
-      {
-        "termino": "enlace",
-        "definicion": "Fuerza que une átomos (iónico, covalente…).",
-        "ejemplo": "En H₂O los enlaces son covalentes."
       }
     ],
     "diagrama_svg": ""

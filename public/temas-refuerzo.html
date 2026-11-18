@@ -9,9 +9,12 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="css/design-tokens.css">
   <link rel="stylesheet" href="css/theme.css">
-  <script src="js/danteCacheVersion.js?v=c-1.3.111"></script>
-  <script src="js/danteStudentId.js?v=c-1.3.111"></script>
-  <script src="js/danteTemasRefuerzo.js?v=c-1.3.111"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" defer></script>
+  <script src="js/danteCacheVersion.js?v=c-1.3.112"></script>
+  <script src="js/danteStudentId.js?v=c-1.3.112"></script>
+  <script src="js/danteTemasRefuerzo.js?v=c-1.3.112"></script>
   <style>
     :root {
       --perfil-cyan: #7eb8c4;
@@ -213,23 +216,38 @@
       border: 1px solid var(--perfil-line); background: rgba(15,23,42,.7);
       font-size: .82rem; color: #94a3b8; line-height: 1.45;
     }
-    .tr-fallo {
-      margin: 0 0 .75rem; padding: .75rem .85rem; border-radius: .75rem;
-      border: 1px solid rgba(248,113,113,.28); background: rgba(69,10,10,.22);
+    .tr-fallos-wrap {
+      background: #f1f5f9;
+      border-radius: .95rem;
+      padding: .85rem .7rem 1rem;
+      margin: .35rem 0 0;
+      border: 1px solid #cbd5e1;
     }
-    .tr-fallo:last-child { margin-bottom: 0; }
-    .tr-fallo .tr-fallo-enun {
-      margin: 0 0 .55rem; font-size: .9rem; line-height: 1.5; color: #e2e8f0;
+    .tr-fallo-q .tr-opt {
+      cursor: default;
+      pointer-events: none;
     }
-    .tr-fallo .tr-fallo-row {
-      margin: .35rem 0 0; font-size: .82rem; line-height: 1.4; color: #cbd5e1;
+    .tr-fallo-q .tr-opt.bad .badge-letra {
+      background: #be123c; border-color: #be123c;
     }
-    .tr-fallo .mal { color: #fca5a5; }
-    .tr-fallo .bien { color: #6ee7b7; }
+    .tr-fallo-q .tr-opt.ok .badge-letra {
+      background: #15803d; border-color: #15803d;
+    }
+    .tr-fallo-tag {
+      display: inline-block; margin-left: .35rem; font-size: .68rem;
+      font-weight: 700; letter-spacing: .02em; text-transform: uppercase;
+      vertical-align: middle;
+    }
+    .tr-fallo-tag.mal { color: #be123c; }
+    .tr-fallo-tag.bien { color: #15803d; }
     .tr-fallo-more {
-      margin: .55rem 0 0; background: transparent; border: 0; color: #7eb8c4;
+      margin: .65rem 0 0; background: transparent; border: 0; color: #7eb8c4;
       font-size: .78rem; cursor: pointer; padding: 0; text-decoration: underline;
     }
+    .tr-q .katex, .tr-body .katex, .tr-fb-result .katex {
+      font-size: 1.05em;
+    }
+    .tr-body .katex-display { margin: .55rem 0; overflow-x: auto; overflow-y: hidden; }
     /* —— Cartilla clara (estilo examen ICFES) —— */
     .tr-practica-wrap {
       background: #f1f5f9;
@@ -372,7 +390,8 @@
       </div>
       <div class="tr-card" id="temaFallosCard">
         <h2 class="tr-sec-h" style="margin:0 0 .55rem">La pregunta que fallaste</h2>
-        <div id="temaFallos"></div>
+        <p class="tr-sub" style="margin:0 0 .65rem">Misma cartilla que en el examen. Tu opción y la correcta quedan marcadas.</p>
+        <div id="temaFallos" class="tr-fallos-wrap"></div>
       </div>
       <div class="tr-card tr-body" id="temaExplicacion"></div>
       <div class="tr-card">
@@ -385,7 +404,7 @@
         <button type="button" id="btnMarcarHecho" class="tr-btn" disabled>Marcar tema como superado</button>
       </div>
     </section>
-    <p class="tr-foot-ver"><span id="badgeDanteVersion">c-1.3.111</span></p>
+    <p class="tr-foot-ver"><span id="badgeDanteVersion">c-1.3.112</span></p>
   </main>
 
   <script>
@@ -815,17 +834,89 @@
         });
       }
 
+      function renderMath(el) {
+        if (!el) return;
+        function go() {
+          if (!window.renderMathInElement) return;
+          try {
+            window.renderMathInElement(el, {
+              delimiters: [
+                { left: '$$', right: '$$', display: true },
+                { left: '$', right: '$', display: false },
+                { left: '\\(', right: '\\)', display: false },
+                { left: '\\[', right: '\\]', display: true }
+              ],
+              throwOnError: false
+            });
+          } catch (_) {}
+        }
+        if (window.renderMathInElement) {
+          go();
+          return;
+        }
+        var n = 0;
+        var t = setInterval(function () {
+          if (window.renderMathInElement || ++n > 50) {
+            clearInterval(t);
+            go();
+          }
+        }, 40);
+      }
+
       function htmlFallo(f) {
         if (!f || !f.enunciado) return '';
-        var elegidaTxt = f.textoElegida || opcionPorLetra(f.opciones, f.elegida) || '—';
-        var correctaTxt = f.textoCorrecta || opcionPorLetra(f.opciones, f.correcta) || '—';
-        var Lmal = f.elegida ? (f.elegida + ') ') : '';
-        var Lok = f.correcta ? (f.correcta + ') ') : '';
-        return '<div class="tr-fallo">'
-          + '<p class="tr-fallo-enun"></p>'
-          + '<p class="tr-fallo-row mal"><strong>Tu respuesta:</strong> <span data-mal></span></p>'
-          + '<p class="tr-fallo-row bien"><strong>Correcta:</strong> <span data-ok></span></p>'
+        return '<div class="tr-q tr-fallo-q">'
+          + '<div class="enun" data-enun></div>'
+          + '<div class="tr-opts" data-ops></div>'
+          + '<div class="tr-fb-result show" data-fb></div>'
           + '</div>';
+      }
+
+      function pintarOpcionesFallo(nodo, f) {
+        var opsBox = nodo.querySelector('[data-ops]');
+        if (!opsBox) return;
+        opsBox.innerHTML = '';
+        var ops = Array.isArray(f.opciones) && f.opciones.length
+          ? f.opciones
+          : ['A', 'B', 'C', 'D'].map(function (L) {
+            var txt = L === f.elegida ? (f.textoElegida || '')
+              : (L === f.correcta ? (f.textoCorrecta || '') : '');
+            return L + ') ' + (txt || '—');
+          });
+        var elegida = String(f.elegida || '').toUpperCase();
+        var correcta = String(f.correcta || '').toUpperCase();
+        ops.slice(0, 4).forEach(function (op, i) {
+          var letra = String(op).trim().charAt(0).toUpperCase();
+          if ('ABCD'.indexOf(letra) < 0) letra = 'ABCD'.charAt(i);
+          var row = document.createElement('div');
+          row.className = 'tr-opt';
+          if (letra === correcta) row.classList.add('ok');
+          if (letra === elegida && elegida !== correcta) row.classList.add('bad');
+          if (letra === elegida) row.classList.add('sel');
+          var tag = '';
+          if (letra === elegida && letra === correcta) tag = '<span class="tr-fallo-tag bien">tu respuesta · correcta</span>';
+          else if (letra === elegida) tag = '<span class="tr-fallo-tag mal">tu respuesta</span>';
+          else if (letra === correcta) tag = '<span class="tr-fallo-tag bien">correcta</span>';
+          row.innerHTML = '<span class="badge-letra" aria-hidden="true"></span>'
+            + '<span class="letra-label">' + letra + ')</span>'
+            + '<span class="txt-op"></span>' + tag;
+          row.querySelector('.txt-op').textContent = textoOpcionLimpio(op);
+          opsBox.appendChild(row);
+        });
+        var fb = nodo.querySelector('[data-fb]');
+        if (fb) {
+          var mal = elegida && elegida !== correcta;
+          fb.className = 'tr-fb-result show ' + (mal ? 'bad' : 'ok');
+          fb.innerHTML = mal
+            ? ('<strong>Respuesta marcada</strong><span></span>')
+            : ('<strong>Esta era la correcta</strong><span></span>');
+          var span = fb.querySelector('span');
+          if (span) {
+            span.textContent = mal
+              ? ('Elegiste ' + elegida + '. La correcta es ' + (correcta || '—') + '.')
+              : ('La opción ' + (correcta || '—') + ' responde lo que pide el enunciado.');
+          }
+        }
       }
 
       function pintarFallos(temaId, tema) {
@@ -833,6 +924,7 @@
         var card = $('temaFallosCard');
         if (!box || !card) return Promise.resolve();
         box.innerHTML = '';
+        Array.prototype.forEach.call(card.querySelectorAll('.tr-fallo-ops-visual'), function (n) { n.remove(); });
         var fallos = [];
         try { fallos = window.DanteTemasRefuerzo.fallosDeTema(temaId) || []; } catch (_) { fallos = []; }
         if (!fallos.length) {
@@ -853,12 +945,10 @@
             wrap.innerHTML = htmlFallo(f);
             var nodo = wrap.firstChild;
             if (!nodo) return;
-            nodo.querySelector('.tr-fallo-enun').textContent = f.enunciado;
-            var Lmal = f.elegida ? (f.elegida + ') ') : '';
-            var Lok = f.correcta ? (f.correcta + ') ') : '';
-            nodo.querySelector('[data-mal]').textContent = Lmal + (f.textoElegida || opcionPorLetra(f.opciones, f.elegida) || '—');
-            nodo.querySelector('[data-ok]').textContent = Lok + (f.textoCorrecta || opcionPorLetra(f.opciones, f.correcta) || '—');
+            nodo.querySelector('[data-enun]').textContent = f.enunciado;
+            pintarOpcionesFallo(nodo, f);
             box.appendChild(nodo);
+            renderMath(nodo);
           }
           appendFallo(mostrar[0]);
           if (resto.length) {
@@ -872,17 +962,17 @@
             };
             box.appendChild(btn);
           }
-          // Ayuda visual de opciones junto a la pregunta fallida (si el tema la trae)
           var svgOps = (tema && tema.explicacion && tema.explicacion.diagrama_opciones_svg)
             || (tema && tema.diagrama_opciones_svg) || '';
           if (svgOps) {
             var wrapOps = document.createElement('div');
-            wrapOps.style.marginTop = '0.75rem';
-            wrapOps.innerHTML = '<p class="tr-sub" style="margin:0 0 .4rem">Así se miran las opciones de este tipo de pregunta:</p>'
+            wrapOps.className = 'tr-fallo-ops-visual';
+            wrapOps.style.marginTop = '0.85rem';
+            wrapOps.innerHTML = '<p class="tr-sub" style="margin:0 0 .4rem;color:#94a3b8">Así se miran las opciones de este tipo de pregunta:</p>'
               + '<button type="button" class="tr-diagram" data-tr-expand-diagram aria-label="Ampliar ayuda de opciones">'
               + svgOps
               + '<p class="tr-diagram-hint">Toca para ampliar</p></button>';
-            box.appendChild(wrapOps);
+            card.appendChild(wrapOps);
             engancharDiagramasExpandibles(wrapOps);
           }
           return lista;
@@ -943,6 +1033,7 @@
             $('temaExplicacion').innerHTML = htmlExplicacion(tema);
             engancharDiagramasExpandibles($('temaExplicacion'));
             engancharTerminos($('temaExplicacion'), tema);
+            renderMath($('temaExplicacion'));
             renderPractica(tema);
             window.scrollTo(0, 0);
           });
@@ -1003,6 +1094,7 @@
           fb.className = 'tr-fb-result';
           wrap.appendChild(fb);
           box.appendChild(wrap);
+          renderMath(wrap);
         });
       }
 
@@ -1031,6 +1123,7 @@
           fb.querySelector('span').textContent = just
             || ('La respuesta correcta es ' + q.correcta + '.');
         }
+        renderMath(fb);
         actualizarBotonHecho();
       }
 

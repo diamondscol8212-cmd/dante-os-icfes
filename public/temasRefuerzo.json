@@ -7879,93 +7879,147 @@
         "quimica"
       ],
       "estadoContenido": "completo",
-      "profundizar": "Repasa moles, molaridad y tendencias periódicas.",
-      "diagrama_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 520 200\" role=\"img\" aria-label=\"Química: cambios y reacciones\"><rect width=\"520\" height=\"200\" rx=\"14\" fill=\"#0b1220\"/><rect x=\"1\" y=\"1\" width=\"518\" height=\"198\" rx=\"13\" fill=\"none\" stroke=\"#1e293b\"/><text x=\"24\" y=\"28\" fill=\"#94a3b8\" font-size=\"11\" font-family=\"ui-monospace,monospace\" letter-spacing=\"1\">AYUDA VISUAL</text><text x=\"24\" y=\"55\" fill=\"#cbd5e1\" font-size=\"13\">Reacción balanceada</text><circle cx=\"70\" cy=\"95\" r=\"14\" fill=\"#7eb8c433\" stroke=\"#7eb8c4\"/><text x=\"70\" y=\"99\" text-anchor=\"middle\" fill=\"#7eb8c4\" font-size=\"10\">H₂</text><circle cx=\"110\" cy=\"95\" r=\"14\" fill=\"#7eb8c433\" stroke=\"#7eb8c4\"/><text x=\"110\" y=\"99\" text-anchor=\"middle\" fill=\"#7eb8c4\" font-size=\"10\">H₂</text><text x=\"140\" y=\"100\" fill=\"#94a3b8\" font-size=\"14\">+</text><circle cx=\"175\" cy=\"95\" r=\"16\" fill=\"#c4a57433\" stroke=\"#c4a574\"/><text x=\"175\" y=\"99\" text-anchor=\"middle\" fill=\"#c4a574\" font-size=\"10\">O₂</text><text x=\"210\" y=\"100\" fill=\"#94a3b8\" font-size=\"14\">→</text><circle cx=\"250\" cy=\"95\" r=\"16\" fill=\"#34d39933\" stroke=\"#34d399\"/><text x=\"250\" y=\"99\" text-anchor=\"middle\" fill=\"#6ee7b7\" font-size=\"9\">H₂O</text><circle cx=\"295\" cy=\"95\" r=\"16\" fill=\"#34d39933\" stroke=\"#34d399\"/><text x=\"295\" y=\"99\" text-anchor=\"middle\" fill=\"#6ee7b7\" font-size=\"9\">H₂O</text><text x=\"24\" y=\"145\" fill=\"#e2e8f0\" font-size=\"12\">2 H₂ + O₂ → 2 H₂O · mismos átomos a ambos lados</text><text x=\"24\" y=\"170\" fill=\"#7eb8c4\" font-size=\"12\">Molaridad M = n / V</text></svg>",
-      "diagrama_opciones_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 520 200\" role=\"img\" aria-label=\"Opciones química\"><rect width=\"520\" height=\"200\" rx=\"14\" fill=\"#0b1220\"/><rect x=\"1\" y=\"1\" width=\"518\" height=\"198\" rx=\"13\" fill=\"none\" stroke=\"#1e293b\"/><text x=\"24\" y=\"28\" fill=\"#94a3b8\" font-size=\"11\" font-family=\"ui-monospace,monospace\" letter-spacing=\"1\">OPCIONES · AYUDA VISUAL</text><text x=\"24\" y=\"52\" fill=\"#cbd5e1\" font-size=\"12\">¿Qué opción respeta el balance?</text><rect x=\"40\" y=\"70\" width=\"210\" height=\"70\" rx=\"10\" fill=\"#111827\" stroke=\"#34d39955\"/><text x=\"145\" y=\"100\" text-anchor=\"middle\" fill=\"#6ee7b7\" font-size=\"12\">✓ 2 H₂ + O₂ → 2 H₂O</text><text x=\"145\" y=\"122\" text-anchor=\"middle\" fill=\"#94a3b8\" font-size=\"10\">4 H y 2 O a cada lado</text><rect x=\"270\" y=\"70\" width=\"210\" height=\"70\" rx=\"10\" fill=\"#111827\" stroke=\"#f8717155\"/><text x=\"375\" y=\"100\" text-anchor=\"middle\" fill=\"#f87171\" font-size=\"12\">✗ H₂ + O₂ → H₂O</text><text x=\"375\" y=\"122\" text-anchor=\"middle\" fill=\"#94a3b8\" font-size=\"10\">átomos no cuadran</text><text x=\"24\" y=\"170\" fill=\"#64748b\" font-size=\"11\">Molaridad: revisa unidades n (mol) y V (L)</text></svg>",
+      "profundizar": "Oxidación/reducción + estados · molaridad · balance.",
+      "diagrama_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 520 205\" role=\"img\" aria-label=\"Química: cambios y reacciones\"><rect width=\"520\" height=\"205\" rx=\"14\" fill=\"#0b1220\"/><rect x=\"1\" y=\"1\" width=\"518\" height=\"203\" rx=\"13\" fill=\"none\" stroke=\"#1e293b\"/><text x=\"24\" y=\"28\" fill=\"#94a3b8\" font-size=\"11\" font-family=\"ui-monospace,monospace\" letter-spacing=\"1\">AYUDA VISUAL</text><text x=\"24\" y=\"48\" fill=\"#cbd5e1\" font-size=\"12\">Oxidación · sulfito → sulfato</text><rect x=\"40\" y=\"62\" width=\"150\" height=\"70\" rx=\"10\" fill=\"#111827\" stroke=\"#c4a57455\"/><text x=\"115\" y=\"92\" text-anchor=\"middle\" fill=\"#c4a574\" font-size=\"14\">SO₃²⁻</text><text x=\"115\" y=\"114\" text-anchor=\"middle\" fill=\"#94a3b8\" font-size=\"11\">S en +4</text><text x=\"210\" y=\"100\" fill=\"#64748b\" font-size=\"18\">→</text><rect x=\"240\" y=\"62\" width=\"150\" height=\"70\" rx=\"10\" fill=\"#111827\" stroke=\"#34d39955\"/><text x=\"315\" y=\"92\" text-anchor=\"middle\" fill=\"#6ee7b7\" font-size=\"14\">SO₄²⁻</text><text x=\"315\" y=\"114\" text-anchor=\"middle\" fill=\"#94a3b8\" font-size=\"11\">S en +6</text><text x=\"410\" y=\"100\" fill=\"#7eb8c4\" font-size=\"12\">+2e⁻</text><text x=\"24\" y=\"160\" fill=\"#e2e8f0\" font-size=\"12\">El S pierde e⁻ → se oxida (+4 → +6)</text><text x=\"24\" y=\"182\" fill=\"#64748b\" font-size=\"11\">Semirreacción: SO₃²⁻ + H₂O → SO₄²⁻ + 2H⁺ + 2e⁻</text></svg>",
+      "diagrama_opciones_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 520 200\" role=\"img\" aria-label=\"Opciones química\"><rect width=\"520\" height=\"200\" rx=\"14\" fill=\"#0b1220\"/><rect x=\"1\" y=\"1\" width=\"518\" height=\"198\" rx=\"13\" fill=\"none\" stroke=\"#1e293b\"/><text x=\"24\" y=\"28\" fill=\"#94a3b8\" font-size=\"11\" font-family=\"ui-monospace,monospace\" letter-spacing=\"1\">OPCIONES · AYUDA VISUAL</text><text x=\"24\" y=\"52\" fill=\"#cbd5e1\" font-size=\"12\">Cambio de oxidación del S</text><rect x=\"40\" y=\"70\" width=\"210\" height=\"70\" rx=\"10\" fill=\"#111827\" stroke=\"#34d39955\"/><text x=\"145\" y=\"100\" text-anchor=\"middle\" fill=\"#6ee7b7\" font-size=\"13\">✓ +4 → +6</text><text x=\"145\" y=\"122\" text-anchor=\"middle\" fill=\"#94a3b8\" font-size=\"10\">se oxida (pierde 2e⁻)</text><rect x=\"270\" y=\"70\" width=\"210\" height=\"70\" rx=\"10\" fill=\"#111827\" stroke=\"#f8717155\"/><text x=\"375\" y=\"100\" text-anchor=\"middle\" fill=\"#f87171\" font-size=\"13\">✗ +6 → +4</text><text x=\"375\" y=\"122\" text-anchor=\"middle\" fill=\"#94a3b8\" font-size=\"10\">sería reducción</text><text x=\"24\" y=\"170\" fill=\"#64748b\" font-size=\"11\">Cuenta O y carga para hallar el n° de oxidación del S</text></svg>",
       "terminos": [
         {
-          "termino": "átomo",
-          "definicion": "Unidad básica de un elemento (núcleo + electrones).",
-          "ejemplo": "El carbono tiene 6 protones."
+          "termino": "oxidación",
+          "definicion": "Pérdida de electrones; el número de oxidación del elemento sube.",
+          "ejemplo": "Sulfito → sulfato: el S se oxida."
+        },
+        {
+          "termino": "estado de oxidación",
+          "definicion": "Carga formal que tendría el átomo si los enlaces fueran iónicos.",
+          "ejemplo": "En SO₄²⁻ el S tiene +6."
+        },
+        {
+          "termino": "sulfito",
+          "definicion": "Ion SO₃²⁻; el azufre suele tener estado de oxidación +4.",
+          "ejemplo": "SO₃²⁻ + H₂O → SO₄²⁻ + 2H⁺ + 2e⁻."
+        },
+        {
+          "termino": "sulfato",
+          "definicion": "Ion SO₄²⁻; el azufre suele tener estado de oxidación +6.",
+          "ejemplo": "Producto de oxidar el sulfito."
+        },
+        {
+          "termino": "molaridad",
+          "definicion": "Concentración: moles de soluto por litro de solución (M = n/V).",
+          "ejemplo": "2 mol en 1 L → M = 2."
         },
         {
           "termino": "mol",
           "definicion": "Cantidad de sustancia: 6,022×10²³ entidades.",
           "ejemplo": "1 mol de H₂O ≈ 18 g."
-        },
-        {
-          "termino": "reacción química",
-          "definicion": "Transformación de sustancias en otras.",
-          "ejemplo": "2H₂ + O₂ → 2H₂O."
-        },
-        {
-          "termino": "molaridad",
-          "definicion": "Concentración: moles de soluto por litro de solución.",
-          "ejemplo": "M = n/V."
-        },
-        {
-          "termino": "enlace",
-          "definicion": "Fuerza que une átomos (iónico, covalente…).",
-          "ejemplo": "En H₂O los enlaces son covalentes."
         }
       ],
       "explicacion": {
-        "intro": "La química describe composición y cambio: estequiometría, disoluciones (molaridad), tabla periódica (radio, electronegatividad) y reacciones con conservación de átomos.",
+        "intro": "Si el ítem da una semirreacción como $\\text{SO}_3^{2-} \\rightarrow \\text{SO}_4^{2-}$, calcula el estado de oxidación del elemento que cambia (aquí el S): en sulfito suele ser +4 y en sulfato +6. Si el número sube, hay oxidación (pérdida de e⁻). También practica molaridad $M=n/V$ y balance de átomos.",
         "pasos": [
-          "Balancea o usa la relación molar de la reacción.",
-          "Convierte gramos ↔ moles con masa molar.",
-          "Lee tendencias periódicas (grupo/periodo) con la causa correcta (capas, Z efe)."
+          "Identifica el elemento cuyo número de oxidación cambia (S, N, Fe…).",
+          "Asigna estados: O suele ser −2; H +1; la carga del ion cierra la suma.",
+          "Si el número sube → oxidación; si baja → reducción.",
+          "En disoluciones: $M = n/V$ con V en litros."
         ],
         "errores": [
-          "Olvidar la masa molar al pasar de g a mol.",
-          "Invertir tendencias (radio vs electronegatividad).",
-          "Creer que los moles “desaparecen” sin conservación."
+          "Invertir oxidación y reducción (+4→+6 no es reducción).",
+          "Olvidar la carga del ion al calcular el estado del S.",
+          "Usar gramos como si fueran moles en molaridad."
         ],
         "ejemplo_resuelto": {
-          "titulo": "Ejemplo resuelto",
-          "enunciado": "40 g de NaOH en 1 L de solución. Masa molar NaOH = 40 g/mol. ¿Molaridad?",
+          "titulo": "Ejemplo resuelto · mismo tipo",
+          "enunciado": "En $\\text{SO}_3^{2-} + \\text{H}_2\\text{O} \\rightarrow \\text{SO}_4^{2-} + 2\\text{H}^+ + 2e^-$, el S cambia de…",
           "pasos": [
-            "1) moles = 40/40 = 1 mol.",
-            "2) V = 1 L.",
-            "3) M = 1 mol/L."
+            "1) En SO₃²⁻: 3(−2) + x = −2 → x = +4 (sulfito).",
+            "2) En SO₄²⁻: 4(−2) + x = −2 → x = +6 (sulfato).",
+            "3) +4 → +6: el S se oxida (pierde 2e⁻, como en la semirreacción)."
           ],
-          "respuesta": "1 M",
-          "contraste": null
+          "respuesta": "+4 → +6 (oxidación)",
+          "contraste": {
+            "titulo": "Contraste · no invertir",
+            "invalido": "Inválido: «El S pasa de +6 a +4» (eso sería reducción).",
+            "valido": "Válido: «Sulfito (+4) → sulfato (+6): oxidación.»"
+          }
         },
-        "contraste": null,
-        "diagrama_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 520 200\" role=\"img\" aria-label=\"Química: cambios y reacciones\"><rect width=\"520\" height=\"200\" rx=\"14\" fill=\"#0b1220\"/><rect x=\"1\" y=\"1\" width=\"518\" height=\"198\" rx=\"13\" fill=\"none\" stroke=\"#1e293b\"/><text x=\"24\" y=\"28\" fill=\"#94a3b8\" font-size=\"11\" font-family=\"ui-monospace,monospace\" letter-spacing=\"1\">AYUDA VISUAL</text><text x=\"24\" y=\"55\" fill=\"#cbd5e1\" font-size=\"13\">Reacción balanceada</text><circle cx=\"70\" cy=\"95\" r=\"14\" fill=\"#7eb8c433\" stroke=\"#7eb8c4\"/><text x=\"70\" y=\"99\" text-anchor=\"middle\" fill=\"#7eb8c4\" font-size=\"10\">H₂</text><circle cx=\"110\" cy=\"95\" r=\"14\" fill=\"#7eb8c433\" stroke=\"#7eb8c4\"/><text x=\"110\" y=\"99\" text-anchor=\"middle\" fill=\"#7eb8c4\" font-size=\"10\">H₂</text><text x=\"140\" y=\"100\" fill=\"#94a3b8\" font-size=\"14\">+</text><circle cx=\"175\" cy=\"95\" r=\"16\" fill=\"#c4a57433\" stroke=\"#c4a574\"/><text x=\"175\" y=\"99\" text-anchor=\"middle\" fill=\"#c4a574\" font-size=\"10\">O₂</text><text x=\"210\" y=\"100\" fill=\"#94a3b8\" font-size=\"14\">→</text><circle cx=\"250\" cy=\"95\" r=\"16\" fill=\"#34d39933\" stroke=\"#34d399\"/><text x=\"250\" y=\"99\" text-anchor=\"middle\" fill=\"#6ee7b7\" font-size=\"9\">H₂O</text><circle cx=\"295\" cy=\"95\" r=\"16\" fill=\"#34d39933\" stroke=\"#34d399\"/><text x=\"295\" y=\"99\" text-anchor=\"middle\" fill=\"#6ee7b7\" font-size=\"9\">H₂O</text><text x=\"24\" y=\"145\" fill=\"#e2e8f0\" font-size=\"12\">2 H₂ + O₂ → 2 H₂O · mismos átomos a ambos lados</text><text x=\"24\" y=\"170\" fill=\"#7eb8c4\" font-size=\"12\">Molaridad M = n / V</text></svg>",
-        "diagrama_opciones_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 520 200\" role=\"img\" aria-label=\"Opciones química\"><rect width=\"520\" height=\"200\" rx=\"14\" fill=\"#0b1220\"/><rect x=\"1\" y=\"1\" width=\"518\" height=\"198\" rx=\"13\" fill=\"none\" stroke=\"#1e293b\"/><text x=\"24\" y=\"28\" fill=\"#94a3b8\" font-size=\"11\" font-family=\"ui-monospace,monospace\" letter-spacing=\"1\">OPCIONES · AYUDA VISUAL</text><text x=\"24\" y=\"52\" fill=\"#cbd5e1\" font-size=\"12\">¿Qué opción respeta el balance?</text><rect x=\"40\" y=\"70\" width=\"210\" height=\"70\" rx=\"10\" fill=\"#111827\" stroke=\"#34d39955\"/><text x=\"145\" y=\"100\" text-anchor=\"middle\" fill=\"#6ee7b7\" font-size=\"12\">✓ 2 H₂ + O₂ → 2 H₂O</text><text x=\"145\" y=\"122\" text-anchor=\"middle\" fill=\"#94a3b8\" font-size=\"10\">4 H y 2 O a cada lado</text><rect x=\"270\" y=\"70\" width=\"210\" height=\"70\" rx=\"10\" fill=\"#111827\" stroke=\"#f8717155\"/><text x=\"375\" y=\"100\" text-anchor=\"middle\" fill=\"#f87171\" font-size=\"12\">✗ H₂ + O₂ → H₂O</text><text x=\"375\" y=\"122\" text-anchor=\"middle\" fill=\"#94a3b8\" font-size=\"10\">átomos no cuadran</text><text x=\"24\" y=\"170\" fill=\"#64748b\" font-size=\"11\">Molaridad: revisa unidades n (mol) y V (L)</text></svg>",
+        "contraste": {
+          "titulo": "Contraste · no invertir",
+          "invalido": "Inválido: «El S pasa de +6 a +4» (eso sería reducción).",
+          "valido": "Válido: «Sulfito (+4) → sulfato (+6): oxidación.»"
+        },
+        "diagrama_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 520 205\" role=\"img\" aria-label=\"Química: cambios y reacciones\"><rect width=\"520\" height=\"205\" rx=\"14\" fill=\"#0b1220\"/><rect x=\"1\" y=\"1\" width=\"518\" height=\"203\" rx=\"13\" fill=\"none\" stroke=\"#1e293b\"/><text x=\"24\" y=\"28\" fill=\"#94a3b8\" font-size=\"11\" font-family=\"ui-monospace,monospace\" letter-spacing=\"1\">AYUDA VISUAL</text><text x=\"24\" y=\"48\" fill=\"#cbd5e1\" font-size=\"12\">Oxidación · sulfito → sulfato</text><rect x=\"40\" y=\"62\" width=\"150\" height=\"70\" rx=\"10\" fill=\"#111827\" stroke=\"#c4a57455\"/><text x=\"115\" y=\"92\" text-anchor=\"middle\" fill=\"#c4a574\" font-size=\"14\">SO₃²⁻</text><text x=\"115\" y=\"114\" text-anchor=\"middle\" fill=\"#94a3b8\" font-size=\"11\">S en +4</text><text x=\"210\" y=\"100\" fill=\"#64748b\" font-size=\"18\">→</text><rect x=\"240\" y=\"62\" width=\"150\" height=\"70\" rx=\"10\" fill=\"#111827\" stroke=\"#34d39955\"/><text x=\"315\" y=\"92\" text-anchor=\"middle\" fill=\"#6ee7b7\" font-size=\"14\">SO₄²⁻</text><text x=\"315\" y=\"114\" text-anchor=\"middle\" fill=\"#94a3b8\" font-size=\"11\">S en +6</text><text x=\"410\" y=\"100\" fill=\"#7eb8c4\" font-size=\"12\">+2e⁻</text><text x=\"24\" y=\"160\" fill=\"#e2e8f0\" font-size=\"12\">El S pierde e⁻ → se oxida (+4 → +6)</text><text x=\"24\" y=\"182\" fill=\"#64748b\" font-size=\"11\">Semirreacción: SO₃²⁻ + H₂O → SO₄²⁻ + 2H⁺ + 2e⁻</text></svg>",
+        "diagrama_opciones_svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 520 200\" role=\"img\" aria-label=\"Opciones química\"><rect width=\"520\" height=\"200\" rx=\"14\" fill=\"#0b1220\"/><rect x=\"1\" y=\"1\" width=\"518\" height=\"198\" rx=\"13\" fill=\"none\" stroke=\"#1e293b\"/><text x=\"24\" y=\"28\" fill=\"#94a3b8\" font-size=\"11\" font-family=\"ui-monospace,monospace\" letter-spacing=\"1\">OPCIONES · AYUDA VISUAL</text><text x=\"24\" y=\"52\" fill=\"#cbd5e1\" font-size=\"12\">Cambio de oxidación del S</text><rect x=\"40\" y=\"70\" width=\"210\" height=\"70\" rx=\"10\" fill=\"#111827\" stroke=\"#34d39955\"/><text x=\"145\" y=\"100\" text-anchor=\"middle\" fill=\"#6ee7b7\" font-size=\"13\">✓ +4 → +6</text><text x=\"145\" y=\"122\" text-anchor=\"middle\" fill=\"#94a3b8\" font-size=\"10\">se oxida (pierde 2e⁻)</text><rect x=\"270\" y=\"70\" width=\"210\" height=\"70\" rx=\"10\" fill=\"#111827\" stroke=\"#f8717155\"/><text x=\"375\" y=\"100\" text-anchor=\"middle\" fill=\"#f87171\" font-size=\"13\">✗ +6 → +4</text><text x=\"375\" y=\"122\" text-anchor=\"middle\" fill=\"#94a3b8\" font-size=\"10\">sería reducción</text><text x=\"24\" y=\"170\" fill=\"#64748b\" font-size=\"11\">Cuenta O y carga para hallar el n° de oxidación del S</text></svg>",
         "terminos": [
           {
-            "termino": "átomo",
-            "definicion": "Unidad básica de un elemento (núcleo + electrones).",
-            "ejemplo": "El carbono tiene 6 protones."
+            "termino": "oxidación",
+            "definicion": "Pérdida de electrones; el número de oxidación del elemento sube.",
+            "ejemplo": "Sulfito → sulfato: el S se oxida."
+          },
+          {
+            "termino": "estado de oxidación",
+            "definicion": "Carga formal que tendría el átomo si los enlaces fueran iónicos.",
+            "ejemplo": "En SO₄²⁻ el S tiene +6."
+          },
+          {
+            "termino": "sulfito",
+            "definicion": "Ion SO₃²⁻; el azufre suele tener estado de oxidación +4.",
+            "ejemplo": "SO₃²⁻ + H₂O → SO₄²⁻ + 2H⁺ + 2e⁻."
+          },
+          {
+            "termino": "sulfato",
+            "definicion": "Ion SO₄²⁻; el azufre suele tener estado de oxidación +6.",
+            "ejemplo": "Producto de oxidar el sulfito."
+          },
+          {
+            "termino": "molaridad",
+            "definicion": "Concentración: moles de soluto por litro de solución (M = n/V).",
+            "ejemplo": "2 mol en 1 L → M = 2."
           },
           {
             "termino": "mol",
             "definicion": "Cantidad de sustancia: 6,022×10²³ entidades.",
             "ejemplo": "1 mol de H₂O ≈ 18 g."
-          },
-          {
-            "termino": "reacción química",
-            "definicion": "Transformación de sustancias en otras.",
-            "ejemplo": "2H₂ + O₂ → 2H₂O."
-          },
-          {
-            "termino": "molaridad",
-            "definicion": "Concentración: moles de soluto por litro de solución.",
-            "ejemplo": "M = n/V."
-          },
-          {
-            "termino": "enlace",
-            "definicion": "Fuerza que une átomos (iónico, covalente…).",
-            "ejemplo": "En H₂O los enlaces son covalentes."
           }
         ]
       },
       "practica": [
         {
           "id": "tr_qui_01",
+          "enunciado": "En la oxidación de sulfito a sulfato, el estado del S va de:",
+          "opciones": [
+            "A) +6 a +4",
+            "B) +4 a +6",
+            "C) 0 a −2",
+            "D) +2 a +2"
+          ],
+          "correcta": "B",
+          "justificacion_incorrectas": {
+            "A": "Eso sería reducción.",
+            "C": "No corresponde a SO₃²⁻/SO₄²⁻.",
+            "D": "Sí cambia."
+          },
+          "explicacion_correcta": "+4 → +6.",
+          "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
+        },
+        {
+          "id": "tr_qui_02",
+          "enunciado": "Si el número de oxidación sube, el proceso es:",
+          "opciones": [
+            "A) reducción",
+            "B) oxidación",
+            "C) solo disolución",
+            "D) precipitación siempre"
+          ],
+          "correcta": "B",
+          "justificacion_incorrectas": {
+            "A": "Reducción baja el número.",
+            "C": "No explica el cambio de e⁻.",
+            "D": "No aplica."
+          },
+          "explicacion_correcta": "Sube = oxidación."
+        },
+        {
+          "id": "tr_qui_03",
           "enunciado": "40 g NaOH (MM=40) en 1 L → molaridad:",
           "opciones": [
             "A) 0,4 M",
@@ -7979,42 +8033,7 @@
             "C": "Usaste gramos como moles.",
             "D": "Factor 10 sin base."
           },
-          "explicacion_correcta": "n=1; M=1.",
-          "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
-        },
-        {
-          "id": "tr_qui_02",
-          "enunciado": "Al bajar en un grupo, el radio atómico suele:",
-          "opciones": [
-            "A) disminuir",
-            "B) aumentar",
-            "C) anularse",
-            "D) igualar al del He siempre"
-          ],
-          "correcta": "B",
-          "justificacion_incorrectas": {
-            "A": "Al bajar hay más capas.",
-            "C": "No se anula.",
-            "D": "Falso."
-          },
-          "explicacion_correcta": "Más niveles de energía → mayor radio."
-        },
-        {
-          "id": "tr_qui_03",
-          "enunciado": "2 H₂ + O₂ → 2 H₂O. Si hay 2 mol H₂ y 1 mol O₂, el agua máxima es:",
-          "opciones": [
-            "A) 1 mol",
-            "B) 2 mol",
-            "C) 3 mol",
-            "D) 0 mol"
-          ],
-          "correcta": "B",
-          "justificacion_incorrectas": {
-            "A": "Eso sería si limitara a la mitad.",
-            "C": "No hay átomos de más.",
-            "D": "Sí reaccionan."
-          },
-          "explicacion_correcta": "Proporción exacta → 2 mol H₂O."
+          "explicacion_correcta": "n=1; M=1."
         },
         {
           "id": "tr_qui_04",
