@@ -484,8 +484,10 @@
       }
     } catch (eCat) {}
 
+    // Gate: hay que haber abierto la cartilla del tema. Sin espera forzada.
+    // Acertar aquí baja el contador de fallidas, pero NO saca el tema de Temas de refuerzo
+    // (eso solo ocurre al marcar «superado» en la cartilla tras la práctica).
     const temasFaltantes = [];
-    const temasEnEspera = [];
     const vistosIds = {};
     reactivos.forEach(function (item) {
       if (!window.DanteTemasRefuerzo || typeof window.DanteTemasRefuerzo.resolverTemaId !== 'function') return;
@@ -500,7 +502,6 @@
       });
       if (!temaId || vistosIds[temaId]) return;
       vistosIds[temaId] = true;
-      // Solo el nombre limpio del catálogo (nunca el enunciado de la pregunta).
       const titulo = (typeof window.DanteTemasRefuerzo.tituloDe === 'function'
         ? window.DanteTemasRefuerzo.tituloDe(temaId, null)
         : String(temaId || '').replace(/_/g, ' '));
@@ -508,13 +509,6 @@
         && window.DanteTemasRefuerzo.fueEstudiado(temaId);
       if (!estudiado) {
         temasFaltantes.push({ id: temaId, titulo: titulo });
-        return;
-      }
-      const mins = typeof window.DanteTemasRefuerzo.minutosRestantesCooldown === 'function'
-        ? window.DanteTemasRefuerzo.minutosRestantesCooldown(temaId)
-        : 0;
-      if (mins && mins > 0) {
-        temasEnEspera.push({ id: temaId, titulo: titulo, minutos: mins });
       }
     });
 
@@ -525,7 +519,7 @@
         : '';
       nota(
         'Primero estudia el tema',
-        'Antes de responder esas fallidas, abre la cartilla «' + primero.titulo + '»' + extra + '. Cuando la hayas visto, vuelve aquí al repaso.',
+        'Antes de responder esas fallidas, abre la cartilla «' + primero.titulo + '»' + extra + '. En cuanto la abras, puedes volver aquí al repaso. El tema sigue en Temas de refuerzo hasta que lo marques como superado en la cartilla.',
         [
           {
             texto: 'Ir a la cartilla',
@@ -540,25 +534,9 @@
       return;
     }
 
-    if (temasEnEspera.length) {
-      const primero = temasEnEspera.slice().sort(function (a, b) {
-        return (b.minutos || 0) - (a.minutos || 0);
-      })[0];
-      const mins = primero.minutos || 1;
-      const msg = mins >= 60
-        ? ('Podrás responder las preguntas fallidas de «' + primero.titulo + '» mañana (o en unas horas). Así evitas responder de memoria inmediata.')
-        : ('Podrás responder las preguntas fallidas de este tema («' + primero.titulo + '») en ' + mins + (mins === 1 ? ' minuto' : ' minutos') + '. Así consolidás lo estudiado.');
-      nota(
-        'Aún no es momento del repaso',
-        msg,
-        [{ texto: 'Entendido', alClick: cerrarNota }]
-      );
-      return;
-    }
-
     nota(
       'Repaso · preguntas fallidas',
-      'Vas a repasar exactamente ' + reactivos.length + ' pregunta' + (reactivos.length === 1 ? '' : 's') + ' que tú fallaste. Si las aciertas, el número en la sala baja.',
+      'Vas a repasar exactamente ' + reactivos.length + ' pregunta' + (reactivos.length === 1 ? '' : 's') + ' que tú fallaste. Si las aciertas, baja el contador de fallidas (crédito parcial en proyección). El tema de refuerzo solo se limpia cuando lo superas en la cartilla.',
       [
         {
           texto: 'Empezar repaso',

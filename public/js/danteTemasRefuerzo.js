@@ -7,8 +7,12 @@
 
   var CATALOGO_URL = 'temasRefuerzo.json';
   var STORE_PREFIX = 'dante_temas_refuerzo_v1:';
-  /** Tras abrir la cartilla, espera antes de repasar fallidas del mismo tema (evita memoria inmediata). */
-  var COOLDOWN_FALLIDAS_MS = 15 * 60 * 1000;
+  /**
+   * Tras abrir la cartilla se puede ir de inmediato a Repaso · Fallidas (sin espera forzada).
+   * El tema SOLO sale de pendientes con marcarHecho (práctica de la cartilla + «lo entendí»).
+   * Acertar la fallida original NO limpia el tema de refuerzo.
+   */
+  var COOLDOWN_FALLIDAS_MS = 0;
   var _catalogo = null;
   var _catalogoPromise = null;
 
@@ -288,6 +292,11 @@
     return [];
   }
 
+  /**
+   * ÚNICA vía para sacar un tema de «pendientes»:
+   * el estudiante responde la práctica de la cartilla y marca «superado».
+   * Acertar en Repaso · Fallidas NO debe llamar esto.
+   */
   function marcarHecho(temaId, detalle) {
     var id = String(temaId || '');
     if (!id) return;
@@ -296,7 +305,8 @@
     estado.hechos[id] = {
       ts: Date.now(),
       aciertos: detalle && detalle.aciertos,
-      total: detalle && detalle.total
+      total: detalle && detalle.total,
+      via: 'cartilla_practica'
     };
     if (!estado.vistos) estado.vistos = {};
     if (!estado.vistos[id] || !estado.vistos[id].ts) {
@@ -307,7 +317,8 @@
 
   /**
    * Marca la cartilla como abierta/estudiada.
-   * Conserva el primer timestamp (el cooldown de fallidas no se reinicia al reabrir).
+   * Habilita Repaso · Fallidas de inmediato (sin espera).
+   * No quita el tema de pendientes.
    */
   function marcarVisto(temaId) {
     var id = String(temaId || '');
@@ -343,10 +354,12 @@
   }
 
   /**
-   * Minutos que faltan del cooldown tras estudiar la cartilla.
-   * null = aún no estudió; 0 = ya puede repasar fallidas.
+   * Minutos de espera antes de Repaso · Fallidas.
+   * Con cooldown 0: null = aún no estudió; 0 = ya puede (tras abrir cartilla).
    */
   function minutosRestantesCooldown(temaId) {
+    if (!fueEstudiado(temaId)) return null;
+    if (!COOLDOWN_FALLIDAS_MS) return 0;
     var ts = tsEstudioDe(temaId);
     if (!ts) return null;
     var left = COOLDOWN_FALLIDAS_MS - (Date.now() - ts);
@@ -354,10 +367,9 @@
     return Math.max(1, Math.ceil(left / 60000));
   }
 
-  /** Estudió la cartilla y ya pasó el tiempo mínimo para repasar fallidas del tema. */
+  /** Puede abrir Repaso · Fallidas del tema: basta haber abierto la cartilla (sin espera). */
   function puedeRepasarFallidas(temaId) {
-    if (!fueEstudiado(temaId)) return false;
-    return minutosRestantesCooldown(temaId) === 0;
+    return fueEstudiado(temaId);
   }
 
   /** Pendientes activos: nunca incluye temas ya marcados como superados. */
