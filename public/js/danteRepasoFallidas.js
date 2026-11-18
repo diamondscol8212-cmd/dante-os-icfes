@@ -472,6 +472,7 @@
     } catch (eCat) {}
 
     const temasFaltantes = [];
+    const temasEnEspera = [];
     const vistosIds = {};
     reactivos.forEach(function (item) {
       if (!window.DanteTemasRefuerzo || typeof window.DanteTemasRefuerzo.resolverTemaId !== 'function') return;
@@ -486,13 +487,20 @@
       });
       if (!temaId || vistosIds[temaId]) return;
       vistosIds[temaId] = true;
+      const titulo = (typeof window.DanteTemasRefuerzo.tituloDe === 'function'
+        ? window.DanteTemasRefuerzo.tituloDe(temaId, item)
+        : temaId.replace(/_/g, ' '));
       const estudiado = typeof window.DanteTemasRefuerzo.fueEstudiado === 'function'
         && window.DanteTemasRefuerzo.fueEstudiado(temaId);
       if (!estudiado) {
-        const titulo = (typeof window.DanteTemasRefuerzo.tituloDe === 'function'
-          ? window.DanteTemasRefuerzo.tituloDe(temaId, item)
-          : temaId.replace(/_/g, ' '));
         temasFaltantes.push({ id: temaId, titulo: titulo });
+        return;
+      }
+      const mins = typeof window.DanteTemasRefuerzo.minutosRestantesCooldown === 'function'
+        ? window.DanteTemasRefuerzo.minutosRestantesCooldown(temaId)
+        : 0;
+      if (mins && mins > 0) {
+        temasEnEspera.push({ id: temaId, titulo: titulo, minutos: mins });
       }
     });
 
@@ -514,6 +522,22 @@
           },
           { texto: 'Cancelar', alClick: cerrarNota }
         ]
+      );
+      return;
+    }
+
+    if (temasEnEspera.length) {
+      const primero = temasEnEspera.slice().sort(function (a, b) {
+        return (b.minutos || 0) - (a.minutos || 0);
+      })[0];
+      const mins = primero.minutos || 1;
+      const msg = mins >= 60
+        ? ('Podrás responder las preguntas fallidas de «' + primero.titulo + '» mañana (o en unas horas). Así evitas responder de memoria inmediata.')
+        : ('Podrás responder las preguntas fallidas de este tema («' + primero.titulo + '») en ' + mins + (mins === 1 ? ' minuto' : ' minutos') + '. Así consolidás lo estudiado.');
+      nota(
+        'Aún no es momento del repaso',
+        msg,
+        [{ texto: 'Entendido', alClick: cerrarNota }]
       );
       return;
     }

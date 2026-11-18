@@ -7,6 +7,8 @@
 
   var CATALOGO_URL = 'temasRefuerzo.json';
   var STORE_PREFIX = 'dante_temas_refuerzo_v1:';
+  /** Tras abrir la cartilla, espera antes de repasar fallidas del mismo tema (evita memoria inmediata). */
+  var COOLDOWN_FALLIDAS_MS = 15 * 60 * 1000;
   var _catalogo = null;
   var _catalogoPromise = null;
 
@@ -261,16 +263,22 @@
       total: detalle && detalle.total
     };
     if (!estado.vistos) estado.vistos = {};
-    estado.vistos[id] = { ts: Date.now() };
+    if (!estado.vistos[id] || !estado.vistos[id].ts) {
+      estado.vistos[id] = { ts: Date.now() };
+    }
     guardarEstado(estado);
   }
 
-  /** Marca la cartilla como abierta/estudiada (habilita repaso de fallidas del tema). */
+  /**
+   * Marca la cartilla como abierta/estudiada.
+   * Conserva el primer timestamp (el cooldown de fallidas no se reinicia al reabrir).
+   */
   function marcarVisto(temaId) {
     var id = String(temaId || '');
     if (!id) return;
     var estado = leerEstado();
     if (!estado.vistos) estado.vistos = {};
+    if (estado.vistos[id] && estado.vistos[id].ts) return;
     estado.vistos[id] = { ts: Date.now() };
     guardarEstado(estado);
   }
@@ -285,8 +293,49 @@
     return false;
   }
 
+  function tsEstudioDe(temaId) {
+    var id = String(temaId || '');
+    if (!id) return 0;
+    var estado = leerEstado();
+    if (estado.vistos && estado.vistos[id] && estado.vistos[id].ts) {
+      return Number(estado.vistos[id].ts) || 0;
+    }
+    if (estado.hechos && estado.hechos[id] && estado.hechos[id].ts) {
+      return Number(estado.hechos[id].ts) || 0;
+    }
+    return 0;
+  }
+
+  /**
+   * Minutos que faltan del cooldown tras estudiar la cartilla.
+   * null = aún no estudió; 0 = ya puede repasar fallidas.
+   */
+  function minutosRestantesCooldown(temaId) {
+    var ts = tsEstudioDe(temaId);
+    if (!ts) return null;
+    var left = COOLDOWN_FALLIDAS_MS - (Date.now() - ts);
+    if (left <= 0) return 0;
+    return Math.max(1, Math.ceil(left / 60000));
+  }
+
+  /** Estudió la cartilla y ya pasó el tiempo mínimo para repasar fallidas del tema. */
+  function puedeRepasarFallidas(temaId) {
+    if (!fueEstudiado(temaId)) return false;
+    return minutosRestantesCooldown(temaId) === 0;
+  }
+
+  /** Pendientes activos: nunca incluye temas ya marcados como superados. */
   function listarPendientes() {
-    return leerEstado().pendientes.slice();
+    var estado = leerEstado();
+    var hechos = estado.hechos || {};
+    var limpios = (estado.pendientes || []).filter(function (p) {
+      return p && p.id && !hechos[p.id];
+    });
+    if (limpios.length !== (estado.pendientes || []).length) {
+      estado.pendientes = limpios;
+      guardarEstado(estado);
+    }
+    return limpios.slice();
   }
 
   function listarHechos() {
@@ -298,7 +347,7 @@
         ts: estado.hechos[id] && estado.hechos[id].ts,
         detalle: estado.hechos[id]
       };
-    });
+    }).sort(function (a, b) { return (b.ts || 0) - (a.ts || 0); });
   }
 
   function exportarParaSnapshot() {
@@ -330,7 +379,28 @@
   }
 
   function contarPendientes() {
-    return leerEstado().pendientes.length;
+    return listarPendientes().length;
+  }
+
+  /** Actualiza la tarjeta de la sala (index). */
+  function pintarSala() {
+    var el = document.getElementById('lblTemasRefuerzoDetalle');
+    var puerta = document.getElementById('puertaTemasRefuerzo');
+    if (!el && !puerta) return;
+    var n = contarPendientes();
+    if (el) {
+      el.textContent = n > 0
+        ? (n + (n === 1 ? ' tema pendiente' : ' temas pendientes') + ' · Estudia lo que fallaste')
+        : 'Disponible · Estudia lo que fallaste';
+    }
+    if (puerta) {
+      puerta.classList.toggle('sala-card-has-pending', n > 0);
+      puerta.setAttribute('data-pendientes', String(n));
+    }
+  }
+
+  function arranqueSala() {
+    try { pintarSala(); } catch (_) {}
   }
 
   global.DanteTemasRefuerzo = {
@@ -341,13 +411,23 @@
     marcarHecho: marcarHecho,
     marcarVisto: marcarVisto,
     fueEstudiado: fueEstudiado,
+    minutosRestantesCooldown: minutosRestantesCooldown,
+    puedeRepasarFallidas: puedeRepasarFallidas,
+    cooldownMs: COOLDOWN_FALLIDAS_MS,
     tituloDe: tituloDe,
     fallosDeTema: fallosDeTema,
     listarPendientes: listarPendientes,
     listarHechos: listarHechos,
     contarPendientes: contarPendientes,
+    pintarSala: pintarSala,
     exportarParaSnapshot: exportarParaSnapshot,
     importarDesdeSnapshot: importarDesdeSnapshot,
     leerEstado: leerEstado
   };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', arranqueSala);
+  } else {
+    arranqueSala();
+  }
 })(window);
