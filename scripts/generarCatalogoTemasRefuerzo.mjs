@@ -113,28 +113,58 @@ const CONTENIDO = {
   },
   argumentacion: {
     intro: 'Un argumento une premisas (razones) con una conclusión. En Saber 11° identificas qué se concluye, qué se asume o qué falla.',
-    pasos: ['Separa premisas y conclusión.', '¿Las premisas bastan o hay un salto?', 'Si hay salto típico, nómbralo (falacia).'],
-    errores: ['Confundir premisa con conclusión.', 'Elegir lo “que suena bien” sin apoyo textual.', 'Mezclar tipos de falacia.'],
+    pasos: [
+      'Separa premisas y conclusión.',
+      '¿Las premisas bastan o hay un salto?',
+      'Si hay salto típico, nómbralo (falacia).'
+    ],
+    errores: [
+      'Confundir premisa con conclusión.',
+      'Elegir lo “que suena bien” sin apoyo textual.',
+      'Mezclar tipos de falacia.'
+    ],
     ejemplo: {
       titulo: 'Ejemplo resuelto',
-      enunciado: '«Si hay celulares en clase, el colegio colapsará.»',
-      pasos: ['1) De un permiso salta a un desastre total.', '2) No hay pasos intermedios demostrados.', '3) Es pendiente resbaladiza.'],
-      respuesta: 'Pendiente resbaladiza'
+      enunciado: '«Si permitimos celulares en clase, el colegio colapsará.»',
+      pasos: [
+        '1) Premisa implícita: permitir celulares.',
+        '2) Conclusión: el colegio colapsa.',
+        '3) Hay un salto: no hay pasos intermedios demostrados → pendiente resbaladiza.',
+        '4) Por eso la conclusión no se sigue de la premisa: de un permiso no se deduce un desastre total.'
+      ],
+      respuesta: 'Pendiente resbaladiza',
+      contraste: {
+        titulo: 'Contraste · argumento válido (corto)',
+        invalido: 'Inválido: «Si hay celulares, el colegio colapsa.» (salto sin prueba).',
+        valido: 'Válido: «Si el reglamento prohíbe celulares y Ana usa uno, entonces Ana incumple el reglamento.» (la conclusión sí se sigue de las premisas).'
+      }
     },
     profundizar: 'Si quieres profundizar más: busca «estructura del argumento» y «falacias comunes».',
     practica: [
-      q('tr_arg_01', '«Si permitimos X, todo colapsa.» ¿Qué falla?', ['A) Pendiente resbaladiza', 'B) Dato estadístico', 'C) Norma escolar', 'D) Definición'], 'A',
-        { B: 'No hay cifras.', C: 'No describe una norma.', D: 'No define un término.' },
-        'Salto a consecuencias extremas sin prueba.'),
-      q('tr_arg_02', 'Todo M es P; todo S es M. Conclusión:', ['A) Ningún S es P', 'B) Todo S es P', 'C) Algún P no es S', 'D) Nada'], 'B',
-        { A: 'Negación indebida.', C: 'No se deduce eso.', D: 'Sí se deduce S⊆P.' },
-        'Transitividad de la inclusión.'),
-      q('tr_arg_03', '«No oigas su idea: reprobó.» Error:', ['A) Falsa analogía', 'B) Ad hominem', 'C) Generalización', 'D) Circular'], 'B',
-        { A: 'No compara casos.', C: 'No generaliza una muestra.', D: 'No redefine.' },
-        'Ataca a la persona, no la propuesta.'),
-      q('tr_arg_04', 'La conclusión es:', ['A) Lo que el autor quiere que aceptes', 'B) Cualquier ejemplo', 'C) Solo el título', 'D) Una pregunta retórica'], 'A',
-        { B: 'El ejemplo puede ser premisa.', C: 'El título orienta, no demuestra.', D: 'Abre el tema.' },
-        'Es lo sostenido por las razones.')
+      q('tr_arg_01',
+        'Premisa: «Permitimos X.» Conclusión: «Todo colapsa.» ¿Qué falla en el esquema?',
+        ['A) Pendiente resbaladiza: la conclusión no se sigue de la premisa', 'B) Es un dato estadístico sólido', 'C) Solo describe una norma escolar', 'D) Es una definición de X'],
+        'A',
+        { B: 'No hay cifras ni evidencia.', C: 'No describe una norma: predice un desastre.', D: 'No define el término; afirma consecuencias.' },
+        'De un permiso no se deduce un colapso: hay un salto (pendiente resbaladiza).'),
+      q('tr_arg_02',
+        'Premisas: «Todo M es P» y «Todo S es M.» ¿Qué conclusión se sigue?',
+        ['A) Ningún S es P', 'B) Todo S es P', 'C) Algún P no es S', 'D) No se puede concluir nada'],
+        'B',
+        { A: 'Negación indebida: las premisas afirman inclusión.', C: 'No es lo que se deduce aquí.', D: 'Sí se deduce: S ⊆ P.' },
+        'Argumento válido: la conclusión se sigue de las premisas (transitividad).'),
+      q('tr_arg_03',
+        '«No oigas su propuesta: él reprobó dos materias.» Identifica premisa, ataque y fallo:',
+        ['A) Falsa analogía entre dos casos', 'B) Ad hominem: ataca a la persona, no la propuesta', 'C) Generalización con una muestra', 'D) Definición circular'],
+        'B',
+        { A: 'No compara dos casos; descalifica al hablante.', C: 'No generaliza una muestra.', D: 'No redefine un término.' },
+        'La “premisa” habla de la persona; la conclusión rechaza la idea: el paso no es válido (ad hominem).'),
+      q('tr_arg_04',
+        'En un texto, ¿qué cuenta como conclusión del argumento?',
+        ['A) La idea que el autor quiere que aceptes a partir de las razones', 'B) Cualquier ejemplo anecdótico', 'C) Solo el título del párrafo', 'D) Una pregunta retórica sin respuesta'],
+        'A',
+        { B: 'El ejemplo puede ser premisa o ilustración.', C: 'El título orienta, no demuestra.', D: 'Abre el tema; no es la tesis.' },
+        'Conclusión = lo que se sostiene con las premisas; aplica el mismo esquema premisa → conclusión.')
     ]
   }
 };
@@ -169,9 +199,12 @@ function plantillaBase(id, titulo, area) {
     pasos: [
       '1) Identifica la magnitud, la idea o la norma que pide.',
       '2) Aplica la regla del subtema (fórmula, inferencia o definición).',
-      '3) Contrasta cada opción: la correcta encaja; las otras fallan por un error típico.'
+      '3) Contrasta cada opción: la correcta encaja; las otras fallan por un error típico.',
+      '4) Por eso la respuesta correcta es la que cumple exactamente lo pedido, no la que solo “parece” cercana.'
     ],
-    respuesta: 'La opción que cumple exactamente lo pedido'
+    respuesta: 'La opción que cumple exactamente lo pedido',
+    // Plantilla opcional para contraste válido vs inválido (como en argumentación).
+    contraste: null
   };
 
   const practica = [
@@ -340,6 +373,7 @@ function buildTema(id) {
       pasos: base.pasos,
       errores: base.errores,
       ejemplo_resuelto: base.ejemplo,
+      contraste: (base.ejemplo && base.ejemplo.contraste) || base.contraste || null,
       diagrama_svg: diagrama
     },
     practica

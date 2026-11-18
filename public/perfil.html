@@ -20,11 +20,11 @@
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="theme.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/danteCacheVersion.js?v=c-1.3.99"></script>
-    <script src="js/danteRevealScroll.js?v=c-1.3.99"></script>
-    <script src="js/danteSaber11Info.js?v=c-1.3.99"></script>
-    <script src="js/danteStudentId.js?v=c-1.3.99"></script>
-    <script src="js/danteTemasRefuerzo.js?v=c-1.3.99"></script>
+    <script src="js/danteCacheVersion.js?v=c-1.3.101"></script>
+    <script src="js/danteRevealScroll.js?v=c-1.3.101"></script>
+    <script src="js/danteSaber11Info.js?v=c-1.3.101"></script>
+    <script src="js/danteStudentId.js?v=c-1.3.101"></script>
+    <script src="js/danteTemasRefuerzo.js?v=c-1.3.101"></script>
     <script src="js/danteNube.js?v=c-1.3.87"></script>
     <script src="js/danteRegistro.js?v=c-1.3.87"></script>
     <script src="js/danteVectorIcons.js"></script>
@@ -929,6 +929,8 @@
         #bloqueModulos > #btnInformeGeneral,
         #bloqueModulos > #btnInformeSimulacro,
         #bloqueModulos > #btnInformeRutaVocacional,
+        #bloqueModulos > #btnTemasRefuerzoPerfil,
+        #bloqueModulos > a.puerta-informe,
         #bloqueSecundario .puerta-informe {
             display: flex !important;
             flex-direction: row !important;
@@ -943,6 +945,62 @@
             position: relative;
             width: 100%;
             text-align: left;
+            text-decoration: none !important;
+            color: inherit !important;
+            box-sizing: border-box !important;
+            cursor: pointer;
+        }
+        .puerta-marca.pendiente {
+            background: rgba(239, 68, 68, 0.14) !important;
+            border-color: rgba(248, 113, 113, 0.4) !important;
+            color: #f87171 !important;
+        }
+        .btn-fallaste.pendiente {
+            border-color: rgba(248, 113, 113, 0.35) !important;
+        }
+        .btn-fallaste.pendiente .fallaste-ico {
+            color: #f87171 !important;
+            border-color: rgba(248, 113, 113, 0.4) !important;
+            background: rgba(239, 68, 68, 0.14) !important;
+        }
+        .btn-fallaste .fallaste-ico {
+            width: 1.85rem;
+            height: 1.85rem;
+            border-radius: 0.55rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 0 0 1.85rem;
+            border: 1px solid rgba(34, 197, 94, 0.22);
+            background: rgba(34, 197, 94, 0.12);
+            color: #4ade80;
+            margin-right: 0.65rem;
+        }
+        .btn-fallaste .fallaste-ico svg {
+            width: 0.95rem !important;
+            height: 0.95rem !important;
+            color: inherit !important;
+        }
+        .btn-fallaste .fallaste-copy {
+            flex: 1 1 auto;
+            min-width: 0;
+            text-align: left;
+        }
+        .btn-fallaste .fallaste-copy strong {
+            display: block;
+            font-size: 0.88rem;
+            font-weight: 650;
+            color: #e2e8f0;
+        }
+        .btn-fallaste .fallaste-copy small {
+            display: block;
+            margin-top: 0.18rem;
+            font-size: 0.7rem;
+            color: #94a3b8;
+            font-weight: 450;
+        }
+        .btn-fallaste {
+            gap: 0 !important;
         }
         #perfilLegacyOculto,
         #btnSimulacroPerfil,
@@ -1673,12 +1731,12 @@
                     <span class="puerta-chev" aria-hidden="true">›</span>
                 </button>
                 <a id="btnTemasRefuerzoPerfil" href="temas-refuerzo.html" class="puerta-informe">
-                    <span class="puerta-marca" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path><path d="M8 7h8"></path><path d="M8 11h6"></path></svg>
+                    <span class="puerta-marca" id="marcaTemasRefuerzo" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path><path d="M8 7h8"></path><path d="M8 11h6"></path></svg>
                     </span>
                     <span>
                         <strong>Temas de refuerzo</strong>
-                        <span id="txtTemasRefuerzoResumen">Estudio de los subtemas que fallaste.</span>
+                        <span id="txtTemasRefuerzoResumen">Disponible cuando quieras.</span>
                     </span>
                     <span class="puerta-chev" aria-hidden="true">›</span>
                 </a>
@@ -1721,12 +1779,25 @@
                     <h3>Pruebas que has hecho</h3>
                     <button type="button" id="btnVerTodasPruebas" hidden aria-hidden="true" onclick="PerfilEstudiante.toggleVerTodasPruebas()">Ver todas</button>
                 </div>
+                <p class="text-[10px] text-slate-500" style="font-family:'Plus Jakarta Sans',sans-serif;margin:0 0 0.15rem;">Disponible cuando quieras · sin reloj</p>
                 <button type="button" id="btnRepasoFallidasPerfil" onclick="window.location.href='/index.html?repaso=fallidas'" class="btn-fallaste" style="display:flex;width:100%;margin:0;">
-                    <span>Repaso · preguntas fallidas</span>
+                    <span class="fallaste-ico" id="icoRepasoFallidas" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9"></path><polyline points="3 4 3 12 11 12"></polyline></svg>
+                    </span>
+                    <span class="fallaste-copy">
+                        <strong id="txtRepasoFallidasTitulo">Repaso · preguntas fallidas</strong>
+                        <small id="txtRepasoFallidasSub">Disponible cuando quieras.</small>
+                    </span>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
                 </button>
-                <a href="temas-refuerzo.html" class="btn-fallaste" style="display:flex;width:100%;margin:0;text-decoration:none;">
-                    <span>Temas de refuerzo · cartilla</span>
+                <a id="btnTemasRefuerzoCartilla" href="temas-refuerzo.html" class="btn-fallaste" style="display:flex;width:100%;margin:0;text-decoration:none;">
+                    <span class="fallaste-ico" id="icoTemasCartilla" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                    </span>
+                    <span class="fallaste-copy">
+                        <strong id="txtTemasCartillaTitulo">Temas de refuerzo · cartilla</strong>
+                        <small id="txtTemasCartillaSub">Disponible cuando quieras.</small>
+                    </span>
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
                 </a>
                 <div class="overflow-x-auto">
@@ -6351,15 +6422,50 @@
             PerfilEstudiante.init();
             VocacionalManager.init();
             try {
-                if (window.DanteTemasRefuerzo) {
-                    const n = window.DanteTemasRefuerzo.contarPendientes();
-                    const el = document.getElementById('txtTemasRefuerzoResumen');
-                    if (el) {
-                        el.textContent = n > 0
-                            ? (n === 1 ? '1 tema pendiente de estudiar.' : (n + ' temas pendientes de estudiar.'))
-                            : 'Estudio de los subtemas que fallaste.';
+                (function pintarEstadosPendientesPerfil() {
+                    let nTemas = 0;
+                    try {
+                        if (window.DanteTemasRefuerzo && typeof window.DanteTemasRefuerzo.contarPendientes === 'function') {
+                            nTemas = window.DanteTemasRefuerzo.contarPendientes() || 0;
+                        }
+                    } catch (_) {}
+                    let nFallidas = 0;
+                    try {
+                        const raw = JSON.parse(localStorage.getItem('dante_fallidas_ledger_v2') || '[]');
+                        nFallidas = Array.isArray(raw) ? raw.length : 0;
+                    } catch (_) {}
+
+                    const marcaTemas = document.getElementById('marcaTemasRefuerzo');
+                    const txtTemas = document.getElementById('txtTemasRefuerzoResumen');
+                    const icoTemas = document.getElementById('icoTemasCartilla');
+                    const subTemas = document.getElementById('txtTemasCartillaSub');
+                    const btnTemasModulo = document.getElementById('btnTemasRefuerzoPerfil');
+                    const btnTemasCartilla = document.getElementById('btnTemasRefuerzoCartilla');
+                    if (nTemas > 0) {
+                        if (marcaTemas) marcaTemas.classList.add('pendiente');
+                        if (btnTemasCartilla) btnTemasCartilla.classList.add('pendiente');
+                        if (txtTemas) txtTemas.textContent = nTemas === 1 ? '1 tema pendiente · disponible cuando quieras.' : (nTemas + ' temas pendientes · disponible cuando quieras.');
+                        if (subTemas) subTemas.textContent = nTemas === 1 ? '1 pendiente · entra cuando quieras.' : (nTemas + ' pendientes · entra cuando quieras.');
+                    } else {
+                        if (marcaTemas) marcaTemas.classList.remove('pendiente');
+                        if (btnTemasCartilla) btnTemasCartilla.classList.remove('pendiente');
+                        if (txtTemas) txtTemas.textContent = 'Disponible cuando quieras.';
+                        if (subTemas) subTemas.textContent = 'Disponible cuando quieras.';
                     }
-                }
+
+                    const btnFallidas = document.getElementById('btnRepasoFallidasPerfil');
+                    const txtFallidas = document.getElementById('txtRepasoFallidasTitulo');
+                    const subFallidas = document.getElementById('txtRepasoFallidasSub');
+                    if (nFallidas > 0) {
+                        if (btnFallidas) btnFallidas.classList.add('pendiente');
+                        if (txtFallidas) txtFallidas.textContent = 'Repaso · ' + nFallidas + (nFallidas === 1 ? ' fallida' : ' fallidas');
+                        if (subFallidas) subFallidas.textContent = 'Hay pendientes · disponible cuando quieras.';
+                    } else {
+                        if (btnFallidas) btnFallidas.classList.remove('pendiente');
+                        if (txtFallidas) txtFallidas.textContent = 'Repaso · preguntas fallidas';
+                        if (subFallidas) subFallidas.textContent = 'Sin pendientes · disponible cuando quieras.';
+                    }
+                })();
             } catch (_) {}
             (function revealEntradaPerfil() {
                 function pin() {
