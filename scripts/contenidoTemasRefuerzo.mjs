@@ -5868,11 +5868,11 @@ export const CONTENIDO_TEMAS = {
         ],
         "correcta": "A",
         "justificacion_incorrectas": {
-          "B": "Confundiste cantidad con %.",
-          "C": "Mal.",
-          "D": "Mal."
+          "B": "15 es la cantidad, no el porcentaje: 15/60 = 25%.",
+          "C": "40% sería 24 de 60, no 15.",
+          "D": "50% sería la mitad (30 de 60), no 15."
         },
-        "explicacion_correcta": "15/60=0,25."
+        "explicacion_correcta": "15÷60 = 0,25 → 25%."
       },
       {
         "id": "tr_and_02",
@@ -5885,11 +5885,11 @@ export const CONTENIDO_TEMAS = {
         ],
         "correcta": "A",
         "justificacion_incorrectas": {
-          "B": "Insuficiente.",
-          "C": "Mal despeje.",
-          "D": "Mal."
+          "B": "Si la cuarta fuera 80, el total sería 310 y el promedio 77,5.",
+          "C": "70 daría total 300 y promedio 75.",
+          "D": "50 daría total 280 y promedio 70."
         },
-        "explicacion_correcta": "Total 320; 320−230=90."
+        "explicacion_correcta": "Total requerido = 80×4 = 320; 320−230 = 90."
       },
       {
         "id": "tr_and_03",
@@ -5902,11 +5902,11 @@ export const CONTENIDO_TEMAS = {
         ],
         "correcta": "A",
         "justificacion_incorrectas": {
-          "B": "Partes mal.",
-          "C": "Mal.",
-          "D": "Mal."
+          "B": "14 serían 2 partes de 5, no de 7.",
+          "C": "20 serían 4 partes de 7, no 2.",
+          "D": "25 serían 5 partes (las niñas), no los niños."
         },
-        "explicacion_correcta": "2+5=7 partes; 35/7=5; 2×5=10."
+        "explicacion_correcta": "2+5 = 7 partes; 35/7 = 5 por parte; niños = 2×5 = 10."
       },
       {
         "id": "tr_and_04",
@@ -5919,33 +5919,33 @@ export const CONTENIDO_TEMAS = {
         ],
         "correcta": "A",
         "justificacion_incorrectas": {
-          "B": "No.",
-          "C": "No.",
-          "D": "No."
+          "B": "No es una acción pedagógica con datos.",
+          "C": "Conjugar es gramática, no lectura de asistencia.",
+          "D": "Nombrar ríos es geografía, no el uso del gráfico escolar."
         },
-        "explicacion_correcta": "Decisión pedagógica con datos."
+        "explicacion_correcta": "El gráfico informa decisiones de aula: patrones de falta y apoyos."
       }
     ],
     "profundizar": " %, razones y promedios con sentido de aula.",
     "terminos": [
       {
         "termino": "porcentaje",
-        "definicion": "Parte de 100.",
+        "definicion": "Cantidad expresada como partes de 100 (tanto por ciento).",
         "ejemplo": "15 de 60 = 25%."
       },
       {
         "termino": "promedio",
-        "definicion": "Media aritmética de notas o datos.",
+        "definicion": "Media aritmética: suma de los datos dividida entre cuántos hay.",
         "ejemplo": "Suma ÷ cantidad."
       },
       {
         "termino": "razón",
-        "definicion": "Comparación a:b.",
+        "definicion": "Comparación entre dos cantidades en la forma a:b o a/b.",
         "ejemplo": "2:5 de niños a niñas."
       },
       {
         "termino": "lectura de gráficos",
-        "definicion": "Interpretar barras, líneas o tablas para decidir.",
+        "definicion": "Interpretar barras, líneas o tablas para tomar una decisión con datos.",
         "ejemplo": "Ver en qué mes bajó la asistencia."
       }
     ],

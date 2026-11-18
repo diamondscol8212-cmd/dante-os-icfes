@@ -7,6 +7,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { TEMA_SUB } from '../src/services/bank/enriquecerAyudas.js';
 import { CONTENIDO_TEMAS } from './contenidoTemasRefuerzo.mjs';
+import { fuentesDe } from './fuentesTemasRefuerzo.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -56,6 +57,64 @@ const CONTENIDO = { ...CONTENIDO_TEMAS };
 
 function q(id, enunciado, opciones, correcta, justificacion_incorrectas, explicacion_correcta) {
   return { id, enunciado, opciones, correcta, justificacion_incorrectas, explicacion_correcta };
+}
+
+function textoOpcionLimpio(op) {
+  return String(op || '').replace(/^[A-Da-d][\)\.\-\:]\s*/, '').trim();
+}
+
+function justifDebil(txt) {
+  const t = String(txt || '').trim();
+  return !t || t.length < 12 || /^(mal|no|falso|incorrecto)\.?$/i.test(t);
+}
+
+/**
+ * Completa justificaciones pobres de práctica (p. ej. «Mal.» / «No.»)
+ * sin inventar fuera del ítem: ancla en el texto de la opción.
+ */
+function enriquecerPractica(item) {
+  if (!item || typeof item !== 'object') return item;
+  const correcta = String(item.correcta || '').toUpperCase().slice(0, 1);
+  const ops = Array.isArray(item.opciones) ? item.opciones : [];
+  const just = { ...(item.justificacion_incorrectas || {}) };
+  ops.forEach((op, i) => {
+    let L = String(op).trim().charAt(0).toUpperCase();
+    if (!'ABCD'.includes(L)) L = 'ABCD'.charAt(i);
+    if (L === correcta) return;
+    if (!justifDebil(just[L])) return;
+    const txt = textoOpcionLimpio(op) || ('opción ' + L);
+    just[L] = '«' + txt + '» no resuelve el enunciado. La respuesta correcta es ' + (correcta || '—') + '.';
+  });
+  let expl = String(item.explicacion_correcta || '').trim();
+  if (expl.length < 20) {
+    const okOp = ops.find((op, i) => {
+      let L = String(op).trim().charAt(0).toUpperCase();
+      if (!'ABCD'.includes(L)) L = 'ABCD'.charAt(i);
+      return L === correcta;
+    });
+    expl = 'La opción ' + (correcta || '—') + ' encaja con el concepto del tema'
+      + (okOp ? (': «' + textoOpcionLimpio(okOp) + '».') : '.');
+  }
+  return {
+    ...item,
+    justificacion_incorrectas: just,
+    explicacion_correcta: expl
+  };
+}
+
+/** Amplía definiciones demasiado cortas del glosario. */
+function enriquecerTerminos(terminos, tituloTema) {
+  const lista = Array.isArray(terminos) ? terminos : [];
+  const ancla = String(tituloTema || 'este tema').slice(0, 60);
+  return lista.map((tm) => {
+    if (!tm || !tm.termino) return tm;
+    let def = String(tm.definicion || '').trim();
+    if (def.length >= 28) return tm;
+    const term = String(tm.termino).trim();
+    if (!def) def = 'Concepto clave de «' + ancla + '».';
+    else def = def.replace(/\.$/, '') + '; es un concepto clave de «' + ancla + '».';
+    return { ...tm, termino: term, definicion: def, ejemplo: tm.ejemplo || '' };
+  });
 }
 
 /** Fallback solo si falta entrada en CONTENIDO_TEMAS: sigue siendo contenido, no tips de examen. */
@@ -746,11 +805,27 @@ function buildTema(id) {
     ? base.diagrama_svg
     : diagramaDe(id, area, titulo);
   const diagramaOpciones = diagramaOpcionesDe(canon) || diagramaOpcionesDe(id) || '';
-  const terminos = Array.isArray(base.terminos) ? base.terminos.slice(0, 6) : [];
-  const practica = (base.practica || []).map((p, i) => ({
-    ...p,
-    ayuda_visual: i === 0 ? 'Usa el diagrama de la explicación para orientar el procedimiento.' : undefined
-  }));
+  const terminos = enriquecerTerminos(
+    Array.isArray(base.terminos) ? base.terminos.slice(0, 6) : [],
+    titulo
+  );
+  const fuentes = fuentesDe(canon, area);
+  let practicaRaw = Array.isArray(base.practica) ? base.practica.slice() : [];
+  // Mínimo 2–3 ítems de práctica por tema.
+  if (practicaRaw.length < 2) {
+    const fallback = plantillaBase(id, titulo, area).practica;
+    practicaRaw = practicaRaw.concat(fallback).slice(0, 4);
+  }
+  const practica = practicaRaw.map((p, i) => {
+    const limpio = enriquecerPractica(p);
+    return {
+      ...limpio,
+      ayuda_visual: i === 0 ? 'Usa el diagrama de la explicación para orientar el procedimiento.' : undefined
+    };
+  });
+  const ejemplo = base.ejemplo && base.ejemplo.enunciado
+    ? base.ejemplo
+    : plantillaBase(id, titulo, area).ejemplo;
   return {
     id,
     titulo,
@@ -762,6 +837,7 @@ function buildTema(id) {
       : [titulo.toLowerCase(), id.replace(/_/g, ' ')],
     estadoContenido: 'completo',
     profundizar: base.profundizar,
+    fuentes,
     diagrama_svg: diagrama,
     diagrama_opciones_svg: diagramaOpciones || undefined,
     terminos,
@@ -769,11 +845,12 @@ function buildTema(id) {
       intro: base.intro,
       pasos: base.pasos,
       errores: base.errores,
-      ejemplo_resuelto: base.ejemplo,
-      contraste: (base.ejemplo && base.ejemplo.contraste) || base.contraste || null,
+      ejemplo_resuelto: ejemplo,
+      contraste: (ejemplo && ejemplo.contraste) || base.contraste || null,
       diagrama_svg: diagrama,
       diagrama_opciones_svg: diagramaOpciones || undefined,
-      terminos
+      terminos,
+      fuentes
     },
     practica
   };

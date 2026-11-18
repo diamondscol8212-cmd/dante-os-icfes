@@ -151,7 +151,7 @@
             "C": "Te quedaste en 3x=18.",
             "D": "Multiplicaste de más."
           },
-          "explicacion_correcta": "3x=12 → x=4."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «x = 4»."
         },
         {
           "id": "tr_alg_03",
@@ -165,7 +165,7 @@
           "correcta": "B",
           "justificacion_incorrectas": {
             "A": "No es el modelo lineal básico.",
-            "C": "No calcula.",
+            "C": "«únicamente el nombre del tanque» no resuelve el enunciado. La respuesta correcta es B.",
             "D": "Irrelevante."
           },
           "explicacion_correcta": "Lineal: V = V0 − r·t."
@@ -306,11 +306,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "Hay dato.",
-            "C": "No.",
-            "D": "No."
+            "B": "«Un color sin dato» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Un verbo» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Una norma penal» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Altura = magnitud.",
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Un valor mayor».",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
         },
         {
@@ -325,10 +325,10 @@
           "correcta": "A",
           "justificacion_incorrectas": {
             "B": "Pierdes claves.",
-            "C": "No.",
-            "D": "No siempre."
+            "C": "«Borrarla» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Traducirla a una ecuación siempre» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Leyenda."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Usarla para interpretar símbolos»."
         },
         {
           "id": "tr_ai_03",
@@ -341,11 +341,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No.",
-            "C": "No.",
-            "D": "No."
+            "B": "«Cantar» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Freír» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Conjugar» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Escala."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Relacionar distancias en papel y reales»."
         },
         {
           "id": "tr_ai_04",
@@ -358,11 +358,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No.",
-            "C": "No.",
-            "D": "No."
+            "B": "«Inventar un cuento» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Cambiar de área» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Contar tipografías» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Enunciado + imagen."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Ver qué pregunta el enunciado»."
         }
       ]
     },
@@ -405,7 +405,7 @@
         },
         {
           "termino": "estructura",
-          "definicion": "Partes y orden del texto.",
+          "definicion": "Partes y orden del texto; es un concepto clave de «Lectura: análisis textual».",
           "ejemplo": "Introducción → desarrollo → cierre."
         }
       ],
@@ -452,7 +452,7 @@
           },
           {
             "termino": "estructura",
-            "definicion": "Partes y orden del texto.",
+            "definicion": "Partes y orden del texto; es un concepto clave de «Lectura: análisis textual».",
             "ejemplo": "Introducción → desarrollo → cierre."
           }
         ],
@@ -475,11 +475,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "Geo.",
-            "C": "Química.",
-            "D": "Mate."
+            "B": "«Un río» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Un átomo» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Un ángulo» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Orden discursivo.",
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Una secuencia».",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
         },
         {
@@ -493,11 +493,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "Rompe.",
-            "C": "Rompe.",
-            "D": "Rompe."
+            "B": "«Borrar nexos» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Cambiar de idioma al azar» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Ignorar referencias» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Cohesión."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Pronombres y repeticiones controladas»."
         },
         {
           "id": "tr_at_03",
@@ -510,11 +510,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No.",
-            "C": "No.",
-            "D": "No."
+            "B": "«Legislar» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Medir» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Navegar» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Ejemplo."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Ejemplificar»."
         },
         {
           "id": "tr_at_04",
@@ -527,11 +527,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No basta.",
-            "C": "No.",
-            "D": "No."
+            "B": "«Solo la tipografía» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«El clima de Londres» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«El mcm» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Construcción."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Cómo está construido»."
         }
       ]
     },
@@ -563,22 +563,22 @@
       "terminos": [
         {
           "termino": "porcentaje",
-          "definicion": "Parte de 100.",
+          "definicion": "Cantidad expresada como partes de 100 (tanto por ciento).",
           "ejemplo": "15 de 60 = 25%."
         },
         {
           "termino": "promedio",
-          "definicion": "Media aritmética de notas o datos.",
+          "definicion": "Media aritmética: suma de los datos dividida entre cuántos hay.",
           "ejemplo": "Suma ÷ cantidad."
         },
         {
           "termino": "razón",
-          "definicion": "Comparación a:b.",
+          "definicion": "Comparación entre dos cantidades en la forma a:b o a/b.",
           "ejemplo": "2:5 de niños a niñas."
         },
         {
           "termino": "lectura de gráficos",
-          "definicion": "Interpretar barras, líneas o tablas para decidir.",
+          "definicion": "Interpretar barras, líneas o tablas para tomar una decisión con datos.",
           "ejemplo": "Ver en qué mes bajó la asistencia."
         }
       ],
@@ -610,22 +610,22 @@
         "terminos": [
           {
             "termino": "porcentaje",
-            "definicion": "Parte de 100.",
+            "definicion": "Cantidad expresada como partes de 100 (tanto por ciento).",
             "ejemplo": "15 de 60 = 25%."
           },
           {
             "termino": "promedio",
-            "definicion": "Media aritmética de notas o datos.",
+            "definicion": "Media aritmética: suma de los datos dividida entre cuántos hay.",
             "ejemplo": "Suma ÷ cantidad."
           },
           {
             "termino": "razón",
-            "definicion": "Comparación a:b.",
+            "definicion": "Comparación entre dos cantidades en la forma a:b o a/b.",
             "ejemplo": "2:5 de niños a niñas."
           },
           {
             "termino": "lectura de gráficos",
-            "definicion": "Interpretar barras, líneas o tablas para decidir.",
+            "definicion": "Interpretar barras, líneas o tablas para tomar una decisión con datos.",
             "ejemplo": "Ver en qué mes bajó la asistencia."
           }
         ],
@@ -652,11 +652,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "Confundiste cantidad con %.",
-            "C": "Mal.",
-            "D": "Mal."
+            "B": "15 es la cantidad, no el porcentaje: 15/60 = 25%.",
+            "C": "40% sería 24 de 60, no 15.",
+            "D": "50% sería la mitad (30 de 60), no 15."
           },
-          "explicacion_correcta": "15/60=0,25.",
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «25%».",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
         },
         {
@@ -670,11 +670,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "Insuficiente.",
-            "C": "Mal despeje.",
-            "D": "Mal."
+            "B": "Si la cuarta fuera 80, el total sería 310 y el promedio 77,5.",
+            "C": "70 daría total 300 y promedio 75.",
+            "D": "50 daría total 280 y promedio 70."
           },
-          "explicacion_correcta": "Total 320; 320−230=90."
+          "explicacion_correcta": "Total requerido = 80×4 = 320; 320−230 = 90."
         },
         {
           "id": "tr_and_03",
@@ -687,11 +687,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "Partes mal.",
-            "C": "Mal.",
-            "D": "Mal."
+            "B": "14 serían 2 partes de 5, no de 7.",
+            "C": "20 serían 4 partes de 7, no 2.",
+            "D": "25 serían 5 partes (las niñas), no los niños."
           },
-          "explicacion_correcta": "2+5=7 partes; 35/7=5; 2×5=10."
+          "explicacion_correcta": "2+5 = 7 partes; 35/7 = 5 por parte; niños = 2×5 = 10."
         },
         {
           "id": "tr_and_04",
@@ -704,11 +704,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No.",
-            "C": "No.",
-            "D": "No."
+            "B": "No es una acción pedagógica con datos.",
+            "C": "Conjugar es gramática, no lectura de asistencia.",
+            "D": "Nombrar ríos es geografía, no el uso del gráfico escolar."
           },
-          "explicacion_correcta": "Decisión pedagógica con datos."
+          "explicacion_correcta": "El gráfico informa decisiones de aula: patrones de falta y apoyos."
         }
       ]
     },
@@ -829,11 +829,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "Dañina.",
-            "C": "No enseña.",
+            "B": "«Solo insulta» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Es silencio total siempre» no resuelve el enunciado. La respuesta correcta es A.",
             "D": "Ilegal/antipedagógico."
           },
-          "explicacion_correcta": "Error + camino.",
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Señala el error y cómo corregirlo».",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
         },
         {
@@ -848,10 +848,10 @@
           "correcta": "A",
           "justificacion_incorrectas": {
             "B": "Dependencia.",
-            "C": "No.",
-            "D": "No enseña."
+            "C": "«Abandonar» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Castigar» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Apoyo gradual."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Apoyar y retirar ayuda poco a poco»."
         },
         {
           "id": "tr_ap_03",
@@ -864,9 +864,9 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "Inseguro.",
-            "C": "Inseguro.",
-            "D": "Inseguro."
+            "B": "«Burlarse» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Excluir» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Amenazar» no resuelve el enunciado. La respuesta correcta es A."
           },
           "explicacion_correcta": "Seguridad para aprender."
         },
@@ -881,8 +881,8 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "Excluye.",
-            "C": "Violento.",
+            "B": "«Ignorar necesidades» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Segregar con burla» no resuelve el enunciado. La respuesta correcta es A.",
             "D": "Ilegal/antipedagógico."
           },
           "explicacion_correcta": "Inclusión con respeto."
@@ -1066,7 +1066,7 @@
             "C": "No generaliza muestra.",
             "D": "No redefine."
           },
-          "explicacion_correcta": "Ataca a la persona."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «Ad hominem»."
         },
         {
           "id": "tr_arg_04",
@@ -1234,9 +1234,9 @@
           "justificacion_incorrectas": {
             "A": "Ignoraste el paréntesis.",
             "C": "Solo sumaste.",
-            "D": "Solo 3×2."
+            "D": "«6» no resuelve el enunciado. La respuesta correcta es B."
           },
-          "explicacion_correcta": "Paréntesis primero."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «14»."
         },
         {
           "id": "tr_ari_03",
@@ -1253,7 +1253,7 @@
             "C": "Factor 100 erróneo.",
             "D": "Sin conversión."
           },
-          "explicacion_correcta": "60 min = 1 h."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «2 h»."
         },
         {
           "id": "tr_ari_04",
@@ -1266,7 +1266,7 @@
           ],
           "correcta": "B",
           "justificacion_incorrectas": {
-            "A": "Falso.",
+            "A": "«+ antes que × siempre» no resuelve el enunciado. La respuesta correcta es B.",
             "C": "No es regla.",
             "D": "Paréntesis mandan."
           },
@@ -1392,8 +1392,8 @@
           "correcta": "A",
           "justificacion_incorrectas": {
             "B": "No niega todo.",
-            "C": "No.",
-            "D": "No."
+            "C": "«Pedir comida» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Cambiar de idioma» no resuelve el enunciado. La respuesta correcta es A."
           },
           "explicacion_correcta": "por lo tanto = conclusión.",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
@@ -1409,8 +1409,8 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "Detalle.",
-            "C": "No.",
+            "B": "«Cualquier fecha suelta» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Solo el tipógrafo» no resuelve el enunciado. La respuesta correcta es A.",
             "D": "Puede abrir, no es tesis."
           },
           "explicacion_correcta": "Tesis = idea central."
@@ -1427,10 +1427,10 @@
           "correcta": "B",
           "justificacion_incorrectas": {
             "A": "Pierdes el sentido.",
-            "C": "No.",
-            "D": "No."
+            "C": "«Borrar el 1» no resuelve el enunciado. La respuesta correcta es B.",
+            "D": "«Inventar un tercer tema» no resuelve el enunciado. La respuesta correcta es B."
           },
-          "explicacion_correcta": "Integrar contraste."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «Integrar el contraste»."
         },
         {
           "id": "tr_art_04",
@@ -1443,11 +1443,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No.",
+            "B": "«Cambia de asignatura solo» no resuelve el enunciado. La respuesta correcta es A.",
             "C": "No siempre anula.",
-            "D": "No."
+            "D": "«Es la bibliografía» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Ejemplo = apoyo."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Ilustra la idea en curso»."
         }
       ]
     },
@@ -1569,8 +1569,8 @@
           "correcta": "B",
           "justificacion_incorrectas": {
             "A": "Es lo contrario.",
-            "C": "No lo dice.",
-            "D": "No."
+            "C": "«Break the door» no resuelve el enunciado. La respuesta correcta es B.",
+            "D": "«Ignore the door» no resuelve el enunciado. La respuesta correcta es B."
           },
           "explicacion_correcta": "Keep = mantener cerrada.",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
@@ -1603,11 +1603,11 @@
           ],
           "correcta": "B",
           "justificacion_incorrectas": {
-            "A": "Off ≠ on.",
-            "C": "No.",
-            "D": "No."
+            "A": "«a suggestion to keep phones on» no resuelve el enunciado. La respuesta correcta es B.",
+            "C": "«a weather report» no resuelve el enunciado. La respuesta correcta es B.",
+            "D": "«a math problem» no resuelve el enunciado. La respuesta correcta es B."
           },
-          "explicacion_correcta": "turn off = apagar."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «a polite instruction to switch phones off»."
         },
         {
           "id": "tr_av_04",
@@ -1804,7 +1804,7 @@
             "C": "Las plantas no “ingieren” glucosa para liberar ese O₂.",
             "D": "N₂ no es la fuente del O₂ fotosintético."
           },
-          "explicacion_correcta": "Fotólisis del agua."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «el agua»."
         },
         {
           "id": "tr_bio_04",
@@ -1962,7 +1962,7 @@
           "justificacion_incorrectas": {
             "A": "Se puede resolver.",
             "C": "No necesariamente.",
-            "D": "No."
+            "D": "«el límite es 1» no resuelve el enunciado. La respuesta correcta es B."
           },
           "explicacion_correcta": "Indeterminación algebraica."
         },
@@ -1977,7 +1977,7 @@
           ],
           "correcta": "B",
           "justificacion_incorrectas": {
-            "A": "Falso.",
+            "A": "«siempre 0» no resuelve el enunciado. La respuesta correcta es B.",
             "C": "Derivada es otro objeto.",
             "D": "Existe por continuidad."
           },
@@ -1996,9 +1996,9 @@
           "justificacion_incorrectas": {
             "A": "Es tendencia.",
             "C": "Integral distinta.",
-            "D": "Otra área."
+            "D": "«la moda estadística» no resuelve el enunciado. La respuesta correcta es B."
           },
-          "explicacion_correcta": "Tendencia de f(x)."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «el valor al que se acerca f(x)»."
         }
       ]
     },
@@ -2041,7 +2041,7 @@
         },
         {
           "termino": "presente simple",
-          "definicion": "Hábitos y hechos generales.",
+          "definicion": "Hábitos y hechos generales; es un concepto clave de «Inglés: gramática en contexto».",
           "ejemplo": "She works every day."
         },
         {
@@ -2094,7 +2094,7 @@
           },
           {
             "termino": "presente simple",
-            "definicion": "Hábitos y hechos generales.",
+            "definicion": "Hábitos y hechos generales; es un concepto clave de «Inglés: gramática en contexto».",
             "ejemplo": "She works every day."
           },
           {
@@ -2170,7 +2170,7 @@
             "B": "does es he/she.",
             "D": "doing necesita auxiliar."
           },
-          "explicacion_correcta": "last night → did."
+          "explicacion_correcta": "La opción C encaja con el concepto del tema: «did»."
         },
         {
           "id": "tr_cloze_04",
@@ -2229,7 +2229,7 @@
         },
         {
           "termino": "factorial",
-          "definicion": "n! = n×(n−1)×…×1.",
+          "definicion": "n! = n×(n−1)×…×1; es un concepto clave de «Combinatoria y conteo de arreglos».",
           "ejemplo": "4! = 24."
         },
         {
@@ -2276,7 +2276,7 @@
           },
           {
             "termino": "factorial",
-            "definicion": "n! = n×(n−1)×…×1.",
+            "definicion": "n! = n×(n−1)×…×1; es un concepto clave de «Combinatoria y conteo de arreglos».",
             "ejemplo": "4! = 24."
           },
           {
@@ -2310,9 +2310,9 @@
           "justificacion_incorrectas": {
             "B": "Eso es P(4,2).",
             "C": "Mal cálculo.",
-            "D": "Solo resta."
+            "D": "«2» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "C=6.",
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «6».",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
         },
         {
@@ -2328,9 +2328,9 @@
           "justificacion_incorrectas": {
             "A": "C ignora orden.",
             "C": "Suma indebida.",
-            "D": "No."
+            "D": "«1» no resuelve el enunciado. La respuesta correcta es B."
           },
-          "explicacion_correcta": "Permutación."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «P(4,2)=12»."
         },
         {
           "id": "tr_comb_03",
@@ -2343,11 +2343,11 @@
           ],
           "correcta": "B",
           "justificacion_incorrectas": {
-            "A": "Sumaste.",
-            "C": "Solo sopas.",
-            "D": "Solo jugos."
+            "A": "«5» no resuelve el enunciado. La respuesta correcta es B.",
+            "C": "«3» no resuelve el enunciado. La respuesta correcta es B.",
+            "D": "«2» no resuelve el enunciado. La respuesta correcta es B."
           },
-          "explicacion_correcta": "3·2=6."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «6»."
         },
         {
           "id": "tr_comb_04",
@@ -2495,11 +2495,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "Vulnera.",
-            "C": "Vulnera.",
-            "D": "Ilegal."
+            "B": "«Humilla» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Agrede» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Falsifica» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Respeto + pacífica.",
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Respeta derechos y busca solución pacífica».",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
         },
         {
@@ -2513,11 +2513,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No.",
-            "C": "No.",
-            "D": "No."
+            "B": "«Solo el capricho propio» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Ignorar a otros» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Romper normas por diversión» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Interés común."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Considerar el interés común»."
         },
         {
           "id": "tr_cc_03",
@@ -2530,11 +2530,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No protege.",
-            "C": "Agrava.",
-            "D": "Agrava."
+            "B": "«Guardar silencio eterno» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Devolver violencia» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Burlarse más» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Protocolos."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Activar protocolos escolares»."
         },
         {
           "id": "tr_cc_04",
@@ -2549,9 +2549,9 @@
           "justificacion_incorrectas": {
             "B": "Lo contrario.",
             "C": "Lo contrario.",
-            "D": "No siempre."
+            "D": "«Callar denuncias siempre» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Respeto."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Trato respetuoso a toda persona»."
         }
       ]
     },
@@ -2676,7 +2676,7 @@
             "C": "Opinión ≠ literal.",
             "D": "Las cifras cuentan."
           },
-          "explicacion_correcta": "Dato explícito.",
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «recuperar lo dicho explícitamente».",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
         },
         {
@@ -2692,9 +2692,9 @@
           "justificacion_incorrectas": {
             "A": "Correcto literal.",
             "C": "Puede ser paráfrasis fiel.",
-            "D": "Correcto."
+            "D": "«el mismo dato» no resuelve el enunciado. La respuesta correcta es B."
           },
-          "explicacion_correcta": "No inventes."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «una semana inventada»."
         },
         {
           "id": "tr_lit_03",
@@ -2707,11 +2707,11 @@
           ],
           "correcta": "B",
           "justificacion_incorrectas": {
-            "A": "No.",
+            "A": "«fuera del texto» no resuelve el enunciado. La respuesta correcta es B.",
             "C": "Puede despistar.",
-            "D": "No."
+            "D": "«en la opción más corta siempre» no resuelve el enunciado. La respuesta correcta es B."
           },
-          "explicacion_correcta": "En el texto."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «en una oración del texto»."
         },
         {
           "id": "tr_lit_04",
@@ -2724,11 +2724,11 @@
           ],
           "correcta": "B",
           "justificacion_incorrectas": {
-            "A": "Invalida.",
-            "C": "Añadido.",
+            "A": "«cambia el sentido» no resuelve el enunciado. La respuesta correcta es B.",
+            "C": "«agrega un final nuevo» no resuelve el enunciado. La respuesta correcta es B.",
             "D": "Contradicción."
           },
-          "explicacion_correcta": "Mismo sentido."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «dice lo mismo con otras palabras fieles»."
         }
       ]
     },
@@ -2896,7 +2896,7 @@
           "justificacion_incorrectas": {
             "A": "No ejecutan políticas como gobierno.",
             "B": "No son el Congreso.",
-            "D": "No es rama."
+            "D": "«diplomática» no resuelve el enunciado. La respuesta correcta es C."
           },
           "explicacion_correcta": "Judicial = administración de justicia."
         },
@@ -3038,7 +3038,7 @@
           "justificacion_incorrectas": {
             "A": "Falta el impacto.",
             "C": "Eso es historia.",
-            "D": "Inglés."
+            "D": "«solo gramática» no resuelve el enunciado. La respuesta correcta es B."
           },
           "explicacion_correcta": "Tecnología + sociedad/ambiente.",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
@@ -3055,8 +3055,8 @@
           "correcta": "B",
           "justificacion_incorrectas": {
             "A": "Irreal en CTS.",
-            "C": "No.",
-            "D": "No."
+            "C": "«un error de suma» no resuelve el enunciado. La respuesta correcta es B.",
+            "D": "«una capital de departamento» no resuelve el enunciado. La respuesta correcta es B."
           },
           "explicacion_correcta": "Compromiso beneficio-riesgo."
         },
@@ -3071,7 +3071,7 @@
           ],
           "correcta": "B",
           "justificacion_incorrectas": {
-            "A": "Secundario.",
+            "A": "«solo el color del panel» no resuelve el enunciado. La respuesta correcta es B.",
             "C": "Fuera de contexto.",
             "D": "Irrelevante."
           },
@@ -3129,12 +3129,12 @@
         },
         {
           "termino": "saludo",
-          "definicion": "Fórmula de inicio o cierre.",
+          "definicion": "Fórmula de inicio o cierre; es un concepto clave de «Inglés: comprensión de diálogos».",
           "ejemplo": "Hi / See you later."
         },
         {
           "termino": "petición",
-          "definicion": "Pedir algo con cortesía.",
+          "definicion": "Pedir algo con cortesía; es un concepto clave de «Inglés: comprensión de diálogos».",
           "ejemplo": "Could you help me?"
         },
         {
@@ -3176,12 +3176,12 @@
           },
           {
             "termino": "saludo",
-            "definicion": "Fórmula de inicio o cierre.",
+            "definicion": "Fórmula de inicio o cierre; es un concepto clave de «Inglés: comprensión de diálogos».",
             "ejemplo": "Hi / See you later."
           },
           {
             "termino": "petición",
-            "definicion": "Pedir algo con cortesía.",
+            "definicion": "Pedir algo con cortesía; es un concepto clave de «Inglés: comprensión de diálogos».",
             "ejemplo": "Could you help me?"
           },
           {
@@ -3248,7 +3248,7 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "Malformado.",
+            "B": "«I am late too always never.» no resuelve el enunciado. La respuesta correcta es A.",
             "C": "Cambia de tema.",
             "D": "Irrelevante."
           },
@@ -3269,7 +3269,7 @@
             "C": "Responde a Do you…?",
             "D": "Conector suelto."
           },
-          "explicacion_correcta": "Where → lugar."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «It's next to the cafeteria.»."
         }
       ]
     },
@@ -3306,12 +3306,12 @@
         },
         {
           "termino": "saludo",
-          "definicion": "Fórmula de inicio o cierre.",
+          "definicion": "Fórmula de inicio o cierre; es un concepto clave de «Inglés: comprensión de diálogos».",
           "ejemplo": "Hi / See you later."
         },
         {
           "termino": "petición",
-          "definicion": "Pedir algo con cortesía.",
+          "definicion": "Pedir algo con cortesía; es un concepto clave de «Inglés: comprensión de diálogos».",
           "ejemplo": "Could you help me?"
         },
         {
@@ -3353,12 +3353,12 @@
           },
           {
             "termino": "saludo",
-            "definicion": "Fórmula de inicio o cierre.",
+            "definicion": "Fórmula de inicio o cierre; es un concepto clave de «Inglés: comprensión de diálogos».",
             "ejemplo": "Hi / See you later."
           },
           {
             "termino": "petición",
-            "definicion": "Pedir algo con cortesía.",
+            "definicion": "Pedir algo con cortesía; es un concepto clave de «Inglés: comprensión de diálogos».",
             "ejemplo": "Could you help me?"
           },
           {
@@ -3425,7 +3425,7 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "Malformado.",
+            "B": "«I am late too always never.» no resuelve el enunciado. La respuesta correcta es A.",
             "C": "Cambia de tema.",
             "D": "Irrelevante."
           },
@@ -3446,7 +3446,7 @@
             "C": "Responde a Do you…?",
             "D": "Conector suelto."
           },
-          "explicacion_correcta": "Where → lugar."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «It's next to the cafeteria.»."
         }
       ]
     },
@@ -3567,9 +3567,9 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No.",
-            "C": "No.",
-            "D": "No."
+            "B": "«Insulto» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Silencio» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Solo un título» no resuelve el enunciado. La respuesta correcta es A."
           },
           "explicacion_correcta": "Misma causa = acuerdo.",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
@@ -3587,7 +3587,7 @@
           "justificacion_incorrectas": {
             "B": "No comparas.",
             "C": "Insuficiente.",
-            "D": "No."
+            "D": "«Inventar un tercer texto» no resuelve el enunciado. La respuesta correcta es A."
           },
           "explicacion_correcta": "Diferencias de tesis."
         },
@@ -3602,11 +3602,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No.",
-            "C": "No.",
-            "D": "No."
+            "B": "«Una fecha falsa» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Un error tipográfico» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«La opción más larga» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Acuerdo parcial."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Una idea que ambos aceptan»."
         },
         {
           "id": "tr_dos_04",
@@ -3619,11 +3619,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "Eso ayuda.",
-            "C": "Eso ayuda.",
-            "D": "Eso ayuda."
+            "B": "«Leer ambos» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Anotar tesis» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Buscar evidencias» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "No cruzar autores."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Atribuir a A lo que solo dice B»."
         }
       ]
     },
@@ -3671,7 +3671,7 @@
         },
         {
           "termino": "moda",
-          "definicion": "Valor que más se repite.",
+          "definicion": "Valor que más se repite; es un concepto clave de «Estadística descriptiva (media, mediana, moda, rango)».",
           "ejemplo": "En 2,2,5 la moda es 2."
         },
         {
@@ -3740,7 +3740,7 @@
           },
           {
             "termino": "moda",
-            "definicion": "Valor que más se repite.",
+            "definicion": "Valor que más se repite; es un concepto clave de «Estadística descriptiva (media, mediana, moda, rango)».",
             "ejemplo": "En 2,2,5 la moda es 2."
           },
           {
@@ -3796,10 +3796,10 @@
           "correcta": "B",
           "justificacion_incorrectas": {
             "A": "Sumaste Q1+Q3.",
-            "C": "Eso es Q1.",
-            "D": "Eso es Q3."
+            "C": "«25» no resuelve el enunciado. La respuesta correcta es B.",
+            "D": "«65» no resuelve el enunciado. La respuesta correcta es B."
           },
-          "explicacion_correcta": "IQR=Q3−Q1=40."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «40»."
         },
         {
           "id": "tr_est_03",
@@ -3816,7 +3816,7 @@
             "C": "Rango = máx−mín.",
             "D": "Q3 es el 75%."
           },
-          "explicacion_correcta": "Mediana = Q2."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «el cuartil 2 (Q2)»."
         },
         {
           "id": "tr_est_04",
@@ -3829,11 +3829,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "Máximo.",
-            "C": "Mínimo.",
+            "B": "«6» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«2» no resuelve el enunciado. La respuesta correcta es A.",
             "D": "Suma sin dividir."
           },
-          "explicacion_correcta": "(2+4+6)/3=4."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «4»."
         }
       ]
     },
@@ -3865,7 +3865,7 @@
       "terminos": [
         {
           "termino": "tesis",
-          "definicion": "Posición central del autor.",
+          "definicion": "Posición central del autor; es un concepto clave de «Lectura: evaluación crítica».",
           "ejemplo": "Lo que defiende el texto."
         },
         {
@@ -3912,7 +3912,7 @@
         "terminos": [
           {
             "termino": "tesis",
-            "definicion": "Posición central del autor.",
+            "definicion": "Posición central del autor; es un concepto clave de «Lectura: evaluación crítica».",
             "ejemplo": "Lo que defiende el texto."
           },
           {
@@ -3955,10 +3955,10 @@
           "correcta": "A",
           "justificacion_incorrectas": {
             "B": "No es prueba.",
-            "C": "Debilita.",
-            "D": "No evalúa."
+            "C": "«Ignorar datos» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Cambiar de tema» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Evidencia.",
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Pruebas suficientes».",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
         },
         {
@@ -3974,9 +3974,9 @@
           "justificacion_incorrectas": {
             "B": "Eso es buen apoyo.",
             "C": "No es sesgo.",
-            "D": "Eso mejora."
+            "D": "«Se corrige un error» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Omisión interesada."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Se omiten datos que contradicen la tesis»."
         },
         {
           "id": "tr_ev_03",
@@ -3989,11 +3989,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No.",
+            "B": "«Definición perfecta» no resuelve el enunciado. La respuesta correcta es A.",
             "C": "No hay cifra.",
             "D": "No es silogismo."
           },
-          "explicacion_correcta": "Autoridad ≠ prueba."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Autoridad mal usada»."
         },
         {
           "id": "tr_ev_04",
@@ -4006,9 +4006,9 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "Ad hominem.",
-            "C": "No.",
-            "D": "No."
+            "B": "«Insultar al autor» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Ignorar el texto» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Cambiar la pregunta» no resuelve el enunciado. La respuesta correcta es A."
           },
           "explicacion_correcta": "Razones + evidencia."
         }
@@ -4131,11 +4131,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "Mate.",
-            "C": "Geo.",
-            "D": "Gramática."
+            "B": "«Solo una suma» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Un mapa» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Una conjugación» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Tensión de valores.",
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Dos valores en tensión».",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
         },
         {
@@ -4149,11 +4149,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No.",
-            "C": "No.",
-            "D": "No."
+            "B": "«Una fórmula química» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Un horario» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Una capital» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Reciprocidad."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Una regla de reciprocidad moral»."
         },
         {
           "id": "tr_fil_03",
@@ -4166,11 +4166,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "Eso ayuda.",
-            "C": "Eso ayuda.",
-            "D": "Eso ayuda."
+            "B": "«Leer la distinción» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Citar el texto» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Nombrar el valor» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "No las fusiones."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Igualarlas automáticamente»."
         },
         {
           "id": "tr_fil_04",
@@ -4183,11 +4183,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No basta.",
-            "C": "No.",
-            "D": "No."
+            "B": "«Solo el nombre del autor» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«La tipografía» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Un porcentaje suelto» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Tesis moral."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Lo que el texto sostiene sobre lo correcto/incorrecto»."
         }
       ]
     },
@@ -4322,7 +4322,7 @@
             "C": "Invertiste 6/24.",
             "D": "Sumaste sin dividir bien."
           },
-          "explicacion_correcta": "|Δv|/t = 24/6 = 4.",
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «4 m/s²».",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
         },
         {
@@ -4340,7 +4340,7 @@
             "C": "Usaste g≈10 por error.",
             "D": "Invertiste m/F."
           },
-          "explicacion_correcta": "a = F/m = 6."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «6 m/s²»."
         },
         {
           "id": "tr_fis_03",
@@ -4357,7 +4357,7 @@
             "C": "Sí cambia con m.",
             "D": "No es óptica."
           },
-          "explicacion_correcta": "a ∝ 1/m."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «disminuye»."
         },
         {
           "id": "tr_fis_04",
@@ -4507,9 +4507,9 @@
           "justificacion_incorrectas": {
             "A": "Sumaste arriba y abajo.",
             "C": "Procedimiento invertido.",
-            "D": "Incompleto."
+            "D": "«2/6» no resuelve el enunciado. La respuesta correcta es B."
           },
-          "explicacion_correcta": "3/6+2/6=5/6.",
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «5/6».",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
         },
         {
@@ -4523,11 +4523,11 @@
           ],
           "correcta": "B",
           "justificacion_incorrectas": {
-            "A": "Usaste 1/2.",
-            "C": "Solo 1/5.",
-            "D": "1/4."
+            "A": "«20» no resuelve el enunciado. La respuesta correcta es B.",
+            "C": "«8» no resuelve el enunciado. La respuesta correcta es B.",
+            "D": "«10» no resuelve el enunciado. La respuesta correcta es B."
           },
-          "explicacion_correcta": "16."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «16»."
         },
         {
           "id": "tr_frac_03",
@@ -4544,7 +4544,7 @@
             "C": "3/4=6/8>5/8.",
             "D": "Sí se comparan."
           },
-          "explicacion_correcta": "3/4 mayor."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «3/4»."
         },
         {
           "id": "tr_frac_04",
@@ -4559,9 +4559,9 @@
           "justificacion_incorrectas": {
             "A": "Aún simplificable.",
             "C": "No es simplificar.",
-            "D": "Recíproco."
+            "D": "«3/2» no resuelve el enunciado. La respuesta correcta es B."
           },
-          "explicacion_correcta": "mcd=4 → 2/3."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «2/3»."
         }
       ]
     },
@@ -4692,11 +4692,11 @@
           ],
           "correcta": "B",
           "justificacion_incorrectas": {
-            "A": "2·3−1.",
+            "A": "«5» no resuelve el enunciado. La respuesta correcta es B.",
             "C": "Olvidaste +1.",
             "D": "Solo el intercepto."
           },
-          "explicacion_correcta": "2·3+1=7.",
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «7».",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
         },
         {
@@ -4710,11 +4710,11 @@
           ],
           "correcta": "B",
           "justificacion_incorrectas": {
-            "A": "Eso es b.",
+            "A": "«1» no resuelve el enunciado. La respuesta correcta es B.",
             "C": "Suma indebida.",
             "D": "No es horizontal."
           },
-          "explicacion_correcta": "m=2."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «2»."
         },
         {
           "id": "tr_fun_03",
@@ -4728,10 +4728,10 @@
           "correcta": "B",
           "justificacion_incorrectas": {
             "A": "Eso sí define función.",
-            "C": "Sí puede.",
+            "C": "«graficarse» no resuelve el enunciado. La respuesta correcta es B.",
             "D": "Puede tenerlo."
           },
-          "explicacion_correcta": "Un x → un solo y."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «asignar dos y distintos al mismo x»."
         },
         {
           "id": "tr_fun_04",
@@ -4746,9 +4746,9 @@
           "justificacion_incorrectas": {
             "A": "Decrecer baja.",
             "C": "Constante es horizontal.",
-            "D": "Sí existe."
+            "D": "«no existe» no resuelve el enunciado. La respuesta correcta es B."
           },
-          "explicacion_correcta": "Creciente."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «crece»."
         }
       ]
     },
@@ -4796,7 +4796,7 @@
         },
         {
           "termino": "cordillera",
-          "definicion": "Cadena de montañas.",
+          "definicion": "Cadena de montañas; es un concepto clave de «Geografía de Colombia: regiones, relieve y clima».",
           "ejemplo": "Colombia tiene Occidental, Central y Oriental."
         },
         {
@@ -4859,7 +4859,7 @@
           },
           {
             "termino": "cordillera",
-            "definicion": "Cadena de montañas.",
+            "definicion": "Cadena de montañas; es un concepto clave de «Geografía de Colombia: regiones, relieve y clima».",
             "ejemplo": "Colombia tiene Occidental, Central y Oriental."
           },
           {
@@ -5105,7 +5105,7 @@
             "C": "Sumaste lados una sola vez (L+A), falta el ×2.",
             "D": "Solo tres lados o mal factor."
           },
-          "explicacion_correcta": "P=2(x+3x)=8x.",
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «8x».",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
         },
         {
@@ -5123,7 +5123,7 @@
             "B": "Eso es L+A, no el área.",
             "D": "Falta multiplicar x·x."
           },
-          "explicacion_correcta": "A=x·3x=3x²."
+          "explicacion_correcta": "La opción C encaja con el concepto del tema: «3x²»."
         },
         {
           "id": "tr_geo_m_03",
@@ -5140,7 +5140,7 @@
             "C": "Pensaste en otra figura.",
             "D": "Un solo lado."
           },
-          "explicacion_correcta": "P=4·4=16."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «16»."
         },
         {
           "id": "tr_geo_m_04",
@@ -5157,7 +5157,7 @@
             "C": "Pitágoras no es la suma de lados.",
             "D": "π es de círculos."
           },
-          "explicacion_correcta": "a²+b²=c²."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «los dos catetos y la hipotenusa»."
         }
       ]
     },
@@ -5190,12 +5190,12 @@
       "terminos": [
         {
           "termino": "sujeto",
-          "definicion": "Quién hace la acción.",
+          "definicion": "Quién hace la acción; es un concepto clave de «Inglés: gramática».",
           "ejemplo": "My brother speaks English."
         },
         {
           "termino": "verbo",
-          "definicion": "La acción o estado.",
+          "definicion": "La acción o estado; es un concepto clave de «Inglés: gramática».",
           "ejemplo": "speaks, is, went."
         },
         {
@@ -5243,12 +5243,12 @@
         "terminos": [
           {
             "termino": "sujeto",
-            "definicion": "Quién hace la acción.",
+            "definicion": "Quién hace la acción; es un concepto clave de «Inglés: gramática».",
             "ejemplo": "My brother speaks English."
           },
           {
             "termino": "verbo",
-            "definicion": "La acción o estado.",
+            "definicion": "La acción o estado; es un concepto clave de «Inglés: gramática».",
             "ejemplo": "speaks, is, went."
           },
           {
@@ -5294,7 +5294,7 @@
             "C": "Falta is/are.",
             "D": "Participio sin auxiliar."
           },
-          "explicacion_correcta": "he/she → speaks.",
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «speaks».",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
         },
         {
@@ -5329,7 +5329,7 @@
             "B": "Does es he/she.",
             "D": "Are no forma pasado de see."
           },
-          "explicacion_correcta": "Did + verbo base."
+          "explicacion_correcta": "La opción C encaja con el concepto del tema: «Did»."
         },
         {
           "id": "tr_gr_04",
@@ -5379,12 +5379,12 @@
       "terminos": [
         {
           "termino": "sujeto",
-          "definicion": "Quién hace la acción.",
+          "definicion": "Quién hace la acción; es un concepto clave de «Inglés: gramática y lectura».",
           "ejemplo": "My brother speaks English."
         },
         {
           "termino": "verbo",
-          "definicion": "La acción o estado.",
+          "definicion": "La acción o estado; es un concepto clave de «Inglés: gramática y lectura».",
           "ejemplo": "speaks, is, went."
         },
         {
@@ -5432,12 +5432,12 @@
         "terminos": [
           {
             "termino": "sujeto",
-            "definicion": "Quién hace la acción.",
+            "definicion": "Quién hace la acción; es un concepto clave de «Inglés: gramática y lectura».",
             "ejemplo": "My brother speaks English."
           },
           {
             "termino": "verbo",
-            "definicion": "La acción o estado.",
+            "definicion": "La acción o estado; es un concepto clave de «Inglés: gramática y lectura».",
             "ejemplo": "speaks, is, went."
           },
           {
@@ -5483,7 +5483,7 @@
             "C": "Falta is/are.",
             "D": "Participio sin auxiliar."
           },
-          "explicacion_correcta": "he/she → speaks.",
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «speaks».",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
         },
         {
@@ -5518,7 +5518,7 @@
             "B": "Does es he/she.",
             "D": "Are no forma pasado de see."
           },
-          "explicacion_correcta": "Did + verbo base."
+          "explicacion_correcta": "La opción C encaja con el concepto del tema: «Did»."
         },
         {
           "id": "tr_gr_04",
@@ -5724,7 +5724,7 @@
             "B": "No es la cuenca continental de los Llanos.",
             "C": "Irrelevante aquí."
           },
-          "explicacion_correcta": "Llanos → Orinoco."
+          "explicacion_correcta": "La opción D encaja con el concepto del tema: «Orinoco»."
         },
         {
           "id": "tr_hidro_04",
@@ -5901,7 +5901,7 @@
           "correcta": "A",
           "justificacion_incorrectas": {
             "B": "No es el hecho.",
-            "C": "No aplica.",
+            "C": "«crear el Caribe insular» no resuelve el enunciado. La respuesta correcta es A.",
             "D": "Siglo XX tardío."
           },
           "explicacion_correcta": "Victoria clave de 1819."
@@ -5980,7 +5980,7 @@
         },
         {
           "termino": "variable dependiente",
-          "definicion": "Lo que se mide como efecto.",
+          "definicion": "Lo que se mide como efecto; es un concepto clave de «Ciencias: indagación científica».",
           "ejemplo": "Altura de la planta."
         },
         {
@@ -6032,7 +6032,7 @@
           },
           {
             "termino": "variable dependiente",
-            "definicion": "Lo que se mide como efecto.",
+            "definicion": "Lo que se mide como efecto; es un concepto clave de «Ciencias: indagación científica».",
             "ejemplo": "Altura de la planta."
           },
           {
@@ -6070,10 +6070,10 @@
           "correcta": "B",
           "justificacion_incorrectas": {
             "A": "Eso es dependiente.",
-            "C": "No.",
-            "D": "No."
+            "C": "«el nombre del laboratorio» no resuelve el enunciado. La respuesta correcta es B.",
+            "D": "«siempre el tiempo político» no resuelve el enunciado. La respuesta correcta es B."
           },
-          "explicacion_correcta": "Se manipula.",
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «la que se manipula».",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
         },
         {
@@ -6088,10 +6088,10 @@
           "correcta": "A",
           "justificacion_incorrectas": {
             "B": "Eso es independiente/control.",
-            "C": "No.",
+            "C": "«un distractor gramatical» no resuelve el enunciado. La respuesta correcta es A.",
             "D": "Hipótesis ≠ medición."
           },
-          "explicacion_correcta": "Se mide el efecto."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «la respuesta medida»."
         },
         {
           "id": "tr_ind_03",
@@ -6108,7 +6108,7 @@
             "C": "Confunde causas.",
             "D": "Mala práctica."
           },
-          "explicacion_correcta": "Aislar la causa."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «mantenerlas constantes para aislar el efecto»."
         },
         {
           "id": "tr_ind_04",
@@ -6123,7 +6123,7 @@
           "justificacion_incorrectas": {
             "B": "Aún se pone a prueba.",
             "C": "Debe ser comprobable.",
-            "D": "No."
+            "D": "«un mapa político» no resuelve el enunciado. La respuesta correcta es A."
           },
           "explicacion_correcta": "Afirmación comprobable."
         }
@@ -6250,9 +6250,9 @@
           "justificacion_incorrectas": {
             "A": "Contradicción no vale.",
             "C": "Sin texto no hay inferencia del ítem.",
-            "D": "Sin apoyo."
+            "D": "«ser solo un rumor» no resuelve el enunciado. La respuesta correcta es B."
           },
-          "explicacion_correcta": "Se sigue del texto.",
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «seguirse de pistas del texto».",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
         },
         {
@@ -6267,7 +6267,7 @@
           "correcta": "A",
           "justificacion_incorrectas": {
             "B": "No se deduce el continente.",
-            "C": "Absurdo.",
+            "C": "«el aparato está en la Luna» no resuelve el enunciado. La respuesta correcta es A.",
             "D": "Sí hay lectura."
           },
           "explicacion_correcta": "39 °C sugiere fiebre."
@@ -6283,9 +6283,9 @@
           ],
           "correcta": "B",
           "justificacion_incorrectas": {
-            "A": "Sí es.",
-            "C": "Sí es.",
-            "D": "Sí es."
+            "A": "«lo que el texto implica» no resuelve el enunciado. La respuesta correcta es B.",
+            "C": "«una conclusión con apoyo» no resuelve el enunciado. La respuesta correcta es B.",
+            "D": "«una lectura de una pista» no resuelve el enunciado. La respuesta correcta es B."
           },
           "explicacion_correcta": "Sin apoyo = inválida."
         },
@@ -6300,11 +6300,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "Invención.",
+            "B": "«inventas un final» no resuelve el enunciado. La respuesta correcta es A.",
             "C": "Fuera de foco.",
             "D": "Longitud ≠ verdad."
           },
-          "explicacion_correcta": "Apoyo textual."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «citas la pista»."
         }
       ]
     },
@@ -6351,7 +6351,7 @@
         },
         {
           "termino": "implied",
-          "definicion": "Sugerido, no explícito.",
+          "definicion": "Sugerido, no explícito; es un concepto clave de «Inglés: lectura inferencial».",
           "ejemplo": "Between the lines."
         }
       ],
@@ -6398,7 +6398,7 @@
           },
           {
             "termino": "implied",
-            "definicion": "Sugerido, no explícito.",
+            "definicion": "Sugerido, no explícito; es un concepto clave de «Inglés: lectura inferencial».",
             "ejemplo": "Between the lines."
           }
         ],
@@ -6426,8 +6426,8 @@
           "correcta": "A",
           "justificacion_incorrectas": {
             "B": "Coat/gloves ≠ swimming.",
-            "C": "No.",
-            "D": "No."
+            "C": "«It is a math class» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Sam sold the house» no resuelve el enunciado. La respuesta correcta es A."
           },
           "explicacion_correcta": "Abrigo + guantes → frío.",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
@@ -6443,9 +6443,9 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No.",
-            "C": "No encaja.",
-            "D": "No lo dice."
+            "B": "«They hate candles» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«It was noon at the beach» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«They finished a marathon only» no resuelve el enunciado. La respuesta correcta es A."
           },
           "explicacion_correcta": "Lights out → apagón."
         },
@@ -6460,11 +6460,11 @@
           ],
           "correcta": "B",
           "justificacion_incorrectas": {
-            "A": "No.",
-            "C": "No.",
-            "D": "No."
+            "A": "«Contradict the text» no resuelve el enunciado. La respuesta correcta es B.",
+            "C": "«Ignore the text» no resuelve el enunciado. La respuesta correcta es B.",
+            "D": "«Be a random rumor» no resuelve el enunciado. La respuesta correcta es B."
           },
-          "explicacion_correcta": "Apoyo textual."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «Be supported by clues in the text»."
         },
         {
           "id": "tr_inf_en_04",
@@ -6477,9 +6477,9 @@
           ],
           "correcta": "B",
           "justificacion_incorrectas": {
-            "A": "Plausible.",
-            "C": "Plausible.",
-            "D": "Plausible."
+            "A": "«She may feel satisfied» no resuelve el enunciado. La respuesta correcta es B.",
+            "C": "«She finished reading for now» no resuelve el enunciado. La respuesta correcta es B.",
+            "D": "«She stopped reading that moment» no resuelve el enunciado. La respuesta correcta es B."
           },
           "explicacion_correcta": "Car is not supported."
         }
@@ -6594,11 +6594,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No.",
-            "C": "No.",
-            "D": "No."
+            "B": "«Cantar el himno» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Freír» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Conjugar» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Símbolos.",
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Explicar símbolos y colores».",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
         },
         {
@@ -6612,11 +6612,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "Eso sí.",
-            "C": "Eso sí.",
-            "D": "Eso sí."
+            "B": "«Porcentajes» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Relativos» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Partes de 100» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Respeta unidades."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Personas absolutas sin aviso»."
         },
         {
           "id": "tr_int_03",
@@ -6629,11 +6629,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No.",
-            "C": "No.",
-            "D": "No."
+            "B": "«El mapa se mojó» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Hay un afluente» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Hay una metáfora» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Crecimiento."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «El valor crece en el tiempo mostrado»."
         },
         {
           "id": "tr_int_04",
@@ -6646,11 +6646,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No.",
-            "C": "No.",
-            "D": "No."
+            "B": "«Solo el color favorito» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«La tipografía» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«El clima» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Altura/valor."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «La altura o el valor rotulado»."
         }
       ]
     },
@@ -6763,11 +6763,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "Geo/mate.",
-            "C": "Mate.",
-            "D": "Inglés."
+            "B": "«Un triángulo» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Un mcm» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Un auxiliar did» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Punto de vista.",
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «El punto de vista de un actor con sus intereses».",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
         },
         {
@@ -6781,11 +6781,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No.",
-            "C": "No.",
-            "D": "No."
+            "B": "«Solo el color del logo» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«La tipografía» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«El clima de Marte» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Consecuencias."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Qué pasaría si se impone esa posición»."
         },
         {
           "id": "tr_iya_03",
@@ -6798,11 +6798,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No.",
-            "C": "No.",
-            "D": "Mate."
+            "B": "«Solo el chiste» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Solo la conjugación» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Solo el perímetro» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Ambiente."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Ecosistemas y recursos»."
         },
         {
           "id": "tr_iya_04",
@@ -6815,11 +6815,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "Eso ayuda.",
-            "C": "Eso ayuda.",
-            "D": "Eso ayuda."
+            "B": "«Separar intereses» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Leer el caso» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Nombrar consecuencias» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "No mezclar voces."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Mezclar qué dijo cada actor»."
         }
       ]
     },
@@ -6851,7 +6851,7 @@
       "terminos": [
         {
           "termino": "main idea",
-          "definicion": "Idea principal del texto.",
+          "definicion": "Idea principal del texto; es un concepto clave de «Inglés: comprensión de lectura».",
           "ejemplo": "What the text is mostly about."
         },
         {
@@ -6898,7 +6898,7 @@
         "terminos": [
           {
             "termino": "main idea",
-            "definicion": "Idea principal del texto.",
+            "definicion": "Idea principal del texto; es un concepto clave de «Inglés: comprensión de lectura».",
             "ejemplo": "What the text is mostly about."
           },
           {
@@ -6941,10 +6941,10 @@
           "correcta": "A",
           "justificacion_incorrectas": {
             "B": "No está en el texto.",
-            "C": "No.",
-            "D": "No."
+            "C": "«At night only» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Never» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Dato literal: 9.",
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «At 9».",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
         },
         {
@@ -6958,9 +6958,9 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No lo dice.",
+            "B": "«Tom hates books» no resuelve el enunciado. La respuesta correcta es A.",
             "C": "Generaliza de más.",
-            "D": "No lo dice."
+            "D": "«Tom is a teacher» no resuelve el enunciado. La respuesta correcta es A."
           },
           "explicacion_correcta": "Idea = lo que el texto sostiene."
         },
@@ -6976,8 +6976,8 @@
           "correcta": "B",
           "justificacion_incorrectas": {
             "A": "No es humor.",
-            "C": "No.",
-            "D": "No."
+            "C": "«To describe a mountain» no resuelve el enunciado. La respuesta correcta es B.",
+            "D": "«To ask a math question» no resuelve el enunciado. La respuesta correcta es B."
           },
           "explicacion_correcta": "Propósito = aconsejar."
         },
@@ -6996,7 +6996,7 @@
             "C": "No dice children.",
             "D": "No dice tourists."
           },
-          "explicacion_correcta": "Only members."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «Members only»."
         }
       ]
     },
@@ -7039,7 +7039,7 @@
         },
         {
           "termino": "presente simple",
-          "definicion": "Hábitos y hechos generales.",
+          "definicion": "Hábitos y hechos generales; es un concepto clave de «Inglés: gramática en contexto».",
           "ejemplo": "She works every day."
         },
         {
@@ -7092,7 +7092,7 @@
           },
           {
             "termino": "presente simple",
-            "definicion": "Hábitos y hechos generales.",
+            "definicion": "Hábitos y hechos generales; es un concepto clave de «Inglés: gramática en contexto».",
             "ejemplo": "She works every day."
           },
           {
@@ -7168,7 +7168,7 @@
             "B": "does es he/she.",
             "D": "doing necesita auxiliar."
           },
-          "explicacion_correcta": "last night → did."
+          "explicacion_correcta": "La opción C encaja con el concepto del tema: «did»."
         },
         {
           "id": "tr_cloze_04",
@@ -7307,10 +7307,10 @@
           "correcta": "B",
           "justificacion_incorrectas": {
             "A": "El texto dice two.",
-            "C": "No.",
-            "D": "No."
+            "C": "«Three» no resuelve el enunciado. La respuesta correcta es B.",
+            "D": "«None» no resuelve el enunciado. La respuesta correcta es B."
           },
-          "explicacion_correcta": "two maps.",
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «Two».",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
         },
         {
@@ -7324,11 +7324,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No está.",
-            "C": "No.",
-            "D": "No."
+            "B": "«At 8» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«At noon» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«At midnight» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "at 7."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «At 7»."
         },
         {
           "id": "tr_lit_en_03",
@@ -7341,11 +7341,11 @@
           ],
           "correcta": "B",
           "justificacion_incorrectas": {
-            "A": "Otro lugar.",
-            "C": "No.",
+            "A": "«Bogotá» no resuelve el enunciado. La respuesta correcta es B.",
+            "C": "«Miami» no resuelve el enunciado. La respuesta correcta es B.",
             "D": "Sí lo dice: Tunja."
           },
-          "explicacion_correcta": "Tunja."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «Tunja»."
         },
         {
           "id": "tr_lit_en_04",
@@ -7358,11 +7358,11 @@
           ],
           "correcta": "B",
           "justificacion_incorrectas": {
-            "A": "Mal conteo.",
-            "C": "No.",
-            "D": "No."
+            "A": "«4» no resuelve el enunciado. La respuesta correcta es B.",
+            "C": "«15» no resuelve el enunciado. La respuesta correcta es B.",
+            "D": "«50» no resuelve el enunciado. La respuesta correcta es B."
           },
-          "explicacion_correcta": "5."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «5»."
         }
       ]
     },
@@ -7399,12 +7399,12 @@
         },
         {
           "termino": "narrador",
-          "definicion": "Voz que cuenta la historia.",
+          "definicion": "Voz que cuenta la historia; es un concepto clave de «Lectura: recursos literarios».",
           "ejemplo": "Primera o tercera persona."
         },
         {
           "termino": "tema",
-          "definicion": "Idea central de la obra.",
+          "definicion": "Idea central de la obra; es un concepto clave de «Lectura: recursos literarios».",
           "ejemplo": "Amor, soledad, poder."
         },
         {
@@ -7446,12 +7446,12 @@
           },
           {
             "termino": "narrador",
-            "definicion": "Voz que cuenta la historia.",
+            "definicion": "Voz que cuenta la historia; es un concepto clave de «Lectura: recursos literarios».",
             "ejemplo": "Primera o tercera persona."
           },
           {
             "termino": "tema",
-            "definicion": "Idea central de la obra.",
+            "definicion": "Idea central de la obra; es un concepto clave de «Lectura: recursos literarios».",
             "ejemplo": "Amor, soledad, poder."
           },
           {
@@ -7483,11 +7483,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No.",
-            "C": "No.",
-            "D": "No."
+            "B": "«Un mapa» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Una fórmula» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Un climograma» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Exageración.",
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Hipérbole».",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
         },
         {
@@ -7501,11 +7501,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No.",
-            "C": "No.",
-            "D": "No."
+            "B": "«Acta notarial» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Tabla de datos» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Norma penal» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Metáfora."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Metáfora»."
         },
         {
           "id": "tr_lit_03",
@@ -7518,11 +7518,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No.",
-            "C": "No.",
-            "D": "No."
+            "B": "«Solo tercera» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Silencio total» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Futuro gramatical obligatorio» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Primera persona."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Primera persona»."
         },
         {
           "id": "tr_lit_04",
@@ -7535,11 +7535,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "Mate.",
-            "C": "Mate.",
-            "D": "Geo."
+            "B": "«Medir un ángulo» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Calcular un %,» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Nombrar un afluente» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Énfasis."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Enfatizar por exageración»."
         }
       ]
     },
@@ -7660,11 +7660,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "Mate.",
-            "C": "Inglés.",
-            "D": "Geo."
+            "B": "«Medir un ángulo» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Conjugar» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Nombrar un afluente» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Elección.",
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Elegir representantes».",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
         },
         {
@@ -7678,9 +7678,9 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No.",
-            "C": "No.",
-            "D": "No."
+            "B": "«Solo el clima» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Solo el mcm» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Solo la tipografía» no resuelve el enunciado. La respuesta correcta es A."
           },
           "explicacion_correcta": "Opinión pública formal."
         },
@@ -7695,11 +7695,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No.",
-            "C": "No.",
-            "D": "No."
+            "B": "«Freír» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Pintar» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Nadar» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Vigilancia."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Vigilar la gestión pública»."
         },
         {
           "id": "tr_par_04",
@@ -7712,11 +7712,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No.",
-            "C": "No.",
-            "D": "No."
+            "B": "«Solo callar» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Solo insultar» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Solo ausentarse siempre» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Varios mecanismos."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Proponer, vigilar y deliberar»."
         }
       ]
     },
@@ -7837,11 +7837,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No prueba.",
-            "C": "Débil.",
-            "D": "No prueba."
+            "B": "«Insulto» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Rumor anónimo» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Amenaza» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Contrastable.",
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Dato contrastable».",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
         },
         {
@@ -7857,9 +7857,9 @@
           "justificacion_incorrectas": {
             "B": "Irrelevante.",
             "C": "Irrelevante.",
-            "D": "No basta."
+            "D": "«¿Es larga?» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Autor e interés."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «¿Quién la produce y con qué interés?»."
         },
         {
           "id": "tr_pc_03",
@@ -7873,10 +7873,10 @@
           "correcta": "A",
           "justificacion_incorrectas": {
             "B": "Eso combate el sesgo.",
-            "C": "Eso ayuda.",
-            "D": "Eso ayuda."
+            "C": "«Citar método» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Corregir errores» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Solo confirmar."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Buscar solo lo que ya creías»."
         },
         {
           "id": "tr_pc_04",
@@ -7889,11 +7889,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No.",
-            "C": "No basta.",
-            "D": "No."
+            "B": "«Solo un chiste» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Una metáfora» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Un color» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Datos + periodo."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Cifras y periodo de comparación»."
         }
       ]
     },
@@ -8015,10 +8015,10 @@
           "correcta": "A",
           "justificacion_incorrectas": {
             "B": "Insuficiente.",
-            "C": "No.",
-            "D": "No."
+            "C": "«Ignoras causas» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Borras datos» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Relaciones.",
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Miras relaciones entre partes».",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
         },
         {
@@ -8032,11 +8032,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No.",
-            "C": "No.",
-            "D": "Geo."
+            "B": "«La meta principal» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Un sinónimo de tesis literaria» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Un afluente» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "No intencional."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Una consecuencia no buscada de una medida»."
         },
         {
           "id": "tr_psi_03",
@@ -8050,10 +8050,10 @@
           "correcta": "A",
           "justificacion_incorrectas": {
             "B": "Lo contrario.",
-            "C": "No.",
-            "D": "No."
+            "C": "«Que no hay causas» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Que solo importa el clima de Marte» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Afectación mutua."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Que lo que hace un actor afecta a otros»."
         },
         {
           "id": "tr_psi_04",
@@ -8070,7 +8070,7 @@
             "C": "Eso es sistémico.",
             "D": "Eso es sistémico."
           },
-          "explicacion_correcta": "Reduccionismo."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Culpar a una sola persona de un problema complejo»."
         }
       ]
     },
@@ -8191,9 +8191,9 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No.",
-            "C": "No.",
-            "D": "No."
+            "B": "«Recetas de cocina» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Goles» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Tipografías» no resuelve el enunciado. La respuesta correcta es A."
           },
           "explicacion_correcta": "Derechos fundamentales.",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
@@ -8209,11 +8209,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "Ilegal.",
-            "C": "Delito.",
-            "D": "Delito."
+            "B": "«Ignorar la ley siempre» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Falsificar documentos» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Destruir pruebas» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Respeto mutuo."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Respetar los derechos de otros»."
         },
         {
           "id": "tr_ps_03",
@@ -8227,8 +8227,8 @@
           "correcta": "A",
           "justificacion_incorrectas": {
             "B": "Rompe convivencia.",
-            "C": "Rompe.",
-            "D": "Rompe."
+            "C": "«Censurar todo diálogo» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Eliminar deberes» no resuelve el enunciado. La respuesta correcta es A."
           },
           "explicacion_correcta": "Diálogo / mediación."
         },
@@ -8243,9 +8243,9 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No protege.",
-            "C": "Agrava.",
-            "D": "Ilegal."
+            "B": "«Callar siempre» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Responder con violencia» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Falsificar notas» no resuelve el enunciado. La respuesta correcta es A."
           },
           "explicacion_correcta": "Rutas institucionales."
         }
@@ -8368,11 +8368,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No define.",
-            "C": "No.",
-            "D": "No."
+            "B": "«Una definición de sal» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Un mapa» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Una ecuación» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Petición.",
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Una petición cortés».",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
         },
         {
@@ -8386,11 +8386,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No.",
-            "C": "No.",
-            "D": "No."
+            "B": "«Contar un chiste solo» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Enseñar álgebra» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Pedir un autógrafo» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Advertencia."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Prohibir / advertir»."
         },
         {
           "id": "tr_prag_03",
@@ -8403,9 +8403,9 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "Literal.",
-            "C": "Mate.",
-            "D": "Geo."
+            "B": "«Se cita una fecha» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Se suma 2+2» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Se nombra un río» no resuelve el enunciado. La respuesta correcta es A."
           },
           "explicacion_correcta": "Contrario + crítica."
         },
@@ -8420,11 +8420,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No.",
-            "C": "No.",
-            "D": "No."
+            "B": "«Una capital» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Un climograma» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Un mcm» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Sarcasmo."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Sarcasmo»."
         }
       ]
     },
@@ -8559,7 +8559,7 @@
             "C": "Contaste mal.",
             "D": "Eso es impar+… distinto."
           },
-          "explicacion_correcta": "3/6=1/2.",
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «1/2».",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
         },
         {
@@ -8577,7 +8577,7 @@
             "C": "Suma indebida.",
             "D": "No es imposible."
           },
-          "explicacion_correcta": "Complemento 1−0,3."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «0,7»."
         },
         {
           "id": "tr_pro_03",
@@ -8592,7 +8592,7 @@
           "justificacion_incorrectas": {
             "B": "No es definición.",
             "C": "Hay que leer la condición.",
-            "D": "No siempre."
+            "D": "«siempre 50%» no resuelve el enunciado. La respuesta correcta es A."
           },
           "explicacion_correcta": "Modelo clásico equiprobable."
         },
@@ -8648,7 +8648,7 @@
         },
         {
           "termino": "proporción",
-          "definicion": "Igualdad de dos razones.",
+          "definicion": "Igualdad de dos razones; es un concepto clave de «Proporcionalidad directa e inversa».",
           "ejemplo": "2/3 = 4/6."
         },
         {
@@ -8700,7 +8700,7 @@
           },
           {
             "termino": "proporción",
-            "definicion": "Igualdad de dos razones.",
+            "definicion": "Igualdad de dos razones; es un concepto clave de «Proporcionalidad directa e inversa».",
             "ejemplo": "2/3 = 4/6."
           },
           {
@@ -8746,7 +8746,7 @@
             "C": "Mal producto.",
             "D": "Con menos gente tarda más."
           },
-          "explicacion_correcta": "24/3=8.",
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «8».",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
         },
         {
@@ -8762,9 +8762,9 @@
           "justificacion_incorrectas": {
             "B": "Suma sin unitario.",
             "C": "Razón invertida.",
-            "D": "De más."
+            "D": "«35000» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "4000×7."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «28000»."
         },
         {
           "id": "tr_prop_03",
@@ -8779,9 +8779,9 @@
           "justificacion_incorrectas": {
             "A": "Suma arbitraria.",
             "C": "Duplicaste 120.",
-            "D": "1 h."
+            "D": "«60» no resuelve el enunciado. La respuesta correcta es B."
           },
-          "explicacion_correcta": "60 km/h×3."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «180»."
         },
         {
           "id": "tr_prop_04",
@@ -8795,10 +8795,10 @@
           "correcta": "B",
           "justificacion_incorrectas": {
             "A": "Directa crecería juntas.",
-            "C": "Hay regla.",
-            "D": "No aplica."
+            "C": "«aleatoria» no resuelve el enunciado. La respuesta correcta es B.",
+            "D": "«geométrica forzada» no resuelve el enunciado. La respuesta correcta es B."
           },
-          "explicacion_correcta": "Producto constante."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «inversa»."
         }
       ]
     },
@@ -8952,9 +8952,9 @@
           "justificacion_incorrectas": {
             "A": "Eso sería reducción.",
             "C": "No corresponde a SO₃²⁻/SO₄²⁻.",
-            "D": "Sí cambia."
+            "D": "«+2 a +2» no resuelve el enunciado. La respuesta correcta es B."
           },
-          "explicacion_correcta": "+4 → +6.",
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «+4 a +6».",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
         },
         {
@@ -8970,9 +8970,9 @@
           "justificacion_incorrectas": {
             "A": "Reducción baja el número.",
             "C": "No explica el cambio de e⁻.",
-            "D": "No aplica."
+            "D": "«precipitación siempre» no resuelve el enunciado. La respuesta correcta es B."
           },
-          "explicacion_correcta": "Sube = oxidación."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «oxidación»."
         },
         {
           "id": "tr_qui_03",
@@ -8989,7 +8989,7 @@
             "C": "Usaste gramos como moles.",
             "D": "Factor 10 sin base."
           },
-          "explicacion_correcta": "n=1; M=1."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «1 M»."
         },
         {
           "id": "tr_qui_04",
@@ -9006,7 +9006,7 @@
             "C": "No define M.",
             "D": "No es concentración."
           },
-          "explicacion_correcta": "M = n/V."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «moles de soluto / litros de solución»."
         }
       ]
     },
@@ -9038,7 +9038,7 @@
       "terminos": [
         {
           "termino": "main idea",
-          "definicion": "Idea principal del texto.",
+          "definicion": "Idea principal del texto; es un concepto clave de «Inglés: comprensión de lectura».",
           "ejemplo": "What the text is mostly about."
         },
         {
@@ -9085,7 +9085,7 @@
         "terminos": [
           {
             "termino": "main idea",
-            "definicion": "Idea principal del texto.",
+            "definicion": "Idea principal del texto; es un concepto clave de «Inglés: comprensión de lectura».",
             "ejemplo": "What the text is mostly about."
           },
           {
@@ -9128,10 +9128,10 @@
           "correcta": "A",
           "justificacion_incorrectas": {
             "B": "No está en el texto.",
-            "C": "No.",
-            "D": "No."
+            "C": "«At night only» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Never» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Dato literal: 9.",
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «At 9».",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
         },
         {
@@ -9145,9 +9145,9 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No lo dice.",
+            "B": "«Tom hates books» no resuelve el enunciado. La respuesta correcta es A.",
             "C": "Generaliza de más.",
-            "D": "No lo dice."
+            "D": "«Tom is a teacher» no resuelve el enunciado. La respuesta correcta es A."
           },
           "explicacion_correcta": "Idea = lo que el texto sostiene."
         },
@@ -9163,8 +9163,8 @@
           "correcta": "B",
           "justificacion_incorrectas": {
             "A": "No es humor.",
-            "C": "No.",
-            "D": "No."
+            "C": "«To describe a mountain» no resuelve el enunciado. La respuesta correcta es B.",
+            "D": "«To ask a math question» no resuelve el enunciado. La respuesta correcta es B."
           },
           "explicacion_correcta": "Propósito = aconsejar."
         },
@@ -9183,7 +9183,7 @@
             "C": "No dice children.",
             "D": "No dice tourists."
           },
-          "explicacion_correcta": "Only members."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «Members only»."
         }
       ]
     },
@@ -9220,17 +9220,17 @@
         },
         {
           "termino": "sinónimo",
-          "definicion": "Palabra de sentido similar.",
+          "definicion": "Palabra de sentido similar; es un concepto clave de «Lectura: significado en contexto».",
           "ejemplo": "Inicio ≈ comienzo."
         },
         {
           "termino": "antónimo",
-          "definicion": "Palabra de sentido opuesto.",
+          "definicion": "Palabra de sentido opuesto; es un concepto clave de «Lectura: significado en contexto».",
           "ejemplo": "Frío ≠ caliente."
         },
         {
           "termino": "ambigüedad",
-          "definicion": "Más de un sentido posible.",
+          "definicion": "Más de un sentido posible; es un concepto clave de «Lectura: significado en contexto».",
           "ejemplo": "“Banco” (asiento / entidad)."
         }
       ],
@@ -9267,17 +9267,17 @@
           },
           {
             "termino": "sinónimo",
-            "definicion": "Palabra de sentido similar.",
+            "definicion": "Palabra de sentido similar; es un concepto clave de «Lectura: significado en contexto».",
             "ejemplo": "Inicio ≈ comienzo."
           },
           {
             "termino": "antónimo",
-            "definicion": "Palabra de sentido opuesto.",
+            "definicion": "Palabra de sentido opuesto; es un concepto clave de «Lectura: significado en contexto».",
             "ejemplo": "Frío ≠ caliente."
           },
           {
             "termino": "ambigüedad",
-            "definicion": "Más de un sentido posible.",
+            "definicion": "Más de un sentido posible; es un concepto clave de «Lectura: significado en contexto».",
             "ejemplo": "“Banco” (asiento / entidad)."
           }
         ],
@@ -9305,10 +9305,10 @@
           "correcta": "A",
           "justificacion_incorrectas": {
             "B": "Literal indebido.",
-            "C": "No.",
-            "D": "No."
+            "C": "«Un río» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Una suma» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Figurativo: lento.",
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Muy lento».",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
         },
         {
@@ -9324,9 +9324,9 @@
           "justificacion_incorrectas": {
             "B": "Otra acepción.",
             "C": "Otra acepción.",
-            "D": "No."
+            "D": "«Una capital» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Sentido técnico."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Conjunto/repositorio»."
         },
         {
           "id": "tr_sem_03",
@@ -9339,11 +9339,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No.",
-            "C": "No.",
-            "D": "No."
+            "B": "«Cerrar el texto» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«Elegir al azar» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Contar letras» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Contexto oracional."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Mirar la oración completa»."
         },
         {
           "id": "tr_sem_04",
@@ -9357,10 +9357,10 @@
           "correcta": "A",
           "justificacion_incorrectas": {
             "B": "Otra acepción.",
-            "C": "No.",
-            "D": "No."
+            "C": "«Un examen» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Un ángulo» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Agua que fluye."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Que fluye / disponible»."
         }
       ]
     },
@@ -9482,8 +9482,8 @@
           "correcta": "B",
           "justificacion_incorrectas": {
             "A": "Es lo contrario.",
-            "C": "No lo dice.",
-            "D": "No."
+            "C": "«Break the door» no resuelve el enunciado. La respuesta correcta es B.",
+            "D": "«Ignore the door» no resuelve el enunciado. La respuesta correcta es B."
           },
           "explicacion_correcta": "Keep = mantener cerrada.",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
@@ -9516,11 +9516,11 @@
           ],
           "correcta": "B",
           "justificacion_incorrectas": {
-            "A": "Off ≠ on.",
-            "C": "No.",
-            "D": "No."
+            "A": "«a suggestion to keep phones on» no resuelve el enunciado. La respuesta correcta es B.",
+            "C": "«a weather report» no resuelve el enunciado. La respuesta correcta es B.",
+            "D": "«a math problem» no resuelve el enunciado. La respuesta correcta es B."
           },
-          "explicacion_correcta": "turn off = apagar."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «a polite instruction to switch phones off»."
         },
         {
           "id": "tr_av_04",
@@ -9658,11 +9658,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No.",
+            "B": "«No existe» no resuelve el enunciado. La respuesta correcta es A.",
             "C": "No lo implica.",
-            "D": "No."
+            "D": "«Es un verbo» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Altura = valor.",
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Tiene el valor mayor en esa gráfica».",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
         },
         {
@@ -9677,8 +9677,8 @@
           "correcta": "A",
           "justificacion_incorrectas": {
             "B": "No es demografía.",
-            "C": "No.",
-            "D": "No."
+            "C": "«Color político» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«Temperatura» no resuelve el enunciado. La respuesta correcta es A."
           },
           "explicacion_correcta": "Escala = proporción."
         },
@@ -9693,11 +9693,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "No.",
-            "C": "No.",
-            "D": "No."
+            "B": "«Solo el tipógrafo» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«El clima» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«La portada del libro» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "Fila × columna."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «Fila y columna»."
         },
         {
           "id": "tr_td_04",
@@ -9710,11 +9710,11 @@
           ],
           "correcta": "A",
           "justificacion_incorrectas": {
-            "B": "Sumaste.",
-            "C": "Un extremo.",
-            "D": "Un extremo."
+            "B": "«32» no resuelve el enunciado. La respuesta correcta es A.",
+            "C": "«20» no resuelve el enunciado. La respuesta correcta es A.",
+            "D": "«12» no resuelve el enunciado. La respuesta correcta es A."
           },
-          "explicacion_correcta": "20−12=8."
+          "explicacion_correcta": "La opción A encaja con el concepto del tema: «8»."
         }
       ]
     },
@@ -9845,11 +9845,11 @@
           ],
           "correcta": "B",
           "justificacion_incorrectas": {
-            "A": "Invertiste.",
+            "A": "«5/3» no resuelve el enunciado. La respuesta correcta es B.",
             "C": "Usaste otro cateto sin dato.",
             "D": "Eso sería un cos si adj=4."
           },
-          "explicacion_correcta": "sen=3/5.",
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «3/5».",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
         },
         {
@@ -9865,9 +9865,9 @@
           "justificacion_incorrectas": {
             "A": "Eso no es cos.",
             "C": "Tangente es razón distinta.",
-            "D": "No."
+            "D": "«área» no resuelve el enunciado. La respuesta correcta es B."
           },
-          "explicacion_correcta": "cos=adj/hip."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «hipotenusa»."
         },
         {
           "id": "tr_tri_03",
@@ -9880,11 +9880,11 @@
           ],
           "correcta": "B",
           "justificacion_incorrectas": {
-            "A": "Invertido.",
-            "C": "No.",
+            "A": "«hip/op» no resuelve el enunciado. La respuesta correcta es B.",
+            "C": "«adj/op al cuadrado» no resuelve el enunciado. La respuesta correcta es B.",
             "D": "Identidad distinta."
           },
-          "explicacion_correcta": "tan=op/adj."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «op/adj»."
         },
         {
           "id": "tr_tri_04",
@@ -9898,8 +9898,8 @@
           "correcta": "B",
           "justificacion_incorrectas": {
             "A": "No por tamaño solo.",
-            "C": "Es lado.",
-            "D": "No."
+            "C": "«un ángulo» no resuelve el enunciado. La respuesta correcta es B.",
+            "D": "«el perímetro» no resuelve el enunciado. La respuesta correcta es B."
           },
           "explicacion_correcta": "Frente al ángulo de 90°."
         }
@@ -10026,7 +10026,7 @@
             "C": "do the bus no.",
             "D": "put the bus no."
           },
-          "explicacion_correcta": "take the bus.",
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «takes».",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
         },
         {
@@ -10044,7 +10044,7 @@
             "C": "bored describe a la persona.",
             "D": "short no explica el llanto."
           },
-          "explicacion_correcta": "moving = emotivo."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «moving»."
         },
         {
           "id": "tr_voc_03",
@@ -10203,7 +10203,7 @@
             "C": "do the bus no.",
             "D": "put the bus no."
           },
-          "explicacion_correcta": "take the bus.",
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «takes».",
           "ayuda_visual": "Usa el diagrama de la explicación para orientar el procedimiento."
         },
         {
@@ -10221,7 +10221,7 @@
             "C": "bored describe a la persona.",
             "D": "short no explica el llanto."
           },
-          "explicacion_correcta": "moving = emotivo."
+          "explicacion_correcta": "La opción B encaja con el concepto del tema: «moving»."
         },
         {
           "id": "tr_voc_03",
