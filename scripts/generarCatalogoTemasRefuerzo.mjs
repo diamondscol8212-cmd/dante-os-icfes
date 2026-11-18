@@ -6,6 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { TEMA_SUB } from '../src/services/bank/enriquecerAyudas.js';
+import { CONTENIDO_TEMAS } from './contenidoTemasRefuerzo.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -21,7 +22,8 @@ const AREA_DE = {
   analisis_textual: 'lectura_critica', analisis_imagen: 'lectura_critica',
   indagacion: 'ciencias_naturales', fisica: 'ciencias_naturales', quimica: 'ciencias_naturales',
   biologia: 'ciencias_naturales', cts: 'ciencias_naturales',
-  geografia: 'sociales_ciudadanas', constitucion: 'sociales_ciudadanas', historia: 'sociales_ciudadanas',
+  geografia: 'sociales_ciudadanas', hidrografia_colombia: 'sociales_ciudadanas',
+  constitucion: 'sociales_ciudadanas', historia: 'sociales_ciudadanas',
   pensamiento_critico: 'sociales_ciudadanas', interpretacion: 'sociales_ciudadanas',
   interpretacion_y_analisis: 'sociales_ciudadanas', participacion: 'sociales_ciudadanas',
   pensamiento_social: 'sociales_ciudadanas', pensamiento_sistemico: 'sociales_ciudadanas',
@@ -49,193 +51,66 @@ const ALIAS = {
   grammar_reading: 'grammar'
 };
 
-const CONTENIDO = {
-  fracciones: {
-    intro: 'Una fracción a/b compara una parte (numerador) con un todo dividido en b partes iguales. Dos fracciones son equivalentes si representan la misma cantidad (1/2 = 2/4 = 3/6).',
-    pasos: [
-      'Para sumar o restar: iguala denominadores (mcm) y opera solo los numeradores.',
-      'Para comparar: lleva al mismo denominador o pasa a decimal.',
-      '«De» entre fracción y entero suele ser multiplicación: (2/5)×40.'
-    ],
-    errores: [
-      'Sumar numeradores y denominadores por separado.',
-      'Olvidar convertir al denominador común.',
-      'Invertir la fracción sin que el enunciado lo pida.'
-    ],
-    ejemplo: {
-      titulo: 'Ejemplo resuelto',
-      enunciado: 'Calcula 1/2 + 1/3.',
-      pasos: [
-        '1) mcm(2,3) = 6.',
-        '2) 1/2 = 3/6 y 1/3 = 2/6.',
-        '3) 3/6 + 2/6 = 5/6.'
-      ],
-      respuesta: '5/6'
-    },
-    profundizar: 'Si quieres profundizar más: busca «mínimo común múltiplo» y «fracciones equivalentes».',
-    practica: [
-      q('tr_frac_01', '¿Cuánto es 1/2 + 1/3?', ['A) 2/5', 'B) 5/6', 'C) 1/5', 'D) 2/6'], 'B',
-        { A: 'Sumaste numeradores y denominadores por separado.', C: 'Invertiste el procedimiento.', D: 'Convertiste 1/2 a sextos pero no sumaste el 1/3.' },
-        'mcm=6 → 3/6+2/6=5/6.'),
-      q('tr_frac_02', '¿Cuánto es (2/5) de 40?', ['A) 20', 'B) 16', 'C) 8', 'D) 10'], 'B',
-        { A: 'Usaste 1/2 de 40.', C: 'Solo 1/5 de 40.', D: 'Usaste 1/4.' },
-        '(2/5)×40=16.'),
-      q('tr_frac_03', '¿Cuál es mayor: 3/4 o 5/8?', ['A) 5/8', 'B) 3/4', 'C) Iguales', 'D) No se pueden comparar'], 'B',
-        { A: '5/8=0,625 < 0,75.', C: '3/4=6/8 > 5/8.', D: 'Sí se comparan con el mismo denominador.' },
-        '3/4=6/8 > 5/8.'),
-      q('tr_frac_04', 'Simplifica 8/12.', ['A) 4/6', 'B) 2/3', 'C) 8/3', 'D) 3/2'], 'B',
-        { A: 'Aún se puede simplificar más.', C: 'No es simplificar.', D: 'Eso es el recíproco.' },
-        'mcd=4 → 2/3.')
-    ]
-  },
-  proporcionalidad: {
-    intro: 'Magnitudes directamente proporcionales crecen juntas en la misma razón. Inversas: al subir una, baja la otra y el producto se conserva.',
-    pasos: ['Clasifica: ¿más→más (directa) o más→menos (inversa)?', 'Directa: a/b=c/d. Inversa: a·b=c·d.', 'Convierte unidades antes de operar.'],
-    errores: ['Tratar un caso inverso como directo.', 'Sumar en vez de usar la razón.', 'Olvidar conversiones de tiempo.'],
-    ejemplo: {
-      titulo: 'Ejemplo resuelto',
-      enunciado: '4 obreros terminan en 6 días. ¿Cuántos días tardan 3?',
-      pasos: ['1) Es inversa: personas×días constante.', '2) 4×6=24 jornadas.', '3) 24÷3=8 días.'],
-      respuesta: '8 días'
-    },
-    profundizar: 'Si quieres profundizar más: busca «regla de tres simple e inversa».',
-    practica: [
-      q('tr_prop_01', '4 obreros · 6 días. ¿Días con 3 obreros?', ['A) 4,5', 'B) 8', 'C) 12', 'D) 2'], 'B',
-        { A: 'Lo trataste como directa.', C: 'Duplicaste sin el producto.', D: 'Con menos gente tarda más.' },
-        '4×6=24; 24÷3=8.'),
-      q('tr_prop_02', '5 cuadernos = 20.000. ¿7?', ['A) 28.000', 'B) 25.000', 'C) 14.000', 'D) 35.000'], 'A',
-        { B: 'Sumaste sin unitario.', C: 'Invertiste la razón.', D: 'Multiplicaste de más.' },
-        'Unitario 4.000 ×7=28.000.'),
-      q('tr_prop_03', '120 km en 2 h. ¿En 3 h?', ['A) 150', 'B) 180', 'C) 240', 'D) 60'], 'B',
-        { A: 'Sumaste 30 sin velocidad.', C: 'Duplicaste 120.', D: 'Usaste 1 h.' },
-        '60 km/h ×3=180.')
-    ]
-  },
-  argumentacion: {
-    intro: 'Un argumento une premisas (razones) con una conclusión. En Saber 11° identificas qué se concluye, qué se asume o qué falla.',
-    pasos: [
-      'Separa premisas y conclusión.',
-      '¿Las premisas bastan o hay un salto?',
-      'Si hay salto típico, nómbralo (falacia).'
-    ],
-    errores: [
-      'Confundir premisa con conclusión.',
-      'Elegir lo “que suena bien” sin apoyo textual.',
-      'Mezclar tipos de falacia.'
-    ],
-    ejemplo: {
-      titulo: 'Ejemplo resuelto',
-      enunciado: '«Si permitimos celulares en clase, el colegio colapsará.»',
-      pasos: [
-        '1) Premisa implícita: permitir celulares.',
-        '2) Conclusión: el colegio colapsa.',
-        '3) Hay un salto: no hay pasos intermedios demostrados → pendiente resbaladiza.',
-        '4) Por eso la conclusión no se sigue de la premisa: de un permiso no se deduce un desastre total.'
-      ],
-      respuesta: 'Pendiente resbaladiza',
-      contraste: {
-        titulo: 'Contraste · argumento válido (corto)',
-        invalido: 'Inválido: «Si hay celulares, el colegio colapsa.» (salto sin prueba).',
-        valido: 'Válido: «Si el reglamento prohíbe celulares y Ana usa uno, entonces Ana incumple el reglamento.» (la conclusión sí se sigue de las premisas).'
-      }
-    },
-    profundizar: 'Si quieres profundizar más: busca «estructura del argumento» y «falacias comunes».',
-    practica: [
-      q('tr_arg_01',
-        'Premisa: «Permitimos X.» Conclusión: «Todo colapsa.» ¿Qué falla en el esquema?',
-        ['A) Pendiente resbaladiza: la conclusión no se sigue de la premisa', 'B) Es un dato estadístico sólido', 'C) Solo describe una norma escolar', 'D) Es una definición de X'],
-        'A',
-        { B: 'No hay cifras ni evidencia.', C: 'No describe una norma: predice un desastre.', D: 'No define el término; afirma consecuencias.' },
-        'De un permiso no se deduce un colapso: hay un salto (pendiente resbaladiza).'),
-      q('tr_arg_02',
-        'Premisas: «Todo M es P» y «Todo S es M.» ¿Qué conclusión se sigue?',
-        ['A) Ningún S es P', 'B) Todo S es P', 'C) Algún P no es S', 'D) No se puede concluir nada'],
-        'B',
-        { A: 'Negación indebida: las premisas afirman inclusión.', C: 'No es lo que se deduce aquí.', D: 'Sí se deduce: S ⊆ P.' },
-        'Argumento válido: la conclusión se sigue de las premisas (transitividad).'),
-      q('tr_arg_03',
-        '«No oigas su propuesta: él reprobó dos materias.» Identifica premisa, ataque y fallo:',
-        ['A) Falsa analogía entre dos casos', 'B) Ad hominem: ataca a la persona, no la propuesta', 'C) Generalización con una muestra', 'D) Definición circular'],
-        'B',
-        { A: 'No compara dos casos; descalifica al hablante.', C: 'No generaliza una muestra.', D: 'No redefine un término.' },
-        'La “premisa” habla de la persona; la conclusión rechaza la idea: el paso no es válido (ad hominem).'),
-      q('tr_arg_04',
-        'En un texto, ¿qué cuenta como conclusión del argumento?',
-        ['A) La idea que el autor quiere que aceptes a partir de las razones', 'B) Cualquier ejemplo anecdótico', 'C) Solo el título del párrafo', 'D) Una pregunta retórica sin respuesta'],
-        'A',
-        { B: 'El ejemplo puede ser premisa o ilustración.', C: 'El título orienta, no demuestra.', D: 'Abre el tema; no es la tesis.' },
-        'Conclusión = lo que se sostiene con las premisas; aplica el mismo esquema premisa → conclusión.')
-    ]
-  }
-};
+/** Contenido real por tema (hechos/conceptos). Fuente: contenidoTemasRefuerzo.mjs */
+const CONTENIDO = { ...CONTENIDO_TEMAS };
 
 function q(id, enunciado, opciones, correcta, justificacion_incorrectas, explicacion_correcta) {
   return { id, enunciado, opciones, correcta, justificacion_incorrectas, explicacion_correcta };
 }
 
+/** Fallback solo si falta entrada en CONTENIDO_TEMAS: sigue siendo contenido, no tips de examen. */
 function plantillaBase(id, titulo, area) {
-  const areaLbl = {
-    matematicas: 'matemáticas',
-    lectura_critica: 'lectura crítica',
-    ciencias_naturales: 'ciencias naturales',
-    sociales_ciudadanas: 'sociales y ciudadanas',
-    ingles: 'inglés'
-  }[area] || 'Saber 11°';
-
-  const intro = `Este tema agrupa preguntas de ${areaLbl} centradas en «${titulo}». Domínalo identificando qué pide el enunciado, qué datos son útiles y qué distractores suelen aparecer.`;
+  const intro = `«${titulo}» es un núcleo de ${area.replace(/_/g, ' ')}: domina definiciones, relaciones y ejemplos del tema (no solo trucos de opción múltiple).`;
   const pasos = [
-    'Lee la pregunta completa y subraya lo que pide exactamente.',
-    'Descarta opciones que respondan otra cosa o usen solo parte de los datos.',
-    'Verifica con un cálculo corto, una cita del texto o una definición clave.'
+    `Recuerda la definición o relación central de «${titulo}».`,
+    'Aplícala al caso concreto del enunciado.',
+    'Explica por qué las otras opciones fallan en el concepto.'
   ];
   const errores = [
-    'Elegir la opción “parecida” sin comprobar el procedimiento o el texto.',
-    'Olvidar una conversión, una condición o una premisa.',
-    'Confundir este subtema con otro cercano del área.'
+    'Confundir este concepto con uno vecino del área.',
+    'Aplicar una fórmula o definición incompleta.',
+    'Elegir un ejemplo que no corresponde al mismo fenómeno.'
   ];
   const ejemplo = {
     titulo: 'Ejemplo resuelto',
-    enunciado: `En una pregunta de «${titulo}», el enunciado da datos y pide un resultado concreto.`,
+    enunciado: `Caso de «${titulo}»: identifica el concepto y aplícalo.`,
     pasos: [
-      '1) Identifica la magnitud, la idea o la norma que pide.',
-      '2) Aplica la regla del subtema (fórmula, inferencia o definición).',
-      '3) Contrasta cada opción: la correcta encaja; las otras fallan por un error típico.',
-      '4) Por eso la respuesta correcta es la que cumple exactamente lo pedido, no la que solo “parece” cercana.'
+      '1) Nombra el concepto del tema.',
+      '2) Conéctalo con los datos del caso.',
+      '3) Elige la opción que expresa esa relación.',
+      '4) Las demás fallan por un error conceptual típico.'
     ],
-    respuesta: 'La opción que cumple exactamente lo pedido',
-    // Plantilla opcional para contraste válido vs inválido (como en argumentación).
+    respuesta: 'La opción alineada con el concepto del tema',
     contraste: null
   };
-
   const practica = [
-    q(`${id}_p1`, `En «${titulo}», ¿qué debes hacer primero?`,
-      ['A) Mirar solo las opciones', 'B) Identificar qué pide el enunciado', 'C) Sumar todos los datos', 'D) Elegir la más larga'],
-      'B',
-      { A: 'Sin saber qué pide, cualquier opción puede engañarte.', C: 'No todos los datos se operan igual.', D: 'La longitud no indica corrección.' },
-      'Primero clarifica la tarea del enunciado.'),
-    q(`${id}_p2`, `Un distractor típico en este tema suele:`,
-      ['A) Responder otra pregunta o usar mal un dato', 'B) Ser siempre la opción A', 'C) Repetir el enunciado', 'D) No tener texto'],
+    q(`${id}_p1`, `El núcleo de «${titulo}» es:`,
+      ['A) La definición/relación propia del tema', 'B) Solo adivinar la letra', 'C) Ignorar el caso', 'D) Cambiar de materia'],
       'A',
-      { B: 'La letra no define el error.', C: 'Repetir no es un patrón de distractor.', D: 'Todas las opciones tienen contenido.' },
-      'Los distractores fallan por un error concreto de procedimiento o lectura.'),
-    q(`${id}_p3`, `Para marcar el tema como superado conviene:`,
-      ['A) Adivinar rápido', 'B) Practicar varias ítems y revisar el error de cada falla', 'C) Evitar leer la explicación', 'D) Solo memorizar la respuesta'],
+      { B: 'Sin concepto no hay transferencia.', C: 'El caso aporta los datos.', D: 'Hay que quedarse en el tema.' },
+      'Primero el concepto.'),
+    q(`${id}_p2`, `Una respuesta correcta debe:`,
+      ['A) Aplicar el concepto al caso', 'B) Contradecir el concepto', 'C) Hablar de otro tema', 'D) Ser la más larga'],
+      'A',
+      { B: 'Contradicción falla.', C: 'Fuera de foco.', D: 'Longitud ≠ acierto.' },
+      'Concepto + caso.'),
+    q(`${id}_p3`, `Error típico en este tema:`,
+      ['A) Usar bien la definición', 'B) Mezclarlo con un subtema cercano', 'C) Verificar con un ejemplo', 'D) Repasar la relación clave'],
       'B',
-      { A: 'Adivinar no consolida el subtema.', C: 'La explicación es el núcleo del refuerzo.', D: 'Memorizar una clave no transfiere a ítems nuevos.' },
-      'Practica + revisión del error típico.'),
-    q(`${id}_p4`, `Si dos opciones parecen plausibles, ¿qué haces?`,
-      ['A) Eliges al azar', 'B) Vuelves al criterio del subtema y contrastas con el enunciado', 'C) Tomas la más corta', 'D) Tomas la que tiene número más grande'],
-      'B',
-      { A: 'El azar no entrena.', C: 'La longitud no decide.', D: 'El tamaño del número no es criterio.' },
-      'El criterio del tema + el enunciado desempatan.')
+      { A: 'Eso es acierto.', C: 'Eso ayuda.', D: 'Eso ayuda.' },
+      'Confusión entre subtemas.'),
+    q(`${id}_p4`, `Para consolidar conviene:`,
+      ['A) Practicar ítems nuevos del mismo concepto', 'B) Evitar ejemplos', 'C) Solo memorizar una clave', 'D) Borrar la definición'],
+      'A',
+      { B: 'Sin práctica no fija.', C: 'No transfiere.', D: 'Pierdes el ancla.' },
+      'Práctica del mismo esquema.')
   ];
-
   return {
     intro,
     pasos,
     errores,
     ejemplo,
-    profundizar: `Si quieres profundizar más: busca «${titulo}» en guías ICFES o en tus apuntes del área.`,
+    profundizar: `Profundiza en «${titulo}» con apuntes y ejemplos del área.`,
     practica
   };
 }
@@ -285,6 +160,21 @@ function diagramaDe(id, area, titulo) {
       + `<text x="320" y="80" text-anchor="middle" fill="#7eb8c4" font-size="13">Conclusión</text>`
       + `<rect x="40" y="120" width="350" height="44" rx="10" fill="#111827" stroke="#c4a57455"/>`
       + `<text x="56" y="147" fill="#c4a574" font-size="12">¿Las razones bastan? Si hay salto → falacia</text>`
+    );
+  }
+  if (id === 'hidrografia_colombia' || id === 'geografia') {
+    return base(
+      `<text x="24" y="58" fill="#cbd5e1" font-size="13">Cuencas de Colombia</text>`
+      + `<rect x="40" y="72" width="130" height="70" rx="10" fill="#111827" stroke="#7eb8c455"/>`
+      + `<text x="105" y="100" text-anchor="middle" fill="#7eb8c4" font-size="12">Magdalena</text>`
+      + `<text x="105" y="120" text-anchor="middle" fill="#94a3b8" font-size="11">→ Caribe</text>`
+      + `<rect x="190" y="72" width="130" height="70" rx="10" fill="#111827" stroke="#c4a57455"/>`
+      + `<text x="255" y="100" text-anchor="middle" fill="#c4a574" font-size="12">Cauca</text>`
+      + `<text x="255" y="120" text-anchor="middle" fill="#94a3b8" font-size="11">afluente</text>`
+      + `<rect x="340" y="72" width="140" height="70" rx="10" fill="#111827" stroke="#34d39955"/>`
+      + `<text x="410" y="100" text-anchor="middle" fill="#6ee7b7" font-size="12">Orinoco / Amazonas</text>`
+      + `<text x="410" y="120" text-anchor="middle" fill="#94a3b8" font-size="11">Llanos / suroriente</text>`
+      + `<text x="24" y="175" fill="#64748b" font-size="11">Macizo colombiano: nacen Magdalena y Cauca</text>`
     );
   }
   if (area === 'matematicas') {
@@ -364,7 +254,9 @@ function buildTema(id) {
     area,
     nivel: NIVEL[area] || 'Media · Saber 11°',
     subs: [id],
-    matchTema: [titulo.toLowerCase(), id.replace(/_/g, ' ')],
+    matchTema: id === 'hidrografia_colombia'
+      ? [titulo.toLowerCase(), 'hidrografía', 'hidrografia', 'afluente', 'río cauca', 'rio cauca', 'río magdalena', 'cuenca del orinoco', 'macizo colombiano']
+      : [titulo.toLowerCase(), id.replace(/_/g, ' ')],
     estadoContenido: 'completo',
     profundizar: base.profundizar,
     diagrama_svg: diagrama,

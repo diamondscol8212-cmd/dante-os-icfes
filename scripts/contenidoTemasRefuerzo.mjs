@@ -1,0 +1,4794 @@
+/** Autogenerado por buildContenidoTemasRefuerzo.mjs — cartillas de contenido real. */
+function q(id, enunciado, opciones, correcta, justificacion_incorrectas, explicacion_correcta) {
+  return { id, enunciado, opciones, correcta, justificacion_incorrectas, explicacion_correcta };
+}
+export const CONTENIDO_TEMAS = {
+  "hidrografia_colombia": {
+    "intro": "La hidrografía de Colombia se organiza en grandes cuencas. El Magdalena nace en el macizo colombiano y desemboca en el mar Caribe; el Cauca es su afluente principal. Los Llanos drenan hacia el Orinoco; la Amazonía colombiana hacia la cuenca del Amazonas.",
+    "pasos": [
+      "Ubica el río en su cuenca (Magdalena-Caribe, Orinoco, Amazonas o Pacífico).",
+      "Distingue afluente (desagua en otro río) de desembocadura (llega al mar).",
+      "Recuerda: en el macizo colombiano nacen Magdalena y Cauca."
+    ],
+    "errores": [
+      "Creer que el Cauca es afluente del Amazonas o del Orinoco.",
+      "Decir que el Magdalena desemboca en el Pacífico.",
+      "Confundir la cuenca de los Llanos (Orinoco) con la del Magdalena."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "El río Cauca es afluente del…",
+      "pasos": [
+        "1) Un afluente aporta agua a otro río, no al mar directamente como “desembocadura oceánica” del sistema.",
+        "2) El Cauca corre entre Occidental y Central y se une al Magdalena.",
+        "3) No pertenece a la cuenca del Amazonas ni del Orinoco.",
+        "4) Por eso la respuesta es Magdalena."
+      ],
+      "respuesta": "Magdalena",
+      "contraste": {
+        "titulo": "Contraste · cuenca correcta",
+        "invalido": "Inválido: «El Cauca es afluente del Amazonas.» (otra cuenca).",
+        "valido": "Válido: «El Cauca es afluente del Magdalena; juntos drenan hacia el Caribe.»"
+      }
+    },
+    "practica": [
+      {
+        "id": "tr_hidro_01",
+        "enunciado": "El río Cauca es afluente del:",
+        "opciones": [
+          "A) Amazonas",
+          "B) Orinoco",
+          "C) Magdalena",
+          "D) Mediterráneo"
+        ],
+        "correcta": "C",
+        "justificacion_incorrectas": {
+          "A": "El Cauca no está en la cuenca amazónica.",
+          "B": "Los Llanos van al Orinoco; el Cauca no.",
+          "D": "Sin conexión con el Mediterráneo."
+        },
+        "explicacion_correcta": "El Cauca aporta al Magdalena."
+      },
+      {
+        "id": "tr_hidro_02",
+        "enunciado": "El Magdalena nace en el macizo colombiano y desemboca en:",
+        "opciones": [
+          "A) el océano Pacífico",
+          "B) el río Amazonas",
+          "C) el mar Caribe",
+          "D) el lago Titicaca"
+        ],
+        "correcta": "C",
+        "justificacion_incorrectas": {
+          "A": "Desemboca al norte, en el Caribe.",
+          "B": "No es afluente del Amazonas.",
+          "D": "El Titicaca no está en su curso."
+        },
+        "explicacion_correcta": "Macizo → Magdalena → Caribe."
+      },
+      {
+        "id": "tr_hidro_03",
+        "enunciado": "Los Llanos Orientales hacen parte, sobre todo, de la cuenca del:",
+        "opciones": [
+          "A) Pacífico",
+          "B) Caribe insular",
+          "C) Mediterráneo",
+          "D) Orinoco"
+        ],
+        "correcta": "D",
+        "justificacion_incorrectas": {
+          "A": "Vertiente occidental distinta.",
+          "B": "No es la cuenca continental de los Llanos.",
+          "C": "Irrelevante aquí."
+        },
+        "explicacion_correcta": "Llanos → Orinoco."
+      },
+      {
+        "id": "tr_hidro_04",
+        "enunciado": "En el macizo colombiano nacen, entre otros:",
+        "opciones": [
+          "A) solo arroyos de La Guajira",
+          "B) Magdalena y Cauca",
+          "C) únicamente ríos de San Andrés",
+          "D) el Amazonas en su desembocadura"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "La Guajira está al norte.",
+          "C": "San Andrés es insular.",
+          "D": "El Amazonas no “nace” allí como desembocadura."
+        },
+        "explicacion_correcta": "Macizo: nacimiento de Magdalena y Cauca."
+      }
+    ],
+    "profundizar": "Repasa el mapa de cuencas Magdalena-Cauca, Orinoco y Amazonas."
+  },
+  "geografia": {
+    "intro": "Colombia se organiza en regiones naturales (Andina, Caribe, Pacífica, Orinoquía, Amazonía), tres cordilleras andinas y ecosistemas ligados a altitud y humedad (páramo, manglar, selva). La ubicación y el relieve explican clima, puertos y límites.",
+    "pasos": [
+      "Asocia ciudades/paisajes con la región correcta.",
+      "Usa el gradiente térmico: a mayor altitud, menor temperatura media.",
+      "Distingue Caribe vs Pacífico (puertos, islas, Darién) y ubica límites orientales (Venezuela, Brasil)."
+    ],
+    "errores": [
+      "Poner la Amazonía en el Caribe o el café en la Orinoquía.",
+      "Confundir Buenaventura (Pacífico) con puertos caribeños.",
+      "Ignorar que la altitud cambia el clima tropical."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "Barranquilla, Cartagena y Santa Marta son ciudades de la región…",
+      "pasos": [
+        "1) Son puertos sobre el mar Caribe.",
+        "2) No corresponden a Amazonía ni Orinoquía.",
+        "3) Respuesta: Caribe."
+      ],
+      "respuesta": "Caribe",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "tr_geo_01",
+        "enunciado": "La Amazonía colombiana se encuentra, principalmente, en el:",
+        "opciones": [
+          "A) extremo norte Caribe",
+          "B) suroriente del país",
+          "C) archipiélago de San Andrés",
+          "D) eje cafetero"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Norte = Caribe/Guajira.",
+          "C": "San Andrés es Caribe insular.",
+          "D": "Café = región Andina."
+        },
+        "explicacion_correcta": "Amazonía = suroriente."
+      },
+      {
+        "id": "tr_geo_02",
+        "enunciado": "A mayor altitud, en montañas tropicales, la temperatura suele:",
+        "opciones": [
+          "A) bajar",
+          "B) subir siempre",
+          "C) igualarse al nivel del mar",
+          "D) depender solo del nombre del municipio"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "La media baja con la altura.",
+          "C": "El gradiente térmico actúa.",
+          "D": "La altitud es el factor físico."
+        },
+        "explicacion_correcta": "Más altura → más frío."
+      },
+      {
+        "id": "tr_geo_03",
+        "enunciado": "Buenaventura es el principal puerto colombiano sobre el:",
+        "opciones": [
+          "A) océano Pacífico",
+          "B) mar Caribe",
+          "C) río Meta",
+          "D) lago de Tota"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Los grandes del Caribe son otros.",
+          "C": "Meta = fluvial llanero.",
+          "D": "Lago andino."
+        },
+        "explicacion_correcta": "Buenaventura = Pacífico."
+      },
+      {
+        "id": "tr_geo_04",
+        "enunciado": "Un páramo es un ecosistema de:",
+        "opciones": [
+          "A) alta montaña tropical",
+          "B) playa de manglar",
+          "C) sabana inundable baja",
+          "D) arrecife de coral"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Manglar = costa.",
+          "C": "Sabana = Orinoquía baja.",
+          "D": "Coral = marino."
+        },
+        "explicacion_correcta": "Páramo = alta montaña."
+      }
+    ],
+    "profundizar": "Repasa regiones naturales, cordilleras y ecosistemas de Colombia."
+  },
+  "biologia": {
+    "intro": "La biología del examen cubre estructuras y procesos: fotosíntesis (fase luminosa en tilacoides → ATP y NADPH; Calvin fija CO₂), genética de poblaciones (selección natural) y niveles de organización (célula → ecosistema).",
+    "pasos": [
+      "Identifica el proceso (fotosíntesis, respiración, selección, homeostasis).",
+      "Ubica dónde ocurre (orgánulo, tejido, población).",
+      "Relaciona causa → mecanismo → efecto medible (O₂, frecuencia alélica, etc.)."
+    ],
+    "errores": [
+      "Confundir fase luminosa con ciclo de Calvin.",
+      "Creer que la selección crea mutaciones a voluntad.",
+      "Mezclar respiración celular con fotosíntesis."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "En la fase luminosa de la fotosíntesis, en los tilacoides se generan principalmente…",
+      "pasos": [
+        "1) La luz excita pigmentos en tilacoides.",
+        "2) Se produce ATP y NADPH (y O₂ al fotolizar agua).",
+        "3) El azúcar se forma después, en el estroma (Calvin)."
+      ],
+      "respuesta": "ATP y NADPH (energía reductora)",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "tr_bio_01",
+        "enunciado": "La fase luminosa ocurre sobre todo en:",
+        "opciones": [
+          "A) mitocondrias",
+          "B) tilacoides del cloroplasto",
+          "C) ribosomas libres",
+          "D) vacuolas"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Mitocondria = respiración.",
+          "C": "Ribosoma = proteínas.",
+          "D": "Vacuola no hace la fase luminosa."
+        },
+        "explicacion_correcta": "Tilacoides = fase luminosa."
+      },
+      {
+        "id": "tr_bio_02",
+        "enunciado": "Si un pesticida elimina no resistentes y sobreviven resistentes que se reproducen, el proceso es:",
+        "opciones": [
+          "A) selección natural",
+          "B) fotosíntesis",
+          "C) meiosis obligatoria en todos",
+          "D) extinción inmediata de la especie"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "No es metabolismo vegetal.",
+          "C": "No explica el cambio de frecuencia.",
+          "D": "La población no desaparece del todo."
+        },
+        "explicacion_correcta": "Cambia la frecuencia del rasgo resistente."
+      },
+      {
+        "id": "tr_bio_03",
+        "enunciado": "El O₂ liberado en fotosíntesis proviene principalmente de:",
+        "opciones": [
+          "A) el CO₂",
+          "B) el agua",
+          "C) la glucosa ingerida",
+          "D) el nitrógeno del aire"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "El CO₂ aporta carbono al azúcar.",
+          "C": "Las plantas no “ingieren” glucosa para liberar ese O₂.",
+          "D": "N₂ no es la fuente del O₂ fotosintético."
+        },
+        "explicacion_correcta": "Fotólisis del agua."
+      },
+      {
+        "id": "tr_bio_04",
+        "enunciado": "Una población es:",
+        "opciones": [
+          "A) un solo organismo",
+          "B) individuos de la misma especie en un área",
+          "C) todas las especies del planeta",
+          "D) solo el clima"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Eso es organismo.",
+          "C": "Eso es biosfera/comunidad amplia.",
+          "D": "El clima es abiótico."
+        },
+        "explicacion_correcta": "Población = misma especie, mismo lugar."
+      }
+    ],
+    "profundizar": "Repasa fotosíntesis, genética de poblaciones y organización biológica."
+  },
+  "fisica": {
+    "intro": "La física relaciona magnitudes: cinemática (v, a, Δx), dinámica (F = ma) y fenómenos de ondas/óptica. Las unidades y el signo de la aceleración importan tanto como la fórmula.",
+    "pasos": [
+      "Lista datos con unidades coherentes (m/s, s, kg, N).",
+      "Elige la relación (definición de a, 2ª ley, Snell, etc.).",
+      "Interpreta el resultado (desaceleración = a negativa si v disminuye)."
+    ],
+    "errores": [
+      "Usar v = d/t cuando hay aceleración no nula sin la fórmula adecuada.",
+      "Olvidar que F neta / m da a.",
+      "Mezclar ángulo de incidencia con índice de refracción."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "Un vehículo pasa de 24 m/s a 0 en 6 s. ¿Magnitud de la desaceleración?",
+      "pasos": [
+        "1) a = (v_f − v_i)/t = (0 − 24)/6.",
+        "2) a = −4 m/s².",
+        "3) Magnitud = 4 m/s²."
+      ],
+      "respuesta": "4 m/s²",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "tr_fis_01",
+        "enunciado": "De 24 m/s a 0 en 6 s, la magnitud de a es:",
+        "opciones": [
+          "A) 4 m/s²",
+          "B) 144 m/s²",
+          "C) 0,25 m/s²",
+          "D) 30 m/s²"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Multiplicaste 24×6.",
+          "C": "Invertiste 6/24.",
+          "D": "Sumaste sin dividir bien."
+        },
+        "explicacion_correcta": "|Δv|/t = 24/6 = 4."
+      },
+      {
+        "id": "tr_fis_02",
+        "enunciado": "F = 12 N sobre m = 2 kg (sin fricción). a =",
+        "opciones": [
+          "A) 24 m/s²",
+          "B) 6 m/s²",
+          "C) 10 m/s²",
+          "D) 0,17 m/s²"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Multiplicaste F·m.",
+          "C": "Usaste g≈10 por error.",
+          "D": "Invertiste m/F."
+        },
+        "explicacion_correcta": "a = F/m = 6."
+      },
+      {
+        "id": "tr_fis_03",
+        "enunciado": "Si la misma F se aplica a mayor masa, a:",
+        "opciones": [
+          "A) aumenta",
+          "B) disminuye",
+          "C) no cambia nunca",
+          "D) se vuelve luz"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Mayor inercia → menor a.",
+          "C": "Sí cambia con m.",
+          "D": "No es óptica."
+        },
+        "explicacion_correcta": "a ∝ 1/m."
+      },
+      {
+        "id": "tr_fis_04",
+        "enunciado": "En refracción, el índice n relaciona:",
+        "opciones": [
+          "A) solo la masa del bloque",
+          "B) velocidad/ángulo de la luz en medios",
+          "C) únicamente el color político",
+          "D) la densidad poblacional"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "n no es masa.",
+          "C": "Irrelevante.",
+          "D": "No es demografía."
+        },
+        "explicacion_correcta": "Óptica: n y ley de Snell."
+      }
+    ],
+    "profundizar": "Practica cinemática, F=ma y óptica básica con unidades."
+  },
+  "quimica": {
+    "intro": "La química describe composición y cambio: estequiometría, disoluciones (molaridad), tabla periódica (radio, electronegatividad) y reacciones con conservación de átomos.",
+    "pasos": [
+      "Balancea o usa la relación molar de la reacción.",
+      "Convierte gramos ↔ moles con masa molar.",
+      "Lee tendencias periódicas (grupo/periodo) con la causa correcta (capas, Z efe)."
+    ],
+    "errores": [
+      "Olvidar la masa molar al pasar de g a mol.",
+      "Invertir tendencias (radio vs electronegatividad).",
+      "Creer que los moles “desaparecen” sin conservación."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "40 g de NaOH en 1 L de solución. Masa molar NaOH = 40 g/mol. ¿Molaridad?",
+      "pasos": [
+        "1) moles = 40/40 = 1 mol.",
+        "2) V = 1 L.",
+        "3) M = 1 mol/L."
+      ],
+      "respuesta": "1 M",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "tr_qui_01",
+        "enunciado": "40 g NaOH (MM=40) en 1 L → molaridad:",
+        "opciones": [
+          "A) 0,4 M",
+          "B) 1 M",
+          "C) 40 M",
+          "D) 10 M"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Dividiste mal.",
+          "C": "Usaste gramos como moles.",
+          "D": "Factor 10 sin base."
+        },
+        "explicacion_correcta": "n=1; M=1."
+      },
+      {
+        "id": "tr_qui_02",
+        "enunciado": "Al bajar en un grupo, el radio atómico suele:",
+        "opciones": [
+          "A) disminuir",
+          "B) aumentar",
+          "C) anularse",
+          "D) igualar al del He siempre"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Al bajar hay más capas.",
+          "C": "No se anula.",
+          "D": "Falso."
+        },
+        "explicacion_correcta": "Más niveles de energía → mayor radio."
+      },
+      {
+        "id": "tr_qui_03",
+        "enunciado": "2 H₂ + O₂ → 2 H₂O. Si hay 2 mol H₂ y 1 mol O₂, el agua máxima es:",
+        "opciones": [
+          "A) 1 mol",
+          "B) 2 mol",
+          "C) 3 mol",
+          "D) 0 mol"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Eso sería si limitara a la mitad.",
+          "C": "No hay átomos de más.",
+          "D": "Sí reaccionan."
+        },
+        "explicacion_correcta": "Proporción exacta → 2 mol H₂O."
+      },
+      {
+        "id": "tr_qui_04",
+        "enunciado": "La molaridad M es:",
+        "opciones": [
+          "A) moles de soluto / litros de solución",
+          "B) litros / moles",
+          "C) solo gramos de solvente",
+          "D) presión atmosférica"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Está invertido.",
+          "C": "No define M.",
+          "D": "No es concentración."
+        },
+        "explicacion_correcta": "M = n/V."
+      }
+    ],
+    "profundizar": "Repasa moles, molaridad y tendencias periódicas."
+  },
+  "historia": {
+    "intro": "La historia de Colombia en el examen conecta procesos: Independencia (20 de julio de 1810 como grito/junta; Boyacá 1819 como victoria decisiva), siglo XIX (partidos, guerras), pérdida de Panamá (1903) y transformaciones del siglo XX.",
+    "pasos": [
+      "Sitúa el hecho en el proceso (no solo la fecha).",
+      "Distingue causa, acontecimiento y consecuencia.",
+      "Evita anacronismos (no proyectes instituciones actuales al pasado)."
+    ],
+    "errores": [
+      "Creer que la Independencia fue un solo día completo.",
+      "Confundir Boyacá con el 20 de julio.",
+      "Atribuir la pérdida de Panamá a la Amazonía."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "La batalla de Boyacá (7 ago 1819) fue decisiva para…",
+      "pasos": [
+        "1) Cierra la campaña libertadora en la Nueva Granada.",
+        "2) Facilita la consolidación independentista frente al poder español.",
+        "3) No es el “grito” de 1810."
+      ],
+      "respuesta": "La independencia de la Nueva Granada / consolidación libertadora",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "tr_his_01",
+        "enunciado": "El 20 de julio de 1810 se recuerda como:",
+        "opciones": [
+          "A) la batalla de Boyacá",
+          "B) el grito de independencia / junta de Bogotá",
+          "C) la pérdida de Panamá",
+          "D) la Constitución de 1991"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Boyacá es 1819.",
+          "C": "Panamá es 1903.",
+          "D": "1991 es mucho después."
+        },
+        "explicacion_correcta": "1810 = junta / grito en Bogotá."
+      },
+      {
+        "id": "tr_his_02",
+        "enunciado": "Boyacá (1819) fue decisiva para:",
+        "opciones": [
+          "A) independizar la Nueva Granada en la campaña libertadora",
+          "B) fundar San Andrés",
+          "C) crear el Caribe insular",
+          "D) firmar la Constitución de 1991"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "No es el hecho.",
+          "C": "No aplica.",
+          "D": "Siglo XX tardío."
+        },
+        "explicacion_correcta": "Victoria clave de 1819."
+      },
+      {
+        "id": "tr_his_03",
+        "enunciado": "La pérdida de Panamá (1903) separó de Colombia:",
+        "opciones": [
+          "A) la Amazonía",
+          "B) el istmo que hoy es Panamá",
+          "C) La Guajira",
+          "D) solo las islas del Rosario"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Amazonía sigue siendo colombiana en gran parte.",
+          "C": "Guajira no se “perdió” así.",
+          "D": "No es el núcleo del hecho."
+        },
+        "explicacion_correcta": "Se separa el istmo panameño."
+      },
+      {
+        "id": "tr_his_04",
+        "enunciado": "La Independencia colombiana fue:",
+        "opciones": [
+          "A) un solo día sin proceso",
+          "B) un proceso de años con juntas, guerras y campañas",
+          "C) solo un tratado europeo de 1492",
+          "D) únicamente un cambio de bandera en 1991"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Hubo proceso prolongado.",
+          "C": "1492 es conquista.",
+          "D": "1991 es otra etapa."
+        },
+        "explicacion_correcta": "Proceso, no un instante."
+      }
+    ],
+    "profundizar": "Línea de tiempo: 1810, 1819, siglo XIX, 1903, siglo XX."
+  },
+  "constitucion": {
+    "intro": "La Constitución Política organiza el Estado en ramas: legislativa (Congreso), ejecutiva (Presidente) y judicial (cortes/jueces), con derechos, deberes y controles. Separación de poderes evita la concentración.",
+    "pasos": [
+      "Identifica qué rama hace la norma, la ejecuta o la juzga.",
+      "Relaciona el mecanismo (tutela, voto, etc.) con el derecho o control.",
+      "No mezcles funciones (el Congreso no “juzga” como corte ordinaria)."
+    ],
+    "errores": [
+      "Asignar al Presidente la función de legislar en abstracto como Congreso.",
+      "Creer que los jueces encabezan la rama ejecutiva.",
+      "Confundir derecho fundamental con trámite administrativo cualquiera."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "En Colombia, el Congreso hace parte de la rama…",
+      "pasos": [
+        "1) Congreso = Senado + Cámara.",
+        "2) Su función central es legislar.",
+        "3) Rama legislativa."
+      ],
+      "respuesta": "Legislativa",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "tr_con_01",
+        "enunciado": "El Congreso integra la rama:",
+        "opciones": [
+          "A) legislativa",
+          "B) ejecutiva",
+          "C) judicial",
+          "D) militar exclusiva"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Ejecutiva = Presidente y gobierno.",
+          "C": "Judicial = jueces/cortes.",
+          "D": "No es una rama constitucional así."
+        },
+        "explicacion_correcta": "Congreso = legislativa."
+      },
+      {
+        "id": "tr_con_02",
+        "enunciado": "El Presidente encabeza la rama:",
+        "opciones": [
+          "A) judicial",
+          "B) ejecutiva",
+          "C) legislativa",
+          "D) electoral únicamente"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Judicial son cortes.",
+          "C": "Legislativa es Congreso.",
+          "D": "Lo electoral tiene órganos propios."
+        },
+        "explicacion_correcta": "Presidente = ejecutiva."
+      },
+      {
+        "id": "tr_con_03",
+        "enunciado": "Cortes y jueces integran la rama:",
+        "opciones": [
+          "A) ejecutiva",
+          "B) legislativa",
+          "C) judicial",
+          "D) diplomática"
+        ],
+        "correcta": "C",
+        "justificacion_incorrectas": {
+          "A": "No ejecutan políticas como gobierno.",
+          "B": "No son el Congreso.",
+          "D": "No es rama."
+        },
+        "explicacion_correcta": "Judicial = administración de justicia."
+      },
+      {
+        "id": "tr_con_04",
+        "enunciado": "La separación de poderes busca:",
+        "opciones": [
+          "A) concentrar todo en una persona",
+          "B) repartir funciones y controlar el poder",
+          "C) eliminar derechos",
+          "D) sustituir la Constitución por decretos eternos"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Es lo contrario.",
+          "C": "La Constitución garantiza derechos.",
+          "D": "El marco superior es la Constitución."
+        },
+        "explicacion_correcta": "Frenos y contrapesos."
+      }
+    ],
+    "profundizar": "Memoriza ramas + un ejemplo de función de cada una."
+  },
+  "algebra": {
+    "intro": "El álgebra modela relaciones con variables: despejar, plantear ecuaciones lineales y traducir un enunciado (tarifa, tanque, distancia) a una igualdad que se resuelve con operaciones inversas.",
+    "pasos": [
+      "Define la incógnita (lo que pide el enunciado).",
+      "Escribe la ecuación con los datos.",
+      "Despeja con operaciones inversas y verifica sustituyendo."
+    ],
+    "errores": [
+      "Sumar cuando tocaba multiplicar (o al revés).",
+      "Despejar mal el término con la variable.",
+      "Olvidar unidades o el término constante (tarifa base)."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "Tarifa = 3000 + 150·km. Si el viaje cuesta 6000, ¿km?",
+      "pasos": [
+        "1) 3000 + 150k = 6000.",
+        "2) 150k = 3000.",
+        "3) k = 20."
+      ],
+      "respuesta": "20 km",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "tr_alg_01",
+        "enunciado": "3000 + 150k = 6000 → k =",
+        "opciones": [
+          "A) 10",
+          "B) 20",
+          "C) 40",
+          "D) 2"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Usaste 1500/150.",
+          "C": "Dividiste 6000/150 sin restar base.",
+          "D": "Mal despeje."
+        },
+        "explicacion_correcta": "k=(6000-3000)/150=20."
+      },
+      {
+        "id": "tr_alg_02",
+        "enunciado": "Para despejar x en 3x + 6 = 18:",
+        "opciones": [
+          "A) x = 8",
+          "B) x = 4",
+          "C) x = 6",
+          "D) x = 12"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Restaste mal.",
+          "C": "Te quedaste en 3x=18.",
+          "D": "Multiplicaste de más."
+        },
+        "explicacion_correcta": "3x=12 → x=4."
+      },
+      {
+        "id": "tr_alg_03",
+        "enunciado": "Si un tanque pierde agua a tasa constante, el modelo típico es:",
+        "opciones": [
+          "A) solo una potencia sin sentido",
+          "B) cantidad inicial ± tasa·tiempo",
+          "C) únicamente el nombre del tanque",
+          "D) una desigualdad electoral"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "No es el modelo lineal básico.",
+          "C": "No calcula.",
+          "D": "Irrelevante."
+        },
+        "explicacion_correcta": "Lineal: V = V0 − r·t."
+      },
+      {
+        "id": "tr_alg_04",
+        "enunciado": "Operación inversa de multiplicar por 5 es:",
+        "opciones": [
+          "A) sumar 5",
+          "B) dividir entre 5",
+          "C) restar 5",
+          "D) elevar al cuadrado"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Suma no deshace producto.",
+          "C": "Resta no deshace producto.",
+          "D": "Potencia distinta."
+        },
+        "explicacion_correcta": "Producto ↔ división."
+      }
+    ],
+    "profundizar": "Traduce enunciado → ecuación → despeje."
+  },
+  "aritmetica": {
+    "intro": "La aritmética opera cantidades con orden de operaciones (paréntesis, potencias, ×÷, +−) y sentido de las operaciones en contexto (totales, diferencias, tasas simples).",
+    "pasos": [
+      "Respeta el orden de operaciones.",
+      "Convierte unidades antes de operar si hace falta.",
+      "Estima un valor razonable para detectar errores gruesos."
+    ],
+    "errores": [
+      "Sumar antes de multiplicar sin paréntesis que lo autoricen.",
+      "Olvidar un paréntesis del enunciado.",
+      "Mezclar unidades (minutos con horas)."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "Calcula 3 + 4 × 2.",
+      "pasos": [
+        "1) Primero 4×2=8.",
+        "2) Luego 3+8=11.",
+        "3) No es (3+4)×2=14."
+      ],
+      "respuesta": "11",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "tr_ari_01",
+        "enunciado": "3 + 4 × 2 =",
+        "opciones": [
+          "A) 14",
+          "B) 11",
+          "C) 10",
+          "D) 24"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Sumaste antes.",
+          "C": "Restaste mal.",
+          "D": "Multiplicaste todo."
+        },
+        "explicacion_correcta": "Producto antes que suma."
+      },
+      {
+        "id": "tr_ari_02",
+        "enunciado": "(3 + 4) × 2 =",
+        "opciones": [
+          "A) 11",
+          "B) 14",
+          "C) 5",
+          "D) 6"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Ignoraste el paréntesis.",
+          "C": "Solo sumaste.",
+          "D": "Solo 3×2."
+        },
+        "explicacion_correcta": "Paréntesis primero."
+      },
+      {
+        "id": "tr_ari_03",
+        "enunciado": "120 minutos en horas son:",
+        "opciones": [
+          "A) 2 h",
+          "B) 12 h",
+          "C) 0,12 h",
+          "D) 120 h"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Dividiste mal.",
+          "C": "Factor 100 erróneo.",
+          "D": "Sin conversión."
+        },
+        "explicacion_correcta": "60 min = 1 h."
+      },
+      {
+        "id": "tr_ari_04",
+        "enunciado": "El orden correcto básico es:",
+        "opciones": [
+          "A) + antes que × siempre",
+          "B) ×÷ antes que +− (si no hay paréntesis)",
+          "C) solo de derecha a izquierda al azar",
+          "D) ignorar paréntesis"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Falso.",
+          "C": "No es regla.",
+          "D": "Paréntesis mandan."
+        },
+        "explicacion_correcta": "PEMDAS/orden estándar."
+      }
+    ],
+    "profundizar": "Orden de operaciones + conversiones."
+  },
+  "geometria": {
+    "intro": "La geometría estudia figuras y medidas: perímetro (contorno), área (superficie), volumen (espacio) y relaciones (Pitágoras, semejanza). Cada magnitud usa su fórmula.",
+    "pasos": [
+      "Identifica si pide perímetro, área o volumen.",
+      "Elige la fórmula de la figura.",
+      "Mantén unidades coherentes (cm vs m)."
+    ],
+    "errores": [
+      "Usar área cuando pedían perímetro.",
+      "Olvidar elevar al cuadrado/cubo en áreas/volúmenes.",
+      "Aplicar Pitágoras sin ser triángulo rectángulo."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "Área de un rectángulo 5×3.",
+      "pasos": [
+        "1) A = base × altura.",
+        "2) A = 15.",
+        "3) Perímetro sería 2(5+3)=16, distinto."
+      ],
+      "respuesta": "15",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "tr_geo_m_01",
+        "enunciado": "Área de rectángulo 5×3:",
+        "opciones": [
+          "A) 15",
+          "B) 16",
+          "C) 8",
+          "D) 30"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Eso es perímetro.",
+          "C": "Sumaste a medias.",
+          "D": "Multiplicaste de más."
+        },
+        "explicacion_correcta": "A=b·h."
+      },
+      {
+        "id": "tr_geo_m_02",
+        "enunciado": "Perímetro de un cuadrado de lado 4:",
+        "opciones": [
+          "A) 8",
+          "B) 16",
+          "C) 12",
+          "D) 4"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Solo dos lados.",
+          "C": "Pensaste triángulo.",
+          "D": "Un solo lado."
+        },
+        "explicacion_correcta": "P=4·l."
+      },
+      {
+        "id": "tr_geo_m_03",
+        "enunciado": "En un triángulo rectángulo, Pitágoras relaciona:",
+        "opciones": [
+          "A) solo ángulos políticos",
+          "B) catetos e hipotenusa",
+          "C) únicamente el color",
+          "D) la densidad"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "No.",
+          "C": "No.",
+          "D": "No."
+        },
+        "explicacion_correcta": "a²+b²=c²."
+      },
+      {
+        "id": "tr_geo_m_04",
+        "enunciado": "El área de un círculo usa:",
+        "opciones": [
+          "A) 2πr",
+          "B) πr²",
+          "C) πr³",
+          "D) r/π"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Eso es circunferencia (aprox. perímetro).",
+          "C": "Eso recuerda volumen de esfera (4/3πr³).",
+          "D": "Invertido."
+        },
+        "explicacion_correcta": "A=πr²."
+      }
+    ],
+    "profundizar": "Clasifica la magnitud y aplica la fórmula correcta."
+  },
+  "funciones": {
+    "intro": "Una función asigna a cada x un único y. Se representa con tabla, fórmula o gráfica; la pendiente en lineales indica el cambio de y por cada unidad de x.",
+    "pasos": [
+      "Reconoce dominio/recorrido en el contexto.",
+      "Lee en la gráfica: ¿crece, decrece, corta ejes?",
+      "En y = mx + b, interpreta m y b."
+    ],
+    "errores": [
+      "Creer que una relación vertical es función de x.",
+      "Confundir pendiente con intercepto.",
+      "Leer mal un punto (x,y) en la gráfica."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "y = 2x + 1. Si x=3, y=¿?",
+      "pasos": [
+        "1) Sustituye x=3.",
+        "2) y=6+1=7.",
+        "3) Un solo valor → es función."
+      ],
+      "respuesta": "7",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "tr_fun_01",
+        "enunciado": "En y=2x+1, si x=3, y=",
+        "opciones": [
+          "A) 5",
+          "B) 7",
+          "C) 6",
+          "D) 1"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "2·3−1.",
+          "C": "Olvidaste +1.",
+          "D": "Solo el intercepto."
+        },
+        "explicacion_correcta": "2·3+1=7."
+      },
+      {
+        "id": "tr_fun_02",
+        "enunciado": "La pendiente de y=2x+1 es:",
+        "opciones": [
+          "A) 1",
+          "B) 2",
+          "C) 3",
+          "D) 0"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Eso es b.",
+          "C": "Suma indebida.",
+          "D": "No es horizontal."
+        },
+        "explicacion_correcta": "m=2."
+      },
+      {
+        "id": "tr_fun_03",
+        "enunciado": "Una función de x no puede:",
+        "opciones": [
+          "A) tener un y por cada x",
+          "B) asignar dos y distintos al mismo x",
+          "C) graficarse",
+          "D) tener intercepto"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Eso sí define función.",
+          "C": "Sí puede.",
+          "D": "Puede tenerlo."
+        },
+        "explicacion_correcta": "Un x → un solo y."
+      },
+      {
+        "id": "tr_fun_04",
+        "enunciado": "Si la gráfica sube de izquierda a derecha, la función:",
+        "opciones": [
+          "A) decrece",
+          "B) crece",
+          "C) es constante",
+          "D) no existe"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Decrecer baja.",
+          "C": "Constante es horizontal.",
+          "D": "Sí existe."
+        },
+        "explicacion_correcta": "Creciente."
+      }
+    ],
+    "profundizar": "Fórmula ↔ tabla ↔ gráfica."
+  },
+  "estadistica": {
+    "intro": "La estadística descriptiva resume datos: media (promedio), mediana (valor central ordenado), moda (más frecuente) y rango (máx−mín). Cada medida responde una pregunta distinta.",
+    "pasos": [
+      "Ordena los datos si usas mediana.",
+      "Elige la medida que pide el enunciado.",
+      "Cuidado con valores atípicos: afectan mucho la media."
+    ],
+    "errores": [
+      "Calcular la media cuando pedían mediana.",
+      "Olvidar ordenar para la mediana.",
+      "Confundir rango con media."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "Datos: 2, 4, 4, 6. Media y moda?",
+      "pasos": [
+        "1) Media=(2+4+4+6)/4=4.",
+        "2) Moda=4 (más frecuente).",
+        "3) Mediana=(4+4)/2=4."
+      ],
+      "respuesta": "Media 4; moda 4",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "tr_est_01",
+        "enunciado": "Media de 2,4,6:",
+        "opciones": [
+          "A) 4",
+          "B) 6",
+          "C) 2",
+          "D) 12"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Tomaste el máximo.",
+          "C": "Mínimo.",
+          "D": "Sumaste sin dividir."
+        },
+        "explicacion_correcta": "(2+4+6)/3=4."
+      },
+      {
+        "id": "tr_est_02",
+        "enunciado": "Moda de 1,2,2,3:",
+        "opciones": [
+          "A) 1",
+          "B) 2",
+          "C) 3",
+          "D) 8"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Aparece una vez.",
+          "C": "Una vez.",
+          "D": "Suma."
+        },
+        "explicacion_correcta": "2 es el más frecuente."
+      },
+      {
+        "id": "tr_est_03",
+        "enunciado": "Mediana de 1,3,8 (ordenados):",
+        "opciones": [
+          "A) 1",
+          "B) 3",
+          "C) 8",
+          "D) 4"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Extremo.",
+          "C": "Extremo.",
+          "D": "Media, no mediana."
+        },
+        "explicacion_correcta": "Valor central=3."
+      },
+      {
+        "id": "tr_est_04",
+        "enunciado": "Rango de 5 y 12:",
+        "opciones": [
+          "A) 17",
+          "B) 7",
+          "C) 5",
+          "D) 12"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Suma.",
+          "C": "Mínimo.",
+          "D": "Máximo."
+        },
+        "explicacion_correcta": "12−5=7."
+      }
+    ],
+    "profundizar": "Media / mediana / moda / rango: elige la que preguntan."
+  },
+  "probabilidad": {
+    "intro": "La probabilidad clásica es casos favorables / casos posibles (espacio muestral equiprobable). Unión, intersección y complemento (1−p) evitan contar de más o de menos.",
+    "pasos": [
+      "Define el espacio muestral.",
+      "Cuenta favorables con la condición exacta.",
+      "Usa complemento cuando “al menos” es más fácil al revés."
+    ],
+    "errores": [
+      "Confundir unión con intersección.",
+      "Usar 1−p del evento equivocado.",
+      "Suponer independencia cuando no la hay."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "Dado justo. P(par)=?",
+      "pasos": [
+        "1) Espacio={1..6}.",
+        "2) Pares={2,4,6} → 3.",
+        "3) P=3/6=1/2."
+      ],
+      "respuesta": "1/2",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "tr_pro_01",
+        "enunciado": "P(par) en dado justo:",
+        "opciones": [
+          "A) 1/6",
+          "B) 1/2",
+          "C) 1/3",
+          "D) 2/3"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Un solo número.",
+          "C": "Contaste mal.",
+          "D": "Eso es impar+… distinto."
+        },
+        "explicacion_correcta": "3/6=1/2."
+      },
+      {
+        "id": "tr_pro_02",
+        "enunciado": "Si P(A)=0,3, P(no A)=",
+        "opciones": [
+          "A) 0,3",
+          "B) 0,7",
+          "C) 1,3",
+          "D) 0"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Mismo evento.",
+          "C": "Suma indebida.",
+          "D": "No es imposible."
+        },
+        "explicacion_correcta": "Complemento 1−0,3."
+      },
+      {
+        "id": "tr_pro_03",
+        "enunciado": "Favorables/posibles requiere:",
+        "opciones": [
+          "A) resultados igualmente posibles (clásico)",
+          "B) solo opiniones",
+          "C) ignorar el enunciado",
+          "D) siempre 50%"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "No es definición.",
+          "C": "Hay que leer la condición.",
+          "D": "No siempre."
+        },
+        "explicacion_correcta": "Modelo clásico equiprobable."
+      },
+      {
+        "id": "tr_pro_04",
+        "enunciado": "P(A o B) con excluyentes es:",
+        "opciones": [
+          "A) P(A)·P(B)",
+          "B) P(A)+P(B)",
+          "C) P(A)−P(B)",
+          "D) 1"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Eso es intersección independiente.",
+          "C": "No es la unión.",
+          "D": "Solo si es seguro."
+        },
+        "explicacion_correcta": "Unión de excluyentes."
+      }
+    ],
+    "profundizar": "Espacio muestral + conteo + complemento."
+  },
+  "trigonometria": {
+    "intro": "En un triángulo rectángulo: sen = opuesto/hipotenusa, cos = adyacente/hipotenusa, tan = opuesto/adyacente. El ángulo determina qué lados usar.",
+    "pasos": [
+      "Dibuja y marca opuesto, adyacente e hipotenusa respecto al ángulo.",
+      "Elige seno, coseno o tangente.",
+      "Despeja el lado pedido."
+    ],
+    "errores": [
+      "Invertir opuesto y adyacente.",
+      "Usar hipotenusa como cateto.",
+      "Aplicar razones en un triángulo no rectángulo sin ley adecuada."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "En rectángulo, opuesto=3, hipotenusa=5. sen θ=?",
+      "pasos": [
+        "1) sen=op/hip.",
+        "2) 3/5.",
+        "3) No uses adyacente aquí."
+      ],
+      "respuesta": "3/5",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "tr_tri_01",
+        "enunciado": "sen θ si op=3, hip=5:",
+        "opciones": [
+          "A) 5/3",
+          "B) 3/5",
+          "C) 3/4",
+          "D) 4/5"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Invertiste.",
+          "C": "Usaste otro cateto sin dato.",
+          "D": "Eso sería un cos si adj=4."
+        },
+        "explicacion_correcta": "sen=3/5."
+      },
+      {
+        "id": "tr_tri_02",
+        "enunciado": "cos θ = adyacente /:",
+        "opciones": [
+          "A) opuesto",
+          "B) hipotenusa",
+          "C) tangente",
+          "D) área"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Eso no es cos.",
+          "C": "Tangente es razón distinta.",
+          "D": "No."
+        },
+        "explicacion_correcta": "cos=adj/hip."
+      },
+      {
+        "id": "tr_tri_03",
+        "enunciado": "tan θ =",
+        "opciones": [
+          "A) hip/op",
+          "B) op/adj",
+          "C) adj/op al cuadrado",
+          "D) sen+cos"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Invertido.",
+          "C": "No.",
+          "D": "Identidad distinta."
+        },
+        "explicacion_correcta": "tan=op/adj."
+      },
+      {
+        "id": "tr_tri_04",
+        "enunciado": "La hipotenusa es:",
+        "opciones": [
+          "A) el cateto menor siempre",
+          "B) el lado opuesto al ángulo recto",
+          "C) un ángulo",
+          "D) el perímetro"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "No por tamaño solo.",
+          "C": "Es lado.",
+          "D": "No."
+        },
+        "explicacion_correcta": "Frente al ángulo de 90°."
+      }
+    ],
+    "profundizar": "SOH-CAH-TOA con dibujo."
+  },
+  "combinatoria": {
+    "intro": "La combinatoria cuenta arreglos: permutaciones (el orden importa) y combinaciones (el orden no importa). Multiplica opciones en etapas sucesivas (principio multiplicativo).",
+    "pasos": [
+      "Decide si el orden importa.",
+      "Usa P o C (o producto de casos) según corresponda.",
+      "No doble-cuentes el mismo grupo."
+    ],
+    "errores": [
+      "Usar combinaciones cuando el orden sí importa.",
+      "Sumar cuando las etapas son sucesivas (debía multiplicar).",
+      "Olvidar restricciones del enunciado."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "¿De cuántas formas elegir 2 libros de 4 si el orden no importa?",
+      "pasos": [
+        "1) Combinación C(4,2).",
+        "2) 4·3/2!=6.",
+        "3) Si el orden importara sería 12."
+      ],
+      "respuesta": "6",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "tr_comb_01",
+        "enunciado": "C(4,2) =",
+        "opciones": [
+          "A) 6",
+          "B) 12",
+          "C) 8",
+          "D) 2"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Eso es P(4,2).",
+          "C": "Mal cálculo.",
+          "D": "Solo resta."
+        },
+        "explicacion_correcta": "C=6."
+      },
+      {
+        "id": "tr_comb_02",
+        "enunciado": "Si el orden importa en 4 para 2:",
+        "opciones": [
+          "A) C(4,2)",
+          "B) P(4,2)=12",
+          "C) 4+2",
+          "D) 1"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "C ignora orden.",
+          "C": "Suma indebida.",
+          "D": "No."
+        },
+        "explicacion_correcta": "Permutación."
+      },
+      {
+        "id": "tr_comb_03",
+        "enunciado": "Menú: 3 sopas y 2 jugos. ¿Pares sopa+jugo?",
+        "opciones": [
+          "A) 5",
+          "B) 6",
+          "C) 3",
+          "D) 2"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Sumaste.",
+          "C": "Solo sopas.",
+          "D": "Solo jugos."
+        },
+        "explicacion_correcta": "3·2=6."
+      },
+      {
+        "id": "tr_comb_04",
+        "enunciado": "Combinación se usa cuando:",
+        "opciones": [
+          "A) el orden no importa",
+          "B) el orden siempre importa",
+          "C) hay infinitos casos sin regla",
+          "D) solo en física"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Eso es permutación.",
+          "C": "Hay regla de conteo.",
+          "D": "Es matemática."
+        },
+        "explicacion_correcta": "Orden irrelevante → C."
+      }
+    ],
+    "profundizar": "Orden sí/no → P o C; etapas → producto."
+  },
+  "calculo_limites": {
+    "intro": "Un límite describe el valor al que se acerca una función cuando x tiende a un número (o ±∞), aunque f(a) no exista. Se simplifica algebraicamente (factorizar) para quitar indeterminaciones 0/0.",
+    "pasos": [
+      "Sustituye el valor si f es continua allí.",
+      "Si sale 0/0, factoriza/simplifica y vuelve a sustituir.",
+      "Interpreta el resultado como tendencia, no solo como “f(a)”."
+    ],
+    "errores": [
+      "Declarar que no existe límite solo porque f(a) no está definida, sin mirar laterales.",
+      "Cancelar términos indebidos.",
+      "Confundir límite con derivada."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "lim x→2 (x²−4)/(x−2)",
+      "pasos": [
+        "1) Sustituir da 0/0.",
+        "2) Factoriza (x−2)(x+2)/(x−2).",
+        "3) Para x≠2 queda x+2 → 4."
+      ],
+      "respuesta": "4",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "tr_lim_01",
+        "enunciado": "lim x→2 (x²−4)/(x−2) =",
+        "opciones": [
+          "A) 0",
+          "B) 4",
+          "C) ∞",
+          "D) 2"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Indeterminación, no el límite.",
+          "C": "No diverge aquí.",
+          "D": "Te quedaste a medias."
+        },
+        "explicacion_correcta": "Simplifica a x+2 → 4."
+      },
+      {
+        "id": "tr_lim_02",
+        "enunciado": "0/0 al sustituir indica:",
+        "opciones": [
+          "A) fin del problema",
+          "B) indeterminación: hay que simplificar",
+          "C) el límite es siempre 0",
+          "D) el límite es 1"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Se puede resolver.",
+          "C": "No necesariamente.",
+          "D": "No."
+        },
+        "explicacion_correcta": "Indeterminación algebraica."
+      },
+      {
+        "id": "tr_lim_03",
+        "enunciado": "Si f es polinomio, lim x→a f(x) =",
+        "opciones": [
+          "A) siempre 0",
+          "B) f(a)",
+          "C) la derivada",
+          "D) no existe"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Falso.",
+          "C": "Derivada es otro objeto.",
+          "D": "Existe por continuidad."
+        },
+        "explicacion_correcta": "Continuidad de polinomios."
+      },
+      {
+        "id": "tr_lim_04",
+        "enunciado": "El límite describe:",
+        "opciones": [
+          "A) solo un punto aislado sin tendencia",
+          "B) el valor al que se acerca f(x)",
+          "C) únicamente el área",
+          "D) la moda estadística"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Es tendencia.",
+          "C": "Integral distinta.",
+          "D": "Otra área."
+        },
+        "explicacion_correcta": "Tendencia de f(x)."
+      }
+    ],
+    "profundizar": "Sustitución → indeterminación → simplificar."
+  },
+  "cts": {
+    "intro": "Ciencia, tecnología y sociedad (CTS) analiza cómo una decisión técnica (energía, agro, salud) impacta ambiente, equidad y riesgos. No basta nombrar la tecnología: hay que enlazar mecanismo e impacto.",
+    "pasos": [
+      "Identifica la tecnología o medida propuesta.",
+      "Señala el impacto ambiental/social relevante del caso.",
+      "Evalúa trade-offs (beneficio vs riesgo) con evidencia del enunciado."
+    ],
+    "errores": [
+      "Elegir una opción que ignora el impacto descrito.",
+      "Confundir correlación local con solución universal.",
+      "Olvidar el contexto ecológico del sitio (páramo, mar, café…)."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "Paneles solares cerca de un santuario marino para reducir impacto…",
+      "pasos": [
+        "1) La medida busca mitigar presión ambiental.",
+        "2) Debe cuidarse que la instalación no dañe el ecosistema que se quiere proteger.",
+        "3) La mejor opción equilibra energía limpia y conservación."
+      ],
+      "respuesta": "Mitigar impacto sin destruir el ecosistema protegido",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "tr_cts_01",
+        "enunciado": "CTS conecta principalmente:",
+        "opciones": [
+          "A) solo fórmulas sin contexto",
+          "B) ciencia/tecnología con impactos sociales y ambientales",
+          "C) únicamente fechas históricas",
+          "D) solo gramática"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Falta el impacto.",
+          "C": "Eso es historia.",
+          "D": "Inglés."
+        },
+        "explicacion_correcta": "Tecnología + sociedad/ambiente."
+      },
+      {
+        "id": "tr_cts_02",
+        "enunciado": "Un trade-off es:",
+        "opciones": [
+          "A) ganar todo sin costo",
+          "B) un equilibrio entre beneficio y costo/riesgo",
+          "C) un error de suma",
+          "D) una capital de departamento"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Irreal en CTS.",
+          "C": "No.",
+          "D": "No."
+        },
+        "explicacion_correcta": "Compromiso beneficio-riesgo."
+      },
+      {
+        "id": "tr_cts_03",
+        "enunciado": "En un páramo, una intervención debe considerar sobre todo:",
+        "opciones": [
+          "A) solo el color del panel",
+          "B) el agua y ecosistemas de alta montaña",
+          "C) el Mediterráneo",
+          "D) la moda estadística de otro país"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Secundario.",
+          "C": "Fuera de contexto.",
+          "D": "Irrelevante."
+        },
+        "explicacion_correcta": "Páramo = retención hídrica/frailejones."
+      },
+      {
+        "id": "tr_cts_04",
+        "enunciado": "La mejor respuesta CTS suele:",
+        "opciones": [
+          "A) negar todo impacto",
+          "B) articular evidencia del caso con consecuencias",
+          "C) copiar una definición vacía",
+          "D) hablar de otra región sin datos"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Siempre hay efectos.",
+          "C": "Insuficiente.",
+          "D": "Fuera de caso."
+        },
+        "explicacion_correcta": "Evidencia + impacto."
+      }
+    ],
+    "profundizar": "Caso → tecnología → impacto → decisión informada."
+  },
+  "indagacion": {
+    "intro": "La indagación científica plantea preguntas, hipótesis, variables (independiente/dependiente/controladas) y evidencia. Un buen diseño cambia una variable a la vez y mide con claridad.",
+    "pasos": [
+      "Separa pregunta, hipótesis y variable que se manipula.",
+      "Identifica qué se mide (dependiente) y qué se controla.",
+      "Concluye solo lo que los datos permiten."
+    ],
+    "errores": [
+      "Confundir hipótesis con conclusión ya demostrada.",
+      "Cambiar varias variables a la vez.",
+      "Generalizar más allá de la evidencia."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "Se varía la luz y se mide O₂ en plantas. ¿Variable independiente?",
+      "pasos": [
+        "1) Independiente = la que el experimentador cambia.",
+        "2) Aquí: intensidad de luz.",
+        "3) Dependiente: tasa de O₂."
+      ],
+      "respuesta": "Intensidad de luz",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "tr_ind_01",
+        "enunciado": "Variable independiente es:",
+        "opciones": [
+          "A) la que se mide como resultado",
+          "B) la que se manipula",
+          "C) el nombre del laboratorio",
+          "D) siempre el tiempo político"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Eso es dependiente.",
+          "C": "No.",
+          "D": "No."
+        },
+        "explicacion_correcta": "Se manipula."
+      },
+      {
+        "id": "tr_ind_02",
+        "enunciado": "Variable dependiente es:",
+        "opciones": [
+          "A) la respuesta medida",
+          "B) la que se fija de antemano como causa",
+          "C) un distractor gramatical",
+          "D) la hipótesis misma"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Eso es independiente/control.",
+          "C": "No.",
+          "D": "Hipótesis ≠ medición."
+        },
+        "explicacion_correcta": "Se mide el efecto."
+      },
+      {
+        "id": "tr_ind_03",
+        "enunciado": "Controlar variables significa:",
+        "opciones": [
+          "A) ignorarlas",
+          "B) mantenerlas constantes para aislar el efecto",
+          "C) cambiarlas todas",
+          "D) borrar datos"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Rompe el diseño.",
+          "C": "Confunde causas.",
+          "D": "Mala práctica."
+        },
+        "explicacion_correcta": "Aislar la causa."
+      },
+      {
+        "id": "tr_ind_04",
+        "enunciado": "Una hipótesis es:",
+        "opciones": [
+          "A) una respuesta tentativa comprobable",
+          "B) un resultado ya publicado obligatorio",
+          "C) una opinión sin prueba posible",
+          "D) un mapa político"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Aún se pone a prueba.",
+          "C": "Debe ser comprobable.",
+          "D": "No."
+        },
+        "explicacion_correcta": "Afirmación comprobable."
+      }
+    ],
+    "profundizar": "Pregunta → variables → evidencia → conclusión limitada."
+  },
+  "argumentacion": {
+    "intro": "Un argumento une premisas (razones) con una conclusión. Es válido si la conclusión se sigue; es falaz si hay un salto (pendiente resbaladiza, ad hominem, etc.).",
+    "pasos": [
+      "Separa premisas y conclusión.",
+      "Pregunta si las premisas bastan o hay salto.",
+      "Nombra el tipo de fallo si lo hay."
+    ],
+    "errores": [
+      "Confundir premisa con conclusión.",
+      "Aceptar lo que “suena bien” sin apoyo.",
+      "Mezclar tipos de falacia."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "«Si permitimos celulares en clase, el colegio colapsará.»",
+      "pasos": [
+        "1) Premisa implícita: permitir celulares.",
+        "2) Conclusión: el colegio colapsa.",
+        "3) Salto sin pasos intermedios → pendiente resbaladiza.",
+        "4) Por eso la conclusión no se sigue: de un permiso no se deduce un desastre total."
+      ],
+      "respuesta": "Pendiente resbaladiza",
+      "contraste": {
+        "titulo": "Contraste · argumento válido (corto)",
+        "invalido": "Inválido: «Si hay celulares, el colegio colapsa.»",
+        "valido": "Válido: «Si el reglamento prohíbe celulares y Ana usa uno, Ana incumple el reglamento.»"
+      }
+    },
+    "practica": [
+      {
+        "id": "tr_arg_01",
+        "enunciado": "Premisa: «Permitimos X.» Conclusión: «Todo colapsa.» ¿Qué falla?",
+        "opciones": [
+          "A) Pendiente resbaladiza: la conclusión no se sigue",
+          "B) Dato estadístico sólido",
+          "C) Solo una norma escolar",
+          "D) Definición de X"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "No hay evidencia numérica.",
+          "C": "No describe norma: predice desastre.",
+          "D": "No define: afirma consecuencias."
+        },
+        "explicacion_correcta": "Salto permiso→colapso."
+      },
+      {
+        "id": "tr_arg_02",
+        "enunciado": "«Todo M es P» y «Todo S es M» ⇒",
+        "opciones": [
+          "A) Ningún S es P",
+          "B) Todo S es P",
+          "C) Algún P no es S necesariamente aquí",
+          "D) Nada"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Negación indebida.",
+          "C": "No es lo deducido.",
+          "D": "Sí se deduce inclusión."
+        },
+        "explicacion_correcta": "Transitividad válida."
+      },
+      {
+        "id": "tr_arg_03",
+        "enunciado": "«No oigas su propuesta: reprobó dos materias.»",
+        "opciones": [
+          "A) Falsa analogía",
+          "B) Ad hominem",
+          "C) Generalización con muestra",
+          "D) Definición circular"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "No compara casos.",
+          "C": "No generaliza muestra.",
+          "D": "No redefine."
+        },
+        "explicacion_correcta": "Ataca a la persona."
+      },
+      {
+        "id": "tr_arg_04",
+        "enunciado": "La conclusión de un argumento es:",
+        "opciones": [
+          "A) la idea que se quiere que aceptes a partir de las razones",
+          "B) cualquier anécdota",
+          "C) solo el título",
+          "D) una pregunta sin tesis"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Puede ser premisa.",
+          "C": "Orienta, no demuestra.",
+          "D": "No es tesis."
+        },
+        "explicacion_correcta": "Conclusión = lo sostenido."
+      }
+    ],
+    "profundizar": "Premisa → conclusión; detecta saltos."
+  },
+  "fracciones": {
+    "intro": "Una fracción a/b compara una parte (numerador) con un todo en b partes iguales. Equivalentes representan la misma cantidad (1/2=2/4).",
+    "pasos": [
+      "Para sumar/restar: iguala denominadores (mcm).",
+      "Para comparar: mismo denominador o decimal.",
+      "«De» suele ser multiplicación: (2/5)×40."
+    ],
+    "errores": [
+      "Sumar numeradores y denominadores por separado.",
+      "Olvidar el denominador común.",
+      "Invertir sin que lo pidan."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "1/2 + 1/3",
+      "pasos": [
+        "1) mcm(2,3)=6.",
+        "2) 3/6+2/6.",
+        "3) 5/6."
+      ],
+      "respuesta": "5/6",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "tr_frac_01",
+        "enunciado": "1/2+1/3=",
+        "opciones": [
+          "A) 2/5",
+          "B) 5/6",
+          "C) 1/5",
+          "D) 2/6"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Sumaste arriba y abajo.",
+          "C": "Procedimiento invertido.",
+          "D": "Incompleto."
+        },
+        "explicacion_correcta": "3/6+2/6=5/6."
+      },
+      {
+        "id": "tr_frac_02",
+        "enunciado": "(2/5) de 40=",
+        "opciones": [
+          "A) 20",
+          "B) 16",
+          "C) 8",
+          "D) 10"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Usaste 1/2.",
+          "C": "Solo 1/5.",
+          "D": "1/4."
+        },
+        "explicacion_correcta": "16."
+      },
+      {
+        "id": "tr_frac_03",
+        "enunciado": "Mayor: 3/4 o 5/8?",
+        "opciones": [
+          "A) 5/8",
+          "B) 3/4",
+          "C) Iguales",
+          "D) No comparables"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "5/8=0,625<0,75.",
+          "C": "3/4=6/8>5/8.",
+          "D": "Sí se comparan."
+        },
+        "explicacion_correcta": "3/4 mayor."
+      },
+      {
+        "id": "tr_frac_04",
+        "enunciado": "Simplifica 8/12:",
+        "opciones": [
+          "A) 4/6",
+          "B) 2/3",
+          "C) 8/3",
+          "D) 3/2"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Aún simplificable.",
+          "C": "No es simplificar.",
+          "D": "Recíproco."
+        },
+        "explicacion_correcta": "mcd=4 → 2/3."
+      }
+    ],
+    "profundizar": "mcm, equivalencia y “de” como producto."
+  },
+  "proporcionalidad": {
+    "intro": "Magnitudes directamente proporcionales crecen juntas en la misma razón. Inversas: al subir una baja la otra y el producto se conserva.",
+    "pasos": [
+      "Clasifica: más→más (directa) o más→menos (inversa).",
+      "Directa a/b=c/d; inversa a·b=c·d.",
+      "Convierte unidades antes."
+    ],
+    "errores": [
+      "Tratar inversa como directa.",
+      "Sumar en vez de usar la razón.",
+      "Olvidar conversiones de tiempo."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "4 obreros · 6 días. ¿Días con 3?",
+      "pasos": [
+        "1) Inversa: personas×días constante.",
+        "2) 4×6=24.",
+        "3) 24/3=8."
+      ],
+      "respuesta": "8 días",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "tr_prop_01",
+        "enunciado": "4 obreros·6 días → con 3:",
+        "opciones": [
+          "A) 4,5",
+          "B) 8",
+          "C) 12",
+          "D) 2"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "La trataste directa.",
+          "C": "Mal producto.",
+          "D": "Con menos gente tarda más."
+        },
+        "explicacion_correcta": "24/3=8."
+      },
+      {
+        "id": "tr_prop_02",
+        "enunciado": "5 cuadernos=20000. ¿7?",
+        "opciones": [
+          "A) 28000",
+          "B) 25000",
+          "C) 14000",
+          "D) 35000"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Suma sin unitario.",
+          "C": "Razón invertida.",
+          "D": "De más."
+        },
+        "explicacion_correcta": "4000×7."
+      },
+      {
+        "id": "tr_prop_03",
+        "enunciado": "120 km en 2 h → en 3 h:",
+        "opciones": [
+          "A) 150",
+          "B) 180",
+          "C) 240",
+          "D) 60"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Suma arbitraria.",
+          "C": "Duplicaste 120.",
+          "D": "1 h."
+        },
+        "explicacion_correcta": "60 km/h×3."
+      },
+      {
+        "id": "tr_prop_04",
+        "enunciado": "Si al duplicar obreros el tiempo se reduce a la mitad (mismo trabajo), es:",
+        "opciones": [
+          "A) directa",
+          "B) inversa",
+          "C) aleatoria",
+          "D) geométrica forzada"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Directa crecería juntas.",
+          "C": "Hay regla.",
+          "D": "No aplica."
+        },
+        "explicacion_correcta": "Producto constante."
+      }
+    ],
+    "profundizar": "Regla de tres directa e inversa."
+  },
+  "inferencia": {
+    "intro": "Una inferencia válida extrae algo que se sigue del texto sin inventar datos externos. Si el texto no lo sostiene, no es inferencia válida.",
+    "pasos": [
+      "Localiza pistas textuales.",
+      "Formula lo que se sigue.",
+      "Descarta lo que el texto no autoriza."
+    ],
+    "errores": [
+      "Inventar causas no dichas.",
+      "Confundir opinión propia con inferencia.",
+      "Generalizar más allá del párrafo."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "Texto: «Ana salió con paraguas; la calle estaba mojada.» Inferencia razonable:",
+      "pasos": [
+        "1) Hay indicios de lluvia o piso húmedo.",
+        "2) No afirma el color del paraguas.",
+        "3) Inferencia: probablemente llovió o llovía."
+      ],
+      "respuesta": "Probablemente había lluvia / piso mojado por lluvia",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "tr_inf_01",
+        "enunciado": "Inferencia válida debe:",
+        "opciones": [
+          "A) contradecir el texto",
+          "B) seguirse de pistas del texto",
+          "C) ignorar el texto",
+          "D) ser solo un rumor"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Contradicción no vale.",
+          "C": "Sin texto no hay inferencia del ítem.",
+          "D": "Sin apoyo."
+        },
+        "explicacion_correcta": "Se sigue del texto."
+      },
+      {
+        "id": "tr_inf_02",
+        "enunciado": "«El termómetro marca 39 °C.» Inferencia clínica básica en contexto escolar típico:",
+        "opciones": [
+          "A) hay fiebre probable",
+          "B) es invierno en Europa necesariamente",
+          "C) el aparato está en la Luna",
+          "D) no significa nada"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "No se deduce el continente.",
+          "C": "Absurdo.",
+          "D": "Sí hay lectura."
+        },
+        "explicacion_correcta": "39 °C sugiere fiebre."
+      },
+      {
+        "id": "tr_inf_03",
+        "enunciado": "No es inferencia válida:",
+        "opciones": [
+          "A) lo que el texto implica",
+          "B) un dato que el texto nunca sugiere",
+          "C) una conclusión con apoyo",
+          "D) una lectura de una pista"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Sí es.",
+          "C": "Sí es.",
+          "D": "Sí es."
+        },
+        "explicacion_correcta": "Sin apoyo = inválida."
+      },
+      {
+        "id": "tr_inf_04",
+        "enunciado": "Para validar una inferencia:",
+        "opciones": [
+          "A) citas la pista",
+          "B) inventas un final",
+          "C) cambias el tema",
+          "D) miras solo la opción más larga"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Invención.",
+          "C": "Fuera de foco.",
+          "D": "Longitud ≠ verdad."
+        },
+        "explicacion_correcta": "Apoyo textual."
+      }
+    ],
+    "profundizar": "Profundiza en «inferencias válidas» con ejemplos nuevos del mismo esquema."
+  },
+  "comprension_literal": {
+    "intro": "La comprensión literal recupera información explícita: nombres, cifras, hechos dichos tal cual en el texto.",
+    "pasos": [
+      "Subraya el dato pedido.",
+      "Contrasta con cada opción.",
+      "Elige la que reproduce el texto."
+    ],
+    "errores": [
+      "Inferir de más.",
+      "Cambiar una cifra.",
+      "Confundir un personaje con otro."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "Texto: «La reunión es a las 8 a. m. en el aula 2.» ¿Hora?",
+      "pasos": [
+        "1) El texto dice 8 a. m.",
+        "2) Lugar es otro dato.",
+        "3) Respuesta literal: 8 a. m."
+      ],
+      "respuesta": "8 a. m.",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "tr_lit_01",
+        "enunciado": "Literal significa:",
+        "opciones": [
+          "A) inventar el final",
+          "B) recuperar lo dicho explícitamente",
+          "C) solo opinar",
+          "D) ignorar cifras"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Eso no es literal.",
+          "C": "Opinión ≠ literal.",
+          "D": "Las cifras cuentan."
+        },
+        "explicacion_correcta": "Dato explícito."
+      },
+      {
+        "id": "tr_lit_02",
+        "enunciado": "Si el texto dice “tres días”, la respuesta literal no es:",
+        "opciones": [
+          "A) tres días",
+          "B) una semana inventada",
+          "C) tres días de plazo",
+          "D) el mismo dato"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Correcto literal.",
+          "C": "Puede ser paráfrasis fiel.",
+          "D": "Correcto."
+        },
+        "explicacion_correcta": "No inventes."
+      },
+      {
+        "id": "tr_lit_03",
+        "enunciado": "La clave literal está:",
+        "opciones": [
+          "A) fuera del texto",
+          "B) en una oración del texto",
+          "C) solo en tu memoria de otra obra",
+          "D) en la opción más corta siempre"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "No.",
+          "C": "Puede despistar.",
+          "D": "No."
+        },
+        "explicacion_correcta": "En el texto."
+      },
+      {
+        "id": "tr_lit_04",
+        "enunciado": "Paráfrasis literal válida:",
+        "opciones": [
+          "A) cambia el sentido",
+          "B) dice lo mismo con otras palabras fieles",
+          "C) agrega un final nuevo",
+          "D) niega el dato"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Invalida.",
+          "C": "Añadido.",
+          "D": "Contradicción."
+        },
+        "explicacion_correcta": "Mismo sentido."
+      }
+    ],
+    "profundizar": "Profundiza en «comprensión literal» con ejemplos nuevos del mismo esquema."
+  },
+  "articulacion_global": {
+    "intro": "La articulación global une partes del texto en un sentido de conjunto (tesis, hilo, cohesión).",
+    "pasos": [
+      "Define el concepto clave: tesis / hilo conductor.",
+      "Aplícalo al caso o texto del enunciado.",
+      "Contrasta por qué las otras lecturas fallan conceptualmente."
+    ],
+    "errores": [
+      "Ignorar el foco «tesis / hilo conductor».",
+      "Mezclar este tema con otro cercano.",
+      "Elegir una opción sin anclarla al concepto."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "Caso típico de «articulacion global»: identifica tesis / hilo conductor.",
+      "pasos": [
+        "1) Recuerda: La articulación global une partes del texto en un sentido de conjunto (tesis, hilo, cohesión).…",
+        "2) Busca en el caso el elemento que corresponde a tesis / hilo conductor.",
+        "3) Descarta opciones que cambian el concepto.",
+        "4) La respuesta es la que sostiene tesis / hilo conductor."
+      ],
+      "respuesta": "La opción alineada con tesis / hilo conductor",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "articulacion_global_p1",
+        "enunciado": "En este tema, el núcleo conceptual es:",
+        "opciones": [
+          "A) tesis / hilo conductor",
+          "B) Memorizar solo la letra de una clave ajena",
+          "C) Ignorar el caso",
+          "D) Cambiar de área sin leer"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin concepto no hay transferencia.",
+          "C": "El caso es la evidencia.",
+          "D": "Hay que quedarse en el tema."
+        },
+        "explicacion_correcta": "Núcleo: tesis / hilo conductor."
+      },
+      {
+        "id": "articulacion_global_p2",
+        "enunciado": "Una respuesta correcta debe:",
+        "opciones": [
+          "A) Aplicar el concepto al caso",
+          "B) Contradecir el concepto a propósito",
+          "C) Hablar de otro tema",
+          "D) Ser la más larga"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Contradicción falla.",
+          "C": "Fuera de foco.",
+          "D": "Longitud ≠ acierto."
+        },
+        "explicacion_correcta": "Concepto + caso."
+      },
+      {
+        "id": "articulacion_global_p3",
+        "enunciado": "Error típico:",
+        "opciones": [
+          "A) Aplicar bien el concepto",
+          "B) Confundir este concepto con uno vecino",
+          "C) Leer el caso con cuidado",
+          "D) Verificar la definición"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Eso es acierto.",
+          "C": "Eso ayuda.",
+          "D": "Eso ayuda."
+        },
+        "explicacion_correcta": "Confusión entre subtemas."
+      },
+      {
+        "id": "articulacion_global_p4",
+        "enunciado": "Para consolidar el tema conviene:",
+        "opciones": [
+          "A) Resolver ítems nuevos del mismo concepto",
+          "B) Evitar cualquier ejemplo",
+          "C) Solo adivinar",
+          "D) Borrar la definición"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin práctica no fija.",
+          "C": "No consolida.",
+          "D": "Pierdes el ancla."
+        },
+        "explicacion_correcta": "Práctica del mismo esquema."
+      }
+    ],
+    "profundizar": "Busca más casos de «tesis / hilo conductor»."
+  },
+  "evaluacion_critica": {
+    "intro": "La evaluación crítica juzga solidez, sesgos y suficiencia de las razones del texto.",
+    "pasos": [
+      "Define el concepto clave: ¿las pruebas bastan?.",
+      "Aplícalo al caso o texto del enunciado.",
+      "Contrasta por qué las otras lecturas fallan conceptualmente."
+    ],
+    "errores": [
+      "Ignorar el foco «¿las pruebas bastan?».",
+      "Mezclar este tema con otro cercano.",
+      "Elegir una opción sin anclarla al concepto."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "Caso típico de «evaluacion critica»: identifica ¿las pruebas bastan?.",
+      "pasos": [
+        "1) Recuerda: La evaluación crítica juzga solidez, sesgos y suficiencia de las razones del texto.…",
+        "2) Busca en el caso el elemento que corresponde a ¿las pruebas bastan?.",
+        "3) Descarta opciones que cambian el concepto.",
+        "4) La respuesta es la que sostiene ¿las pruebas bastan?."
+      ],
+      "respuesta": "La opción alineada con ¿las pruebas bastan?",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "evaluacion_critica_p1",
+        "enunciado": "En este tema, el núcleo conceptual es:",
+        "opciones": [
+          "A) ¿las pruebas bastan?",
+          "B) Memorizar solo la letra de una clave ajena",
+          "C) Ignorar el caso",
+          "D) Cambiar de área sin leer"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin concepto no hay transferencia.",
+          "C": "El caso es la evidencia.",
+          "D": "Hay que quedarse en el tema."
+        },
+        "explicacion_correcta": "Núcleo: ¿las pruebas bastan?."
+      },
+      {
+        "id": "evaluacion_critica_p2",
+        "enunciado": "Una respuesta correcta debe:",
+        "opciones": [
+          "A) Aplicar el concepto al caso",
+          "B) Contradecir el concepto a propósito",
+          "C) Hablar de otro tema",
+          "D) Ser la más larga"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Contradicción falla.",
+          "C": "Fuera de foco.",
+          "D": "Longitud ≠ acierto."
+        },
+        "explicacion_correcta": "Concepto + caso."
+      },
+      {
+        "id": "evaluacion_critica_p3",
+        "enunciado": "Error típico:",
+        "opciones": [
+          "A) Aplicar bien el concepto",
+          "B) Confundir este concepto con uno vecino",
+          "C) Leer el caso con cuidado",
+          "D) Verificar la definición"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Eso es acierto.",
+          "C": "Eso ayuda.",
+          "D": "Eso ayuda."
+        },
+        "explicacion_correcta": "Confusión entre subtemas."
+      },
+      {
+        "id": "evaluacion_critica_p4",
+        "enunciado": "Para consolidar el tema conviene:",
+        "opciones": [
+          "A) Resolver ítems nuevos del mismo concepto",
+          "B) Evitar cualquier ejemplo",
+          "C) Solo adivinar",
+          "D) Borrar la definición"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin práctica no fija.",
+          "C": "No consolida.",
+          "D": "Pierdes el ancla."
+        },
+        "explicacion_correcta": "Práctica del mismo esquema."
+      }
+    ],
+    "profundizar": "Busca más casos de «¿las pruebas bastan?»."
+  },
+  "dos_textos": {
+    "intro": "Comparar dos textos es contrastar tesis, evidencias y puntos de acuerdo/desacuerdo.",
+    "pasos": [
+      "Define el concepto clave: acuerdo vs desacuerdo.",
+      "Aplícalo al caso o texto del enunciado.",
+      "Contrasta por qué las otras lecturas fallan conceptualmente."
+    ],
+    "errores": [
+      "Ignorar el foco «acuerdo vs desacuerdo».",
+      "Mezclar este tema con otro cercano.",
+      "Elegir una opción sin anclarla al concepto."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "Caso típico de «dos textos»: identifica acuerdo vs desacuerdo.",
+      "pasos": [
+        "1) Recuerda: Comparar dos textos es contrastar tesis, evidencias y puntos de acuerdo/desacuerdo.…",
+        "2) Busca en el caso el elemento que corresponde a acuerdo vs desacuerdo.",
+        "3) Descarta opciones que cambian el concepto.",
+        "4) La respuesta es la que sostiene acuerdo vs desacuerdo."
+      ],
+      "respuesta": "La opción alineada con acuerdo vs desacuerdo",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "dos_textos_p1",
+        "enunciado": "En este tema, el núcleo conceptual es:",
+        "opciones": [
+          "A) acuerdo vs desacuerdo",
+          "B) Memorizar solo la letra de una clave ajena",
+          "C) Ignorar el caso",
+          "D) Cambiar de área sin leer"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin concepto no hay transferencia.",
+          "C": "El caso es la evidencia.",
+          "D": "Hay que quedarse en el tema."
+        },
+        "explicacion_correcta": "Núcleo: acuerdo vs desacuerdo."
+      },
+      {
+        "id": "dos_textos_p2",
+        "enunciado": "Una respuesta correcta debe:",
+        "opciones": [
+          "A) Aplicar el concepto al caso",
+          "B) Contradecir el concepto a propósito",
+          "C) Hablar de otro tema",
+          "D) Ser la más larga"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Contradicción falla.",
+          "C": "Fuera de foco.",
+          "D": "Longitud ≠ acierto."
+        },
+        "explicacion_correcta": "Concepto + caso."
+      },
+      {
+        "id": "dos_textos_p3",
+        "enunciado": "Error típico:",
+        "opciones": [
+          "A) Aplicar bien el concepto",
+          "B) Confundir este concepto con uno vecino",
+          "C) Leer el caso con cuidado",
+          "D) Verificar la definición"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Eso es acierto.",
+          "C": "Eso ayuda.",
+          "D": "Eso ayuda."
+        },
+        "explicacion_correcta": "Confusión entre subtemas."
+      },
+      {
+        "id": "dos_textos_p4",
+        "enunciado": "Para consolidar el tema conviene:",
+        "opciones": [
+          "A) Resolver ítems nuevos del mismo concepto",
+          "B) Evitar cualquier ejemplo",
+          "C) Solo adivinar",
+          "D) Borrar la definición"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin práctica no fija.",
+          "C": "No consolida.",
+          "D": "Pierdes el ancla."
+        },
+        "explicacion_correcta": "Práctica del mismo esquema."
+      }
+    ],
+    "profundizar": "Busca más casos de «acuerdo vs desacuerdo»."
+  },
+  "textos_discontinuos": {
+    "intro": "Los textos discontinuos (tablas, avisos, gráficas) se leen localizando ejes, filas y condiciones.",
+    "pasos": [
+      "Define el concepto clave: leer la clave de la tabla/gráfica.",
+      "Aplícalo al caso o texto del enunciado.",
+      "Contrasta por qué las otras lecturas fallan conceptualmente."
+    ],
+    "errores": [
+      "Ignorar el foco «leer la clave de la tabla/gráfica».",
+      "Mezclar este tema con otro cercano.",
+      "Elegir una opción sin anclarla al concepto."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "Caso típico de «textos discontinuos»: identifica leer la clave de la tabla/gráfica.",
+      "pasos": [
+        "1) Recuerda: Los textos discontinuos (tablas, avisos, gráficas) se leen localizando ejes, filas y condiciones.…",
+        "2) Busca en el caso el elemento que corresponde a leer la clave de la tabla/gráfica.",
+        "3) Descarta opciones que cambian el concepto.",
+        "4) La respuesta es la que sostiene leer la clave de la tabla/gráfica."
+      ],
+      "respuesta": "La opción alineada con leer la clave de la tabla/gráfica",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "textos_discontinuos_p1",
+        "enunciado": "En este tema, el núcleo conceptual es:",
+        "opciones": [
+          "A) leer la clave de la tabla/gráfica",
+          "B) Memorizar solo la letra de una clave ajena",
+          "C) Ignorar el caso",
+          "D) Cambiar de área sin leer"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin concepto no hay transferencia.",
+          "C": "El caso es la evidencia.",
+          "D": "Hay que quedarse en el tema."
+        },
+        "explicacion_correcta": "Núcleo: leer la clave de la tabla/gráfica."
+      },
+      {
+        "id": "textos_discontinuos_p2",
+        "enunciado": "Una respuesta correcta debe:",
+        "opciones": [
+          "A) Aplicar el concepto al caso",
+          "B) Contradecir el concepto a propósito",
+          "C) Hablar de otro tema",
+          "D) Ser la más larga"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Contradicción falla.",
+          "C": "Fuera de foco.",
+          "D": "Longitud ≠ acierto."
+        },
+        "explicacion_correcta": "Concepto + caso."
+      },
+      {
+        "id": "textos_discontinuos_p3",
+        "enunciado": "Error típico:",
+        "opciones": [
+          "A) Aplicar bien el concepto",
+          "B) Confundir este concepto con uno vecino",
+          "C) Leer el caso con cuidado",
+          "D) Verificar la definición"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Eso es acierto.",
+          "C": "Eso ayuda.",
+          "D": "Eso ayuda."
+        },
+        "explicacion_correcta": "Confusión entre subtemas."
+      },
+      {
+        "id": "textos_discontinuos_p4",
+        "enunciado": "Para consolidar el tema conviene:",
+        "opciones": [
+          "A) Resolver ítems nuevos del mismo concepto",
+          "B) Evitar cualquier ejemplo",
+          "C) Solo adivinar",
+          "D) Borrar la definición"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin práctica no fija.",
+          "C": "No consolida.",
+          "D": "Pierdes el ancla."
+        },
+        "explicacion_correcta": "Práctica del mismo esquema."
+      }
+    ],
+    "profundizar": "Busca más casos de «leer la clave de la tabla/gráfica»."
+  },
+  "filosofia": {
+    "intro": "Las ideas éticas/filosóficas del texto plantean valores, deberes o concepciones de justicia que debes identificar.",
+    "pasos": [
+      "Define el concepto clave: valor o tesis ética.",
+      "Aplícalo al caso o texto del enunciado.",
+      "Contrasta por qué las otras lecturas fallan conceptualmente."
+    ],
+    "errores": [
+      "Ignorar el foco «valor o tesis ética».",
+      "Mezclar este tema con otro cercano.",
+      "Elegir una opción sin anclarla al concepto."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "Caso típico de «filosofia»: identifica valor o tesis ética.",
+      "pasos": [
+        "1) Recuerda: Las ideas éticas/filosóficas del texto plantean valores, deberes o concepciones de justicia que debes identificar.…",
+        "2) Busca en el caso el elemento que corresponde a valor o tesis ética.",
+        "3) Descarta opciones que cambian el concepto.",
+        "4) La respuesta es la que sostiene valor o tesis ética."
+      ],
+      "respuesta": "La opción alineada con valor o tesis ética",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "filosofia_p1",
+        "enunciado": "En este tema, el núcleo conceptual es:",
+        "opciones": [
+          "A) valor o tesis ética",
+          "B) Memorizar solo la letra de una clave ajena",
+          "C) Ignorar el caso",
+          "D) Cambiar de área sin leer"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin concepto no hay transferencia.",
+          "C": "El caso es la evidencia.",
+          "D": "Hay que quedarse en el tema."
+        },
+        "explicacion_correcta": "Núcleo: valor o tesis ética."
+      },
+      {
+        "id": "filosofia_p2",
+        "enunciado": "Una respuesta correcta debe:",
+        "opciones": [
+          "A) Aplicar el concepto al caso",
+          "B) Contradecir el concepto a propósito",
+          "C) Hablar de otro tema",
+          "D) Ser la más larga"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Contradicción falla.",
+          "C": "Fuera de foco.",
+          "D": "Longitud ≠ acierto."
+        },
+        "explicacion_correcta": "Concepto + caso."
+      },
+      {
+        "id": "filosofia_p3",
+        "enunciado": "Error típico:",
+        "opciones": [
+          "A) Aplicar bien el concepto",
+          "B) Confundir este concepto con uno vecino",
+          "C) Leer el caso con cuidado",
+          "D) Verificar la definición"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Eso es acierto.",
+          "C": "Eso ayuda.",
+          "D": "Eso ayuda."
+        },
+        "explicacion_correcta": "Confusión entre subtemas."
+      },
+      {
+        "id": "filosofia_p4",
+        "enunciado": "Para consolidar el tema conviene:",
+        "opciones": [
+          "A) Resolver ítems nuevos del mismo concepto",
+          "B) Evitar cualquier ejemplo",
+          "C) Solo adivinar",
+          "D) Borrar la definición"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin práctica no fija.",
+          "C": "No consolida.",
+          "D": "Pierdes el ancla."
+        },
+        "explicacion_correcta": "Práctica del mismo esquema."
+      }
+    ],
+    "profundizar": "Busca más casos de «valor o tesis ética»."
+  },
+  "pragmatica": {
+    "intro": "La pragmática atiende la intención comunicativa: ¿informar, persuadir, ironizar, pedir?",
+    "pasos": [
+      "Define el concepto clave: intención del hablante.",
+      "Aplícalo al caso o texto del enunciado.",
+      "Contrasta por qué las otras lecturas fallan conceptualmente."
+    ],
+    "errores": [
+      "Ignorar el foco «intención del hablante».",
+      "Mezclar este tema con otro cercano.",
+      "Elegir una opción sin anclarla al concepto."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "Caso típico de «pragmatica»: identifica intención del hablante.",
+      "pasos": [
+        "1) Recuerda: La pragmática atiende la intención comunicativa: ¿informar, persuadir, ironizar, pedir?…",
+        "2) Busca en el caso el elemento que corresponde a intención del hablante.",
+        "3) Descarta opciones que cambian el concepto.",
+        "4) La respuesta es la que sostiene intención del hablante."
+      ],
+      "respuesta": "La opción alineada con intención del hablante",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "pragmatica_p1",
+        "enunciado": "En este tema, el núcleo conceptual es:",
+        "opciones": [
+          "A) intención del hablante",
+          "B) Memorizar solo la letra de una clave ajena",
+          "C) Ignorar el caso",
+          "D) Cambiar de área sin leer"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin concepto no hay transferencia.",
+          "C": "El caso es la evidencia.",
+          "D": "Hay que quedarse en el tema."
+        },
+        "explicacion_correcta": "Núcleo: intención del hablante."
+      },
+      {
+        "id": "pragmatica_p2",
+        "enunciado": "Una respuesta correcta debe:",
+        "opciones": [
+          "A) Aplicar el concepto al caso",
+          "B) Contradecir el concepto a propósito",
+          "C) Hablar de otro tema",
+          "D) Ser la más larga"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Contradicción falla.",
+          "C": "Fuera de foco.",
+          "D": "Longitud ≠ acierto."
+        },
+        "explicacion_correcta": "Concepto + caso."
+      },
+      {
+        "id": "pragmatica_p3",
+        "enunciado": "Error típico:",
+        "opciones": [
+          "A) Aplicar bien el concepto",
+          "B) Confundir este concepto con uno vecino",
+          "C) Leer el caso con cuidado",
+          "D) Verificar la definición"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Eso es acierto.",
+          "C": "Eso ayuda.",
+          "D": "Eso ayuda."
+        },
+        "explicacion_correcta": "Confusión entre subtemas."
+      },
+      {
+        "id": "pragmatica_p4",
+        "enunciado": "Para consolidar el tema conviene:",
+        "opciones": [
+          "A) Resolver ítems nuevos del mismo concepto",
+          "B) Evitar cualquier ejemplo",
+          "C) Solo adivinar",
+          "D) Borrar la definición"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin práctica no fija.",
+          "C": "No consolida.",
+          "D": "Pierdes el ancla."
+        },
+        "explicacion_correcta": "Práctica del mismo esquema."
+      }
+    ],
+    "profundizar": "Busca más casos de «intención del hablante»."
+  },
+  "semantica": {
+    "intro": "La semántica fija el significado en contexto: una palabra cambia según la oración.",
+    "pasos": [
+      "Define el concepto clave: sentido contextual.",
+      "Aplícalo al caso o texto del enunciado.",
+      "Contrasta por qué las otras lecturas fallan conceptualmente."
+    ],
+    "errores": [
+      "Ignorar el foco «sentido contextual».",
+      "Mezclar este tema con otro cercano.",
+      "Elegir una opción sin anclarla al concepto."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "Caso típico de «semantica»: identifica sentido contextual.",
+      "pasos": [
+        "1) Recuerda: La semántica fija el significado en contexto: una palabra cambia según la oración.…",
+        "2) Busca en el caso el elemento que corresponde a sentido contextual.",
+        "3) Descarta opciones que cambian el concepto.",
+        "4) La respuesta es la que sostiene sentido contextual."
+      ],
+      "respuesta": "La opción alineada con sentido contextual",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "semantica_p1",
+        "enunciado": "En este tema, el núcleo conceptual es:",
+        "opciones": [
+          "A) sentido contextual",
+          "B) Memorizar solo la letra de una clave ajena",
+          "C) Ignorar el caso",
+          "D) Cambiar de área sin leer"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin concepto no hay transferencia.",
+          "C": "El caso es la evidencia.",
+          "D": "Hay que quedarse en el tema."
+        },
+        "explicacion_correcta": "Núcleo: sentido contextual."
+      },
+      {
+        "id": "semantica_p2",
+        "enunciado": "Una respuesta correcta debe:",
+        "opciones": [
+          "A) Aplicar el concepto al caso",
+          "B) Contradecir el concepto a propósito",
+          "C) Hablar de otro tema",
+          "D) Ser la más larga"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Contradicción falla.",
+          "C": "Fuera de foco.",
+          "D": "Longitud ≠ acierto."
+        },
+        "explicacion_correcta": "Concepto + caso."
+      },
+      {
+        "id": "semantica_p3",
+        "enunciado": "Error típico:",
+        "opciones": [
+          "A) Aplicar bien el concepto",
+          "B) Confundir este concepto con uno vecino",
+          "C) Leer el caso con cuidado",
+          "D) Verificar la definición"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Eso es acierto.",
+          "C": "Eso ayuda.",
+          "D": "Eso ayuda."
+        },
+        "explicacion_correcta": "Confusión entre subtemas."
+      },
+      {
+        "id": "semantica_p4",
+        "enunciado": "Para consolidar el tema conviene:",
+        "opciones": [
+          "A) Resolver ítems nuevos del mismo concepto",
+          "B) Evitar cualquier ejemplo",
+          "C) Solo adivinar",
+          "D) Borrar la definición"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin práctica no fija.",
+          "C": "No consolida.",
+          "D": "Pierdes el ancla."
+        },
+        "explicacion_correcta": "Práctica del mismo esquema."
+      }
+    ],
+    "profundizar": "Busca más casos de «sentido contextual»."
+  },
+  "literatura": {
+    "intro": "Los recursos literarios (metáfora, hipérbole, narrador) construyen el efecto del texto.",
+    "pasos": [
+      "Define el concepto clave: recurso y efecto.",
+      "Aplícalo al caso o texto del enunciado.",
+      "Contrasta por qué las otras lecturas fallan conceptualmente."
+    ],
+    "errores": [
+      "Ignorar el foco «recurso y efecto».",
+      "Mezclar este tema con otro cercano.",
+      "Elegir una opción sin anclarla al concepto."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "Caso típico de «literatura»: identifica recurso y efecto.",
+      "pasos": [
+        "1) Recuerda: Los recursos literarios (metáfora, hipérbole, narrador) construyen el efecto del texto.…",
+        "2) Busca en el caso el elemento que corresponde a recurso y efecto.",
+        "3) Descarta opciones que cambian el concepto.",
+        "4) La respuesta es la que sostiene recurso y efecto."
+      ],
+      "respuesta": "La opción alineada con recurso y efecto",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "literatura_p1",
+        "enunciado": "En este tema, el núcleo conceptual es:",
+        "opciones": [
+          "A) recurso y efecto",
+          "B) Memorizar solo la letra de una clave ajena",
+          "C) Ignorar el caso",
+          "D) Cambiar de área sin leer"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin concepto no hay transferencia.",
+          "C": "El caso es la evidencia.",
+          "D": "Hay que quedarse en el tema."
+        },
+        "explicacion_correcta": "Núcleo: recurso y efecto."
+      },
+      {
+        "id": "literatura_p2",
+        "enunciado": "Una respuesta correcta debe:",
+        "opciones": [
+          "A) Aplicar el concepto al caso",
+          "B) Contradecir el concepto a propósito",
+          "C) Hablar de otro tema",
+          "D) Ser la más larga"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Contradicción falla.",
+          "C": "Fuera de foco.",
+          "D": "Longitud ≠ acierto."
+        },
+        "explicacion_correcta": "Concepto + caso."
+      },
+      {
+        "id": "literatura_p3",
+        "enunciado": "Error típico:",
+        "opciones": [
+          "A) Aplicar bien el concepto",
+          "B) Confundir este concepto con uno vecino",
+          "C) Leer el caso con cuidado",
+          "D) Verificar la definición"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Eso es acierto.",
+          "C": "Eso ayuda.",
+          "D": "Eso ayuda."
+        },
+        "explicacion_correcta": "Confusión entre subtemas."
+      },
+      {
+        "id": "literatura_p4",
+        "enunciado": "Para consolidar el tema conviene:",
+        "opciones": [
+          "A) Resolver ítems nuevos del mismo concepto",
+          "B) Evitar cualquier ejemplo",
+          "C) Solo adivinar",
+          "D) Borrar la definición"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin práctica no fija.",
+          "C": "No consolida.",
+          "D": "Pierdes el ancla."
+        },
+        "explicacion_correcta": "Práctica del mismo esquema."
+      }
+    ],
+    "profundizar": "Busca más casos de «recurso y efecto»."
+  },
+  "analisis_textual": {
+    "intro": "El análisis textual descompone estructura, cohesión y procedimientos del discurso.",
+    "pasos": [
+      "Define el concepto clave: cómo está construido.",
+      "Aplícalo al caso o texto del enunciado.",
+      "Contrasta por qué las otras lecturas fallan conceptualmente."
+    ],
+    "errores": [
+      "Ignorar el foco «cómo está construido».",
+      "Mezclar este tema con otro cercano.",
+      "Elegir una opción sin anclarla al concepto."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "Caso típico de «analisis textual»: identifica cómo está construido.",
+      "pasos": [
+        "1) Recuerda: El análisis textual descompone estructura, cohesión y procedimientos del discurso.…",
+        "2) Busca en el caso el elemento que corresponde a cómo está construido.",
+        "3) Descarta opciones que cambian el concepto.",
+        "4) La respuesta es la que sostiene cómo está construido."
+      ],
+      "respuesta": "La opción alineada con cómo está construido",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "analisis_textual_p1",
+        "enunciado": "En este tema, el núcleo conceptual es:",
+        "opciones": [
+          "A) cómo está construido",
+          "B) Memorizar solo la letra de una clave ajena",
+          "C) Ignorar el caso",
+          "D) Cambiar de área sin leer"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin concepto no hay transferencia.",
+          "C": "El caso es la evidencia.",
+          "D": "Hay que quedarse en el tema."
+        },
+        "explicacion_correcta": "Núcleo: cómo está construido."
+      },
+      {
+        "id": "analisis_textual_p2",
+        "enunciado": "Una respuesta correcta debe:",
+        "opciones": [
+          "A) Aplicar el concepto al caso",
+          "B) Contradecir el concepto a propósito",
+          "C) Hablar de otro tema",
+          "D) Ser la más larga"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Contradicción falla.",
+          "C": "Fuera de foco.",
+          "D": "Longitud ≠ acierto."
+        },
+        "explicacion_correcta": "Concepto + caso."
+      },
+      {
+        "id": "analisis_textual_p3",
+        "enunciado": "Error típico:",
+        "opciones": [
+          "A) Aplicar bien el concepto",
+          "B) Confundir este concepto con uno vecino",
+          "C) Leer el caso con cuidado",
+          "D) Verificar la definición"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Eso es acierto.",
+          "C": "Eso ayuda.",
+          "D": "Eso ayuda."
+        },
+        "explicacion_correcta": "Confusión entre subtemas."
+      },
+      {
+        "id": "analisis_textual_p4",
+        "enunciado": "Para consolidar el tema conviene:",
+        "opciones": [
+          "A) Resolver ítems nuevos del mismo concepto",
+          "B) Evitar cualquier ejemplo",
+          "C) Solo adivinar",
+          "D) Borrar la definición"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin práctica no fija.",
+          "C": "No consolida.",
+          "D": "Pierdes el ancla."
+        },
+        "explicacion_correcta": "Práctica del mismo esquema."
+      }
+    ],
+    "profundizar": "Busca más casos de «cómo está construido»."
+  },
+  "analisis_imagen": {
+    "intro": "Leer una imagen es relacionar elementos visuales con la pregunta (qué muestra, para qué).",
+    "pasos": [
+      "Define el concepto clave: elementos y función.",
+      "Aplícalo al caso o texto del enunciado.",
+      "Contrasta por qué las otras lecturas fallan conceptualmente."
+    ],
+    "errores": [
+      "Ignorar el foco «elementos y función».",
+      "Mezclar este tema con otro cercano.",
+      "Elegir una opción sin anclarla al concepto."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "Caso típico de «analisis imagen»: identifica elementos y función.",
+      "pasos": [
+        "1) Recuerda: Leer una imagen es relacionar elementos visuales con la pregunta (qué muestra, para qué).…",
+        "2) Busca en el caso el elemento que corresponde a elementos y función.",
+        "3) Descarta opciones que cambian el concepto.",
+        "4) La respuesta es la que sostiene elementos y función."
+      ],
+      "respuesta": "La opción alineada con elementos y función",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "analisis_imagen_p1",
+        "enunciado": "En este tema, el núcleo conceptual es:",
+        "opciones": [
+          "A) elementos y función",
+          "B) Memorizar solo la letra de una clave ajena",
+          "C) Ignorar el caso",
+          "D) Cambiar de área sin leer"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin concepto no hay transferencia.",
+          "C": "El caso es la evidencia.",
+          "D": "Hay que quedarse en el tema."
+        },
+        "explicacion_correcta": "Núcleo: elementos y función."
+      },
+      {
+        "id": "analisis_imagen_p2",
+        "enunciado": "Una respuesta correcta debe:",
+        "opciones": [
+          "A) Aplicar el concepto al caso",
+          "B) Contradecir el concepto a propósito",
+          "C) Hablar de otro tema",
+          "D) Ser la más larga"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Contradicción falla.",
+          "C": "Fuera de foco.",
+          "D": "Longitud ≠ acierto."
+        },
+        "explicacion_correcta": "Concepto + caso."
+      },
+      {
+        "id": "analisis_imagen_p3",
+        "enunciado": "Error típico:",
+        "opciones": [
+          "A) Aplicar bien el concepto",
+          "B) Confundir este concepto con uno vecino",
+          "C) Leer el caso con cuidado",
+          "D) Verificar la definición"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Eso es acierto.",
+          "C": "Eso ayuda.",
+          "D": "Eso ayuda."
+        },
+        "explicacion_correcta": "Confusión entre subtemas."
+      },
+      {
+        "id": "analisis_imagen_p4",
+        "enunciado": "Para consolidar el tema conviene:",
+        "opciones": [
+          "A) Resolver ítems nuevos del mismo concepto",
+          "B) Evitar cualquier ejemplo",
+          "C) Solo adivinar",
+          "D) Borrar la definición"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin práctica no fija.",
+          "C": "No consolida.",
+          "D": "Pierdes el ancla."
+        },
+        "explicacion_correcta": "Práctica del mismo esquema."
+      }
+    ],
+    "profundizar": "Busca más casos de «elementos y función»."
+  },
+  "pensamiento_social": {
+    "intro": "Normas y convivencia: derechos, deberes y mecanismos (p. ej. tutela) frente a conflictos cotidianos.",
+    "pasos": [
+      "Define el concepto clave: norma aplicable al caso.",
+      "Aplícalo al caso o texto del enunciado.",
+      "Contrasta por qué las otras lecturas fallan conceptualmente."
+    ],
+    "errores": [
+      "Ignorar el foco «norma aplicable al caso».",
+      "Mezclar este tema con otro cercano.",
+      "Elegir una opción sin anclarla al concepto."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "Caso típico de «pensamiento social»: identifica norma aplicable al caso.",
+      "pasos": [
+        "1) Recuerda: Normas y convivencia: derechos, deberes y mecanismos (p. ej. tutela) frente a conflictos cotidianos.…",
+        "2) Busca en el caso el elemento que corresponde a norma aplicable al caso.",
+        "3) Descarta opciones que cambian el concepto.",
+        "4) La respuesta es la que sostiene norma aplicable al caso."
+      ],
+      "respuesta": "La opción alineada con norma aplicable al caso",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "pensamiento_social_p1",
+        "enunciado": "En este tema, el núcleo conceptual es:",
+        "opciones": [
+          "A) norma aplicable al caso",
+          "B) Memorizar solo la letra de una clave ajena",
+          "C) Ignorar el caso",
+          "D) Cambiar de área sin leer"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin concepto no hay transferencia.",
+          "C": "El caso es la evidencia.",
+          "D": "Hay que quedarse en el tema."
+        },
+        "explicacion_correcta": "Núcleo: norma aplicable al caso."
+      },
+      {
+        "id": "pensamiento_social_p2",
+        "enunciado": "Una respuesta correcta debe:",
+        "opciones": [
+          "A) Aplicar el concepto al caso",
+          "B) Contradecir el concepto a propósito",
+          "C) Hablar de otro tema",
+          "D) Ser la más larga"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Contradicción falla.",
+          "C": "Fuera de foco.",
+          "D": "Longitud ≠ acierto."
+        },
+        "explicacion_correcta": "Concepto + caso."
+      },
+      {
+        "id": "pensamiento_social_p3",
+        "enunciado": "Error típico:",
+        "opciones": [
+          "A) Aplicar bien el concepto",
+          "B) Confundir este concepto con uno vecino",
+          "C) Leer el caso con cuidado",
+          "D) Verificar la definición"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Eso es acierto.",
+          "C": "Eso ayuda.",
+          "D": "Eso ayuda."
+        },
+        "explicacion_correcta": "Confusión entre subtemas."
+      },
+      {
+        "id": "pensamiento_social_p4",
+        "enunciado": "Para consolidar el tema conviene:",
+        "opciones": [
+          "A) Resolver ítems nuevos del mismo concepto",
+          "B) Evitar cualquier ejemplo",
+          "C) Solo adivinar",
+          "D) Borrar la definición"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin práctica no fija.",
+          "C": "No consolida.",
+          "D": "Pierdes el ancla."
+        },
+        "explicacion_correcta": "Práctica del mismo esquema."
+      }
+    ],
+    "profundizar": "Busca más casos de «norma aplicable al caso»."
+  },
+  "pensamiento_sistemico": {
+    "intro": "Pensamiento sistémico: causas, actores e interdependencias de un problema social (no una sola variable).",
+    "pasos": [
+      "Define el concepto clave: mapa de relaciones.",
+      "Aplícalo al caso o texto del enunciado.",
+      "Contrasta por qué las otras lecturas fallan conceptualmente."
+    ],
+    "errores": [
+      "Ignorar el foco «mapa de relaciones».",
+      "Mezclar este tema con otro cercano.",
+      "Elegir una opción sin anclarla al concepto."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "Caso típico de «pensamiento sistemico»: identifica mapa de relaciones.",
+      "pasos": [
+        "1) Recuerda: Pensamiento sistémico: causas, actores e interdependencias de un problema social (no una sola variable).…",
+        "2) Busca en el caso el elemento que corresponde a mapa de relaciones.",
+        "3) Descarta opciones que cambian el concepto.",
+        "4) La respuesta es la que sostiene mapa de relaciones."
+      ],
+      "respuesta": "La opción alineada con mapa de relaciones",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "pensamiento_sistemico_p1",
+        "enunciado": "En este tema, el núcleo conceptual es:",
+        "opciones": [
+          "A) mapa de relaciones",
+          "B) Memorizar solo la letra de una clave ajena",
+          "C) Ignorar el caso",
+          "D) Cambiar de área sin leer"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin concepto no hay transferencia.",
+          "C": "El caso es la evidencia.",
+          "D": "Hay que quedarse en el tema."
+        },
+        "explicacion_correcta": "Núcleo: mapa de relaciones."
+      },
+      {
+        "id": "pensamiento_sistemico_p2",
+        "enunciado": "Una respuesta correcta debe:",
+        "opciones": [
+          "A) Aplicar el concepto al caso",
+          "B) Contradecir el concepto a propósito",
+          "C) Hablar de otro tema",
+          "D) Ser la más larga"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Contradicción falla.",
+          "C": "Fuera de foco.",
+          "D": "Longitud ≠ acierto."
+        },
+        "explicacion_correcta": "Concepto + caso."
+      },
+      {
+        "id": "pensamiento_sistemico_p3",
+        "enunciado": "Error típico:",
+        "opciones": [
+          "A) Aplicar bien el concepto",
+          "B) Confundir este concepto con uno vecino",
+          "C) Leer el caso con cuidado",
+          "D) Verificar la definición"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Eso es acierto.",
+          "C": "Eso ayuda.",
+          "D": "Eso ayuda."
+        },
+        "explicacion_correcta": "Confusión entre subtemas."
+      },
+      {
+        "id": "pensamiento_sistemico_p4",
+        "enunciado": "Para consolidar el tema conviene:",
+        "opciones": [
+          "A) Resolver ítems nuevos del mismo concepto",
+          "B) Evitar cualquier ejemplo",
+          "C) Solo adivinar",
+          "D) Borrar la definición"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin práctica no fija.",
+          "C": "No consolida.",
+          "D": "Pierdes el ancla."
+        },
+        "explicacion_correcta": "Práctica del mismo esquema."
+      }
+    ],
+    "profundizar": "Busca más casos de «mapa de relaciones»."
+  },
+  "pensamiento_critico": {
+    "intro": "Fuentes y evidencias: quién habla, qué prueba ofrece y qué falta para sostener una afirmación.",
+    "pasos": [
+      "Define el concepto clave: calidad de la evidencia.",
+      "Aplícalo al caso o texto del enunciado.",
+      "Contrasta por qué las otras lecturas fallan conceptualmente."
+    ],
+    "errores": [
+      "Ignorar el foco «calidad de la evidencia».",
+      "Mezclar este tema con otro cercano.",
+      "Elegir una opción sin anclarla al concepto."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "Caso típico de «pensamiento critico»: identifica calidad de la evidencia.",
+      "pasos": [
+        "1) Recuerda: Fuentes y evidencias: quién habla, qué prueba ofrece y qué falta para sostener una afirmación.…",
+        "2) Busca en el caso el elemento que corresponde a calidad de la evidencia.",
+        "3) Descarta opciones que cambian el concepto.",
+        "4) La respuesta es la que sostiene calidad de la evidencia."
+      ],
+      "respuesta": "La opción alineada con calidad de la evidencia",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "pensamiento_critico_p1",
+        "enunciado": "En este tema, el núcleo conceptual es:",
+        "opciones": [
+          "A) calidad de la evidencia",
+          "B) Memorizar solo la letra de una clave ajena",
+          "C) Ignorar el caso",
+          "D) Cambiar de área sin leer"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin concepto no hay transferencia.",
+          "C": "El caso es la evidencia.",
+          "D": "Hay que quedarse en el tema."
+        },
+        "explicacion_correcta": "Núcleo: calidad de la evidencia."
+      },
+      {
+        "id": "pensamiento_critico_p2",
+        "enunciado": "Una respuesta correcta debe:",
+        "opciones": [
+          "A) Aplicar el concepto al caso",
+          "B) Contradecir el concepto a propósito",
+          "C) Hablar de otro tema",
+          "D) Ser la más larga"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Contradicción falla.",
+          "C": "Fuera de foco.",
+          "D": "Longitud ≠ acierto."
+        },
+        "explicacion_correcta": "Concepto + caso."
+      },
+      {
+        "id": "pensamiento_critico_p3",
+        "enunciado": "Error típico:",
+        "opciones": [
+          "A) Aplicar bien el concepto",
+          "B) Confundir este concepto con uno vecino",
+          "C) Leer el caso con cuidado",
+          "D) Verificar la definición"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Eso es acierto.",
+          "C": "Eso ayuda.",
+          "D": "Eso ayuda."
+        },
+        "explicacion_correcta": "Confusión entre subtemas."
+      },
+      {
+        "id": "pensamiento_critico_p4",
+        "enunciado": "Para consolidar el tema conviene:",
+        "opciones": [
+          "A) Resolver ítems nuevos del mismo concepto",
+          "B) Evitar cualquier ejemplo",
+          "C) Solo adivinar",
+          "D) Borrar la definición"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin práctica no fija.",
+          "C": "No consolida.",
+          "D": "Pierdes el ancla."
+        },
+        "explicacion_correcta": "Práctica del mismo esquema."
+      }
+    ],
+    "profundizar": "Busca más casos de «calidad de la evidencia»."
+  },
+  "interpretacion": {
+    "intro": "Lectura de gráficos y mapas sociales: leyenda, escalas y qué comparación permite el visual.",
+    "pasos": [
+      "Define el concepto clave: qué muestra el gráfico.",
+      "Aplícalo al caso o texto del enunciado.",
+      "Contrasta por qué las otras lecturas fallan conceptualmente."
+    ],
+    "errores": [
+      "Ignorar el foco «qué muestra el gráfico».",
+      "Mezclar este tema con otro cercano.",
+      "Elegir una opción sin anclarla al concepto."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "Caso típico de «interpretacion»: identifica qué muestra el gráfico.",
+      "pasos": [
+        "1) Recuerda: Lectura de gráficos y mapas sociales: leyenda, escalas y qué comparación permite el visual.…",
+        "2) Busca en el caso el elemento que corresponde a qué muestra el gráfico.",
+        "3) Descarta opciones que cambian el concepto.",
+        "4) La respuesta es la que sostiene qué muestra el gráfico."
+      ],
+      "respuesta": "La opción alineada con qué muestra el gráfico",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "interpretacion_p1",
+        "enunciado": "En este tema, el núcleo conceptual es:",
+        "opciones": [
+          "A) qué muestra el gráfico",
+          "B) Memorizar solo la letra de una clave ajena",
+          "C) Ignorar el caso",
+          "D) Cambiar de área sin leer"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin concepto no hay transferencia.",
+          "C": "El caso es la evidencia.",
+          "D": "Hay que quedarse en el tema."
+        },
+        "explicacion_correcta": "Núcleo: qué muestra el gráfico."
+      },
+      {
+        "id": "interpretacion_p2",
+        "enunciado": "Una respuesta correcta debe:",
+        "opciones": [
+          "A) Aplicar el concepto al caso",
+          "B) Contradecir el concepto a propósito",
+          "C) Hablar de otro tema",
+          "D) Ser la más larga"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Contradicción falla.",
+          "C": "Fuera de foco.",
+          "D": "Longitud ≠ acierto."
+        },
+        "explicacion_correcta": "Concepto + caso."
+      },
+      {
+        "id": "interpretacion_p3",
+        "enunciado": "Error típico:",
+        "opciones": [
+          "A) Aplicar bien el concepto",
+          "B) Confundir este concepto con uno vecino",
+          "C) Leer el caso con cuidado",
+          "D) Verificar la definición"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Eso es acierto.",
+          "C": "Eso ayuda.",
+          "D": "Eso ayuda."
+        },
+        "explicacion_correcta": "Confusión entre subtemas."
+      },
+      {
+        "id": "interpretacion_p4",
+        "enunciado": "Para consolidar el tema conviene:",
+        "opciones": [
+          "A) Resolver ítems nuevos del mismo concepto",
+          "B) Evitar cualquier ejemplo",
+          "C) Solo adivinar",
+          "D) Borrar la definición"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin práctica no fija.",
+          "C": "No consolida.",
+          "D": "Pierdes el ancla."
+        },
+        "explicacion_correcta": "Práctica del mismo esquema."
+      }
+    ],
+    "profundizar": "Busca más casos de «qué muestra el gráfico»."
+  },
+  "interpretacion_y_analisis": {
+    "intro": "Interpretar perspectivas: intereses, marcos y consecuencias de distintas posiciones en un caso.",
+    "pasos": [
+      "Define el concepto clave: perspectiva y consecuencias.",
+      "Aplícalo al caso o texto del enunciado.",
+      "Contrasta por qué las otras lecturas fallan conceptualmente."
+    ],
+    "errores": [
+      "Ignorar el foco «perspectiva y consecuencias».",
+      "Mezclar este tema con otro cercano.",
+      "Elegir una opción sin anclarla al concepto."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "Caso típico de «interpretacion y analisis»: identifica perspectiva y consecuencias.",
+      "pasos": [
+        "1) Recuerda: Interpretar perspectivas: intereses, marcos y consecuencias de distintas posiciones en un caso.…",
+        "2) Busca en el caso el elemento que corresponde a perspectiva y consecuencias.",
+        "3) Descarta opciones que cambian el concepto.",
+        "4) La respuesta es la que sostiene perspectiva y consecuencias."
+      ],
+      "respuesta": "La opción alineada con perspectiva y consecuencias",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "interpretacion_y_analisis_p1",
+        "enunciado": "En este tema, el núcleo conceptual es:",
+        "opciones": [
+          "A) perspectiva y consecuencias",
+          "B) Memorizar solo la letra de una clave ajena",
+          "C) Ignorar el caso",
+          "D) Cambiar de área sin leer"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin concepto no hay transferencia.",
+          "C": "El caso es la evidencia.",
+          "D": "Hay que quedarse en el tema."
+        },
+        "explicacion_correcta": "Núcleo: perspectiva y consecuencias."
+      },
+      {
+        "id": "interpretacion_y_analisis_p2",
+        "enunciado": "Una respuesta correcta debe:",
+        "opciones": [
+          "A) Aplicar el concepto al caso",
+          "B) Contradecir el concepto a propósito",
+          "C) Hablar de otro tema",
+          "D) Ser la más larga"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Contradicción falla.",
+          "C": "Fuera de foco.",
+          "D": "Longitud ≠ acierto."
+        },
+        "explicacion_correcta": "Concepto + caso."
+      },
+      {
+        "id": "interpretacion_y_analisis_p3",
+        "enunciado": "Error típico:",
+        "opciones": [
+          "A) Aplicar bien el concepto",
+          "B) Confundir este concepto con uno vecino",
+          "C) Leer el caso con cuidado",
+          "D) Verificar la definición"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Eso es acierto.",
+          "C": "Eso ayuda.",
+          "D": "Eso ayuda."
+        },
+        "explicacion_correcta": "Confusión entre subtemas."
+      },
+      {
+        "id": "interpretacion_y_analisis_p4",
+        "enunciado": "Para consolidar el tema conviene:",
+        "opciones": [
+          "A) Resolver ítems nuevos del mismo concepto",
+          "B) Evitar cualquier ejemplo",
+          "C) Solo adivinar",
+          "D) Borrar la definición"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin práctica no fija.",
+          "C": "No consolida.",
+          "D": "Pierdes el ancla."
+        },
+        "explicacion_correcta": "Práctica del mismo esquema."
+      }
+    ],
+    "profundizar": "Busca más casos de «perspectiva y consecuencias»."
+  },
+  "participacion": {
+    "intro": "Mecanismos de participación (voto, consulta, veeduría) canalizan influencia ciudadana en lo público.",
+    "pasos": [
+      "Define el concepto clave: mecanismo adecuado.",
+      "Aplícalo al caso o texto del enunciado.",
+      "Contrasta por qué las otras lecturas fallan conceptualmente."
+    ],
+    "errores": [
+      "Ignorar el foco «mecanismo adecuado».",
+      "Mezclar este tema con otro cercano.",
+      "Elegir una opción sin anclarla al concepto."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "Caso típico de «participacion»: identifica mecanismo adecuado.",
+      "pasos": [
+        "1) Recuerda: Mecanismos de participación (voto, consulta, veeduría) canalizan influencia ciudadana en lo público.…",
+        "2) Busca en el caso el elemento que corresponde a mecanismo adecuado.",
+        "3) Descarta opciones que cambian el concepto.",
+        "4) La respuesta es la que sostiene mecanismo adecuado."
+      ],
+      "respuesta": "La opción alineada con mecanismo adecuado",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "participacion_p1",
+        "enunciado": "En este tema, el núcleo conceptual es:",
+        "opciones": [
+          "A) mecanismo adecuado",
+          "B) Memorizar solo la letra de una clave ajena",
+          "C) Ignorar el caso",
+          "D) Cambiar de área sin leer"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin concepto no hay transferencia.",
+          "C": "El caso es la evidencia.",
+          "D": "Hay que quedarse en el tema."
+        },
+        "explicacion_correcta": "Núcleo: mecanismo adecuado."
+      },
+      {
+        "id": "participacion_p2",
+        "enunciado": "Una respuesta correcta debe:",
+        "opciones": [
+          "A) Aplicar el concepto al caso",
+          "B) Contradecir el concepto a propósito",
+          "C) Hablar de otro tema",
+          "D) Ser la más larga"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Contradicción falla.",
+          "C": "Fuera de foco.",
+          "D": "Longitud ≠ acierto."
+        },
+        "explicacion_correcta": "Concepto + caso."
+      },
+      {
+        "id": "participacion_p3",
+        "enunciado": "Error típico:",
+        "opciones": [
+          "A) Aplicar bien el concepto",
+          "B) Confundir este concepto con uno vecino",
+          "C) Leer el caso con cuidado",
+          "D) Verificar la definición"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Eso es acierto.",
+          "C": "Eso ayuda.",
+          "D": "Eso ayuda."
+        },
+        "explicacion_correcta": "Confusión entre subtemas."
+      },
+      {
+        "id": "participacion_p4",
+        "enunciado": "Para consolidar el tema conviene:",
+        "opciones": [
+          "A) Resolver ítems nuevos del mismo concepto",
+          "B) Evitar cualquier ejemplo",
+          "C) Solo adivinar",
+          "D) Borrar la definición"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin práctica no fija.",
+          "C": "No consolida.",
+          "D": "Pierdes el ancla."
+        },
+        "explicacion_correcta": "Práctica del mismo esquema."
+      }
+    ],
+    "profundizar": "Busca más casos de «mecanismo adecuado»."
+  },
+  "competencias_ciudadanas": {
+    "intro": "Competencias ciudadanas: convivir, participar y pensar lo público con respeto a derechos.",
+    "pasos": [
+      "Define el concepto clave: acción ciudadana pertinente.",
+      "Aplícalo al caso o texto del enunciado.",
+      "Contrasta por qué las otras lecturas fallan conceptualmente."
+    ],
+    "errores": [
+      "Ignorar el foco «acción ciudadana pertinente».",
+      "Mezclar este tema con otro cercano.",
+      "Elegir una opción sin anclarla al concepto."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "Caso típico de «competencias ciudadanas»: identifica acción ciudadana pertinente.",
+      "pasos": [
+        "1) Recuerda: Competencias ciudadanas: convivir, participar y pensar lo público con respeto a derechos.…",
+        "2) Busca en el caso el elemento que corresponde a acción ciudadana pertinente.",
+        "3) Descarta opciones que cambian el concepto.",
+        "4) La respuesta es la que sostiene acción ciudadana pertinente."
+      ],
+      "respuesta": "La opción alineada con acción ciudadana pertinente",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "competencias_ciudadanas_p1",
+        "enunciado": "En este tema, el núcleo conceptual es:",
+        "opciones": [
+          "A) acción ciudadana pertinente",
+          "B) Memorizar solo la letra de una clave ajena",
+          "C) Ignorar el caso",
+          "D) Cambiar de área sin leer"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin concepto no hay transferencia.",
+          "C": "El caso es la evidencia.",
+          "D": "Hay que quedarse en el tema."
+        },
+        "explicacion_correcta": "Núcleo: acción ciudadana pertinente."
+      },
+      {
+        "id": "competencias_ciudadanas_p2",
+        "enunciado": "Una respuesta correcta debe:",
+        "opciones": [
+          "A) Aplicar el concepto al caso",
+          "B) Contradecir el concepto a propósito",
+          "C) Hablar de otro tema",
+          "D) Ser la más larga"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Contradicción falla.",
+          "C": "Fuera de foco.",
+          "D": "Longitud ≠ acierto."
+        },
+        "explicacion_correcta": "Concepto + caso."
+      },
+      {
+        "id": "competencias_ciudadanas_p3",
+        "enunciado": "Error típico:",
+        "opciones": [
+          "A) Aplicar bien el concepto",
+          "B) Confundir este concepto con uno vecino",
+          "C) Leer el caso con cuidado",
+          "D) Verificar la definición"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Eso es acierto.",
+          "C": "Eso ayuda.",
+          "D": "Eso ayuda."
+        },
+        "explicacion_correcta": "Confusión entre subtemas."
+      },
+      {
+        "id": "competencias_ciudadanas_p4",
+        "enunciado": "Para consolidar el tema conviene:",
+        "opciones": [
+          "A) Resolver ítems nuevos del mismo concepto",
+          "B) Evitar cualquier ejemplo",
+          "C) Solo adivinar",
+          "D) Borrar la definición"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin práctica no fija.",
+          "C": "No consolida.",
+          "D": "Pierdes el ancla."
+        },
+        "explicacion_correcta": "Práctica del mismo esquema."
+      }
+    ],
+    "profundizar": "Busca más casos de «acción ciudadana pertinente»."
+  },
+  "dialogo": {
+    "intro": "En diálogos en inglés, el sentido sale del turno de habla, el contexto y la reacción del interlocutor.",
+    "pasos": [
+      "Define el concepto clave: what the speaker means.",
+      "Aplícalo al caso o texto del enunciado.",
+      "Contrasta por qué las otras lecturas fallan conceptualmente."
+    ],
+    "errores": [
+      "Ignorar el foco «what the speaker means».",
+      "Mezclar este tema con otro cercano.",
+      "Elegir una opción sin anclarla al concepto."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "Caso típico de «dialogo»: identifica what the speaker means.",
+      "pasos": [
+        "1) Recuerda: En diálogos en inglés, el sentido sale del turno de habla, el contexto y la reacción del interlocutor.…",
+        "2) Busca en el caso el elemento que corresponde a what the speaker means.",
+        "3) Descarta opciones que cambian el concepto.",
+        "4) La respuesta es la que sostiene what the speaker means."
+      ],
+      "respuesta": "La opción alineada con what the speaker means",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "dialogo_p1",
+        "enunciado": "En este tema, el núcleo conceptual es:",
+        "opciones": [
+          "A) what the speaker means",
+          "B) Memorizar solo la letra de una clave ajena",
+          "C) Ignorar el caso",
+          "D) Cambiar de área sin leer"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin concepto no hay transferencia.",
+          "C": "El caso es la evidencia.",
+          "D": "Hay que quedarse en el tema."
+        },
+        "explicacion_correcta": "Núcleo: what the speaker means."
+      },
+      {
+        "id": "dialogo_p2",
+        "enunciado": "Una respuesta correcta debe:",
+        "opciones": [
+          "A) Aplicar el concepto al caso",
+          "B) Contradecir el concepto a propósito",
+          "C) Hablar de otro tema",
+          "D) Ser la más larga"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Contradicción falla.",
+          "C": "Fuera de foco.",
+          "D": "Longitud ≠ acierto."
+        },
+        "explicacion_correcta": "Concepto + caso."
+      },
+      {
+        "id": "dialogo_p3",
+        "enunciado": "Error típico:",
+        "opciones": [
+          "A) Aplicar bien el concepto",
+          "B) Confundir este concepto con uno vecino",
+          "C) Leer el caso con cuidado",
+          "D) Verificar la definición"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Eso es acierto.",
+          "C": "Eso ayuda.",
+          "D": "Eso ayuda."
+        },
+        "explicacion_correcta": "Confusión entre subtemas."
+      },
+      {
+        "id": "dialogo_p4",
+        "enunciado": "Para consolidar el tema conviene:",
+        "opciones": [
+          "A) Resolver ítems nuevos del mismo concepto",
+          "B) Evitar cualquier ejemplo",
+          "C) Solo adivinar",
+          "D) Borrar la definición"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin práctica no fija.",
+          "C": "No consolida.",
+          "D": "Pierdes el ancla."
+        },
+        "explicacion_correcta": "Práctica del mismo esquema."
+      }
+    ],
+    "profundizar": "Busca más casos de «what the speaker means»."
+  },
+  "aviso": {
+    "intro": "Los avisos dan instrucciones o prohibiciones: lee el verbo modal y el lugar/condición.",
+    "pasos": [
+      "Define el concepto clave: instruction or warning.",
+      "Aplícalo al caso o texto del enunciado.",
+      "Contrasta por qué las otras lecturas fallan conceptualmente."
+    ],
+    "errores": [
+      "Ignorar el foco «instruction or warning».",
+      "Mezclar este tema con otro cercano.",
+      "Elegir una opción sin anclarla al concepto."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "Caso típico de «aviso»: identifica instruction or warning.",
+      "pasos": [
+        "1) Recuerda: Los avisos dan instrucciones o prohibiciones: lee el verbo modal y el lugar/condición.…",
+        "2) Busca en el caso el elemento que corresponde a instruction or warning.",
+        "3) Descarta opciones que cambian el concepto.",
+        "4) La respuesta es la que sostiene instruction or warning."
+      ],
+      "respuesta": "La opción alineada con instruction or warning",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "aviso_p1",
+        "enunciado": "En este tema, el núcleo conceptual es:",
+        "opciones": [
+          "A) instruction or warning",
+          "B) Memorizar solo la letra de una clave ajena",
+          "C) Ignorar el caso",
+          "D) Cambiar de área sin leer"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin concepto no hay transferencia.",
+          "C": "El caso es la evidencia.",
+          "D": "Hay que quedarse en el tema."
+        },
+        "explicacion_correcta": "Núcleo: instruction or warning."
+      },
+      {
+        "id": "aviso_p2",
+        "enunciado": "Una respuesta correcta debe:",
+        "opciones": [
+          "A) Aplicar el concepto al caso",
+          "B) Contradecir el concepto a propósito",
+          "C) Hablar de otro tema",
+          "D) Ser la más larga"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Contradicción falla.",
+          "C": "Fuera de foco.",
+          "D": "Longitud ≠ acierto."
+        },
+        "explicacion_correcta": "Concepto + caso."
+      },
+      {
+        "id": "aviso_p3",
+        "enunciado": "Error típico:",
+        "opciones": [
+          "A) Aplicar bien el concepto",
+          "B) Confundir este concepto con uno vecino",
+          "C) Leer el caso con cuidado",
+          "D) Verificar la definición"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Eso es acierto.",
+          "C": "Eso ayuda.",
+          "D": "Eso ayuda."
+        },
+        "explicacion_correcta": "Confusión entre subtemas."
+      },
+      {
+        "id": "aviso_p4",
+        "enunciado": "Para consolidar el tema conviene:",
+        "opciones": [
+          "A) Resolver ítems nuevos del mismo concepto",
+          "B) Evitar cualquier ejemplo",
+          "C) Solo adivinar",
+          "D) Borrar la definición"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin práctica no fija.",
+          "C": "No consolida.",
+          "D": "Pierdes el ancla."
+        },
+        "explicacion_correcta": "Práctica del mismo esquema."
+      }
+    ],
+    "profundizar": "Busca más casos de «instruction or warning»."
+  },
+  "cloze": {
+    "intro": "Cloze: eliges la forma gramatical que encaja en la oración (tiempo, acuerdo, conector).",
+    "pasos": [
+      "Define el concepto clave: correct form in context.",
+      "Aplícalo al caso o texto del enunciado.",
+      "Contrasta por qué las otras lecturas fallan conceptualmente."
+    ],
+    "errores": [
+      "Ignorar el foco «correct form in context».",
+      "Mezclar este tema con otro cercano.",
+      "Elegir una opción sin anclarla al concepto."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "Caso típico de «cloze»: identifica correct form in context.",
+      "pasos": [
+        "1) Recuerda: Cloze: eliges la forma gramatical que encaja en la oración (tiempo, acuerdo, conector).…",
+        "2) Busca en el caso el elemento que corresponde a correct form in context.",
+        "3) Descarta opciones que cambian el concepto.",
+        "4) La respuesta es la que sostiene correct form in context."
+      ],
+      "respuesta": "La opción alineada con correct form in context",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "cloze_p1",
+        "enunciado": "En este tema, el núcleo conceptual es:",
+        "opciones": [
+          "A) correct form in context",
+          "B) Memorizar solo la letra de una clave ajena",
+          "C) Ignorar el caso",
+          "D) Cambiar de área sin leer"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin concepto no hay transferencia.",
+          "C": "El caso es la evidencia.",
+          "D": "Hay que quedarse en el tema."
+        },
+        "explicacion_correcta": "Núcleo: correct form in context."
+      },
+      {
+        "id": "cloze_p2",
+        "enunciado": "Una respuesta correcta debe:",
+        "opciones": [
+          "A) Aplicar el concepto al caso",
+          "B) Contradecir el concepto a propósito",
+          "C) Hablar de otro tema",
+          "D) Ser la más larga"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Contradicción falla.",
+          "C": "Fuera de foco.",
+          "D": "Longitud ≠ acierto."
+        },
+        "explicacion_correcta": "Concepto + caso."
+      },
+      {
+        "id": "cloze_p3",
+        "enunciado": "Error típico:",
+        "opciones": [
+          "A) Aplicar bien el concepto",
+          "B) Confundir este concepto con uno vecino",
+          "C) Leer el caso con cuidado",
+          "D) Verificar la definición"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Eso es acierto.",
+          "C": "Eso ayuda.",
+          "D": "Eso ayuda."
+        },
+        "explicacion_correcta": "Confusión entre subtemas."
+      },
+      {
+        "id": "cloze_p4",
+        "enunciado": "Para consolidar el tema conviene:",
+        "opciones": [
+          "A) Resolver ítems nuevos del mismo concepto",
+          "B) Evitar cualquier ejemplo",
+          "C) Solo adivinar",
+          "D) Borrar la definición"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin práctica no fija.",
+          "C": "No consolida.",
+          "D": "Pierdes el ancla."
+        },
+        "explicacion_correcta": "Práctica del mismo esquema."
+      }
+    ],
+    "profundizar": "Busca más casos de «correct form in context»."
+  },
+  "vocabulario": {
+    "intro": "Vocabulario en contexto: el significado se fija por la oración, no por la primera acepción suelta.",
+    "pasos": [
+      "Define el concepto clave: meaning in the sentence.",
+      "Aplícalo al caso o texto del enunciado.",
+      "Contrasta por qué las otras lecturas fallan conceptualmente."
+    ],
+    "errores": [
+      "Ignorar el foco «meaning in the sentence».",
+      "Mezclar este tema con otro cercano.",
+      "Elegir una opción sin anclarla al concepto."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "Caso típico de «vocabulario»: identifica meaning in the sentence.",
+      "pasos": [
+        "1) Recuerda: Vocabulario en contexto: el significado se fija por la oración, no por la primera acepción suelta.…",
+        "2) Busca en el caso el elemento que corresponde a meaning in the sentence.",
+        "3) Descarta opciones que cambian el concepto.",
+        "4) La respuesta es la que sostiene meaning in the sentence."
+      ],
+      "respuesta": "La opción alineada con meaning in the sentence",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "vocabulario_p1",
+        "enunciado": "En este tema, el núcleo conceptual es:",
+        "opciones": [
+          "A) meaning in the sentence",
+          "B) Memorizar solo la letra de una clave ajena",
+          "C) Ignorar el caso",
+          "D) Cambiar de área sin leer"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin concepto no hay transferencia.",
+          "C": "El caso es la evidencia.",
+          "D": "Hay que quedarse en el tema."
+        },
+        "explicacion_correcta": "Núcleo: meaning in the sentence."
+      },
+      {
+        "id": "vocabulario_p2",
+        "enunciado": "Una respuesta correcta debe:",
+        "opciones": [
+          "A) Aplicar el concepto al caso",
+          "B) Contradecir el concepto a propósito",
+          "C) Hablar de otro tema",
+          "D) Ser la más larga"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Contradicción falla.",
+          "C": "Fuera de foco.",
+          "D": "Longitud ≠ acierto."
+        },
+        "explicacion_correcta": "Concepto + caso."
+      },
+      {
+        "id": "vocabulario_p3",
+        "enunciado": "Error típico:",
+        "opciones": [
+          "A) Aplicar bien el concepto",
+          "B) Confundir este concepto con uno vecino",
+          "C) Leer el caso con cuidado",
+          "D) Verificar la definición"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Eso es acierto.",
+          "C": "Eso ayuda.",
+          "D": "Eso ayuda."
+        },
+        "explicacion_correcta": "Confusión entre subtemas."
+      },
+      {
+        "id": "vocabulario_p4",
+        "enunciado": "Para consolidar el tema conviene:",
+        "opciones": [
+          "A) Resolver ítems nuevos del mismo concepto",
+          "B) Evitar cualquier ejemplo",
+          "C) Solo adivinar",
+          "D) Borrar la definición"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin práctica no fija.",
+          "C": "No consolida.",
+          "D": "Pierdes el ancla."
+        },
+        "explicacion_correcta": "Práctica del mismo esquema."
+      }
+    ],
+    "profundizar": "Busca más casos de «meaning in the sentence»."
+  },
+  "lectura": {
+    "intro": "Reading comprehension: idea principal, detalle y propósito del texto en inglés.",
+    "pasos": [
+      "Define el concepto clave: main idea / detail.",
+      "Aplícalo al caso o texto del enunciado.",
+      "Contrasta por qué las otras lecturas fallan conceptualmente."
+    ],
+    "errores": [
+      "Ignorar el foco «main idea / detail».",
+      "Mezclar este tema con otro cercano.",
+      "Elegir una opción sin anclarla al concepto."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "Caso típico de «lectura»: identifica main idea / detail.",
+      "pasos": [
+        "1) Recuerda: Reading comprehension: idea principal, detalle y propósito del texto en inglés.…",
+        "2) Busca en el caso el elemento que corresponde a main idea / detail.",
+        "3) Descarta opciones que cambian el concepto.",
+        "4) La respuesta es la que sostiene main idea / detail."
+      ],
+      "respuesta": "La opción alineada con main idea / detail",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "lectura_p1",
+        "enunciado": "En este tema, el núcleo conceptual es:",
+        "opciones": [
+          "A) main idea / detail",
+          "B) Memorizar solo la letra de una clave ajena",
+          "C) Ignorar el caso",
+          "D) Cambiar de área sin leer"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin concepto no hay transferencia.",
+          "C": "El caso es la evidencia.",
+          "D": "Hay que quedarse en el tema."
+        },
+        "explicacion_correcta": "Núcleo: main idea / detail."
+      },
+      {
+        "id": "lectura_p2",
+        "enunciado": "Una respuesta correcta debe:",
+        "opciones": [
+          "A) Aplicar el concepto al caso",
+          "B) Contradecir el concepto a propósito",
+          "C) Hablar de otro tema",
+          "D) Ser la más larga"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Contradicción falla.",
+          "C": "Fuera de foco.",
+          "D": "Longitud ≠ acierto."
+        },
+        "explicacion_correcta": "Concepto + caso."
+      },
+      {
+        "id": "lectura_p3",
+        "enunciado": "Error típico:",
+        "opciones": [
+          "A) Aplicar bien el concepto",
+          "B) Confundir este concepto con uno vecino",
+          "C) Leer el caso con cuidado",
+          "D) Verificar la definición"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Eso es acierto.",
+          "C": "Eso ayuda.",
+          "D": "Eso ayuda."
+        },
+        "explicacion_correcta": "Confusión entre subtemas."
+      },
+      {
+        "id": "lectura_p4",
+        "enunciado": "Para consolidar el tema conviene:",
+        "opciones": [
+          "A) Resolver ítems nuevos del mismo concepto",
+          "B) Evitar cualquier ejemplo",
+          "C) Solo adivinar",
+          "D) Borrar la definición"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin práctica no fija.",
+          "C": "No consolida.",
+          "D": "Pierdes el ancla."
+        },
+        "explicacion_correcta": "Práctica del mismo esquema."
+      }
+    ],
+    "profundizar": "Busca más casos de «main idea / detail»."
+  },
+  "literal_reading": {
+    "intro": "Literal reading: recupera datos explícitos del texto en inglés.",
+    "pasos": [
+      "Define el concepto clave: explicit detail.",
+      "Aplícalo al caso o texto del enunciado.",
+      "Contrasta por qué las otras lecturas fallan conceptualmente."
+    ],
+    "errores": [
+      "Ignorar el foco «explicit detail».",
+      "Mezclar este tema con otro cercano.",
+      "Elegir una opción sin anclarla al concepto."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "Caso típico de «literal reading»: identifica explicit detail.",
+      "pasos": [
+        "1) Recuerda: Literal reading: recupera datos explícitos del texto en inglés.…",
+        "2) Busca en el caso el elemento que corresponde a explicit detail.",
+        "3) Descarta opciones que cambian el concepto.",
+        "4) La respuesta es la que sostiene explicit detail."
+      ],
+      "respuesta": "La opción alineada con explicit detail",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "literal_reading_p1",
+        "enunciado": "En este tema, el núcleo conceptual es:",
+        "opciones": [
+          "A) explicit detail",
+          "B) Memorizar solo la letra de una clave ajena",
+          "C) Ignorar el caso",
+          "D) Cambiar de área sin leer"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin concepto no hay transferencia.",
+          "C": "El caso es la evidencia.",
+          "D": "Hay que quedarse en el tema."
+        },
+        "explicacion_correcta": "Núcleo: explicit detail."
+      },
+      {
+        "id": "literal_reading_p2",
+        "enunciado": "Una respuesta correcta debe:",
+        "opciones": [
+          "A) Aplicar el concepto al caso",
+          "B) Contradecir el concepto a propósito",
+          "C) Hablar de otro tema",
+          "D) Ser la más larga"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Contradicción falla.",
+          "C": "Fuera de foco.",
+          "D": "Longitud ≠ acierto."
+        },
+        "explicacion_correcta": "Concepto + caso."
+      },
+      {
+        "id": "literal_reading_p3",
+        "enunciado": "Error típico:",
+        "opciones": [
+          "A) Aplicar bien el concepto",
+          "B) Confundir este concepto con uno vecino",
+          "C) Leer el caso con cuidado",
+          "D) Verificar la definición"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Eso es acierto.",
+          "C": "Eso ayuda.",
+          "D": "Eso ayuda."
+        },
+        "explicacion_correcta": "Confusión entre subtemas."
+      },
+      {
+        "id": "literal_reading_p4",
+        "enunciado": "Para consolidar el tema conviene:",
+        "opciones": [
+          "A) Resolver ítems nuevos del mismo concepto",
+          "B) Evitar cualquier ejemplo",
+          "C) Solo adivinar",
+          "D) Borrar la definición"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin práctica no fija.",
+          "C": "No consolida.",
+          "D": "Pierdes el ancla."
+        },
+        "explicacion_correcta": "Práctica del mismo esquema."
+      }
+    ],
+    "profundizar": "Busca más casos de «explicit detail»."
+  },
+  "inferential_reading": {
+    "intro": "Inferential reading: concluye lo que el texto implica en inglés, con apoyo.",
+    "pasos": [
+      "Define el concepto clave: supported inference.",
+      "Aplícalo al caso o texto del enunciado.",
+      "Contrasta por qué las otras lecturas fallan conceptualmente."
+    ],
+    "errores": [
+      "Ignorar el foco «supported inference».",
+      "Mezclar este tema con otro cercano.",
+      "Elegir una opción sin anclarla al concepto."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "Caso típico de «inferential reading»: identifica supported inference.",
+      "pasos": [
+        "1) Recuerda: Inferential reading: concluye lo que el texto implica en inglés, con apoyo.…",
+        "2) Busca en el caso el elemento que corresponde a supported inference.",
+        "3) Descarta opciones que cambian el concepto.",
+        "4) La respuesta es la que sostiene supported inference."
+      ],
+      "respuesta": "La opción alineada con supported inference",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "inferential_reading_p1",
+        "enunciado": "En este tema, el núcleo conceptual es:",
+        "opciones": [
+          "A) supported inference",
+          "B) Memorizar solo la letra de una clave ajena",
+          "C) Ignorar el caso",
+          "D) Cambiar de área sin leer"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin concepto no hay transferencia.",
+          "C": "El caso es la evidencia.",
+          "D": "Hay que quedarse en el tema."
+        },
+        "explicacion_correcta": "Núcleo: supported inference."
+      },
+      {
+        "id": "inferential_reading_p2",
+        "enunciado": "Una respuesta correcta debe:",
+        "opciones": [
+          "A) Aplicar el concepto al caso",
+          "B) Contradecir el concepto a propósito",
+          "C) Hablar de otro tema",
+          "D) Ser la más larga"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Contradicción falla.",
+          "C": "Fuera de foco.",
+          "D": "Longitud ≠ acierto."
+        },
+        "explicacion_correcta": "Concepto + caso."
+      },
+      {
+        "id": "inferential_reading_p3",
+        "enunciado": "Error típico:",
+        "opciones": [
+          "A) Aplicar bien el concepto",
+          "B) Confundir este concepto con uno vecino",
+          "C) Leer el caso con cuidado",
+          "D) Verificar la definición"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Eso es acierto.",
+          "C": "Eso ayuda.",
+          "D": "Eso ayuda."
+        },
+        "explicacion_correcta": "Confusión entre subtemas."
+      },
+      {
+        "id": "inferential_reading_p4",
+        "enunciado": "Para consolidar el tema conviene:",
+        "opciones": [
+          "A) Resolver ítems nuevos del mismo concepto",
+          "B) Evitar cualquier ejemplo",
+          "C) Solo adivinar",
+          "D) Borrar la definición"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin práctica no fija.",
+          "C": "No consolida.",
+          "D": "Pierdes el ancla."
+        },
+        "explicacion_correcta": "Práctica del mismo esquema."
+      }
+    ],
+    "profundizar": "Busca más casos de «supported inference»."
+  },
+  "grammar": {
+    "intro": "Grammar: tiempos, concordancia y estructura de la oración en inglés.",
+    "pasos": [
+      "Define el concepto clave: correct structure.",
+      "Aplícalo al caso o texto del enunciado.",
+      "Contrasta por qué las otras lecturas fallan conceptualmente."
+    ],
+    "errores": [
+      "Ignorar el foco «correct structure».",
+      "Mezclar este tema con otro cercano.",
+      "Elegir una opción sin anclarla al concepto."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "Caso típico de «grammar»: identifica correct structure.",
+      "pasos": [
+        "1) Recuerda: Grammar: tiempos, concordancia y estructura de la oración en inglés.…",
+        "2) Busca en el caso el elemento que corresponde a correct structure.",
+        "3) Descarta opciones que cambian el concepto.",
+        "4) La respuesta es la que sostiene correct structure."
+      ],
+      "respuesta": "La opción alineada con correct structure",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "grammar_p1",
+        "enunciado": "En este tema, el núcleo conceptual es:",
+        "opciones": [
+          "A) correct structure",
+          "B) Memorizar solo la letra de una clave ajena",
+          "C) Ignorar el caso",
+          "D) Cambiar de área sin leer"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin concepto no hay transferencia.",
+          "C": "El caso es la evidencia.",
+          "D": "Hay que quedarse en el tema."
+        },
+        "explicacion_correcta": "Núcleo: correct structure."
+      },
+      {
+        "id": "grammar_p2",
+        "enunciado": "Una respuesta correcta debe:",
+        "opciones": [
+          "A) Aplicar el concepto al caso",
+          "B) Contradecir el concepto a propósito",
+          "C) Hablar de otro tema",
+          "D) Ser la más larga"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Contradicción falla.",
+          "C": "Fuera de foco.",
+          "D": "Longitud ≠ acierto."
+        },
+        "explicacion_correcta": "Concepto + caso."
+      },
+      {
+        "id": "grammar_p3",
+        "enunciado": "Error típico:",
+        "opciones": [
+          "A) Aplicar bien el concepto",
+          "B) Confundir este concepto con uno vecino",
+          "C) Leer el caso con cuidado",
+          "D) Verificar la definición"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Eso es acierto.",
+          "C": "Eso ayuda.",
+          "D": "Eso ayuda."
+        },
+        "explicacion_correcta": "Confusión entre subtemas."
+      },
+      {
+        "id": "grammar_p4",
+        "enunciado": "Para consolidar el tema conviene:",
+        "opciones": [
+          "A) Resolver ítems nuevos del mismo concepto",
+          "B) Evitar cualquier ejemplo",
+          "C) Solo adivinar",
+          "D) Borrar la definición"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin práctica no fija.",
+          "C": "No consolida.",
+          "D": "Pierdes el ancla."
+        },
+        "explicacion_correcta": "Práctica del mismo esquema."
+      }
+    ],
+    "profundizar": "Busca más casos de «correct structure»."
+  },
+  "aptitud_numerica_docente": {
+    "intro": "Aptitud numérica docente: razonar con magnitudes, proporciones y lecturas cuantitativas de aula.",
+    "pasos": [
+      "Define el concepto clave: relación cuantitativa.",
+      "Aplícalo al caso o texto del enunciado.",
+      "Contrasta por qué las otras lecturas fallan conceptualmente."
+    ],
+    "errores": [
+      "Ignorar el foco «relación cuantitativa».",
+      "Mezclar este tema con otro cercano.",
+      "Elegir una opción sin anclarla al concepto."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "Caso típico de «aptitud numerica docente»: identifica relación cuantitativa.",
+      "pasos": [
+        "1) Recuerda: Aptitud numérica docente: razonar con magnitudes, proporciones y lecturas cuantitativas de aula.…",
+        "2) Busca en el caso el elemento que corresponde a relación cuantitativa.",
+        "3) Descarta opciones que cambian el concepto.",
+        "4) La respuesta es la que sostiene relación cuantitativa."
+      ],
+      "respuesta": "La opción alineada con relación cuantitativa",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "aptitud_numerica_docente_p1",
+        "enunciado": "En este tema, el núcleo conceptual es:",
+        "opciones": [
+          "A) relación cuantitativa",
+          "B) Memorizar solo la letra de una clave ajena",
+          "C) Ignorar el caso",
+          "D) Cambiar de área sin leer"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin concepto no hay transferencia.",
+          "C": "El caso es la evidencia.",
+          "D": "Hay que quedarse en el tema."
+        },
+        "explicacion_correcta": "Núcleo: relación cuantitativa."
+      },
+      {
+        "id": "aptitud_numerica_docente_p2",
+        "enunciado": "Una respuesta correcta debe:",
+        "opciones": [
+          "A) Aplicar el concepto al caso",
+          "B) Contradecir el concepto a propósito",
+          "C) Hablar de otro tema",
+          "D) Ser la más larga"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Contradicción falla.",
+          "C": "Fuera de foco.",
+          "D": "Longitud ≠ acierto."
+        },
+        "explicacion_correcta": "Concepto + caso."
+      },
+      {
+        "id": "aptitud_numerica_docente_p3",
+        "enunciado": "Error típico:",
+        "opciones": [
+          "A) Aplicar bien el concepto",
+          "B) Confundir este concepto con uno vecino",
+          "C) Leer el caso con cuidado",
+          "D) Verificar la definición"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Eso es acierto.",
+          "C": "Eso ayuda.",
+          "D": "Eso ayuda."
+        },
+        "explicacion_correcta": "Confusión entre subtemas."
+      },
+      {
+        "id": "aptitud_numerica_docente_p4",
+        "enunciado": "Para consolidar el tema conviene:",
+        "opciones": [
+          "A) Resolver ítems nuevos del mismo concepto",
+          "B) Evitar cualquier ejemplo",
+          "C) Solo adivinar",
+          "D) Borrar la definición"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin práctica no fija.",
+          "C": "No consolida.",
+          "D": "Pierdes el ancla."
+        },
+        "explicacion_correcta": "Práctica del mismo esquema."
+      }
+    ],
+    "profundizar": "Busca más casos de «relación cuantitativa»."
+  },
+  "aptitud_pedagogica": {
+    "intro": "Aptitud pedagógica: decisiones de enseñanza que respetan el aprendizaje y el contexto del estudiante.",
+    "pasos": [
+      "Define el concepto clave: decisión pedagógica pertinente.",
+      "Aplícalo al caso o texto del enunciado.",
+      "Contrasta por qué las otras lecturas fallan conceptualmente."
+    ],
+    "errores": [
+      "Ignorar el foco «decisión pedagógica pertinente».",
+      "Mezclar este tema con otro cercano.",
+      "Elegir una opción sin anclarla al concepto."
+    ],
+    "ejemplo": {
+      "titulo": "Ejemplo resuelto",
+      "enunciado": "Caso típico de «aptitud pedagogica»: identifica decisión pedagógica pertinente.",
+      "pasos": [
+        "1) Recuerda: Aptitud pedagógica: decisiones de enseñanza que respetan el aprendizaje y el contexto del estudiante.…",
+        "2) Busca en el caso el elemento que corresponde a decisión pedagógica pertinente.",
+        "3) Descarta opciones que cambian el concepto.",
+        "4) La respuesta es la que sostiene decisión pedagógica pertinente."
+      ],
+      "respuesta": "La opción alineada con decisión pedagógica pertinente",
+      "contraste": null
+    },
+    "practica": [
+      {
+        "id": "aptitud_pedagogica_p1",
+        "enunciado": "En este tema, el núcleo conceptual es:",
+        "opciones": [
+          "A) decisión pedagógica pertinente",
+          "B) Memorizar solo la letra de una clave ajena",
+          "C) Ignorar el caso",
+          "D) Cambiar de área sin leer"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin concepto no hay transferencia.",
+          "C": "El caso es la evidencia.",
+          "D": "Hay que quedarse en el tema."
+        },
+        "explicacion_correcta": "Núcleo: decisión pedagógica pertinente."
+      },
+      {
+        "id": "aptitud_pedagogica_p2",
+        "enunciado": "Una respuesta correcta debe:",
+        "opciones": [
+          "A) Aplicar el concepto al caso",
+          "B) Contradecir el concepto a propósito",
+          "C) Hablar de otro tema",
+          "D) Ser la más larga"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Contradicción falla.",
+          "C": "Fuera de foco.",
+          "D": "Longitud ≠ acierto."
+        },
+        "explicacion_correcta": "Concepto + caso."
+      },
+      {
+        "id": "aptitud_pedagogica_p3",
+        "enunciado": "Error típico:",
+        "opciones": [
+          "A) Aplicar bien el concepto",
+          "B) Confundir este concepto con uno vecino",
+          "C) Leer el caso con cuidado",
+          "D) Verificar la definición"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Eso es acierto.",
+          "C": "Eso ayuda.",
+          "D": "Eso ayuda."
+        },
+        "explicacion_correcta": "Confusión entre subtemas."
+      },
+      {
+        "id": "aptitud_pedagogica_p4",
+        "enunciado": "Para consolidar el tema conviene:",
+        "opciones": [
+          "A) Resolver ítems nuevos del mismo concepto",
+          "B) Evitar cualquier ejemplo",
+          "C) Solo adivinar",
+          "D) Borrar la definición"
+        ],
+        "correcta": "A",
+        "justificacion_incorrectas": {
+          "B": "Sin práctica no fija.",
+          "C": "No consolida.",
+          "D": "Pierdes el ancla."
+        },
+        "explicacion_correcta": "Práctica del mismo esquema."
+      }
+    ],
+    "profundizar": "Busca más casos de «decisión pedagógica pertinente»."
+  }
+};
+export { q };

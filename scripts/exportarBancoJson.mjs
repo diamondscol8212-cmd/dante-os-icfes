@@ -31,6 +31,7 @@ const limpio = (BANCO_COMPLETO || []).map((item) => ({
   imagen_url: item.imagen_url || null,
   sub_competencia: item.sub_competencia || item.sub || null,
   sub: item.sub || item.sub_competencia || null,
+  tema_refuerzo_id: item.tema_refuerzo_id || item.temaRefuerzoId || item.sub_competencia || item.sub || null,
   es_escrito: Boolean(item.esEscrito || item.es_escrito),
   source: String(item.id || '').includes('_gen_') ? 'gen' : 'escrito'
 }));

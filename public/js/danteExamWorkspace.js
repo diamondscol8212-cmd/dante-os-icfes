@@ -4286,6 +4286,7 @@
             itemId: recordRespuesta.id,
             sub: (item && (item.sub || item.sub_competencia)) || '',
             sub_competencia: (item && (item.sub || item.sub_competencia)) || '',
+            tema_refuerzo_id: (item && (item.tema_refuerzo_id || item.temaRefuerzoId)) || '',
             tema_a_estudiar: (item && (item.tema_a_estudiar || item.repaso)) || recordRespuesta.tema || '',
             tema: (item && (item.tema_a_estudiar || item.tema || item.repaso)) || '',
             repaso: (item && item.repaso) || '',

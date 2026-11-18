@@ -85,23 +85,44 @@
   function resolverTemaId(meta) {
     meta = meta || {};
     var sub = String(meta.sub || meta.sub_competencia || '').toLowerCase().trim();
+    var refuerzo = String(meta.tema_refuerzo_id || meta.temaRefuerzoId || '').toLowerCase().trim();
     var temaTxt = String(
       meta.tema_a_estudiar || meta.tema || meta.repaso || meta.enunciado || ''
     ).toLowerCase();
+    var enunciado = String(meta.enunciado || '').toLowerCase();
     var cat = (_catalogo && _catalogo.temas) || [];
 
-    // 1) Fracciones por enunciado/tema (antes de caer en aritmética genérica).
-    if (/fraccion|numerador|denominador/.test(temaTxt)) return 'fracciones';
-
-    // 2) sub_competencia exacta del banco (= id del catálogo).
-    if (sub) {
+    function enCatalogo(id) {
+      if (!id) return '';
       for (var i = 0; i < cat.length; i++) {
         var t = cat[i];
         if (!t) continue;
-        if (t.id === sub) return t.id;
-        if (Array.isArray(t.subs) && t.subs.indexOf(sub) >= 0) return t.id;
+        if (t.id === id) return t.id;
+        if (Array.isArray(t.subs) && t.subs.indexOf(id) >= 0) return t.id;
       }
+      return '';
     }
+
+    // 0) Id explícito de cartilla de contenido (puede ser más fino que sub_competencia).
+    var hitRef = enCatalogo(refuerzo);
+    if (hitRef) return hitRef;
+
+    // 1) Fracciones por enunciado/tema (antes de caer en aritmética genérica).
+    if (/numerador|denominador/.test(temaTxt + ' ' + enunciado)
+        || (/\bfracci[oó]n(es)?\b/.test(temaTxt + ' ' + enunciado)
+          && !/fraccionar|fraccionamiento|petr[oó]leo/.test(temaTxt + ' ' + enunciado))) {
+      return 'fracciones';
+    }
+
+    // 1b) Hidrografía por enunciado (ríos/afluentes/cuencas) aunque el sub sea geografia.
+    if (/afluente|cuenca del|macizo colombiano|desemboca|el r[ií]o (cauca|magdalena)|r[ií]o cauca|r[ií]o magdalena/.test(enunciado)
+        && /magdalena|cauca|orinoco|amazonas|r[ií]o/.test(enunciado + ' ' + temaTxt)) {
+      if (enCatalogo('hidrografia_colombia')) return 'hidrografia_colombia';
+    }
+
+    // 2) sub_competencia exacta del banco (= id del catálogo).
+    var hitSub = enCatalogo(sub);
+    if (hitSub) return hitSub;
 
     // 3) match por texto de tema_a_estudiar.
     for (var j = 0; j < cat.length; j++) {

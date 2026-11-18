@@ -37,6 +37,7 @@ const TEMA_SUB = {
   biologia: 'Biología: estructuras y procesos',
   cts: 'Ciencia, tecnología y sociedad',
   geografia: 'Geografía de Colombia',
+  hidrografia_colombia: 'Hidrografía de Colombia: ríos, afluentes y cuencas',
   constitucion: 'Constitución Política y organización del Estado',
   historia: 'Historia de Colombia',
   pensamiento_critico: 'Sociales: fuentes y evidencias',
@@ -253,8 +254,49 @@ function porqueIncorrecta(mala, bien, ctx) {
   return `«${izq}» es un distractor. ${tipTexto} La opción que sí responde es «${der}».`;
 }
 
+/**
+ * Id de cartilla de Temas de refuerzo (contenido real del ítem).
+ * Puede ser más específico que sub_competencia (p. ej. hidrografía dentro de geografía).
+ */
+export function temaRefuerzoDe(item) {
+  const sub = subDe(item);
+  const prevId = limpio(item.tema_refuerzo_id || item.temaRefuerzoId).toLowerCase();
+  if (prevId && (TEMA_SUB[prevId] || prevId === 'fracciones')) return prevId;
+
+  const texto = [
+    item && (item.pregunta_texto || item.texto || item.enunciado),
+    Array.isArray(item && (item.opciones_respuesta || item.opciones))
+      ? (item.opciones_respuesta || item.opciones).map((o) => (typeof o === 'string' ? o : (o && o.texto) || '')).join(' ')
+      : '',
+    item && (item.tema_a_estudiar || item.repaso || '')
+  ].join(' ').toLowerCase();
+
+  // Hidrografía concreta (solo dentro de geografía del banco).
+  if (sub === 'geografia') {
+    if (
+      /afluente|cuenca del|macizo colombiano|desemboca|nacen varios r[ií]os|el r[ií]o (cauca|magdalena)|r[ií]o cauca|r[ií]o magdalena/.test(texto)
+      && /magdalena|cauca|orinoco|amazonas|r[ií]o/.test(texto)
+    ) {
+      return 'hidrografia_colombia';
+    }
+    return 'geografia';
+  }
+
+  if (sub === 'fracciones') return 'fracciones';
+  // Evita falsos positivos tipo «fraccionar petróleo».
+  if (/numerador|denominador/.test(texto)
+      || (/\bfracci[oó]n(es)?\b/.test(texto) && !/fraccionar|fraccionamiento|petr[oó]leo/.test(texto))) {
+    return 'fracciones';
+  }
+
+  if (TEMA_SUB[sub]) return sub;
+  return sub || '';
+}
+
 function temaDe(item) {
   const sub = subDe(item);
+  const refuerzoId = temaRefuerzoDe(item);
+  if (refuerzoId && TEMA_SUB[refuerzoId]) return TEMA_SUB[refuerzoId];
   const prev = limpio(item.tema_a_estudiar) || limpio(item.repaso);
   if (prev && !temaEsDebil(prev)) return prev;
   if (TEMA_SUB[sub]) return TEMA_SUB[sub];
@@ -384,8 +426,11 @@ export function enriquecerAyudaItem(item) {
     if (texto && justifFinal[L]) razonesFinal[texto] = justifFinal[L];
   });
 
+  const temaRefuerzoId = temaRefuerzoDe(item);
   const temaPrev = limpio(item.tema_a_estudiar) || limpio(item.repaso);
-  const tema = (!temaEsDebil(temaPrev) ? temaPrev : null) || ayuda.tema_a_estudiar;
+  // Si hay cartilla específica (p. ej. hidrografía), el título canónico manda.
+  const temaCanonico = temaRefuerzoId && TEMA_SUB[temaRefuerzoId] ? TEMA_SUB[temaRefuerzoId] : '';
+  const tema = temaCanonico || ((!temaEsDebil(temaPrev) ? temaPrev : null) || ayuda.tema_a_estudiar);
 
   return {
     ...item,
@@ -393,6 +438,7 @@ export function enriquecerAyudaItem(item) {
     frase_acierto: limpio(item.frase_acierto) || ayuda.frase_acierto,
     repaso: tema,
     tema_a_estudiar: tema,
+    tema_refuerzo_id: temaRefuerzoId || item.tema_refuerzo_id || subDe(item) || '',
     explicacion_correcta: alinearExplicacionCorrecta(item, ayuda),
     explicacion_incorrecta: limpio(item.explicacion_incorrecta) || '',
     razonesPorTexto: razonesFinal,
