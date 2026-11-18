@@ -9,9 +9,9 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="css/design-tokens.css">
   <link rel="stylesheet" href="css/theme.css">
-  <script src="js/danteCacheVersion.js?v=c-1.3.103"></script>
-  <script src="js/danteStudentId.js?v=c-1.3.103"></script>
-  <script src="js/danteTemasRefuerzo.js?v=c-1.3.103"></script>
+  <script src="js/danteCacheVersion.js?v=c-1.3.105"></script>
+  <script src="js/danteStudentId.js?v=c-1.3.105"></script>
+  <script src="js/danteTemasRefuerzo.js?v=c-1.3.105"></script>
   <style>
     :root {
       --perfil-cyan: #7eb8c4;
@@ -251,6 +251,7 @@
         <p class="tr-kicker" id="temaArea">Tema</p>
         <h1 class="tr-title" id="temaTitulo">—</h1>
         <p class="tr-sub" id="temaEstado"></p>
+        <p class="tr-note" id="temaContexto" style="margin:.85rem 0 0">Este tema aparece porque fallaste una pregunta relacionada.</p>
       </div>
       <div class="tr-card tr-body" id="temaExplicacion"></div>
       <div class="tr-card">
@@ -263,7 +264,7 @@
         <button type="button" id="btnMarcarHecho" class="tr-btn" disabled>Marcar tema como superado</button>
       </div>
     </section>
-    <p class="tr-foot-ver"><span id="badgeDanteVersion">c-1.3.103</span></p>
+    <p class="tr-foot-ver"><span id="badgeDanteVersion">c-1.3.105</span></p>
   </main>
 
   <script>
@@ -452,6 +453,7 @@
           }
           temaActivo = tema;
           respuestas = {};
+          try { window.DanteTemasRefuerzo.marcarVisto(tema.id || id); } catch (_) {}
           $('vistaLista').classList.add('hidden');
           $('vistaTema').classList.remove('hidden');
           $('temaTitulo').textContent = tema.titulo || id;
@@ -459,6 +461,18 @@
           $('temaEstado').textContent = tema.estadoContenido === 'completo'
             ? 'Cartilla lista · ejemplo resuelto · práctica al final'
             : 'Contenido base · se irá ampliando';
+          var etiqueta = tema.titulo || id.replace(/_/g, ' ');
+          try {
+            var pend = (window.DanteTemasRefuerzo.listarPendientes() || []).find(function (p) {
+              return p && p.id === (tema.id || id);
+            });
+            if (pend && pend.titulo) etiqueta = pend.titulo;
+          } catch (_) {}
+          var ctx = $('temaContexto');
+          if (ctx) {
+            ctx.textContent = 'Este tema aparece porque fallaste una pregunta sobre «' + etiqueta + '».';
+            ctx.classList.remove('hidden');
+          }
           $('temaExplicacion').innerHTML = htmlExplicacion(tema);
           engancharDiagramasExpandibles($('temaExplicacion'));
           renderPractica(tema);
@@ -478,9 +492,9 @@
         var btn = $('btnMarcarHecho');
         if (!items.length) {
           nota.classList.remove('hidden');
-          nota.textContent = 'Todavía no hay preguntas de práctica para este tema. Puedes marcarlo como visto cuando hayas leído la explicación.';
-          btn.disabled = false;
-          btn.textContent = 'Marcar tema como visto';
+          nota.textContent = 'Todavía no hay preguntas de práctica. Al abrir la cartilla ya cuenta como estudiada para el repaso de fallidas.';
+          btn.disabled = true;
+          btn.textContent = 'Sin práctica · no se puede marcar superado';
           return;
         }
         nota.classList.add('hidden');
@@ -489,7 +503,7 @@
         items.forEach(function (q, idx) {
           var wrap = document.createElement('div');
           wrap.className = 'tr-q';
-          wrap.dataset.qid = q.id || ('q' + idx);
+          wrap.dataset.qid = clavePractica(q, idx);
           var enun = document.createElement('div');
           enun.className = 'enun';
           enun.textContent = (idx + 1) + '. ' + (q.enunciado || '');
@@ -551,33 +565,62 @@
         actualizarBotonHecho();
       }
 
+      function clavePractica(q, idx) {
+        return q && q.id ? q.id : ('q' + idx);
+      }
+
       function actualizarBotonHecho() {
         var items = (temaActivo && temaActivo.practica) || [];
         var btn = $('btnMarcarHecho');
-        if (!items.length) { btn.disabled = false; return; }
+        var nota = $('practicaNota');
+        if (!items.length) {
+          btn.disabled = true;
+          btn.textContent = 'Sin práctica · no se puede marcar superado';
+          return;
+        }
         var n = items.length;
         var respondidas = 0;
         var aciertos = 0;
-        items.forEach(function (q) {
-          var key = q.id;
+        items.forEach(function (q, idx) {
+          var key = clavePractica(q, idx);
           if (Object.prototype.hasOwnProperty.call(respuestas, key)) {
             respondidas++;
             if (respuestas[key]) aciertos++;
           }
         });
-        btn.disabled = respondidas < n;
-        if (respondidas >= n) {
-          btn.textContent = aciertos >= Math.ceil(n * 0.6)
-            ? 'Marcar tema como superado (' + aciertos + '/' + n + ')'
-            : 'Repasaste las preguntas · marcar como visto (' + aciertos + '/' + n + ')';
+        var todoBien = respondidas === n && aciertos === n;
+        btn.disabled = !todoBien;
+        if (todoBien) {
+          btn.textContent = 'Marcar tema como superado (' + aciertos + '/' + n + ')';
+          if (nota) { nota.classList.add('hidden'); nota.textContent = ''; }
+        } else if (respondidas === n && aciertos < n) {
+          btn.textContent = 'Marcar tema como superado';
+          if (nota) {
+            nota.classList.remove('hidden');
+            nota.textContent = 'Para marcar superado debes acertar las ' + n + ' preguntas de práctica (' + aciertos + '/' + n + ' bien). Corrige las que fallaste.';
+          }
+        } else {
+          btn.textContent = 'Marcar tema como superado (' + aciertos + '/' + n + ' · responde todas)';
+          if (nota) { nota.classList.add('hidden'); nota.textContent = ''; }
         }
       }
 
       $('btnMarcarHecho').onclick = function () {
         if (!temaActivo) return;
         var items = temaActivo.practica || [];
+        if (!items.length) return;
         var aciertos = 0;
-        items.forEach(function (q) { if (respuestas[q.id]) aciertos++; });
+        items.forEach(function (q, idx) {
+          if (respuestas[clavePractica(q, idx)]) aciertos++;
+        });
+        if (aciertos < items.length) {
+          var nota = $('practicaNota');
+          if (nota) {
+            nota.classList.remove('hidden');
+            nota.textContent = 'Aún no: debes responder bien las ' + items.length + ' preguntas de práctica.';
+          }
+          return;
+        }
         window.DanteTemasRefuerzo.marcarHecho(temaActivo.id, { aciertos: aciertos, total: items.length });
         $('vistaTema').classList.add('hidden');
         $('vistaLista').classList.remove('hidden');

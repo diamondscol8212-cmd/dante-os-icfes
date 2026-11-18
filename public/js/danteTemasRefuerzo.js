@@ -27,12 +27,13 @@
     try {
       var raw = localStorage.getItem(storeKey());
       var data = raw ? JSON.parse(raw) : null;
-      if (!data || typeof data !== 'object') data = { pendientes: [], hechos: {}, updatedAt: '' };
+      if (!data || typeof data !== 'object') data = { pendientes: [], hechos: {}, vistos: {}, updatedAt: '' };
       if (!Array.isArray(data.pendientes)) data.pendientes = [];
       if (!data.hechos || typeof data.hechos !== 'object') data.hechos = {};
+      if (!data.vistos || typeof data.vistos !== 'object') data.vistos = {};
       return data;
     } catch (_) {
-      return { pendientes: [], hechos: {}, updatedAt: '' };
+      return { pendientes: [], hechos: {}, vistos: {}, updatedAt: '' };
     }
   }
 
@@ -205,7 +206,29 @@
       aciertos: detalle && detalle.aciertos,
       total: detalle && detalle.total
     };
+    if (!estado.vistos) estado.vistos = {};
+    estado.vistos[id] = { ts: Date.now() };
     guardarEstado(estado);
+  }
+
+  /** Marca la cartilla como abierta/estudiada (habilita repaso de fallidas del tema). */
+  function marcarVisto(temaId) {
+    var id = String(temaId || '');
+    if (!id) return;
+    var estado = leerEstado();
+    if (!estado.vistos) estado.vistos = {};
+    estado.vistos[id] = { ts: Date.now() };
+    guardarEstado(estado);
+  }
+
+  /** Estudió la cartilla (la abrió) o ya la superó. */
+  function fueEstudiado(temaId) {
+    var id = String(temaId || '');
+    if (!id) return false;
+    var estado = leerEstado();
+    if (estado.hechos && estado.hechos[id]) return true;
+    if (estado.vistos && estado.vistos[id]) return true;
+    return false;
   }
 
   function listarPendientes() {
@@ -234,6 +257,8 @@
     var remotePend = Array.isArray(snapTemas.pendientes) ? snapTemas.pendientes : [];
     var remoteHechos = snapTemas.hechos && typeof snapTemas.hechos === 'object' ? snapTemas.hechos : {};
     var hechos = Object.assign({}, remoteHechos, local.hechos);
+    var remoteVistos = snapTemas.vistos && typeof snapTemas.vistos === 'object' ? snapTemas.vistos : {};
+    var vistos = Object.assign({}, remoteVistos, local.vistos || {});
     var map = {};
     local.pendientes.forEach(function (p) { if (p && p.id) map[p.id] = p; });
     remotePend.forEach(function (p) {
@@ -245,6 +270,7 @@
     guardarEstado({
       pendientes: Object.keys(map).map(function (k) { return map[k]; }),
       hechos: hechos,
+      vistos: vistos,
       updatedAt: new Date().toISOString()
     });
   }
@@ -259,6 +285,9 @@
     resolverTemaId: resolverTemaId,
     registrarFallo: registrarFallo,
     marcarHecho: marcarHecho,
+    marcarVisto: marcarVisto,
+    fueEstudiado: fueEstudiado,
+    tituloDe: tituloDe,
     listarPendientes: listarPendientes,
     listarHechos: listarHechos,
     contarPendientes: contarPendientes,

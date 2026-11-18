@@ -464,6 +464,60 @@
       return;
     }
 
+    // Estudio previo: cada fallida exige haber abierto la cartilla del tema asociado.
+    try {
+      if (window.DanteTemasRefuerzo && typeof window.DanteTemasRefuerzo.cargarCatalogo === 'function') {
+        await window.DanteTemasRefuerzo.cargarCatalogo();
+      }
+    } catch (eCat) {}
+
+    const temasFaltantes = [];
+    const vistosIds = {};
+    reactivos.forEach(function (item) {
+      if (!window.DanteTemasRefuerzo || typeof window.DanteTemasRefuerzo.resolverTemaId !== 'function') return;
+      const temaId = window.DanteTemasRefuerzo.resolverTemaId({
+        sub: item.sub || item.sub_competencia,
+        sub_competencia: item.sub_competencia || item.sub,
+        tema_refuerzo_id: item.tema_refuerzo_id || item.temaRefuerzoId,
+        tema_a_estudiar: item.tema_a_estudiar || item.repaso || item.tema,
+        tema: item.tema || item.tema_a_estudiar,
+        repaso: item.repaso,
+        enunciado: item.pregunta_texto || item.enunciado || item.texto || ''
+      });
+      if (!temaId || vistosIds[temaId]) return;
+      vistosIds[temaId] = true;
+      const estudiado = typeof window.DanteTemasRefuerzo.fueEstudiado === 'function'
+        && window.DanteTemasRefuerzo.fueEstudiado(temaId);
+      if (!estudiado) {
+        const titulo = (typeof window.DanteTemasRefuerzo.tituloDe === 'function'
+          ? window.DanteTemasRefuerzo.tituloDe(temaId, item)
+          : temaId.replace(/_/g, ' '));
+        temasFaltantes.push({ id: temaId, titulo: titulo });
+      }
+    });
+
+    if (temasFaltantes.length) {
+      const primero = temasFaltantes[0];
+      const extra = temasFaltantes.length > 1
+        ? (' (y ' + (temasFaltantes.length - 1) + ' tema' + (temasFaltantes.length === 2 ? '' : 's') + ' más)')
+        : '';
+      nota(
+        'Primero estudia el tema',
+        'Antes de responder esas fallidas, abre la cartilla de «' + primero.titulo + '»' + extra + '. Cuando la hayas visto, vuelve aquí al repaso.',
+        [
+          {
+            texto: 'Ir a la cartilla',
+            alClick: function () {
+              cerrarNota();
+              window.location.href = 'temas-refuerzo.html?tema=' + encodeURIComponent(primero.id);
+            }
+          },
+          { texto: 'Cancelar', alClick: cerrarNota }
+        ]
+      );
+      return;
+    }
+
     nota(
       'Repaso · preguntas fallidas',
       'Vas a repasar exactamente ' + reactivos.length + ' pregunta' + (reactivos.length === 1 ? '' : 's') + ' que tú fallaste. Si las aciertas, el número en la sala baja.',
