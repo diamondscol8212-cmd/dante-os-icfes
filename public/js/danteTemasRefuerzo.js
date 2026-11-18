@@ -155,9 +155,45 @@
     return String((meta && (meta.area || meta.materia)) || '').toLowerCase();
   }
 
+  function snapshotFalloDe(meta) {
+    meta = meta || {};
+    var itemId = String(meta.itemId || meta.id || '').trim();
+    var enunciado = String(meta.enunciado || meta.pregunta_texto || meta.texto || '').replace(/\s+/g, ' ').trim();
+    var opciones = Array.isArray(meta.opciones) ? meta.opciones.map(function (o) {
+      return typeof o === 'string' ? o : String((o && (o.texto || o.label)) || o || '');
+    }) : [];
+    var elegida = String(meta.elegida || meta.opcionSeleccionada || meta.letra || '').toUpperCase().replace(/[^A-D]/g, '').slice(0, 1);
+    var correcta = String(meta.correcta || meta.ok || '').toUpperCase().replace(/[^A-D]/g, '').slice(0, 1);
+    if (!itemId && !enunciado) return null;
+    return {
+      itemId: itemId,
+      enunciado: enunciado.slice(0, 1200),
+      opciones: opciones.slice(0, 4),
+      elegida: elegida,
+      correcta: correcta,
+      textoElegida: String(meta.textoElegida || meta.textoOpcion || '').slice(0, 240),
+      textoCorrecta: String(meta.textoCorrecta || '').slice(0, 240),
+      ts: Date.now()
+    };
+  }
+
+  function adjuntarFallo(pendiente, snap) {
+    if (!pendiente || !snap) return;
+    if (!Array.isArray(pendiente.fallos)) pendiente.fallos = [];
+    // Evita duplicar el mismo ítem: actualiza o inserta al frente.
+    pendiente.fallos = pendiente.fallos.filter(function (f) {
+      return !(f && snap.itemId && f.itemId === snap.itemId);
+    });
+    pendiente.fallos.unshift(snap);
+    if (pendiente.fallos.length > 8) pendiente.fallos = pendiente.fallos.slice(0, 8);
+    pendiente.itemId = snap.itemId || pendiente.itemId || '';
+    pendiente.ultimoFallo = snap;
+  }
+
   /**
    * Registra un fallo → agrega tema a pendientes (sin duplicar).
-   * meta: { sub, sub_competencia, tema_a_estudiar, tema, repaso, area, itemId }
+   * meta: { sub, sub_competencia, tema_a_estudiar, tema, repaso, area, itemId,
+   *         enunciado, opciones, elegida, correcta, textoElegida, textoCorrecta }
    */
   function registrarFallo(meta) {
     meta = meta || {};
@@ -165,6 +201,7 @@
       var temaId = resolverTemaId(meta);
       if (!temaId) return null;
       var estado = leerEstado();
+      var snap = snapshotFalloDe(meta);
       // Regla: si el estudiante ya marcó el tema como superado, NO vuelve a pendientes
       // aunque falle otra pregunta del mismo subtema. Queda solo en historial (hechos).
       if (estado.hechos && estado.hechos[temaId]) {
@@ -173,14 +210,17 @@
       var existe = estado.pendientes.some(function (p) { return p && p.id === temaId; });
       if (!existe) {
         var catTema = temaPorId(temaId);
-        estado.pendientes.unshift({
+        var nuevo = {
           id: temaId,
           titulo: tituloDe(temaId, meta),
           area: areaDe(temaId, meta),
           nivel: (catTema && catTema.nivel) || '',
           itemId: meta.itemId || meta.id || '',
+          fallos: [],
           ts: Date.now()
-        });
+        };
+        adjuntarFallo(nuevo, snap);
+        estado.pendientes.unshift(nuevo);
         if (estado.pendientes.length > 80) estado.pendientes = estado.pendientes.slice(0, 80);
         guardarEstado(estado);
       } else {
@@ -188,12 +228,26 @@
           if (p && p.id === temaId) {
             p.titulo = tituloDe(temaId, meta);
             p.ts = Date.now();
+            adjuntarFallo(p, snap);
           }
         });
         guardarEstado(estado);
       }
       return temaId;
     });
+  }
+
+  /** Fallos guardados para un tema (más reciente primero). */
+  function fallosDeTema(temaId) {
+    var id = String(temaId || '');
+    var estado = leerEstado();
+    var pend = (estado.pendientes || []).find(function (p) { return p && p.id === id; });
+    if (pend && Array.isArray(pend.fallos) && pend.fallos.length) return pend.fallos.slice();
+    if (pend && pend.ultimoFallo) return [pend.ultimoFallo];
+    if (pend && pend.itemId) {
+      return [{ itemId: pend.itemId, enunciado: '', opciones: [], elegida: '', correcta: '', ts: pend.ts || 0 }];
+    }
+    return [];
   }
 
   function marcarHecho(temaId, detalle) {
@@ -288,6 +342,7 @@
     marcarVisto: marcarVisto,
     fueEstudiado: fueEstudiado,
     tituloDe: tituloDe,
+    fallosDeTema: fallosDeTema,
     listarPendientes: listarPendientes,
     listarHechos: listarHechos,
     contarPendientes: contarPendientes,

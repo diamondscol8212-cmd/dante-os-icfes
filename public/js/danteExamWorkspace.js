@@ -4312,6 +4312,10 @@
           && window.DanteTemasRefuerzo
           && typeof window.DanteTemasRefuerzo.registrarFallo === 'function') {
         try {
+          const letraOkTema = String(
+            (item && (item.correcta || item.ok || item.clave || item.respuesta_correcta)) || ''
+          ).toUpperCase().replace(/[^A-D]/g, '').slice(0, 1);
+          const opsTema = (item && (item.opciones_respuesta || item.opciones)) || [];
           window.DanteTemasRefuerzo.registrarFallo({
             id: recordRespuesta.id,
             itemId: recordRespuesta.id,
@@ -4323,7 +4327,12 @@
             repaso: (item && item.repaso) || '',
             area: (item && (item.area || item.area_general)) || recordRespuesta.materia || '',
             materia: recordRespuesta.materia || '',
-            enunciado: (item && (item.pregunta_texto || item.texto || item.enunciado)) || ''
+            enunciado: (item && (item.pregunta_texto || item.texto || item.enunciado)) || '',
+            opciones: opsTema,
+            elegida: String(elegida || recordRespuesta.opcionSeleccionada || '').toUpperCase().slice(0, 1),
+            correcta: letraOkTema,
+            textoElegida: recordRespuesta.textoOpcion || this._textoOpcionEnPantalla(item, elegida) || '',
+            textoCorrecta: this._textoOpcionEnPantalla(item, letraOkTema) || ''
           });
         } catch (eTema) {}
       }

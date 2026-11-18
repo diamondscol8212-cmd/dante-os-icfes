@@ -872,79 +872,990 @@ C.comprension_literal = skillPack(
   ]
 );
 
-// Remaining themes: compact but content-real
-const EXTRA = {
-  articulacion_global: ['La articulación global une partes del texto en un sentido de conjunto (tesis, hilo, cohesión).', 'tesis / hilo conductor'],
-  evaluacion_critica: ['La evaluación crítica juzga solidez, sesgos y suficiencia de las razones del texto.', '¿las pruebas bastan?'],
-  dos_textos: ['Comparar dos textos es contrastar tesis, evidencias y puntos de acuerdo/desacuerdo.', 'acuerdo vs desacuerdo'],
-  textos_discontinuos: ['Los textos discontinuos (tablas, avisos, gráficas) se leen localizando ejes, filas y condiciones.', 'leer la clave de la tabla/gráfica'],
-  filosofia: ['Las ideas éticas/filosóficas del texto plantean valores, deberes o concepciones de justicia que debes identificar.', 'valor o tesis ética'],
-  pragmatica: ['La pragmática atiende la intención comunicativa: ¿informar, persuadir, ironizar, pedir?', 'intención del hablante'],
-  semantica: ['La semántica fija el significado en contexto: una palabra cambia según la oración.', 'sentido contextual'],
-  literatura: ['Los recursos literarios (metáfora, hipérbole, narrador) construyen el efecto del texto.', 'recurso y efecto'],
-  analisis_textual: ['El análisis textual descompone estructura, cohesión y procedimientos del discurso.', 'cómo está construido'],
-  analisis_imagen: ['Leer una imagen es relacionar elementos visuales con la pregunta (qué muestra, para qué).', 'elementos y función'],
-  pensamiento_social: ['Normas y convivencia: derechos, deberes y mecanismos (p. ej. tutela) frente a conflictos cotidianos.', 'norma aplicable al caso'],
-  pensamiento_sistemico: ['Pensamiento sistémico: causas, actores e interdependencias de un problema social (no una sola variable).', 'mapa de relaciones'],
-  pensamiento_critico: ['Fuentes y evidencias: quién habla, qué prueba ofrece y qué falta para sostener una afirmación.', 'calidad de la evidencia'],
-  interpretacion: ['Lectura de gráficos y mapas sociales: leyenda, escalas y qué comparación permite el visual.', 'qué muestra el gráfico'],
-  interpretacion_y_analisis: ['Interpretar perspectivas: intereses, marcos y consecuencias de distintas posiciones en un caso.', 'perspectiva y consecuencias'],
-  participacion: ['Mecanismos de participación (voto, consulta, veeduría) canalizan influencia ciudadana en lo público.', 'mecanismo adecuado'],
-  competencias_ciudadanas: ['Competencias ciudadanas: convivir, participar y pensar lo público con respeto a derechos.', 'acción ciudadana pertinente'],
-  dialogo: ['En diálogos en inglés, el sentido sale del turno de habla, el contexto y la reacción del interlocutor.', 'what the speaker means'],
-  aviso: ['Los avisos dan instrucciones o prohibiciones: lee el verbo modal y el lugar/condición.', 'instruction or warning'],
-  cloze: ['Cloze: eliges la forma gramatical que encaja en la oración (tiempo, acuerdo, conector).', 'correct form in context'],
-  vocabulario: ['Vocabulario en contexto: el significado se fija por la oración, no por la primera acepción suelta.', 'meaning in the sentence'],
-  lectura: ['Reading comprehension: idea principal, detalle y propósito del texto en inglés.', 'main idea / detail'],
-  literal_reading: ['Literal reading: recupera datos explícitos del texto en inglés.', 'explicit detail'],
-  inferential_reading: ['Inferential reading: concluye lo que el texto implica en inglés, con apoyo.', 'supported inference'],
-  grammar: ['Grammar: tiempos, concordancia y estructura de la oración en inglés.', 'correct structure'],
-  aptitud_numerica_docente: ['Aptitud numérica docente: razonar con magnitudes, proporciones y lecturas cuantitativas de aula.', 'relación cuantitativa'],
-  aptitud_pedagogica: ['Aptitud pedagógica: decisiones de enseñanza que respetan el aprendizaje y el contexto del estudiante.', 'decisión pedagógica pertinente']
-};
+// ——— Inglés, lectura y sociales: contenido real (no meta-estrategia) ———
+C.cloze = pack(
+  'En inglés, el hueco de una oración se completa con la forma que concuerda con el sujeto y con las pistas de tiempo. Yesterday / last week → pasado simple; since / for + resultado presente → present perfect; he/she/it en presente añade -s.',
+  [
+    'Busca marcas de tiempo (yesterday, now, since, tomorrow).',
+    'Mira el sujeto: I/you/we/they vs he/she/it.',
+    'Elige el tiempo y la forma (afirmativa, negativa o interrogativa) que encajan juntos.'
+  ],
+  [
+    'Usar present simple con yesterday.',
+    'Olvidar la -s de he/she/it en presente.',
+    'Elegir un infinitivo cuando la estructura pide -ing o pasado.'
+  ],
+  {
+    titulo: 'Ejemplo resuelto',
+    enunciado: 'She _____ to the library yesterday.',
+    pasos: [
+      '1) yesterday = pasado.',
+      '2) Sujeto she → verbo en pasado: went (go → went).',
+      '3) No uses goes (presente) ni going (sin auxiliar).'
+    ],
+    respuesta: 'went',
+    contraste: null
+  },
+  [
+    q('tr_cloze_01', 'They _____ soccer every Saturday.', ['A) plays', 'B) play', 'C) playing', 'D) played yesterday'], 'B',
+      { A: 'plays es para he/she/it.', C: 'Falta auxiliar (are playing).', D: 'yesterday contradice every Saturday.' },
+      'They + present simple = play.'),
+    q('tr_cloze_02', 'He _____ here since 2020.', ['A) lives', 'B) lived', 'C) has lived', 'D) living'], 'C',
+      { A: 'Presente simple no marca since.', B: 'Pasado corto no cubre desde 2020 hasta ahora.', D: 'Falta has/is.' },
+      'since → present perfect: has lived.'),
+    q('tr_cloze_03', 'I _____ my homework last night.', ['A) do', 'B) does', 'C) did', 'D) doing'], 'C',
+      { A: 'do es presente.', B: 'does es he/she.', D: 'doing necesita auxiliar.' },
+      'last night → did.'),
+    q('tr_cloze_04', 'We _____ to the museum tomorrow.', ['A) go', 'B) went', 'C) are going', 'D) gone'], 'C',
+      { A: 'go no marca futuro planificado.', B: 'went es pasado.', D: 'gone es participio.' },
+      'tomorrow + plan → are going.')
+  ],
+  'Practica tiempos: past, present, present perfect y futuros con marcas de tiempo.'
+);
 
-for (const [id, [intro, foco]] of Object.entries(EXTRA)) {
-  C[id] = pack(
-    intro,
-    [
-      `Define el concepto clave: ${foco}.`,
-      'Aplícalo al caso o texto del enunciado.',
-      'Contrasta por qué las otras lecturas fallan conceptualmente.'
-    ],
-    [
-      `Ignorar el foco «${foco}».`,
-      'Mezclar este tema con otro cercano.',
-      'Elegir una opción sin anclarla al concepto.'
-    ],
-    {
-      titulo: 'Ejemplo resuelto',
-      enunciado: `Caso típico de «${id.replace(/_/g, ' ')}»: identifica ${foco}.`,
-      pasos: [
-        `1) Recuerda: ${intro.slice(0, 120)}…`,
-        `2) Busca en el caso el elemento que corresponde a ${foco}.`,
-        '3) Descarta opciones que cambian el concepto.',
-        `4) La respuesta es la que sostiene ${foco}.`
-      ],
-      respuesta: `La opción alineada con ${foco}`,
-      contraste: null
-    },
-    [
-      q(`${id}_p1`, `En este tema, el núcleo conceptual es:`, [`A) ${foco}`, 'B) Memorizar solo la letra de una clave ajena', 'C) Ignorar el caso', 'D) Cambiar de área sin leer'], 'A',
-        { B: 'Sin concepto no hay transferencia.', C: 'El caso es la evidencia.', D: 'Hay que quedarse en el tema.' },
-        `Núcleo: ${foco}.`),
-      q(`${id}_p2`, `Una respuesta correcta debe:`, ['A) Aplicar el concepto al caso', 'B) Contradecir el concepto a propósito', 'C) Hablar de otro tema', 'D) Ser la más larga'], 'A',
-        { B: 'Contradicción falla.', C: 'Fuera de foco.', D: 'Longitud ≠ acierto.' },
-        'Concepto + caso.'),
-      q(`${id}_p3`, `Error típico:`, ['A) Aplicar bien el concepto', 'B) Confundir este concepto con uno vecino', 'C) Leer el caso con cuidado', 'D) Verificar la definición'], 'B',
-        { A: 'Eso es acierto.', C: 'Eso ayuda.', D: 'Eso ayuda.' },
-        'Confusión entre subtemas.'),
-      q(`${id}_p4`, `Para consolidar el tema conviene:`, ['A) Resolver ítems nuevos del mismo concepto', 'B) Evitar cualquier ejemplo', 'C) Solo adivinar', 'D) Borrar la definición'], 'A',
-        { B: 'Sin práctica no fija.', C: 'No consolida.', D: 'Pierdes el ancla.' },
-        'Práctica del mismo esquema.')
-    ],
-    `Busca más casos de «${foco}».`
-  );
-}
+C.grammar = pack(
+  'La gramática del examen pide la estructura correcta: tiempo verbal, concordancia sujeto-verbo, orden de palabras y formas en negativo/pregunta (do/does/did, don\'t/doesn\'t).',
+  [
+    'Identifica si la oración es presente, pasado o perfect.',
+    'Asegura que el verbo concuerde con el sujeto.',
+    'En preguntas/negativos, coloca el auxiliar en el lugar correcto.'
+  ],
+  [
+    'She go / They goes.',
+    'Did she went…? (doble pasado).',
+    'Poner el adverbio rompiendo el auxiliar (She doesn\'t never…).'
+  ],
+  {
+    titulo: 'Ejemplo resuelto',
+    enunciado: '_____ she finish the project last week?',
+    pasos: ['1) last week = pasado.', '2) Pregunta en pasado: Did + sujeto + verbo base.', '3) Did she finish…? (no finished).'],
+    respuesta: 'Did she finish…?',
+    contraste: null
+  },
+  [
+    q('tr_gr_01', 'My brother _____ English well.', ['A) speak', 'B) speaks', 'C) speaking', 'D) spoken'], 'B',
+      { A: 'Falta -s con he.', C: 'Falta is/are.', D: 'Participio sin auxiliar.' },
+      'he/she → speaks.'),
+    q('tr_gr_02', 'They _____ not like coffee.', ['A) does', 'B) do', 'C) didn\'t never', 'D) is'], 'B',
+      { A: 'does es singular.', C: 'Doble negación / mezcla.', D: 'is no niega like.' },
+      'They do not / don\'t.'),
+    q('tr_gr_03', '_____ you see the movie yesterday?', ['A) Do', 'B) Does', 'C) Did', 'D) Are'], 'C',
+      { A: 'Do + yesterday no.', B: 'Does es he/she.', D: 'Are no forma pasado de see.' },
+      'Did + verbo base.'),
+    q('tr_gr_04', 'She _____ already left.', ['A) have', 'B) has', 'C) having', 'D) haded'], 'B',
+      { A: 'have con I/you/we/they.', C: 'Forma -ing incompleta.', D: 'No existe haded.' },
+      'She has already left.')
+  ],
+  'Repasa concordancia y auxiliares do/does/did/have/has.'
+);
+
+C.vocabulario = pack(
+  'El vocabulario en contexto se decide por la oración completa: sinónimos, colocaciones (make a decision, take a bus) y el registro (formal/informal). No elijas la primera acepción del diccionario si no encaja.',
+  [
+    'Lee la oración entera y qué pedía el hueco (verbo, sustantivo, adjetivo).',
+    'Descarta opciones que cambian el sentido o la colocación.',
+    'Quédate con la palabra que suena natural en ese contexto.'
+  ],
+  [
+    'Elegir un sinónimo que no colocaciona (do a decision).',
+    'Ignorar el tono (muy informal en un aviso serio).',
+    'Traducir palabra por palabra desde el español.'
+  ],
+  {
+    titulo: 'Ejemplo resuelto',
+    enunciado: 'Please _____ a decision before Friday.',
+    pasos: ['1) Colocación inglesa: make a decision.', '2) take/do no son la colocación estándar aquí.', '3) Respuesta: make.'],
+    respuesta: 'make',
+    contraste: null
+  },
+  [
+    q('tr_voc_01', 'She _____ the bus to school.', ['A) makes', 'B) takes', 'C) does', 'D) puts'], 'B',
+      { A: 'make the bus no es colocación.', C: 'do the bus no.', D: 'put the bus no.' },
+      'take the bus.'),
+    q('tr_voc_02', 'The movie was so _____ that I cried.', ['A) funny', 'B) moving', 'C) bored', 'D) short only'], 'B',
+      { A: 'funny hace reír, no llorar.', C: 'bored describe a la persona.', D: 'short no explica el llanto.' },
+      'moving = emotivo.'),
+    q('tr_voc_03', 'He gave me some useful _____.', ['A) advices', 'B) advice', 'C) advise', 'D) advising'], 'B',
+      { A: 'advice es incontable (sin -s).', C: 'advise es verbo.', D: 'gerundio no cabe.' },
+      'advice (uncountable).'),
+    q('tr_voc_04', 'We need to _____ the problem carefully.', ['A) look', 'B) watch', 'C) examine', 'D) see at'], 'C',
+      { A: 'look necesita at/into.', B: 'watch es observar en el tiempo.', D: 'see at no es natural.' },
+      'examine the problem.')
+  ],
+  'Aprende colocaciones frecuentes: make/take/do/have + sustantivo.'
+);
+
+C.dialogo = pack(
+  'En un diálogo, cada turno responde al anterior: saludos, peticiones, rechazos o acuerdos. La clave está en qué acaba de decir el interlocutor y qué se espera como reacción natural.',
+  [
+    'Lee el último turno antes del hueco.',
+    'Decide la función: aceptar, rechazar, preguntar, disculparse.',
+    'Elige la réplica que encaja en tono y contenido.'
+  ],
+  [
+    'Responder “Yes, I am” a “How are you?”.',
+    'Ignorar un “Would you like…?” y hablar de otro tema.',
+    'Usar un registro grosero cuando el diálogo es formal.'
+  ],
+  {
+    titulo: 'Ejemplo resuelto',
+    enunciado: 'A: “Could you open the window?” B: _____',
+    pasos: ['1) Es una petición cortés.', '2) Respuesta natural: “Sure.” / “Of course.”', '3) No: “I am 15 years old.”'],
+    respuesta: 'Sure. / Of course.',
+    contraste: null
+  },
+  [
+    q('tr_dia_01', 'A: “How are you?” B: _____', ['A) I am fine, thanks.', 'B) Yes, I am.', 'C) I am student.', 'D) Open the door.'], 'A',
+      { B: 'Yes, I am responde a Are you…?', C: 'No responde al saludo.', D: 'Es una orden.' },
+      'How are you → I am fine.'),
+    q('tr_dia_02', 'A: “Would you like some water?” B: _____', ['A) Yes, please.', 'B) I am water.', 'C) Yesterday.', 'D) She goes.'], 'A',
+      { B: 'No tiene sentido.', C: 'No responde la oferta.', D: 'Gramática ajena.' },
+      'Oferta → Yes, please / No, thanks.'),
+    q('tr_dia_03', 'A: “Sorry I\'m late.” B: _____', ['A) No problem.', 'B) I am late too always never.', 'C) What time is book?', 'D) Play soccer.'], 'A',
+      { B: 'Malformado.', C: 'Cambia de tema.', D: 'Irrelevante.' },
+      'Disculpa → No problem / That\'s OK.'),
+    q('tr_dia_04', 'A: “Where is the library?” B: _____', ['A) It\'s next to the cafeteria.', 'B) I am library.', 'C) Yes, I do.', 'D) Because.'], 'A',
+      { B: 'No localiza.', C: 'Responde a Do you…?', D: 'Conector suelto.' },
+      'Where → lugar.')
+  ],
+  'Practica pares: petición/oferta/disculpa/ubicación.'
+);
+
+C.aviso = pack(
+  'Los avisos e instrucciones en inglés usan imperativos (Keep quiet), modales de obligación (must, should) y prohibiciones (Do not / No + -ing). Lee la condición (place/time) antes de elegir.',
+  [
+    'Identifica si ordena, prohíbe o informa.',
+    'Atiende el lugar o la hora del aviso.',
+    'Elige la opción que cumple la instrucción, no una paráfrasis contraria.'
+  ],
+  [
+    'Leer “No smoking” como permiso para fumar.',
+    'Ignorar “after 6 p.m.”.',
+    'Confundir must con might.'
+  ],
+  {
+    titulo: 'Ejemplo resuelto',
+    enunciado: 'Sign: “Do not enter after 8 p.m.” What does it mean?',
+    pasos: ['1) Do not enter = prohibición.', '2) after 8 p.m. = condición de tiempo.', '3) No se puede entrar después de las 8.'],
+    respuesta: 'Entry is forbidden after 8 p.m.',
+    contraste: null
+  },
+  [
+    q('tr_av_01', '“Keep the door closed.” means:', ['A) Leave the door open', 'B) The door should stay closed', 'C) Break the door', 'D) Ignore the door'], 'B',
+      { A: 'Es lo contrario.', C: 'No lo dice.', D: 'No.' },
+      'Keep = mantener cerrada.'),
+    q('tr_av_02', '“No food in the lab.” means:', ['A) You may eat here', 'B) Food is not allowed in the lab', 'C) Only teachers eat', 'D) Buy food now'], 'B',
+      { A: 'Contradice No.', C: 'No lo limita a teachers.', D: 'No es una orden de compra.' },
+      'No + noun = prohibición.'),
+    q('tr_av_03', '“Please turn off your phones.” is:', ['A) a suggestion to keep phones on', 'B) a polite instruction to switch phones off', 'C) a weather report', 'D) a math problem'], 'B',
+      { A: 'Off ≠ on.', C: 'No.', D: 'No.' },
+      'turn off = apagar.'),
+    q('tr_av_04', '“Staff only.” means:', ['A) Anyone can enter', 'B) Only workers may enter', 'C) Students must enter', 'D) Closed forever'], 'B',
+      { A: 'Contradice only.', C: 'No dice students.', D: 'No afirma cierre eterno.' },
+      'Staff only = solo personal.')
+  ],
+  'Repasa imperativos y No + -ing / No + noun.'
+);
+
+C.lectura = pack(
+  'En comprensión de lectura en inglés identificas la idea principal, un detalle explícito o el propósito del autor. La respuesta correcta está apoyada por una o más oraciones del texto, no por tu opinión general.',
+  [
+    'Lee el texto completo una vez.',
+    'Subraya la frase que responde exactamente a la pregunta.',
+    'Descarta opciones que agregan datos que el texto no dice.'
+  ],
+  [
+    'Elegir un detalle verdadero pero que no responde la pregunta.',
+    'Inventar una causa que el texto no menciona.',
+    'Confundir el título con la idea principal si el texto dice otra cosa.'
+  ],
+  {
+    titulo: 'Ejemplo resuelto',
+    enunciado: 'Text: “Ana walks to school because the bus is expensive.” Why does Ana walk?',
+    pasos: ['1) La pregunta pide la causa.', '2) El texto dice because the bus is expensive.', '3) No inventes “she likes exercise” si no está.'],
+    respuesta: 'Because the bus is expensive',
+    contraste: null
+  },
+  [
+    q('tr_lec_01', 'Text: “The museum opens at 9.” When does it open?', ['A) At 9', 'B) At noon', 'C) At night only', 'D) Never'], 'A',
+      { B: 'No está en el texto.', C: 'No.', D: 'No.' },
+      'Dato literal: 9.'),
+    q('tr_lec_02', 'Text: “Tom studies at night to avoid noise.” Main idea:', ['A) Tom studies at night to avoid noise', 'B) Tom hates books', 'C) Night is always silent everywhere', 'D) Tom is a teacher'], 'A',
+      { B: 'No lo dice.', C: 'Generaliza de más.', D: 'No lo dice.' },
+      'Idea = lo que el texto sostiene.'),
+    q('tr_lec_03', 'Purpose of “Buy tickets online to save time.”', ['A) To entertain with a joke', 'B) To advise saving time by buying online', 'C) To describe a mountain', 'D) To ask a math question'], 'B',
+      { A: 'No es humor.', C: 'No.', D: 'No.' },
+      'Propósito = aconsejar.'),
+    q('tr_lec_04', 'Text: “Only members may enter.” Who may enter?', ['A) Anyone', 'B) Members only', 'C) Children only', 'D) Tourists only'], 'B',
+      { A: 'Only lo niega.', C: 'No dice children.', D: 'No dice tourists.' },
+      'Only members.')
+  ],
+  'Practica: main idea, detail y purpose con textos cortos.'
+);
+
+C.literal_reading = pack(
+  'La lectura literal en inglés recupera lo que el texto dice palabra por palabra: nombres, cifras, lugares y hechos explícitos. No infieras más de lo escrito.',
+  [
+    'Localiza en el texto la misma información que pide la pregunta.',
+    'Copia el dato sin cambiarlo.',
+    'Rechaza opciones que cambian un número o un nombre.'
+  ],
+  [
+    'Cambiar 3 days por a week.',
+    'Inferir emociones no dichas.',
+    'Usar conocimiento general en vez del texto.'
+  ],
+  {
+    titulo: 'Ejemplo resuelto',
+    enunciado: '“The train leaves at 6:30 a.m.” What time does it leave?',
+    pasos: ['1) Dato explícito: 6:30 a.m.', '2) No inventes 7:00.', '3) Respuesta: 6:30 a.m.'],
+    respuesta: '6:30 a.m.',
+    contraste: null
+  },
+  [
+    q('tr_lit_en_01', '“Luisa bought two maps.” How many maps?', ['A) One', 'B) Two', 'C) Three', 'D) None'], 'B',
+      { A: 'El texto dice two.', C: 'No.', D: 'No.' },
+      'two maps.'),
+    q('tr_lit_en_02', '“The class starts at 7.” When?', ['A) At 7', 'B) At 8', 'C) At noon', 'D) At midnight'], 'A',
+      { B: 'No está.', C: 'No.', D: 'No.' },
+      'at 7.'),
+    q('tr_lit_en_03', '“Pedro lives in Tunja.” Where?', ['A) Bogotá', 'B) Tunja', 'C) Miami', 'D) Not said as a city'], 'B',
+      { A: 'Otro lugar.', C: 'No.', D: 'Sí lo dice: Tunja.' },
+      'Tunja.'),
+    q('tr_lit_en_04', '“There are 5 chairs.” How many chairs?', ['A) 4', 'B) 5', 'C) 15', 'D) 50'], 'B',
+      { A: 'Mal conteo.', C: 'No.', D: 'No.' },
+      '5.')
+  ],
+  'Busca el dato exacto en el texto.'
+);
+
+C.inferential_reading = pack(
+  'La lectura inferencial en inglés concluye algo que el texto implica con pistas, sin citarlo literalmente. La inferencia válida siempre puede señalar una o dos frases de apoyo.',
+  [
+    'Junta las pistas del texto.',
+    'Formula lo que se sigue con lógica.',
+    'Descarta conclusiones que el texto no autoriza.'
+  ],
+  [
+    'Inventar un final dramático.',
+    'Confundir opinión personal con inferencia.',
+    'Generalizar “always/never” sin base.'
+  ],
+  {
+    titulo: 'Ejemplo resuelto',
+    enunciado: '“Maya took her umbrella. The streets were wet.” What can we infer?',
+    pasos: ['1) Umbrella + wet streets → probablemente llovió o llovía.', '2) No afirma el color del paraguas.', '3) Inferencia: it was raining / had rained.'],
+    respuesta: 'It was probably raining',
+    contraste: null
+  },
+  [
+    q('tr_inf_en_01', '“Sam put on a coat and gloves.” Infer:', ['A) It is likely cold outside', 'B) Sam is swimming', 'C) It is a math class', 'D) Sam sold the house'], 'A',
+      { B: 'Coat/gloves ≠ swimming.', C: 'No.', D: 'No.' },
+      'Abrigo + guantes → frío.'),
+    q('tr_inf_en_02', '“The lights went out and people lit candles.” Infer:', ['A) There was probably a power cut', 'B) They hate candles', 'C) It was noon at the beach', 'D) They finished a marathon only'], 'A',
+      { B: 'No.', C: 'No encaja.', D: 'No lo dice.' },
+      'Lights out → apagón.'),
+    q('tr_inf_en_03', 'A valid inference must:', ['A) Contradict the text', 'B) Be supported by clues in the text', 'C) Ignore the text', 'D) Be a random rumor'], 'B',
+      { A: 'No.', C: 'No.', D: 'No.' },
+      'Apoyo textual.'),
+    q('tr_inf_en_04', '“Lia closed the book and smiled.” Weak inference:', ['A) She may feel satisfied', 'B) She definitely bought a car', 'C) She finished reading for now', 'D) She stopped reading that moment'], 'B',
+      { A: 'Plausible.', C: 'Plausible.', D: 'Plausible.' },
+      'Car is not supported.')
+  ],
+  'Pista + lógica = inferencia; sin pista = inválida.'
+);
+
+C.articulacion_global = pack(
+  'La articulación global del texto es el hilo que une párrafos: tesis, conectores (además, sin embargo, por eso) y repetición de ideas clave. Entender el conjunto evita quedarte en una sola frase suelta.',
+  [
+    'Busca la tesis o idea que se sostiene a lo largo del texto.',
+    'Marca conectores que suman, contrastan o concluyen.',
+    'Explica cómo un párrafo prepara al siguiente.'
+  ],
+  [
+    'Leer solo el primer renglón y generalizar.',
+    'Ignorar un “sin embargo” que cambia el sentido.',
+    'Confundir un ejemplo local con la tesis global.'
+  ],
+  {
+    titulo: 'Ejemplo resuelto',
+    enunciado: 'P1 habla de contaminación; P2 dice “Sin embargo, hay soluciones locales.” ¿Qué hace el conector?',
+    pasos: ['1) Sin embargo = contraste.', '2) No niega el problema: introduce otro enfoque.', '3) Articula problema → matiz/solución.'],
+    respuesta: 'Contrasta y abre el matiz de las soluciones',
+    contraste: null
+  },
+  [
+    q('tr_art_01', 'Un conector “por lo tanto” suele:', ['A) Introducir una conclusión', 'B) Negar el texto entero', 'C) Pedir comida', 'D) Cambiar de idioma'], 'A',
+      { B: 'No niega todo.', C: 'No.', D: 'No.' },
+      'por lo tanto = conclusión.'),
+    q('tr_art_02', 'La tesis de un texto es:', ['A) La idea central que se sostiene', 'B) Cualquier fecha suelta', 'C) Solo el tipógrafo', 'D) Una pregunta sin respuesta obligatoria'], 'A',
+      { B: 'Detalle.', C: 'No.', D: 'Puede abrir, no es tesis.' },
+      'Tesis = idea central.'),
+    q('tr_art_03', 'Si el párrafo 2 contradice al 1 con “pero”, la lectura global debe:', ['A) Ignorar el 2', 'B) Integrar el contraste', 'C) Borrar el 1', 'D) Inventar un tercer tema'], 'B',
+      { A: 'Pierdes el sentido.', C: 'No.', D: 'No.' },
+      'Integrar contraste.'),
+    q('tr_art_04', 'Un ejemplo en medio del texto normalmente:', ['A) Ilustra la idea en curso', 'B) Cambia de asignatura solo', 'C) Anula la tesis siempre', 'D) Es la bibliografía'], 'A',
+      { B: 'No.', C: 'No siempre anula.', D: 'No.' },
+      'Ejemplo = apoyo.')
+  ],
+  'Sigue el hilo: tesis + conectores + ejemplos.'
+);
+
+C.evaluacion_critica = pack(
+  'Evaluar críticamente un texto es juzgar si las razones bastan: ¿hay evidencia?, ¿hay sesgo?, ¿se exagera? No basta con entender: hay que valorar la solidez.',
+  [
+    'Separa afirmación y prueba.',
+    'Pregunta qué falta (datos, fuentes, contraejemplos).',
+    'Decide si la conclusión está justificada.'
+  ],
+  [
+    'Aceptar una generalización con un solo caso.',
+    'Confundir opinión con dato.',
+    'Atacar a la persona en vez del argumento.'
+  ],
+  {
+    titulo: 'Ejemplo resuelto',
+    enunciado: '“Todos odian el parque porque Ana se cayó.” ¿Qué falla?',
+    pasos: ['1) De un caso (Ana) salta a “todos”.', '2) Falta evidencia de mayoría.', '3) Evaluación: generalización apresurada; la conclusión no se sostiene.'],
+    respuesta: 'Generalización con un solo caso',
+    contraste: null
+  },
+  [
+    q('tr_ev_01', 'Una conclusión sólida necesita:', ['A) Pruebas suficientes', 'B) Solo un grito', 'C) Ignorar datos', 'D) Cambiar de tema'], 'A',
+      { B: 'No es prueba.', C: 'Debilita.', D: 'No evalúa.' },
+      'Evidencia.'),
+    q('tr_ev_02', 'Un sesgo aparece cuando:', ['A) Se omiten datos que contradicen la tesis', 'B) Se citan fuentes claras', 'C) Se define un término', 'D) Se corrige un error'], 'A',
+      { B: 'Eso es buen apoyo.', C: 'No es sesgo.', D: 'Eso mejora.' },
+      'Omisión interesada.'),
+    q('tr_ev_03', '“Lo dijo un famoso, entonces es verdad.” Fallo:', ['A) Autoridad mal usada', 'B) Definición perfecta', 'C) Dato estadístico', 'D) Silogismo válido'], 'A',
+      { B: 'No.', C: 'No hay cifra.', D: 'No es silogismo.' },
+      'Autoridad ≠ prueba.'),
+    q('tr_ev_04', 'Para criticar un argumento debes:', ['A) Revisar razones y evidencia', 'B) Insultar al autor', 'C) Ignorar el texto', 'D) Cambiar la pregunta'], 'A',
+      { B: 'Ad hominem.', C: 'No.', D: 'No.' },
+      'Razones + evidencia.')
+  ],
+  'Afirmación vs prueba; detecta sesgos y saltos.'
+);
+
+C.dos_textos = pack(
+  'Comparar dos textos es hallar acuerdos, desacuerdos y matices: qué sostiene cada uno, con qué evidencias y dónde se cruzan o se oponen.',
+  [
+    'Resume la tesis de A y la de B por separado.',
+    'Marca un punto en común y uno en conflicto.',
+    'Responde exactamente lo que pide: acuerdo, contraste o ambos.'
+  ],
+  [
+    'Mezclar citas de A como si fueran de B.',
+    'Decir que “dicen lo mismo” cuando hay contraste claro.',
+    'Elegir un detalle irrelevante para ambos.'
+  ],
+  {
+    titulo: 'Ejemplo resuelto',
+    enunciado: 'A: “El recreo debe alargarse.” B: “El recreo está bien; hay que reforzar matemáticas.” ¿Desacuerdo?',
+    pasos: ['1) A quiere más recreo.', '2) B prioriza otra cosa y no pide alargar.', '3) Desacuerdo sobre alargar el recreo.'],
+    respuesta: 'Desacuerdo sobre alargar el recreo',
+    contraste: null
+  },
+  [
+    q('tr_dos_01', 'Si A y B afirman la misma causa, hay:', ['A) Acuerdo', 'B) Insulto', 'C) Silencio', 'D) Solo un título'], 'A',
+      { B: 'No.', C: 'No.', D: 'No.' },
+      'Misma causa = acuerdo.'),
+    q('tr_dos_02', 'Para contrastar debes:', ['A) Señalar en qué difieren las tesis', 'B) Ignorar B', 'C) Copiar solo adjetivos', 'D) Inventar un tercer texto'], 'A',
+      { B: 'No comparas.', C: 'Insuficiente.', D: 'No.' },
+      'Diferencias de tesis.'),
+    q('tr_dos_03', 'Un punto de encuentro es:', ['A) Una idea que ambos aceptan', 'B) Una fecha falsa', 'C) Un error tipográfico', 'D) La opción más larga'], 'A',
+      { B: 'No.', C: 'No.', D: 'No.' },
+      'Acuerdo parcial.'),
+    q('tr_dos_04', 'Error típico al comparar:', ['A) Atribuir a A lo que solo dice B', 'B) Leer ambos', 'C) Anotar tesis', 'D) Buscar evidencias'], 'A',
+      { B: 'Eso ayuda.', C: 'Eso ayuda.', D: 'Eso ayuda.' },
+      'No cruzar autores.')
+  ],
+  'Tesis A vs tesis B: acuerdo y contraste.'
+);
+
+C.textos_discontinuos = pack(
+  'Tablas, avisos y gráficas se leen por estructura: título, ejes, filas/columnas y unidades. La respuesta sale de cruzar la pregunta con la celda o barra correcta.',
+  [
+    'Lee el título y las unidades.',
+    'Ubica la fila/columna o el punto del eje que pide la pregunta.',
+    'Compara valores si pide “mayor”, “menor” o “diferencia”.'
+  ],
+  [
+    'Leer mal el eje (confundir % con cantidad).',
+    'Tomar la barra vecina.',
+    'Ignorar una nota al pie que cambia la lectura.'
+  ],
+  {
+    titulo: 'Ejemplo resuelto',
+    enunciado: 'Tabla: Lun 4 préstamos, Mar 6. ¿Qué día tuvo más?',
+    pasos: ['1) Compara 4 y 6.', '2) Martes es mayor.', '3) Respuesta: martes.'],
+    respuesta: 'Martes',
+    contraste: null
+  },
+  [
+    q('tr_td_01', 'Si una barra llega más alto en “Andina”, esa región:', ['A) Tiene el valor mayor en esa gráfica', 'B) No existe', 'C) Siempre es la capital', 'D) Es un verbo'], 'A',
+      { B: 'No.', C: 'No lo implica.', D: 'No.' },
+      'Altura = valor.'),
+    q('tr_td_02', 'Una escala 1:50.000 en mapa indica:', ['A) Relación papel–realidad', 'B) Población', 'C) Color político', 'D) Temperatura'], 'A',
+      { B: 'No es demografía.', C: 'No.', D: 'No.' },
+      'Escala = proporción.'),
+    q('tr_td_03', 'Para leer una celda debes cruzar:', ['A) Fila y columna', 'B) Solo el tipógrafo', 'C) El clima', 'D) La portada del libro'], 'A',
+      { B: 'No.', C: 'No.', D: 'No.' },
+      'Fila × columna.'),
+    q('tr_td_04', 'Si pide la diferencia entre 20 y 12:', ['A) 8', 'B) 32', 'C) 20', 'D) 12'], 'A',
+      { B: 'Sumaste.', C: 'Un extremo.', D: 'Un extremo.' },
+      '20−12=8.')
+  ],
+  'Título, ejes, celdas: cruza pregunta y dato.'
+);
+
+C.filosofia = pack(
+  'En textos con ideas éticas o filosóficas identificas valores (justicia, libertad, deber), dilemas y la tesis moral que el autor sostiene o cuestiona.',
+  [
+    'Nombra el valor o principio en juego.',
+    'Separa el caso concreto de la norma general.',
+    'Elige la opción que expresa esa idea ética, no un dato lateral.'
+  ],
+  [
+    'Reducir el texto a una anécdota sin el valor.',
+    'Confundir legalidad con moralidad si el texto las distingue.',
+    'Atribuir al autor una tesis opuesta.'
+  ],
+  {
+    titulo: 'Ejemplo resuelto',
+    enunciado: 'Texto: “Mentir para salvar una vida puede ser un deber.” ¿Qué idea ética destaca?',
+    pasos: ['1) Hay un conflicto verdad vs vida.', '2) El autor prioriza salvar la vida como deber.', '3) No es solo “mentir es malo” sin matices.'],
+    respuesta: 'El deber de preservar la vida puede primar',
+    contraste: null
+  },
+  [
+    q('tr_fil_01', 'Un dilema ético presenta:', ['A) Dos valores en tensión', 'B) Solo una suma', 'C) Un mapa', 'D) Una conjugación'], 'A',
+      { B: 'Mate.', C: 'Geo.', D: 'Gramática.' },
+      'Tensión de valores.'),
+    q('tr_fil_02', '“Debes tratar a otros como quieres que te traten” expresa:', ['A) Una regla de reciprocidad moral', 'B) Una fórmula química', 'C) Un horario', 'D) Una capital'], 'A',
+      { B: 'No.', C: 'No.', D: 'No.' },
+      'Reciprocidad.'),
+    q('tr_fil_03', 'Si el texto distingue ley y justicia, no debes:', ['A) Igualarlas automáticamente', 'B) Leer la distinción', 'C) Citar el texto', 'D) Nombrar el valor'], 'A',
+      { B: 'Eso ayuda.', C: 'Eso ayuda.', D: 'Eso ayuda.' },
+      'No las fusiones.'),
+    q('tr_fil_04', 'La tesis moral es:', ['A) Lo que el texto sostiene sobre lo correcto/incorrecto', 'B) Solo el nombre del autor', 'C) La tipografía', 'D) Un porcentaje suelto'], 'A',
+      { B: 'No basta.', C: 'No.', D: 'No.' },
+      'Tesis moral.')
+  ],
+  'Valores, dilemas y tesis moral del texto.'
+);
+
+C.pragmatica = pack(
+  'La intención comunicativa responde a para qué se dice algo: informar, pedir, ironizar, advertir o persuadir. El mismo enunciado cambia de función según la situación.',
+  [
+    'Mira la situación (quién habla a quién).',
+    'Clasifica el acto: pregunta, orden, consejo, amenaza suave, etc.',
+    'Elige la opción que nombra esa intención.'
+  ],
+  [
+    'Leer una ironía como dato literal.',
+    'Tomar una pregunta retórica como petición de dato.',
+    'Ignorar el tono de un aviso.'
+  ],
+  {
+    titulo: 'Ejemplo resuelto',
+    enunciado: 'En una fila: “¿Trajiste el día completo?” dicho con sarcasmo por llegar tarde.',
+    pasos: ['1) No pide el clima del día.', '2) Critica la tardanza.', '3) Intención: reclamo / ironía.'],
+    respuesta: 'Ironía / reclamo por la tardanza',
+    contraste: null
+  },
+  [
+    q('tr_prag_01', '“¿Puedes pasarme la sal?” en la mesa suele ser:', ['A) Una petición cortés', 'B) Una definición de sal', 'C) Un mapa', 'D) Una ecuación'], 'A',
+      { B: 'No define.', C: 'No.', D: 'No.' },
+      'Petición.'),
+    q('tr_prag_02', 'Un anuncio “No pisar el césped” pretende:', ['A) Prohibir / advertir', 'B) Contar un chiste solo', 'C) Enseñar álgebra', 'D) Pedir un autógrafo'], 'A',
+      { B: 'No.', C: 'No.', D: 'No.' },
+      'Advertencia.'),
+    q('tr_prag_03', 'La ironía ocurre cuando:', ['A) Se dice lo contrario de lo que se quiere criticar', 'B) Se cita una fecha', 'C) Se suma 2+2', 'D) Se nombra un río'], 'A',
+      { B: 'Literal.', C: 'Mate.', D: 'Geo.' },
+      'Contrario + crítica.'),
+    q('tr_prag_04', '“Te felicito…” dicho tras un error grave puede ser:', ['A) Sarcasmo', 'B) Una capital', 'C) Un climograma', 'D) Un mcm'], 'A',
+      { B: 'No.', C: 'No.', D: 'No.' },
+      'Sarcasmo.')
+  ],
+  '¿Para qué se dice? Informar, pedir, ironizar, advertir.'
+);
+
+C.semantica = pack(
+  'El significado en contexto depende de la oración: una misma palabra puede ser literal o figurada. Elige el sentido que hace coherente el párrafo.',
+  [
+    'Sustituye la palabra por cada opción y mira cuál mantiene el sentido.',
+    'Atiende si el uso es figurado (metáfora).',
+    'Descarta acepciones que rompen la lógica del texto.'
+  ],
+  [
+    'Elegir la acepción más común aunque no calce.',
+    'Ignorar comillas o tono figurado.',
+    'Traducir palabra por palabra sin contexto.'
+  ],
+  {
+    titulo: 'Ejemplo resuelto',
+    enunciado: '“La noticia me dejó helado.” ¿Qué significa helado aquí?',
+    pasos: ['1) No habla de temperatura corporal real necesariamente.', '2) Uso figurado: sorprendido / impactado.', '3) Sentido contextual: asombro.'],
+    respuesta: 'Sorprendido / impactado',
+    contraste: null
+  },
+  [
+    q('tr_sem_01', '“Paso de tortuga” en un trámite suele significar:', ['A) Muy lento', 'B) Un animal en la oficina', 'C) Un río', 'D) Una suma'], 'A',
+      { B: 'Literal indebido.', C: 'No.', D: 'No.' },
+      'Figurativo: lento.'),
+    q('tr_sem_02', 'En “banco de datos”, banco es:', ['A) Conjunto/repositorio', 'B) Solo una silla', 'C) Un pez', 'D) Una capital'], 'A',
+      { B: 'Otra acepción.', C: 'Otra acepción.', D: 'No.' },
+      'Sentido técnico.'),
+    q('tr_sem_03', 'Para fijar el sentido debes:', ['A) Mirar la oración completa', 'B) Cerrar el texto', 'C) Elegir al azar', 'D) Contar letras'], 'A',
+      { B: 'No.', C: 'No.', D: 'No.' },
+      'Contexto oracional.'),
+    q('tr_sem_04', '“Corriente” en “agua corriente” significa:', ['A) Que fluye / disponible', 'B) Opinión política', 'C) Un examen', 'D) Un ángulo'], 'A',
+      { B: 'Otra acepción.', C: 'No.', D: 'No.' },
+      'Agua que fluye.')
+  ],
+  'Misma palabra, distinto sentido: manda el contexto.'
+);
+
+C.literatura = pack(
+  'Los recursos literarios (metáfora, hipérbole, narrador, personificación) producen un efecto: embellecer, exagerar, acercar emociones. Identifica el recurso y para qué sirve en el fragmento.',
+  [
+    'Nombra el recurso (comparación, exageración, etc.).',
+    'Explica el efecto en el lector.',
+    'No lo leas solo como dato histórico si el ítem pide el recurso.'
+  ],
+  [
+    'Llamar metáfora a una estadística.',
+    'Ignorar el narrador en primera persona.',
+    'Confundir hipérbole con literalidad.'
+  ],
+  {
+    titulo: 'Ejemplo resuelto',
+    enunciado: '“El sol sonreía sobre el valle.” ¿Qué recurso hay?',
+    pasos: ['1) El sol no sonríe de verdad.', '2) Se le atribuye acción humana → personificación.', '3) Efecto: ambientar con calidez.'],
+    respuesta: 'Personificación',
+    contraste: null
+  },
+  [
+    q('tr_lit_01', '“Te lo dije mil veces” es tipicamente:', ['A) Hipérbole', 'B) Un mapa', 'C) Una fórmula', 'D) Un climograma'], 'A',
+      { B: 'No.', C: 'No.', D: 'No.' },
+      'Exageración.'),
+    q('tr_lit_02', '“Sus ojos eran dos luceros” es:', ['A) Metáfora', 'B) Acta notarial', 'C) Tabla de datos', 'D) Norma penal'], 'A',
+      { B: 'No.', C: 'No.', D: 'No.' },
+      'Metáfora.'),
+    q('tr_lit_03', 'Un narrador en “yo” está en:', ['A) Primera persona', 'B) Solo tercera', 'C) Silencio total', 'D) Futuro gramatical obligatorio'], 'A',
+      { B: 'No.', C: 'No.', D: 'No.' },
+      'Primera persona.'),
+    q('tr_lit_04', 'El efecto de la hipérbole suele ser:', ['A) Enfatizar por exageración', 'B) Medir un ángulo', 'C) Calcular un %,', 'D) Nombrar un afluente'], 'A',
+      { B: 'Mate.', C: 'Mate.', D: 'Geo.' },
+      'Énfasis.')
+  ],
+  'Recurso + efecto en el fragmento.'
+);
+
+C.analisis_textual = pack(
+  'Analizar un texto es ver cómo está construido: partes, cohesión, repeticiones, citas y el procedimiento del autor (definir, argumentar, narrar).',
+  [
+    'Identifica la función del párrafo (introducir, ejemplificar, concluir).',
+    'Marca mecanismos de cohesión (pronombres, sinónimos, conectores).',
+    'Di qué procedimiento usa el autor.'
+  ],
+  [
+    'Quedarse solo en el tema sin ver la estructura.',
+    'Confundir un ejemplo con la tesis.',
+    'Ignorar una cita y su función.'
+  ],
+  {
+    titulo: 'Ejemplo resuelto',
+    enunciado: 'Un párrafo define un término y el siguiente da un ejemplo. ¿Qué hace el autor?',
+    pasos: ['1) Primero define.', '2) Luego ilustra.', '3) Procedimiento: definición + ejemplificación.'],
+    respuesta: 'Definir y luego ejemplificar',
+    contraste: null
+  },
+  [
+    q('tr_at_01', 'Un conector “en primer lugar” organiza:', ['A) Una secuencia', 'B) Un río', 'C) Un átomo', 'D) Un ángulo'], 'A',
+      { B: 'Geo.', C: 'Química.', D: 'Mate.' },
+      'Orden discursivo.'),
+    q('tr_at_02', 'La cohesión se logra con:', ['A) Pronombres y repeticiones controladas', 'B) Borrar nexos', 'C) Cambiar de idioma al azar', 'D) Ignorar referencias'], 'A',
+      { B: 'Rompe.', C: 'Rompe.', D: 'Rompe.' },
+      'Cohesión.'),
+    q('tr_at_03', 'Si un párrafo solo ilustra, su función es:', ['A) Ejemplificar', 'B) Legislar', 'C) Medir', 'D) Navegar'], 'A',
+      { B: 'No.', C: 'No.', D: 'No.' },
+      'Ejemplo.'),
+    q('tr_at_04', 'Analizar el texto pregunta:', ['A) Cómo está construido', 'B) Solo la tipografía', 'C) El clima de Londres', 'D) El mcm'], 'A',
+      { B: 'No basta.', C: 'No.', D: 'No.' },
+      'Construcción.')
+  ],
+  'Estructura, cohesión y procedimiento del autor.'
+);
+
+C.analisis_imagen = pack(
+  'Leer una imagen en el examen es relacionar lo que se ve (personas, objetos, símbolos, plano) con la pregunta: qué representa y para qué se usa en el ítem.',
+  [
+    'Describe los elementos visibles relevantes.',
+    'Conecta la imagen con el enunciado.',
+    'Elige la opción que interpreta esa relación, no un detalle decorativo.'
+  ],
+  [
+    'Inventar objetos que no están.',
+    'Ignorar una leyenda o título de la figura.',
+    'Leer la imagen como si no hubiera pregunta.'
+  ],
+  {
+    titulo: 'Ejemplo resuelto',
+    enunciado: 'Una figura muestra una rosa de los vientos. ¿Para qué sirve?',
+    pasos: ['1) Elementos: N, S, E, O.', '2) Función: orientar.', '3) No mide población.'],
+    respuesta: 'Orientar puntos cardinales',
+    contraste: null
+  },
+  [
+    q('tr_ai_01', 'Una barra más alta en una gráfica suele indicar:', ['A) Un valor mayor', 'B) Un color sin dato', 'C) Un verbo', 'D) Una norma penal'], 'A',
+      { B: 'Hay dato.', C: 'No.', D: 'No.' },
+      'Altura = magnitud.'),
+    q('tr_ai_02', 'Si la imagen tiene leyenda, debes:', ['A) Usarla para interpretar símbolos', 'B) Ignorarla', 'C) Borrarla', 'D) Traducirla a una ecuación siempre'], 'A',
+      { B: 'Pierdes claves.', C: 'No.', D: 'No siempre.' },
+      'Leyenda.'),
+    q('tr_ai_03', 'Un mapa con escala sirve para:', ['A) Relacionar distancias en papel y reales', 'B) Cantar', 'C) Freír', 'D) Conjugar'], 'A',
+      { B: 'No.', C: 'No.', D: 'No.' },
+      'Escala.'),
+    q('tr_ai_04', 'Al interpretar una imagen, lo primero es:', ['A) Ver qué pregunta el enunciado', 'B) Inventar un cuento', 'C) Cambiar de área', 'D) Contar tipografías'], 'A',
+      { B: 'No.', C: 'No.', D: 'No.' },
+      'Enunciado + imagen.')
+  ],
+  'Elementos visibles + pregunta = interpretación.'
+);
+
+C.pensamiento_social = pack(
+  'Normas y convivencia: derechos, deberes y mecanismos (tutela, acción popular, deberes ciudadanos) resuelven conflictos cotidianos dentro del marco constitucional.',
+  [
+    'Identifica el derecho o deber en juego.',
+    'Nombra el mecanismo adecuado (tutela, denuncia, diálogo, etc.).',
+    'Descarta opciones que inventan sanciones inexistentes.'
+  ],
+  [
+    'Usar tutela para un conflicto que no es de derecho fundamental.',
+    'Confundir deber moral con sanción penal.',
+    'Ignorar la dignidad o el debido proceso.'
+  ],
+  {
+    titulo: 'Ejemplo resuelto',
+    enunciado: 'Una EPS niega un tratamiento urgente. ¿Qué mecanismo cabe?',
+    pasos: ['1) Hay derecho a la salud en juego.', '2) Tutela protege derechos fundamentales.', '3) No es solo “quejarse en redes” como mecanismo jurídico.'],
+    respuesta: 'Acción de tutela',
+    contraste: null
+  },
+  [
+    q('tr_ps_01', 'La tutela protege principalmente:', ['A) Derechos fundamentales', 'B) Recetas de cocina', 'C) Goles', 'D) Tipografías'], 'A',
+      { B: 'No.', C: 'No.', D: 'No.' },
+      'Derechos fundamentales.'),
+    q('tr_ps_02', 'Un deber ciudadano típico es:', ['A) Respetar los derechos de otros', 'B) Ignorar la ley siempre', 'C) Falsificar documentos', 'D) Destruir pruebas'], 'A',
+      { B: 'Ilegal.', C: 'Delito.', D: 'Delito.' },
+      'Respeto mutuo.'),
+    q('tr_ps_03', 'La convivencia pacífica implica:', ['A) Resolver conflictos sin violencia', 'B) Imponer por la fuerza', 'C) Censurar todo diálogo', 'D) Eliminar deberes'], 'A',
+      { B: 'Rompe convivencia.', C: 'Rompe.', D: 'Rompe.' },
+      'Diálogo / mediación.'),
+    q('tr_ps_04', 'Si hay discriminación en el colegio, un camino es:', ['A) Activar rutas de atención y denuncia institucional', 'B) Callar siempre', 'C) Responder con violencia', 'D) Falsificar notas'], 'A',
+      { B: 'No protege.', C: 'Agrava.', D: 'Ilegal.' },
+      'Rutas institucionales.')
+  ],
+  'Derecho + deber + mecanismo adecuado.'
+);
+
+C.pensamiento_sistemico = pack(
+  'El pensamiento sistémico mira un problema social como red: causas, actores, efectos colaterales e interdependencias. No reduce todo a una sola variable.',
+  [
+    'Lista actores (Estado, comunidad, empresas…).',
+    'Relaciona causa → efecto → retroalimentación.',
+    'Elige la opción que reconoce varias dimensiones del caso.'
+  ],
+  [
+    'Culpar a un solo actor sin mirar el sistema.',
+    'Ignorar efectos secundarios.',
+    'Proponer una solución que rompe otra parte del sistema sin evaluarlo.'
+  ],
+  {
+    titulo: 'Ejemplo resuelto',
+    enunciado: 'Más tráfico + más buses viejos + poca ciclovía. ¿Lectura sistémica?',
+    pasos: ['1) Varias causas concurrentes.', '2) Soluciones parciales (solo semáforos) no bastan.', '3) Hay que coordinar transporte, ambiente y urbanismo.'],
+    respuesta: 'Problema multicausal e interdependiente',
+    contraste: null
+  },
+  [
+    q('tr_psi_01', 'Un sistema social se entiende mejor si:', ['A) Miras relaciones entre partes', 'B) Ves solo un tuit', 'C) Ignoras causas', 'D) Borras datos'], 'A',
+      { B: 'Insuficiente.', C: 'No.', D: 'No.' },
+      'Relaciones.'),
+    q('tr_psi_02', 'Un efecto colateral es:', ['A) Una consecuencia no buscada de una medida', 'B) La meta principal', 'C) Un sinónimo de tesis literaria', 'D) Un afluente'], 'A',
+      { B: 'No.', C: 'No.', D: 'Geo.' },
+      'No intencional.'),
+    q('tr_psi_03', 'Interdependencia significa:', ['A) Que lo que hace un actor afecta a otros', 'B) Que nadie se relaciona', 'C) Que no hay causas', 'D) Que solo importa el clima de Marte'], 'A',
+      { B: 'Lo contrario.', C: 'No.', D: 'No.' },
+      'Afectación mutua.'),
+    q('tr_psi_04', 'Una lectura no sistémica típica:', ['A) Culpar a una sola persona de un problema complejo', 'B) Mapear actores', 'C) Ver causas múltiples', 'D) Evaluar efectos'], 'A',
+      { B: 'Eso es sistémico.', C: 'Eso es sistémico.', D: 'Eso es sistémico.' },
+      'Reduccionismo.')
+  ],
+  'Actores + causas + efectos en red.'
+);
+
+C.pensamiento_critico = pack(
+  'Fuentes y evidencias: quién habla, con qué datos y qué tan confiables son. Un buen juicio distingue rumor, opinión y prueba.',
+  [
+    'Identifica la fuente (institución, testigo, anónimo).',
+    'Mira si aporta datos verificables.',
+    'Valora si alcanza para la conclusión.'
+  ],
+  [
+    'Creer algo solo porque “está en redes”.',
+    'Confundir testimonio único con estadística.',
+    'Descartar una fuente seria sin argumento.'
+  ],
+  {
+    titulo: 'Ejemplo resuelto',
+    enunciado: 'Un rumor de chat vs un informe con metodología. ¿Cuál sostiene mejor una política pública?',
+    pasos: ['1) El informe declara método y datos.', '2) El rumor no es verificable.', '3) Prioriza la fuente con evidencia.'],
+    respuesta: 'El informe con metodología',
+    contraste: null
+  },
+  [
+    q('tr_pc_01', 'Una evidencia fuerte suele ser:', ['A) Dato contrastable', 'B) Insulto', 'C) Rumor anónimo', 'D) Amenaza'], 'A',
+      { B: 'No prueba.', C: 'Débil.', D: 'No prueba.' },
+      'Contrastable.'),
+    q('tr_pc_02', 'Pregunta clave sobre una fuente:', ['A) ¿Quién la produce y con qué interés?', 'B) ¿Qué tipografía usa?', 'C) ¿Cuántos emojis tiene?', 'D) ¿Es larga?'], 'A',
+      { B: 'Irrelevante.', C: 'Irrelevante.', D: 'No basta.' },
+      'Autor e interés.'),
+    q('tr_pc_03', 'Un sesgo de confirmación es:', ['A) Buscar solo lo que ya creías', 'B) Revisar contraejemplos', 'C) Citar método', 'D) Corregir errores'], 'A',
+      { B: 'Eso combate el sesgo.', C: 'Eso ayuda.', D: 'Eso ayuda.' },
+      'Solo confirmar.'),
+    q('tr_pc_04', 'Para sostener “aumentó el desempleo” necesitas:', ['A) Cifras y periodo de comparación', 'B) Solo un chiste', 'C) Una metáfora', 'D) Un color'], 'A',
+      { B: 'No.', C: 'No basta.', D: 'No.' },
+      'Datos + periodo.')
+  ],
+  'Fuente + dato + suficiencia.'
+);
+
+C.interpretacion = pack(
+  'Leer gráficos y mapas sociales: leyenda, escala, unidades y qué comparación permite el visual (mayor/menor, tendencia, distribución).',
+  [
+    'Lee título, leyenda y unidades.',
+    'Ubica el valor que pide la pregunta.',
+    'Compara solo lo que el gráfico muestra.'
+  ],
+  [
+    'Inventar una tendencia no dibujada.',
+    'Confundir eje X con Y.',
+    'Ignorar la escala.'
+  ],
+  {
+    titulo: 'Ejemplo resuelto',
+    enunciado: 'Barras: Andina 48, Caribe 20. ¿Cuál concentra más?',
+    pasos: ['1) Compara alturas/valores.', '2) 48 > 20.', '3) Andina.'],
+    respuesta: 'Andina',
+    contraste: null
+  },
+  [
+    q('tr_int_01', 'La leyenda de un mapa sirve para:', ['A) Explicar símbolos y colores', 'B) Cantar el himno', 'C) Freír', 'D) Conjugar'], 'A',
+      { B: 'No.', C: 'No.', D: 'No.' },
+      'Símbolos.'),
+    q('tr_int_02', 'Si el eje Y está en %, no leas los valores como:', ['A) Personas absolutas sin aviso', 'B) Porcentajes', 'C) Relativos', 'D) Partes de 100'], 'A',
+      { B: 'Eso sí.', C: 'Eso sí.', D: 'Eso sí.' },
+      'Respeta unidades.'),
+    q('tr_int_03', 'Una tendencia al alza en una línea significa:', ['A) El valor crece en el tiempo mostrado', 'B) El mapa se mojó', 'C) Hay un afluente', 'D) Hay una metáfora'], 'A',
+      { B: 'No.', C: 'No.', D: 'No.' },
+      'Crecimiento.'),
+    q('tr_int_04', 'Para decir “cuál es mayor” en barras miras:', ['A) La altura o el valor rotulado', 'B) Solo el color favorito', 'C) La tipografía', 'D) El clima'], 'A',
+      { B: 'No.', C: 'No.', D: 'No.' },
+      'Altura/valor.')
+  ],
+  'Título, leyenda, ejes, comparación.'
+);
+
+C.interpretacion_y_analisis = pack(
+  'Interpretar perspectivas: cada actor tiene intereses y marcos. Analiza qué defiende, con qué argumentos y qué consecuencias tendría adoptar su posición.',
+  [
+    'Identifica quién habla y qué quiere.',
+    'Resume su marco (económico, ambiental, de derechos…).',
+    'Evalúa consecuencias de seguir esa perspectiva.'
+  ],
+  [
+    'Atribuir a un actor la tesis del otro.',
+    'Ignorar el conflicto de intereses.',
+    'Elegir “la más bonita” sin analizar consecuencias.'
+  ],
+  {
+    titulo: 'Ejemplo resuelto',
+    enunciado: 'Empresa quiere mina; comunidad teme el agua. ¿Perspectivas?',
+    pasos: ['1) Empresa: interés económico/extractivo.', '2) Comunidad: interés hídrico/territorio.', '3) Análisis: tensar desarrollo vs cuidado ambiental.'],
+    respuesta: 'Intereses en tensión: extractivo vs hídrico',
+    contraste: null
+  },
+  [
+    q('tr_iya_01', 'Una perspectiva es:', ['A) El punto de vista de un actor con sus intereses', 'B) Un triángulo', 'C) Un mcm', 'D) Un auxiliar did'], 'A',
+      { B: 'Geo/mate.', C: 'Mate.', D: 'Inglés.' },
+      'Punto de vista.'),
+    q('tr_iya_02', 'Al analizar consecuencias preguntas:', ['A) Qué pasaría si se impone esa posición', 'B) Solo el color del logo', 'C) La tipografía', 'D) El clima de Marte'], 'A',
+      { B: 'No.', C: 'No.', D: 'No.' },
+      'Consecuencias.'),
+    q('tr_iya_03', 'Un marco ambiental prioriza:', ['A) Ecosistemas y recursos', 'B) Solo el chiste', 'C) Solo la conjugación', 'D) Solo el perímetro'], 'A',
+      { B: 'No.', C: 'No.', D: 'Mate.' },
+      'Ambiente.'),
+    q('tr_iya_04', 'Error típico:', ['A) Mezclar qué dijo cada actor', 'B) Separar intereses', 'C) Leer el caso', 'D) Nombrar consecuencias'], 'A',
+      { B: 'Eso ayuda.', C: 'Eso ayuda.', D: 'Eso ayuda.' },
+      'No mezclar voces.')
+  ],
+  'Actor → interés → consecuencias.'
+);
+
+C.participacion = pack(
+  'La participación ciudadana usa mecanismos: voto, consulta popular, cabildo, veeduría, iniciativa legislativa. Cada uno sirve para influir en lo público de forma distinta.',
+  [
+    'Identifica qué quiere lograr la ciudadanía (elegir, vigilar, proponer).',
+    'Elige el mecanismo que corresponde.',
+    'No inventes trámites que no existen en el caso.'
+  ],
+  [
+    'Confundir veeduría con tutela.',
+    'Pensar que el voto es el único mecanismo.',
+    'Usar revocatoria para un cargo que no aplica.'
+  ],
+  {
+    titulo: 'Ejemplo resuelto',
+    enunciado: 'Ciudadanos quieren vigilar un contrato de obra. ¿Mecanismo?',
+    pasos: ['1) Objetivo: control/vigilancia.', '2) Veeduría ciudadana.', '3) No es exactamente el voto.'],
+    respuesta: 'Veeduría',
+    contraste: null
+  },
+  [
+    q('tr_par_01', 'El voto sirve para:', ['A) Elegir representantes', 'B) Medir un ángulo', 'C) Conjugar', 'D) Nombrar un afluente'], 'A',
+      { B: 'Mate.', C: 'Inglés.', D: 'Geo.' },
+      'Elección.'),
+    q('tr_par_02', 'Una consulta popular indaga:', ['A) La opinión ciudadana sobre un tema', 'B) Solo el clima', 'C) Solo el mcm', 'D) Solo la tipografía'], 'A',
+      { B: 'No.', C: 'No.', D: 'No.' },
+      'Opinión pública formal.'),
+    q('tr_par_03', 'La veeduría busca:', ['A) Vigilar la gestión pública', 'B) Freír', 'C) Pintar', 'D) Nadar'], 'A',
+      { B: 'No.', C: 'No.', D: 'No.' },
+      'Vigilancia.'),
+    q('tr_par_04', 'Participar no es solo votar; también es:', ['A) Proponer, vigilar y deliberar', 'B) Solo callar', 'C) Solo insultar', 'D) Solo ausentarse siempre'], 'A',
+      { B: 'No.', C: 'No.', D: 'No.' },
+      'Varios mecanismos.')
+  ],
+  'Voto, consulta, veeduría, iniciativa: elige el adecuado.'
+);
+
+C.competencias_ciudadanas = pack(
+  'Las competencias ciudadanas unen convivir, participar y pensar lo público con respeto a los derechos. En un conflicto, la respuesta competente protege dignidad y busca salidas institucionales.',
+  [
+    'Reconoce el derecho vulnerado o el conflicto.',
+    'Propone una acción respetuosa y legal.',
+    'Evita respuestas violentas o discriminatorias.'
+  ],
+  [
+    'Responder con agresión.',
+    'Excluir a alguien por identidad.',
+    'Ignorar rutas de atención existentes.'
+  ],
+  {
+    titulo: 'Ejemplo resuelto',
+    enunciado: 'Un compañero es excluido del grupo por su acento. ¿Qué es ciudadano?',
+    pasos: ['1) Hay discriminación.', '2) Acción: incluir, dialogar, reportar si persiste.', '3) No reforzar el rechazo.'],
+    respuesta: 'Incluir y rechazar la discriminación',
+    contraste: null
+  },
+  [
+    q('tr_cc_01', 'Una acción ciudadana competente:', ['A) Respeta derechos y busca solución pacífica', 'B) Humilla', 'C) Agrede', 'D) Falsifica'], 'A',
+      { B: 'Vulnera.', C: 'Vulnera.', D: 'Ilegal.' },
+      'Respeto + pacífica.'),
+    q('tr_cc_02', 'Pensar lo público implica:', ['A) Considerar el interés común', 'B) Solo el capricho propio', 'C) Ignorar a otros', 'D) Romper normas por diversión'], 'A',
+      { B: 'No.', C: 'No.', D: 'No.' },
+      'Interés común.'),
+    q('tr_cc_03', 'Ante bullying, una ruta válida es:', ['A) Activar protocolos escolares', 'B) Guardar silencio eterno', 'C) Devolver violencia', 'D) Burlarse más'], 'A',
+      { B: 'No protege.', C: 'Agrava.', D: 'Agrava.' },
+      'Protocolos.'),
+    q('tr_cc_04', 'La dignidad humana exige:', ['A) Trato respetuoso a toda persona', 'B) Discriminar', 'C) Excluir', 'D) Callar denuncias siempre'], 'A',
+      { B: 'Lo contrario.', C: 'Lo contrario.', D: 'No siempre.' },
+      'Respeto.')
+  ],
+  'Convivir, participar, pensar lo público con derechos.'
+);
+
+C.aptitud_numerica_docente = pack(
+  'La aptitud numérica docente aplica proporciones, porcentajes y lectura de datos escolares (asistencias, notas, cupos) con sentido pedagógico: el número informa una decisión de aula.',
+  [
+    'Traduce el problema escolar a una operación (razón, %, promedio).',
+    'Calcula con unidades coherentes.',
+    'Interpreta el resultado en el contexto del aula.'
+  ],
+  [
+    'Calcular bien pero interpretar al revés.',
+    'Usar % sobre la base equivocada.',
+    'Ignorar que el dato es de una muestra.'
+  ],
+  {
+    titulo: 'Ejemplo resuelto',
+    enunciado: 'De 40 estudiantes, 8 faltaron. ¿Qué % faltó?',
+    pasos: ['1) 8/40 = 0,2.', '2) 0,2 × 100 = 20%.', '3) Faltó el 20%.'],
+    respuesta: '20%',
+    contraste: null
+  },
+  [
+    q('tr_and_01', '15 de 60 es:', ['A) 25%', 'B) 15%', 'C) 40%', 'D) 50%'], 'A',
+      { B: 'Confundiste cantidad con %.', C: 'Mal.', D: 'Mal.' },
+      '15/60=0,25.'),
+    q('tr_and_02', 'Si el promedio de 4 notas es 80 y tres suman 230, la cuarta es:', ['A) 90', 'B) 80', 'C) 70', 'D) 50'], 'A',
+      { B: 'Insuficiente.', C: 'Mal despeje.', D: 'Mal.' },
+      'Total 320; 320−230=90.'),
+    q('tr_and_03', 'Razón 2:5 de niños a niñas en 35 alumnos → niños:', ['A) 10', 'B) 14', 'C) 20', 'D) 25'], 'A',
+      { B: 'Partes mal.', C: 'Mal.', D: 'Mal.' },
+      '2+5=7 partes; 35/7=5; 2×5=10.'),
+    q('tr_and_04', 'Un gráfico de asistencia sirve al docente para:', ['A) Detectar patrones y decidir apoyos', 'B) Freír', 'C) Conjugar', 'D) Nombrar ríos'], 'A',
+      { B: 'No.', C: 'No.', D: 'No.' },
+      'Decisión pedagógica con datos.')
+  ],
+  ' %, razones y promedios con sentido de aula.'
+);
+
+C.aptitud_pedagogica = pack(
+  'La aptitud pedagógica elige acciones de enseñanza que respetan el aprendizaje: diagnóstico, andamiaje, retroalimentación clara y clima de aula seguro.',
+  [
+    'Identifica la necesidad del estudiante (concepto, motivación, inclusión).',
+    'Elige la estrategia que enseña, no solo que castiga.',
+    'Verifica que la acción sea ética y viable en el aula.'
+  ],
+  [
+    'Ridiculizar el error.',
+    'Dar solo la respuesta sin mediar.',
+    'Ignorar barreras de acceso.'
+  ],
+  {
+    titulo: 'Ejemplo resuelto',
+    enunciado: 'Un estudiante falla fracciones. ¿Qué es más pedagógico?',
+    pasos: ['1) Diagnosticar el error (p. ej. sumar denominadores).', '2) Mediar con material concreto / mcm.', '3) No limitarse a decir “mal”.'],
+    respuesta: 'Mediar el error conceptual',
+    contraste: null
+  },
+  [
+    q('tr_ap_01', 'Una buena retroalimentación:', ['A) Señala el error y cómo corregirlo', 'B) Solo insulta', 'C) Es silencio total siempre', 'D) Falsifica la nota'], 'A',
+      { B: 'Dañina.', C: 'No enseña.', D: 'Ilegal/antipedagógico.' },
+      'Error + camino.'),
+    q('tr_ap_02', 'El andamiaje consiste en:', ['A) Apoyar y retirar ayuda poco a poco', 'B) Hacer todo por el estudiante siempre', 'C) Abandonar', 'D) Castigar'], 'A',
+      { B: 'Dependencia.', C: 'No.', D: 'No enseña.' },
+      'Apoyo gradual.'),
+    q('tr_ap_03', 'Un clima de aula seguro permite:', ['A) Equivocarse y aprender', 'B) Burlarse', 'C) Excluir', 'D) Amenazar'], 'A',
+      { B: 'Inseguro.', C: 'Inseguro.', D: 'Inseguro.' },
+      'Seguridad para aprender.'),
+    q('tr_ap_04', 'Ante diversidad en el aula, lo pedagógico es:', ['A) Ajustar apoyos sin bajar la dignidad', 'B) Ignorar necesidades', 'C) Segregar con burla', 'D) Negar el acceso'], 'A',
+      { B: 'Excluye.', C: 'Violento.', D: 'Ilegal/antipedagógico.' },
+      'Inclusión con respeto.')
+  ],
+  'Diagnosticar, mediar, retroalimentar con respeto.'
+);
+
+// Aliases de inglés que el banco usa como id propio
+C.dialogues = C.dialogo;
+C.signs_notices = C.aviso;
+C.lexical_cloze = C.cloze;
+C.vocabulary = C.vocabulario;
+C.reading_comprehension = C.lectura;
+C.grammar_reading = C.grammar;
 
 const outPath = path.join(__dirname, 'contenidoTemasRefuerzo.mjs');
 const body = `/** Autogenerado por buildContenidoTemasRefuerzo.mjs — cartillas de contenido real. */\n`
