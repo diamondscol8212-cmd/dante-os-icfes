@@ -260,19 +260,40 @@ function diagramaDe(id, area, titulo) {
       + `<text x="56" y="147" fill="#c4a574" font-size="12">¿Las razones bastan? Si hay salto → falacia</text>`
     );
   }
-  if (id === 'hidrografia_colombia' || id === 'geografia') {
+  if (id === 'hidrografia_colombia') {
+    // Esquema geográfico: ríos Magdalena/Cauca y cuencas (no cajas genéricas)
     return base(
-      `<text x="24" y="58" fill="#cbd5e1" font-size="13">Cuencas de Colombia</text>`
-      + `<rect x="40" y="72" width="130" height="70" rx="10" fill="#111827" stroke="#7eb8c455"/>`
-      + `<text x="105" y="100" text-anchor="middle" fill="#7eb8c4" font-size="12">Magdalena</text>`
-      + `<text x="105" y="120" text-anchor="middle" fill="#94a3b8" font-size="11">→ Caribe</text>`
-      + `<rect x="190" y="72" width="130" height="70" rx="10" fill="#111827" stroke="#c4a57455"/>`
-      + `<text x="255" y="100" text-anchor="middle" fill="#c4a574" font-size="12">Cauca</text>`
-      + `<text x="255" y="120" text-anchor="middle" fill="#94a3b8" font-size="11">afluente</text>`
-      + `<rect x="340" y="72" width="140" height="70" rx="10" fill="#111827" stroke="#34d39955"/>`
-      + `<text x="410" y="100" text-anchor="middle" fill="#6ee7b7" font-size="12">Orinoco / Amazonas</text>`
-      + `<text x="410" y="120" text-anchor="middle" fill="#94a3b8" font-size="11">Llanos / suroriente</text>`
-      + `<text x="24" y="175" fill="#64748b" font-size="11">Macizo colombiano: nacen Magdalena y Cauca</text>`
+      `<text x="24" y="48" fill="#cbd5e1" font-size="12">Mapa esquemático · hidrografía de Colombia</text>`
+      + `<path d="M210 55 L250 70 L270 110 L265 160 L240 200 L200 210 L170 180 L160 120 Z" fill="#0f172a" stroke="#334155" stroke-width="1.5"/>`
+      + `<text x="70" y="80" fill="#7eb8c4" font-size="11">Caribe</text>`
+      + `<path d="M90 88 C140 95, 180 100, 215 95" fill="none" stroke="#38bdf8" stroke-width="2.5"/>`
+      + `<text x="95" y="78" fill="#38bdf8" font-size="10">Magdalena →</text>`
+      + `<path d="M175 150 C185 130, 195 115, 215 100" fill="none" stroke="#c4a574" stroke-width="2"/>`
+      + `<text x="120" y="145" fill="#c4a574" font-size="10">Cauca (afluente)</text>`
+      + `<circle cx="200" y="175" r="5" fill="#fbbf24"/><text x="210" y="179" fill="#fbbf24" font-size="10">Macizo</text>`
+      + `<text x="300" y="90" fill="#94a3b8" font-size="11">Orinoco → Llanos</text>`
+      + `<path d="M280 100 C320 110, 360 120, 400 115" fill="none" stroke="#34d399" stroke-width="2"/>`
+      + `<text x="300" y="150" fill="#6ee7b7" font-size="11">Amazonas → suroriente</text>`
+      + `<path d="M260 170 C300 185, 340 195, 390 190" fill="none" stroke="#6ee7b7" stroke-width="2"/>`
+      + `<text x="300" y="210" fill="#64748b" font-size="10">Cauca aporta al Magdalena; no al Amazonas</text>`,
+      230
+    );
+  }
+  if (id === 'geografia') {
+    return base(
+      `<text x="24" y="48" fill="#cbd5e1" font-size="12">Mapa · regiones naturales de Colombia</text>`
+      + `<path d="M200 50 L255 65 L275 115 L260 175 L230 210 L185 215 L155 175 L150 110 Z" fill="#0f172a" stroke="#334155"/>`
+      + `<rect x="195" y="55" width="55" height="28" rx="4" fill="#0ea5e933" stroke="#38bdf8"/><text x="222" y="73" text-anchor="middle" fill="#7dd3fc" font-size="9">Caribe</text>`
+      + `<rect x="155" y="100" width="40" height="50" rx="4" fill="#c4a57433" stroke="#c4a574"/><text x="175" y="128" text-anchor="middle" fill="#c4a574" font-size="9">Pacíf.</text>`
+      + `<rect x="200" y="95" width="50" height="55" rx="4" fill="#7eb8c433" stroke="#7eb8c4"/><text x="225" y="125" text-anchor="middle" fill="#7eb8c4" font-size="9">Andina</text>`
+      + `<rect x="255" y="100" width="55" height="45" rx="4" fill="#fbbf2433" stroke="#fbbf24"/><text x="282" y="125" text-anchor="middle" fill="#fbbf24" font-size="9">Orinoq.</text>`
+      + `<rect x="210" y="160" width="60" height="40" rx="4" fill="#34d39933" stroke="#34d399"/><text x="240" y="184" text-anchor="middle" fill="#6ee7b7" font-size="9">Amazonía</text>`
+      + `<text x="330" y="85" fill="#e2e8f0" font-size="11">Barranquilla → Caribe</text>`
+      + `<text x="330" y="110" fill="#e2e8f0" font-size="11">Buenaventura → Pacífico</text>`
+      + `<text x="330" y="135" fill="#e2e8f0" font-size="11">Eje cafetero → Andina</text>`
+      + `<text x="330" y="160" fill="#e2e8f0" font-size="11">Leticia → Amazonía</text>`
+      + `<text x="24" y="215" fill="#64748b" font-size="10">Más altitud (Andina/páramo) → menor temperatura media</text>`,
+      235
     );
   }
   if (id === 'constitucion') {
@@ -321,50 +342,273 @@ function diagramaDe(id, area, titulo) {
       + `<text x="24" y="160" fill="#94a3b8" font-size="12">Yesterday → played · Since 2019 → have played</text>`
     );
   }
-  if (area === 'lectura_critica') {
+  if (id === 'cts') {
     return base(
-      `<rect x="36" y="55" width="200" height="110" rx="10" fill="#111827" stroke="#334155"/>`
-      + `<text x="52" y="82" fill="#94a3b8" font-size="11">TEXTO</text>`
-      + `<line x1="52" y1="98" x2="210" y2="98" stroke="#334155"/><line x1="52" y1="118" x2="190" y2="118" stroke="#334155"/><line x1="52" y1="138" x2="200" y2="138" stroke="#334155"/>`
-      + `<text x="270" y="90" fill="#64748b" font-size="16">→</text>`
-      + `<rect x="300" y="70" width="180" height="80" rx="10" fill="#111827" stroke="#7eb8c455"/>`
-      + `<text x="390" y="105" text-anchor="middle" fill="#7eb8c4" font-size="13">Idea / inferencia</text>`
-      + `<text x="390" y="128" text-anchor="middle" fill="#94a3b8" font-size="11">solo con apoyo del texto</text>`
+      `<rect x="40" y="55" width="120" height="50" rx="8" fill="#111827" stroke="#7eb8c455"/><text x="100" y="85" text-anchor="middle" fill="#7eb8c4" font-size="12">Ciencia</text>`
+      + `<rect x="200" y="55" width="120" height="50" rx="8" fill="#111827" stroke="#c4a57455"/><text x="260" y="85" text-anchor="middle" fill="#c4a574" font-size="12">Tecnología</text>`
+      + `<rect x="360" y="55" width="120" height="50" rx="8" fill="#111827" stroke="#34d39955"/><text x="420" y="85" text-anchor="middle" fill="#6ee7b7" font-size="12">Sociedad</text>`
+      + `<text x="24" y="140" fill="#e2e8f0" font-size="12">Ej.: presa → energía (+) · ecosistema (−)</text>`
+      + `<text x="24" y="168" fill="#94a3b8" font-size="11">Evalúa impacto + riesgo-beneficio con evidencia</text>`
     );
   }
-  if (area === 'ciencias_naturales') {
+  if (id === 'indagacion') {
     return base(
-      `<circle cx="120" cy="110" r="36" fill="none" stroke="#7eb8c4" stroke-width="2"/>`
-      + `<text x="120" y="114" text-anchor="middle" fill="#7eb8c4" font-size="12">causa</text>`
-      + `<text x="180" y="114" fill="#64748b" font-size="18">→</text>`
-      + `<rect x="210" y="78" width="120" height="64" rx="10" fill="#111827" stroke="#c4a57455"/>`
-      + `<text x="270" y="115" text-anchor="middle" fill="#c4a574" font-size="12">mecanismo</text>`
-      + `<text x="350" y="114" fill="#64748b" font-size="18">→</text>`
-      + `<circle cx="420" cy="110" r="36" fill="none" stroke="#34d399" stroke-width="2"/>`
-      + `<text x="420" y="114" text-anchor="middle" fill="#6ee7b7" font-size="12">efecto</text>`
-      + `<text x="24" y="175" fill="#64748b" font-size="11">${label}</text>`
+      `<text x="24" y="60" fill="#cbd5e1" font-size="13">Pregunta → hipótesis → experimento</text>`
+      + `<rect x="40" y="80" width="130" height="44" rx="8" fill="#111827" stroke="#7eb8c455"/><text x="105" y="107" text-anchor="middle" fill="#7eb8c4" font-size="11">Indep. (manipulo)</text>`
+      + `<text x="185" y="107" fill="#64748b" font-size="16">→</text>`
+      + `<rect x="210" y="80" width="130" height="44" rx="8" fill="#111827" stroke="#c4a57455"/><text x="275" y="107" text-anchor="middle" fill="#c4a574" font-size="11">Depend. (mido)</text>`
+      + `<text x="355" y="107" fill="#64748b" font-size="16">→</text>`
+      + `<rect x="380" y="80" width="100" height="44" rx="8" fill="#111827" stroke="#34d39955"/><text x="430" y="107" text-anchor="middle" fill="#6ee7b7" font-size="11">Control</text>`
+      + `<text x="24" y="160" fill="#94a3b8" font-size="12">Misma luz/agua; solo cambia el fertilizante</text>`
+      + `<text x="24" y="185" fill="#64748b" font-size="11">La evidencia apoya o refuta la hipótesis</text>`
     );
   }
-  if (area === 'sociales_ciudadanas') {
+  if (id === 'dialogo' || id === 'dialogues') {
     return base(
-      `<rect x="60" y="60" width="400" height="40" rx="8" fill="#111827" stroke="#7eb8c455"/>`
-      + `<text x="260" y="85" text-anchor="middle" fill="#7eb8c4" font-size="13">Norma / Estado</text>`
-      + `<line x1="160" y1="100" x2="160" y2="130" stroke="#475569"/><line x1="260" y1="100" x2="260" y2="130" stroke="#475569"/><line x1="360" y1="100" x2="360" y2="130" stroke="#475569"/>`
-      + `<rect x="100" y="130" width="120" height="36" rx="8" fill="#111827" stroke="#334155"/><text x="160" y="153" text-anchor="middle" fill="#cbd5e1" font-size="11">Derecho</text>`
-      + `<rect x="200" y="130" width="120" height="36" rx="8" fill="#111827" stroke="#334155"/><text x="260" y="153" text-anchor="middle" fill="#cbd5e1" font-size="11">Deber</text>`
-      + `<rect x="300" y="130" width="120" height="36" rx="8" fill="#111827" stroke="#334155"/><text x="360" y="153" text-anchor="middle" fill="#cbd5e1" font-size="11">Mecanismo</text>`
+      `<rect x="40" y="55" width="200" height="50" rx="10" fill="#111827" stroke="#7eb8c455"/>`
+      + `<text x="56" y="85" fill="#7eb8c4" font-size="12">A: How are you?</text>`
+      + `<rect x="280" y="90" width="200" height="50" rx="10" fill="#111827" stroke="#34d39955"/>`
+      + `<text x="296" y="120" fill="#6ee7b7" font-size="12">B: Fine, thanks.</text>`
+      + `<text x="24" y="170" fill="#94a3b8" font-size="12">La respuesta debe coincidir con lo preguntado</text>`
     );
   }
-  // inglés / default
+  if (id === 'aviso' || id === 'signs_notices') {
+    return base(
+      `<rect x="80" y="50" width="360" height="100" rx="12" fill="#111827" stroke="#f87171" stroke-width="2"/>`
+      + `<text x="260" y="90" text-anchor="middle" fill="#f87171" font-size="18" font-weight="700">NO SMOKING</text>`
+      + `<text x="260" y="120" text-anchor="middle" fill="#94a3b8" font-size="12">Prohibición · destinatario: todos</text>`
+      + `<text x="24" y="175" fill="#cbd5e1" font-size="12">Open 9 a.m.–5 p.m. → horario · Staff only → acceso</text>`
+    );
+  }
+  if (id === 'vocabulario' || id === 'vocabulary') {
+    return base(
+      `<text x="24" y="65" fill="#cbd5e1" font-size="13">“She sat by the river bank.”</text>`
+      + `<text x="24" y="100" fill="#6ee7b7" font-size="13">bank = orilla  ✓  (contexto: river)</text>`
+      + `<text x="24" y="130" fill="#f87171" font-size="13">bank = banco (dinero) ✗ aquí</text>`
+      + `<text x="24" y="165" fill="#94a3b8" font-size="12">Usa las palabras alrededor para fijar el sentido</text>`
+    );
+  }
+  if (id === 'lectura' || id === 'reading_comprehension') {
+    return base(
+      `<rect x="36" y="50" width="220" height="90" rx="10" fill="#111827" stroke="#334155"/>`
+      + `<text x="52" y="75" fill="#94a3b8" font-size="11">The museum opens at 9.</text>`
+      + `<text x="52" y="98" fill="#94a3b8" font-size="11">Buy tickets online.</text>`
+      + `<text x="52" y="121" fill="#64748b" font-size="10">…</text>`
+      + `<text x="280" y="70" fill="#7eb8c4" font-size="12">Main idea?</text>`
+      + `<text x="280" y="95" fill="#c4a574" font-size="12">Detail / when?</text>`
+      + `<text x="280" y="120" fill="#6ee7b7" font-size="12">Purpose?</text>`
+      + `<text x="24" y="170" fill="#94a3b8" font-size="11">Responde solo con lo que el texto sostiene</text>`
+    );
+  }
+  if (id === 'literal_reading') {
+    return base(
+      `<text x="24" y="65" fill="#cbd5e1" font-size="13">“Luisa bought two maps.”</text>`
+      + `<text x="24" y="100" fill="#e2e8f0" font-size="13">How many maps?</text>`
+      + `<text x="24" y="135" fill="#6ee7b7" font-size="14">→ two  (dato literal)</text>`
+      + `<text x="24" y="170" fill="#f87171" font-size="12">No inventes “three” ni “a week”</text>`
+    );
+  }
+  if (id === 'inferential_reading') {
+    return base(
+      `<text x="24" y="60" fill="#cbd5e1" font-size="13">“Tom turned off the light and yawned.”</text>`
+      + `<text x="24" y="95" fill="#94a3b8" font-size="12">Pista: yawned</text>`
+      + `<text x="24" y="125" fill="#6ee7b7" font-size="13">Inferencia: he is tired / going to sleep</text>`
+      + `<text x="24" y="160" fill="#f87171" font-size="12">No digas “he hates books” (no hay pista)</text>`
+    );
+  }
+  if (id === 'historia') {
+    return base(
+      `<text x="40" y="70" fill="#7eb8c4" font-size="12">1810</text>`
+      + `<circle cx="55" cy="95" r="6" fill="#7eb8c4"/>`
+      + `<line x1="61" y1="95" x2="200" y2="95" stroke="#475569" stroke-width="2"/>`
+      + `<text x="160" y="70" fill="#c4a574" font-size="12">1819</text>`
+      + `<circle cx="210" cy="95" r="6" fill="#c4a574"/>`
+      + `<line x1="216" y1="95" x2="360" y2="95" stroke="#475569" stroke-width="2"/>`
+      + `<text x="340" y="70" fill="#6ee7b7" font-size="12">1903</text>`
+      + `<circle cx="370" cy="95" r="6" fill="#6ee7b7"/>`
+      + `<text x="40" y="130" fill="#94a3b8" font-size="11">Junta / grito</text>`
+      + `<text x="175" y="130" fill="#94a3b8" font-size="11">Boyacá</text>`
+      + `<text x="330" y="130" fill="#94a3b8" font-size="11">Panamá se separa</text>`
+      + `<text x="24" y="170" fill="#cbd5e1" font-size="12">Independencia = proceso, no un solo día</text>`
+    );
+  }
+  if (id === 'pensamiento_social') {
+    return base(
+      `<rect x="40" y="55" width="120" height="50" rx="8" fill="#111827" stroke="#7eb8c455"/><text x="100" y="85" text-anchor="middle" fill="#7eb8c4" font-size="12">Actores</text>`
+      + `<rect x="200" y="55" width="120" height="50" rx="8" fill="#111827" stroke="#c4a57455"/><text x="260" y="85" text-anchor="middle" fill="#c4a574" font-size="12">Conflicto</text>`
+      + `<rect x="360" y="55" width="120" height="50" rx="8" fill="#111827" stroke="#34d39955"/><text x="420" y="85" text-anchor="middle" fill="#6ee7b7" font-size="12">Norma</text>`
+      + `<text x="24" y="140" fill="#e2e8f0" font-size="12">¿Quién interviene? ¿Qué chocan? ¿Qué regla aplica?</text>`
+      + `<text x="24" y="170" fill="#94a3b8" font-size="11">Ej.: comunidad · empresa · Estado por un río</text>`
+    );
+  }
+  if (id === 'pensamiento_sistemico') {
+    return base(
+      `<circle cx="120" cy="100" r="40" fill="none" stroke="#7eb8c4" stroke-width="2"/><text x="120" y="104" text-anchor="middle" fill="#7eb8c4" font-size="11">Sequía</text>`
+      + `<text x="175" y="104" fill="#64748b" font-size="16">→</text>`
+      + `<circle cx="250" cy="100" r="40" fill="none" stroke="#c4a574" stroke-width="2"/><text x="250" y="104" text-anchor="middle" fill="#c4a574" font-size="11">Cosecha↓</text>`
+      + `<text x="305" y="104" fill="#64748b" font-size="16">→</text>`
+      + `<circle cx="380" cy="100" r="40" fill="none" stroke="#f87171" stroke-width="2"/><text x="380" y="104" text-anchor="middle" fill="#f87171" font-size="11">Precios↑</text>`
+      + `<text x="24" y="170" fill="#94a3b8" font-size="12">Efecto cascada · las partes se afectan (interdependencia)</text>`
+    );
+  }
+  if (id === 'pensamiento_critico') {
+    return base(
+      `<text x="24" y="65" fill="#cbd5e1" font-size="13">Afirmación: “Todos los jóvenes…”</text>`
+      + `<text x="24" y="100" fill="#c4a574" font-size="12">¿Hay evidencia? ¿Hay supuesto oculto?</text>`
+      + `<text x="24" y="130" fill="#6ee7b7" font-size="12">Contraejemplo → la generalización falla</text>`
+      + `<text x="24" y="165" fill="#94a3b8" font-size="12">Criterios: claridad · relevancia · fuente</text>`
+    );
+  }
+  if (id === 'interpretacion' || id === 'interpretacion_y_analisis') {
+    return base(
+      `<rect x="40" y="55" width="140" height="70" rx="8" fill="#111827" stroke="#334155"/><text x="110" y="85" text-anchor="middle" fill="#94a3b8" font-size="11">Dato / norma</text><text x="110" y="105" text-anchor="middle" fill="#64748b" font-size="10">del caso</text>`
+      + `<text x="200" y="95" fill="#64748b" font-size="16">→</text>`
+      + `<rect x="230" y="55" width="140" height="70" rx="8" fill="#111827" stroke="#7eb8c455"/><text x="300" y="85" text-anchor="middle" fill="#7eb8c4" font-size="11">Contexto</text><text x="300" y="105" text-anchor="middle" fill="#94a3b8" font-size="10">histórico/social</text>`
+      + `<text x="390" y="95" fill="#64748b" font-size="16">→</text>`
+      + `<rect x="410" y="55" width="80" height="70" rx="8" fill="#111827" stroke="#34d39955"/><text x="450" y="95" text-anchor="middle" fill="#6ee7b7" font-size="11">Sentido</text>`
+      + `<text x="24" y="160" fill="#cbd5e1" font-size="12">Interpretar ≠ solo repetir el dato</text>`
+    );
+  }
+  if (id === 'participacion') {
+    return base(
+      `<text x="24" y="65" fill="#cbd5e1" font-size="13">Vías ciudadanas</text>`
+      + `<rect x="40" y="85" width="100" height="40" rx="8" fill="#111827" stroke="#7eb8c455"/><text x="90" y="110" text-anchor="middle" fill="#7eb8c4" font-size="11">Voto</text>`
+      + `<rect x="160" y="85" width="100" height="40" rx="8" fill="#111827" stroke="#c4a57455"/><text x="210" y="110" text-anchor="middle" fill="#c4a574" font-size="11">Veeduría</text>`
+      + `<rect x="280" y="85" width="100" height="40" rx="8" fill="#111827" stroke="#34d39955"/><text x="330" y="110" text-anchor="middle" fill="#6ee7b7" font-size="11">Cabildo</text>`
+      + `<rect x="400" y="85" width="90" height="40" rx="8" fill="#111827" stroke="#fbbf2455"/><text x="445" y="110" text-anchor="middle" fill="#fbbf24" font-size="11">Consulta</text>`
+      + `<text x="24" y="160" fill="#94a3b8" font-size="12">Participar con respeto a derechos de otros</text>`
+    );
+  }
+  if (id === 'competencias_ciudadanas') {
+    return base(
+      `<rect x="60" y="55" width="160" height="55" rx="10" fill="#111827" stroke="#7eb8c455"/><text x="140" y="88" text-anchor="middle" fill="#7eb8c4" font-size="13">Derecho</text>`
+      + `<rect x="300" y="55" width="160" height="55" rx="10" fill="#111827" stroke="#c4a57455"/><text x="380" y="88" text-anchor="middle" fill="#c4a574" font-size="13">Deber</text>`
+      + `<text x="24" y="140" fill="#e2e8f0" font-size="12">Conflicto → diálogo / mediación / justicia</text>`
+      + `<text x="24" y="168" fill="#94a3b8" font-size="11">Empatía + pluralismo (diversidad de ideas)</text>`
+    );
+  }
+  if (id === 'aptitud_pedagogica') {
+    return base(
+      `<text x="24" y="65" fill="#cbd5e1" font-size="13">Error del estudiante (ej. fracciones)</text>`
+      + `<text x="24" y="100" fill="#f87171" font-size="12">✗ Solo decir “mal” / ridiculizar</text>`
+      + `<text x="24" y="130" fill="#6ee7b7" font-size="12">✓ Diagnosticar → mediar → retroalimentar</text>`
+      + `<text x="24" y="165" fill="#94a3b8" font-size="12">Andamiaje: apoyo que se retira poco a poco</text>`
+    );
+  }
+  // Lectura crítica: esquemas por subtipo
+  if (id === 'comprension_literal') {
+    return base(
+      `<rect x="40" y="55" width="240" height="70" rx="10" fill="#111827" stroke="#334155"/>`
+      + `<text x="56" y="85" fill="#94a3b8" font-size="12">“La reunión es el martes a las 3.”</text>`
+      + `<text x="56" y="108" fill="#64748b" font-size="11">¿Cuándo? → martes a las 3</text>`
+      + `<text x="310" y="90" fill="#6ee7b7" font-size="13">Dato explícito</text>`
+      + `<text x="310" y="115" fill="#f87171" font-size="12">No inventes el día</text>`
+    );
+  }
+  if (id === 'inferencia') {
+    return base(
+      `<text x="24" y="65" fill="#cbd5e1" font-size="13">Texto: apagó la luz y bostezó</text>`
+      + `<text x="24" y="100" fill="#94a3b8" font-size="12">Pista → cansancio / ir a dormir</text>`
+      + `<text x="24" y="135" fill="#6ee7b7" font-size="13">Inferencia válida (con apoyo)</text>`
+      + `<text x="24" y="165" fill="#f87171" font-size="12">Sobrelectura: “odia leer” (sin pista)</text>`
+    );
+  }
+  if (id === 'dos_textos') {
+    return base(
+      `<rect x="40" y="55" width="180" height="70" rx="10" fill="#111827" stroke="#7eb8c455"/><text x="130" y="85" text-anchor="middle" fill="#7eb8c4" font-size="12">Texto A</text><text x="130" y="105" text-anchor="middle" fill="#94a3b8" font-size="10">informa</text>`
+      + `<rect x="300" y="55" width="180" height="70" rx="10" fill="#111827" stroke="#c4a57455"/><text x="390" y="85" text-anchor="middle" fill="#c4a574" font-size="12">Texto B</text><text x="390" y="105" text-anchor="middle" fill="#94a3b8" font-size="10">persuade</text>`
+      + `<text x="24" y="160" fill="#e2e8f0" font-size="12">Compara propósito · punto de vista · conclusión</text>`
+    );
+  }
+  if (id === 'textos_discontinuos') {
+    return base(
+      `<rect x="50" y="120" width="30" height="40" fill="#7eb8c4"/><rect x="95" y="90" width="30" height="70" fill="#c4a574"/><rect x="140" y="70" width="30" height="90" fill="#34d399"/>`
+      + `<line x1="40" y1="160" x2="200" y2="160" stroke="#334155"/>`
+      + `<text x="65" y="175" text-anchor="middle" fill="#94a3b8" font-size="10">Ene</text>`
+      + `<text x="110" y="175" text-anchor="middle" fill="#94a3b8" font-size="10">Feb</text>`
+      + `<text x="155" y="175" text-anchor="middle" fill="#94a3b8" font-size="10">Mar</text>`
+      + `<text x="240" y="90" fill="#e2e8f0" font-size="12">Lee ejes + leyenda</text>`
+      + `<text x="240" y="115" fill="#94a3b8" font-size="12">El dato está en la barra/tabla</text>`
+      + `<text x="240" y="140" fill="#64748b" font-size="11">No ignores el pie o la escala</text>`
+    );
+  }
+  if (id === 'articulacion_global') {
+    return base(
+      `<rect x="40" y="55" width="100" height="40" rx="8" fill="#111827" stroke="#334155"/><text x="90" y="80" text-anchor="middle" fill="#cbd5e1" font-size="11">Intro</text>`
+      + `<text x="150" y="80" fill="#64748b" font-size="14">→</text>`
+      + `<rect x="175" y="55" width="120" height="40" rx="8" fill="#111827" stroke="#7eb8c455"/><text x="235" y="80" text-anchor="middle" fill="#7eb8c4" font-size="11">Desarrollo</text>`
+      + `<text x="305" y="80" fill="#64748b" font-size="14">→</text>`
+      + `<rect x="330" y="55" width="100" height="40" rx="8" fill="#111827" stroke="#34d39955"/><text x="380" y="80" text-anchor="middle" fill="#6ee7b7" font-size="11">Cierre</text>`
+      + `<text x="24" y="130" fill="#e2e8f0" font-size="12">Cohesión: conectores · pronombres</text>`
+      + `<text x="24" y="158" fill="#94a3b8" font-size="12">Coherencia: un mismo hilo conductor</text>`
+    );
+  }
+  if (id === 'evaluacion_critica') {
+    return base(
+      `<text x="24" y="65" fill="#cbd5e1" font-size="13">Tesis del autor</text>`
+      + `<text x="24" y="95" fill="#94a3b8" font-size="12">¿Qué evidencia da? ¿Hay sesgo?</text>`
+      + `<text x="24" y="125" fill="#c4a574" font-size="12">¿Omite contraargumentos?</text>`
+      + `<text x="24" y="160" fill="#6ee7b7" font-size="12">Fiabilidad = fuente + datos + rigor</text>`
+    );
+  }
+  if (id === 'filosofia') {
+    return base(
+      `<rect x="40" y="55" width="160" height="50" rx="8" fill="#111827" stroke="#334155"/><text x="120" y="85" text-anchor="middle" fill="#cbd5e1" font-size="12">Premisas</text>`
+      + `<text x="220" y="85" fill="#64748b" font-size="16">→</text>`
+      + `<rect x="250" y="55" width="160" height="50" rx="8" fill="#111827" stroke="#7eb8c455"/><text x="330" y="85" text-anchor="middle" fill="#7eb8c4" font-size="12">Conclusión</text>`
+      + `<text x="24" y="140" fill="#e2e8f0" font-size="12">Ética: ¿qué debo hacer? · Conocimiento ≠ opinión</text>`
+      + `<text x="24" y="168" fill="#94a3b8" font-size="11">Conceptos: justicia, libertad, verdad</text>`
+    );
+  }
+  if (id === 'pragmatica') {
+    return base(
+      `<text x="24" y="65" fill="#cbd5e1" font-size="13">“¡Fuego!” en teatro ≠ en un incendio</text>`
+      + `<text x="24" y="100" fill="#94a3b8" font-size="12">Contexto fija la intención</text>`
+      + `<text x="24" y="130" fill="#7eb8c4" font-size="12">Acto de habla: pedir · avisar · ironizar</text>`
+      + `<text x="24" y="165" fill="#c4a574" font-size="12">Implicatura: “Hace frío” → cierra la ventana</text>`
+    );
+  }
+  if (id === 'semantica') {
+    return base(
+      `<text x="24" y="65" fill="#cbd5e1" font-size="14">banco</text>`
+      + `<text x="120" y="65" fill="#7eb8c4" font-size="12">→ asiento</text>`
+      + `<text x="120" y="95" fill="#c4a574" font-size="12">→ entidad financiera</text>`
+      + `<text x="24" y="135" fill="#94a3b8" font-size="12">Ambigüedad: el contexto elige el sentido</text>`
+      + `<text x="24" y="165" fill="#e2e8f0" font-size="12">Sinónimo / antónimo según el uso</text>`
+    );
+  }
+  if (id === 'literatura') {
+    return base(
+      `<text x="24" y="65" fill="#cbd5e1" font-size="13">“Sus ojos eran estrellas”</text>`
+      + `<text x="24" y="100" fill="#7eb8c4" font-size="12">Figura: metáfora (no literal)</text>`
+      + `<text x="24" y="130" fill="#94a3b8" font-size="12">Narrador · tema · género (lírico/narrativo…)</text>`
+      + `<text x="24" y="165" fill="#c4a574" font-size="12">Lee el recurso, no solo la anécdota</text>`
+    );
+  }
+  if (id === 'analisis_textual') {
+    return base(
+      `<text x="24" y="65" fill="#cbd5e1" font-size="13">Tesis → recursos → tono</text>`
+      + `<text x="24" y="100" fill="#94a3b8" font-size="12">Ejemplo / dato / pregunta retórica</text>`
+      + `<text x="24" y="130" fill="#7eb8c4" font-size="12">¿Para qué usa cada recurso el autor?</text>`
+      + `<text x="24" y="165" fill="#c4a574" font-size="12">Estructura: intro · desarrollo · cierre</text>`
+    );
+  }
+  if (id === 'analisis_imagen') {
+    return base(
+      `<rect x="50" y="50" width="160" height="100" rx="8" fill="#111827" stroke="#7eb8c4"/>`
+      + `<circle cx="130" cy="90" r="22" fill="#1e293b" stroke="#c4a574"/>`
+      + `<text x="130" y="95" text-anchor="middle" fill="#c4a574" font-size="10">primer plano</text>`
+      + `<text x="240" y="80" fill="#e2e8f0" font-size="12">Composición · símbolo</text>`
+      + `<text x="240" y="108" fill="#94a3b8" font-size="12">Pie de foto ancla el sentido</text>`
+      + `<text x="240" y="136" fill="#64748b" font-size="11">Balanza → justicia (simbólico)</text>`
+    );
+  }
+  // Último recurso: nunca “Datos→Proceso→Resultado”
   return base(
-    `<rect x="40" y="60" width="200" height="55" rx="10" fill="#111827" stroke="#334155"/>`
-    + `<text x="140" y="93" text-anchor="middle" fill="#94a3b8" font-size="13">Pista del enunciado</text>`
-    + `<text x="255" y="93" fill="#64748b" font-size="18">→</text>`
-    + `<rect x="280" y="60" width="200" height="55" rx="10" fill="#111827" stroke="#7eb8c455"/>`
-    + `<text x="380" y="85" text-anchor="middle" fill="#7eb8c4" font-size="13">Forma que encaja</text>`
-    + `<text x="380" y="105" text-anchor="middle" fill="#94a3b8" font-size="11">sujeto · tiempo · sentido</text>`
-    + `<text x="24" y="150" fill="#cbd5e1" font-size="12">${label}</text>`
-    + `<text x="24" y="175" fill="#64748b" font-size="11">Elige la opción que respeta gramática y contexto</text>`
+    `<text x="24" y="70" fill="#cbd5e1" font-size="14">${label}</text>`
+    + `<text x="24" y="110" fill="#94a3b8" font-size="13">Aplica la definición al caso del enunciado</text>`
+    + `<text x="24" y="145" fill="#7eb8c4" font-size="12">Marca datos → relación del tema → respuesta</text>`
+    + `<text x="24" y="175" fill="#64748b" font-size="11">Usa los términos clave de esta cartilla</text>`
   );
 }
 

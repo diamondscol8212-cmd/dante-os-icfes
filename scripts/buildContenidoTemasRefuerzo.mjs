@@ -31,11 +31,12 @@ function pack(intro, pasos, errores, ejemplo, practica, profundizar, meta) {
 const C = {};
 
 C.hidrografia_colombia = pack(
-  'La hidrografía de Colombia se organiza en grandes cuencas. El Magdalena nace en el macizo colombiano y desemboca en el mar Caribe; el Cauca es su afluente principal. Los Llanos drenan hacia el Orinoco; la Amazonía colombiana hacia la cuenca del Amazonas.',
+  'Si la pregunta nombra el Cauca, Magdalena, Llanos u Orinoco, ubica el río en el mapa mental de cuencas: Magdalena nace en el macizo y desemboca en el Caribe; el Cauca es su afluente (se une al Magdalena, no al Amazonas). Los Llanos drenan al Orinoco; el suroriente, al Amazonas. “Afluente” = aporta a otro río; “desembocadura” = entrega al mar.',
   [
-    'Ubica el río en su cuenca (Magdalena-Caribe, Orinoco, Amazonas o Pacífico).',
-    'Distingue afluente (desagua en otro río) de desembocadura (llega al mar).',
-    'Recuerda: en el macizo colombiano nacen Magdalena y Cauca.'
+    'Marca en el mapa: ¿Caribe, Orinoco, Amazonas o Pacífico?',
+    'Si dice “afluente del…”, busca el río receptor (Cauca → Magdalena).',
+    'Si dice “desemboca en…”, busca el mar u océano (Magdalena → Caribe).',
+    'Recuerda el macizo colombiano como nacimiento de Magdalena y Cauca.'
   ],
   [
     'Creer que el Cauca es afluente del Amazonas o del Orinoco.',
@@ -43,13 +44,13 @@ C.hidrografia_colombia = pack(
     'Confundir la cuenca de los Llanos (Orinoco) con la del Magdalena.'
   ],
   {
-    titulo: 'Ejemplo resuelto',
+    titulo: 'Ejemplo resuelto · mismo tipo',
     enunciado: 'El río Cauca es afluente del…',
     pasos: [
-      '1) Un afluente aporta agua a otro río, no al mar directamente como “desembocadura oceánica” del sistema.',
-      '2) El Cauca corre entre Occidental y Central y se une al Magdalena.',
-      '3) No pertenece a la cuenca del Amazonas ni del Orinoco.',
-      '4) Por eso la respuesta es Magdalena.'
+      '1) Afluente = aporta agua a otro río (no “desemboca solo en el mar” como sistema principal).',
+      '2) En el mapa, el Cauca baja entre cordilleras y se une al Magdalena.',
+      '3) Amazonas y Orinoco son otras cuencas (suroriente / Llanos).',
+      '4) Respuesta: Magdalena (juntos hacia el Caribe).'
     ],
     respuesta: 'Magdalena',
     contraste: {
@@ -76,11 +77,12 @@ C.hidrografia_colombia = pack(
 );
 
 C.geografia = pack(
-  'Colombia se organiza en regiones naturales (Andina, Caribe, Pacífica, Orinoquía, Amazonía), tres cordilleras andinas y ecosistemas ligados a altitud y humedad (páramo, manglar, selva). La ubicación y el relieve explican clima, puertos y límites.',
+  'Cuando el ítem cita una ciudad, puerto o paisaje, colócalo en el mapa de regiones: Caribe (Barranquilla, Cartagena), Pacífica (Buenaventura), Andina (eje cafetero, páramos), Orinoquía (Llanos) o Amazonía (suroriente, Leticia). La altitud en la Andina baja la temperatura media; no mezcles costa Caribe con costa Pacífica.',
   [
-    'Asocia ciudades/paisajes con la región correcta.',
-    'Usa el gradiente térmico: a mayor altitud, menor temperatura media.',
-    'Distingue Caribe vs Pacífico (puertos, islas, Darién) y ubica límites orientales (Venezuela, Brasil).'
+    'Identifica la pista: ciudad, río, puerto, ecosistema o “norte/suroriente”.',
+    'Ubícala en una de las cinco regiones naturales.',
+    'Si habla de temperatura en montaña, aplica: más altitud → más frío.',
+    'Descarta opciones de otra costa o de otra región (ej. café ≠ Orinoquía).'
   ],
   [
     'Poner la Amazonía en el Caribe o el café en la Orinoquía.',
@@ -88,15 +90,20 @@ C.geografia = pack(
     'Ignorar que la altitud cambia el clima tropical.'
   ],
   {
-    titulo: 'Ejemplo resuelto',
+    titulo: 'Ejemplo resuelto · mismo tipo',
     enunciado: 'Barranquilla, Cartagena y Santa Marta son ciudades de la región…',
     pasos: [
-      '1) Son puertos sobre el mar Caribe.',
-      '2) No corresponden a Amazonía ni Orinoquía.',
-      '3) Respuesta: Caribe.'
+      '1) Son puertos sobre el mar Caribe (norte).',
+      '2) No son Amazonía (suroriente) ni Orinoquía (Llanos).',
+      '3) Tampoco Pacífico (Buenaventura está al oeste).',
+      '4) Respuesta: Caribe.'
     ],
     respuesta: 'Caribe',
-    contraste: null
+    contraste: {
+      titulo: 'Contraste · costa correcta',
+      invalido: 'Inválido: «Buenaventura es puerto del Caribe.»',
+      valido: 'Válido: «Buenaventura es el gran puerto del Pacífico; Barranquilla, del Caribe.»'
+    }
   },
   [
     q('tr_geo_01', 'La Amazonía colombiana se encuentra, principalmente, en el:', ['A) extremo norte Caribe', 'B) suroriente del país', 'C) archipiélago de San Andrés', 'D) eje cafetero'], 'B',
@@ -232,11 +239,12 @@ C.quimica = pack(
 );
 
 C.historia = pack(
-  'La historia de Colombia en el examen conecta procesos: Independencia (20 de julio de 1810 como grito/junta; Boyacá 1819 como victoria decisiva), siglo XIX (partidos, guerras), pérdida de Panamá (1903) y transformaciones del siglo XX.',
+  'Si el ítem da una fecha (1810, 1819, 1903), colócala en la línea: 20 jul 1810 = junta/grito en Bogotá (inicio del proceso); Boyacá 1819 = victoria decisiva de la campaña libertadora; 1903 = separación de Panamá. No confundas el “grito” con la batalla, ni Panamá con la Amazonía.',
   [
-    'Sitúa el hecho en el proceso (no solo la fecha).',
-    'Distingue causa, acontecimiento y consecuencia.',
-    'Evita anacronismos (no proyectes instituciones actuales al pasado).'
+    'Lee la fecha o el nombre del hecho.',
+    'Ubícalo en la línea 1810 → 1819 → siglo XIX → 1903.',
+    'Di si es causa, acontecimiento o consecuencia del proceso independentista.',
+    'Descarta anacronismos (p. ej. Constitución de 1991 en un ítem de 1810).'
   ],
   [
     'Creer que la Independencia fue un solo día completo.',
@@ -244,15 +252,20 @@ C.historia = pack(
     'Atribuir la pérdida de Panamá a la Amazonía.'
   ],
   {
-    titulo: 'Ejemplo resuelto',
+    titulo: 'Ejemplo resuelto · mismo tipo',
     enunciado: 'La batalla de Boyacá (7 ago 1819) fue decisiva para…',
     pasos: [
-      '1) Cierra la campaña libertadora en la Nueva Granada.',
-      '2) Facilita la consolidación independentista frente al poder español.',
-      '3) No es el “grito” de 1810.'
+      '1) 1819 ≠ 1810: no es el grito/junta.',
+      '2) Boyacá cierra la campaña libertadora en la Nueva Granada.',
+      '3) Consecuencia: consolidación independentista frente a España.',
+      '4) Respuesta: independencia / consolidación libertadora.'
     ],
     respuesta: 'La independencia de la Nueva Granada / consolidación libertadora',
-    contraste: null
+    contraste: {
+      titulo: 'Contraste · fecha correcta',
+      invalido: 'Inválido: «Boyacá es lo mismo que el 20 de julio de 1810.»',
+      valido: 'Válido: «1810 inicia el proceso; Boyacá 1819 es la victoria decisiva.»'
+    }
   },
   [
     q('tr_his_01', 'El 20 de julio de 1810 se recuerda como:', ['A) la batalla de Boyacá', 'B) el grito de independencia / junta de Bogotá', 'C) la pérdida de Panamá', 'D) la Constitución de 1991'], 'B',
