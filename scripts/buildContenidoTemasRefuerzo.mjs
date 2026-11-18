@@ -6,6 +6,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { terminosDe } from './terminosTemasRefuerzo.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -13,8 +14,18 @@ function q(id, enunciado, opciones, correcta, justificacion_incorrectas, explica
   return { id, enunciado, opciones, correcta, justificacion_incorrectas, explicacion_correcta };
 }
 
-function pack(intro, pasos, errores, ejemplo, practica, profundizar) {
-  return { intro, pasos, errores, ejemplo, practica, profundizar };
+function pack(intro, pasos, errores, ejemplo, practica, profundizar, meta) {
+  meta = meta || {};
+  return {
+    intro,
+    pasos,
+    errores,
+    ejemplo,
+    practica,
+    profundizar,
+    terminos: Array.isArray(meta.terminos) ? meta.terminos : [],
+    diagrama_svg: meta.diagrama_svg || ''
+  };
 }
 
 const C = {};
@@ -369,39 +380,50 @@ C.aritmetica = pack(
 );
 
 C.geometria = pack(
-  'La geometría estudia figuras y medidas: perímetro (contorno), área (superficie), volumen (espacio) y relaciones (Pitágoras, semejanza). Cada magnitud usa su fórmula.',
+  'Cuando el problema da un rectángulo con ancho = x y largo = 3x (u otras longitudes), primero decide qué pide: perímetro (contorno) o área (superficie). Perímetro: suma de lados → P = 2(x + 3x) = 8x. Área: producto → A = x · 3x = 3x². No mezcles las dos fórmulas.',
   [
-    'Identifica si pide perímetro, área o volumen.',
-    'Elige la fórmula de la figura.',
-    'Mantén unidades coherentes (cm vs m).'
+    'Lee si pregunta perímetro, área o volumen (palabras clave: contorno / cerca / superficie / pintura / capacidad).',
+    'Dibuja la figura y marca cada lado (ej.: ancho x, largo 3x).',
+    'Aplica solo la fórmula pedida: P = 2(L+A) o A = L·A; en triángulo rectángulo, Pitágoras si pide un lado.',
+    'Simplifica (8x, 3x²…) y revisa unidades.'
   ],
   [
-    'Usar área cuando pedían perímetro.',
-    'Olvidar elevar al cuadrado/cubo en áreas/volúmenes.',
-    'Aplicar Pitágoras sin ser triángulo rectángulo.'
+    'Calcular área (producto) cuando pedían perímetro (suma de lados).',
+    'Usar P = L+A en vez de 2(L+A) en el rectángulo.',
+    'Tratar 3x como “3 + x” en lugar de “tres veces x”.',
+    'Aplicar Pitágoras a un triángulo que no es rectángulo.'
   ],
   {
-    titulo: 'Ejemplo resuelto',
-    enunciado: 'Área de un rectángulo 5×3.',
-    pasos: ['1) A = base × altura.', '2) A = 15.', '3) Perímetro sería 2(5+3)=16, distinto.'],
-    respuesta: '15',
-    contraste: null
+    titulo: 'Ejemplo resuelto · mismo tipo',
+    enunciado: 'Un rectángulo tiene ancho x y largo 3x. ¿Cuál es su perímetro?',
+    pasos: [
+      '1) Perímetro = contorno = 2 × (largo + ancho).',
+      '2) Largo + ancho = 3x + x = 4x.',
+      '3) P = 2 × 4x = 8x.',
+      '4) El área sería 3x·x = 3x²: eso NO responde “perímetro”.'
+    ],
+    respuesta: '8x',
+    contraste: {
+      titulo: 'Contraste · no confundir con área',
+      invalido: 'Inválido: responder 3x² (eso es el área).',
+      valido: 'Válido: 8x (perímetro del rectángulo x por 3x).'
+    }
   },
   [
-    q('tr_geo_m_01', 'Área de rectángulo 5×3:', ['A) 15', 'B) 16', 'C) 8', 'D) 30'], 'A',
-      { B: 'Eso es perímetro.', C: 'Sumaste a medias.', D: 'Multiplicaste de más.' },
-      'A=b·h.'),
-    q('tr_geo_m_02', 'Perímetro de un cuadrado de lado 4:', ['A) 8', 'B) 16', 'C) 12', 'D) 4'], 'B',
-      { A: 'Solo dos lados.', C: 'Pensaste triángulo.', D: 'Un solo lado.' },
-      'P=4·l.'),
-    q('tr_geo_m_03', 'En un triángulo rectángulo, Pitágoras relaciona:', ['A) solo ángulos políticos', 'B) catetos e hipotenusa', 'C) únicamente el color', 'D) la densidad'], 'B',
-      { A: 'No.', C: 'No.', D: 'No.' },
-      'a²+b²=c².'),
-    q('tr_geo_m_04', 'El área de un círculo usa:', ['A) 2πr', 'B) πr²', 'C) πr³', 'D) r/π'], 'B',
-      { A: 'Eso es circunferencia (aprox. perímetro).', C: 'Eso recuerda volumen de esfera (4/3πr³).', D: 'Invertido.' },
-      'A=πr².')
+    q('tr_geo_m_01', 'Rectángulo de ancho x y largo 3x. Su perímetro es:', ['A) 3x²', 'B) 8x', 'C) 4x', 'D) 6x'], 'B',
+      { A: 'Eso es el área (x·3x).', C: 'Sumaste lados una sola vez (L+A), falta el ×2.', D: 'Solo tres lados o mal factor.' },
+      'P=2(x+3x)=8x.'),
+    q('tr_geo_m_02', 'Mismo rectángulo (x por 3x). Su área es:', ['A) 8x', 'B) 4x', 'C) 3x²', 'D) 3x'], 'C',
+      { A: 'Eso es el perímetro.', B: 'Eso es L+A, no el área.', D: 'Falta multiplicar x·x.' },
+      'A=x·3x=3x².'),
+    q('tr_geo_m_03', 'Perímetro de un cuadrado de lado 4:', ['A) 8', 'B) 16', 'C) 12', 'D) 4'], 'B',
+      { A: 'Solo dos lados.', C: 'Pensaste en otra figura.', D: 'Un solo lado.' },
+      'P=4·4=16.'),
+    q('tr_geo_m_04', 'En un triángulo rectángulo, Pitágoras relaciona:', ['A) solo los ángulos agudos entre sí', 'B) los dos catetos y la hipotenusa', 'C) únicamente el perímetro', 'D) el área con π'], 'B',
+      { A: 'Pitágoras habla de lados.', C: 'Pitágoras no es la suma de lados.', D: 'π es de círculos.' },
+      'a²+b²=c².')
   ],
-  'Clasifica la magnitud y aplica la fórmula correcta.'
+  'Marca L y A en el dibujo; elige P=2(L+A) o A=L·A según la pregunta.'
 );
 
 C.funciones = pack(
@@ -1856,6 +1878,15 @@ C.lexical_cloze = C.cloze;
 C.vocabulary = C.vocabulario;
 C.reading_comprehension = C.lectura;
 C.grammar_reading = C.grammar;
+
+// Adjunta 3–6 términos clave a cada cartilla
+Object.keys(C).forEach(function (id) {
+  var packObj = C[id];
+  if (!packObj || typeof packObj !== 'object') return;
+  if (!Array.isArray(packObj.terminos) || !packObj.terminos.length) {
+    packObj.terminos = terminosDe(id);
+  }
+});
 
 const outPath = path.join(__dirname, 'contenidoTemasRefuerzo.mjs');
 const body = `/** Autogenerado por buildContenidoTemasRefuerzo.mjs — cartillas de contenido real. */\n`

@@ -9,9 +9,9 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="css/design-tokens.css">
   <link rel="stylesheet" href="css/theme.css">
-  <script src="js/danteCacheVersion.js?v=c-1.3.107"></script>
-  <script src="js/danteStudentId.js?v=c-1.3.107"></script>
-  <script src="js/danteTemasRefuerzo.js?v=c-1.3.107"></script>
+  <script src="js/danteCacheVersion.js?v=c-1.3.108"></script>
+  <script src="js/danteStudentId.js?v=c-1.3.108"></script>
+  <script src="js/danteTemasRefuerzo.js?v=c-1.3.108"></script>
   <style>
     :root {
       --perfil-cyan: #7eb8c4;
@@ -62,8 +62,65 @@
       transition: border-color .15s, background .15s;
     }
     .tr-item:hover { border-color: rgba(126,184,196,.45); background: rgba(15,23,42,.95); }
-    .tr-item strong { display: block; font-size: .92rem; font-weight: 600; }
-    .tr-item span.meta { display: block; font-size: .75rem; color: #94a3b8; margin-top: .15rem; font-family: ui-monospace, monospace; }
+    .tr-item strong {
+      display: block; font-size: .92rem; font-weight: 600;
+      overflow-wrap: anywhere; word-break: break-word;
+    }
+    .tr-item span.meta {
+      display: block; font-size: .75rem; color: #94a3b8; margin-top: .15rem;
+      font-family: ui-monospace, monospace;
+      overflow-wrap: anywhere; word-break: break-word;
+    }
+    .tr-body p, .tr-body li, .tr-note, .tr-fallo-enun {
+      overflow-wrap: anywhere; word-break: break-word;
+    }
+    .tr-terminos { margin: 1rem 0 .35rem; }
+    .tr-chips {
+      display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .55rem;
+    }
+    .tr-chip {
+      display: inline-flex; align-items: center; gap: .35rem;
+      max-width: 100%; padding: .35rem .65rem; border-radius: 999px;
+      border: 1px solid rgba(126,184,196,.35); background: rgba(15,23,42,.9);
+      color: #e2e8f0; font-size: .8rem; font-weight: 600; cursor: pointer;
+      font-family: inherit; text-align: left;
+    }
+    .tr-chip:hover, .tr-chip:focus-visible {
+      border-color: rgba(126,184,196,.7); background: rgba(30,41,59,.95); outline: none;
+    }
+    .tr-chip .q {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 1.05rem; height: 1.05rem; border-radius: 999px; flex-shrink: 0;
+      font-size: .65rem; font-weight: 700; color: #0b1220; background: #7eb8c4;
+    }
+    .tr-term-modal {
+      position: fixed; inset: 0; z-index: 85; display: none;
+      align-items: flex-end; justify-content: center;
+      padding: 1rem; background: rgba(2,6,14,.72); backdrop-filter: blur(8px);
+    }
+    .tr-term-modal.open { display: flex; }
+    @media (min-width: 640px) {
+      .tr-term-modal { align-items: center; }
+    }
+    .tr-term-card {
+      width: min(26rem, 100%); max-height: min(70vh, 420px); overflow: auto;
+      background: #0b1220; border: 1px solid rgba(148,163,184,.22);
+      border-radius: 1rem; padding: 1rem 1.05rem 1.1rem;
+      box-shadow: 0 24px 70px rgba(0,0,0,.55);
+    }
+    .tr-term-card h3 {
+      margin: 0 0 .45rem; font-size: 1.05rem; color: #f8fafc;
+      overflow-wrap: anywhere;
+    }
+    .tr-term-card p {
+      margin: .35rem 0 0; font-size: .9rem; line-height: 1.5; color: #cbd5e1;
+      overflow-wrap: anywhere;
+    }
+    .tr-term-card .ej { color: #94a3b8; font-size: .84rem; }
+    .tr-term-close {
+      float: right; border: 0; background: transparent; color: #94a3b8;
+      font-size: 1.35rem; line-height: 1; cursor: pointer; padding: .1rem .35rem;
+    }
     .tr-badge {
       flex-shrink: 0; font-size: 10px; font-family: ui-monospace, monospace;
       padding: .2rem .45rem; border-radius: 999px; border: 1px solid rgba(148,163,184,.3); color: #cbd5e1;
@@ -266,11 +323,14 @@
         <div id="listaHechos" class="space-y-2"></div>
         <p id="emptyHechos" class="tr-sub hidden">Aún no marcas ninguno como superado.</p>
       </details>
-      <div class="tr-card">
-        <h2 class="tr-sec-h">Cartillas de ejemplo</h2>
-        <p class="tr-sub" style="margin-bottom:.65rem">Temas con explicación completa para que veas cómo funciona el módulo.</p>
+      <details class="tr-card tr-superados" id="secEjemplos">
+        <summary class="tr-superados-sum">
+          <span class="tr-sec-h" style="margin:0">Cartillas de ejemplo</span>
+          <span class="tr-badge">Ver</span>
+        </summary>
+        <p class="tr-sub" style="margin:.65rem 0">Temas con explicación completa para explorar el módulo (no son tus pendientes).</p>
         <div id="listaEjemplos" class="space-y-2"></div>
-      </div>
+      </details>
       <div class="tr-card">
         <a href="index.html?sala=1" class="tr-btn ghost">Volver a la sala</a>
       </div>
@@ -299,7 +359,7 @@
         <button type="button" id="btnMarcarHecho" class="tr-btn" disabled>Marcar tema como superado</button>
       </div>
     </section>
-    <p class="tr-foot-ver"><span id="badgeDanteVersion">c-1.3.107</span></p>
+    <p class="tr-foot-ver"><span id="badgeDanteVersion">c-1.3.108</span></p>
   </main>
 
   <script>
@@ -368,7 +428,10 @@
       function htmlExplicacion(tema) {
         var ex = (tema && tema.explicacion) || {};
         var html = '';
+        // 1) Procedimiento / explicación concreta
+        html += '<p class="tr-sec-h" style="margin:0 0 .45rem">Explicación del procedimiento</p>';
         if (ex.intro) html += '<p>' + escapeHtml(ex.intro) + '</p>';
+        // 2) Diagrama concreto
         var svg = (ex && ex.diagrama_svg) || (tema && tema.diagrama_svg) || '';
         if (svg) {
           html += '<button type="button" class="tr-diagram" data-tr-expand-diagram aria-label="Ampliar ayuda visual">'
@@ -376,6 +439,22 @@
             + '<p class="tr-diagram-hint">Toca para ampliar</p>'
             + '</button>';
         }
+        // 3) Términos clave
+        var terminos = (ex && ex.terminos) || (tema && tema.terminos) || [];
+        if (Array.isArray(terminos) && terminos.length) {
+          html += '<div class="tr-terminos">';
+          html += '<p class="tr-sec-h" style="margin:0">Términos clave</p>';
+          html += '<p class="tr-sub" style="margin:.25rem 0 .15rem">Toca una palabra para ver su definición.</p>';
+          html += '<div class="tr-chips">';
+          terminos.slice(0, 6).forEach(function (tm, idx) {
+            if (!tm || !tm.termino) return;
+            html += '<button type="button" class="tr-chip" data-tr-term="' + idx + '">'
+              + '<span>' + escapeHtml(tm.termino) + '</span><span class="q" aria-hidden="true">?</span>'
+              + '</button>';
+          });
+          html += '</div></div>';
+        }
+        // 4) Cómo hacerlo / errores
         if (Array.isArray(ex.pasos) && ex.pasos.length) {
           html += '<p class="tr-sec-h" style="margin-top:1rem">Cómo hacerlo</p><ul>';
           ex.pasos.forEach(function (s) { html += '<li>' + escapeHtml(s) + '</li>'; });
@@ -386,6 +465,7 @@
           ex.errores.forEach(function (s) { html += '<li>' + escapeHtml(s) + '</li>'; });
           html += '</ul>';
         }
+        // 5) Ejemplo del mismo tipo
         if (ex.ejemplo_resuelto) {
           var ej = ex.ejemplo_resuelto;
           html += '<div class="tr-note" style="border-color:rgba(126,184,196,.35)">';
@@ -414,6 +494,70 @@
           html += '<div class="tr-note">Este tema aún tiene contenido base. La explicación completa se irá completando; igual puedes marcarlo tras practicar cuando haya ítems.</div>';
         }
         return html || '<p>Aún no hay explicación profunda para este tema.</p>';
+      }
+
+      function asegurarModalTermino() {
+        var modal = document.getElementById('trTermModal');
+        if (modal) return modal;
+        modal = document.createElement('div');
+        modal.id = 'trTermModal';
+        modal.className = 'tr-term-modal';
+        modal.setAttribute('aria-hidden', 'true');
+        modal.innerHTML = '<div class="tr-term-card" role="dialog" aria-modal="true" aria-labelledby="trTermTitulo">'
+          + '<button type="button" class="tr-term-close" data-tr-close-term aria-label="Cerrar">&times;</button>'
+          + '<h3 id="trTermTitulo"></h3>'
+          + '<p id="trTermDef"></p>'
+          + '<p class="ej" id="trTermEj"></p></div>';
+        document.body.appendChild(modal);
+        modal.addEventListener('click', function (e) {
+          if (e.target === modal) cerrarTermino();
+        });
+        var closeBtn = modal.querySelector('[data-tr-close-term]');
+        if (closeBtn) closeBtn.addEventListener('click', cerrarTermino);
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') cerrarTermino();
+        });
+        return modal;
+      }
+
+      function abrirTermino(tm) {
+        if (!tm) return;
+        var modal = asegurarModalTermino();
+        var tit = document.getElementById('trTermTitulo');
+        var def = document.getElementById('trTermDef');
+        var ej = document.getElementById('trTermEj');
+        if (tit) tit.textContent = tm.termino || '';
+        if (def) def.textContent = tm.definicion || '';
+        if (ej) {
+          if (tm.ejemplo) {
+            ej.textContent = 'Ejemplo: ' + tm.ejemplo;
+            ej.classList.remove('hidden');
+          } else {
+            ej.textContent = '';
+            ej.classList.add('hidden');
+          }
+        }
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden', 'false');
+      }
+
+      function cerrarTermino() {
+        var modal = document.getElementById('trTermModal');
+        if (!modal) return;
+        modal.classList.remove('open');
+        modal.setAttribute('aria-hidden', 'true');
+      }
+
+      function engancharTerminos(root, tema) {
+        if (!root) return;
+        var terminos = ((tema && tema.explicacion && tema.explicacion.terminos)
+          || (tema && tema.terminos) || []);
+        root.querySelectorAll('[data-tr-term]').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var idx = Number(btn.getAttribute('data-tr-term'));
+            abrirTermino(terminos[idx]);
+          });
+        });
       }
 
       function asegurarModalDiagrama() {
@@ -627,6 +771,7 @@
           pintarFallos(tema.id || id).then(function () {
             $('temaExplicacion').innerHTML = htmlExplicacion(tema);
             engancharDiagramasExpandibles($('temaExplicacion'));
+            engancharTerminos($('temaExplicacion'), tema);
             renderPractica(tema);
             window.scrollTo(0, 0);
           });
