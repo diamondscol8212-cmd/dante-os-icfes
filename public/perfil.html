@@ -20,12 +20,12 @@
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="theme.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/danteCacheVersion.js?v=c-1.3.120"></script>
-    <script src="js/danteRevealScroll.js?v=c-1.3.120"></script>
-    <script src="js/danteSaber11Info.js?v=c-1.3.120"></script>
-    <script src="js/danteStudentId.js?v=c-1.3.120"></script>
-    <script src="js/danteTemasRefuerzo.js?v=c-1.3.120"></script>
-    <script src="js/danteNotificaciones.js?v=c-1.3.120"></script>
+    <script src="js/danteCacheVersion.js?v=c-1.3.121"></script>
+    <script src="js/danteRevealScroll.js?v=c-1.3.121"></script>
+    <script src="js/danteSaber11Info.js?v=c-1.3.121"></script>
+    <script src="js/danteStudentId.js?v=c-1.3.121"></script>
+    <script src="js/danteTemasRefuerzo.js?v=c-1.3.121"></script>
+    <script src="js/danteNotificaciones.js?v=c-1.3.121"></script>
     <script src="js/danteNube.js?v=c-1.3.87"></script>
     <script src="js/danteRegistro.js?v=c-1.3.87"></script>
     <script src="js/danteVectorIcons.js"></script>
@@ -173,14 +173,19 @@
         }
         .nav-item { display: flex; flex-direction: column; align-items: center; min-width: 0; gap: 0.2rem; cursor: pointer; text-decoration: none !important; background: transparent; border: 0; padding: 0; }
         .icon-circle { width: auto; height: auto; border-radius: 0; display: flex; align-items: center; justify-content: center; background: transparent; border: 0; margin-bottom: 0; position: relative; }
-        .nav-text { font-family: 'Plus Jakarta Sans', sans-serif !important; font-size: 0.68rem !important; font-weight: 600 !important; letter-spacing: 0.02em !important; text-transform: none !important; color: #64748b; }
+        .icon-circle i { font-size: 1.22rem !important; line-height: 1 !important; -webkit-font-smoothing: antialiased; }
+        .nav-text { font-family: 'Plus Jakarta Sans', sans-serif !important; font-size: 0.72rem !important; font-weight: 650 !important; letter-spacing: 0.02em !important; text-transform: none !important; color: #94a3b8; }
         .nav-item.is-progreso-active .nav-text { color: #f8fafc !important; }
+        .nav-item.is-progreso-active .icon-circle i {
+            color: #f8fafc !important;
+            filter: drop-shadow(0 0 6px rgba(248, 250, 252, 0.35));
+        }
         .nav-item.is-progreso-active .icon-circle::after {
-            content: ''; position: absolute; left: 50%; bottom: -0.35rem; width: 1.15rem; height: 2px;
+            content: ''; position: absolute; left: 50%; bottom: -0.4rem; width: 1.25rem; height: 2px;
             transform: translateX(-50%); background: #f8fafc; border-radius: 999px;
         }
         .nav-item:not(.is-progreso-active) .nav-text,
-        .nav-item:not(.is-progreso-active) i { color: #64748b !important; }
+        .nav-item:not(.is-progreso-active) i { color: #94a3b8 !important; filter: none; }
         #dante-anchor.nav-item { width: auto; height: auto; border: 0; background: transparent; box-shadow: none; border-radius: 0; }
 
         .modal-overlay {
@@ -2563,15 +2568,15 @@
     <!-- DOCK: mismos íconos que Sala → house · chart-line · brain -->
     <nav class="bottom-nav" id="bottomNav">
         <a href="/index.html?sala=1" class="nav-item" title="Sala">
-            <div class="icon-circle"><i class="fas fa-house text-sm"></i></div>
+            <div class="icon-circle"><i class="fas fa-house"></i></div>
             <span class="nav-text">Sala</span>
         </a>
         <a href="/perfil.html" id="dante-anchor" class="nav-item is-progreso-active" title="Progreso">
-            <div class="icon-circle"><i class="fas fa-chart-line text-sm"></i></div>
+            <div class="icon-circle"><i class="fas fa-chart-line"></i></div>
             <span class="nav-text">Progreso</span>
         </a>
         <a href="/index.html?hackea=1" class="nav-item" title="Hackea">
-            <div class="icon-circle"><i class="fas fa-brain text-sm"></i></div>
+            <div class="icon-circle"><i class="fas fa-brain"></i></div>
             <span class="nav-text">Hackea</span>
         </a>
     </nav>
