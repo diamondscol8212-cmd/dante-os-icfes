@@ -5,7 +5,7 @@
 (function (global) {
   'use strict';
 
-  var CATALOGO_URL = 'data/temasRefuerzo.json';
+  var CATALOGO_URL = 'temasRefuerzo.json';
   var STORE_PREFIX = 'dante_temas_refuerzo_v1:';
   var _catalogo = null;
   var _catalogoPromise = null;
