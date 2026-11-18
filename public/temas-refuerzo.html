@@ -12,9 +12,9 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" defer></script>
-  <script src="js/danteCacheVersion.js?v=c-1.3.112"></script>
-  <script src="js/danteStudentId.js?v=c-1.3.112"></script>
-  <script src="js/danteTemasRefuerzo.js?v=c-1.3.112"></script>
+  <script src="js/danteCacheVersion.js?v=c-1.3.113"></script>
+  <script src="js/danteStudentId.js?v=c-1.3.113"></script>
+  <script src="js/danteTemasRefuerzo.js?v=c-1.3.113"></script>
   <style>
     :root {
       --perfil-cyan: #7eb8c4;
@@ -320,6 +320,38 @@
     }
     .tr-btn:disabled { opacity: .45; cursor: not-allowed; }
     .tr-btn.ghost { background: transparent; border-color: rgba(71,85,105,.8); color: #cbd5e1; }
+    .tr-superado-wrap {
+      margin-top: 1.15rem; padding: 1rem .9rem; border-radius: .95rem;
+      border: 1px solid rgba(52,211,153,.35); background: rgba(6,78,59,.18);
+    }
+    .tr-btn-superado {
+      padding: .95rem 1rem; font-size: .95rem; font-weight: 700;
+      border-color: rgba(52,211,153,.55); background: rgba(16,185,129,.22); color: #ecfdf5;
+    }
+    .tr-btn-superado:not(:disabled) {
+      box-shadow: 0 0 0 1px rgba(52,211,153,.25), 0 10px 28px rgba(16,185,129,.18);
+    }
+    .tr-fuentes { margin: 1rem 0 0; padding: .85rem .9rem; border-radius: .85rem;
+      border: 1px solid rgba(196,165,116,.35); background: rgba(69,46,10,.22); }
+    .tr-fuentes ul { margin: .45rem 0 0; padding-left: 1.1rem; color: #e7e5e4; }
+    .tr-fuentes li { margin-bottom: .4rem; font-size: .88rem; line-height: 1.45; }
+    .tr-fuentes .tipo {
+      display: inline-block; min-width: 3.2rem; font-family: ui-monospace, monospace;
+      font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: #c4a574;
+    }
+    .tr-zoom-bar {
+      display: flex; gap: .45rem; flex-wrap: wrap; align-items: center;
+      margin: 0 0 .35rem;
+    }
+    .tr-zoom-bar button {
+      min-width: 2.4rem; height: 2.2rem; border-radius: .55rem;
+      border: 1px solid rgba(148,163,184,.3); background: rgba(15,23,42,.9);
+      color: #e2e8f0; font-size: 1rem; font-weight: 700; cursor: pointer;
+    }
+    .tr-zoom-bar button:active { background: rgba(30,41,59,.95); }
+    .tr-zoom-bar .tr-zoom-lbl {
+      font-size: .68rem; color: #64748b; font-family: ui-monospace, monospace;
+    }
     .tr-foot-ver {
       margin-top: 1.25rem; text-align: center;
       font-family: ui-monospace, monospace; font-size: 10px; color: #475569;
@@ -389,22 +421,25 @@
         <p class="tr-note" id="temaContexto" style="margin:.85rem 0 0">Este tema aparece porque fallaste una pregunta relacionada.</p>
       </div>
       <div class="tr-card" id="temaFallosCard">
-        <h2 class="tr-sec-h" style="margin:0 0 .55rem">La pregunta que fallaste</h2>
-        <p class="tr-sub" style="margin:0 0 .65rem">Misma cartilla que en el examen. Tu opción y la correcta quedan marcadas.</p>
+        <h2 class="tr-sec-h" style="margin:0 0 .55rem">1 · Tu pregunta</h2>
+        <p class="tr-sub" style="margin:0 0 .65rem">La que fallaste, en formato de cartilla. Tu opción y la correcta quedan marcadas.</p>
         <div id="temaFallos" class="tr-fallos-wrap"></div>
       </div>
       <div class="tr-card tr-body" id="temaExplicacion"></div>
-      <div class="tr-card">
-        <h2 class="tr-sec-h">Comprueba si entendiste</h2>
-        <p class="tr-sub" style="margin:0 0 .75rem">Misma cartilla que en el examen. Toca una opción para responder (sin pista).</p>
+      <div class="tr-card" id="temaPracticaCard">
+        <h2 class="tr-sec-h">7 · Comprueba si entendiste</h2>
+        <p class="tr-sub" style="margin:0 0 .75rem">Misma cartilla que en el examen. Toca una opción para responder.</p>
         <div class="tr-practica-wrap">
           <div id="temaPractica"></div>
         </div>
         <p id="practicaNota" class="tr-note hidden"></p>
-        <button type="button" id="btnMarcarHecho" class="tr-btn" disabled>Marcar tema como superado</button>
+        <div class="tr-superado-wrap">
+          <p class="tr-sub" style="margin:0 0 .55rem">Cuando aciertes toda la práctica, marca el tema.</p>
+          <button type="button" id="btnMarcarHecho" class="tr-btn tr-btn-superado" disabled>Marcar tema como superado</button>
+        </div>
       </div>
     </section>
-    <p class="tr-foot-ver"><span id="badgeDanteVersion">c-1.3.112</span></p>
+    <p class="tr-foot-ver"><span id="badgeDanteVersion">c-1.3.113</span></p>
   </main>
 
   <script>
@@ -473,26 +508,33 @@
       function htmlExplicacion(tema) {
         var ex = (tema && tema.explicacion) || {};
         var html = '';
-        // 1) Procedimiento / explicación concreta
-        html += '<p class="tr-sec-h" style="margin:0 0 .45rem">Explicación del procedimiento</p>';
+        // 2 · Qué pasó
+        html += '<p class="tr-sec-h" style="margin:0 0 .45rem">2 · Qué pasó</p>';
         if (ex.intro) html += '<p>' + escapeHtml(ex.intro) + '</p>';
-        // 2) Diagrama concreto del tema
         var svg = (ex && ex.diagrama_svg) || (tema && tema.diagrama_svg) || '';
         if (svg) {
           html += '<button type="button" class="tr-diagram" data-tr-expand-diagram aria-label="Ampliar ayuda visual">'
             + svg
-            + '<p class="tr-diagram-hint">Toca para ampliar</p>'
+            + '<p class="tr-diagram-hint">Toca para ampliar · pellizca o usa + / −</p>'
             + '</button>';
         }
-        // 3) Términos clave (prioriza los de la pregunta fallida)
+        var svgOps = (ex && ex.diagrama_opciones_svg) || (tema && tema.diagrama_opciones_svg) || '';
+        if (svgOps) {
+          html += '<p class="tr-sub" style="margin:.35rem 0 .45rem">Opciones: por qué una encaja y otra no</p>';
+          html += '<button type="button" class="tr-diagram" data-tr-expand-diagram aria-label="Ampliar opciones visuales">'
+            + svgOps
+            + '<p class="tr-diagram-hint">Toca para ampliar · pellizca o usa + / −</p>'
+            + '</button>';
+        }
+        // 3 · Términos clave
         var terminos = (tema && tema._terminosActivos)
           || (ex && ex.terminos)
           || (tema && tema.terminos)
           || [];
         if (Array.isArray(terminos) && terminos.length) {
           html += '<div class="tr-terminos">';
-          html += '<p class="tr-sec-h" style="margin:0">Términos clave</p>';
-          html += '<p class="tr-sub" style="margin:.25rem 0 .15rem">Incluye palabras de tu pregunta fallida. Toca una para ver la definición.</p>';
+          html += '<p class="tr-sec-h" style="margin:0">3 · Términos clave</p>';
+          html += '<p class="tr-sub" style="margin:.25rem 0 .15rem">Incluye palabras de tu pregunta. Toca una para ver la definición.</p>';
           html += '<div class="tr-chips">';
           terminos.slice(0, 8).forEach(function (tm, idx) {
             if (!tm || !tm.termino) return;
@@ -503,9 +545,9 @@
           });
           html += '</div></div>';
         }
-        // 4) Cómo hacerlo / errores
+        // 4 · Cómo hacerlo
         if (Array.isArray(ex.pasos) && ex.pasos.length) {
-          html += '<p class="tr-sec-h" style="margin-top:1rem">Cómo hacerlo</p><ul>';
+          html += '<p class="tr-sec-h" style="margin-top:1rem">4 · Cómo hacerlo</p><ul>';
           ex.pasos.forEach(function (s) { html += '<li>' + escapeHtml(s) + '</li>'; });
           html += '</ul>';
         }
@@ -514,11 +556,11 @@
           ex.errores.forEach(function (s) { html += '<li>' + escapeHtml(s) + '</li>'; });
           html += '</ul>';
         }
-        // 5) Ejemplo del mismo tipo
+        // 5 · Ejemplo
         if (ex.ejemplo_resuelto) {
           var ej = ex.ejemplo_resuelto;
           html += '<div class="tr-note" style="border-color:rgba(126,184,196,.35)">';
-          html += '<p class="tr-sec-h" style="margin:0 0 .4rem">' + escapeHtml(ej.titulo || 'Ejemplo resuelto') + '</p>';
+          html += '<p class="tr-sec-h" style="margin:0 0 .4rem">5 · Ejemplo</p>';
           if (ej.enunciado) html += '<p><strong>Problema:</strong> ' + escapeHtml(ej.enunciado) + '</p>';
           if (Array.isArray(ej.pasos) && ej.pasos.length) {
             html += '<ul>';
@@ -536,21 +578,26 @@
             html += '</div>';
           }
         }
-        // 6) Ayuda visual de opciones (correcta vs incorrecta) cuando aporta
-        var svgOps = (ex && ex.diagrama_opciones_svg) || (tema && tema.diagrama_opciones_svg) || '';
-        if (svgOps) {
-          html += '<p class="tr-sec-h" style="margin-top:1rem">Cómo leer las opciones</p>';
-          html += '<p class="tr-sub" style="margin:0 0 .45rem">Apoyo visual para ver por qué una opción encaja y otra no.</p>';
-          html += '<button type="button" class="tr-diagram" data-tr-expand-diagram aria-label="Ampliar opciones visuales">'
-            + svgOps
-            + '<p class="tr-diagram-hint">Toca para ampliar</p>'
-            + '</button>';
+        // 6 · Para profundizar
+        var fuentes = (ex && ex.fuentes) || (tema && tema.fuentes) || [];
+        html += '<div class="tr-fuentes">';
+        html += '<p class="tr-sec-h" style="margin:0">6 · Para profundizar</p>';
+        html += '<p class="tr-sub" style="margin:.35rem 0 0;color:#d6d3d1">Si quieres seguir, usa 1 o 2 de estas fuentes:</p><ul>';
+        if (Array.isArray(fuentes) && fuentes.length) {
+          fuentes.slice(0, 2).forEach(function (fn) {
+            if (!fn || !fn.texto) return;
+            var tipo = String(fn.tipo || 'guia');
+            var etiqueta = tipo === 'libro' ? 'Libro' : (tipo === 'video' ? 'Video' : 'Guía');
+            html += '<li><span class="tipo">' + etiqueta + '</span> ' + escapeHtml(fn.texto) + '</li>';
+          });
+        } else if (tema && tema.profundizar) {
+          html += '<li><span class="tipo">Guía</span> ' + escapeHtml(tema.profundizar) + '</li>';
+        } else {
+          html += '<li><span class="tipo">Guía</span> Guía ICFES Saber 11° del área correspondiente.</li>';
         }
-        if (tema && tema.profundizar) {
-          html += '<div class="tr-note">' + escapeHtml(tema.profundizar) + '</div>';
-        }
+        html += '</ul></div>';
         if (tema && tema.estadoContenido === 'placeholder') {
-          html += '<div class="tr-note">Este tema aún tiene contenido base. La explicación completa se irá completando; igual puedes marcarlo tras practicar cuando haya ítems.</div>';
+          html += '<div class="tr-note">Este tema aún tiene contenido base. La explicación completa se irá completando.</div>';
         }
         return html || '<p>Aún no hay explicación profunda para este tema.</p>';
       }
@@ -624,18 +671,25 @@
       function aplicarZoomTransform(ctl) {
         if (!ctl || !ctl.target) return;
         ctl.target.style.transform = 'translate(calc(-50% + ' + ctl.x + 'px), calc(-50% + ' + ctl.y + 'px)) scale(' + ctl.scale + ')';
+        if (ctl.lbl) ctl.lbl.textContent = Math.round(ctl.scale * 100) + '%';
       }
 
-      function engancharZoomStage(stage, target) {
+      function setZoom(ctl, scale) {
+        ctl.scale = Math.max(ctl.min, Math.min(ctl.max, scale));
+        if (ctl.scale <= 1.02) { ctl.scale = 1; ctl.x = 0; ctl.y = 0; }
+        aplicarZoomTransform(ctl);
+      }
+
+      function engancharZoomStage(stage, target, lbl) {
         var ctl = {
           stage: stage,
           target: target,
+          lbl: lbl || null,
           scale: 1,
           x: 0,
           y: 0,
           min: 1,
-          max: 4.5,
-          pointers: new Map(),
+          max: 5,
           pinchStartDist: 0,
           pinchStartScale: 1,
           panLast: null,
@@ -643,74 +697,94 @@
         };
         zoomCtl = ctl;
 
-        function onPointerDown(e) {
-          if (e.pointerType === 'mouse' && e.button !== 0) return;
-          stage.setPointerCapture(e.pointerId);
-          ctl.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
-          if (ctl.pointers.size === 1) {
-            ctl.panLast = { x: e.clientX, y: e.clientY };
-            var now = Date.now();
-            if (now - ctl.lastTap < 280) {
-              if (ctl.scale > 1.05) {
-                ctl.scale = 1; ctl.x = 0; ctl.y = 0;
-              } else {
-                ctl.scale = 2.2;
-              }
-              aplicarZoomTransform(ctl);
-            }
-            ctl.lastTap = now;
-          } else if (ctl.pointers.size === 2) {
-            var pts = Array.from(ctl.pointers.values());
-            ctl.pinchStartDist = Math.max(1, Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y));
+        function touchPair(ev) {
+          if (!ev.touches || ev.touches.length < 2) return null;
+          return [ev.touches[0], ev.touches[1]];
+        }
+
+        function onTouchStart(ev) {
+          if (ev.touches.length === 2) {
+            var a = ev.touches[0];
+            var b = ev.touches[1];
+            ctl.pinchStartDist = Math.max(1, Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY));
             ctl.pinchStartScale = ctl.scale;
             ctl.panLast = null;
+          } else if (ev.touches.length === 1) {
+            ctl.panLast = { x: ev.touches[0].clientX, y: ev.touches[0].clientY };
+            var now = Date.now();
+            if (now - ctl.lastTap < 300) {
+              setZoom(ctl, ctl.scale > 1.15 ? 1 : 2.4);
+            }
+            ctl.lastTap = now;
           }
-          e.preventDefault();
+          if (ev.cancelable) ev.preventDefault();
         }
 
-        function onPointerMove(e) {
-          if (!ctl.pointers.has(e.pointerId)) return;
-          ctl.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
-          if (ctl.pointers.size === 2) {
-            var pts = Array.from(ctl.pointers.values());
-            var d = Math.max(1, Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y));
-            var next = ctl.pinchStartScale * (d / ctl.pinchStartDist);
-            ctl.scale = Math.max(ctl.min, Math.min(ctl.max, next));
-            aplicarZoomTransform(ctl);
-          } else if (ctl.pointers.size === 1 && ctl.panLast) {
-            var p = ctl.pointers.get(e.pointerId);
-            ctl.x += p.x - ctl.panLast.x;
-            ctl.y += p.y - ctl.panLast.y;
-            ctl.panLast = { x: p.x, y: p.y };
+        function onTouchMove(ev) {
+          if (ev.touches.length === 2) {
+            var a = ev.touches[0];
+            var b = ev.touches[1];
+            var d = Math.max(1, Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY));
+            if (!ctl.pinchStartDist) {
+              ctl.pinchStartDist = d;
+              ctl.pinchStartScale = ctl.scale;
+            }
+            setZoom(ctl, ctl.pinchStartScale * (d / ctl.pinchStartDist));
+          } else if (ev.touches.length === 1 && ctl.panLast && ctl.scale > 1.02) {
+            var t = ev.touches[0];
+            ctl.x += t.clientX - ctl.panLast.x;
+            ctl.y += t.clientY - ctl.panLast.y;
+            ctl.panLast = { x: t.clientX, y: t.clientY };
             aplicarZoomTransform(ctl);
           }
-          e.preventDefault();
+          if (ev.cancelable) ev.preventDefault();
         }
 
-        function onPointerUp(e) {
-          ctl.pointers.delete(e.pointerId);
-          if (ctl.pointers.size < 2) ctl.pinchStartDist = 0;
-          if (ctl.pointers.size === 1) {
-            var only = ctl.pointers.values().next().value;
-            ctl.panLast = only ? { x: only.x, y: only.y } : null;
-          } else {
+        function onTouchEnd(ev) {
+          if (ev.touches.length < 2) ctl.pinchStartDist = 0;
+          if (ev.touches.length === 1) {
+            ctl.panLast = { x: ev.touches[0].clientX, y: ev.touches[0].clientY };
+          } else if (!ev.touches.length) {
             ctl.panLast = null;
           }
         }
 
+        var mouseDown = false;
+        function onMouseDown(e) {
+          if (e.button !== 0) return;
+          mouseDown = true;
+          ctl.panLast = { x: e.clientX, y: e.clientY };
+        }
+        function onMouseMove(e) {
+          if (!mouseDown || !ctl.panLast) return;
+          if (ctl.scale > 1.02) {
+            ctl.x += e.clientX - ctl.panLast.x;
+            ctl.y += e.clientY - ctl.panLast.y;
+            aplicarZoomTransform(ctl);
+          }
+          ctl.panLast = { x: e.clientX, y: e.clientY };
+        }
+        function onMouseUp() {
+          mouseDown = false;
+          ctl.panLast = null;
+        }
         function onWheel(e) {
           e.preventDefault();
-          var factor = e.deltaY < 0 ? 1.12 : 0.9;
-          ctl.scale = Math.max(ctl.min, Math.min(ctl.max, ctl.scale * factor));
-          if (ctl.scale <= 1.02) { ctl.scale = 1; ctl.x = 0; ctl.y = 0; }
-          aplicarZoomTransform(ctl);
+          setZoom(ctl, ctl.scale * (e.deltaY < 0 ? 1.14 : 0.88));
         }
 
-        stage.addEventListener('pointerdown', onPointerDown);
-        stage.addEventListener('pointermove', onPointerMove);
-        stage.addEventListener('pointerup', onPointerUp);
-        stage.addEventListener('pointercancel', onPointerUp);
+        stage.addEventListener('touchstart', onTouchStart, { passive: false });
+        stage.addEventListener('touchmove', onTouchMove, { passive: false });
+        stage.addEventListener('touchend', onTouchEnd);
+        stage.addEventListener('touchcancel', onTouchEnd);
+        stage.addEventListener('mousedown', onMouseDown);
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mouseup', onMouseUp);
         stage.addEventListener('wheel', onWheel, { passive: false });
+        ctl._cleanup = function () {
+          window.removeEventListener('mousemove', onMouseMove);
+          window.removeEventListener('mouseup', onMouseUp);
+        };
         aplicarZoomTransform(ctl);
         return ctl;
       }
@@ -742,13 +816,29 @@
         var modal = asegurarModalDiagrama();
         var body = document.getElementById('trDiagramModalBody');
         if (body) {
-          body.innerHTML = '<p class="tr-zoom-hint">Pellizca con dos dedos para ampliar · arrastra para mover · doble toque para reset</p>'
+          body.innerHTML = ''
+            + '<div class="tr-zoom-bar">'
+            + '<button type="button" data-z-out aria-label="Alejar">−</button>'
+            + '<button type="button" data-z-in aria-label="Acercar">+</button>'
+            + '<button type="button" data-z-reset aria-label="Restablecer" style="min-width:3.2rem;font-size:.75rem">1:1</button>'
+            + '<span class="tr-zoom-lbl" id="trZoomLbl">100%</span>'
+            + '</div>'
+            + '<p class="tr-zoom-hint">Pellizca con dos dedos · arrastra · o usa + / −</p>'
             + '<div class="tr-zoom-stage" id="trZoomStage"><div class="tr-zoom-target" id="trZoomTarget">'
             + (svgHtml || '')
             + '</div></div>';
           var stage = document.getElementById('trZoomStage');
           var target = document.getElementById('trZoomTarget');
-          if (stage && target) engancharZoomStage(stage, target);
+          var lbl = document.getElementById('trZoomLbl');
+          if (stage && target) {
+            var ctl = engancharZoomStage(stage, target, lbl);
+            var bar = body.querySelector('.tr-zoom-bar');
+            if (bar) {
+              bar.querySelector('[data-z-in]').onclick = function () { setZoom(ctl, ctl.scale * 1.3); };
+              bar.querySelector('[data-z-out]').onclick = function () { setZoom(ctl, ctl.scale / 1.3); };
+              bar.querySelector('[data-z-reset]').onclick = function () { setZoom(ctl, 1); };
+            }
+          }
         }
         modal.classList.add('open');
         modal.setAttribute('aria-hidden', 'false');
@@ -759,6 +849,9 @@
         if (!modal) return;
         modal.classList.remove('open');
         modal.setAttribute('aria-hidden', 'true');
+        if (zoomCtl && typeof zoomCtl._cleanup === 'function') {
+          try { zoomCtl._cleanup(); } catch (_) {}
+        }
         zoomCtl = null;
         var body = document.getElementById('trDiagramModalBody');
         if (body) body.innerHTML = '';
