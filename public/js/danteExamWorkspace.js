@@ -742,11 +742,22 @@
       if (typeof next === 'function') next();
     }
 
+    _trasRespiracionEntrada(continuar, esDiagnostico) {
+      const seguir = () => {
+        if (esDiagnostico) this._abrirPerfilDiagnosticoSiAplica(continuar);
+        else continuar();
+      };
+      if (window.DanteLapizHoja && typeof window.DanteLapizHoja.pedir === 'function') {
+        window.DanteLapizHoja.pedir(seguir);
+      } else {
+        seguir();
+      }
+    }
+
     _abrirRespiracionDeEntrada(continuar, esDiagnostico) {
       const modal = document.getElementById('modalRespiracionInicio');
       if (!modal) {
-        if (esDiagnostico) this._abrirPerfilDiagnosticoSiAplica(continuar);
-        else continuar();
+        this._trasRespiracionEntrada(continuar, esDiagnostico);
         return;
       }
       this._respiracionCerrada = false;
@@ -857,8 +868,7 @@
         sessionStorage.getItem('dante_is_diagnostic') === 'true' ||
         localStorage.getItem('dante_is_diagnostic') === 'true'
       );
-      if (esDiag) this._abrirPerfilDiagnosticoSiAplica(continuar);
-      else continuar();
+      this._trasRespiracionEntrada(continuar, esDiag);
     }
 
     _continuarEntradaEvaluacion() {

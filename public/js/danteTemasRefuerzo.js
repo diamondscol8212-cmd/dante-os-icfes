@@ -8,7 +8,7 @@
   var CATALOGO_URL = 'temasRefuerzo.json';
   var STORE_PREFIX = 'dante_temas_refuerzo_v1:';
   /**
-   * Tras abrir la cartilla se puede ir de inmediato a Repaso · Fallidas (sin espera forzada).
+   * Repaso · Fallidas no exige haber abierto la cartilla (sin espera ni bloqueo).
    * El tema SOLO sale de pendientes con marcarHecho (práctica de la cartilla + «lo entendí»).
    * Acertar la fallida original NO limpia el tema de refuerzo.
    */
@@ -367,9 +367,9 @@
     return Math.max(1, Math.ceil(left / 60000));
   }
 
-  /** Puede abrir Repaso · Fallidas del tema: basta haber abierto la cartilla (sin espera). */
-  function puedeRepasarFallidas(temaId) {
-    return fueEstudiado(temaId);
+  /** Repaso · Fallidas no bloquea por tema pendiente (siempre permitido). */
+  function puedeRepasarFallidas(/* temaId */) {
+    return true;
   }
 
   /** Pendientes activos: nunca incluye temas ya marcados como superados. */

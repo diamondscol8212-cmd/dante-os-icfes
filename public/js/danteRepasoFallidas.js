@@ -477,63 +477,9 @@
       return;
     }
 
-    // Estudio previo: cada fallida exige haber abierto la cartilla del tema asociado.
-    try {
-      if (window.DanteTemasRefuerzo && typeof window.DanteTemasRefuerzo.cargarCatalogo === 'function') {
-        await window.DanteTemasRefuerzo.cargarCatalogo();
-      }
-    } catch (eCat) {}
-
-    // Gate: hay que haber abierto la cartilla del tema. Sin espera forzada.
-    // Acertar aquí baja el contador de fallidas, pero NO saca el tema de Temas de refuerzo
-    // (eso solo ocurre al marcar «superado» en la cartilla tras la práctica).
-    const temasFaltantes = [];
-    const vistosIds = {};
-    reactivos.forEach(function (item) {
-      if (!window.DanteTemasRefuerzo || typeof window.DanteTemasRefuerzo.resolverTemaId !== 'function') return;
-      const temaId = window.DanteTemasRefuerzo.resolverTemaId({
-        sub: item.sub || item.sub_competencia,
-        sub_competencia: item.sub_competencia || item.sub,
-        tema_refuerzo_id: item.tema_refuerzo_id || item.temaRefuerzoId,
-        tema_a_estudiar: item.tema_a_estudiar || item.repaso || item.tema,
-        tema: item.tema || item.tema_a_estudiar,
-        repaso: item.repaso,
-        enunciado: item.pregunta_texto || item.enunciado || item.texto || ''
-      });
-      if (!temaId || vistosIds[temaId]) return;
-      vistosIds[temaId] = true;
-      const titulo = (typeof window.DanteTemasRefuerzo.tituloDe === 'function'
-        ? window.DanteTemasRefuerzo.tituloDe(temaId, null)
-        : String(temaId || '').replace(/_/g, ' '));
-      const estudiado = typeof window.DanteTemasRefuerzo.fueEstudiado === 'function'
-        && window.DanteTemasRefuerzo.fueEstudiado(temaId);
-      if (!estudiado) {
-        temasFaltantes.push({ id: temaId, titulo: titulo });
-      }
-    });
-
-    if (temasFaltantes.length) {
-      const primero = temasFaltantes[0];
-      const extra = temasFaltantes.length > 1
-        ? (' (y ' + (temasFaltantes.length - 1) + ' tema' + (temasFaltantes.length === 2 ? '' : 's') + ' más)')
-        : '';
-      nota(
-        'Primero estudia el tema',
-        'Antes de responder esas fallidas, abre la cartilla «' + primero.titulo + '»' + extra + '. En cuanto la abras, puedes volver aquí al repaso. El tema sigue en Temas de refuerzo hasta que lo marques como superado en la cartilla.',
-        [
-          {
-            texto: 'Ir a la cartilla',
-            alClick: function () {
-              cerrarNota();
-              window.location.href = 'temas-refuerzo.html?tema=' + encodeURIComponent(primero.id);
-            }
-          },
-          { texto: 'Cancelar', alClick: cerrarNota }
-        ]
-      );
-      return;
-    }
-
+    // Sin bloqueo por temas de refuerzo pendientes: se puede entrar aunque no se haya
+    // abierto la cartilla. Acertar aquí baja fallidas (crédito parcial) pero NO saca el tema;
+    // el tema solo se limpia al marcar «superado» en la cartilla tras la práctica.
     nota(
       'Repaso · preguntas fallidas',
       'Vas a repasar exactamente ' + reactivos.length + ' pregunta' + (reactivos.length === 1 ? '' : 's') + ' que tú fallaste. Si las aciertas, baja el contador de fallidas (crédito parcial en proyección). El tema de refuerzo solo se limpia cuando lo superas en la cartilla.',
