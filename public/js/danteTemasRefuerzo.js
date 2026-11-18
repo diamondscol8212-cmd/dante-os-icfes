@@ -143,9 +143,10 @@
       var temaId = resolverTemaId(meta);
       if (!temaId) return null;
       var estado = leerEstado();
-      if (estado.hechos[temaId]) {
-        // Si ya estaba "hecho" y vuelve a fallar, reabre como pendiente.
-        delete estado.hechos[temaId];
+      // Regla: si el estudiante ya marcó el tema como superado, NO vuelve a pendientes
+      // aunque falle otra pregunta del mismo subtema. Queda solo en historial (hechos).
+      if (estado.hechos && estado.hechos[temaId]) {
+        return temaId;
       }
       var existe = estado.pendientes.some(function (p) { return p && p.id === temaId; });
       if (!existe) {
@@ -161,7 +162,6 @@
         if (estado.pendientes.length > 80) estado.pendientes = estado.pendientes.slice(0, 80);
         guardarEstado(estado);
       } else {
-        // Actualiza título si el catálogo ya cargó uno mejor
         estado.pendientes.forEach(function (p) {
           if (p && p.id === temaId) {
             p.titulo = tituloDe(temaId, meta);
@@ -212,15 +212,15 @@
     var local = leerEstado();
     var remotePend = Array.isArray(snapTemas.pendientes) ? snapTemas.pendientes : [];
     var remoteHechos = snapTemas.hechos && typeof snapTemas.hechos === 'object' ? snapTemas.hechos : {};
+    var hechos = Object.assign({}, remoteHechos, local.hechos);
     var map = {};
     local.pendientes.forEach(function (p) { if (p && p.id) map[p.id] = p; });
     remotePend.forEach(function (p) {
       if (!p || !p.id) return;
       if (!map[p.id] || (p.ts || 0) > (map[p.id].ts || 0)) map[p.id] = p;
     });
-    var hechos = Object.assign({}, remoteHechos, local.hechos);
-    // Si está en pendientes, no lo dejes como hecho
-    Object.keys(map).forEach(function (id) { delete hechos[id]; });
+    // Superado gana: no puede quedar a la vez en pendientes y en hechos.
+    Object.keys(hechos).forEach(function (id) { delete map[id]; });
     guardarEstado({
       pendientes: Object.keys(map).map(function (k) { return map[k]; }),
       hechos: hechos,

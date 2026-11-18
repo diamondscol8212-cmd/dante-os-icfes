@@ -9,9 +9,9 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="css/design-tokens.css">
   <link rel="stylesheet" href="css/theme.css">
-  <script src="js/danteCacheVersion.js?v=c-1.3.97"></script>
-  <script src="js/danteStudentId.js?v=c-1.3.97"></script>
-  <script src="js/danteTemasRefuerzo.js?v=c-1.3.97"></script>
+  <script src="js/danteCacheVersion.js?v=c-1.3.98"></script>
+  <script src="js/danteStudentId.js?v=c-1.3.98"></script>
+  <script src="js/danteTemasRefuerzo.js?v=c-1.3.98"></script>
   <style>
     :root {
       --perfil-cyan: #7eb8c4;
@@ -57,8 +57,11 @@
       flex-shrink: 0; font-size: 10px; font-family: ui-monospace, monospace;
       padding: .2rem .45rem; border-radius: 999px; border: 1px solid rgba(148,163,184,.3); color: #cbd5e1;
     }
-    .tr-badge.ok { color: #6ee7b7; border-color: rgba(52,211,153,.35); }
+    .tr-badge.ok { color: #6ee7b7; border-color: rgba(52,211,153,.35); background: rgba(6,78,59,.25); }
     .tr-badge.wait { color: #fcd34d; border-color: rgba(251,191,36,.35); }
+    .tr-diagram { margin: .75rem 0 1rem; padding: .55rem; border-radius: 14px; border: 1px solid rgba(148,163,184,.14); background: #080b12; }
+    .tr-diagram svg { display: block; width: 100%; height: auto; }
+    .tr-item.hecho { opacity: .92; border-color: rgba(52,211,153,.28); }
     .tr-sec-h {
       font-family: ui-monospace, monospace; font-size: 10px; letter-spacing: .12em;
       text-transform: uppercase; color: var(--perfil-amber); margin: 0 0 .65rem; font-weight: 700;
@@ -104,7 +107,7 @@
       <img src="assets/icons/dante-logo-icon.svg" alt="" width="24" height="24" style="border-radius:6px">
       <span>Temas de refuerzo</span>
     </a>
-    <span id="badgeDanteVersion" class="tr-badge">c-1.3.97</span>
+    <span id="badgeDanteVersion" class="tr-badge">c-1.3.98</span>
   </header>
 
   <main class="tr-main">
@@ -117,10 +120,11 @@
       <div class="tr-card">
         <h2 class="tr-sec-h">Pendientes</h2>
         <div id="listaPendientes" class="space-y-2"></div>
-        <p id="emptyPendientes" class="tr-sub hidden">No tienes temas pendientes. Siguen apareciendo solos cuando falles una pregunta.</p>
+        <p id="emptyPendientes" class="tr-sub hidden">No tienes temas pendientes. Aparecen al fallar una pregunta; si ya lo superaste, no vuelve a esta lista.</p>
       </div>
       <div class="tr-card">
-        <h2 class="tr-sec-h">Ya repasados</h2>
+        <h2 class="tr-sec-h">Superados ✓</h2>
+        <p class="tr-sub" style="margin-bottom:.65rem">Historial con chulito. No vuelven a la lista activa aunque falles otra pregunta del mismo tema.</p>
         <div id="listaHechos" class="space-y-2"></div>
         <p id="emptyHechos" class="tr-sub hidden">Aún no marcas ninguno como superado.</p>
       </div>
@@ -182,11 +186,11 @@
         hechos.forEach(function (h) {
           var btn = document.createElement('button');
           btn.type = 'button';
-          btn.className = 'tr-item';
-          btn.innerHTML = '<div style="flex:1;min-width:0"><strong></strong><span class="meta"></span></div><span class="tr-badge ok">Hecho</span><span aria-hidden="true">›</span>';
+          btn.className = 'tr-item hecho';
+          btn.innerHTML = '<div style="flex:1;min-width:0"><strong></strong><span class="meta"></span></div><span class="tr-badge ok" title="Superado">✓ Superado</span>';
           btn.querySelector('strong').textContent = h.titulo || h.id;
           var catH = window.DanteTemasRefuerzo.temaPorId(h.id);
-          btn.querySelector('.meta').textContent = (catH && catH.nivel) ? catH.nivel + ' · puedes volver' : 'Puedes volver a estudiarlo';
+          btn.querySelector('.meta').textContent = (catH && catH.nivel) ? catH.nivel + ' · solo historial' : 'Solo historial · no vuelve a pendientes';
           btn.onclick = function () { abrirTema(h.id); };
           boxH.appendChild(btn);
         });
@@ -216,6 +220,10 @@
         var ex = (tema && tema.explicacion) || {};
         var html = '';
         if (ex.intro) html += '<p>' + escapeHtml(ex.intro) + '</p>';
+        var svg = (ex && ex.diagrama_svg) || (tema && tema.diagrama_svg) || '';
+        if (svg) {
+          html += '<div class="tr-diagram">' + svg + '</div>';
+        }
         if (Array.isArray(ex.pasos) && ex.pasos.length) {
           html += '<p class="tr-sec-h" style="margin-top:1rem">Cómo hacerlo</p><ul>';
           ex.pasos.forEach(function (s) { html += '<li>' + escapeHtml(s) + '</li>'; });
@@ -311,6 +319,15 @@
           enun.className = 'enun';
           enun.textContent = (idx + 1) + '. ' + (q.enunciado || '');
           wrap.appendChild(enun);
+          if (q.ayuda_visual) {
+            var tip = document.createElement('div');
+            tip.className = 'tr-fb';
+            tip.style.marginBottom = '.45rem';
+            tip.style.color = '#7eb8c4';
+            tip.textContent = q.ayuda_visual;
+            tip.hidden = false;
+            wrap.appendChild(tip);
+          }
           (q.opciones || []).forEach(function (op) {
             var letra = String(op).trim().charAt(0).toUpperCase();
             var b = document.createElement('button');
