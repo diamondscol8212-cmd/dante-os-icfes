@@ -1387,31 +1387,89 @@ export const CONTENIDO_TEMAS = {
     "diagrama_svg": ""
   },
   "estadistica": {
-    "intro": "La estadística descriptiva resume datos: media (promedio), mediana (valor central ordenado), moda (más frecuente) y rango (máx−mín). Cada medida responde una pregunta distinta.",
+    "intro": "Si el ítem habla de cuartiles o diagrama de caja: ordena los datos y ubica Q1 (25%), Q2 = mediana (50%) y Q3 (75%). El rango intercuartílico es IQR = Q3 − Q1. “34 años o más” con mediana Q2=34 significa el 50% superior (desde Q2 hacia arriba). No confundas media (promedio) con mediana/Q2.",
     "pasos": [
-      "Ordena los datos si usas mediana.",
-      "Elige la medida que pide el enunciado.",
-      "Cuidado con valores atípicos: afectan mucho la media."
+      "Identifica si pide media, mediana/Q2, moda, rango o IQR (Q3−Q1).",
+      "Si hay caja y bigotes: lee Q1, Q2 (mediana) y Q3 en el gráfico.",
+      "“≥ mediana” o “Q2 o más” → aproximadamente el 50% de los datos.",
+      "Ordena antes de calcular mediana o cuartiles."
     ],
     "errores": [
-      "Calcular la media cuando pedían mediana.",
-      "Olvidar ordenar para la mediana.",
-      "Confundir rango con media."
+      "Calcular la media cuando pedían mediana o Q2.",
+      "Olvidar que Q2 = mediana.",
+      "Confundir IQR (Q3−Q1) con el rango total (máx−mín).",
+      "Creer que “Q2 o más” es el 25% o el 75%."
     ],
     "ejemplo": {
-      "titulo": "Ejemplo resuelto",
-      "enunciado": "Datos: 2, 4, 4, 6. Media y moda?",
+      "titulo": "Ejemplo resuelto · mismo tipo",
+      "enunciado": "En un boxplot, Q1=25, mediana (Q2)=34 y Q3=42. ¿Qué % tiene 34 años o más?",
       "pasos": [
-        "1) Media=(2+4+4+6)/4=4.",
-        "2) Moda=4 (más frecuente).",
-        "3) Mediana=(4+4)/2=4."
+        "1) Q2 = mediana = 34 divide la muestra en 50% y 50%.",
+        "2) “34 o más” = desde Q2 hacia arriba ≈ 50%.",
+        "3) No uses Q1 ni Q3 para ese porcentaje.",
+        "4) Respuesta: 50%."
       ],
-      "respuesta": "Media 4; moda 4",
-      "contraste": null
+      "respuesta": "50%",
+      "contraste": {
+        "titulo": "Contraste · cuartil 2",
+        "invalido": "Inválido: «Es el 25% porque Q1=25.» (Q1 es otra frontera).",
+        "valido": "Válido: «Q2 es la mediana: la mitad de los datos está en Q2 o por encima.»"
+      }
     },
     "practica": [
       {
         "id": "tr_est_01",
+        "enunciado": "Si Q2 (cuartil 2) = 34, el % de datos ≥ 34 es:",
+        "opciones": [
+          "A) 25%",
+          "B) 50%",
+          "C) 75%",
+          "D) 100%"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Eso sería por debajo de Q1 en sentido de cuarto, no “≥ Q2”.",
+          "C": "75% estaría por debajo de Q3.",
+          "D": "No todos están ≥ mediana."
+        },
+        "explicacion_correcta": "Q2 = mediana → 50% a cada lado."
+      },
+      {
+        "id": "tr_est_02",
+        "enunciado": "IQR con Q1=25 y Q3=65:",
+        "opciones": [
+          "A) 90",
+          "B) 40",
+          "C) 25",
+          "D) 65"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "Sumaste Q1+Q3.",
+          "C": "Eso es Q1.",
+          "D": "Eso es Q3."
+        },
+        "explicacion_correcta": "IQR=Q3−Q1=40."
+      },
+      {
+        "id": "tr_est_03",
+        "enunciado": "La mediana es lo mismo que:",
+        "opciones": [
+          "A) la moda siempre",
+          "B) el cuartil 2 (Q2)",
+          "C) el rango",
+          "D) Q3"
+        ],
+        "correcta": "B",
+        "justificacion_incorrectas": {
+          "A": "No siempre coinciden.",
+          "C": "Rango = máx−mín.",
+          "D": "Q3 es el 75%."
+        },
+        "explicacion_correcta": "Mediana = Q2."
+      },
+      {
+        "id": "tr_est_04",
         "enunciado": "Media de 2,4,6:",
         "opciones": [
           "A) 4",
@@ -1421,75 +1479,29 @@ export const CONTENIDO_TEMAS = {
         ],
         "correcta": "A",
         "justificacion_incorrectas": {
-          "B": "Tomaste el máximo.",
+          "B": "Máximo.",
           "C": "Mínimo.",
-          "D": "Sumaste sin dividir."
+          "D": "Suma sin dividir."
         },
         "explicacion_correcta": "(2+4+6)/3=4."
-      },
-      {
-        "id": "tr_est_02",
-        "enunciado": "Moda de 1,2,2,3:",
-        "opciones": [
-          "A) 1",
-          "B) 2",
-          "C) 3",
-          "D) 8"
-        ],
-        "correcta": "B",
-        "justificacion_incorrectas": {
-          "A": "Aparece una vez.",
-          "C": "Una vez.",
-          "D": "Suma."
-        },
-        "explicacion_correcta": "2 es el más frecuente."
-      },
-      {
-        "id": "tr_est_03",
-        "enunciado": "Mediana de 1,3,8 (ordenados):",
-        "opciones": [
-          "A) 1",
-          "B) 3",
-          "C) 8",
-          "D) 4"
-        ],
-        "correcta": "B",
-        "justificacion_incorrectas": {
-          "A": "Extremo.",
-          "C": "Extremo.",
-          "D": "Media, no mediana."
-        },
-        "explicacion_correcta": "Valor central=3."
-      },
-      {
-        "id": "tr_est_04",
-        "enunciado": "Rango de 5 y 12:",
-        "opciones": [
-          "A) 17",
-          "B) 7",
-          "C) 5",
-          "D) 12"
-        ],
-        "correcta": "B",
-        "justificacion_incorrectas": {
-          "A": "Suma.",
-          "C": "Mínimo.",
-          "D": "Máximo."
-        },
-        "explicacion_correcta": "12−5=7."
       }
     ],
-    "profundizar": "Media / mediana / moda / rango: elige la que preguntan.",
+    "profundizar": "Cuartiles Q1–Q2–Q3 · mediana · IQR · media/moda según lo que pregunten.",
     "terminos": [
+      {
+        "termino": "cuartil",
+        "definicion": "Valor que divide los datos ordenados en cuatro partes iguales (25% cada una).",
+        "ejemplo": "Q2 es el cuartil 2 = mediana."
+      },
+      {
+        "termino": "mediana",
+        "definicion": "Valor central al ordenar los datos; coincide con el cuartil 2 (Q2).",
+        "ejemplo": "En 1,3,8 la mediana (Q2) es 3."
+      },
       {
         "termino": "media",
         "definicion": "Promedio: suma de datos ÷ cantidad de datos.",
         "ejemplo": "Media de 2,4,6 = 4."
-      },
-      {
-        "termino": "mediana",
-        "definicion": "Valor central al ordenar los datos.",
-        "ejemplo": "En 1,3,8 la mediana es 3."
       },
       {
         "termino": "moda",
@@ -1497,14 +1509,14 @@ export const CONTENIDO_TEMAS = {
         "ejemplo": "En 2,2,5 la moda es 2."
       },
       {
-        "termino": "rango",
-        "definicion": "Diferencia entre el mayor y el menor.",
-        "ejemplo": "12−5 = 7."
+        "termino": "rango intercuartílico",
+        "definicion": "IQR = Q3 − Q1; mide la dispersión del 50% central.",
+        "ejemplo": "Si Q1=25 y Q3=65, IQR=40."
       },
       {
-        "termino": "frecuencia",
-        "definicion": "Cuántas veces aparece un dato.",
-        "ejemplo": "Si 3 sale cinco veces, f=5."
+        "termino": "diagrama de caja",
+        "definicion": "Gráfico que muestra mínimo, Q1, mediana (Q2), Q3 y máximo.",
+        "ejemplo": "La caja va de Q1 a Q3; la línea interior es Q2."
       }
     ],
     "diagrama_svg": ""

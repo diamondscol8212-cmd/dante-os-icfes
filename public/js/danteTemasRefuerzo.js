@@ -382,6 +382,88 @@
     return listarPendientes().length;
   }
 
+  /**
+   * Diccionario para detectar términos de la pregunta fallida (todas las áreas).
+   * pattern: regex sobre enunciado+opciones; prioriza estos en el glosario.
+   */
+  var GLOSARIO_MATCH = [
+    { pattern: /cuartil|q\s*[123]|boxplot|caja y bigotes|rango intercuart|iqr/i, termino: 'cuartil', definicion: 'Valor que divide los datos ordenados en cuatro partes iguales (25% cada una).', ejemplo: 'Q2 (cuartil 2) = mediana.' },
+    { pattern: /\bmediana\b|q\s*2\b/i, termino: 'mediana', definicion: 'Valor central al ordenar los datos; es el cuartil 2 (Q2).', ejemplo: 'En 1,3,8 la mediana es 3.' },
+    { pattern: /\bmedia\b|promedio/i, termino: 'media', definicion: 'Promedio: suma de datos ÷ cantidad de datos.', ejemplo: 'Media de 2,4,6 = 4.' },
+    { pattern: /\bmoda\b/i, termino: 'moda', definicion: 'Valor que más se repite en el conjunto.', ejemplo: 'En 2,2,5 la moda es 2.' },
+    { pattern: /intercuart|iqr|q\s*3\s*[-−]\s*q\s*1/i, termino: 'rango intercuartílico', definicion: 'IQR = Q3 − Q1; dispersión del 50% central.', ejemplo: 'Q1=25, Q3=65 → IQR=40.' },
+    { pattern: /per[ií]metro/i, termino: 'perímetro', definicion: 'Medida del contorno de una figura (suma de lados).', ejemplo: 'Rectángulo: P = 2×(largo+ancho).' },
+    { pattern: /\b[aá]rea\b/i, termino: 'área', definicion: 'Medida de la superficie interior de una figura plana.', ejemplo: 'Rectángulo: A = largo × ancho.' },
+    { pattern: /pit[aá]goras|hipotenusa|cateto/i, termino: 'hipotenusa', definicion: 'Lado opuesto al ángulo recto; el más largo del triángulo rectángulo.', ejemplo: 'a² + b² = c².' },
+    { pattern: /afluente/i, termino: 'afluente', definicion: 'Río que desemboca en otro río (no directamente en el mar).', ejemplo: 'El Cauca es afluente del Magdalena.' },
+    { pattern: /cuenca/i, termino: 'cuenca', definicion: 'Territorio cuyas aguas drenan hacia un mismo río o mar.', ejemplo: 'Cuenca del Magdalena-Cauca.' },
+    { pattern: /desemboca/i, termino: 'desembocadura', definicion: 'Lugar donde un río entrega sus aguas al mar u otro cuerpo.', ejemplo: 'El Magdalena desemboca en el Caribe.' },
+    { pattern: /macizo colombiano/i, termino: 'macizo colombiano', definicion: 'Nudo montañoso del sur donde nacen grandes ríos.', ejemplo: 'Allí nacen Magdalena y Cauca.' },
+    { pattern: /molaridad|\bM\s*=\s*n\s*\/\s*V/i, termino: 'molaridad', definicion: 'Concentración: moles de soluto por litro de solución (M = n/V).', ejemplo: '2 mol en 1 L → M = 2.' },
+    { pattern: /\bmol\b|estequiometr/i, termino: 'mol', definicion: 'Cantidad de sustancia: 6,022×10²³ entidades.', ejemplo: '1 mol de H₂O ≈ 18 g.' },
+    { pattern: /fotos[ií]ntesis|tilacoide|calvin/i, termino: 'fotosíntesis', definicion: 'Proceso que convierte luz, CO₂ y agua en glucosa y O₂.', ejemplo: 'Fase luminosa en tilacoides; Calvin fija CO₂.' },
+    { pattern: /falacia|ad hominem|premisa/i, termino: 'falacia', definicion: 'Razonamiento inválido que parece convincente.', ejemplo: 'Atacar a la persona (ad hominem).' },
+    { pattern: /inferencia|impl[ií]cito|se deduce/i, termino: 'inferencia', definicion: 'Conclusión apoyada por pistas del texto, no dicha literalmente.', ejemplo: 'Bostezó → probablemente está cansado.' },
+    { pattern: /concordancia|present (simple|perfect)|past simple|does he|they ____/i, termino: 'concordancia', definicion: 'El verbo debe coincidir con el sujeto (número/persona).', ejemplo: 'He plays / They play.' },
+    { pattern: /main idea|idea principal/i, termino: 'main idea', definicion: 'Idea principal: lo central que el texto comunica.', ejemplo: 'What the text is mostly about.' },
+    { pattern: /constituci[oó]n|rama (legislativa|ejecutiva|judicial)/i, termino: 'Constitución', definicion: 'Norma Suprema que organiza el Estado y los derechos.', ejemplo: 'Constitución Política de 1991.' },
+    { pattern: /fracci[oó]n|numerador|denominador/i, termino: 'fracción', definicion: 'Número que expresa partes de un todo (a/b).', ejemplo: '3/4: numerador 3, denominador 4.' },
+    { pattern: /pendiente|y\s*=\s*mx/i, termino: 'pendiente', definicion: 'Cambio de y por cada unidad de x (m en y=mx+b).', ejemplo: 'En y=2x+1, m=2.' },
+    { pattern: /probabilidad|espacio muestral/i, termino: 'probabilidad', definicion: 'Casos favorables ÷ casos posibles (entre 0 y 1).', ejemplo: 'P(cara)=1/2 en moneda justa.' },
+    { pattern: /regi[oó]n (natural|andina|caribe|pac[ií]fica|amazon)/i, termino: 'región natural', definicion: 'Zona con rasgos comunes de relieve, clima y bioma.', ejemplo: 'Andina, Caribe, Pacífica, Orinoquía, Amazonía.' },
+    { pattern: /\bp[aá]ramo\b/i, termino: 'páramo', definicion: 'Ecosistema de alta montaña tropical, frío y húmedo.', ejemplo: 'Frailejones y retención de agua.' },
+    { pattern: /fuerza|f\s*=\s*m\s*[·\*]\s*a|\bnewton/i, termino: 'fuerza', definicion: 'Empuje o atracción que puede cambiar el movimiento: F = m·a.', ejemplo: 'Si m sube y F es fija, a baja.' },
+    { pattern: /hip[oó]tesis|variable independiente|variable dependiente/i, termino: 'hipótesis', definicion: 'Afirmación comprobable que se pone a prueba en un experimento.', ejemplo: '“Si añado sal, el punto de ebullición sube.”' },
+    { pattern: /no smoking|do not enter|staff only|prohibici[oó]n/i, termino: 'aviso', definicion: 'Texto breve que informa o prohíbe (imperativo / No + -ing).', ejemplo: 'No smoking = no fumar.' }
+  ];
+
+  function textoDeFallos(temaId) {
+    var parts = [];
+    try {
+      (fallosDeTema(temaId) || []).forEach(function (f) {
+        if (!f) return;
+        if (f.enunciado) parts.push(f.enunciado);
+        if (Array.isArray(f.opciones)) parts.push(f.opciones.join(' '));
+        if (f.textoElegida) parts.push(f.textoElegida);
+        if (f.textoCorrecta) parts.push(f.textoCorrecta);
+      });
+    } catch (_) {}
+    return parts.join(' \n ');
+  }
+
+  /** Une términos detectados en la pregunta fallida (prioridad) + términos del tema. */
+  function glosarioParaTema(temaId, terminosBase) {
+    var base = Array.isArray(terminosBase) ? terminosBase.slice() : [];
+    var texto = textoDeFallos(temaId);
+    var priorizados = [];
+    var vistos = {};
+    function keyOf(tm) {
+      return String((tm && tm.termino) || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    }
+    if (texto) {
+      GLOSARIO_MATCH.forEach(function (g) {
+        if (!g.pattern.test(texto)) return;
+        var k = keyOf(g);
+        if (vistos[k]) return;
+        vistos[k] = true;
+        priorizados.push({
+          termino: g.termino,
+          definicion: g.definicion,
+          ejemplo: g.ejemplo || '',
+          desdePregunta: true
+        });
+      });
+    }
+    base.forEach(function (tm) {
+      if (!tm || !tm.termino) return;
+      var k = keyOf(tm);
+      if (vistos[k]) return;
+      vistos[k] = true;
+      priorizados.push(tm);
+    });
+    return priorizados.slice(0, 8);
+  }
+
   /** Actualiza la tarjeta de la sala (index). */
   function pintarSala() {
     var el = document.getElementById('lblTemasRefuerzoDetalle');
@@ -416,6 +498,8 @@
     cooldownMs: COOLDOWN_FALLIDAS_MS,
     tituloDe: tituloDe,
     fallosDeTema: fallosDeTema,
+    glosarioParaTema: glosarioParaTema,
+    textoDeFallos: textoDeFallos,
     listarPendientes: listarPendientes,
     listarHechos: listarHechos,
     contarPendientes: contarPendientes,

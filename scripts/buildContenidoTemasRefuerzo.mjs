@@ -476,39 +476,50 @@ C.funciones = pack(
 );
 
 C.estadistica = pack(
-  'La estadística descriptiva resume datos: media (promedio), mediana (valor central ordenado), moda (más frecuente) y rango (máx−mín). Cada medida responde una pregunta distinta.',
+  'Si el ítem habla de cuartiles o diagrama de caja: ordena los datos y ubica Q1 (25%), Q2 = mediana (50%) y Q3 (75%). El rango intercuartílico es IQR = Q3 − Q1. “34 años o más” con mediana Q2=34 significa el 50% superior (desde Q2 hacia arriba). No confundas media (promedio) con mediana/Q2.',
   [
-    'Ordena los datos si usas mediana.',
-    'Elige la medida que pide el enunciado.',
-    'Cuidado con valores atípicos: afectan mucho la media.'
+    'Identifica si pide media, mediana/Q2, moda, rango o IQR (Q3−Q1).',
+    'Si hay caja y bigotes: lee Q1, Q2 (mediana) y Q3 en el gráfico.',
+    '“≥ mediana” o “Q2 o más” → aproximadamente el 50% de los datos.',
+    'Ordena antes de calcular mediana o cuartiles.'
   ],
   [
-    'Calcular la media cuando pedían mediana.',
-    'Olvidar ordenar para la mediana.',
-    'Confundir rango con media.'
+    'Calcular la media cuando pedían mediana o Q2.',
+    'Olvidar que Q2 = mediana.',
+    'Confundir IQR (Q3−Q1) con el rango total (máx−mín).',
+    'Creer que “Q2 o más” es el 25% o el 75%.'
   ],
   {
-    titulo: 'Ejemplo resuelto',
-    enunciado: 'Datos: 2, 4, 4, 6. Media y moda?',
-    pasos: ['1) Media=(2+4+4+6)/4=4.', '2) Moda=4 (más frecuente).', '3) Mediana=(4+4)/2=4.'],
-    respuesta: 'Media 4; moda 4',
-    contraste: null
+    titulo: 'Ejemplo resuelto · mismo tipo',
+    enunciado: 'En un boxplot, Q1=25, mediana (Q2)=34 y Q3=42. ¿Qué % tiene 34 años o más?',
+    pasos: [
+      '1) Q2 = mediana = 34 divide la muestra en 50% y 50%.',
+      '2) “34 o más” = desde Q2 hacia arriba ≈ 50%.',
+      '3) No uses Q1 ni Q3 para ese porcentaje.',
+      '4) Respuesta: 50%.'
+    ],
+    respuesta: '50%',
+    contraste: {
+      titulo: 'Contraste · cuartil 2',
+      invalido: 'Inválido: «Es el 25% porque Q1=25.» (Q1 es otra frontera).',
+      valido: 'Válido: «Q2 es la mediana: la mitad de los datos está en Q2 o por encima.»'
+    }
   },
   [
-    q('tr_est_01', 'Media de 2,4,6:', ['A) 4', 'B) 6', 'C) 2', 'D) 12'], 'A',
-      { B: 'Tomaste el máximo.', C: 'Mínimo.', D: 'Sumaste sin dividir.' },
-      '(2+4+6)/3=4.'),
-    q('tr_est_02', 'Moda de 1,2,2,3:', ['A) 1', 'B) 2', 'C) 3', 'D) 8'], 'B',
-      { A: 'Aparece una vez.', C: 'Una vez.', D: 'Suma.' },
-      '2 es el más frecuente.'),
-    q('tr_est_03', 'Mediana de 1,3,8 (ordenados):', ['A) 1', 'B) 3', 'C) 8', 'D) 4'], 'B',
-      { A: 'Extremo.', C: 'Extremo.', D: 'Media, no mediana.' },
-      'Valor central=3.'),
-    q('tr_est_04', 'Rango de 5 y 12:', ['A) 17', 'B) 7', 'C) 5', 'D) 12'], 'B',
-      { A: 'Suma.', C: 'Mínimo.', D: 'Máximo.' },
-      '12−5=7.')
+    q('tr_est_01', 'Si Q2 (cuartil 2) = 34, el % de datos ≥ 34 es:', ['A) 25%', 'B) 50%', 'C) 75%', 'D) 100%'], 'B',
+      { A: 'Eso sería por debajo de Q1 en sentido de cuarto, no “≥ Q2”.', C: '75% estaría por debajo de Q3.', D: 'No todos están ≥ mediana.' },
+      'Q2 = mediana → 50% a cada lado.'),
+    q('tr_est_02', 'IQR con Q1=25 y Q3=65:', ['A) 90', 'B) 40', 'C) 25', 'D) 65'], 'B',
+      { A: 'Sumaste Q1+Q3.', C: 'Eso es Q1.', D: 'Eso es Q3.' },
+      'IQR=Q3−Q1=40.'),
+    q('tr_est_03', 'La mediana es lo mismo que:', ['A) la moda siempre', 'B) el cuartil 2 (Q2)', 'C) el rango', 'D) Q3'], 'B',
+      { A: 'No siempre coinciden.', C: 'Rango = máx−mín.', D: 'Q3 es el 75%.' },
+      'Mediana = Q2.'),
+    q('tr_est_04', 'Media de 2,4,6:', ['A) 4', 'B) 6', 'C) 2', 'D) 12'], 'A',
+      { B: 'Máximo.', C: 'Mínimo.', D: 'Suma sin dividir.' },
+      '(2+4+6)/3=4.')
   ],
-  'Media / mediana / moda / rango: elige la que preguntan.'
+  'Cuartiles Q1–Q2–Q3 · mediana · IQR · media/moda según lo que pregunten.'
 );
 
 C.probabilidad = pack(

@@ -48,11 +48,12 @@ export const TERMINOS_TEMAS = {
     t('recorrido', 'Conjunto de valores que toma y.', 'En y=x², recorrido y≥0.')
   ],
   estadistica: [
+    t('cuartil', 'Valor que divide los datos ordenados en cuatro partes iguales (25% cada una).', 'Q2 es el cuartil 2 = mediana.'),
+    t('mediana', 'Valor central al ordenar los datos; coincide con el cuartil 2 (Q2).', 'En 1,3,8 la mediana (Q2) es 3.'),
     t('media', 'Promedio: suma de datos ÷ cantidad de datos.', 'Media de 2,4,6 = 4.'),
-    t('mediana', 'Valor central al ordenar los datos.', 'En 1,3,8 la mediana es 3.'),
     t('moda', 'Valor que más se repite.', 'En 2,2,5 la moda es 2.'),
-    t('rango', 'Diferencia entre el mayor y el menor.', '12−5 = 7.'),
-    t('frecuencia', 'Cuántas veces aparece un dato.', 'Si 3 sale cinco veces, f=5.')
+    t('rango intercuartílico', 'IQR = Q3 − Q1; mide la dispersión del 50% central.', 'Si Q1=25 y Q3=65, IQR=40.'),
+    t('diagrama de caja', 'Gráfico que muestra mínimo, Q1, mediana (Q2), Q3 y máximo.', 'La caja va de Q1 a Q3; la línea interior es Q2.')
   ],
   probabilidad: [
     t('probabilidad', 'Medida de qué tan posible es un evento, entre 0 y 1 (o %).', 'P(cara) en moneda justa = 1/2.'),

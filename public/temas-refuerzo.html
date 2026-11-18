@@ -9,9 +9,9 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="css/design-tokens.css">
   <link rel="stylesheet" href="css/theme.css">
-  <script src="js/danteCacheVersion.js?v=c-1.3.109"></script>
-  <script src="js/danteStudentId.js?v=c-1.3.109"></script>
-  <script src="js/danteTemasRefuerzo.js?v=c-1.3.109"></script>
+  <script src="js/danteCacheVersion.js?v=c-1.3.110"></script>
+  <script src="js/danteStudentId.js?v=c-1.3.110"></script>
+  <script src="js/danteTemasRefuerzo.js?v=c-1.3.110"></script>
   <style>
     :root {
       --perfil-cyan: #7eb8c4;
@@ -93,6 +93,10 @@
       width: 1.05rem; height: 1.05rem; border-radius: 999px; flex-shrink: 0;
       font-size: .65rem; font-weight: 700; color: #0b1220; background: #7eb8c4;
     }
+    .tr-chip.from-q {
+      border-color: rgba(251,191,36,.45); background: rgba(69,46,10,.35);
+    }
+    .tr-chip.from-q .q { background: #fbbf24; }
     .tr-term-modal {
       position: fixed; inset: 0; z-index: 85; display: none;
       align-items: flex-end; justify-content: center;
@@ -359,7 +363,7 @@
         <button type="button" id="btnMarcarHecho" class="tr-btn" disabled>Marcar tema como superado</button>
       </div>
     </section>
-    <p class="tr-foot-ver"><span id="badgeDanteVersion">c-1.3.109</span></p>
+    <p class="tr-foot-ver"><span id="badgeDanteVersion">c-1.3.110</span></p>
   </main>
 
   <script>
@@ -431,7 +435,7 @@
         // 1) Procedimiento / explicación concreta
         html += '<p class="tr-sec-h" style="margin:0 0 .45rem">Explicación del procedimiento</p>';
         if (ex.intro) html += '<p>' + escapeHtml(ex.intro) + '</p>';
-        // 2) Diagrama concreto
+        // 2) Diagrama concreto del tema
         var svg = (ex && ex.diagrama_svg) || (tema && tema.diagrama_svg) || '';
         if (svg) {
           html += '<button type="button" class="tr-diagram" data-tr-expand-diagram aria-label="Ampliar ayuda visual">'
@@ -439,16 +443,20 @@
             + '<p class="tr-diagram-hint">Toca para ampliar</p>'
             + '</button>';
         }
-        // 3) Términos clave
-        var terminos = (ex && ex.terminos) || (tema && tema.terminos) || [];
+        // 3) Términos clave (prioriza los de la pregunta fallida)
+        var terminos = (tema && tema._terminosActivos)
+          || (ex && ex.terminos)
+          || (tema && tema.terminos)
+          || [];
         if (Array.isArray(terminos) && terminos.length) {
           html += '<div class="tr-terminos">';
           html += '<p class="tr-sec-h" style="margin:0">Términos clave</p>';
-          html += '<p class="tr-sub" style="margin:.25rem 0 .15rem">Toca una palabra para ver su definición.</p>';
+          html += '<p class="tr-sub" style="margin:.25rem 0 .15rem">Incluye palabras de tu pregunta fallida. Toca una para ver la definición.</p>';
           html += '<div class="tr-chips">';
-          terminos.slice(0, 6).forEach(function (tm, idx) {
+          terminos.slice(0, 8).forEach(function (tm, idx) {
             if (!tm || !tm.termino) return;
-            html += '<button type="button" class="tr-chip" data-tr-term="' + idx + '">'
+            var cls = tm.desdePregunta ? 'tr-chip from-q' : 'tr-chip';
+            html += '<button type="button" class="' + cls + '" data-tr-term="' + idx + '">'
               + '<span>' + escapeHtml(tm.termino) + '</span><span class="q" aria-hidden="true">?</span>'
               + '</button>';
           });
@@ -486,6 +494,16 @@
             if (ctr.valido) html += '<p>' + escapeHtml(ctr.valido) + '</p>';
             html += '</div>';
           }
+        }
+        // 6) Ayuda visual de opciones (correcta vs incorrecta) cuando aporta
+        var svgOps = (ex && ex.diagrama_opciones_svg) || (tema && tema.diagrama_opciones_svg) || '';
+        if (svgOps) {
+          html += '<p class="tr-sec-h" style="margin-top:1rem">Cómo leer las opciones</p>';
+          html += '<p class="tr-sub" style="margin:0 0 .45rem">Apoyo visual para ver por qué una opción encaja y otra no.</p>';
+          html += '<button type="button" class="tr-diagram" data-tr-expand-diagram aria-label="Ampliar opciones visuales">'
+            + svgOps
+            + '<p class="tr-diagram-hint">Toca para ampliar</p>'
+            + '</button>';
         }
         if (tema && tema.profundizar) {
           html += '<div class="tr-note">' + escapeHtml(tema.profundizar) + '</div>';
@@ -550,8 +568,8 @@
 
       function engancharTerminos(root, tema) {
         if (!root) return;
-        var terminos = ((tema && tema.explicacion && tema.explicacion.terminos)
-          || (tema && tema.terminos) || []);
+        var terminos = (tema && tema._terminosActivos)
+          || ((tema && tema.explicacion && tema.explicacion.terminos) || (tema && tema.terminos) || []);
         root.querySelectorAll('[data-tr-term]').forEach(function (btn) {
           btn.addEventListener('click', function () {
             var idx = Number(btn.getAttribute('data-tr-term'));
@@ -681,7 +699,7 @@
           + '</div>';
       }
 
-      function pintarFallos(temaId) {
+      function pintarFallos(temaId, tema) {
         var box = $('temaFallos');
         var card = $('temaFallosCard');
         if (!box || !card) return Promise.resolve();
@@ -690,14 +708,14 @@
         try { fallos = window.DanteTemasRefuerzo.fallosDeTema(temaId) || []; } catch (_) { fallos = []; }
         if (!fallos.length) {
           card.classList.add('hidden');
-          return Promise.resolve();
+          return Promise.resolve([]);
         }
         card.classList.remove('hidden');
         return Promise.all(fallos.slice(0, 5).map(enriquecerFalloDesdeBanco)).then(function (lista) {
           lista = (lista || []).filter(function (f) { return f && f.enunciado; });
           if (!lista.length) {
             card.classList.add('hidden');
-            return;
+            return [];
           }
           var mostrar = lista.slice(0, 1);
           var resto = lista.slice(1);
@@ -725,6 +743,20 @@
             };
             box.appendChild(btn);
           }
+          // Ayuda visual de opciones junto a la pregunta fallida (si el tema la trae)
+          var svgOps = (tema && tema.explicacion && tema.explicacion.diagrama_opciones_svg)
+            || (tema && tema.diagrama_opciones_svg) || '';
+          if (svgOps) {
+            var wrapOps = document.createElement('div');
+            wrapOps.style.marginTop = '0.75rem';
+            wrapOps.innerHTML = '<p class="tr-sub" style="margin:0 0 .4rem">Así se miran las opciones de este tipo de pregunta:</p>'
+              + '<button type="button" class="tr-diagram" data-tr-expand-diagram aria-label="Ampliar ayuda de opciones">'
+              + svgOps
+              + '<p class="tr-diagram-hint">Toca para ampliar</p></button>';
+            box.appendChild(wrapOps);
+            engancharDiagramasExpandibles(wrapOps);
+          }
+          return lista;
         });
       }
 
@@ -768,7 +800,17 @@
             ctx.textContent = 'Este tema aparece porque fallaste una pregunta sobre «' + etiqueta + '».';
             ctx.classList.remove('hidden');
           }
-          pintarFallos(tema.id || id).then(function () {
+          pintarFallos(tema.id || id, tema).then(function () {
+            var baseTerms = (tema.explicacion && tema.explicacion.terminos) || tema.terminos || [];
+            try {
+              if (window.DanteTemasRefuerzo && typeof window.DanteTemasRefuerzo.glosarioParaTema === 'function') {
+                tema._terminosActivos = window.DanteTemasRefuerzo.glosarioParaTema(tema.id || id, baseTerms);
+              } else {
+                tema._terminosActivos = baseTerms;
+              }
+            } catch (_) {
+              tema._terminosActivos = baseTerms;
+            }
             $('temaExplicacion').innerHTML = htmlExplicacion(tema);
             engancharDiagramasExpandibles($('temaExplicacion'));
             engancharTerminos($('temaExplicacion'), tema);

@@ -166,16 +166,23 @@ function diagramaDe(id, area, titulo) {
   }
   if (id === 'estadistica') {
     return base(
-      `<text x="24" y="55" fill="#cbd5e1" font-size="13">Datos: 2, 2, 4, 6, 6</text>`
-      + `<rect x="50" y="120" width="36" height="40" fill="#7eb8c4"/><text x="68" y="175" text-anchor="middle" fill="#94a3b8" font-size="11">2</text>`
-      + `<rect x="100" y="120" width="36" height="40" fill="#7eb8c4"/><text x="118" y="175" text-anchor="middle" fill="#94a3b8" font-size="11">2</text>`
-      + `<rect x="150" y="100" width="36" height="60" fill="#c4a574"/><text x="168" y="175" text-anchor="middle" fill="#94a3b8" font-size="11">4</text>`
-      + `<rect x="200" y="80" width="36" height="80" fill="#34d399"/><text x="218" y="175" text-anchor="middle" fill="#94a3b8" font-size="11">6</text>`
-      + `<rect x="250" y="80" width="36" height="80" fill="#34d399"/><text x="268" y="175" text-anchor="middle" fill="#94a3b8" font-size="11">6</text>`
-      + `<text x="320" y="90" fill="#e2e8f0" font-size="12">Media = 4</text>`
-      + `<text x="320" y="112" fill="#cbd5e1" font-size="12">Mediana = 4</text>`
-      + `<text x="320" y="134" fill="#c4a574" font-size="12">Moda = 2 y 6</text>`
-      + `<text x="320" y="156" fill="#94a3b8" font-size="11">Rango = 4</text>`
+      `<text x="24" y="48" fill="#cbd5e1" font-size="12">Diagrama de caja · cuartiles</text>`
+      + `<line x1="60" y1="100" x2="440" y2="100" stroke="#334155"/>`
+      + `<line x1="80" y1="85" x2="80" y2="115" stroke="#94a3b8" stroke-width="2"/>`
+      + `<rect x="140" y="78" width="160" height="44" fill="#111827" stroke="#7eb8c4" stroke-width="2"/>`
+      + `<line x1="220" y1="78" x2="220" y2="122" stroke="#fbbf24" stroke-width="3"/>`
+      + `<line x1="300" y1="85" x2="300" y2="115" stroke="#7eb8c4" stroke-width="2"/>`
+      + `<line x1="300" y1="100" x2="400" y2="100" stroke="#94a3b8" stroke-width="2"/>`
+      + `<line x1="400" y1="85" x2="400" y2="115" stroke="#94a3b8" stroke-width="2"/>`
+      + `<line x1="140" y1="100" x2="80" y2="100" stroke="#94a3b8" stroke-width="2"/>`
+      + `<text x="80" y="140" text-anchor="middle" fill="#94a3b8" font-size="11">mín</text>`
+      + `<text x="140" y="140" text-anchor="middle" fill="#7eb8c4" font-size="11">Q1</text>`
+      + `<text x="220" y="140" text-anchor="middle" fill="#fbbf24" font-size="11">Q2</text>`
+      + `<text x="300" y="140" text-anchor="middle" fill="#7eb8c4" font-size="11">Q3</text>`
+      + `<text x="400" y="140" text-anchor="middle" fill="#94a3b8" font-size="11">máx</text>`
+      + `<text x="24" y="170" fill="#e2e8f0" font-size="12">Q2 = mediana · IQR = Q3 − Q1 · ≥ Q2 ≈ 50%</text>`
+      + `<text x="24" y="190" fill="#64748b" font-size="11">Ej.: Q1=25, Q2=34, Q3=42</text>`,
+      210
     );
   }
   if (id === 'algebra') {
@@ -328,10 +335,16 @@ function diagramaDe(id, area, titulo) {
   }
   if (id === 'quimica') {
     return base(
-      `<text x="24" y="70" fill="#cbd5e1" font-size="14">2 H₂ + O₂ → 2 H₂O</text>`
-      + `<text x="24" y="105" fill="#94a3b8" font-size="13">Balance: mismos átomos a ambos lados</text>`
-      + `<text x="24" y="140" fill="#7eb8c4" font-size="13">M = n / V  (molaridad)</text>`
-      + `<text x="24" y="170" fill="#64748b" font-size="11">Mol · proporción estequiométrica</text>`
+      `<text x="24" y="55" fill="#cbd5e1" font-size="13">Reacción balanceada</text>`
+      + `<circle cx="70" cy="95" r="14" fill="#7eb8c433" stroke="#7eb8c4"/><text x="70" y="99" text-anchor="middle" fill="#7eb8c4" font-size="10">H₂</text>`
+      + `<circle cx="110" cy="95" r="14" fill="#7eb8c433" stroke="#7eb8c4"/><text x="110" y="99" text-anchor="middle" fill="#7eb8c4" font-size="10">H₂</text>`
+      + `<text x="140" y="100" fill="#94a3b8" font-size="14">+</text>`
+      + `<circle cx="175" cy="95" r="16" fill="#c4a57433" stroke="#c4a574"/><text x="175" y="99" text-anchor="middle" fill="#c4a574" font-size="10">O₂</text>`
+      + `<text x="210" y="100" fill="#94a3b8" font-size="14">→</text>`
+      + `<circle cx="250" cy="95" r="16" fill="#34d39933" stroke="#34d399"/><text x="250" y="99" text-anchor="middle" fill="#6ee7b7" font-size="9">H₂O</text>`
+      + `<circle cx="295" cy="95" r="16" fill="#34d39933" stroke="#34d399"/><text x="295" y="99" text-anchor="middle" fill="#6ee7b7" font-size="9">H₂O</text>`
+      + `<text x="24" y="145" fill="#e2e8f0" font-size="12">2 H₂ + O₂ → 2 H₂O · mismos átomos a ambos lados</text>`
+      + `<text x="24" y="170" fill="#7eb8c4" font-size="12">Molaridad M = n / V</text>`
     );
   }
   if (id === 'cloze' || id === 'grammar' || id === 'lexical_cloze' || id === 'grammar_reading') {
@@ -612,6 +625,101 @@ function diagramaDe(id, area, titulo) {
   );
 }
 
+/** Diagrama extra para entender opciones correctas/incorrectas (cuando aporta). */
+function diagramaOpcionesDe(id) {
+  const wrap = (inner, label, h) => {
+    const H = h || 200;
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 ${H}" role="img" aria-label="${label}">`
+      + `<rect width="520" height="${H}" rx="14" fill="#0b1220"/>`
+      + `<rect x="1" y="1" width="518" height="${H - 2}" rx="13" fill="none" stroke="#1e293b"/>`
+      + `<text x="24" y="28" fill="#94a3b8" font-size="11" font-family="ui-monospace,monospace" letter-spacing="1">OPCIONES · AYUDA VISUAL</text>`
+      + inner
+      + `</svg>`;
+  };
+  if (id === 'estadistica') {
+    return wrap(
+      `<text x="24" y="55" fill="#cbd5e1" font-size="12">Si preguntan “Q2 o más” / “mediana o más”</text>`
+      + `<rect x="60" y="75" width="180" height="70" rx="10" fill="#111827" stroke="#34d39955"/>`
+      + `<text x="150" y="105" text-anchor="middle" fill="#6ee7b7" font-size="13">✓ 50%</text>`
+      + `<text x="150" y="128" text-anchor="middle" fill="#94a3b8" font-size="11">mitad desde Q2</text>`
+      + `<rect x="280" y="75" width="180" height="70" rx="10" fill="#111827" stroke="#f8717155"/>`
+      + `<text x="370" y="105" text-anchor="middle" fill="#f87171" font-size="13">✗ 25% o 75%</text>`
+      + `<text x="370" y="128" text-anchor="middle" fill="#94a3b8" font-size="11">confunden Q1 / Q3</text>`
+      + `<text x="24" y="175" fill="#64748b" font-size="11">IQR = Q3−Q1 (no es un porcentaje de “≥ Q2”)</text>`,
+      'Opciones cuartiles',
+      200
+    );
+  }
+  if (id === 'quimica') {
+    return wrap(
+      `<text x="24" y="52" fill="#cbd5e1" font-size="12">¿Qué opción respeta el balance?</text>`
+      + `<rect x="40" y="70" width="210" height="70" rx="10" fill="#111827" stroke="#34d39955"/>`
+      + `<text x="145" y="100" text-anchor="middle" fill="#6ee7b7" font-size="12">✓ 2 H₂ + O₂ → 2 H₂O</text>`
+      + `<text x="145" y="122" text-anchor="middle" fill="#94a3b8" font-size="10">4 H y 2 O a cada lado</text>`
+      + `<rect x="270" y="70" width="210" height="70" rx="10" fill="#111827" stroke="#f8717155"/>`
+      + `<text x="375" y="100" text-anchor="middle" fill="#f87171" font-size="12">✗ H₂ + O₂ → H₂O</text>`
+      + `<text x="375" y="122" text-anchor="middle" fill="#94a3b8" font-size="10">átomos no cuadran</text>`
+      + `<text x="24" y="170" fill="#64748b" font-size="11">Molaridad: revisa unidades n (mol) y V (L)</text>`,
+      'Opciones química',
+      200
+    );
+  }
+  if (id === 'geometria') {
+    return wrap(
+      `<text x="24" y="52" fill="#cbd5e1" font-size="12">Rectángulo x × 3x · ¿qué pide?</text>`
+      + `<rect x="40" y="70" width="200" height="70" rx="10" fill="#111827" stroke="#34d39955"/>`
+      + `<text x="140" y="100" text-anchor="middle" fill="#6ee7b7" font-size="12">✓ Perímetro 8x</text>`
+      + `<text x="140" y="122" text-anchor="middle" fill="#94a3b8" font-size="10">2(x+3x)</text>`
+      + `<rect x="280" y="70" width="200" height="70" rx="10" fill="#111827" stroke="#f8717155"/>`
+      + `<text x="380" y="100" text-anchor="middle" fill="#f87171" font-size="12">✗ Área 3x²</text>`
+      + `<text x="380" y="122" text-anchor="middle" fill="#94a3b8" font-size="10">si pedían perímetro</text>`
+      + `<text x="24" y="170" fill="#64748b" font-size="11">Lee la magnitud antes de elegir la fórmula</text>`,
+      'Opciones geometría',
+      200
+    );
+  }
+  if (id === 'hidrografia_colombia' || id === 'geografia') {
+    return wrap(
+      `<text x="24" y="52" fill="#cbd5e1" font-size="12">Afluente del Cauca: ¿cuál río receptor?</text>`
+      + `<rect x="40" y="70" width="200" height="70" rx="10" fill="#111827" stroke="#34d39955"/>`
+      + `<text x="140" y="100" text-anchor="middle" fill="#6ee7b7" font-size="12">✓ Magdalena</text>`
+      + `<text x="140" y="122" text-anchor="middle" fill="#94a3b8" font-size="10">misma cuenca → Caribe</text>`
+      + `<rect x="280" y="70" width="200" height="70" rx="10" fill="#111827" stroke="#f8717155"/>`
+      + `<text x="380" y="100" text-anchor="middle" fill="#f87171" font-size="12">✗ Amazonas / Orinoco</text>`
+      + `<text x="380" y="122" text-anchor="middle" fill="#94a3b8" font-size="10">otras cuencas</text>`
+      + `<text x="24" y="170" fill="#64748b" font-size="11">Ubica la región en el mapa antes de elegir</text>`,
+      'Opciones hidrografía',
+      200
+    );
+  }
+  if (id === 'cloze' || id === 'grammar' || id === 'lexical_cloze' || id === 'grammar_reading') {
+    return wrap(
+      `<text x="24" y="55" fill="#cbd5e1" font-size="12">They _____ soccer every Saturday.</text>`
+      + `<rect x="40" y="75" width="200" height="60" rx="10" fill="#111827" stroke="#34d39955"/>`
+      + `<text x="140" y="110" text-anchor="middle" fill="#6ee7b7" font-size="13">✓ play</text>`
+      + `<rect x="280" y="75" width="200" height="60" rx="10" fill="#111827" stroke="#f8717155"/>`
+      + `<text x="380" y="110" text-anchor="middle" fill="#f87171" font-size="13">✗ plays</text>`
+      + `<text x="24" y="165" fill="#94a3b8" font-size="11">they = plural → sin -s · he/she/it → -s</text>`,
+      'Opciones gramática',
+      190
+    );
+  }
+  if (id === 'argumentacion' || id === 'inferencia') {
+    return wrap(
+      `<rect x="40" y="55" width="200" height="70" rx="10" fill="#111827" stroke="#34d39955"/>`
+      + `<text x="140" y="85" text-anchor="middle" fill="#6ee7b7" font-size="12">✓ Con apoyo del texto</text>`
+      + `<text x="140" y="108" text-anchor="middle" fill="#94a3b8" font-size="10">premisa → conclusión</text>`
+      + `<rect x="280" y="55" width="200" height="70" rx="10" fill="#111827" stroke="#f8717155"/>`
+      + `<text x="380" y="85" text-anchor="middle" fill="#f87171" font-size="12">✗ Salto / falacia</text>`
+      + `<text x="380" y="108" text-anchor="middle" fill="#94a3b8" font-size="10">sin evidencia en el texto</text>`
+      + `<text x="24" y="155" fill="#64748b" font-size="11">Descarta lo que el texto no sostiene</text>`,
+      'Opciones lectura',
+      180
+    );
+  }
+  return '';
+}
+
 function buildTema(id) {
   const canon = ALIAS[id] || id;
   const titulo = TEMA_SUB[id] || TEMA_SUB[canon] || id.replace(/_/g, ' ');
@@ -621,6 +729,7 @@ function buildTema(id) {
   const diagrama = (base.diagrama_svg && String(base.diagrama_svg).trim())
     ? base.diagrama_svg
     : diagramaDe(id, area, titulo);
+  const diagramaOpciones = diagramaOpcionesDe(canon) || diagramaOpcionesDe(id) || '';
   const terminos = Array.isArray(base.terminos) ? base.terminos.slice(0, 6) : [];
   const practica = (base.practica || []).map((p, i) => ({
     ...p,
@@ -638,6 +747,7 @@ function buildTema(id) {
     estadoContenido: 'completo',
     profundizar: base.profundizar,
     diagrama_svg: diagrama,
+    diagrama_opciones_svg: diagramaOpciones || undefined,
     terminos,
     explicacion: {
       intro: base.intro,
@@ -646,6 +756,7 @@ function buildTema(id) {
       ejemplo_resuelto: base.ejemplo,
       contraste: (base.ejemplo && base.ejemplo.contraste) || base.contraste || null,
       diagrama_svg: diagrama,
+      diagrama_opciones_svg: diagramaOpciones || undefined,
       terminos
     },
     practica
