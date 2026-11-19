@@ -4586,32 +4586,31 @@
       const repasoSirve = repaso
         && repaso.toLowerCase() !== String(nombreArea || '').toLowerCase()
         && !/^(matem[aá]ticas|lectura|ciencias|sociales|ingl[eé]s)$/i.test(repaso);
-      // Plantilla uniforme (servidor) o armado local: fallo + correcta + tema.
+      // Orden pedagógico: primero por qué es correcta (concepto), luego qué pasó con tu marca.
       let frase = this._textoLimpio(item._explicacionUniforme);
       if (!frase) {
+        const porqueCorrecta = explOk
+          || (textoDeClave ? ('La respuesta correcta es «' + textoDeClave + '» porque cumple lo que pide el enunciado.') : '')
+          || (claveFeedback ? ('La correcta es ' + claveFeedback + '.') : '');
         if (esCorrecta) {
           const partesOk = [];
           partesOk.push(acierto ? ('Bien. ' + acierto) : 'Bien.');
-          if (explOk) partesOk.push(explOk);
+          if (porqueCorrecta && (!acierto || porqueCorrecta !== acierto)) partesOk.push(porqueCorrecta);
           if (repasoSirve) partesOk.push('Para preguntas similares, estudia: ' + repaso + '.');
           frase = partesOk.filter(Boolean).join(' ');
         } else {
           const partes = [];
-          const media = this._textoLimpio(item._queMediaFeedback || item.pista);
-          if (media) partes.push(media);
+          if (porqueCorrecta) partes.push(porqueCorrecta);
           if (elegidaFeedback) {
             if (razon) partes.push('Marcaste ' + elegidaFeedback + '. ' + razon);
             else if (textoMarcado && textoDeClave) {
-              partes.push('Marcaste ' + elegidaFeedback + '. «' + textoMarcado + '» no responde lo pedido.');
+              partes.push('Marcaste ' + elegidaFeedback + '. «' + textoMarcado + '» no es esa relación/concepto.');
             } else {
               partes.push('Marcaste ' + elegidaFeedback + '.');
             }
           }
-          if (explOk) partes.push(explOk);
-          else if (claveFeedback) partes.push('La correcta es ' + claveFeedback + '.');
-          if (!razon && !explOk && claveFeedback) {
-            partes.push('Revisa por qué la opción ' + claveFeedback + ' sí cumple lo pedido.');
-          }
+          const media = this._textoLimpio(item._queMediaFeedback || item.pista);
+          if (media && (!porqueCorrecta || media !== porqueCorrecta)) partes.push(media);
           if (repasoSirve) partes.push('Estudia este tema: ' + repaso + '.');
           frase = partes.filter(Boolean).join(' ') || ('Esta no era. La correcta es ' + (claveFeedback || 'otra opción') + '.');
         }

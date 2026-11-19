@@ -480,7 +480,7 @@
       </div>
       <div class="tr-card tr-body" id="temaExplicacion"></div>
       <div class="tr-card" id="temaPracticaCard">
-        <h2 class="tr-sec-h">7 · Comprueba si entendiste</h2>
+        <h2 class="tr-sec-h">10 · Comprueba si entendiste</h2>
         <p class="tr-sub" style="margin:0 0 .75rem">Misma cartilla que en el examen. Toca una opción para responder.</p>
         <div class="tr-practica-wrap">
           <div id="temaPractica"></div>
@@ -492,7 +492,7 @@
         </div>
       </div>
     </section>
-    <p class="tr-foot-ver"><span id="badgeDanteVersion">c-1.3.142</span></p>
+    <p class="tr-foot-ver"><span id="badgeDanteVersion">c-1.3.144</span></p>
   </main>
 
   <script>
@@ -551,22 +551,32 @@
       function htmlExplicacion(tema) {
         var ex = (tema && tema.explicacion) || {};
         var html = '';
-        // 2 · Qué pasó (estructura AAA)
-        html += '<div class="tr-block">';
-        html += '<p class="tr-sec-h" style="margin:0 0 .55rem">2 · Qué pasó</p>';
+        var porqueOk = ex.porqueCorrecta || (tema && tema.porqueCorrecta) || '';
         var conceptoTxt = (ex.concepto && ex.concepto.definicion)
           || (tema && tema.conceptoPrincipal && tema.conceptoPrincipal.definicion)
           || '';
-        if (conceptoTxt) {
-          html += '<p><strong>Concepto:</strong> ' + escapeHtml(conceptoTxt) + '</p>';
-        }
         var reglaRapida = ex.reglaRapida || (tema && tema.reglaRapida) || '';
+
+        // 2 · Por qué es correcta (primero: ancla el concepto tras fallar)
+        html += '<div class="tr-block">';
+        html += '<p class="tr-sec-h" style="margin:0 0 .55rem">2 · Por qué es correcta</p>';
+        if (porqueOk) {
+          html += '<p>' + escapeHtml(porqueOk) + '</p>';
+        } else if (conceptoTxt) {
+          html += '<p>' + escapeHtml(conceptoTxt) + '</p>';
+        } else {
+          html += '<p>La opción correcta es la que cumple exactamente lo que pide el enunciado con el concepto del tema.</p>';
+        }
         if (reglaRapida) {
           html += '<p class="tr-note" style="margin-top:.5rem"><strong>Regla rápida:</strong> ' + escapeHtml(reglaRapida) + '</p>';
         }
-        var porqueOk = ex.porqueCorrecta || (tema && tema.porqueCorrecta) || '';
-        if (porqueOk) {
-          html += '<p style="margin-top:.45rem"><strong>Por qué es correcta:</strong> ' + escapeHtml(porqueOk) + '</p>';
+        html += '</div>';
+
+        // 3 · Qué pasó / distractores
+        html += '<div class="tr-block">';
+        html += '<p class="tr-sec-h" style="margin:0 0 .55rem">3 · Qué pasó</p>';
+        if (conceptoTxt && porqueOk && conceptoTxt !== porqueOk) {
+          html += '<p><strong>Concepto:</strong> ' + escapeHtml(conceptoTxt) + '</p>';
         }
         if (Array.isArray(ex.distractores) && ex.distractores.length) {
           html += '<p class="tr-sub" style="margin:.65rem 0 .35rem">Distractores</p><ul>';
@@ -575,9 +585,6 @@
             var linea = d.siElegiste
               ? d.siElegiste
               : ((d.letra ? (d.letra + ') ') : '') + (d.falla || d.explicacion || ''));
-            if (d.atrae && (!d.siElegiste || String(d.siElegiste).indexOf(d.atrae) === -1)) {
-              linea += ' · Atrae porque: ' + d.atrae;
-            }
             html += '<li>' + escapeHtml(linea) + '</li>';
           });
           html += '</ul>';
@@ -600,14 +607,15 @@
             + '</button>';
         }
         html += '</div>';
-        // 3 · Términos clave
+
+        // 4 · Términos clave
         var terminos = (tema && tema._terminosActivos)
           || (ex && ex.terminos)
           || (tema && tema.terminos)
           || [];
         if (Array.isArray(terminos) && terminos.length) {
           html += '<div class="tr-block tr-terminos">';
-          html += '<p class="tr-sec-h" style="margin:0">3 · Términos clave</p>';
+          html += '<p class="tr-sec-h" style="margin:0">4 · Términos clave</p>';
           html += '<p class="tr-sub" style="margin:.35rem 0 .2rem">Incluye palabras de tu pregunta. Toca una para ver la definición.</p>';
           html += '<div class="tr-chips">';
           terminos.slice(0, 8).forEach(function (tm, idx) {
@@ -619,10 +627,11 @@
           });
           html += '</div></div>';
         }
-        // 4 · Cómo hacerlo
+
+        // 5 · Cómo hacerlo
         if (Array.isArray(ex.pasos) && ex.pasos.length) {
           html += '<div class="tr-block">';
-          html += '<p class="tr-sec-h" style="margin:0 0 .55rem">4 · Cómo hacerlo</p><ul>';
+          html += '<p class="tr-sec-h" style="margin:0 0 .55rem">5 · Cómo hacerlo</p><ul>';
           ex.pasos.forEach(function (s) { html += '<li>' + escapeHtml(s) + '</li>'; });
           html += '</ul>';
           var checklist = ex.checklist || (tema && tema.checklist) || [];
@@ -633,11 +642,13 @@
           }
           html += '</div>';
         }
+
+        // 6 · Errores típicos
         var errorTipico = ex.errorTipico || (tema && tema.errorTipico) || '';
         var trampaClave = ex.trampaClave || (tema && tema.trampaClave) || '';
         if (errorTipico || trampaClave || (Array.isArray(ex.errores) && ex.errores.length)) {
           html += '<div class="tr-block">';
-          html += '<p class="tr-sec-h" style="margin:0 0 .55rem">Errores típicos</p><ul>';
+          html += '<p class="tr-sec-h" style="margin:0 0 .55rem">6 · Errores típicos</p><ul>';
           if (trampaClave) html += '<li><strong>Trampa clave:</strong> ' + escapeHtml(trampaClave) + '</li>';
           if (errorTipico) html += '<li><strong>Modelo mental incorrecto:</strong> ' + escapeHtml(errorTipico) + '</li>';
           (ex.errores || []).forEach(function (s) {
@@ -648,11 +659,12 @@
           });
           html += '</ul></div>';
         }
-        // 5 · Ejemplo (cartilla blanca, mismo formato que la pregunta fallida)
+
+        // 7 · Ejemplo + contraste
         if (ex.ejemplo_resuelto) {
           var ej = ex.ejemplo_resuelto;
           html += '<div class="tr-block">';
-          html += '<p class="tr-sec-h" style="margin:0 0 .55rem">5 · Ejemplo</p>';
+          html += '<p class="tr-sec-h" style="margin:0 0 .55rem">7 · Ejemplo</p>';
           html += '<div class="tr-ejemplo-cartilla">';
           html += '<p class="tr-ejemplo-label">Ejemplo resuelto · misma cartilla</p>';
           html += '<div class="tr-q">';
@@ -670,17 +682,18 @@
           var ctr = ej.contraste || ex.contraste || null;
           if (ctr) {
             html += '<div class="tr-ejemplo-contraste">';
-            html += '<strong>' + escapeHtml(ctr.titulo || 'Contraste') + '</strong>';
+            html += '<strong>' + escapeHtml(ctr.titulo || '8 · Contraste') + '</strong>';
             if (ctr.invalido) html += '<p style="margin:.35rem 0 0">' + escapeHtml(ctr.invalido) + '</p>';
             if (ctr.valido) html += '<p style="margin:.35rem 0 0">' + escapeHtml(ctr.valido) + '</p>';
             html += '</div>';
           }
           html += '</div></div>';
         }
-        // 6 · Para profundizar
+
+        // 9 · Para profundizar
         var fuentes = (ex && ex.fuentes) || (tema && tema.fuentes) || [];
         html += '<div class="tr-block"><div class="tr-fuentes">';
-        html += '<p class="tr-sec-h" style="margin:0">6 · Para profundizar</p>';
+        html += '<p class="tr-sec-h" style="margin:0">9 · Para profundizar</p>';
         html += '<p class="tr-sub" style="margin:.4rem 0 0;color:#d6d3d1">Si quieres seguir, usa 1 o 2 de estas fuentes:</p><ul>';
         if (Array.isArray(fuentes) && fuentes.length) {
           fuentes.slice(0, 2).forEach(function (fn) {

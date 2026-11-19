@@ -1,5 +1,5 @@
 /** Versión de caché visible en sala / perfil. Subir en cada ship visible. */
-window.DANTE_CACHE_VERSION = 'c-1.3.143';
+window.DANTE_CACHE_VERSION = 'c-1.3.144';
 (function () {
   function pintar() {
     var ver = window.DANTE_CACHE_VERSION || '';
