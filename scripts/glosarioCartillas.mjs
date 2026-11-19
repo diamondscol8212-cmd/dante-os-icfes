@@ -161,95 +161,101 @@ export function defVocab(palabra) {
   return VOCAB_ES[bare] || null;
 }
 
+function cortaTxt(s, n) {
+  const t = limpio(s);
+  if (t.length <= n) return t;
+  return t.slice(0, n - 1).trim() + '…';
+}
+
 /**
- * Explicación específica de un distractor (no plantilla genérica).
+ * Explicación corta y específica de un distractor (sin repetir la definición de la correcta).
+ * Formato objetivo: «opción»: significado. Por qué no encaja.
  */
 export function explicarDistractorEspecifico({ mala, bien, enunciado, area }) {
   const m = limpio(mala);
   const b = limpio(bien);
   const enun = limpio(enunciado);
   const a = String(area || '').toLowerCase();
+  const etiqueta = cortaTxt(m, 52);
 
   const pvM = detectarPhrasal(m);
   const pvB = detectarPhrasal(b) || detectarPhrasal(enun);
   const defM = pvM ? defPhrasal(pvM) : null;
   const defB = pvB ? defPhrasal(pvB) : null;
 
-  if (defM || defB) {
-    const partes = [];
-    if (defM) {
-      partes.push(`«${m}» significa ${defM.es}. ${defM.tip.charAt(0).toUpperCase() + defM.tip.slice(1)}.`);
-    } else {
-      const v = defVocab(m);
-      if (v) partes.push(`«${m}» significa ${v}; no expresa el cambio que pide la oración.`);
-      else partes.push(`«${m}» no encaja con el sentido de la oración.`);
-    }
-    if (defB) {
-      partes.push(`En cambio, «${b}» significa ${defB.es}` + (defB.tip ? ` (${defB.tip})` : '') + '.');
-    } else if (b) {
-      const vb = defVocab(b);
-      if (vb) partes.push(`La opción correcta «${b}» significa ${vb}.`);
-    }
-    return partes.join(' ');
+  if (defM) {
+    // Corto: significado + por qué no sirve (sin re-decir toda la def. de la correcta).
+    return `«${etiqueta}»: ${defM.es}. ${defM.tip.charAt(0).toUpperCase() + defM.tip.slice(1)}.`;
+  }
+  if (pvB || defB) {
+    const v = defVocab(m);
+    if (v) return `«${etiqueta}»: ${v}. No expresa el cambio que pide la oración.`;
+    return `«${etiqueta}» no tiene el sentido del phrasal que pide el contexto.`;
   }
 
   // Vocabulario EN (sin phrasal)
   if (a.includes('ingl')) {
     const vm = defVocab(m);
-    const vb = defVocab(b);
-    if (vm || vb) {
-      const p = [];
-      if (vm) p.push(`«${m}» significa ${vm}; no es el sentido que pide el contexto.`);
-      else p.push(`«${m}» no encaja con el vocabulario o la colocación de la oración.`);
-      if (vb) p.push(`«${b}» sí significa ${vb} y responde al contexto.`);
-      return p.join(' ');
-    }
+    if (vm) return `«${etiqueta}»: ${vm}. No es el sentido que pide el contexto.`;
     if (/passive|was |were |been |by a |by the |written|built/.test((enun + ' ' + b + ' ' + m).toLowerCase())) {
-      return `«${m}» no forma la voz pasiva correcta (be + past participle). La forma válida aquí es «${b}».`;
+      return `«${etiqueta}» no es be + past participle (forma pasiva válida).`;
     }
     if (/purpose|warning|sign|notice|what does/.test(enun.toLowerCase())) {
-      return `«${m}» describe otra función comunicativa; el mensaje busca otra intención. La opción que sí captura el propósito es «${b}».`;
+      return `«${etiqueta}» describe otra intención (no la del aviso/mensaje).`;
     }
+    if (/dialog|conversation|a:|b:|speaker|could you/.test(enun.toLowerCase())) {
+      return `«${etiqueta}» no responde de forma coherente al turno anterior.`;
+    }
+    return `«${etiqueta}» no encaja con el tiempo, la colocación o el sentido de la oración.`;
   }
 
-  // Hidrografía / geografía
+  // Hidrografía / geografía Colombia
   if (/afluente|cuenca|desemboca|macizo|r[ií]o (cauca|magdalena)|orinoco|amazonas|caribe|pac[ií]fico|regi[oó]n (andina|caribe|pac[ií]fica|orinoqu|amazon)/i.test(enun + ' ' + m + ' ' + b)) {
     if (/amazonas/i.test(m) && /cauca|magdalena|afluente/i.test(enun + b)) {
-      return `«${m}» pertenece a otra cuenca (suroriente). El Cauca es afluente del Magdalena y juntos drenan hacia el Caribe.`;
+      return `«${etiqueta}»: otra cuenca (suroriente). El Cauca aporta al Magdalena (Caribe).`;
     }
     if (/orinoco/i.test(m) && /cauca|magdalena/i.test(enun + b)) {
-      return `«${m}» drena los Llanos Orientales; no es la cuenca del sistema Magdalena-Cauca.`;
+      return `«${etiqueta}»: drena los Llanos; no es el sistema Magdalena-Cauca.`;
     }
     if (/pac[ií]fico/i.test(m) && /caribe|magdalena|desemboca/i.test(enun + b)) {
-      return `«${m}» es la vertiente oeste. El Magdalena desemboca en el Caribe (norte), no en el Pacífico.`;
+      return `«${etiqueta}»: vertiente oeste. El Magdalena desemboca en el Caribe.`;
     }
     if (/andina|caribe|pac[ií]fica|orinoqu|amazon/i.test(m + b + enun)) {
-      return `«${m}» ubica mal la región o el rasgo geográfico del enunciado. La ubicación correcta es «${b}».`;
+      return `«${etiqueta}» ubica mal la región o el rasgo del enunciado.`;
     }
-    return `«${m}» confunde afluente, cuenca, desembocadura o región. La respuesta coherente con el mapa es «${b}».`;
+    return `«${etiqueta}» confunde afluente, cuenca o desembocadura.`;
   }
 
-  // Constitución / poder público
   if (/rama|poder (ejecutivo|legislativo|judicial)|corte constitucional|congreso|presidente/i.test(enun)) {
-    return `«${m}» atribuye la función a otra rama o institución. En este caso corresponde a «${b}».`;
+    return `«${etiqueta}» asigna la función a otra rama o institución.`;
   }
 
-  // Ciencias
   if (a.includes('cien') || a.includes('natur')) {
-    return `«${m}» mezcla un concepto cercano (causa/efecto, proceso/resultado o magnitud distinta). Lo que pide el caso es «${b}».`;
+    return `«${etiqueta}» mezcla un concepto cercano (causa/efecto, proceso o magnitud distinta).`;
   }
 
-  // Lectura
   if (a.includes('lect')) {
-    return `«${m}» es plausible, pero el texto no lo afirma ni permite inferirlo con seguridad. Lo respaldado es «${b}».`;
+    return `«${etiqueta}» no está afirmado ni se puede inferir con seguridad del texto.`;
   }
 
-  // Matemáticas
   if (a.includes('mate')) {
-    return `«${m}» sale de un cálculo o lectura incompleta de los datos. El valor/relación que cumple el enunciado es «${b}».`;
+    const nm = parseFloat(String(m).replace(',', '.').replace(/[^\d.-]/g, ''));
+    const nb = parseFloat(String(b).replace(',', '.').replace(/[^\d.-]/g, ''));
+    if (Number.isFinite(nm) && Number.isFinite(nb) && nb !== 0) {
+      if (Math.abs(nm - nb * 2) < 0.05) return `«${etiqueta}»: duplicaste el valor correcto.`;
+      if (Math.abs(nm - nb / 2) < 0.05) return `«${etiqueta}»: partiste a la mitad el valor correcto.`;
+      if (Math.abs(nm + nb - 1) < 0.05 || (nb <= 1 && Math.abs(nm - (1 - nb)) < 0.05)) {
+        return `«${etiqueta}»: confundiste con el complemento (1 − resultado).`;
+      }
+    }
+    return `«${etiqueta}» no es el resultado del procedimiento que pide el enunciado.`;
   }
 
-  return `«${m}» no cumple lo que pide el enunciado. La opción que sí responde es «${b}».`;
+  if (a.includes('social')) {
+    return `«${etiqueta}» confunde el hecho, la norma, la región o el mecanismo del caso.`;
+  }
+
+  return `«${etiqueta}» no cumple lo que pide el enunciado.`;
 }
 
 /**
@@ -335,11 +341,40 @@ export function conceptoPrincipal({ titulo, microClave, ops, correcta, enunciado
     }
   }
 
+  if (microClave && DEF_MICRO[microClave]) {
+    return {
+      termino: limpio(titulo || microClave).slice(0, 48) || microClave,
+      definicion: DEF_MICRO[microClave],
+      ejemplo: okTxt ? `Respuesta ancla: «${cortaTxt(okTxt, 70)}»` : ''
+    };
+  }
+
   const tituloL = limpio(titulo || 'este punto');
+  // Intenta mapear por palabras del título a DEF_MICRO
+  const keyHit = Object.keys(DEF_MICRO).find((k) => tituloL.toLowerCase().includes(k.replace(/_/g, ' '))
+    || (k === 'hidrografia_colombia' && /hidrograf|afluente|cuenca/i.test(tituloL))
+    || (k === 'geografia' && /geograf|regi[oó]n/i.test(tituloL)));
+  if (keyHit) {
+    return {
+      termino: tituloL.length <= 48 ? tituloL : keyHit,
+      definicion: DEF_MICRO[keyHit],
+      ejemplo: okTxt ? `Respuesta ancla: «${cortaTxt(okTxt, 70)}»` : ''
+    };
+  }
+
+  const areaDef = {
+    matematicas: 'Matemáticas: identifica qué pide el enunciado y aplica el procedimiento o relación correcta.',
+    lectura_critica: 'Lectura crítica: responde solo con lo que el texto afirma o permite inferir con seguridad.',
+    ciencias_naturales: 'Ciencias: relaciona el proceso, la magnitud o la evidencia del caso sin mezclar conceptos vecinos.',
+    sociales_ciudadanas: 'Sociales: ubica el hecho, la norma, la región o el mecanismo institucional del enunciado.',
+    ingles: 'Inglés: elige la forma o el vocabulario que encaja con el sentido completo de la oración.'
+  };
+  const a = String(area || '').toLowerCase();
+  const defArea = areaDef[a] || areaDef.matematicas;
   return {
     termino: tituloL.length <= 48 ? tituloL : 'concepto del ítem',
-    definicion: `En esta cartilla el punto clave es: ${tituloL}. Debes entender qué pide el enunciado y por qué solo una opción lo cumple.`,
-    ejemplo: okTxt ? `Respuesta ancla: «${okTxt}»` : ''
+    definicion: defArea + (tituloL ? ` Punto de esta cartilla: ${cortaTxt(tituloL, 70)}.` : ''),
+    ejemplo: okTxt ? `Respuesta ancla: «${cortaTxt(okTxt, 70)}»` : ''
   };
 }
 
@@ -484,10 +519,49 @@ export function diagramaCartilla({ microClave, titulo, enunciado, ops, correcta,
 export function esJustifGenericaPlantilla(txt) {
   const r = limpio(txt);
   if (!r) return true;
+  if (/Error t[ií]pico/i.test(r)) return true;
+  if (/No expresa lo mismo que/i.test(r)) return true;
+  if (/es un distractor\./i.test(r) && /La opci[oó]n que s[ií] responde/i.test(r)) return true;
   if (/Error t[ií]pico de phrasal verb: la part[ií]cula cambia el sentido/i.test(r)) return true;
   if (/suena familiar, pero no encaja con el tiempo/i.test(r)) return true;
   if (/forma gramatical o el vocabulario/i.test(r) && r.length < 160) return true;
   if (/no resuelve (lo que pide )?este enunciado\.?$/i.test(r)) return true;
   if (/elegir un distractor cercano sin verificar/i.test(r)) return true;
+  if (/elegiste algo plausible, pero que el texto no afirma/i.test(r)) return true;
+  if (/mezclaste conceptos cercanos \(causa\/efecto/i.test(r)) return true;
   return false;
 }
+
+/** Definiciones canónicas cortas por micro-habilidad / subtema. */
+export const DEF_MICRO = {
+  phrasal_verbs: 'Un phrasal verb es verbo + partícula; su sentido se aprende en bloque (no palabra por palabra).',
+  passive_voice: 'La voz pasiva se forma con be + past participle; el foco está en la acción o el objeto.',
+  infer_purpose: 'El propósito es la intención del mensaje: para qué se dice o escribe.',
+  dialog_response: 'En un diálogo, cada turno debe responder de forma coherente a lo que acaba de pedirse o decirse.',
+  grammar_form: 'La forma gramatical correcta respeta sujeto, tiempo verbal y estructura de la oración.',
+  vocab_context: 'El vocabulario correcto es el que encaja con el sentido completo de la oración (colocación).',
+  algebra: 'En álgebra se despeja la incógnita con operaciones inversas a ambos lados de la igualdad.',
+  geometria: 'Geometría: identifica qué pide (perímetro, área, volumen o ángulo) y usa la fórmula correcta.',
+  fracciones: 'Fracción = parte/todo. Para sumar o comparar, iguala denominadores.',
+  proporcionalidad: 'Proporción: si una magnitud cambia, la otra lo hace en la misma razón (directa) o al revés (inversa).',
+  estadistica: 'Estadística descriptiva: media (promedio), mediana (centro), moda (más frecuente).',
+  probabilidad: 'Probabilidad = casos favorables ÷ casos posibles (entre 0 y 1).',
+  funciones: 'Una función asigna a cada x un único y; en y = mx + b, m es pendiente y b intercepto.',
+  aritmetica: 'Aritmética: respeta el orden de operaciones y convierte unidades antes de calcular.',
+  trigonometria: 'Trigonometría: seno = op/hip, coseno = adj/hip, tangente = op/adj.',
+  combinatoria: 'Combinatoria: si el orden importa usa permutación; si no, combinación.',
+  argumentacion: 'Un argumento une premisas con una conclusión; detecta falacias o saltos lógicos.',
+  inferencia: 'Una inferencia válida se sigue del texto sin inventar datos que no están.',
+  comprension_literal: 'Comprensión literal: responde solo lo que el texto dice de forma explícita.',
+  evaluacion_critica: 'Evaluación crítica: juzga la tesis, el sesgo o la evidencia del autor.',
+  semantica: 'Semántica: el significado depende del contexto de la palabra o expresión.',
+  pragmatica: 'Pragmática: qué acto de habla realiza el enunciado (pedir, avisar, ironizar…).',
+  fisica: 'Física: relaciona magnitudes (fuerza, masa, aceleración, energía) con la fórmula del caso.',
+  quimica: 'Química: identifica el cambio (reacción, oxidación, equilibrio) y lo que se conserva.',
+  biologia: 'Biología: ubica el proceso o estructura (célula, fotosíntesis, ecosistema) del caso.',
+  indagacion: 'Indagación: distingue variable independiente, dependiente y controlada.',
+  geografia: 'Geografía de Colombia: ubica el rasgo en su región natural o vertiente correcta.',
+  hidrografia_colombia: 'Afluente = río que aporta a otro río. Cuenca = territorio que drena a un mismo sistema.',
+  constitucion: 'La Constitución organiza el Estado en ramas (legislativa, ejecutiva, judicial) con funciones propias.',
+  historia: 'Historia: sitúa el hecho en su fecha, causa y consecuencia sin confundir periodos.'
+};

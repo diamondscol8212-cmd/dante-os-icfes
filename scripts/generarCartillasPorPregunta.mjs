@@ -12,7 +12,6 @@ import {
   conceptoPrincipal,
   diagramaCartilla,
   explicarDistractorEspecifico,
-  esJustifGenericaPlantilla,
   detectarPhrasal,
   defPhrasal,
   defVocab
@@ -214,9 +213,11 @@ function microDe(p, ops) {
   // Títulos anclados al tema del ítem (no genéricos vacíos).
   const temaPrev = limpio(p.tema_a_estudiar || p.repaso || '');
   if (temaPrev && temaPrev.length >= 8 && temaPrev.length <= 90 && !/\?/.test(temaPrev)) {
+    // Normaliza clave a un micro conocido cuando el sub lo permite.
+    const claveCanon = sub || 'tema';
     return {
-      clave: sub || 'tema',
-      titulo: temaPrev,
+      clave: claveCanon,
+      titulo: temaPrev.replace(/^Inglés:\s*phrasal verb.*/i, temaPrev).slice(0, 90),
       terminosBase: []
     };
   }
@@ -236,16 +237,7 @@ function justMap(p) {
 
 function justifDeOpcion(p, o, ops, correcta) {
   const ok = ops.find((x) => x.letra === correcta) || {};
-  const bank = limpio(justMap(p)[o.letra] || '');
-  if (bank && !esJustifGenericaPlantilla(bank) && bank.length >= 40) {
-    // Si la del banco es específica pero no trae definición ES de phrasal, refuerza.
-    const pv = detectarPhrasal(o.texto);
-    const def = pv && defPhrasal(pv);
-    if (def && !bank.toLowerCase().includes(def.es.slice(0, 18).toLowerCase())) {
-      return `«${o.texto}» significa ${def.es}. ${bank}`;
-    }
-    return bank;
-  }
+  // Cartilla: siempre explicación corta y específica (no reutilizar justifs largas/genéricas del banco).
   return explicarDistractorEspecifico({
     mala: o.texto,
     bien: ok.texto || '',
@@ -258,34 +250,30 @@ function buildIntro(p, ops, micro, concepto) {
   const correcta = correctaDe(p);
   const ok = ops.find((o) => o.letra === correcta);
   const partes = [];
-  // 1) Definición obligatoria del concepto principal en español
+  // 1) Definición una sola vez
   if (concepto && concepto.definicion) {
     partes.push(concepto.definicion);
-    if (concepto.ejemplo) partes.push(`Úsalo así: ${concepto.ejemplo}.`);
   }
-  // 2) Por qué la correcta
+  // 2) Correcta (breve; no repite la definición ya dicha en el concepto)
   if (ok) {
     const pv = detectarPhrasal(ok.texto) || detectarPhrasal(enunciadoDe(p));
     const def = pv && defPhrasal(pv);
     const v = defVocab(ok.texto);
-    if (def) {
-      partes.push(`La opción ${correcta} («${ok.texto}») es correcta porque significa ${def.es} y encaja con el contexto del enunciado.`);
-    } else if (v) {
-      partes.push(`La opción ${correcta} («${ok.texto}») es correcta: significa ${v}.`);
+    const yaDicho = concepto && concepto.definicion && def
+      && String(concepto.definicion).toLowerCase().includes(String(def.es).slice(0, 18).toLowerCase());
+    if (def && !yaDicho) {
+      partes.push(`Correcta ${correcta}) «${ok.texto}»: ${def.es}.`);
+    } else if (v && !(concepto && String(concepto.definicion || '').toLowerCase().includes(v.toLowerCase()))) {
+      partes.push(`Correcta ${correcta}) «${ok.texto}»: ${v}.`);
     } else {
-      const expl = limpio(p.explicacion_correcta || '');
-      if (expl && !/^La respuesta es/i.test(expl)) partes.push(expl);
-      else partes.push(`La opción ${correcta} («${ok.texto}») responde exactamente lo que pide el enunciado.`);
+      partes.push(`Correcta ${correcta}) «${ok.texto}».`);
     }
   }
-  // 3) Distractores específicos
+  // 3) Distractores: una línea corta cada uno
   ops.forEach((o) => {
     if (o.letra === correcta) return;
-    partes.push(`Opción ${o.letra}: ${justifDeOpcion(p, o, ops, correcta)}`);
+    partes.push(`${o.letra}) ${justifDeOpcion(p, o, ops, correcta)}`);
   });
-  if (micro && micro.titulo) {
-    partes.push(`Esta cartilla refuerza exactamente: ${micro.titulo}.`);
-  }
   return partes.join(' ');
 }
 
@@ -335,7 +323,7 @@ function buildErrores(p, ops) {
   ops.forEach((o) => {
     if (o.letra === correcta) return;
     const j = justifDeOpcion(p, o, ops, correcta);
-    out.push(j.length > 180 ? j.slice(0, 177) + '…' : j);
+    out.push(j.length > 140 ? j.slice(0, 137) + '…' : j);
   });
   if (!out.length) {
     out.push('Confundir este ítem con un tema genérico cercano.');
@@ -729,11 +717,27 @@ function main() {
   };
 
   // Compacto: ~1500 cartillas; evita JSON indentado de decenas de MB.
-  fs.writeFileSync(outPath, JSON.stringify(catalogo), 'utf8');
-  if (Array.isArray(raw)) fs.writeFileSync(bankPath, JSON.stringify(arr), 'utf8');
+  // Escritura atómica + reintentos (Windows a veces bloquea el JSON grande).
+  function writeAtomic(target, data) {
+    const tmp = target + '.tmp';
+    fs.writeFileSync(tmp, data, 'utf8');
+    for (let i = 0; i < 8; i++) {
+      try {
+        fs.renameSync(tmp, target);
+        return;
+      } catch (_) {
+        try { fs.copyFileSync(tmp, target); fs.unlinkSync(tmp); return; } catch (__) {}
+        Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 500);
+      }
+    }
+    fs.writeFileSync(target, data, 'utf8');
+    try { fs.unlinkSync(tmp); } catch (_) {}
+  }
+  writeAtomic(outPath, JSON.stringify(catalogo));
+  if (Array.isArray(raw)) writeAtomic(bankPath, JSON.stringify(arr));
   else {
     raw.preguntas = arr;
-    fs.writeFileSync(bankPath, JSON.stringify(raw), 'utf8');
+    writeAtomic(bankPath, JSON.stringify(raw));
   }
 
   // Muestreo de los casos reportados por el usuario

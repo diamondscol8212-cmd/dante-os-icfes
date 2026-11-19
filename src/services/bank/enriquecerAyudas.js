@@ -249,26 +249,23 @@ function errorTipicoPorTexto(mala, bien, sub, area, item) {
       const keyB = hitB ? String(hitB).toLowerCase().replace(/\s+/g, ' ') : '';
       const defM = keyM && PHRASAL_ES[keyM];
       const defB = keyB && PHRASAL_ES[keyB];
-      if (defM && defB) {
-        return `«${limpio(mala)}» significa ${defM}. No expresa lo mismo que «${limpio(bien)}» (${defB}), que sí encaja con el contexto.`;
-      }
       if (defM) {
-        return `«${limpio(mala)}» significa ${defM}. Ese sentido no encaja con lo que pide la oración` + (defB ? `; la correcta significa ${defB}` : '') + '.';
+        return `«${limpio(mala)}»: ${defM}. No encaja con el sentido que pide la oración.`;
       }
       if (defB) {
-        return `Esta opción no significa lo mismo que «${limpio(bien)}» (${defB}), que sí responde al contexto de la oración.`;
+        return `«${limpio(mala)}» no tiene el sentido de «${limpio(bien)}» (${defB}).`;
       }
     }
     if (/passive|was |were |been |by a |by the |past participle|written|built|constructed|discovered/.test(m + ' ' + b + ' ' + enunciado)) {
-      return `«${limpio(mala)}» no forma la voz pasiva correcta (be + past participle). La forma válida aquí es «${limpio(bien)}».`;
+      return `«${limpio(mala)}» no es be + past participle (voz pasiva válida).`;
     }
     if (/purpose|warning|sign|notice|what does .+ (want|mean)|intention/.test(enunciado)) {
-      return `«${limpio(mala)}» describe otra función comunicativa (saludo, venta, etc.). El propósito real del mensaje lo captura «${limpio(bien)}».`;
+      return `«${limpio(mala)}» describe otra intención, no la del aviso/mensaje.`;
     }
     if (/dialog|conversation|a:|b:|speaker|how are you|could you/.test(enunciado + ' ' + sub)) {
-      return `«${limpio(mala)}» no responde de forma coherente a lo que acaba de pedir o decir el interlocutor. Encaja mejor «${limpio(bien)}».`;
+      return `«${limpio(mala)}» no responde de forma coherente al turno anterior.`;
     }
-    return `«${limpio(mala)}» suena cercano, pero no encaja con el tiempo, la colocación o el sentido exacto. La opción que sí cumple es «${limpio(bien)}».`;
+    return `«${limpio(mala)}» no encaja con el tiempo, la colocación o el sentido de la oración.`;
   }
 
   if (esMate && (/probabil|azar|dado|carta|moneda|evento/.test(sub + enunciado) || sub === 'probabilidad')) {
@@ -315,11 +312,11 @@ function errorTipicoPorTexto(mala, bien, sub, area, item) {
   }
 
   if (/inferen|implica|sugiere|evaluacion_critica|articulacion/.test(sub) || area.includes('lect')) {
-    return 'Error típico: elegiste algo plausible, pero que el texto no afirma ni permite inferir con seguridad.';
+    return 'no está afirmado ni se puede inferir con seguridad del texto';
   }
 
   if (area.includes('cien') || /fisica|quimica|biologia|indagacion|cts/.test(sub)) {
-    return 'Error típico: mezclaste conceptos cercanos (causa/efecto, proceso/resultado, o la magnitud que no pide el caso).';
+    return 'mezcla un concepto cercano (causa/efecto, proceso/resultado o magnitud distinta)';
   }
 
   if (/afluente|cuenca|macizo colombiano|desemboca|r[ií]o (cauca|magdalena)|hidrograf/.test(enunciado + sub)
@@ -342,7 +339,7 @@ function errorTipicoPorTexto(mala, bien, sub, area, item) {
   }
 
   if (area.includes('social') || /pensamiento_|constitucion|historia|geografia|ciudadan|hidrograf/.test(sub)) {
-    return 'Error típico: confundiste la norma, el hecho histórico, la región o el mecanismo institucional con otro parecido del enunciado.';
+    return 'confunde el hecho, la norma, la región o el mecanismo del caso';
   }
 
   // Cálculos numéricos solo en matemáticas.
@@ -371,15 +368,24 @@ function errorTipicoPorTexto(mala, bien, sub, area, item) {
 }
 
 function porqueIncorrecta(mala, bien, ctx) {
-  const izq = corta(crudo(mala), 90);
-  const der = corta(crudo(bien), 90);
+  const izq = corta(crudo(mala), 70);
+  const der = corta(crudo(bien), 70);
   const item = (ctx && ctx.item) || {};
   const letra = (ctx && ctx.letra) || '';
   const sub = subDe(item);
   const area = areaDe(item);
   const tipTrampa = errorTipicoPorTrampa(trampaDeOpcion(item, letra), area);
-  const tipTexto = tipTrampa || errorTipicoPorTexto(izq, der, sub, area, item);
-  return `«${izq}» es un distractor. ${tipTexto} La opción que sí responde es «${der}».`;
+  let tipTexto = tipTrampa || errorTipicoPorTexto(izq, der, sub, area, item);
+  // Evita wrappers largos y frases repetidas.
+  tipTexto = limpio(tipTexto)
+    .replace(/^«[^»]+»\s*(es un distractor\.\s*)?/i, '')
+    .replace(/\s*La opción que sí responde es «[^»]+»\.?/i, '')
+    .replace(/Error t[ií]pico:\s*/i, '')
+    .replace(/Error t[ií]pico de [^:]+:\s*/i, '');
+  if (/significa |no encaja|no es |no responde|no forma|confunde|mezcla|ubica|sale de/i.test(tipTexto)) {
+    return tipTexto.startsWith('«') ? tipTexto : `«${izq}»: ${tipTexto}`;
+  }
+  return `«${izq}»: ${tipTexto || 'no cumple lo que pide el enunciado'}.`;
 }
 
 /**
