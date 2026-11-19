@@ -12,6 +12,9 @@ import {
   conceptoPrincipal,
   diagramaCartilla,
   explicarDistractorEspecifico,
+  atraeDistractor,
+  porqueCorrectaDe,
+  errorTipicoDe,
   detectarPhrasal,
   defPhrasal,
   defVocab
@@ -237,7 +240,6 @@ function justMap(p) {
 
 function justifDeOpcion(p, o, ops, correcta) {
   const ok = ops.find((x) => x.letra === correcta) || {};
-  // Cartilla: siempre explicación corta y específica (no reutilizar justifs largas/genéricas del banco).
   return explicarDistractorEspecifico({
     mala: o.texto,
     bien: ok.texto || '',
@@ -246,38 +248,37 @@ function justifDeOpcion(p, o, ops, correcta) {
   });
 }
 
-function buildIntro(p, ops, micro, concepto) {
+function buildDistractoresAAA(p, ops, correcta) {
+  const ok = ops.find((x) => x.letra === correcta) || {};
+  const enun = enunciadoDe(p);
+  const area = areaDe(p);
+  return ops.filter((o) => o.letra !== correcta).map((o) => {
+    const falla = explicarDistractorEspecifico({ mala: o.texto, bien: ok.texto || '', enunciado: enun, area });
+    const atrae = atraeDistractor({ mala: o.texto, bien: ok.texto || '', enunciado: enun, area });
+    return {
+      letra: o.letra,
+      texto: o.texto,
+      atrae,
+      falla,
+      explicacion: `${falla} (Atrae porque: ${atrae})`
+    };
+  });
+}
+
+function buildIntro(p, ops, micro, concepto, porqueCorrecta, distractores) {
   const correcta = correctaDe(p);
   const ok = ops.find((o) => o.letra === correcta);
   const partes = [];
-  // 1) Definición una sola vez
-  if (concepto && concepto.definicion) {
-    partes.push(concepto.definicion);
-  }
-  // 2) Correcta (breve; no repite la definición ya dicha en el concepto)
-  if (ok) {
-    const pv = detectarPhrasal(ok.texto) || detectarPhrasal(enunciadoDe(p));
-    const def = pv && defPhrasal(pv);
-    const v = defVocab(ok.texto);
-    const yaDicho = concepto && concepto.definicion && def
-      && String(concepto.definicion).toLowerCase().includes(String(def.es).slice(0, 18).toLowerCase());
-    if (def && !yaDicho) {
-      partes.push(`Correcta ${correcta}) «${ok.texto}»: ${def.es}.`);
-    } else if (v && !(concepto && String(concepto.definicion || '').toLowerCase().includes(v.toLowerCase()))) {
-      partes.push(`Correcta ${correcta}) «${ok.texto}»: ${v}.`);
-    } else {
-      partes.push(`Correcta ${correcta}) «${ok.texto}».`);
-    }
-  }
-  // 3) Distractores: una línea corta cada uno
-  ops.forEach((o) => {
-    if (o.letra === correcta) return;
-    partes.push(`${o.letra}) ${justifDeOpcion(p, o, ops, correcta)}`);
+  if (concepto && concepto.definicion) partes.push(concepto.definicion);
+  if (porqueCorrecta) partes.push(porqueCorrecta);
+  else if (ok) partes.push(`Correcta ${correcta}) «${ok.texto}».`);
+  (distractores || []).forEach((d) => {
+    partes.push(`${d.letra}) ${d.falla}`);
   });
   return partes.join(' ');
 }
 
-function buildPasos(p, ops, micro) {
+function buildPasos(p, ops, micro, concepto) {
   const correcta = correctaDe(p);
   const ok = ops.find((o) => o.letra === correcta);
   const clave = micro.clave;
@@ -285,82 +286,79 @@ function buildPasos(p, ops, micro) {
     const pv = detectarPhrasal((ok && ok.texto) || '') || detectarPhrasal(enunciadoDe(p));
     const def = pv && defPhrasal(pv);
     return [
-      def
-        ? `Recuerda: «${pv}» significa ${def.es}.`
-        : 'Lee la oración completa y qué cambio describe (eliminar, investigar, parecerse…).',
-      'Traduce mentalmente cada opción al español y mírala contra el contexto.',
-      `Quédate con la opción ${correcta}${ok ? ` («${ok.texto}»)` : ''} cuyo significado sí encaja.`,
-      'Descarta las que significan otra cosa (p. ej. keep up ≠ phase out).'
+      def ? `Ancla: «${pv}» = ${def.es}.` : 'Identifica qué cambio pide la oración (retirar, investigar, posponer…).',
+      'Traduce cada opción al español y compárala con ese cambio.',
+      `Quédate con ${correcta}${ok ? ` («${ok.texto}»)` : ''} solo si el significado encaja.`,
+      'Descarta phrasals cercanos que cambian el sentido (p. ej. keep up ≠ phase out).'
     ];
   }
   if (clave === 'passive_voice') {
     return [
-      'Identifica si el foco está en el objeto/acción (pasiva) o en quién hace (activa).',
+      'Confirma si el foco está en el objeto/acción (pasiva).',
       'Arma be (am/is/are/was/were) + past participle.',
-      'Si aparece «by…», comprueba que el agente encaje.',
-      `Elige ${correcta}${ok ? ` («${ok.texto}»)` : ''} solo si la forma pasiva es correcta.`
+      'Si hay «by…», verifica que el agente tenga sentido.',
+      `Conserva ${correcta}${ok ? ` («${ok.texto}»)` : ''} solo con la forma pasiva correcta.`
     ];
   }
   if (clave === 'infer_purpose') {
     return [
-      'Subraya palabras de intención (aviso, pedido, rechazo, invitación…).',
-      'Pregúntate: ¿para qué se dice/escribe esto?',
-      'Descarta literales que solo repiten una palabra sin el propósito.',
+      'Marca pistas de intención (aviso, pedido, rechazo, invitación).',
+      'Pregunta: ¿para qué se dice o escribe este mensaje?',
+      'Descarta funciones comunicativas distintas (saludo/venta/etc.).',
       `La opción ${correcta} expresa esa intención.`
     ];
   }
   return [
-    'Lee qué pide exactamente el enunciado (dato, relación, definición o forma).',
-    'Descarta opciones que responden otra pregunta o cambian el caso.',
-    `Conserva la opción ${correcta}${ok ? ` («${ok.texto}»)` : ''} y explica por qué las otras fallan.`,
-    'Comprueba con la definición o relación del mismo punto (no de un tema vecino).'
+    concepto && concepto.definicion
+      ? `Aplica la definición: ${concepto.definicion}`
+      : 'Identifica qué dato, relación o definición pide el caso.',
+    'Descarta opciones que responden otro caso o cambian la magnitud/norma.',
+    `Conserva ${correcta}${ok ? ` («${ok.texto}»)` : ''} y justifica cada descarte con el significado real.`,
+    'Verifica que no mezclaste un tema vecino del mismo área.'
   ];
 }
 
-function buildErrores(p, ops) {
-  const correcta = correctaDe(p);
+function buildErrores(distractores, errorTipico) {
   const out = [];
-  ops.forEach((o) => {
-    if (o.letra === correcta) return;
-    const j = justifDeOpcion(p, o, ops, correcta);
-    out.push(j.length > 140 ? j.slice(0, 137) + '…' : j);
+  if (errorTipico) out.push(`Modelo mental incorrecto: ${errorTipico}`);
+  (distractores || []).forEach((d) => {
+    const line = `«${d.texto}»: ${d.falla}`;
+    out.push(line.length > 150 ? line.slice(0, 147) + '…' : line);
   });
-  if (!out.length) {
-    out.push('Confundir este ítem con un tema genérico cercano.');
-    out.push('Elegir una opción por una sola palabra suelta del enunciado.');
+  if (out.length < 2) {
+    out.push('Elegir por familiaridad sin verificar el sentido exacto.');
   }
-  return out.slice(0, 4);
+  return out.slice(0, 5);
 }
 
-function buildEjemplo(p, ops, concepto) {
+function buildEjemplo(p, ops, concepto, porqueCorrecta, distractores) {
   const correcta = correctaDe(p);
   const ok = ops.find((o) => o.letra === correcta);
-  const malas = ops.filter((o) => o.letra !== correcta);
+  const d0 = distractores && distractores[0];
+  const d1 = distractores && distractores[1];
   const pasos = [
     concepto && concepto.definicion
       ? `1) Concepto: ${concepto.definicion}`
-      : '1) Lee el enunciado y aísla lo que pide.',
-    ...malas.slice(0, 2).map((o, i) => {
-      const j = justifDeOpcion(p, o, ops, correcta);
-      return `${i + 2}) Descarta ${o.letra} («${o.texto}»): ${j.length > 120 ? j.slice(0, 117) + '…' : j}`;
-    }),
-    `${Math.min(4, malas.length + 2)}) Conserva ${correcta}${ok ? ` — «${ok.texto}»` : ''} porque sí cumple el sentido del enunciado.`
+      : '1) Identifica qué pide exactamente el caso.',
+    porqueCorrecta
+      ? `2) Correcta: ${porqueCorrecta}`
+      : `2) Conserva ${correcta}${ok ? ` — «${ok.texto}»` : ''}.`,
+    d0 ? `3) Descarta ${d0.letra}: ${d0.falla}` : '3) Descarta distractores por su significado real.',
+    d1 ? `4) Descarta ${d1.letra}: ${d1.falla}` : `4) Contrasta con el error típico y confirma ${correcta}.`
   ];
-  const mala0 = malas[0];
-  const j0 = mala0 ? justifDeOpcion(p, mala0, ops, correcta) : '';
   return {
     titulo: 'Ejemplo resuelto · este ítem',
     enunciado: enunciadoDe(p),
     pasos: pasos.slice(0, 4),
     respuesta: ok ? `${correcta}) ${ok.texto}` : correcta,
-    contraste: mala0
+    contraste: d0
       ? {
         titulo: 'Contraste rápido',
-        invalido: `Incorrecto: «${mala0.texto}» — ${j0.length > 100 ? j0.slice(0, 97) + '…' : j0}`,
+        invalido: `Incorrecto: «${d0.texto}» — ${d0.falla}${d0.atrae ? ` (atrae: ${d0.atrae})` : ''}`,
         valido: ok
           ? `Correcto: «${ok.texto}»${(detectarPhrasal(ok.texto) && defPhrasal(detectarPhrasal(ok.texto)))
-            ? ' — significa ' + defPhrasal(detectarPhrasal(ok.texto)).es
-            : ' sí cumple lo pedido.'}`
+            ? ' — ' + defPhrasal(detectarPhrasal(ok.texto)).es
+            : (porqueCorrecta ? ' — ' + porqueCorrecta.slice(0, 90) : '')}`
           : `Correcto: ${correcta}`
       }
       : null
@@ -625,6 +623,7 @@ function cartillaDePregunta(p) {
   const cid = cartillaIdDe(p.id);
   const area = areaDe(p);
   const correcta = correctaDe(p);
+  const ok = ops.find((o) => o.letra === correcta) || {};
   const concepto = conceptoPrincipal({
     titulo: micro.titulo,
     microClave: micro.clave,
@@ -633,10 +632,23 @@ function cartillaDePregunta(p) {
     enunciado: enunciadoDe(p),
     area
   });
-  const intro = buildIntro(p, ops, micro, concepto);
-  const pasos = buildPasos(p, ops, micro);
-  const errores = buildErrores(p, ops);
-  const ejemplo = buildEjemplo(p, ops, concepto);
+  const porqueCorrecta = porqueCorrectaDe({
+    okTexto: ok.texto || '',
+    enunciado: enunciadoDe(p),
+    area,
+    concepto
+  });
+  const errorTipico = errorTipicoDe({
+    microClave: micro.clave,
+    area,
+    enunciado: enunciadoDe(p),
+    okTexto: ok.texto || ''
+  });
+  const distractores = buildDistractoresAAA(p, ops, correcta);
+  const intro = buildIntro(p, ops, micro, concepto, porqueCorrecta, distractores);
+  const pasos = buildPasos(p, ops, micro, concepto);
+  const errores = buildErrores(distractores, errorTipico);
+  const ejemplo = buildEjemplo(p, ops, concepto, porqueCorrecta, distractores);
   const practica = practicaDe(p, ops, micro, cid, concepto);
   const terminos = terminosDe(p, ops, micro, concepto);
   const fuentes = fuentesDe(micro.clave, area) || fuentesDe(limpio(p.sub_competencia || p.sub || ''), area) || [
@@ -661,25 +673,63 @@ function cartillaDePregunta(p) {
     subs: [limpio(p.sub_competencia || p.sub || ''), cid].filter(Boolean),
     matchTema: [micro.titulo.toLowerCase(), limpio(p.tema_a_estudiar || '').toLowerCase()].filter(Boolean),
     estadoContenido: 'completo',
+    nivelCalidad: 'AAA',
     itemId: String(p.id),
     microClave: micro.clave,
     conceptoPrincipal: concepto,
+    porqueCorrecta,
+    errorTipico,
     profundizar: `Sigue con 2–3 ítems del mismo punto: «${micro.titulo}».`,
     fuentes: Array.isArray(fuentes) ? fuentes.slice(0, 2) : fuentes,
     diagrama_svg: diagrama,
     terminos,
     explicacion: {
       intro,
+      porqueCorrecta,
+      errorTipico,
+      distractores,
       pasos,
       errores,
       ejemplo_resuelto: ejemplo,
       terminos,
       fuentes: Array.isArray(fuentes) ? fuentes.slice(0, 2) : fuentes,
       diagrama_svg: diagrama,
-      concepto: concepto
+      concepto: concepto,
+      contraste: ejemplo && ejemplo.contraste
     },
     practica
   };
+}
+
+/** Sincroniza pista / boletín del ítem con el nivel AAA de la cartilla (sin tocar IDs ni progreso). */
+function sincronizarAyudasItem(p, cart) {
+  if (!p || !cart || !cart.explicacion) return;
+  const ex = cart.explicacion;
+  if (ex.porqueCorrecta) {
+    p.explicacion_correcta = ex.porqueCorrecta;
+    p.frase_acierto = ex.porqueCorrecta;
+  }
+  if (Array.isArray(ex.distractores) && ex.distractores.length) {
+    const just = {};
+    const razones = {};
+    ex.distractores.forEach((d) => {
+      if (!d || !d.letra) return;
+      const txt = limpio(d.falla || '');
+      const atrae = limpio(d.atrae || '');
+      just[d.letra] = atrae ? `${txt} Atrae porque: ${atrae}` : txt;
+      if (d.texto) razones[d.texto] = just[d.letra];
+    });
+    p.justificacion_opciones = just;
+    p.razonesPorTexto = Object.assign({}, p.razonesPorTexto || {}, razones);
+  }
+  // Pista corta y específica (no “lee el enunciado”).
+  const def = limpio(cart.conceptoPrincipal && cart.conceptoPrincipal.definicion);
+  const tip = limpio(ex.errorTipico || '');
+  if (def) {
+    p.pista = tip
+      ? `${def} Evita: ${tip.slice(0, 110)}${tip.length > 110 ? '…' : ''}`
+      : def;
+  }
 }
 
 function main() {
@@ -706,6 +756,7 @@ function main() {
     // Título visible en boletín / lista: siempre el de la cartilla del ítem
     p.tema_a_estudiar = cart.titulo;
     if (p.repaso != null) p.repaso = cart.titulo;
+    sincronizarAyudasItem(p, cart);
   }
 
   const catalogo = {

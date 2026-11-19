@@ -171,6 +171,121 @@ function cortaTxt(s, n) {
  * Explicación corta y específica de un distractor (sin repetir la definición de la correcta).
  * Formato objetivo: «opción»: significado. Por qué no encaja.
  */
+/**
+ * Por qué la opción incorrecta “atrae” (modelo mental / trampa).
+ */
+export function atraeDistractor({ mala, bien, enunciado, area }) {
+  const m = limpio(mala);
+  const b = limpio(bien);
+  const enun = limpio(enunciado);
+  const a = String(area || '').toLowerCase();
+  const pvM = detectarPhrasal(m);
+  const pvB = detectarPhrasal(b) || detectarPhrasal(enun);
+  if (pvM || pvB) {
+    return 'Suena cercano al phrasal correcto o pertenece al mismo “familia” de verbos con partícula.';
+  }
+  if (a.includes('ingl')) {
+    if (/passive|was |were |written|built/.test((enun + m + b).toLowerCase())) {
+      return 'Parece una forma verbal “casi pasiva” o reordena sujeto/objeto de modo plausible.';
+    }
+    if (/purpose|warning|sign|notice/.test(enun.toLowerCase())) {
+      return 'Describe una intención comunicativa frecuente (saludo, venta, invitación) que no es la de este mensaje.';
+    }
+    return 'Comparte vocabulario o estructura familiar con la oración, pero cambia el sentido exacto.';
+  }
+  if (a.includes('mate')) {
+    const nm = parseFloat(String(m).replace(',', '.').replace(/[^\d.-]/g, ''));
+    const nb = parseFloat(String(b).replace(',', '.').replace(/[^\d.-]/g, ''));
+    if (Number.isFinite(nm) && Number.isFinite(nb) && nb !== 0) {
+      if (Math.abs(nm - nb * 2) < 0.05) return 'Sale de duplicar el valor (error típico al leer mal la razón o el paso).';
+      if (Math.abs(nm - nb / 2) < 0.05) return 'Sale de partir a la mitad (omitir un factor o una conversión).';
+    }
+    return 'Usa los datos visibles del enunciado, pero con un paso o relación incorrecta.';
+  }
+  if (a.includes('lect')) {
+    return 'Suena razonable o “podría deducirse”, pero el texto no lo afirma con seguridad.';
+  }
+  if (a.includes('cien') || a.includes('natur')) {
+    return 'Confunde conceptos vecinos del mismo tema (proceso/resultado, causa/efecto o magnitud).';
+  }
+  if (a.includes('social')) {
+    return 'Nombra un hecho, norma o región parecida a la del caso, fácil de intercambiar.';
+  }
+  return 'Se parece a una respuesta válida del área, pero no cumple lo pedido en este enunciado.';
+}
+
+/**
+ * Por qué la correcta encaja en el contexto exacto del enunciado.
+ */
+export function porqueCorrectaDe({ okTexto, enunciado, area, concepto }) {
+  const ok = limpio(okTexto);
+  const enun = limpio(enunciado);
+  const a = String(area || '').toLowerCase();
+  const pv = detectarPhrasal(ok) || detectarPhrasal(enun);
+  const def = pv && defPhrasal(pv);
+  if (def) {
+    return `«${ok}» encaja porque significa ${def.es}, que es exactamente el cambio que describe la oración.`;
+  }
+  const v = defVocab(ok);
+  if (v) {
+    return `«${ok}» significa ${v}, y ese sentido es el que pide el contexto de la oración.`;
+  }
+  if (a.includes('ingl') && /passive|was |were |written|built|by /.test((enun + ' ' + ok).toLowerCase())) {
+    return `«${ok}» es la forma pasiva correcta (be + past participle) que pide la oración.`;
+  }
+  if (a.includes('ingl') && /purpose|warning|sign|notice|what does/.test(enun.toLowerCase())) {
+    return `«${ok}» expresa la intención real del mensaje (para qué se dice/escribe), no otra función comunicativa.`;
+  }
+  if (a.includes('mate')) {
+    return `«${ok}» es el valor/relación que resulta al aplicar el procedimiento correcto a los datos del enunciado.`;
+  }
+  if (a.includes('lect')) {
+    return `«${ok}» es lo que el texto afirma o permite inferir con seguridad; no añade información externa.`;
+  }
+  if (a.includes('cien') || a.includes('natur')) {
+    return `«${ok}» identifica el proceso, la magnitud o la evidencia que el caso realmente pide.`;
+  }
+  if (a.includes('social')) {
+    return `«${ok}» ubica correctamente el hecho, la norma, la región o el mecanismo del enunciado.`;
+  }
+  const defC = limpio(concepto && concepto.definicion);
+  if (defC) {
+    return `«${ok}» cumple la definición del punto («${defC.slice(0, 90)}${defC.length > 90 ? '…' : ''}») en este enunciado.`;
+  }
+  return `«${ok}» responde exactamente a lo que pide este enunciado.`;
+}
+
+/**
+ * Modelo mental incorrecto más frecuente para este tipo de ítem.
+ */
+export function errorTipicoDe({ microClave, area, enunciado, okTexto }) {
+  const clave = String(microClave || '');
+  const a = String(area || '').toLowerCase();
+  const enun = limpio(enunciado).toLowerCase();
+  if (clave === 'phrasal_verbs' || detectarPhrasal(enun + ' ' + (okTexto || ''))) {
+    return 'Traducir el verbo y la partícula por separado, o elegir un phrasal “parecido” sin comprobar el sentido completo.';
+  }
+  if (clave === 'passive_voice') {
+    return 'Usar la forma activa (wrote) o un be + verbo mal conjugado en vez de be + past participle.';
+  }
+  if (clave === 'infer_purpose') {
+    return 'Confundir el propósito del mensaje con un saludo, una venta o una lectura literal de una sola palabra.';
+  }
+  if (a.includes('mate')) {
+    return 'Operar con los números visibles omitiendo un paso, una conversión o la pregunta exacta (duplicar/partir, invertir la razón).';
+  }
+  if (a.includes('lect')) {
+    return 'Elegir una idea plausible que “podría ser”, aunque el texto no la afirma ni permite inferirla.';
+  }
+  if (a.includes('cien') || a.includes('natur')) {
+    return 'Mezclar causa con efecto, o el proceso con su resultado, al leer el caso.';
+  }
+  if (a.includes('social')) {
+    return 'Intercambiar hechos, normas, ramas del poder o regiones parecidas sin anclarlas al caso.';
+  }
+  return 'Quedarse con la opción que “suena bien” sin verificarla contra la definición o relación del enunciado.';
+}
+
 export function explicarDistractorEspecifico({ mala, bien, enunciado, area }) {
   const m = limpio(mala);
   const b = limpio(bien);

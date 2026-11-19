@@ -12,9 +12,9 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" defer></script>
-  <script src="js/danteCacheVersion.js?v=c-1.3.129"></script>
-  <script src="js/danteStudentId.js?v=c-1.3.129"></script>
-  <script src="js/danteTemasRefuerzo.js?v=c-1.3.129"></script>
+  <script src="js/danteCacheVersion.js?v=c-1.3.130"></script>
+  <script src="js/danteStudentId.js?v=c-1.3.130"></script>
+  <script src="js/danteTemasRefuerzo.js?v=c-1.3.130"></script>
   <style>
     :root {
       --perfil-cyan: #7eb8c4;
@@ -488,7 +488,7 @@
         </div>
       </div>
     </section>
-    <p class="tr-foot-ver"><span id="badgeDanteVersion">c-1.3.129</span></p>
+    <p class="tr-foot-ver"><span id="badgeDanteVersion">c-1.3.130</span></p>
   </main>
 
   <script>
@@ -547,10 +547,31 @@
       function htmlExplicacion(tema) {
         var ex = (tema && tema.explicacion) || {};
         var html = '';
-        // 2 · Qué pasó
+        // 2 · Qué pasó (estructura AAA)
         html += '<div class="tr-block">';
         html += '<p class="tr-sec-h" style="margin:0 0 .55rem">2 · Qué pasó</p>';
-        if (ex.intro) html += '<p>' + escapeHtml(ex.intro) + '</p>';
+        var conceptoTxt = (ex.concepto && ex.concepto.definicion)
+          || (tema && tema.conceptoPrincipal && tema.conceptoPrincipal.definicion)
+          || '';
+        if (conceptoTxt) {
+          html += '<p><strong>Concepto:</strong> ' + escapeHtml(conceptoTxt) + '</p>';
+        }
+        var porqueOk = ex.porqueCorrecta || (tema && tema.porqueCorrecta) || '';
+        if (porqueOk) {
+          html += '<p style="margin-top:.45rem"><strong>Por qué es correcta:</strong> ' + escapeHtml(porqueOk) + '</p>';
+        }
+        if (Array.isArray(ex.distractores) && ex.distractores.length) {
+          html += '<p class="tr-sub" style="margin:.65rem 0 .35rem">Distractores</p><ul>';
+          ex.distractores.forEach(function (d) {
+            if (!d) return;
+            var linea = (d.letra ? (d.letra + ') ') : '') + (d.falla || d.explicacion || '');
+            if (d.atrae) linea += ' · Atrae porque: ' + d.atrae;
+            html += '<li>' + escapeHtml(linea) + '</li>';
+          });
+          html += '</ul>';
+        } else if (ex.intro) {
+          html += '<p>' + escapeHtml(ex.intro) + '</p>';
+        }
         var svg = (ex && ex.diagrama_svg) || (tema && tema.diagrama_svg) || '';
         if (svg) {
           html += '<button type="button" class="tr-diagram" data-tr-expand-diagram aria-label="Ampliar ayuda visual">'
@@ -593,10 +614,16 @@
           ex.pasos.forEach(function (s) { html += '<li>' + escapeHtml(s) + '</li>'; });
           html += '</ul></div>';
         }
-        if (Array.isArray(ex.errores) && ex.errores.length) {
+        var errorTipico = ex.errorTipico || (tema && tema.errorTipico) || '';
+        if (errorTipico || (Array.isArray(ex.errores) && ex.errores.length)) {
           html += '<div class="tr-block">';
           html += '<p class="tr-sec-h" style="margin:0 0 .55rem">Errores típicos</p><ul>';
-          ex.errores.forEach(function (s) { html += '<li>' + escapeHtml(s) + '</li>'; });
+          if (errorTipico) html += '<li><strong>Modelo mental incorrecto:</strong> ' + escapeHtml(errorTipico) + '</li>';
+          (ex.errores || []).forEach(function (s) {
+            if (!s) return;
+            if (errorTipico && String(s).indexOf(errorTipico) !== -1) return;
+            html += '<li>' + escapeHtml(s) + '</li>';
+          });
           html += '</ul></div>';
         }
         // 5 · Ejemplo (cartilla blanca, mismo formato que la pregunta fallida)
