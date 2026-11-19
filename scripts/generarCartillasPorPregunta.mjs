@@ -8,6 +8,15 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { fuentesDe } from './fuentesTemasRefuerzo.mjs';
+import {
+  conceptoPrincipal,
+  diagramaCartilla,
+  explicarDistractorEspecifico,
+  esJustifGenericaPlantilla,
+  detectarPhrasal,
+  defPhrasal,
+  defVocab
+} from './glosarioCartillas.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, '..');
@@ -118,15 +127,32 @@ function microDe(p, ops) {
     const hitOk = (okTxt.match(phRas) || [])[1];
     const hitBlob = (blob.match(phRas) || [])[1];
     if (hitOk || hitBlob || /phrasal/.test(blob)) {
-      const hit = (hitOk || hitBlob || '').toLowerCase();
+      const hit = (hitOk || hitBlob || '').toLowerCase().replace(/\s+/g, ' ');
+      const defHit = hit && defPhrasal(hit);
+      const terminosBase = [];
+      if (hit && defHit) {
+        terminosBase.push({
+          termino: hit,
+          definicion: `${hit.charAt(0).toUpperCase() + hit.slice(1)} significa ${defHit.es}.`,
+          ejemplo: defHit.tip
+        });
+      }
+      terminosBase.push(
+        { termino: 'phrasal verb', definicion: 'Verbo + partícula (out, up, into…) cuyo sentido no siempre es literal.', ejemplo: hit ? `${hit}` : 'phase out = retirar gradualmente' },
+        { termino: 'contexto', definicion: 'El resto de la oración fija qué partícula y qué sentido caben.', ejemplo: 'transition to cloud → eliminar lo viejo' }
+      );
+      // Añade significados ES de los distractores phrasal presentes
+      ops.forEach((o) => {
+        const pv = detectarPhrasal(o.texto);
+        const d = pv && defPhrasal(pv);
+        if (d && pv !== hit) {
+          terminosBase.push({ termino: pv, definicion: `${pv} significa ${d.es}.`, ejemplo: d.tip });
+        }
+      });
       return {
         clave: 'phrasal_verbs',
         titulo: hit ? `Inglés: phrasal verb «${hit}»` : 'Inglés: phrasal verbs en contexto',
-        terminosBase: [
-          { termino: 'phrasal verb', definicion: 'Verbo + partícula (out, up, into…) cuyo sentido no siempre es literal.', ejemplo: hit ? `${hit}` : 'phase out = retirar gradualmente' },
-          { termino: 'contexto', definicion: 'El resto de la oración fija qué partícula y qué sentido caben.', ejemplo: 'transition to cloud → eliminar lo viejo' },
-          { termino: 'colocación', definicion: 'Combinación natural de palabras; no se traduce palabra por palabra.', ejemplo: hit ? hit : 'phase out a system' }
-        ]
+        terminosBase: terminosBase.slice(0, 6)
       };
     }
     if (/passive|was written|were (written|built|made|designed)|__________ (by|with)|voz pasiva|past participle/.test(blob)
@@ -208,19 +234,54 @@ function justMap(p) {
     : {};
 }
 
-function buildIntro(p, ops, micro) {
+function justifDeOpcion(p, o, ops, correcta) {
+  const ok = ops.find((x) => x.letra === correcta) || {};
+  const bank = limpio(justMap(p)[o.letra] || '');
+  if (bank && !esJustifGenericaPlantilla(bank) && bank.length >= 40) {
+    // Si la del banco es específica pero no trae definición ES de phrasal, refuerza.
+    const pv = detectarPhrasal(o.texto);
+    const def = pv && defPhrasal(pv);
+    if (def && !bank.toLowerCase().includes(def.es.slice(0, 18).toLowerCase())) {
+      return `«${o.texto}» significa ${def.es}. ${bank}`;
+    }
+    return bank;
+  }
+  return explicarDistractorEspecifico({
+    mala: o.texto,
+    bien: ok.texto || '',
+    enunciado: enunciadoDe(p),
+    area: areaDe(p)
+  });
+}
+
+function buildIntro(p, ops, micro, concepto) {
   const correcta = correctaDe(p);
   const ok = ops.find((o) => o.letra === correcta);
-  const expl = limpio(p.explicacion_correcta || p.explicacion || '');
-  const just = justMap(p);
   const partes = [];
-  if (expl) partes.push(expl);
-  else if (ok) partes.push(`La opción ${correcta} («${ok.texto}») responde lo que pide el enunciado.`);
+  // 1) Definición obligatoria del concepto principal en español
+  if (concepto && concepto.definicion) {
+    partes.push(concepto.definicion);
+    if (concepto.ejemplo) partes.push(`Úsalo así: ${concepto.ejemplo}.`);
+  }
+  // 2) Por qué la correcta
+  if (ok) {
+    const pv = detectarPhrasal(ok.texto) || detectarPhrasal(enunciadoDe(p));
+    const def = pv && defPhrasal(pv);
+    const v = defVocab(ok.texto);
+    if (def) {
+      partes.push(`La opción ${correcta} («${ok.texto}») es correcta porque significa ${def.es} y encaja con el contexto del enunciado.`);
+    } else if (v) {
+      partes.push(`La opción ${correcta} («${ok.texto}») es correcta: significa ${v}.`);
+    } else {
+      const expl = limpio(p.explicacion_correcta || '');
+      if (expl && !/^La respuesta es/i.test(expl)) partes.push(expl);
+      else partes.push(`La opción ${correcta} («${ok.texto}») responde exactamente lo que pide el enunciado.`);
+    }
+  }
+  // 3) Distractores específicos
   ops.forEach((o) => {
     if (o.letra === correcta) return;
-    const j = limpio(just[o.letra] || '');
-    if (j) partes.push(`Opción ${o.letra}: ${j}`);
-    else partes.push(`Opción ${o.letra} («${o.texto}») no resuelve lo que pide este enunciado.`);
+    partes.push(`Opción ${o.letra}: ${justifDeOpcion(p, o, ops, correcta)}`);
   });
   if (micro && micro.titulo) {
     partes.push(`Esta cartilla refuerza exactamente: ${micro.titulo}.`);
@@ -233,11 +294,15 @@ function buildPasos(p, ops, micro) {
   const ok = ops.find((o) => o.letra === correcta);
   const clave = micro.clave;
   if (clave === 'phrasal_verbs') {
+    const pv = detectarPhrasal((ok && ok.texto) || '') || detectarPhrasal(enunciadoDe(p));
+    const def = pv && defPhrasal(pv);
     return [
-      'Lee la oración completa y qué cambio describe (eliminar, investigar, parecerse…).',
-      'Prueba cada phrasal verb en el hueco: ¿el sentido queda natural?',
-      `Quédate con la opción ${correcta}${ok ? ` («${ok.texto}»)` : ''} que expresa ese cambio.`,
-      'Descarta verbos que suenan cercanos pero cambian el significado.'
+      def
+        ? `Recuerda: «${pv}» significa ${def.es}.`
+        : 'Lee la oración completa y qué cambio describe (eliminar, investigar, parecerse…).',
+      'Traduce mentalmente cada opción al español y mírala contra el contexto.',
+      `Quédate con la opción ${correcta}${ok ? ` («${ok.texto}»)` : ''} cuyo significado sí encaja.`,
+      'Descarta las que significan otra cosa (p. ej. keep up ≠ phase out).'
     ];
   }
   if (clave === 'passive_voice') {
@@ -266,13 +331,11 @@ function buildPasos(p, ops, micro) {
 
 function buildErrores(p, ops) {
   const correcta = correctaDe(p);
-  const just = justMap(p);
   const out = [];
   ops.forEach((o) => {
     if (o.letra === correcta) return;
-    const j = limpio(just[o.letra] || '');
-    if (j) out.push(j.length > 140 ? j.slice(0, 137) + '…' : j);
-    else out.push(`Elegir «${o.texto}» sin verificar si cumple el enunciado.`);
+    const j = justifDeOpcion(p, o, ops, correcta);
+    out.push(j.length > 180 ? j.slice(0, 177) + '…' : j);
   });
   if (!out.length) {
     out.push('Confundir este ítem con un tema genérico cercano.');
@@ -281,37 +344,36 @@ function buildErrores(p, ops) {
   return out.slice(0, 4);
 }
 
-function buildEjemplo(p, ops) {
+function buildEjemplo(p, ops, concepto) {
   const correcta = correctaDe(p);
   const ok = ops.find((o) => o.letra === correcta);
-  const just = justMap(p);
+  const malas = ops.filter((o) => o.letra !== correcta);
   const pasos = [
-    '1) Lee el enunciado y qué pide.',
-    ...ops.filter((o) => o.letra !== correcta).slice(0, 2).map((o) => {
-      const j = limpio(just[o.letra] || '');
-      return j
-        ? `2) Descarta ${o.letra}: ${j.length > 110 ? j.slice(0, 107) + '…' : j}`
-        : `2) Descarta ${o.letra} («${o.texto}»): no cumple el enunciado.`;
+    concepto && concepto.definicion
+      ? `1) Concepto: ${concepto.definicion}`
+      : '1) Lee el enunciado y aísla lo que pide.',
+    ...malas.slice(0, 2).map((o, i) => {
+      const j = justifDeOpcion(p, o, ops, correcta);
+      return `${i + 2}) Descarta ${o.letra} («${o.texto}»): ${j.length > 120 ? j.slice(0, 117) + '…' : j}`;
     }),
-    `3) Conserva ${correcta}${ok ? `: «${ok.texto}»` : ''}.`
+    `${Math.min(4, malas.length + 2)}) Conserva ${correcta}${ok ? ` — «${ok.texto}»` : ''} porque sí cumple el sentido del enunciado.`
   ];
-  // Renumerar limpio
-  const pasosClean = [
-    '1) Lee el enunciado y aísla lo que pide.',
-    '2) Elimina distractores con la justificación de cada uno.',
-    `3) La respuesta es ${correcta}${ok ? ` — «${ok.texto}»` : ''}.`,
-    '4) Explica en una frase por qué las otras fallan en este mismo punto.'
-  ];
+  const mala0 = malas[0];
+  const j0 = mala0 ? justifDeOpcion(p, mala0, ops, correcta) : '';
   return {
     titulo: 'Ejemplo resuelto · este ítem',
     enunciado: enunciadoDe(p),
-    pasos: pasosClean,
+    pasos: pasos.slice(0, 4),
     respuesta: ok ? `${correcta}) ${ok.texto}` : correcta,
-    contraste: ops.find((o) => o.letra !== correcta)
+    contraste: mala0
       ? {
         titulo: 'Contraste rápido',
-        invalido: `Incorrecto: elegir un distractor cercano sin verificar el sentido completo.`,
-        valido: `Correcto: ${ok ? `«${ok.texto}»` : correcta} sí cumple lo pedido.`
+        invalido: `Incorrecto: «${mala0.texto}» — ${j0.length > 100 ? j0.slice(0, 97) + '…' : j0}`,
+        valido: ok
+          ? `Correcto: «${ok.texto}»${(detectarPhrasal(ok.texto) && defPhrasal(detectarPhrasal(ok.texto)))
+            ? ' — significa ' + defPhrasal(detectarPhrasal(ok.texto)).es
+            : ' sí cumple lo pedido.'}`
+          : `Correcto: ${correcta}`
       }
       : null
   };
@@ -329,10 +391,9 @@ function q(id, enunciado, opciones, correcta, justificacion_incorrectas, explica
   };
 }
 
-function practicaDe(p, ops, micro, cid) {
+function practicaDe(p, ops, micro, cid, concepto) {
   const correcta = correctaDe(p);
   const ok = ops.find((o) => o.letra === correcta);
-  const just = justMap(p);
   const malas = ops.filter((o) => o.letra !== correcta);
   const lista = [];
 
@@ -342,20 +403,21 @@ function practicaDe(p, ops, micro, cid) {
     'En el ítem que fallaste, ¿cuál opción sí responde el enunciado?',
     ops.map((o) => `${o.letra}) ${o.texto}`),
     correcta,
-    Object.fromEntries(malas.map((o) => [o.letra, limpio(just[o.letra]) || `«${o.texto}» no resuelve este enunciado.`])),
-    limpio(p.explicacion_correcta || '') || `La correcta es ${correcta}${ok ? ` («${ok.texto}»)` : ''}.`,
+    Object.fromEntries(malas.map((o) => [o.letra, justifDeOpcion(p, o, ops, correcta)])),
+    (concepto && concepto.definicion ? concepto.definicion + ' ' : '')
+      + (limpio(p.explicacion_correcta || '') || `La correcta es ${correcta}${ok ? ` («${ok.texto}»)` : ''}.`),
     'Misma pregunta · mismo punto'
   ));
 
   // P2: por qué un distractor falla
   if (malas[0]) {
     const m = malas[0];
-    const j = limpio(just[m.letra] || `«${m.texto}» no cumple lo pedido.`);
+    const j = justifDeOpcion(p, m, ops, correcta);
     lista.push(q(
       `${cid}_p2`,
       `¿Por qué la opción ${m.letra} («${m.texto}») no es correcta en este ítem?`,
       [
-        `A) ${j}`,
+        `A) ${j.length > 110 ? j.slice(0, 107) + '…' : j}`,
         'B) Porque es la más corta',
         'C) Porque siempre se elige la A',
         'D) Porque el enunciado no tiene respuesta'
@@ -373,30 +435,39 @@ function practicaDe(p, ops, micro, cid) {
 
   // P3: micro-habilidad
   if (micro.clave === 'phrasal_verbs') {
+    const pvOk = detectarPhrasal((ok && ok.texto) || '') || detectarPhrasal(enunciadoDe(p)) || 'phase out';
+    const defOk = defPhrasal(pvOk);
     lista.push(q(
       `${cid}_p3`,
-      '“The factory will ______ coal boilers and switch to solar.” ¿Qué phrasal verb encaja?',
+      `“The company will ______ its old system and move to a new one.” ¿Qué phrasal verb encaja con el mismo sentido que «${pvOk}»?`,
       ['A) phase out', 'B) take after', 'C) look into', 'D) keep up'],
       'A',
       {
-        B: 'take after = parecerse a alguien.',
-        C: 'look into = investigar.',
-        D: 'keep up = mantener el ritmo.'
+        B: 'Take after significa parecerse a alguien. No expresa eliminar un sistema.',
+        C: 'Look into significa investigar. No significa retirar gradualmente.',
+        D: 'Keep up significa mantenerse al día. No expresa eliminar el sistema.'
       },
-      'phase out = retirar/eliminar gradualmente, igual que en el ítem del filing system.',
+      (defOk
+        ? `${pvOk} significa ${defOk.es}. `
+        : '') + 'Phase out = retirar/eliminar gradualmente (mismo punto).',
       'Mismo phrasal · otro contexto'
     ));
     lista.push(q(
       `${cid}_p4`,
-      '«Phase out» en contexto de sistemas viejos significa:',
-      ['A) Retirarlos poco a poco', 'B) Investigarlos', 'C) Imitarlos', 'D) Mantenerlos al día'],
+      `«${pvOk}» significa en español:`,
+      [
+        `A) ${defOk ? defOk.es.charAt(0).toUpperCase() + defOk.es.slice(1) : 'Retirar o eliminar algo de forma gradual'}`,
+        'B) Investigar un asunto',
+        'C) Parecerse a alguien',
+        'D) Mantenerse al día'
+      ],
       'A',
       {
         B: 'Eso sería look into.',
         C: 'Eso sería take after.',
         D: 'Eso sería keep up.'
       },
-      'Retirar gradualmente = phase out.',
+      defOk ? `${pvOk} = ${defOk.es}.` : 'Debes memorizar el significado en español del phrasal.',
       'Definición del phrasal'
     ));
   } else if (micro.clave === 'passive_voice') {
@@ -476,11 +547,12 @@ function practicaDe(p, ops, micro, cid) {
     ));
     if (malas[1]) {
       const m2 = malas[1];
+      const j2 = justifDeOpcion(p, m2, ops, correcta);
       lista.push(q(
         `${cid}_p4`,
         `Respecto de la opción ${m2.letra} («${m2.texto}») en tu ítem:`,
         [
-          'A) Es un distractor que no cumple el enunciado',
+          `A) ${j2.length > 100 ? j2.slice(0, 97) + '…' : j2}`,
           'B) Es siempre la correcta',
           'C) Reemplaza al enunciado',
           'D) No hace falta leerla'
@@ -491,7 +563,7 @@ function practicaDe(p, ops, micro, cid) {
           C: 'El enunciado manda.',
           D: 'Hay que contrastar todas.'
         },
-        limpio(just[m2.letra]) || 'Es distractor en este ítem.',
+        j2,
         'Distractores'
       ));
     }
@@ -500,7 +572,7 @@ function practicaDe(p, ops, micro, cid) {
   return lista.slice(0, 4);
 }
 
-function terminosDe(p, ops, micro) {
+function terminosDe(p, ops, micro, concepto) {
   const out = [];
   const seen = new Set();
   function add(t, def, ej, desdePregunta) {
@@ -515,15 +587,36 @@ function terminosDe(p, ops, micro) {
     });
   }
 
+  // Primero: definición obligatoria del concepto principal
+  if (concepto && concepto.termino && concepto.definicion) {
+    add(concepto.termino, concepto.definicion, concepto.ejemplo || '', true);
+  }
+
   (micro.terminosBase || []).forEach((tm) => add(tm.termino, tm.definicion, tm.ejemplo, false));
 
-  // Palabras del ítem (ingles / términos destacados)
   const enun = enunciadoDe(p);
   const ok = ops.find((o) => o.letra === correctaDe(p));
   if (ok && ok.texto && ok.texto.length <= 48) {
-    add(ok.texto, limpio(p.explicacion_correcta || '').slice(0, 160) || 'Opción correcta de este ítem.', enun.slice(0, 80), true);
+    const pv = detectarPhrasal(ok.texto);
+    const def = pv && defPhrasal(pv);
+    const v = defVocab(ok.texto);
+    add(
+      ok.texto,
+      def ? `${ok.texto} significa ${def.es}.` : (v ? `«${ok.texto}» significa ${v}.` : 'Opción correcta de este ítem.'),
+      enun.slice(0, 80),
+      true
+    );
   }
-  // Extrae posibles términos entre comillas o en mayúsculas cortas
+  // Distractores con definición ES cuando hay glosario
+  ops.forEach((o) => {
+    if (o.letra === correctaDe(p)) return;
+    const pv = detectarPhrasal(o.texto);
+    const def = pv && defPhrasal(pv);
+    const v = defVocab(o.texto);
+    if (def) add(pv, `${pv} significa ${def.es}.`, def.tip, true);
+    else if (v) add(o.texto, `«${o.texto}» significa ${v}.`, 'Distractor de este ítem', true);
+  });
+
   const quoted = enun.match(/[«"]([^»"]{3,40})[»"]/g) || [];
   quoted.slice(0, 2).forEach((qraw) => {
     const t = qraw.replace(/[«»"]/g, '');
@@ -531,31 +624,11 @@ function terminosDe(p, ops, micro) {
   });
 
   while (out.length < 3) {
-    add(
-      'enunciado',
-      'Lo que la pregunta pide exactamente; toda opción debe medirse contra eso.',
-      enun.slice(0, 60),
-      false
-    );
-    add(
-      'distractor',
-      'Opción incorrecta cercana que parece plausible pero no cumple el enunciado.',
-      (ops.find((o) => o.letra !== correctaDe(p)) || {}).texto || '',
-      false
-    );
-    add(
-      'justificación',
-      'Razón por la que una opción falla o por la que la correcta funciona.',
-      '',
-      false
-    );
+    add('enunciado', 'Lo que la pregunta pide exactamente; toda opción debe medirse contra eso.', enun.slice(0, 60), false);
+    add('distractor', 'Opción incorrecta cercana que parece plausible pero no cumple el enunciado.', (ops.find((o) => o.letra !== correctaDe(p)) || {}).texto || '', false);
+    add('justificación', 'Razón concreta (con significado) por la que una opción falla.', '', false);
   }
   return out.slice(0, 6);
-}
-
-function diagramaMini(titulo) {
-  const label = String(titulo || 'Ayuda').slice(0, 42);
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 160" role="img" aria-label="${label}"><rect width="520" height="160" rx="14" fill="#0b1220"/><rect x="1" y="1" width="518" height="158" rx="13" fill="none" stroke="#1e293b"/><text x="24" y="28" fill="#94a3b8" font-size="11" font-family="ui-monospace,monospace" letter-spacing="1">AYUDA VISUAL</text><text x="24" y="64" fill="#e2e8f0" font-size="14">${label.replace(/[<>&]/g, '')}</text><text x="24" y="96" fill="#7eb8c4" font-size="13">Enunciado → descarta distractores → opción que cumple</text><text x="24" y="128" fill="#94a3b8" font-size="12">Practica el mismo punto, no un tema vecino</text></svg>`;
 }
 
 function cartillaDePregunta(p) {
@@ -563,16 +636,34 @@ function cartillaDePregunta(p) {
   const micro = microDe(p, ops);
   const cid = cartillaIdDe(p.id);
   const area = areaDe(p);
-  const intro = buildIntro(p, ops, micro);
+  const correcta = correctaDe(p);
+  const concepto = conceptoPrincipal({
+    titulo: micro.titulo,
+    microClave: micro.clave,
+    ops,
+    correcta,
+    enunciado: enunciadoDe(p),
+    area
+  });
+  const intro = buildIntro(p, ops, micro, concepto);
   const pasos = buildPasos(p, ops, micro);
   const errores = buildErrores(p, ops);
-  const ejemplo = buildEjemplo(p, ops);
-  const practica = practicaDe(p, ops, micro, cid);
-  const terminos = terminosDe(p, ops, micro);
+  const ejemplo = buildEjemplo(p, ops, concepto);
+  const practica = practicaDe(p, ops, micro, cid, concepto);
+  const terminos = terminosDe(p, ops, micro, concepto);
   const fuentes = fuentesDe(micro.clave, area) || fuentesDe(limpio(p.sub_competencia || p.sub || ''), area) || [
     { tipo: 'guia', texto: `Repasa el mismo punto: ${micro.titulo}` },
     { tipo: 'video', texto: `Busca: “${micro.titulo}” (explicación corta + 3 ejemplos)` }
   ];
+  const diagrama = diagramaCartilla({
+    microClave: micro.clave,
+    titulo: micro.titulo,
+    enunciado: enunciadoDe(p),
+    ops,
+    correcta,
+    area,
+    concepto
+  });
 
   return {
     id: cid,
@@ -584,9 +675,10 @@ function cartillaDePregunta(p) {
     estadoContenido: 'completo',
     itemId: String(p.id),
     microClave: micro.clave,
+    conceptoPrincipal: concepto,
     profundizar: `Sigue con 2–3 ítems del mismo punto: «${micro.titulo}».`,
     fuentes: Array.isArray(fuentes) ? fuentes.slice(0, 2) : fuentes,
-    diagrama_svg: diagramaMini(micro.titulo),
+    diagrama_svg: diagrama,
     terminos,
     explicacion: {
       intro,
@@ -595,7 +687,8 @@ function cartillaDePregunta(p) {
       ejemplo_resuelto: ejemplo,
       terminos,
       fuentes: Array.isArray(fuentes) ? fuentes.slice(0, 2) : fuentes,
-      diagrama_svg: diagramaMini(micro.titulo)
+      diagrama_svg: diagrama,
+      concepto: concepto
     },
     practica
   };

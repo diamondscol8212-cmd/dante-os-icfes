@@ -144,6 +144,9 @@ function esJustifGenericaInglesMejorable(razon, area, item) {
   const a = String(area || '').toLowerCase();
   if (!(a.includes('ingl') || /grammar|vocab|dialog|cloze|reading|aviso|sign/.test(subDe(item)))) return false;
   const r = limpio(razon);
+  // Plantillas genéricas (phrasal / grammar) → siempre reescribir con significado concreto.
+  if (/Error t[ií]pico de phrasal verb: la part[ií]cula cambia el sentido/i.test(r)) return true;
+  if (/Error t[ií]pico de voz pasiva: falta be \+ past participle/i.test(r) && r.length < 200) return true;
   // Tip genérico viejo: conviene reescribir si el ítem pide un punto más fino.
   if (!/suena familiar, pero no encaja con el tiempo/i.test(r) && !/forma gramatical o el vocabulario/i.test(r)) {
     return false;
@@ -215,20 +218,57 @@ function errorTipicoPorTexto(mala, bien, sub, area, item) {
 
   // Inglés primero: evita que palabras como hour/% disparen tips de cálculo.
   if (String(area || '').includes('ingl') || /grammar|vocab|dialog|cloze|reading|aviso|sign/.test(sub)) {
-    const phrasal = /\b(phase out|keep up|look into|take after|give up|turn down|put off|carry out|run out|break down|come up|fill in|set up|bring about|call off|get over|make up|pick up|work out)\b/i;
-    if (phrasal.test(m + ' ' + b + ' ' + enunciado)) {
-      return 'Error típico de phrasal verb: la partícula cambia el sentido; esta opción significa otra cosa y no encaja con el contexto de la oración.';
+    const PHRASAL_ES = {
+      'phase out': 'retirar o eliminar algo de forma gradual',
+      'keep up': 'mantenerse al día o continuar al mismo ritmo',
+      'look into': 'investigar o examinar un asunto',
+      'take after': 'parecerse a alguien (familia/rasgos)',
+      'put off': 'posponer o aplazar algo',
+      'give up': 'rendirse o dejar de intentar',
+      'turn down': 'rechazar una oferta o bajar el volumen',
+      'carry out': 'llevar a cabo o ejecutar un plan',
+      'run out': 'agotarse (quedarse sin algo)',
+      'break down': 'averiarse o desglosar en partes',
+      'set up': 'montar, configurar o fundar algo',
+      'call off': 'cancelar un evento o plan',
+      'get over': 'superar una dificultad o enfermedad',
+      'work out': 'resolver un problema o ejercitarse',
+      'make up': 'inventar; reconciliarse; o compensar',
+      'pick up': 'recoger; mejorar; o aprender con la práctica',
+      'bring about': 'provocar o causar un cambio',
+      'come across': 'encontrarse con algo por casualidad',
+      'fill in': 'completar un formulario',
+      'go through': 'atravesar una experiencia o revisar con detalle',
+      'turn into': 'convertirse en'
+    };
+    const phRe = new RegExp('\\b(' + Object.keys(PHRASAL_ES).sort((a, b2) => b2.length - a.length).join('|').replace(/\s+/g, '\\s+') + ')\\b', 'i');
+    const hitM = (m.match(phRe) || [])[1];
+    const hitB = (b.match(phRe) || [])[1] || (enunciado.match(phRe) || [])[1];
+    if (hitM || hitB || /phrasal/.test(enunciado)) {
+      const keyM = hitM ? String(hitM).toLowerCase().replace(/\s+/g, ' ') : '';
+      const keyB = hitB ? String(hitB).toLowerCase().replace(/\s+/g, ' ') : '';
+      const defM = keyM && PHRASAL_ES[keyM];
+      const defB = keyB && PHRASAL_ES[keyB];
+      if (defM && defB) {
+        return `«${limpio(mala)}» significa ${defM}. No expresa lo mismo que «${limpio(bien)}» (${defB}), que sí encaja con el contexto.`;
+      }
+      if (defM) {
+        return `«${limpio(mala)}» significa ${defM}. Ese sentido no encaja con lo que pide la oración` + (defB ? `; la correcta significa ${defB}` : '') + '.';
+      }
+      if (defB) {
+        return `Esta opción no significa lo mismo que «${limpio(bien)}» (${defB}), que sí responde al contexto de la oración.`;
+      }
     }
     if (/passive|was |were |been |by a |by the |past participle|written|built|constructed|discovered/.test(m + ' ' + b + ' ' + enunciado)) {
-      return 'Error típico de voz pasiva: falta be + past participle, o usaste la forma activa/incorrecta del verbo.';
+      return `«${limpio(mala)}» no forma la voz pasiva correcta (be + past participle). La forma válida aquí es «${limpio(bien)}».`;
     }
     if (/purpose|warning|sign|notice|what does .+ (want|mean)|intention/.test(enunciado)) {
-      return 'Error típico: confundiste el propósito del mensaje (avisar, pedir, informar) con un saludo, una venta u otra función comunicativa.';
+      return `«${limpio(mala)}» describe otra función comunicativa (saludo, venta, etc.). El propósito real del mensaje lo captura «${limpio(bien)}».`;
     }
     if (/dialog|conversation|a:|b:|speaker|how are you|could you/.test(enunciado + ' ' + sub)) {
-      return 'Error típico de diálogo: la respuesta no es coherente con lo que acaba de pedir o decir el interlocutor.';
+      return `«${limpio(mala)}» no responde de forma coherente a lo que acaba de pedir o decir el interlocutor. Encaja mejor «${limpio(bien)}».`;
     }
-    return 'Error típico: la forma gramatical o el vocabulario suena familiar, pero no encaja con el tiempo, la colocación o la estructura que pide la oración.';
+    return `«${limpio(mala)}» suena cercano, pero no encaja con el tiempo, la colocación o el sentido exacto. La opción que sí cumple es «${limpio(bien)}».`;
   }
 
   if (esMate && (/probabil|azar|dado|carta|moneda|evento/.test(sub + enunciado) || sub === 'probabilidad')) {
