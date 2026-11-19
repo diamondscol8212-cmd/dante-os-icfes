@@ -110,7 +110,15 @@
       return '';
     }
 
-    // 0) Id explícito de cartilla de contenido (puede ser más fino que sub_competencia).
+    // 0) Cartilla 1:1 por pregunta (q_<itemId>) si el fallo trae itemId.
+    var itemId = String(meta.itemId || meta.id || meta.pregunta_id || '').trim();
+    if (itemId) {
+      var qid = 'q_' + String(itemId).toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+      var hitItem = enCatalogo(qid);
+      if (hitItem) return hitItem;
+    }
+
+    // 0b) Id explícito de cartilla de contenido (puede ser más fino que sub_competencia).
     var hitRef = enCatalogo(refuerzo);
     if (hitRef) return hitRef;
 
