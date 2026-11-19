@@ -318,8 +318,16 @@
     }
 
     closeToSala() {
+      this._faseHackea = 'sala';
+      this._transicionDia1 = false;
+      this._clearTimers();
       this._clearStorm();
       if (global.HackeaSyncIntro) global.HackeaSyncIntro.cancel();
+      try {
+        if (global.HackeaPulso && typeof global.HackeaPulso.abort === 'function') {
+          global.HackeaPulso.abort();
+        }
+      } catch (_) { /* ignore */ }
       // Si quedó abierta la respiración de examen (legado / carrera), cerrarla
       // sin continuar a workspace — Volver a la sala = solo sala.
       try {
@@ -354,6 +362,10 @@
 
     /** Calibrado pero sin Día 1 sellado: reabre la puerta a Día 1 (no repite umbral). */
     openDay1Gate() {
+      // No reabrir “Ya te escucha” si ya vamos al día 1 o el pulso está activo.
+      if (this._transicionDia1 || this._faseHackea === 'dia1_lanzando' || this._faseHackea === 'pulso') {
+        return;
+      }
       this.mind.bindStudent(studentKey());
       document.body.classList.add('hackea-ritual-active');
       document.getElementById('viewHackeaMente')?.classList.remove(
@@ -362,6 +374,7 @@
       );
       this._showView(true);
       this.actIndex = 4;
+      this._faseHackea = 'activacion';
       this._cierre(this._stage());
       if (window.DanteSpiral) window.DanteSpiral.setMode('focus');
     }
@@ -883,11 +896,17 @@
     /** Activación: umbral listo → día 1 del hack (misma lógica de arranque, copy claro). */
     _cierre(stage) {
       if (!stage) return;
+      // Si ya lanzamos el día 1, no re-pintar “Ya te escucha”.
+      if (this._transicionDia1 || this._faseHackea === 'dia1_lanzando' || this._faseHackea === 'pulso') {
+        return;
+      }
       const view = document.getElementById('viewHackeaMente');
       if (view) {
         view.classList.remove('hackea-en-sinred', 'hackea-en-tormenta', 'hackea-en-eco', 'hackea-en-llegada', 'hackea-en-pulso');
         view.classList.add('hackea-en-activacion');
       }
+      this._faseHackea = 'activacion';
+      this._transicionDia1 = false;
       const salirBtn = document.querySelector('#viewHackeaMente .hackea-salir-umbral');
       if (salirBtn) salirBtn.textContent = 'Volver a la sala';
       stage.innerHTML = `
@@ -896,7 +915,7 @@
           <div class="hackea-act-shell hackea-cierre-sheet">
             <div class="hackea-act-label">MODO DANTE</div>
             <h2 class="hackea-act-title">Ya te escucha</h2>
-            <p class="hackea-prompt hackea-cierre-copy">El pulso terminó. Ahora empieza tu entrenamiento.</p>
+            <p class="hackea-prompt hackea-cierre-copy">El umbral terminó. Ahora empieza tu entrenamiento.</p>
             <p class="hackea-cierre-sub">Día 1 de 15. Preguntas reales. Sin ayudas. Sin pausa.</p>
             <button type="button" class="hl-cta hackea-pulso-cta" id="hackeaBtnPulso">Comenzar el día 1</button>
           </div>
@@ -904,9 +923,21 @@
       this._clearTimers();
       this._timers.push(setTimeout(() => stage.querySelector('#hackeaActivacion')?.classList.add('is-in'), 20));
       const startDay1 = () => {
+        if (this._faseHackea === 'sala') return;
+        this._faseHackea = 'pulso';
+        this._transicionDia1 = false;
         view?.classList.remove('hackea-en-activacion');
-        // Quitar la hoja “Ya te escucha” para que no reaparezca bajo la intro/pulso.
         if (stage) stage.innerHTML = '';
+        // Nunca abrir la respiración de examen al entrar al día 1.
+        try {
+          window.danteRespiracionPendiente = false;
+          if (window.DanteExamWorkspace) window.DanteExamWorkspace._respiracionCerrada = true;
+          const modal = document.getElementById('modalRespiracionInicio');
+          if (modal) {
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+          }
+        } catch (_) { /* ignore */ }
         if (global.HackeaPulso && typeof global.HackeaPulso.start === 'function') {
           global.HackeaPulso.start(this.mind, this, { blockIndex: 1, campaignDay: 1 });
         } else {
@@ -914,11 +945,20 @@
         }
       };
       stage.querySelector('#hackeaBtnPulso')?.addEventListener('click', () => {
+        if (this._transicionDia1 || this._faseHackea === 'dia1_lanzando' || this._faseHackea === 'pulso') {
+          return;
+        }
         const btn = stage.querySelector('#hackeaBtnPulso');
         if (btn) btn.disabled = true;
-        // Limpiar ya: evita flash de “Ya te escucha” al cerrar Sincronía.
+        this._clearTimers();
+        this._transicionDia1 = true;
+        this._faseHackea = 'dia1_lanzando';
+        // Limpiar ya: evita flash de “Ya te escucha” bajo la intro del día.
         if (stage) stage.innerHTML = '';
         view?.classList.remove('hackea-en-activacion');
+        try {
+          window.danteRespiracionPendiente = false;
+        } catch (_) { /* ignore */ }
         if (global.HackeaCampaign && typeof global.HackeaCampaign.playDayIntro === 'function') {
           global.HackeaCampaign.playDayIntro(1, startDay1);
         } else {
@@ -1174,6 +1214,12 @@
     clearHackeaObligatorio();
 
     const continueOpen = () => {
+      // Si ya estamos en transición al día 1 o en pulso, no reabrir umbral ni “Ya te escucha”.
+      if (hackeaRitual && (hackeaRitual._transicionDia1
+        || hackeaRitual._faseHackea === 'dia1_lanzando'
+        || hackeaRitual._faseHackea === 'pulso')) {
+        return;
+      }
       const calibrated = !!(mindProfile && typeof mindProfile.isCalibrated === 'function' && mindProfile.isCalibrated());
       const arcSt = global.HackeaArc ? global.HackeaArc.status() : { phase: 'none' };
 

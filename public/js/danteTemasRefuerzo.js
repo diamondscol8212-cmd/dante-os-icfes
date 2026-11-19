@@ -317,7 +317,18 @@
   function tituloDe(temaId, meta) {
     var id = String(temaId || '').trim();
     var t = temaPorId(id);
-    if (t && t.titulo && !pareceIdInterno(t.titulo)) return String(t.titulo).trim();
+    // Preferir un título concreto del concepto (evita listas genéricas repetidas).
+    if (t) {
+      var concepto = t.conceptoPrincipal && t.conceptoPrincipal.termino
+        ? String(t.conceptoPrincipal.termino).replace(/\s+/g, ' ').trim()
+        : '';
+      if (concepto && concepto.length >= 8 && concepto.length <= 90
+        && !pareceIdInterno(concepto) && !pareceFragmentoPregunta(concepto)
+        && !/^tema de refuerzo$/i.test(concepto)) {
+        return concepto;
+      }
+      if (t.titulo && !pareceIdInterno(t.titulo)) return String(t.titulo).trim();
+    }
     var candidatos = [
       meta && meta.titulo,
       meta && meta.tema_a_estudiar,

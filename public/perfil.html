@@ -20,12 +20,12 @@
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="theme.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/danteCacheVersion.js?v=c-1.3.138"></script>
-    <script src="js/danteRevealScroll.js?v=c-1.3.138"></script>
-    <script src="js/danteSaber11Info.js?v=c-1.3.138"></script>
-    <script src="js/danteStudentId.js?v=c-1.3.138"></script>
-    <script src="js/danteTemasRefuerzo.js?v=c-1.3.138"></script>
-    <script src="js/danteNotificaciones.js?v=c-1.3.138"></script>
+    <script src="js/danteCacheVersion.js?v=c-1.3.139"></script>
+    <script src="js/danteRevealScroll.js?v=c-1.3.139"></script>
+    <script src="js/danteSaber11Info.js?v=c-1.3.139"></script>
+    <script src="js/danteStudentId.js?v=c-1.3.139"></script>
+    <script src="js/danteTemasRefuerzo.js?v=c-1.3.139"></script>
+    <script src="js/danteNotificaciones.js?v=c-1.3.139"></script>
     <script src="js/danteNube.js?v=c-1.3.87"></script>
     <script src="js/danteRegistro.js?v=c-1.3.87"></script>
     <script src="js/danteVectorIcons.js"></script>
@@ -1460,7 +1460,31 @@
             padding: 0.8rem 0.9rem; font-size: 0.84rem; line-height: 1.5; color: #881337;
         }
         #modalBoletinSesion .reporte-papel .rp-manana-txt {
-            font-size: 0.9rem; line-height: 1.5; color: #1e293b; margin: 0; font-weight: 550;
+            font-size: 0.9rem; line-height: 1.55; color: #1e293b; margin: 0; font-weight: 550;
+        }
+        #modalBoletinSesion .reporte-papel .rp-stat-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 0.45rem; margin: 0.15rem 0 0.7rem;
+        }
+        #modalBoletinSesion .reporte-papel .rp-stat {
+            background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.7rem; padding: 0.55rem 0.65rem;
+        }
+        #modalBoletinSesion .reporte-papel .rp-stat b {
+            display: block; font-family: 'Source Serif 4', Georgia, serif;
+            font-size: 1.15rem; line-height: 1.1; color: #1e3a5f; font-weight: 700;
+        }
+        #modalBoletinSesion .reporte-papel .rp-stat span {
+            display: block; margin-top: 0.18rem; font-size: 0.68rem; color: #64748b; font-weight: 650;
+        }
+        #modalBoletinSesion .reporte-papel .rp-next {
+            margin-top: 0.85rem; padding: 0.75rem 0.8rem;
+            border-radius: 0.75rem; background: #eff6ff; border: 1px solid #bfdbfe;
+        }
+        #modalBoletinSesion .reporte-papel .rp-next-lbl {
+            display: block; font-size: 0.65rem; font-weight: 750; letter-spacing: 0.04em;
+            text-transform: uppercase; color: #1d4ed8; margin-bottom: 0.28rem;
+        }
+        #modalBoletinSesion .reporte-papel .rp-next p {
+            margin: 0; font-size: 0.88rem; line-height: 1.45; color: #0f172a; font-weight: 600;
         }
         #modalBoletinSesion .reporte-papel .rp-temas-list {
             list-style: none; margin: 0; padding: 0; display: grid; gap: 0.45rem;
@@ -3253,8 +3277,8 @@
                     let badgeTxt = 'Sin datos';
                     let barCls = 'empty';
                     if (has) {
-                        if (pct >= 70) { badge = 'ok'; badgeTxt = 'Fortaleza'; barCls = ''; }
-                        else if (pct >= 40) { badge = 'mid'; badgeTxt = 'En calibración'; barCls = 'mid'; }
+                        if (pct >= 85) { badge = 'ok'; badgeTxt = 'Fortaleza'; barCls = ''; }
+                        else if (pct >= 55) { badge = 'mid'; badgeTxt = 'En progreso'; barCls = 'mid'; }
                         else { badge = 'low'; badgeTxt = 'Para reforzar'; barCls = 'low'; }
                     }
                     const detalle = has ? `${fila.aciertos}/${fila.total}` : '';
@@ -3481,7 +3505,7 @@
             static async compartirBoletinWhatsApp() {
                 const url = await this.obtenerUrlInformeGeneral();
                 const nombre = this._nombreEstudianteParaPadres();
-                const mensaje = `Hola. Te comparto el informe general de avance de ${nombre} en Dante OS. Aquí puedes ver su progreso completo: ${url}`;
+                const mensaje = `Hola. Te comparto el informe general completo de ${nombre} en Dante OS (Hackea, simulacro, entrenamiento, temas y proyección): ${url}`;
                 const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(mensaje)}`;
                 window.open(waUrl, '_blank');
             }
@@ -3527,8 +3551,8 @@
             static toggleModoVista() {
                 const btn = document.getElementById("btnToggleMode");
                 if (btn) {
-                    const isParent = btn.innerText.includes("PADRE");
-                    btn.innerText = isParent ? "VISTA: DOCENTE / FORENSE" : "VISTA: RESUMEN PADRE";
+                    const isParent = btn.innerText.includes("PADRE") || /resumen/i.test(btn.innerText);
+                    btn.innerText = isParent ? "Vista: detalle" : "Vista: resumen para padres";
                 }
             }
 
@@ -4986,10 +5010,10 @@
                 let areaRows = '';
                 Object.keys(precMap || {}).forEach((k) => {
                     const pct = Math.max(0, Math.min(100, Math.round(Number(precMap[k]) || 0)));
-                    let badgeText = 'Fortaleza';
-                    let badgeClass = 'ok';
-                    if (pct < 40) { badgeText = 'Para reforzar'; badgeClass = 'low'; }
-                    else if (pct < 70) { badgeText = 'En calibración'; badgeClass = 'mid'; }
+                    let badgeText = 'Para reforzar';
+                    let badgeClass = 'low';
+                    if (pct >= 85) { badgeText = 'Fortaleza'; badgeClass = 'ok'; }
+                    else if (pct >= 55) { badgeText = 'En progreso'; badgeClass = 'mid'; }
                     areaRows += `
                         <div class="rp-area-row">
                             <div class="rp-area-top">
@@ -5247,10 +5271,10 @@
                 if (!lista.length) return '';
                 return lista.map((a) => {
                     const pct = Math.max(0, Math.min(100, Math.round(a.pct)));
-                    let badgeText = 'Fortaleza';
-                    let badgeClass = 'ok';
-                    if (pct < 40) { badgeText = 'Para reforzar'; badgeClass = 'low'; }
-                    else if (pct < 70) { badgeText = 'En progreso'; badgeClass = 'mid'; }
+                    let badgeText = 'Para reforzar';
+                    let badgeClass = 'low';
+                    if (pct >= 85) { badgeText = 'Fortaleza'; badgeClass = 'ok'; }
+                    else if (pct >= 55) { badgeText = 'En progreso'; badgeClass = 'mid'; }
                     const k = String(a.key || '').toLowerCase();
                     let color = '#334155';
                     if (k.includes('lect')) color = '#7c3aed';
@@ -5432,17 +5456,20 @@
                             : null;
                         let titulo = (typeof window.DanteTemasRefuerzo.tituloDe === 'function')
                             ? window.DanteTemasRefuerzo.tituloDe(id, p)
-                            : (p.titulo || (cat && cat.titulo) || 'Tema de refuerzo');
-                        titulo = String(titulo || '').replace(/\s+/g, ' ').trim();
-                        if (!titulo || /^q[_ ]/i.test(titulo) || /^[0-9a-f]{8}[-_ ]/i.test(titulo)) {
-                            titulo = (cat && cat.titulo) || 'Tema de refuerzo';
-                        }
+                            : (p.titulo || (cat && cat.titulo) || '');
+                        titulo = String(titulo || '').replace(/\s+/g, ' ').trim()
+                            .replace(/^q[_-]?\w+\s*[:·-]?\s*/i, '')
+                            .replace(/^[0-9a-f]{8}[-_ ]+/i, '');
                         const areaKey = String((cat && cat.area) || p.area || '').toLowerCase().replace(/\s+/g, '_');
+                        const areaNombre = AREA_NOM[areaKey] || (areaKey ? areaKey.replace(/_/g, ' ') : '');
+                        if (!titulo || /^tema de refuerzo$/i.test(titulo) || /^q[_ ]/i.test(titulo)) {
+                            titulo = (cat && cat.titulo) || (areaNombre ? ('Repaso de ' + areaNombre) : 'Tema para repasar');
+                        }
                         return {
                             id,
-                            titulo: titulo.slice(0, 120),
+                            titulo: titulo.slice(0, 110),
                             area: areaKey,
-                            areaNombre: AREA_NOM[areaKey] || (areaKey ? areaKey.replace(/_/g, ' ') : '')
+                            areaNombre
                         };
                     }).filter((t) => t && t.titulo && !/^q[_ ]/i.test(t.titulo));
                 } catch (e) {
@@ -5555,33 +5582,35 @@
 
                 let trainHtml = '';
                 if (train.totalSesiones <= 0 && !train.diagHecho && train.totalRespuestas <= 0) {
-                    trainHtml = `<p class="rp-manana-txt">Aún no hay sesiones de entrenamiento o refuerzo registradas. Cuando completes un bloque, aquí verás cuántos llevas y cómo vas por área.</p>`;
+                    trainHtml = `<p class="rp-manana-txt">Todavía no hay sesiones de entrenamiento o refuerzo. Cuando completes un bloque, aquí verás cómo vas.</p>`;
                 } else {
-                    const partes = [];
+                    const stats = [];
                     if (train.totalSesiones > 0) {
-                        partes.push(`Has completado <strong>${train.totalSesiones}</strong> sesión${train.totalSesiones === 1 ? '' : 'es'} registrada${train.totalSesiones === 1 ? '' : 's'}.`);
+                        stats.push(`<div class="rp-stat"><b>${train.totalSesiones}</b><span>Sesiones hechas</span></div>`);
                     }
-                    if (train.diags || train.diagHecho) {
-                        partes.push(train.diags > 0
-                            ? `${train.diags} de diagnóstico inicial.`
-                            : 'Ya completaste el diagnóstico inicial.');
+                    if (train.diags > 0 || train.diagHecho) {
+                        stats.push(`<div class="rp-stat"><b>${train.diags > 0 ? train.diags : 1}</b><span>Diagnóstico</span></div>`);
                     }
-                    if (train.diarios) partes.push(`${train.diarios} de entrenamiento diario.`);
-                    if (train.refuerzos) partes.push(`${train.refuerzos} de refuerzo.`);
-                    if (train.totalRespuestas > 0) {
-                        partes.push(`Llevas <strong>${train.totalAciertos} aciertos</strong> en ${train.totalRespuestas} preguntas guardadas.`);
+                    if (train.diarios > 0) {
+                        stats.push(`<div class="rp-stat"><b>${train.diarios}</b><span>Entrenamiento diario</span></div>`);
+                    }
+                    if (train.refuerzos > 0) {
+                        stats.push(`<div class="rp-stat"><b>${train.refuerzos}</b><span>Refuerzos</span></div>`);
                     }
                     if (train.precisionGeneral != null) {
-                        partes.push(`Tu precisión general acumulada es del <strong>${train.precisionGeneral}%</strong>.`);
-                    } else {
-                        partes.push('Todavía no hay suficientes respuestas para calcular la precisión general.');
+                        stats.push(`<div class="rp-stat"><b>${train.precisionGeneral}%</b><span>Precisión acumulada</span></div>`);
+                    }
+                    const notas = [];
+                    if (train.totalRespuestas > 0) {
+                        notas.push(`Llevas <strong>${train.totalAciertos || 0}</strong> aciertos en ${train.totalRespuestas} preguntas.`);
                     }
                     if (train.fuerte && train.debil && train.fuerte.key !== train.debil.key) {
-                        partes.push(`Tu área más fuerte ahora es <strong>${this._escTexto(train.fuerte.name)}</strong> (${Math.round(train.fuerte.pct)}%). La que más necesitas reforzar es <strong>${this._escTexto(train.debil.name)}</strong> (${Math.round(train.debil.pct)}%).`);
+                        notas.push(`Más fuerte: <strong>${this._escTexto(train.fuerte.name)}</strong> (${Math.round(train.fuerte.pct)}%). Para reforzar: <strong>${this._escTexto(train.debil.name)}</strong> (${Math.round(train.debil.pct)}%).`);
                     } else if (train.fuerte) {
-                        partes.push(`Por ahora destaca <strong>${this._escTexto(train.fuerte.name)}</strong> (${Math.round(train.fuerte.pct)}%).`);
+                        notas.push(`Por ahora destaca <strong>${this._escTexto(train.fuerte.name)}</strong> (${Math.round(train.fuerte.pct)}%).`);
                     }
-                    trainHtml = `<p class="rp-manana-txt">${partes.join(' ')}</p>`;
+                    trainHtml = (stats.length ? `<div class="rp-stat-grid">${stats.join('')}</div>` : '')
+                        + (notas.length ? `<p class="rp-manana-txt">${notas.join(' ')}</p>` : '');
                 }
 
                 const areaRows = this._htmlBarrasAreasInforme(train.areas);
@@ -5606,42 +5635,45 @@
 
                 const resumenPartes = [];
                 if (scoreTxt) {
-                    resumenPartes.push(`Tu proyección actual es de <strong>${scoreTxt} / 500</strong>.`);
+                    resumenPartes.push(`Proyección actual: <strong>${scoreTxt} / 500</strong>.`);
                     if (meta != null) {
-                        if (brecha === 0) resumenPartes.push(`Ya alcanzaste la meta de ${meta} puntos${carreraClean ? ' para ' + this._escTexto(carreraClean) : ''}.`);
-                        else if (brecha != null) resumenPartes.push(`Te faltan <strong>${brecha} puntos</strong> para la meta de ${meta}${carreraClean ? ' (' + this._escTexto(carreraClean) + ')' : ''}.`);
+                        if (brecha === 0) resumenPartes.push(`Ya alcanzaste la meta de ${meta}${carreraClean ? ' para ' + this._escTexto(carreraClean) : ''}.`);
+                        else if (brecha != null) resumenPartes.push(`Te faltan <strong>${brecha} puntos</strong> para llegar a ${meta}${carreraClean ? ' (' + this._escTexto(carreraClean) + ')' : ''}.`);
                     } else {
-                        resumenPartes.push('Cuando elijas una carrera y una meta en la sala, aquí verás la brecha con claridad.');
+                        resumenPartes.push('Cuando elijas carrera y meta en la sala, aquí verás la brecha.');
                     }
                 } else {
-                    resumenPartes.push('Todavía no hay una proyección de puntaje. Termina al menos una sesión medida para verla aquí.');
+                    resumenPartes.push('Todavía no hay una proyección de puntaje. Termina una sesión medida para verla.');
                 }
                 if (racha > 0) {
-                    resumenPartes.push(`Tu racha actual es de <strong>${racha} día${racha === 1 ? '' : 's'}</strong> seguidos.`);
+                    resumenPartes.push(`Racha: <strong>${racha} día${racha === 1 ? '' : 's'}</strong> seguidos.`);
                 } else {
-                    resumenPartes.push('Todavía no tienes una racha activa: empieza hoy un bloque para encenderla.');
+                    resumenPartes.push('Aún no tienes racha activa: empieza hoy un bloque para encenderla.');
                 }
 
                 let siguiente = '';
                 if (temasPend.length) {
                     const primero = this._escTexto(temasPend[0].titulo);
                     const extra = temasPend.length > 1
-                        ? (' (y ' + (temasPend.length - 1) + ' tema' + (temasPend.length === 2 ? '' : 's') + ' más)')
+                        ? (' y ' + (temasPend.length - 1) + ' tema' + (temasPend.length === 2 ? '' : 's') + ' más')
                         : '';
-                    siguiente = 'Empieza por el tema de refuerzo <strong>' + primero + '</strong>' + extra + '. Están en Temas de refuerzo en la sala.';
+                    siguiente = 'Empieza por <strong>' + primero + '</strong>' + extra + ' en Temas de refuerzo.';
                 } else if (train.totalSesiones > 0 && train.debil) {
-                    siguiente = `Mañana conviene empezar por <strong>${this._escTexto(train.debil.name)}</strong>, que es tu área más débil ahora.`;
+                    siguiente = `Sigue reforzando <strong>${this._escTexto(train.debil.name)}</strong>, tu área más débil ahora.`;
                 } else if (!hackea.calibrated) {
-                    siguiente = 'Un buen siguiente paso es hacer <strong>Hackea tu mente</strong> en la sala.';
+                    siguiente = 'Siguiente paso: haz <strong>Hackea tu mente</strong> en la sala.';
                 } else if (!ruta.listaCompleta) {
-                    siguiente = 'Sigue la <strong>ruta vocacional</strong> en la sala para completar tu orientación.';
+                    siguiente = 'Completa la <strong>ruta vocacional</strong> en la sala.';
                 } else if (!sim || sim.estado !== 'listo') {
-                    siguiente = 'Cuando quieras medir el examen completo, abre el <strong>simulacro</strong> desde la sala.';
+                    siguiente = 'Cuando quieras medir el examen completo, abre el <strong>simulacro</strong>.';
                 } else {
                     siguiente = 'Sigue con el entrenamiento diario para subir tu proyección con constancia.';
                 }
-                resumenPartes.push(siguiente);
 
+                const brechaTxt = brecha == null ? '—' : (brecha === 0 ? '0' : ('−' + Math.abs(brecha)));
+                const brechaSub = brecha == null
+                    ? 'Elige meta para verla'
+                    : (brecha === 0 ? 'Meta alcanzada' : ('Te faltan ' + Math.abs(brecha) + ' puntos'));
                 const fechaTxt = new Date().toLocaleDateString('es-CO', { day: 'numeric', month: 'short', year: 'numeric' });
 
                 cuerpo.innerHTML = `
@@ -5652,7 +5684,7 @@
                             <span class="rp-brand-sub">Informe general · ${fechaTxt}</span>
                         </div>
                         <h2 class="rp-title" id="lblBoletinSesionTitulo">Tu informe general</h2>
-                        <p class="rp-lead">Aquí está el resumen de tu avance real con todo lo que ya has hecho en Dante OS.</p>
+                        <p class="rp-lead">Resumen de tu avance real con todo lo que ya has hecho en Dante OS.</p>
 
                         <section class="rp-sec">
                             <h3 class="rp-sec-h"><i class="fa-solid fa-brain" aria-hidden="true"></i> Hackea tu mente</h3>
@@ -5682,7 +5714,7 @@
                         </section>
 
                         <section class="rp-sec">
-                            <h3 class="rp-sec-h"><i class="fa-solid fa-graduation-cap" aria-hidden="true"></i> Proyección y resumen</h3>
+                            <h3 class="rp-sec-h"><i class="fa-solid fa-graduation-cap" aria-hidden="true"></i> Proyección</h3>
                             <div class="rp-card">
                                 <div class="rp-metrics">
                                     <div>
@@ -5697,17 +5729,16 @@
                                     </div>
                                     <div>
                                         <span class="rp-metric-lbl">Brecha</span>
-                                        <span class="rp-metric-val gap">${brecha == null ? '—' : ('-' + brecha + ' pts')}</span>
-                                        <span class="rp-metric-sub">${brecha == null ? 'Elige meta para verla' : ('Te faltan ' + brecha + ' puntos')}</span>
+                                        <span class="rp-metric-val gap">${brechaTxt}</span>
+                                        <span class="rp-metric-sub">${brechaSub}</span>
                                     </div>
                                 </div>
                                 <p class="rp-manana-txt" style="margin-top:0.85rem">${resumenPartes.join(' ')}</p>
+                                <div class="rp-next">
+                                    <span class="rp-next-lbl">Qué hacer ahora</span>
+                                    <p>${siguiente}</p>
+                                </div>
                             </div>
-                        </section>
-
-                        <section class="rp-sec">
-                            <h3 class="rp-sec-h"><i class="fa-solid fa-sun" aria-hidden="true"></i> Qué hacer ahora</h3>
-                            <div class="rp-card"><p class="rp-manana-txt">${siguiente}</p></div>
                         </section>
 
                         <div class="rp-actions">

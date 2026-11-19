@@ -1,0 +1,38 @@
+{
+  "appId": "com.danteos.app",
+  "appName": "Dante OS - ICFES",
+  "webDir": "public",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https",
+    "cleartext": false,
+    "hostname": "danteos.app",
+    "allowNavigation": [
+      "https://*.onrender.com",
+      "https://*.supabase.co"
+    ]
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1500,
+      "backgroundColor": "#0f172a",
+      "showSpinner": false,
+      "androidSplashResourceName": "splash",
+      "androidScaleType": "CENTER_CROP"
+    },
+    "Keyboard": {
+      "resize": "body",
+      "style": "DARK"
+    },
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_icon_config_sample",
+      "iconColor": "#10b981"
+    },
+    "AdMob": {
+      "appIdAndroid": "ca-app-pub-3940256099942544~3347511713",
+      "appIdIos": "ca-app-pub-3940256099942544~1458002511",
+      "initializeForTesting": true,
+      "_comment": "IDs de prueba de Google. Sustituir por los de AdMob (Play/App Store) antes de publicar."
+    }
+  }
+}

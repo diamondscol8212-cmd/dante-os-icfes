@@ -1,25 +1,32 @@
 {
-  "short_name": "DanteOS",
-  "name": "Dante OS - Entrenamiento Adaptativo ICFES",
-  "description": "Plataforma EdTech de evaluación adaptativa por computador (CAT) y perfilamiento cognitivo con soporte PWA Offline.",
+  "short_name": "Dante OS",
+  "name": "Dante OS — Entrenamiento Saber 11°",
+  "description": "Entrena para el ICFES Saber 11° con bloques diarios, refuerzo por temas, simulacro completo e informe para la familia. El plan de pago solo quita los anuncios.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "background_color": "#08090c",
-  "theme_color": "#51e2f5",
+  "background_color": "#0b1220",
+  "theme_color": "#0f172a",
   "categories": ["education", "productivity"],
+  "lang": "es-CO",
   "icons": [
     {
-      "src": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=192&h=192&q=80",
-      "type": "image/jpeg",
+      "src": "assets/icons/icon-192.svg",
+      "type": "image/svg+xml",
       "sizes": "192x192",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=512&h=512&q=80",
-      "type": "image/jpeg",
+      "src": "assets/icons/icon-512.svg",
+      "type": "image/svg+xml",
       "sizes": "512x512",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/dante-logo-icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
       "purpose": "any maskable"
     }
   ]

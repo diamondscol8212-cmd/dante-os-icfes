@@ -62,13 +62,36 @@
      * @param {*} ritual
      * @param {{ blockIndex?: number, campaignDay?: number, focusArea?: string, focusMode?: string }} opts
      */
+    abort() {
+      this._clearTimers();
+      this._destroyPicker();
+      this._clearVentana();
+      this.session = null;
+      this._pending = null;
+      if (this.ritual) this.ritual._faseHackea = 'sala';
+    }
+
     start(mind, ritual, opts) {
       opts = opts || {};
       // Hackea tiene su propia Sincronía / intro de día. No reutilizar la
       // respiración de entrada del examen: dejaba “Ya te escucha” debajo,
       // no arrancaba el pulso, y al “Volver a la sala” aparecía el modal.
+      try {
+        window.danteRespiracionPendiente = false;
+        if (window.DanteExamWorkspace) window.DanteExamWorkspace._respiracionCerrada = true;
+        if (window.DanteAliento) window.DanteAliento.parar('entrada');
+        const modal = document.getElementById('modalRespiracionInicio');
+        if (modal) {
+          modal.classList.add('hidden');
+          modal.style.display = 'none';
+        }
+      } catch (_) { /* ignore */ }
       this.mind = mind;
       this.ritual = ritual;
+      if (ritual) {
+        ritual._faseHackea = 'pulso';
+        ritual._transicionDia1 = false;
+      }
       this.blockIndex = (opts && opts.blockIndex) || 1;
       this.campaignDay = (opts && opts.campaignDay) || this.blockIndex || 1;
       if (global.HackeaArc) {

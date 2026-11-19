@@ -1,9 +1,13 @@
 /**
  * Anuncios de tienda (AdMob / Play · App Store).
  * En nativo muestra interstitial de Google; en web usa el modal de pausa.
- * IDs de prueba oficiales hasta configurar unidades reales en .env / build.
+ * IDs de prueba oficiales hasta configurar unidades reales:
+ *   window.DANTE_ADMOB_APP_ID / window.DANTE_ADMOB_INTERSTITIAL
+ * o variables ADMOB_* en el build.
+ * El plan de pago (DantePlanSala.esPago) omite por completo estos avisos.
  */
 (function () {
+  // Google sample IDs — sustituir antes de publicar en tiendas.
   const TEST_APP = 'ca-app-pub-3940256099942544~3347511713';
   const TEST_INTERSTITIAL = 'ca-app-pub-3940256099942544/1033173712';
 
@@ -24,6 +28,10 @@
 
   function idApp() {
     return String(window.DANTE_ADMOB_APP_ID || TEST_APP);
+  }
+
+  function usandoPrueba() {
+    return idApp() === TEST_APP || idInterstitial() === TEST_INTERSTITIAL;
   }
 
   async function plugin() {
@@ -107,7 +115,8 @@
     inicializar: inicializar,
     mostrarEntreBloques: mostrarInterstitial,
     appId: idApp,
-    interstitialId: idInterstitial
+    interstitialId: idInterstitial,
+    usandoIdsDePrueba: usandoPrueba
   };
 
   if (document.readyState === 'loading') {

@@ -1,6 +1,6 @@
 {
   "name": "Dante OS",
-  "description": "Plataforma Adaptativa Enterprise - Evaluación Adaptativa Psicométrica Multi-Tenant",
+  "description": "App de entrenamiento para el ICFES Saber 11°: práctica diaria, temas de refuerzo, simulacro completo e informe de avance para el estudiante y su familia. El plan de pago solo quita los anuncios de la tienda.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
