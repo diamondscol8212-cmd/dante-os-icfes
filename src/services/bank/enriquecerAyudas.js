@@ -297,8 +297,19 @@ function porqueIncorrecta(mala, bien, ctx) {
  * Puede ser más específico que sub_competencia (p. ej. hidrografía dentro de geografía).
  */
 export function temaRefuerzoDe(item) {
+  // Cartilla 1:1 por pregunta (generada por scripts/generarCartillasPorPregunta.mjs).
+  const itemId = limpio(item && (item.id || item.itemId || item.pregunta_id));
+  if (itemId) {
+    const qid = ('q_' + itemId.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '')).slice(0, 100);
+    const prevId = limpio(item.tema_refuerzo_id || item.temaRefuerzoId).toLowerCase();
+    if (prevId && prevId === qid) return prevId;
+    if (prevId && prevId.startsWith('q_')) return prevId;
+    return qid;
+  }
+
   const sub = subDe(item);
   const prevId = limpio(item.tema_refuerzo_id || item.temaRefuerzoId).toLowerCase();
+  if (prevId && prevId.startsWith('q_')) return prevId;
   if (prevId && (TEMA_SUB[prevId] || prevId === 'fracciones')) return prevId;
 
   const texto = [
@@ -309,7 +320,6 @@ export function temaRefuerzoDe(item) {
     item && (item.tema_a_estudiar || item.repaso || '')
   ].join(' ').toLowerCase();
 
-  // Hidrografía concreta (solo dentro de geografía del banco).
   if (sub === 'geografia') {
     if (
       /afluente|cuenca del|macizo colombiano|desemboca|nacen varios r[ií]os|el r[ií]o (cauca|magdalena)|r[ií]o cauca|r[ií]o magdalena/.test(texto)
@@ -321,7 +331,6 @@ export function temaRefuerzoDe(item) {
   }
 
   if (sub === 'fracciones') return 'fracciones';
-  // Evita falsos positivos tipo «fraccionar petróleo».
   if (/numerador|denominador/.test(texto)
       || (/\bfracci[oó]n(es)?\b/.test(texto) && !/fraccionar|fraccionamiento|petr[oó]leo/.test(texto))) {
     return 'fracciones';
