@@ -32,7 +32,12 @@
       "appIdAndroid": "ca-app-pub-3940256099942544~3347511713",
       "appIdIos": "ca-app-pub-3940256099942544~1458002511",
       "initializeForTesting": true,
-      "_comment": "IDs de prueba de Google. Sustituir por los de AdMob (Play/App Store) antes de publicar."
+      "_TODO_PUBLICAR": [
+        "1. Sustituir appIdAndroid / appIdIos por los App ID reales de AdMob",
+        "2. Poner initializeForTesting en false",
+        "3. Rellenar REAL_APP_ID y REAL_INTERSTITIAL_ID en public/js/danteAds.js",
+        "4. Actualizar android/app/src/main/AndroidManifest.xml → APPLICATION_ID"
+      ]
     }
   }
 }

@@ -725,7 +725,7 @@
   function pintarSala() {
     var el = document.getElementById('lblTemasRefuerzoDetalle');
     var puerta = document.getElementById('puertaTemasRefuerzo');
-    if (!el && !puerta) return;
+    var guia = document.getElementById('lblGuiaDiariaSala');
     var n = contarPendientes();
     if (el) {
       el.textContent = n > 0
@@ -736,10 +736,27 @@
       puerta.classList.toggle('sala-card-has-pending', n > 0);
       puerta.setAttribute('data-pendientes', String(n));
     }
+    if (guia) {
+      if (n > 0) {
+        guia.textContent = 'Hoy: revisa ' + n + (n === 1 ? ' tema' : ' temas')
+          + ' de refuerzo pendiente' + (n === 1 ? '' : 's')
+          + ' + haz tu entrenamiento diario.';
+        guia.classList.remove('hidden');
+        guia.style.display = '';
+      } else {
+        guia.textContent = '';
+        guia.classList.add('hidden');
+        guia.style.display = 'none';
+      }
+    }
   }
 
   function arranqueSala() {
-    try { pintarSala(); } catch (_) {}
+    try {
+      cargarCatalogo().then(function () { pintarSala(); }).catch(function () { pintarSala(); });
+    } catch (_) {
+      try { pintarSala(); } catch (__) {}
+    }
   }
 
   global.DanteTemasRefuerzo = {

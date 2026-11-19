@@ -4510,6 +4510,10 @@
         if (badgeOpcion) badgeOpcion.textContent = 'Sin verificar';
         uiFeedbackTraining.classList.remove('feedback-bien', 'feedback-mal');
         txtCuerpo.textContent = 'La conexión no alcanzó a comprobar esta respuesta. No queda marcada como error. Cuando vuelva la red, revísala en el repaso.';
+        const btnCartillaOff = document.getElementById('btnVerExplicacionCompleta');
+        if (btnCartillaOff) btnCartillaOff.classList.add('hidden');
+        const avisoOff = document.getElementById('uiAvisoErrorRepetido');
+        if (avisoOff) avisoOff.classList.add('hidden');
         if (btnContinuar) {
           const esUltimoPend = (this.indexReactivoActivo + 1 >= this.misionData.reactivos.length);
           btnContinuar.innerHTML = esUltimoPend
@@ -4609,6 +4613,9 @@
       }
       txtCuerpo.textContent = frase;
 
+      // Cartilla completa + aviso suave por fallos repetidos del mismo tema.
+      this._actualizarAyudasTrasFallo(item, esCorrecta);
+
       // Configurar texto del botón de avance
       if (btnContinuar) {
         const esUltimo = (this.indexReactivoActivo + 1 >= this.misionData.reactivos.length);
@@ -4633,6 +4640,85 @@
       uiFeedbackTraining.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
+    /** Resuelve el id de cartilla q_<item> (o tema) y abre temas-refuerzo.html?tema= */
+    _abrirCartillaTema(temaId) {
+      const id = String(temaId || '').trim();
+      if (!id) return;
+      try { this.guardarProgresoSesion(); } catch (_) {}
+      const url = 'temas-refuerzo.html?tema=' + encodeURIComponent(id);
+      try {
+        window.location.href = url;
+      } catch (_) {
+        window.open(url, '_self');
+      }
+    }
+
+    _resolverTemaIdDesdeItem(item) {
+      let temaId = '';
+      try {
+        if (window.DanteTemasRefuerzo && typeof window.DanteTemasRefuerzo.resolverTemaId === 'function') {
+          temaId = window.DanteTemasRefuerzo.resolverTemaId({
+            id: item && (item.id || item.itemId || item.pregunta_id),
+            itemId: item && (item.id || item.itemId || item.pregunta_id),
+            sub: item && (item.sub || item.sub_competencia),
+            sub_competencia: item && (item.sub || item.sub_competencia),
+            tema_refuerzo_id: item && (item.tema_refuerzo_id || item.temaRefuerzoId),
+            tema_a_estudiar: item && (item.tema_a_estudiar || item.repaso),
+            tema: item && (item.tema_a_estudiar || item.tema || item.repaso),
+            repaso: item && item.repaso,
+            enunciado: item && (item.pregunta_texto || item.texto || item.enunciado)
+          }) || '';
+        }
+      } catch (_) { temaId = ''; }
+      if (!temaId && item) {
+        const raw = String(item.id || item.itemId || item.pregunta_id || '').trim();
+        if (raw) {
+          temaId = 'q_' + raw.toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+        }
+      }
+      return temaId;
+    }
+
+    _actualizarAyudasTrasFallo(item, esCorrecta) {
+      const btnCartilla = document.getElementById('btnVerExplicacionCompleta');
+      const aviso = document.getElementById('uiAvisoErrorRepetido');
+      const txtAviso = document.getElementById('txtAvisoErrorRepetido');
+      const btnAviso = document.getElementById('btnAbrirCartillaRepetido');
+      if (btnCartilla) {
+        btnCartilla.classList.add('hidden');
+        btnCartilla.onclick = null;
+      }
+      if (aviso) aviso.classList.add('hidden');
+      if (!esCorrecta) {
+        const temaId = this._resolverTemaIdDesdeItem(item);
+        const titulo = (window.DanteTemasRefuerzo && typeof window.DanteTemasRefuerzo.tituloDe === 'function')
+          ? window.DanteTemasRefuerzo.tituloDe(temaId, item)
+          : (temaId || 'este tema');
+        if (temaId && btnCartilla) {
+          btnCartilla.classList.remove('hidden');
+          btnCartilla.onclick = (e) => {
+            if (e) e.preventDefault();
+            this._abrirCartillaTema(temaId);
+          };
+        }
+        if (!this._fallosTemaSesion) this._fallosTemaSesion = Object.create(null);
+        const clave = temaId || String((item && item.id) || 'sin_tema');
+        this._fallosTemaSesion[clave] = (this._fallosTemaSesion[clave] || 0) + 1;
+        if (this._fallosTemaSesion[clave] >= 2 && aviso && txtAviso && temaId) {
+          txtAviso.textContent = 'Llevas varios fallos en este tipo de pregunta. Te recomiendo revisar la cartilla de «'
+            + String(titulo || 'este tema').slice(0, 80)
+            + '» antes de seguir.';
+          aviso.classList.remove('hidden');
+          if (btnAviso) {
+            btnAviso.onclick = (e) => {
+              if (e) e.preventDefault();
+              this._abrirCartillaTema(temaId);
+            };
+          }
+        }
+      }
+    }
+
     /**
      * Avanza al siguiente reactivo tras la confirmación y lectura del feedback socrático
      */
@@ -4646,6 +4732,13 @@
         uiFeedbackTraining.style.display = 'none';
         uiFeedbackTraining.classList.add('hidden');
       }
+      const btnCartilla = document.getElementById('btnVerExplicacionCompleta');
+      if (btnCartilla) {
+        btnCartilla.classList.add('hidden');
+        btnCartilla.onclick = null;
+      }
+      const avisoRep = document.getElementById('uiAvisoErrorRepetido');
+      if (avisoRep) avisoRep.classList.add('hidden');
 
       const containerCore = document.getElementById('uiContenedorPreguntaCore');
       if (containerCore) {

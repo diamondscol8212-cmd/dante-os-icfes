@@ -969,6 +969,7 @@
 
     /** Día 2–15: intro pedagógica del día → puerta → pulso. */
     openNextPulso() {
+      if (this._faseHackea === 'pulso' || this._faseHackea === 'dia1_lanzando') return;
       this.mind.bindStudent(studentKey());
       document.body.classList.add('hackea-ritual-active');
       this._showView(true);
@@ -986,8 +987,15 @@
       if (!stage) return;
       const view = document.getElementById('viewHackeaMente');
       if (view) view.classList.add('hackea-en-activacion');
+      this._faseHackea = 'dia_gate';
+      try {
+        window.danteRespiracionPendiente = false;
+        if (window.DanteExamWorkspace) window.DanteExamWorkspace._respiracionCerrada = true;
+      } catch (_) { /* ignore */ }
 
       const showGate = () => {
+        if (this._faseHackea === 'sala' || this._faseHackea === 'pulso') return;
+        this._faseHackea = 'dia_gate';
         stage.innerHTML = `
           <div class="hackea-cierre hackea-activacion" id="hackeaActivacionB2">
             <div class="hackea-cierre-glow" aria-hidden="true"></div>
@@ -1002,10 +1010,20 @@
         this._clearTimers();
         this._timers.push(setTimeout(() => stage.querySelector('#hackeaActivacionB2')?.classList.add('is-in'), 20));
         stage.querySelector('#hackeaBtnPulso2')?.addEventListener('click', () => {
+          if (this._faseHackea === 'pulso') return;
           const btn = stage.querySelector('#hackeaBtnPulso2');
           if (btn) btn.disabled = true;
+          this._faseHackea = 'pulso';
           view?.classList.remove('hackea-en-activacion');
           if (stage) stage.innerHTML = '';
+          try {
+            window.danteRespiracionPendiente = false;
+            const modal = document.getElementById('modalRespiracionInicio');
+            if (modal) {
+              modal.classList.add('hidden');
+              modal.style.display = 'none';
+            }
+          } catch (_) { /* ignore */ }
           if (global.HackeaPulso) {
             global.HackeaPulso.start(this.mind, this, {
               blockIndex: st.next_block || day,
