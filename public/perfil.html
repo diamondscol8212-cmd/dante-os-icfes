@@ -20,12 +20,12 @@
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="theme.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/danteCacheVersion.js?v=c-1.3.126"></script>
-    <script src="js/danteRevealScroll.js?v=c-1.3.126"></script>
-    <script src="js/danteSaber11Info.js?v=c-1.3.126"></script>
-    <script src="js/danteStudentId.js?v=c-1.3.126"></script>
-    <script src="js/danteTemasRefuerzo.js?v=c-1.3.126"></script>
-    <script src="js/danteNotificaciones.js?v=c-1.3.126"></script>
+    <script src="js/danteCacheVersion.js?v=c-1.3.127"></script>
+    <script src="js/danteRevealScroll.js?v=c-1.3.127"></script>
+    <script src="js/danteSaber11Info.js?v=c-1.3.127"></script>
+    <script src="js/danteStudentId.js?v=c-1.3.127"></script>
+    <script src="js/danteTemasRefuerzo.js?v=c-1.3.127"></script>
+    <script src="js/danteNotificaciones.js?v=c-1.3.127"></script>
     <script src="js/danteNube.js?v=c-1.3.87"></script>
     <script src="js/danteRegistro.js?v=c-1.3.87"></script>
     <script src="js/danteVectorIcons.js"></script>
@@ -5430,17 +5430,21 @@
                         const cat = (typeof window.DanteTemasRefuerzo.temaPorId === 'function')
                             ? window.DanteTemasRefuerzo.temaPorId(id)
                             : null;
-                        const titulo = (typeof window.DanteTemasRefuerzo.tituloDe === 'function')
+                        let titulo = (typeof window.DanteTemasRefuerzo.tituloDe === 'function')
                             ? window.DanteTemasRefuerzo.tituloDe(id, p)
-                            : (p.titulo || id.replace(/_/g, ' '));
+                            : (p.titulo || (cat && cat.titulo) || 'Tema de refuerzo');
+                        titulo = String(titulo || '').replace(/\s+/g, ' ').trim();
+                        if (!titulo || /^q[_ ]/i.test(titulo) || /^[0-9a-f]{8}[-_ ]/i.test(titulo)) {
+                            titulo = (cat && cat.titulo) || 'Tema de refuerzo';
+                        }
                         const areaKey = String((cat && cat.area) || p.area || '').toLowerCase().replace(/\s+/g, '_');
                         return {
                             id,
-                            titulo: String(titulo || '').replace(/\s+/g, ' ').trim().slice(0, 120),
+                            titulo: titulo.slice(0, 120),
                             area: areaKey,
                             areaNombre: AREA_NOM[areaKey] || (areaKey ? areaKey.replace(/_/g, ' ') : '')
                         };
-                    }).filter((t) => t && t.titulo);
+                    }).filter((t) => t && t.titulo && !/^q[_ ]/i.test(t.titulo));
                 } catch (e) {
                     return [];
                 }

@@ -12,9 +12,9 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" defer></script>
-  <script src="js/danteCacheVersion.js?v=c-1.3.126"></script>
-  <script src="js/danteStudentId.js?v=c-1.3.126"></script>
-  <script src="js/danteTemasRefuerzo.js?v=c-1.3.126"></script>
+  <script src="js/danteCacheVersion.js?v=c-1.3.127"></script>
+  <script src="js/danteStudentId.js?v=c-1.3.127"></script>
+  <script src="js/danteTemasRefuerzo.js?v=c-1.3.127"></script>
   <style>
     :root {
       --perfil-cyan: #7eb8c4;
@@ -488,7 +488,7 @@
         </div>
       </div>
     </section>
-    <p class="tr-foot-ver"><span id="badgeDanteVersion">c-1.3.126</span></p>
+    <p class="tr-foot-ver"><span id="badgeDanteVersion">c-1.3.127</span></p>
   </main>
 
   <script>
@@ -1156,9 +1156,13 @@
         window.DanteTemasRefuerzo.cargarCatalogo().then(function () {
           var tema = window.DanteTemasRefuerzo.temaPorId(id);
           if (!tema) {
+            var tituloPh = (typeof window.DanteTemasRefuerzo.tituloDe === 'function')
+              ? window.DanteTemasRefuerzo.tituloDe(id, null)
+              : 'Tema de refuerzo';
+            if (!tituloPh || /^q[_ ]/i.test(tituloPh)) tituloPh = 'Tema de refuerzo';
             tema = {
               id: id,
-              titulo: id.replace(/_/g, ' '),
+              titulo: tituloPh,
               area: '',
               estadoContenido: 'placeholder',
               explicacion: {
@@ -1167,7 +1171,7 @@
                 errores: []
               },
               practica: [],
-              profundizar: 'Si quieres profundizar más: busca «' + id.replace(/_/g, ' ') + '» en tus apuntes o en guías del ICFES.'
+              profundizar: 'Si quieres profundizar más: vuelve a la sala y practica ítems del mismo tema, o consulta guías del ICFES.'
             };
           }
           temaActivo = tema;
@@ -1177,7 +1181,10 @@
           $('vistaTema').classList.remove('hidden');
           var etiqueta = (typeof window.DanteTemasRefuerzo.tituloDe === 'function')
             ? window.DanteTemasRefuerzo.tituloDe(tema.id || id, tema)
-            : (tema.titulo || id.replace(/_/g, ' '));
+            : (tema.titulo || 'Tema de refuerzo');
+          if (!etiqueta || /^q[_ ]/i.test(etiqueta) || /^[0-9a-f]{8}[-_ ]/i.test(etiqueta)) {
+            etiqueta = 'Tema de refuerzo';
+          }
           tema.titulo = etiqueta;
           $('temaTitulo').textContent = etiqueta;
           $('temaArea').textContent = (tema.nivel || tema.area || 'refuerzo').replace(/_/g, ' ');

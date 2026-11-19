@@ -93,9 +93,11 @@
       var cat = temaPorId(qid);
       var prev = map[qid];
       if (!prev) {
+        var tituloOk = (cat && cat.titulo) || tituloDe(qid, base) || 'Tema de refuerzo';
+        if (pareceIdInterno(tituloOk)) tituloOk = (cat && cat.titulo) || 'Tema de refuerzo';
         map[qid] = {
           id: qid,
-          titulo: (cat && cat.titulo) || tituloDe(qid, base) || qid,
+          titulo: tituloOk,
           area: (cat && cat.area) || (base && base.area) || '',
           nivel: (cat && cat.nivel) || (base && base.nivel) || '',
           itemId: (fallosDeItem[0] && fallosDeItem[0].itemId) || (base && base.itemId) || '',
@@ -189,6 +191,7 @@
       .then(function (json) {
         _catalogo = json && Array.isArray(json.temas) ? json : { temas: [] };
         try { migrarPendientesAPorItem(); } catch (_) {}
+        try { sanearTitulosGuardados(); } catch (_) {}
         return _catalogo;
       })
       .catch(function () {
@@ -282,11 +285,13 @@
   function pareceIdInterno(txt) {
     var s = String(txt || '').replace(/\s+/g, ' ').trim();
     if (!s) return true;
-    // q_<uuid> o el mismo id “humanizado” con espacios
+    // q_<uuid> o el mismo id “humanizado” con espacios / mayúsculas (Gotok Save legacy)
+    if (/^q[_ ]/i.test(s) && /[0-9a-f]{8}/i.test(s)) return true;
     if (/^q_[a-z0-9_]+$/i.test(s)) return true;
     if (/^q\s+[0-9a-f]{8}\s+/i.test(s)) return true;
     if (/^q\s+[0-9a-f\-_\s]{20,}$/i.test(s)) return true;
-    if (/^[0-9a-f]{8}[-_][0-9a-f]{4}[-_]/i.test(s)) return true;
+    if (/^[0-9a-f]{8}[-_ ][0-9a-f]{4}[-_ ]/i.test(s)) return true;
+    if (/^[0-9a-f]{8}([-_ ][0-9a-f]{4}){3}([-_ ][0-9a-f]{12})?$/i.test(s)) return true;
     return false;
   }
 
@@ -508,9 +513,33 @@
     return true;
   }
 
+  /**
+   * Reescribe títulos guardados (local + snapshot nube, p. ej. Gotok Save)
+   * para que nunca queden IDs q_* visibles en la lista.
+   */
+  function sanearTitulosGuardados() {
+    var estado = leerEstado();
+    var dirty = false;
+    (estado.pendientes || []).forEach(function (p) {
+      if (!p || !p.id) return;
+      var limpio = tituloDe(p.id, p);
+      if (pareceIdInterno(p.titulo) || p.titulo !== limpio) {
+        p.titulo = limpio;
+        dirty = true;
+      }
+      if (pareceIdInterno(p.titulo)) {
+        p.titulo = 'Tema de refuerzo';
+        dirty = true;
+      }
+    });
+    if (dirty) guardarEstado(estado);
+    return dirty;
+  }
+
   /** Pendientes activos: nunca incluye temas ya marcados como superados. */
   function listarPendientes() {
     try { migrarPendientesAPorItem(); } catch (_) {}
+    try { sanearTitulosGuardados(); } catch (_) {}
     var estado = leerEstado();
     var hechos = estado.hechos || {};
     var dirty = false;
@@ -518,6 +547,7 @@
       return p && p.id && !hechos[p.id];
     }).map(function (p) {
       var limpio = tituloDe(p.id, p);
+      if (pareceIdInterno(limpio)) limpio = 'Tema de refuerzo';
       if (p.titulo !== limpio) {
         p.titulo = limpio;
         dirty = true;
@@ -544,6 +574,7 @@
   }
 
   function exportarParaSnapshot() {
+    try { sanearTitulosGuardados(); } catch (_) {}
     return leerEstado();
   }
 
@@ -551,6 +582,15 @@
     if (!snapTemas || typeof snapTemas !== 'object') return;
     var local = leerEstado();
     var remotePend = Array.isArray(snapTemas.pendientes) ? snapTemas.pendientes : [];
+    // Limpia títulos sucios que vengan de la nube (p. ej. Gotok Save con q_* legacy).
+    remotePend = remotePend.map(function (p) {
+      if (!p || !p.id) return p;
+      var copia = Object.assign({}, p);
+      var limpio = tituloDe(copia.id, copia);
+      if (pareceIdInterno(limpio)) limpio = 'Tema de refuerzo';
+      copia.titulo = limpio;
+      return copia;
+    });
     var remoteHechos = snapTemas.hechos && typeof snapTemas.hechos === 'object' ? snapTemas.hechos : {};
     var hechos = Object.assign({}, remoteHechos, local.hechos);
     var remoteVistos = snapTemas.vistos && typeof snapTemas.vistos === 'object' ? snapTemas.vistos : {};
@@ -570,6 +610,7 @@
       updatedAt: new Date().toISOString()
     });
     try { migrarPendientesAPorItem(); } catch (_) {}
+    try { sanearTitulosGuardados(); } catch (_) {}
   }
 
   function contarPendientes() {
@@ -712,6 +753,7 @@
     exportarParaSnapshot: exportarParaSnapshot,
     importarDesdeSnapshot: importarDesdeSnapshot,
     migrarPendientesAPorItem: migrarPendientesAPorItem,
+    sanearTitulosGuardados: sanearTitulosGuardados,
     leerEstado: leerEstado
   };
 
