@@ -12,9 +12,9 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" defer></script>
-  <script src="js/danteCacheVersion.js?v=c-1.3.124"></script>
-  <script src="js/danteStudentId.js?v=c-1.3.124"></script>
-  <script src="js/danteTemasRefuerzo.js?v=c-1.3.124"></script>
+  <script src="js/danteCacheVersion.js?v=c-1.3.125"></script>
+  <script src="js/danteStudentId.js?v=c-1.3.125"></script>
+  <script src="js/danteTemasRefuerzo.js?v=c-1.3.125"></script>
   <style>
     :root {
       --perfil-cyan: #7eb8c4;
@@ -67,12 +67,13 @@
     .tr-item:hover { border-color: rgba(126,184,196,.45); background: rgba(15,23,42,.95); }
     .tr-item strong {
       display: block; font-size: .92rem; font-weight: 600;
-      overflow-wrap: anywhere; word-break: break-word;
+      overflow-wrap: break-word; word-break: normal; line-height: 1.35;
+      color: #f8fafc;
     }
     .tr-item span.meta {
-      display: block; font-size: .75rem; color: #94a3b8; margin-top: .15rem;
-      font-family: ui-monospace, monospace;
-      overflow-wrap: anywhere; word-break: break-word;
+      display: block; font-size: .75rem; color: #94a3b8; margin-top: .2rem;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      overflow-wrap: break-word; word-break: normal; line-height: 1.35;
     }
     .tr-body p, .tr-body li, .tr-note, .tr-fallo-enun {
       overflow-wrap: anywhere; word-break: break-word;
@@ -254,8 +255,13 @@
     }
     .tr-ejemplo-cartilla .tr-ejemplo-contraste {
       margin: .75rem 0 0; padding: .7rem .8rem; border-radius: .65rem;
-      background: #fffbeb; border: 1px solid #fde68a; color: #78350f;
+      background: #fffbeb; border: 1px solid #fde68a;
+      color: #451a03 !important;
       font-size: .84rem; line-height: 1.45;
+    }
+    .tr-ejemplo-cartilla .tr-ejemplo-contraste strong,
+    .tr-ejemplo-cartilla .tr-ejemplo-contraste p {
+      color: #451a03 !important;
     }
     .tr-fallos-wrap {
       background: #f1f5f9;
@@ -482,7 +488,7 @@
         </div>
       </div>
     </section>
-    <p class="tr-foot-ver"><span id="badgeDanteVersion">c-1.3.124</span></p>
+    <p class="tr-foot-ver"><span id="badgeDanteVersion">c-1.3.125</span></p>
   </main>
 
   <script>
@@ -509,9 +515,19 @@
           btn.type = 'button';
           btn.className = 'tr-item';
           btn.innerHTML = '<div style="flex:1;min-width:0"><strong></strong><span class="meta"></span></div><span class="tr-badge wait">Pendiente</span><span aria-hidden="true">›</span>';
-          btn.querySelector('strong').textContent = p.titulo || p.id;
           var catP = window.DanteTemasRefuerzo.temaPorId(p.id);
-          btn.querySelector('.meta').textContent = (p.nivel || (catP && catP.nivel) || p.area || 'tema') + (p.id ? ' · ' + p.id : '');
+          var tituloP = (typeof window.DanteTemasRefuerzo.tituloDe === 'function')
+            ? window.DanteTemasRefuerzo.tituloDe(p.id, p)
+            : (p.titulo || 'Tema de refuerzo');
+          if (/^q_[a-z0-9_]+$/i.test(String(tituloP || '').trim())) {
+            tituloP = (catP && catP.titulo) || 'Tema de refuerzo';
+          }
+          btn.querySelector('strong').textContent = tituloP;
+          var materiaP = p.nivel || (catP && catP.nivel) || '';
+          if (!materiaP && (p.area || (catP && catP.area))) {
+            materiaP = String(p.area || catP.area).replace(/_/g, ' ');
+          }
+          btn.querySelector('.meta').textContent = materiaP || 'Refuerzo';
           btn.onclick = function () { abrirTema(p.id); };
           boxP.appendChild(btn);
         });
