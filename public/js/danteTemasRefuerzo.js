@@ -66,8 +66,121 @@
       .slice(0, 60);
   }
 
+  function cartillaIdDeItem(itemId) {
+    var s = String(itemId || '')
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '_')
+      .replace(/^_+|_+$/g, '')
+      .slice(0, 96);
+    return s ? ('q_' + s) : '';
+  }
+
+  /**
+   * Migración forense: pendientes legacy (vocabulary/dialogo/…) → una cartilla q_* por pregunta.
+   * Usa itemId / fallos[].itemId guardados en el snapshot del alumno (p. ej. Gotok Save).
+   */
+  function migrarPendientesAPorItem() {
+    var estado = leerEstado();
+    var pendientes = Array.isArray(estado.pendientes) ? estado.pendientes : [];
+    if (!pendientes.length) return false;
+    var hechos = estado.hechos || {};
+    var map = {};
+    var changed = false;
+
+    function upsert(qid, base, fallosDeItem) {
+      if (!qid || hechos[qid]) return;
+      var cat = temaPorId(qid);
+      var prev = map[qid];
+      if (!prev) {
+        map[qid] = {
+          id: qid,
+          titulo: (cat && cat.titulo) || tituloDe(qid, base) || qid,
+          area: (cat && cat.area) || (base && base.area) || '',
+          nivel: (cat && cat.nivel) || (base && base.nivel) || '',
+          itemId: (fallosDeItem[0] && fallosDeItem[0].itemId) || (base && base.itemId) || '',
+          fallos: fallosDeItem.slice(),
+          ts: (base && base.ts) || Date.now(),
+          migradoDesde: (base && base.id) || ''
+        };
+        changed = true;
+        return;
+      }
+      fallosDeItem.forEach(function (f) {
+        if (!f) return;
+        prev.fallos = (prev.fallos || []).filter(function (x) {
+          return !(x && f.itemId && x.itemId === f.itemId);
+        });
+        prev.fallos.unshift(f);
+      });
+      if (prev.fallos.length > 8) prev.fallos = prev.fallos.slice(0, 8);
+      if ((base && base.ts || 0) > (prev.ts || 0)) prev.ts = base.ts;
+      changed = true;
+    }
+
+    pendientes.forEach(function (p) {
+      if (!p || !p.id) return;
+      var id = String(p.id);
+      var isLegacy = id.indexOf('q_') !== 0;
+      var fallos = Array.isArray(p.fallos) ? p.fallos : [];
+      var itemIds = [];
+      if (p.itemId) itemIds.push(String(p.itemId));
+      fallos.forEach(function (f) {
+        if (f && f.itemId) itemIds.push(String(f.itemId));
+      });
+      // únicos
+      var seen = {};
+      itemIds = itemIds.filter(function (x) {
+        if (!x || seen[x]) return false;
+        seen[x] = true;
+        return true;
+      });
+
+      if (!isLegacy) {
+        // Ya es por ítem: conservar (salvo si está superado).
+        if (!hechos[id]) map[id] = p;
+        return;
+      }
+
+      if (!itemIds.length) {
+        // Legacy sin huella de pregunta: se descarta para no seguir mostrando cartilla genérica mala.
+        changed = true;
+        return;
+      }
+
+      itemIds.forEach(function (itemId) {
+        var qid = cartillaIdDeItem(itemId);
+        if (!qid) return;
+        // Si el catálogo aún no cargó, igual migramos al id canónico.
+        var fallosDeItem = fallos.filter(function (f) {
+          return f && String(f.itemId) === String(itemId);
+        });
+        if (!fallosDeItem.length && String(p.itemId) === String(itemId) && p.ultimoFallo) {
+          fallosDeItem = [p.ultimoFallo];
+        }
+        if (!fallosDeItem.length) {
+          fallosDeItem = [{ itemId: itemId, enunciado: '', opciones: [], ts: p.ts || Date.now() }];
+        }
+        upsert(qid, p, fallosDeItem);
+      });
+    });
+
+    if (!changed && Object.keys(map).length === pendientes.length) return false;
+    estado.pendientes = Object.keys(map).map(function (k) { return map[k]; });
+    // También migra hechos legacy → no reabrir genéricos
+    Object.keys(hechos).forEach(function (hid) {
+      if (String(hid).indexOf('q_') === 0) return;
+      // hechos legacy se dejan; no bloquean q_*
+    });
+    guardarEstado(estado);
+    return true;
+  }
+
   function cargarCatalogo() {
-    if (_catalogo) return Promise.resolve(_catalogo);
+    if (_catalogo) {
+      try { migrarPendientesAPorItem(); } catch (_) {}
+      return Promise.resolve(_catalogo);
+    }
     if (_catalogoPromise) return _catalogoPromise;
     _catalogoPromise = fetch(CATALOGO_URL + '?v=' + encodeURIComponent(
       (global.DANTE_CACHE_VERSION || '') + ''
@@ -75,6 +188,7 @@
       .then(function (r) { return r.ok ? r.json() : { temas: [] }; })
       .then(function (json) {
         _catalogo = json && Array.isArray(json.temas) ? json : { temas: [] };
+        try { migrarPendientesAPorItem(); } catch (_) {}
         return _catalogo;
       })
       .catch(function () {
@@ -382,6 +496,7 @@
 
   /** Pendientes activos: nunca incluye temas ya marcados como superados. */
   function listarPendientes() {
+    try { migrarPendientesAPorItem(); } catch (_) {}
     var estado = leerEstado();
     var hechos = estado.hechos || {};
     var dirty = false;
@@ -440,6 +555,7 @@
       vistos: vistos,
       updatedAt: new Date().toISOString()
     });
+    try { migrarPendientesAPorItem(); } catch (_) {}
   }
 
   function contarPendientes() {
@@ -581,6 +697,7 @@
     pintarSala: pintarSala,
     exportarParaSnapshot: exportarParaSnapshot,
     importarDesdeSnapshot: importarDesdeSnapshot,
+    migrarPendientesAPorItem: migrarPendientesAPorItem,
     leerEstado: leerEstado
   };
 
