@@ -4252,24 +4252,48 @@
       recordRespuesta.c = paramsItem.c;
       this._enriquecerRecordRespuesta(recordRespuesta, item, elegida);
 
-      // Acierto limpio vs acierto de repaso:
-      // - Limpio (entrenamiento/simulacro): peso 1.0 en IRT / proyección.
-      // - Repaso · Fallidas o rehacer tras cartilla: marca recuperación; IRT no voltea el fallo;
-      //   proyección solo recibe crédito parcial (35%) vía DanteAbility.acumular.
+      // Peso por origen del acierto (solo reduce si YA había fallado esa pregunta):
+      // - primer_intento → 1.0 (también si es refuerzo de área a la primera)
+      // - post_explicacion → 0.35
+      // - post_refuerzo (Repaso · Fallidas) → 0.25
       const eraFallidaPendiente = !!(window.DanteRepasoFallidas
         && typeof window.DanteRepasoFallidas.estaPendiente === 'function'
         && window.DanteRepasoFallidas.estaPendiente(recordRespuesta.id));
-      const esRecuperacionScore = Boolean(
-        (this.misionData && this.misionData.esRepasoFallidas)
-        || (recordRespuesta.correcto === true && eraFallidaPendiente)
-      );
+      const habiaFalladoAntes = eraFallidaPendiente
+        || !!(window.DanteAbility && typeof window.DanteAbility.habiaFalladoItem === 'function'
+          && window.DanteAbility.habiaFalladoItem(recordRespuesta.id));
+      const esBloqueRepasoFallidas = !!(this.misionData && this.misionData.esRepasoFallidas);
+      const clsOrigen = (window.DanteAbility && typeof window.DanteAbility.clasificarOrigenAcierto === 'function')
+        ? window.DanteAbility.clasificarOrigenAcierto({
+          id: recordRespuesta.id,
+          correcto: recordRespuesta.correcto === true,
+          habiaFalladoAntes: habiaFalladoAntes,
+          esRepasoFallidas: esBloqueRepasoFallidas,
+          tipo: esBloqueRepasoFallidas ? 'REPASO_FALLIDAS' : undefined
+        })
+        : {
+          origen_acierto: (recordRespuesta.correcto === true
+            ? (habiaFalladoAntes
+              ? (esBloqueRepasoFallidas ? 'post_refuerzo' : 'post_explicacion')
+              : 'primer_intento')
+            : null),
+          peso: (recordRespuesta.correcto === true
+            ? (habiaFalladoAntes ? (esBloqueRepasoFallidas ? 0.25 : 0.35) : 1)
+            : 0),
+          esRecuperacion: !!(recordRespuesta.correcto === true && habiaFalladoAntes)
+        };
+      const esRecuperacionScore = !!(recordRespuesta.correcto === true && clsOrigen.esRecuperacion);
+      recordRespuesta.habiaFalladoAntes = !!habiaFalladoAntes;
+      recordRespuesta.origen_acierto = clsOrigen.origen_acierto || undefined;
+      recordRespuesta.pesoProyeccion = Number(clsOrigen.peso) > 0
+        ? Number(clsOrigen.peso)
+        : ((window.DanteAbility && window.DanteAbility.PESO_ACIERTO_LIMPIO) || 1);
       if (esRecuperacionScore) {
         recordRespuesta.recuperacion = true;
         recordRespuesta.excluirDeScore = true;
-        recordRespuesta.tipo = 'REPASO_FALLIDAS';
-        recordRespuesta.pesoProyeccion = (window.DanteAbility && window.DanteAbility.PESO_ACIERTO_RECUPERACION) || 0.35;
-      } else {
-        recordRespuesta.pesoProyeccion = (window.DanteAbility && window.DanteAbility.PESO_ACIERTO_LIMPIO) || 1;
+        if (clsOrigen.origen_acierto === 'post_refuerzo' || esBloqueRepasoFallidas) {
+          recordRespuesta.tipo = 'REPASO_FALLIDAS';
+        }
       }
 
       this.respuestasSesionActiva[this.indexReactivoActivo] = recordRespuesta;
@@ -4312,11 +4336,14 @@
           textoOpcion: recordRespuesta.textoOpcion || '',
           recuperacion: esRecuperacionScore || undefined,
           excluirDeScore: esRecuperacionScore || undefined,
-          excluir_score: esRecuperacionScore || undefined
+          excluir_score: esRecuperacionScore || undefined,
+          origen_acierto: recordRespuesta.origen_acierto || undefined,
+          pesoProyeccion: recordRespuesta.pesoProyeccion,
+          habiaFalladoAntes: recordRespuesta.habiaFalladoAntes || undefined
         }, {
           tipo: tipoGuardado,
           recuperacion: esRecuperacionScore || undefined,
-          // Recuperación: solo puntos con crédito parcial (35%); nunca como acierto limpio pleno.
+          // Recuperación: crédito parcial (0.35 / 0.25); nunca acierto limpio pleno.
           theta: estGuardado && estGuardado.theta,
           sem: estGuardado && estGuardado.sem,
           puntos: estGuardado && estGuardado.puntos

@@ -5,7 +5,7 @@
  * Acertar en el repaso BAJA el contador al instante. Nunca rellena con banco genérico.
  *
  * Acierto limpio (entrenamiento/simulacro) ≠ acierto de repaso:
- * - Limpio: peso 1.0 en IRT / proyección y en precisión de «Cómo respondes».
+ * - Limpio (primer intento): peso 1.0. Tras fallar: post_explicacion 0.35 / post_refuerzo 0.25.
  * - Repaso: limpia la fallida; proyección solo crédito parcial (~35%); no infla precisión acumulada.
  */
 (function () {

@@ -5,14 +5,17 @@
   const PESOS = [1.733979e-09, 3.633454e-07, 2.378036e-05, 5.867160e-04, 6.438416e-03, 3.424933e-02, 1.002476e-01, 1.691717e-01, 2.210452e-01, 2.422491e-01, 2.210452e-01, 1.691717e-01, 1.002476e-01, 3.424933e-02, 6.438416e-03, 5.867160e-04, 2.378036e-05, 3.633454e-07, 1.733979e-09];
 
   /**
-   * Pesos de proyección (puntaje / 500):
-   * - ACIERTO LIMPIO (entrenamiento, refuerzo, simulacro, diagnóstico): peso 1.0 → entra al IRT completo.
-   * - ACIERTO DE REPASO / recuperación (Repaso · Fallidas o rehacer tras cartilla): peso 0.35.
-   *   No voltea el fallo original en el historial IRT; solo aporta un crédito parcial al puntaje
-   *   mostrado, para que la proyección suba de forma gradual y no con saltos grandes.
+   * Pesos de proyección / brecha (solo si YA había fallado esa pregunta):
+   * - primer_intento → 1.0 (aunque esté en un bloque de refuerzo de área)
+   * - post_explicacion → 0.35 (acertó tras haber fallado y visto explicación)
+   * - post_refuerzo → 0.25 (acertó en bloque Repaso · Fallidas tras haberla fallado)
+   * El acierto de recuperación NO voltea el fallo en IRT; solo crédito parcial a la proyección.
    */
   const PESO_ACIERTO_LIMPIO = 1;
-  const PESO_ACIERTO_RECUPERACION = 0.35;
+  const PESO_ACIERTO_POST_EXPLICACION = 0.35;
+  const PESO_ACIERTO_POST_REFUERZO = 0.25;
+  /** @deprecated alias de post_explicacion */
+  const PESO_ACIERTO_RECUPERACION = PESO_ACIERTO_POST_EXPLICACION;
 
   function params(item) {
     const a = Number(item && item.a);
@@ -102,17 +105,84 @@
   function esRecuperacionScore(r) {
     if (!r) return false;
     if (r.recuperacion === true || r.excluirDeScore === true || r.excluir_score === true) return true;
+    const origen = String(r.origen_acierto || r.origenAcierto || '').toLowerCase();
+    if (origen === 'post_explicacion' || origen === 'post_refuerzo') return true;
     const tipo = String(r.tipo || '').toUpperCase();
-    return tipo === 'REPASO_FALLIDAS';
+    return tipo === 'REPASO_FALLIDAS' && r.correcto === true && r.habiaFalladoAntes === true;
   }
 
-  /** Crédito parcial de proyección: base + 35% del alza que daría tratar el repaso como acierto limpio. */
-  function creditoParcialRecuperacion(puntosBase, puntosSiPleno) {
+  function habiaFalladoItem(id) {
+    const key = String(id || '').trim();
+    if (!key) return false;
+    try {
+      if (window.DanteRepasoFallidas && typeof window.DanteRepasoFallidas.estaPendiente === 'function'
+          && window.DanteRepasoFallidas.estaPendiente(key)) {
+        return true;
+      }
+    } catch (e) {}
+    try {
+      const irt = leerRespuestas();
+      if (irt.some(function (r) { return r && String(r.id) === key && r.correcto === false; })) return true;
+    } catch (e2) {}
+    try {
+      const raw = JSON.parse(localStorage.getItem('dante_history_cache') || '[]');
+      const hist = Array.isArray(raw) ? raw : [];
+      for (let i = 0; i < hist.length; i++) {
+        const items = (hist[i] && (hist[i].items_respondidos || hist[i].preguntas_falladas)) || [];
+        for (let j = 0; j < items.length; j++) {
+          const it = items[j];
+          if (!it) continue;
+          const iid = String(it.id || it.itemId || it.item_original || '');
+          if (iid !== key) continue;
+          if (it.correcto === false || it.correcta === false || it.is_correct === false) return true;
+        }
+      }
+    } catch (e3) {}
+    return false;
+  }
+
+  /**
+   * Clasifica el origen del acierto y el peso de proyección.
+   * Acierto a la primera (aunque sea en refuerzo de área) → 1.0.
+   */
+  function clasificarOrigenAcierto(opts) {
+    const o = opts || {};
+    const correcta = o.correcto === true || o.correcta === true;
+    if (!correcta) {
+      return { origen_acierto: null, peso: 0, esRecuperacion: false, esPrimerIntento: false };
+    }
+    const prev = String(o.origen_acierto || o.origenAcierto || '').toLowerCase();
+    if (prev === 'primer_intento') {
+      return { origen_acierto: 'primer_intento', peso: PESO_ACIERTO_LIMPIO, esRecuperacion: false, esPrimerIntento: true };
+    }
+    if (prev === 'post_refuerzo') {
+      return { origen_acierto: 'post_refuerzo', peso: PESO_ACIERTO_POST_REFUERZO, esRecuperacion: true, esPrimerIntento: false };
+    }
+    if (prev === 'post_explicacion') {
+      return { origen_acierto: 'post_explicacion', peso: PESO_ACIERTO_POST_EXPLICACION, esRecuperacion: true, esPrimerIntento: false };
+    }
+    const habia = o.habiaFalladoAntes === true
+      || (o.id ? habiaFalladoItem(o.id) : false);
+    const esRepaso = o.esRepasoFallidas === true
+      || String(o.tipo || '').toUpperCase() === 'REPASO_FALLIDAS';
+    if (!habia) {
+      return { origen_acierto: 'primer_intento', peso: PESO_ACIERTO_LIMPIO, esRecuperacion: false, esPrimerIntento: true };
+    }
+    if (esRepaso) {
+      return { origen_acierto: 'post_refuerzo', peso: PESO_ACIERTO_POST_REFUERZO, esRecuperacion: true, esPrimerIntento: false };
+    }
+    return { origen_acierto: 'post_explicacion', peso: PESO_ACIERTO_POST_EXPLICACION, esRecuperacion: true, esPrimerIntento: false };
+  }
+
+  /** Crédito parcial de proyección: base + peso·(pleno − base). */
+  function creditoParcialRecuperacion(puntosBase, puntosSiPleno, peso) {
     const base = Number(puntosBase);
     const pleno = Number(puntosSiPleno);
+    const w = Number(peso);
     if (!Number.isFinite(base) || !Number.isFinite(pleno)) return Number.isFinite(base) ? base : (Number.isFinite(pleno) ? pleno : null);
     if (pleno <= base) return Math.round(base);
-    return Math.max(0, Math.min(500, Math.round(base + PESO_ACIERTO_RECUPERACION * (pleno - base))));
+    const factor = Number.isFinite(w) && w > 0 ? Math.min(1, Math.max(0, w)) : PESO_ACIERTO_POST_EXPLICACION;
+    return Math.max(0, Math.min(500, Math.round(base + factor * (pleno - base))));
   }
 
   function acumular(nuevas) {
@@ -145,16 +215,24 @@
     const est = estimar(items);
     est.n = items.length;
     est.pesoLimpio = PESO_ACIERTO_LIMPIO;
-    est.pesoRecuperacion = PESO_ACIERTO_RECUPERACION;
+    est.pesoRecuperacion = PESO_ACIERTO_POST_EXPLICACION;
+    est.pesoPostExplicacion = PESO_ACIERTO_POST_EXPLICACION;
+    est.pesoPostRefuerzo = PESO_ACIERTO_POST_REFUERZO;
 
-    // Crédito parcial solo por aciertos de repaso de ESTE lote (no reescriben el IRT).
+    // Crédito parcial solo por aciertos de recuperación de ESTE lote (no reescriben el IRT).
     const recupOk = (nuevas || []).filter(function (r) {
-      return r && esRecuperacionScore(r) && r.correcto === true && String(r.id || '').trim();
+      if (!r || r.correcto !== true || !String(r.id || '').trim()) return false;
+      const cls = clasificarOrigenAcierto(r);
+      return cls.esRecuperacion || esRecuperacionScore(r);
     });
     if (recupOk.length) {
       const simulMap = new Map(items.map(function (x) { return [x.id, Object.assign({}, x)]; }));
+      let pesoLote = PESO_ACIERTO_POST_EXPLICACION;
       recupOk.forEach(function (r) {
         const id = String(r.id || '');
+        const cls = clasificarOrigenAcierto(r);
+        if (cls.peso > 0 && cls.peso < pesoLote) pesoLote = cls.peso;
+        if (Number(r.pesoProyeccion) > 0 && Number(r.pesoProyeccion) < pesoLote) pesoLote = Number(r.pesoProyeccion);
         const prev = simulMap.get(id);
         if (prev) {
           prev.correcto = true;
@@ -175,10 +253,11 @@
       const basePts = (prevEst && prevEst.puntos != null)
         ? prevEst.puntos
         : (est.puntos != null ? est.puntos : null);
-      const ptsParcial = creditoParcialRecuperacion(basePts, estPleno && estPleno.puntos);
+      const ptsParcial = creditoParcialRecuperacion(basePts, estPleno && estPleno.puntos, pesoLote);
       if (ptsParcial != null) {
         est.puntos = ptsParcial;
         est.creditoRecuperacion = true;
+        est.pesoRecuperacionAplicado = pesoLote;
         est.puntosSiPleno = estPleno && estPleno.puntos;
         est.puntosBase = basePts;
       }
@@ -343,9 +422,13 @@
     estimar: estimar,
     acumular: acumular,
     esRecuperacionScore: esRecuperacionScore,
+    habiaFalladoItem: habiaFalladoItem,
+    clasificarOrigenAcierto: clasificarOrigenAcierto,
     creditoParcialRecuperacion: creditoParcialRecuperacion,
     PESO_ACIERTO_LIMPIO: PESO_ACIERTO_LIMPIO,
     PESO_ACIERTO_RECUPERACION: PESO_ACIERTO_RECUPERACION,
+    PESO_ACIERTO_POST_EXPLICACION: PESO_ACIERTO_POST_EXPLICACION,
+    PESO_ACIERTO_POST_REFUERZO: PESO_ACIERTO_POST_REFUERZO,
     leerRespuestas: leerRespuestas,
     aPuntosSaber: aPuntosSaber,
     percentil: percentil,
