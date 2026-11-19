@@ -131,20 +131,46 @@ function tipDescarte() {
   return 'Si la opción habla de otro caso, otra cifra u otra norma, no es la respuesta.';
 }
 
-function esJustifDebil(razon) {
+/** Plantillas de matemáticas que no deben aparecer fuera de matemáticas. */
+const MATH_CONTAM_RE = /proporci[oó]n\s*[“"']?a\s*ojo|sumaste o restaste cantidades|dividiste cuando tocaba multiplicar|olvidaste convertir \(minutos|Mezclaste per[ií]metro, [aá]rea o volumen|porcentaje como cantidad fija|favorables\/posibles|al despejar sumaste|convertir el tiempo o la magnitud|duplicaste o partiste a la mitad|omitiste un paso, una conversi[oó]n/i;
+
+function esJustifCruzada(razon, area) {
+  const a = String(area || '').toLowerCase();
+  if (a.includes('mate')) return false;
+  return MATH_CONTAM_RE.test(String(razon || ''));
+}
+
+function esJustifGenericaInglesMejorable(razon, area, item) {
+  const a = String(area || '').toLowerCase();
+  if (!(a.includes('ingl') || /grammar|vocab|dialog|cloze|reading|aviso|sign/.test(subDe(item)))) return false;
+  const r = limpio(razon);
+  // Tip genérico viejo: conviene reescribir si el ítem pide un punto más fino.
+  if (!/suena familiar, pero no encaja con el tiempo/i.test(r) && !/forma gramatical o el vocabulario/i.test(r)) {
+    return false;
+  }
+  const blob = [
+    item && (item.pregunta_texto || item.enunciado || ''),
+    JSON.stringify(item && (item.opciones_respuesta || item.opciones) || [])
+  ].join(' ').toLowerCase();
+  return /phase out|keep up|look into|take after|passive|was written|were |by a |by the |purpose of|warning|phrasal/.test(blob);
+}
+
+function esJustifDebil(razon, area, item) {
   const r = limpio(razon);
   if (!r) return true;
+  if (esJustifCruzada(r, area)) return true;
+  if (item && esJustifGenericaInglesMejorable(r, area, item)) return true;
   if (r.length < 55) return true;
   if (/no cumple la condici[oó]n o el c[aá]lculo del enunciado/i.test(r)) return true;
   if (/responde (a )?otra pregunta|usa solo una parte de la informaci[oó]n|lo que se ped[ií]a es/i.test(r)
-      && !/cuenca|afluente|desemboc|macizo|complemento|numerador|pendiente|falacia|gradiente/i.test(r)) {
+      && !/cuenca|afluente|desemboc|macizo|complemento|numerador|pendiente|falacia|gradiente|phrasal|passive|prop[oó]sito|vocabulario|concordancia/i.test(r)) {
     return true;
   }
   if (/no (responde|cierra|es (lo|la)|sirve)|no es (correcta|v[aá]lida)|opci[oó]n incorrecta/i.test(r) && r.length < 110) {
     return true;
   }
   if (/^«[^»]{1,90}» no (responde|es lo que pide)/i.test(r)
-      && !/porque|error|olvid|sumaste|restaste|confund|mezcl|omit|invert|producto|uni[oó]n|complemento|cuenca|afluente|desemboc/i.test(r)) {
+      && !/porque|error|olvid|sumaste|restaste|confund|mezcl|omit|invert|producto|uni[oó]n|complemento|cuenca|afluente|desemboc|phrasal|passive|sentido|colocaci[oó]n|tiempo verbal/i.test(r)) {
     return true;
   }
   return false;
@@ -156,8 +182,12 @@ function trampaDeOpcion(item, letra) {
   return lista.find((t) => String((t && (t.opcion || t.letra)) || '').toUpperCase() === L) || null;
 }
 
-function errorTipicoPorTrampa(trampa) {
+function errorTipicoPorTrampa(trampa, area) {
   if (!trampa || typeof trampa !== 'object') return '';
+  // Las trampas de cálculo solo aplican a matemáticas (u otras áreas numéricas).
+  const a = String(area || '').toLowerCase();
+  const esMate = a.includes('mate') || a.includes('cuantit');
+  if (!esMate) return '';
   if (trampa.vulnera_omision_conversion) {
     return 'Es un error típico de unidades: olvidaste convertir (minutos↔segundos, horas↔minutos, cm↔m, %↔decimal) antes de operar.';
   }
@@ -181,8 +211,27 @@ function errorTipicoPorTexto(mala, bien, sub, area, item) {
   const m = limpio(mala).toLowerCase();
   const b = limpio(bien).toLowerCase();
   const enunciado = limpio(item && (item.pregunta_texto || item.texto || item.enunciado)).toLowerCase();
+  const esMate = String(area || '').includes('mate') || String(area || '').includes('cuantit');
 
-  if (/probabil|azar|dado|carta|moneda|evento/.test(sub + enunciado) || sub === 'probabilidad') {
+  // Inglés primero: evita que palabras como hour/% disparen tips de cálculo.
+  if (String(area || '').includes('ingl') || /grammar|vocab|dialog|cloze|reading|aviso|sign/.test(sub)) {
+    const phrasal = /\b(phase out|keep up|look into|take after|give up|turn down|put off|carry out|run out|break down|come up|fill in|set up|bring about|call off|get over|make up|pick up|work out)\b/i;
+    if (phrasal.test(m + ' ' + b + ' ' + enunciado)) {
+      return 'Error típico de phrasal verb: la partícula cambia el sentido; esta opción significa otra cosa y no encaja con el contexto de la oración.';
+    }
+    if (/passive|was |were |been |by a |by the |past participle|written|built|constructed|discovered/.test(m + ' ' + b + ' ' + enunciado)) {
+      return 'Error típico de voz pasiva: falta be + past participle, o usaste la forma activa/incorrecta del verbo.';
+    }
+    if (/purpose|warning|sign|notice|what does .+ (want|mean)|intention/.test(enunciado)) {
+      return 'Error típico: confundiste el propósito del mensaje (avisar, pedir, informar) con un saludo, una venta u otra función comunicativa.';
+    }
+    if (/dialog|conversation|a:|b:|speaker|how are you|could you/.test(enunciado + ' ' + sub)) {
+      return 'Error típico de diálogo: la respuesta no es coherente con lo que acaba de pedir o decir el interlocutor.';
+    }
+    return 'Error típico: la forma gramatical o el vocabulario suena familiar, pero no encaja con el tiempo, la colocación o la estructura que pide la oración.';
+  }
+
+  if (esMate && (/probabil|azar|dado|carta|moneda|evento/.test(sub + enunciado) || sub === 'probabilidad')) {
     if (numLike(mala) && numLike(bien)) {
       const nm = parseFloat(String(mala).replace(',', '.').replace(/[^\d.-]/g, ''));
       const nb = parseFloat(String(bien).replace(',', '.').replace(/[^\d.-]/g, ''));
@@ -199,25 +248,25 @@ function errorTipicoPorTexto(mala, bien, sub, area, item) {
     return 'Error típico de probabilidad: no identificaste bien el espacio muestral o la regla (suma/producto) que aplica.';
   }
 
-  if (/\/\d|\d\/\d|fracción|fraccion/.test(m + b + enunciado) || /fraccion/.test(sub)) {
+  if (esMate && (/\/\d|\d\/\d|fracción|fraccion/.test(m + b + enunciado) || /fraccion/.test(sub))) {
     if (/\+/.test(m) || /sum/.test(m)) {
       return 'Error típico: sumaste numeradores y denominadores por separado, en vez de llevar ambas fracciones al mismo denominador.';
     }
     return 'Error típico con fracciones: no igualaste denominadores o confundiste la fracción con el entero del enunciado.';
   }
 
-  if (/%|por\s*cien|iva|descuento/.test(m + b + enunciado) || /aritmet|proporcional/.test(sub)) {
+  if (esMate && (/%|por\s*cien|iva|descuento/.test(m + b + enunciado) || /aritmet|proporcional/.test(sub))) {
     if (/sum|resta|\+|−|-/.test(m) && /%/.test(b + m + enunciado)) {
       return 'Error típico: trataste el porcentaje como cantidad fija (sumaste/restaste el número del %) en vez de calcularlo sobre la base.';
     }
     return 'Error típico de porcentaje o razón: no convertiste el % a decimal o lo aplicaste sobre la base equivocada.';
   }
 
-  if (/hora|minuto|segundo|km\/h|m\/s/.test(m + b + enunciado)) {
+  if (esMate && /hora|minuto|segundo|km\/h|m\/s/.test(m + b + enunciado)) {
     return 'Error típico de unidades: olvidaste convertir el tiempo o la magnitud a la misma unidad antes de calcular.';
   }
 
-  if (/media|mediana|moda|rango|desviaci/.test(sub + enunciado) || sub === 'estadistica') {
+  if (esMate && (/media|mediana|moda|rango|desviaci/.test(sub + enunciado) || sub === 'estadistica')) {
     return 'Error típico de estadística: confundiste media, mediana o moda, o usaste el total en vez del promedio.';
   }
 
@@ -256,11 +305,12 @@ function errorTipicoPorTexto(mala, bien, sub, area, item) {
     return 'Error típico: confundiste la norma, el hecho histórico, la región o el mecanismo institucional con otro parecido del enunciado.';
   }
 
-  if (area.includes('ingl') || /grammar|vocab|dialog|cloze|reading|aviso|sign/.test(sub)) {
-    return 'Error típico: la forma gramatical o el vocabulario suena familiar, pero no encaja con el tiempo o la estructura que pide la oración.';
+  // Cálculos numéricos solo en matemáticas.
+  if (!esMate && numLike(mala) && numLike(bien)) {
+    return 'Error típico: elegiste un valor o dato cercano que no responde lo que pide el enunciado.';
   }
 
-  if (numLike(mala) && numLike(bien)) {
+  if (esMate && numLike(mala) && numLike(bien)) {
     const nm = parseFloat(String(mala).replace(',', '.').replace(/[^\d.-]/g, ''));
     const nb = parseFloat(String(bien).replace(',', '.').replace(/[^\d.-]/g, ''));
     if (Number.isFinite(nm) && Number.isFinite(nb) && nb !== 0) {
@@ -287,7 +337,7 @@ function porqueIncorrecta(mala, bien, ctx) {
   const letra = (ctx && ctx.letra) || '';
   const sub = subDe(item);
   const area = areaDe(item);
-  const tipTrampa = errorTipicoPorTrampa(trampaDeOpcion(item, letra));
+  const tipTrampa = errorTipicoPorTrampa(trampaDeOpcion(item, letra), area);
   const tipTexto = tipTrampa || errorTipicoPorTexto(izq, der, sub, area, item);
   return `«${izq}» es un distractor. ${tipTexto} La opción que sí responde es «${der}».`;
 }
@@ -386,7 +436,7 @@ function mapaRazones(item) {
     if (!letra || letra === clave) return;
     const texto = crudo(op);
     let razon = limpio(prevLetra[letra]) || limpio(prevTexto[texto]) || limpio(prevTexto[op]);
-    if (esJustifDebil(razon) || pistaEsDebil(razon)) {
+    if (esJustifDebil(razon, areaDe(item), item) || pistaEsDebil(razon)) {
       razon = porqueIncorrecta(texto, bien, { item, letra });
     }
     out[letra] = razon;
@@ -462,11 +512,11 @@ export function enriquecerAyudaItem(item) {
     if (L === letraCorrecta(item)) return;
     const prev = limpio(justif && justif[L]);
     const gen = limpio(ayuda.justificacion_opciones && ayuda.justificacion_opciones[L]);
-    justifFinal[L] = esJustifDebil(prev) ? (gen || prev) : prev;
+    justifFinal[L] = esJustifDebil(prev, areaDe(item), item) ? (gen || prev) : prev;
   });
   Object.keys(razones).forEach((k) => {
     const prev = limpio(razones[k]);
-    if (!esJustifDebil(prev)) razonesFinal[k] = prev;
+    if (!esJustifDebil(prev, areaDe(item), item)) razonesFinal[k] = prev;
   });
   Object.keys(justifFinal).forEach((L) => {
     const texto = textoOpcion(opcionesDe(item), L);
