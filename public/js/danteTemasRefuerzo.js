@@ -279,8 +279,22 @@
     return false;
   }
 
+  function pareceIdInterno(txt) {
+    var s = String(txt || '').replace(/\s+/g, ' ').trim();
+    if (!s) return true;
+    // q_<uuid> o el mismo id “humanizado” con espacios
+    if (/^q_[a-z0-9_]+$/i.test(s)) return true;
+    if (/^q\s+[0-9a-f]{8}\s+/i.test(s)) return true;
+    if (/^q\s+[0-9a-f\-_\s]{20,}$/i.test(s)) return true;
+    if (/^[0-9a-f]{8}[-_][0-9a-f]{4}[-_]/i.test(s)) return true;
+    return false;
+  }
+
   function humanizarIdTema(temaId) {
-    return String(temaId || '')
+    var raw = String(temaId || '').trim();
+    // Nunca mostrar IDs internos q_* / UUID al estudiante.
+    if (pareceIdInterno(raw) || /^q_/i.test(raw)) return 'Tema de refuerzo';
+    return raw
       .replace(/_/g, ' ')
       .replace(/\b\w/g, function (c) { return c.toUpperCase(); })
       .replace(/\bIngles\b/i, 'Inglés')
@@ -288,27 +302,27 @@
       .replace(/\bMatematicas\b/i, 'Matemáticas')
       .replace(/\bBiologia\b/i, 'Biología')
       .replace(/\bFisica\b/i, 'Física')
-      .trim();
+      .trim() || 'Tema de refuerzo';
   }
 
   /**
    * Nombre limpio del tema para UI/modales.
-   * Nunca devuelve fragmentos de la pregunta fallida.
+   * Nunca devuelve fragmentos de la pregunta fallida ni IDs internos.
    */
   function tituloDe(temaId, meta) {
     var id = String(temaId || '').trim();
     var t = temaPorId(id);
-    if (t && t.titulo) return String(t.titulo).trim();
+    if (t && t.titulo && !pareceIdInterno(t.titulo)) return String(t.titulo).trim();
     var candidatos = [
+      meta && meta.titulo,
       meta && meta.tema_a_estudiar,
       meta && meta.tema,
       meta && meta.repaso
     ];
     for (var i = 0; i < candidatos.length; i++) {
       var c = String(candidatos[i] || '').replace(/\s+/g, ' ').trim();
-      if (!c || pareceFragmentoPregunta(c)) continue;
-      // Evita IDs crudos demasiado técnicos si ya hay algo legible corto
-      if (c.length <= 72) return c;
+      if (!c || pareceFragmentoPregunta(c) || pareceIdInterno(c)) continue;
+      if (c.length <= 90) return c;
     }
     return humanizarIdTema(id || 'tema');
   }
